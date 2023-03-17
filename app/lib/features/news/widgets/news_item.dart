@@ -10,7 +10,7 @@ import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class NewsItem extends StatelessWidget {
+class NewsItem extends StatefulWidget {
   final Client client;
   final NewsEntry news;
   final int index;
@@ -23,9 +23,32 @@ class NewsItem extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<NewsItem> createState() => _NewsItemState();
+}
+
+class _NewsItemState extends State<NewsItem> {
+  late Uint8List newsImage;
+  @override
+  void initState() {
+    super.initState();
+    getNewsImage(widget.news.getSlide(0)!);
+  }
+
+  Future<void> getNewsImage(NewsSlide slide) async {
+    newsImage = await slide.imageBinary().then((value) => value.asTypedList());
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var bgColor = convertColor(news.colors()?.background(), AppCommonTheme.backgroundColor);
-    var fgColor = convertColor(news.colors()?.color(), AppCommonTheme.primaryColor);
+    var bgColor = convertColor(
+      widget.news.colors()?.background(),
+      AppCommonTheme.backgroundColor,
+    );
+    var fgColor = convertColor(
+      widget.news.colors()?.color(),
+      AppCommonTheme.primaryColor,
+    );
     bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
     return Stack(
@@ -35,7 +58,7 @@ class NewsItem extends StatelessWidget {
           color: bgColor,
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: _ImageWidget(news: news.get_slide(0), isDesktop: isDesktop),
+          child: _ImageWidget(image: newsImage, isDesktop: isDesktop),
           clipBehavior: Clip.none,
         ),
         LayoutBuilder(
@@ -57,13 +80,13 @@ class NewsItem extends StatelessWidget {
                         children: <Widget>[
                           const Spacer(),
                           _TitleWidget(
-                            news: news,
+                            news: widget.news,
                             backgroundColor: bgColor,
                             foregroundColor: fgColor,
                           ),
                           const SizedBox(height: 10),
                           _SubtitleWidget(
-                            news: news,
+                            news: widget.news,
                             backgroundColor: bgColor,
                             foregroundColor: fgColor,
                           ),
@@ -74,8 +97,11 @@ class NewsItem extends StatelessWidget {
                   ),
                   Expanded(
                     flex: 1,
-                    child:
-                        NewsSideBar(client: client, news: news, index: index),
+                    child: NewsSideBar(
+                      client: widget.client,
+                      news: widget.news,
+                      index: widget.index,
+                    ),
                   ),
                 ],
               ),
@@ -89,16 +115,15 @@ class NewsItem extends StatelessWidget {
 
 class _ImageWidget extends StatelessWidget {
   const _ImageWidget({
-    required this.news,
+    required this.image,
     required this.isDesktop,
   });
 
-  final NewsSlide news;
+  final List<int>? image;
   final bool isDesktop;
 
   @override
   Widget build(BuildContext context) {
-    var image = await news.image_binary()?;
     Size size = WidgetsBinding.instance.window.physicalSize;
     if (image == null) {
       return const SizedBox.shrink();
@@ -106,7 +131,7 @@ class _ImageWidget extends StatelessWidget {
 
     // return Image.memory(Uint8List.fromList(image), fit: BoxFit.cover);
     return Image.memory(
-      Uint8List.fromList(image),
+      Uint8List.fromList(image!),
       fit: BoxFit.cover,
       cacheWidth: size.width.toInt(),
       cacheHeight: size.height.toInt(),
@@ -128,7 +153,7 @@ class _TitleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      news.text() ?? '',
+      news.getSlide(0)!.typeStr(),
     );
   }
 }
@@ -147,7 +172,7 @@ class _SubtitleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpandableText(
-      news.text() ?? '',
+      news.getSlide(0)!.typeStr(),
       maxLines: 2,
       expandText: '',
       expandOnTextTap: true,
