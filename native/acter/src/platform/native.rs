@@ -1,9 +1,13 @@
 use anyhow::{bail, Result};
 use env_logger::filter::Builder as FilterBuilder;
 use lazy_static::lazy_static;
-use log::{Log, Metadata, Record};
+use log::{LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
 use matrix_sdk_sled::make_store_config;
+use parse_env_filter::{
+    eager::{filters, Filter, SpanFilter},
+    FieldFilter, ParseError,
+};
 use std::{
     path::PathBuf,
     sync::{Arc, Mutex},
@@ -32,7 +36,7 @@ pub fn init_logging(
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
-    let log_level = FilterBuilder::new().parse(filter.as_str()).build();
+    // let log_level = FilterBuilder::new().parse(filter.as_str()).build();
     let mut path = PathBuf::from(log_dir.as_str());
     path.push("app_");
 
@@ -45,11 +49,28 @@ pub fn init_logging(
                 record.level(),
                 message
             ))
-        })
+        })/*
         // Add blanket level filter -
         .level(log_level.filter())
         // - and per-module overrides
-        .level_for("acter-sdk", log_level.filter());
+        .level_for("acter-sdk", log_level.filter())*/;
+
+    if let Ok(items) = filters(filter.as_str()) {
+        for Filter { target, span, level } in items {
+            match level {
+                Some(level) => {
+                    if let Some(level) = get_log_filter(level) {
+                        builder = builder.level_for(target, level);
+                    }
+                }
+                None => {
+                    if let Some(level) = get_log_filter(target) {
+                        builder = builder.level(level);
+                    }
+                }
+            }
+        }
+    }
 
     // Output to console
     if let Some(console_logger) = console_logger {
@@ -120,4 +141,15 @@ impl Log for NopLogger {
     fn log(&self, record: &Record) {}
 
     fn flush(&self) {}
+}
+
+fn get_log_filter(level: &str) -> Option<LevelFilter> {
+    match level {
+        "debug" => Some(LevelFilter::Debug),
+        "error" => Some(LevelFilter::Error),
+        "info" => Some(LevelFilter::Info),
+        "warn" => Some(LevelFilter::Warn),
+        "trace" => Some(LevelFilter::Trace),
+        _ => None,
+    }
 }

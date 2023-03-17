@@ -32,6 +32,7 @@ log = "0.4"
 log-panics = "2.0.0"
 mime = "0.3.16"
 parking_lot = "0.11.2"
+parse-env-filter = "0.1.0"
 ruma = { workspace = true }
 sanitize-filename-reader-friendly = "2.2.1"
 serde = { version = "1", features = ["derive"] }
