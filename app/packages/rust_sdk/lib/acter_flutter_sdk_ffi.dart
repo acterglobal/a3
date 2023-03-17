@@ -1818,7 +1818,7 @@ class Api {
     return tmp7;
   }
 
-  String? __conversationSendPlainMessageFuturePoll(
+  EventId? __conversationSendPlainMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1843,8 +1843,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -1858,17 +1856,14 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
     return tmp7;
   }
 
-  String? __conversationSendFormattedMessageFuturePoll(
+  EventId? __conversationSendFormattedMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1893,8 +1888,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -1908,17 +1901,14 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
     return tmp7;
   }
 
-  String? __conversationSendReactionFuturePoll(
+  EventId? __conversationSendReactionFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1943,8 +1933,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -1958,17 +1946,14 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
     return tmp7;
   }
 
-  String? __conversationSendImageMessageFuturePoll(
+  EventId? __conversationSendImageMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1993,8 +1978,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2008,13 +1991,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
     return tmp7;
   }
 
@@ -2236,7 +2216,7 @@ class Api {
     return tmp7;
   }
 
-  String? __conversationSendFileMessageFuturePoll(
+  EventId? __conversationSendFileMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2261,8 +2241,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2276,13 +2254,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
     return tmp7;
   }
 
@@ -2519,7 +2494,7 @@ class Api {
     return tmp7;
   }
 
-  String? __conversationSendTextReplyFuturePoll(
+  EventId? __conversationSendTextReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2544,8 +2519,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2559,17 +2532,14 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
     return tmp7;
   }
 
-  String? __conversationSendImageReplyFuturePoll(
+  EventId? __conversationSendImageReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2594,8 +2564,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2609,17 +2577,14 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
     return tmp7;
   }
 
-  String? __conversationSendFileReplyFuturePoll(
+  EventId? __conversationSendFileReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2644,8 +2609,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2659,17 +2622,14 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
     return tmp7;
   }
 
-  String? __conversationRedactMessageFuturePoll(
+  EventId? __conversationRedactMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2694,8 +2654,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2709,13 +2667,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
     return tmp7;
   }
 
@@ -15897,7 +15852,7 @@ class Conversation {
   /// Send a simple plain text message to the room
   /// returns the event_id as given by the server of the event soon after
   /// received over timeline().next()
-  Future<String> sendPlainMessage(
+  Future<EventId> sendPlainMessage(
     String textMessage,
   ) {
     final tmp1 = textMessage;
@@ -15930,7 +15885,7 @@ class Conversation {
   }
 
   /// Send a text message in MarkDown format to the room
-  Future<String> sendFormattedMessage(
+  Future<EventId> sendFormattedMessage(
     String markdownMessage,
   ) {
     final tmp1 = markdownMessage;
@@ -15963,7 +15918,7 @@ class Conversation {
   }
 
   /// Send reaction about existing event
-  Future<String> sendReaction(
+  Future<EventId> sendReaction(
     String eventId,
     String key,
   ) {
@@ -16011,7 +15966,7 @@ class Conversation {
   }
 
   /// send the image message to this room
-  Future<String> sendImageMessage(
+  Future<EventId> sendImageMessage(
     String uri,
     String name,
     String mimetype,
@@ -16246,7 +16201,7 @@ class Conversation {
   }
 
   /// send the file message to this room
-  Future<String> sendFileMessage(
+  Future<EventId> sendFileMessage(
     String uri,
     String name,
     String mimetype,
@@ -16456,7 +16411,7 @@ class Conversation {
   }
 
   /// send reply as text
-  Future<String> sendTextReply(
+  Future<EventId> sendTextReply(
     String msg,
     String eventId,
     String? txnId,
@@ -16527,7 +16482,7 @@ class Conversation {
   }
 
   /// send reply as image
-  Future<String> sendImageReply(
+  Future<EventId> sendImageReply(
     String uri,
     String name,
     String mimetype,
@@ -16667,7 +16622,7 @@ class Conversation {
   }
 
   /// send reply as file
-  Future<String> sendFileReply(
+  Future<EventId> sendFileReply(
     String uri,
     String name,
     String mimetype,
@@ -16781,7 +16736,7 @@ class Conversation {
   }
 
   /// redact any message (including text/image/file and reaction)
-  Future<String> redactMessage(
+  Future<EventId> redactMessage(
     String eventId,
     String? reason,
     String? txnId,
@@ -23518,10 +23473,6 @@ class _ConversationSendPlainMessageFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _ConversationSendFormattedMessageFuturePollReturn extends ffi.Struct {
@@ -23537,10 +23488,6 @@ class _ConversationSendFormattedMessageFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _ConversationSendReactionFuturePollReturn extends ffi.Struct {
@@ -23556,10 +23503,6 @@ class _ConversationSendReactionFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _ConversationSendImageMessageFuturePollReturn extends ffi.Struct {
@@ -23575,10 +23518,6 @@ class _ConversationSendImageMessageFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _ConversationInviteUserFuturePollReturn extends ffi.Struct {
@@ -23669,10 +23608,6 @@ class _ConversationSendFileMessageFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _ConversationSaveFileFuturePollReturn extends ffi.Struct {
@@ -23771,10 +23706,6 @@ class _ConversationSendTextReplyFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _ConversationSendImageReplyFuturePollReturn extends ffi.Struct {
@@ -23790,10 +23721,6 @@ class _ConversationSendImageReplyFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _ConversationSendFileReplyFuturePollReturn extends ffi.Struct {
@@ -23809,10 +23736,6 @@ class _ConversationSendFileReplyFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _ConversationRedactMessageFuturePollReturn extends ffi.Struct {
@@ -23828,10 +23751,6 @@ class _ConversationRedactMessageFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _CommentDraftSendFuturePollReturn extends ffi.Struct {

@@ -1,7 +1,6 @@
-use acter_core::spaces::is_acter_space;
+use acter_core::{ruma::OwnedEventId, spaces::is_acter_space};
 use anyhow::{bail, Context, Result};
 use log::{info, warn};
-
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
@@ -190,7 +189,7 @@ impl Room {
             .await?
     }
 
-    pub async fn send_plain_message(&self, message: String) -> Result<String> {
+    pub async fn send_plain_message(&self, message: String) -> Result<OwnedEventId> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -202,12 +201,12 @@ impl Room {
                     RoomMessageEventContent::text_plain(message),
                 );
                 let response = room.send(content, None).await?;
-                Ok(response.event_id.to_string())
+                Ok(response.event_id)
             })
             .await?
     }
 
-    pub async fn send_formatted_message(&self, markdown: String) -> Result<String> {
+    pub async fn send_formatted_message(&self, markdown: String) -> Result<OwnedEventId> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -219,12 +218,12 @@ impl Room {
                     RoomMessageEventContent::text_markdown(markdown),
                 );
                 let response = room.send(content, None).await?;
-                Ok(response.event_id.to_string())
+                Ok(response.event_id)
             })
             .await?
     }
 
-    pub async fn send_reaction(&self, event_id: String, key: String) -> Result<String> {
+    pub async fn send_reaction(&self, event_id: String, key: String) -> Result<OwnedEventId> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -236,7 +235,7 @@ impl Room {
                 let relates_to = Annotation::new(event_id, key);
                 let content = ReactionEventContent::new(relates_to);
                 let response = room.send(content, None).await?;
-                Ok(response.event_id.to_string())
+                Ok(response.event_id)
             })
             .await?
     }
@@ -249,7 +248,7 @@ impl Room {
         size: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
-    ) -> Result<String> {
+    ) -> Result<OwnedEventId> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -269,7 +268,7 @@ impl Room {
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, image_buf, config)
                     .await?;
-                Ok(response.event_id.to_string())
+                Ok(response.event_id)
             })
             .await?
     }
@@ -394,7 +393,7 @@ impl Room {
         name: String,
         mimetype: String,
         size: u32,
-    ) -> Result<String> {
+    ) -> Result<OwnedEventId> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -411,7 +410,7 @@ impl Room {
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, image_buf, config)
                     .await?;
-                Ok(response.event_id.to_string())
+                Ok(response.event_id)
             })
             .await?
     }
@@ -772,7 +771,7 @@ impl Room {
         msg: String,
         event_id: String,
         txn_id: Option<String>,
-    ) -> Result<String> {
+    ) -> Result<OwnedEventId> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -805,7 +804,7 @@ impl Room {
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
                     .await?;
-                Ok(response.event_id.to_string())
+                Ok(response.event_id)
             })
             .await?
     }
@@ -821,7 +820,7 @@ impl Room {
         height: Option<u32>,
         event_id: String,
         txn_id: Option<String>,
-    ) -> Result<String> {
+    ) -> Result<OwnedEventId> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -872,7 +871,7 @@ impl Room {
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
                     .await?;
-                Ok(response.event_id.to_string())
+                Ok(response.event_id)
             })
             .await?
     }
@@ -885,7 +884,7 @@ impl Room {
         size: Option<u32>,
         event_id: String,
         txn_id: Option<String>,
-    ) -> Result<String> {
+    ) -> Result<OwnedEventId> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -934,7 +933,7 @@ impl Room {
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
                     .await?;
-                Ok(response.event_id.to_string())
+                Ok(response.event_id)
             })
             .await?
     }
@@ -944,7 +943,7 @@ impl Room {
         event_id: String,
         reason: Option<String>,
         txn_id: Option<String>,
-    ) -> Result<String> {
+    ) -> Result<OwnedEventId> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -958,7 +957,7 @@ impl Room {
                 let response = room
                     .redact(&event_id, reason.as_deref(), txn_id.map(Into::into))
                     .await?;
-                Ok(response.event_id.to_string())
+                Ok(response.event_id)
             })
             .await?
     }

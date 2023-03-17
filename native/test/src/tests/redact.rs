@@ -1,7 +1,4 @@
-use acter::matrix_sdk::ruma::{
-    events::{AnyMessageLikeEvent, AnyTimelineEvent},
-    EventId,
-};
+use acter::matrix_sdk::ruma::events::{AnyMessageLikeEvent, AnyTimelineEvent};
 use anyhow::Result;
 use futures::stream::StreamExt;
 
@@ -24,10 +21,9 @@ async fn message_redaction() -> Result<()> {
     println!("event id: {event_id:?}");
 
     let redact_id = group
-        .redact_message(event_id.clone(), Some("redact-test".to_string()), None)
+        .redact_message(event_id.to_string(), Some("redact-test".to_string()), None)
         .await?;
 
-    let redact_id = EventId::parse(redact_id)?;
     let ev = group.event(&redact_id).await?;
     println!("redact: {ev:?}");
 
@@ -37,9 +33,8 @@ async fn message_redaction() -> Result<()> {
 
     let Some(e) = r.as_original() else {
         panic!("This should be m.room.redaction event");
-
     };
 
-    assert_eq!(e.redacts.to_string(), event_id);
+    assert_eq!(e.redacts, event_id);
     Ok(())
 }
