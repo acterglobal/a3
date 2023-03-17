@@ -26,7 +26,6 @@ dependencies = [
  "matrix-sdk-sled",
  "mime",
  "oslog",
- "parking_lot 0.11.2",
  "parse-env-filter",
  "ruma",
  "sanitize-filename-reader-friendly",
