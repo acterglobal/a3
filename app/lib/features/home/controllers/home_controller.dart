@@ -28,9 +28,11 @@ class HomeStateNotifier extends StateNotifier<Client?> {
     };
     sdk = asyncSdk;
     state = sdk.currentClient;
-    Get.put(ChatListController(client: state!));
-    Get.put(ChatRoomController(client: state!));
-    Get.put(ReceiptController(client: state!));
-    syncState = state!.startSync();
+    if (state != null || !state!.isGuest()) {
+      Get.put(ChatListController(client: state!));
+      Get.put(ChatRoomController(client: state!));
+      Get.put(ReceiptController(client: state!));
+      syncState = state!.startSync();
+    }
   }
 }

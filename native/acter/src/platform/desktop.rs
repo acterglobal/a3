@@ -16,6 +16,6 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
 
 // this excludes macos, because macos and ios is very much alike in logging
 
-pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
+pub fn init_logging(log_dir: String, filter: String) -> Result<()> {
     native::init_logging(log_dir, filter, None)
 }

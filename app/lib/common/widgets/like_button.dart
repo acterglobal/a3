@@ -1,7 +1,7 @@
 import 'package:acter/common/animations/like_animation.dart';
 import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class LikeButton extends StatefulWidget {
   final String likeCount;
@@ -139,7 +139,11 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                               heartSize.value * 30,
                               heartSize.value * 30,
                             ),
-                            iconName: 'like_filled',
+                            icon: const Icon(
+                              Atlas.heart,
+                              fill: 1.0,
+                              color: Colors.red,
+                            ),
                             color: AppCommonTheme.primaryColor,
                             isSmall: false,
                           )
@@ -148,7 +152,10 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                               heartSize.value * 30,
                               heartSize.value * 30,
                             ),
-                            iconName: 'heart',
+                            icon: const Icon(
+                              Atlas.heart,
+                              color: Colors.white,
+                            ),
                             color: widget.color,
                             isSmall: false,
                           ),
@@ -186,24 +193,19 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
 class _LikeWidget extends StatelessWidget {
   const _LikeWidget({
     required this.size,
-    required this.iconName,
+    required this.icon,
     required this.color,
     required this.isSmall,
   });
 
   final Size size;
-  final String iconName;
+  final Widget icon;
   final Color color;
   final bool isSmall;
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset(
-      'assets/images/$iconName.svg',
-      color: color,
-      width: size.height,
-      height: size.width,
-    );
+    return icon;
   }
 }
 

@@ -2,9 +2,9 @@ import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/news/controllers/news_comment_controller.dart';
 import 'package:acter/models/CommentModel.dart';
 import 'package:acter/features/news/widgets/reply_view.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class CommentView extends StatefulWidget {
@@ -113,13 +113,8 @@ class CommentViewState extends State<CommentView> {
                             .handleCommentLikeClick(widget.postition);
                       },
                       child: widget.commentModel.liked
-                          ? const Icon(Icons.favorite, color: Colors.red)
-                          : SvgPicture.asset(
-                              'assets/images/heart.svg',
-                              color: Colors.white,
-                              width: 24,
-                              height: 24,
-                            ),
+                          ? const Icon(Atlas.heart, color: Colors.red)
+                          : const Icon(Atlas.heart),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),

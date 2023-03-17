@@ -1,10 +1,10 @@
 use acter_core::util::Local;
 use anyhow::{bail, Result};
-use env_logger::filter::Builder as FilterBuilder;
 use lazy_static::lazy_static;
-use log::{Log, Metadata, Record};
+use log::{LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
 use matrix_sdk_sled::make_store_config;
+use parse_env_filter::eager::{filters, Filter};
 use std::{
     path::PathBuf,
     sync::{Arc, Mutex},
@@ -27,34 +27,46 @@ lazy_static! {
 
 pub fn init_logging(
     log_dir: String,
-    filter: Option<String>,
+    filter: String,
     console_logger: Option<Box<dyn Log>>,
 ) -> Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
-    let log_level = match filter {
-        Some(ref filter) => FilterBuilder::new().parse(filter).build(),
-        None => FilterBuilder::new().build(),
+    let mut builder = fern::Dispatch::new().format(|out, message, record| {
+        out.finish(format_args!(
+            "{}[{}][{}] {}",
+            Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
+            record.target(),
+            record.level(),
+            message
+        ))
+    });
+
+    let Ok(items) = filters(&filter) else {
+        bail!("Parsing log filters failed");
     };
-
-    let mut path = PathBuf::from(log_dir.as_str());
-    path.push("app_");
-
-    let mut builder = fern::Dispatch::new()
-        .format(|out, message, record| {
-            out.finish(format_args!(
-                "{}[{}][{}] {}",
-                Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
-                record.target(),
-                record.level(),
-                message
-            ))
-        })
-        // Add blanket level filter -
-        .level(log_level.filter())
-        // - and per-module overrides
-        .level_for("acter-sdk", log_level.filter());
+    for Filter {
+        target,
+        span,
+        level,
+    } in items
+    {
+        match level {
+            Some(level) => {
+                if let Some(level) = get_log_filter(level) {
+                    // Add level filter per module
+                    builder = builder.level_for(target.to_owned(), level);
+                }
+            }
+            None => {
+                if let Some(level) = get_log_filter(target) {
+                    // Add blanket level filter
+                    builder = builder.level(level);
+                }
+            }
+        }
+    }
 
     // Output to console
     if let Some(console_logger) = console_logger {
@@ -62,6 +74,9 @@ pub fn init_logging(
     } else {
         builder = builder.chain(std::io::stdout());
     }
+
+    let mut path = PathBuf::from(log_dir.as_str());
+    path.push("app_");
 
     let (level, dispatch) = builder
         // Output to file
@@ -125,4 +140,15 @@ impl Log for NopLogger {
     fn log(&self, record: &Record) {}
 
     fn flush(&self) {}
+}
+
+fn get_log_filter(level: &str) -> Option<LevelFilter> {
+    match level {
+        "debug" => Some(LevelFilter::Debug),
+        "error" => Some(LevelFilter::Error),
+        "info" => Some(LevelFilter::Info),
+        "warn" => Some(LevelFilter::Warn),
+        "trace" => Some(LevelFilter::Trace),
+        _ => None,
+    }
 }

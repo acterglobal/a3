@@ -129,18 +129,6 @@ class _TitleWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       news.text() ?? '',
-      style: GoogleFonts.roboto(
-        color: foregroundColor,
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        shadows: [
-          Shadow(
-            color: backgroundColor,
-            offset: const Offset(2, 2),
-            blurRadius: 5,
-          ),
-        ],
-      ),
     );
   }
 }
@@ -166,7 +154,7 @@ class _SubtitleWidget extends StatelessWidget {
       collapseOnTextTap: true,
       animation: true,
       linkColor: foregroundColor,
-      style: GoogleFonts.roboto(
+      style: GoogleFonts.inter(
         color: foregroundColor,
         fontSize: 14,
         fontWeight: FontWeight.w400,

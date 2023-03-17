@@ -12,7 +12,6 @@ dependencies = [
  "async-broadcast",
  "async-stream",
  "derive_builder 0.10.2",
- "env_logger",
  "eyeball-im",
  "fern",
  "ffi-gen",
@@ -27,6 +26,8 @@ dependencies = [
  "matrix-sdk-sled",
  "mime",
  "oslog",
+ "parking_lot 0.11.2",
+ "parse-env-filter",
  "ruma",
  "sanitize-filename-reader-friendly",
  "serde",
@@ -2270,6 +2271,12 @@ dependencies = [
  "smallvec",
  "windows-sys 0.45.0",
 ]
+
+[[package]]
+name = "parse-env-filter"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b63323aaa6ab655fccb0f13a03e0ab9be8e8751514c316d204c3f7d7653c096e"
 
 [[package]]
 name = "parse-zoneinfo"

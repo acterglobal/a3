@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:searchbar_animation/searchbar_animation.dart';
 
@@ -23,7 +24,7 @@ class SearchWidget extends StatelessWidget {
         enableKeyboardFocus: true,
         buttonBorderColour: AppCommonTheme.darkShade,
         buttonWidget: const Icon(
-          Icons.search,
+          Atlas.magnifying_glass,
           color: AppCommonTheme.primaryColor,
         ),
         onFieldSubmitted: (String value) {

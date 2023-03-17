@@ -30,7 +30,7 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
 
 const APP_TAG: &str = "global.acter.app"; // product bundle id in project config
 
-pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
+pub fn init_logging(log_dir: String, filter: String) -> Result<()> {
     let console_logger = LoggerWrapper::new(APP_TAG, "viewcycle").cloned_boxed_logger();
     native::init_logging(log_dir, filter, Some(console_logger))
 }

@@ -9,6 +9,7 @@ import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:acter/features/chat/widgets/group_member_view.dart';
 import 'package:acter/features/chat/widgets/invite_list_view.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
@@ -58,7 +59,7 @@ class ProfilePage extends StatelessWidget {
                       ),
                       SizedBox(width: 50),
                       Icon(
-                        Icons.report_outlined,
+                        Atlas.triangle_exclamation,
                         color: AppCommonTheme.primaryColor,
                       )
                     ],
@@ -266,7 +267,7 @@ class ProfilePage extends StatelessWidget {
             children: const [
               Padding(
                 padding: EdgeInsets.all(8),
-                child: Icon(Icons.notifications, color: Colors.white),
+                child: Icon(Atlas.bell_reminder, color: Colors.white),
               ),
               Text('Mute', style: TextStyle(color: Colors.white))
             ],
@@ -292,7 +293,7 @@ class ProfilePage extends StatelessWidget {
             children: const [
               Padding(
                 padding: EdgeInsets.all(8),
-                child: Icon(Icons.search, color: Colors.white),
+                child: Icon(Atlas.magnifying_glass, color: Colors.white),
               ),
               Text('Search', style: TextStyle(color: Colors.white))
             ],
@@ -318,7 +319,7 @@ class ProfilePage extends StatelessWidget {
             children: const [
               Padding(
                 padding: EdgeInsets.all(8),
-                child: Icon(Icons.photo_library_rounded, color: Colors.white),
+                child: Icon(Atlas.image_gallery, color: Colors.white),
               ),
               Text('Gallery', style: TextStyle(color: Colors.white))
             ],
@@ -342,21 +343,22 @@ class ProfilePage extends StatelessWidget {
         );
       },
       child: Row(
-        children: [
-          const Padding(
+        children: const [
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Icon(Icons.person_add_alt_1_outlined, color: Colors.white),
+            child: Icon(Atlas.user_plus, color: Colors.white),
           ),
-          const Text(
+          Text(
             'Requests & Invites',
             style: TextStyle(color: Colors.white),
           ),
-          const Spacer(),
-          Row(
-            children: const [
-              Text('3', style: TextStyle(color: Colors.white)),
-              Icon(Icons.arrow_forward_ios, color: Colors.white)
-            ],
+          Spacer(),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Text(
+              '3',
+              style: TextStyle(color: Colors.white),
+            ),
           )
         ],
       ),
@@ -372,19 +374,17 @@ class ProfilePage extends StatelessWidget {
         );
       },
       child: Row(
-        children: [
-          const Padding(
+        children: const [
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Icon(Icons.link, color: Colors.white),
+            child: Icon(Atlas.link, color: Colors.white),
           ),
-          const Text('Group Link', style: TextStyle(color: Colors.white)),
-          const Spacer(),
-          Row(
-            children: const [
-              Text('On', style: TextStyle(color: Colors.white)),
-              Icon(Icons.arrow_forward_ios, color: Colors.white)
-            ],
-          )
+          Text('Group Link', style: TextStyle(color: Colors.white)),
+          Spacer(),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Text('On', style: TextStyle(color: Colors.white)),
+          ),
         ],
       ),
     );
@@ -455,7 +455,7 @@ class ProfilePage extends StatelessWidget {
                           cursorColor: Colors.white,
                           decoration: InputDecoration(
                             prefixIcon: Icon(
-                              Icons.search,
+                              Atlas.magnifying_glass,
                               color: Colors.white.withOpacity(0.5),
                             ),
                             hintText: 'Search for friends',
@@ -536,22 +536,20 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           children: [
             Row(
-              children: [
-                const Padding(
+              children: const [
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Icon(Icons.groups_outlined, color: Colors.white),
+                  child: Icon(Atlas.group_team, color: Colors.white),
                 ),
-                const Text(
+                Text(
                   'Group in common',
                   style: TextStyle(color: Colors.white),
                 ),
-                const Spacer(),
-                Row(
-                  children: const [
-                    Text('3', style: TextStyle(color: Colors.white)),
-                    Icon(Icons.arrow_forward_ios, color: Colors.white)
-                  ],
-                )
+                Spacer(),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: Text('3', style: TextStyle(color: Colors.white)),
+                ),
               ],
             ),
             const Padding(
@@ -559,25 +557,23 @@ class ProfilePage extends StatelessWidget {
               child: Divider(height: 2, color: AppCommonTheme.dividerColor),
             ),
             Row(
-              children: [
-                const Padding(
+              children: const [
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Icon(Icons.link, color: Colors.white),
+                  child: Icon(Atlas.link, color: Colors.white),
                 ),
-                const Text(
+                Text(
                   'Share Username',
                   style: TextStyle(color: Colors.white),
                 ),
-                const Spacer(),
-                Row(
-                  children: const [
-                    Text(
-                      '@marthacraig',
-                      style: TextStyle(color: AppCommonTheme.primaryColor),
-                    ),
-                    Icon(Icons.arrow_forward_ios, color: Colors.white)
-                  ],
-                )
+                Spacer(),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: Text(
+                    '@marthacraig',
+                    style: TextStyle(color: AppCommonTheme.primaryColor),
+                  ),
+                ),
               ],
             ),
           ],
@@ -594,7 +590,7 @@ class ProfilePage extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: const [
-            Icon(Icons.dangerous_outlined, color: AppCommonTheme.primaryColor),
+            Icon(Atlas.danger, color: AppCommonTheme.primaryColor),
             Padding(
               padding: EdgeInsets.only(left: 8),
               child: Text(
@@ -719,15 +715,10 @@ class ProfilePage extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                    const Padding(
+                      padding: EdgeInsets.all(8),
+                      child:
                           Text('Spam', style: TextStyle(color: Colors.white)),
-                          Icon(Icons.keyboard_arrow_right, color: Colors.white)
-                        ],
-                      ),
                     ),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(6.33),
@@ -743,17 +734,11 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text(
-                            'Violence',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Icon(Icons.keyboard_arrow_right, color: Colors.white)
-                        ],
+                    const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        'Violence',
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                     ClipRRect(
@@ -770,17 +755,11 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text(
-                            'Fake Account',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Icon(Icons.keyboard_arrow_right, color: Colors.white)
-                        ],
+                    const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        'Fake Account',
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                     ClipRRect(
@@ -797,17 +776,11 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text(
-                            'Copyrights',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Icon(Icons.keyboard_arrow_right, color: Colors.white)
-                        ],
+                    const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        'Copyrights',
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                     ClipRRect(
@@ -824,15 +797,10 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                    const Padding(
+                      padding: EdgeInsets.all(8),
+                      child:
                           Text('Spam', style: TextStyle(color: Colors.white)),
-                          Icon(Icons.keyboard_arrow_right, color: Colors.white)
-                        ],
-                      ),
                     ),
                   ],
                 ),

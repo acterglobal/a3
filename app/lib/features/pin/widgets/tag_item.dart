@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class TagListItem extends StatelessWidget {
   // final Tag tag;
@@ -23,11 +22,6 @@ class TagListItem extends StatelessWidget {
       ),
       child: Text(
         tagTitle,
-        style: GoogleFonts.roboto(
-          color: tagColor,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
       ),
     );
   }

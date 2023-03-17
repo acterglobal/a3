@@ -1,7 +1,7 @@
 import 'package:acter/features/news/controllers/news_comment_controller.dart';
 import 'package:acter/models/CommentModel.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class ReplyView extends StatefulWidget {
@@ -79,13 +79,8 @@ class ReplyViewState extends State<ReplyView> {
               );
             },
             child: widget.replyModel.liked
-                ? const Icon(Icons.favorite, color: Colors.red)
-                : SvgPicture.asset(
-                    'assets/images/heart.svg',
-                    color: Colors.white,
-                    width: 24,
-                    height: 24,
-                  ),
+                ? const Icon(Atlas.heart, color: Colors.red)
+                : const Icon(Atlas.heart),
           ),
         ],
       ),

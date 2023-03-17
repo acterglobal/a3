@@ -6,8 +6,8 @@ import 'package:acter/models/Team.dart';
 import 'package:acter/models/ToDoList.dart';
 import 'package:acter/models/ToDoTask.dart';
 import 'package:acter/common/widgets/expandable_text.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
@@ -227,9 +227,7 @@ class _TasksRatioWidget extends StatelessWidget {
         IconButton(
           onPressed: () => controller.toggleCardExpand(index, isExpanded),
           icon: Icon(
-            isExpanded
-                ? FlutterIcons.ios_arrow_up_ion
-                : FlutterIcons.ios_arrow_down_ion,
+            isExpanded ? Atlas.arrow_up_circle : Atlas.arrow_down_circle,
           ),
           color: ToDoTheme.primaryTextColor,
         ),
@@ -251,7 +249,7 @@ class _CommentsWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         const Icon(
-          FlutterIcons.heart_evi,
+          Atlas.heart,
           color: ToDoTheme.primaryTextColor,
         ),
         Padding(
@@ -268,7 +266,7 @@ class _CommentsWidget extends StatelessWidget {
         ),
         const Spacer(),
         const Icon(
-          FlutterIcons.bookmark_border_mdi,
+          Atlas.book,
           color: ToDoTheme.primaryTextColor,
         ),
       ],

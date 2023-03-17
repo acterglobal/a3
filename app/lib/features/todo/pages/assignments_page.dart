@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
 class AssignmentsPage extends StatefulWidget {
@@ -20,7 +21,7 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
             Navigator.pop(context);
           },
           child: const Icon(
-            Icons.arrow_back_ios,
+            Atlas.arrow_left_circle,
             color: Colors.white,
             size: 24,
           ),
@@ -83,7 +84,7 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
                               width: 8,
                             ),
                             Icon(
-                              Icons.arrow_forward_ios,
+                              Atlas.arrow_right_circle,
                               color: ToDoTheme.secondaryTextColor,
                               size: 18,
                             ),

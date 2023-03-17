@@ -1,5 +1,5 @@
 /// Initialize logging
-fn init_logging(log_dir: string, filter: Option<string>) -> Result<()>;
+fn init_logging(log_dir: string, filter: string) -> Result<()>;
 
 /// Rotate the logging file
 fn rotate_log_file() -> Result<string>;

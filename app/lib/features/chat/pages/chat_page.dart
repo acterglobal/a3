@@ -8,9 +8,9 @@ import 'package:acter/features/chat/widgets/list_item.dart';
 import 'package:acter/models/JoinedRoom.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Invitation;
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reorderable_list_2.dart';
@@ -55,7 +55,7 @@ class _ChatPageState extends State<ChatPage> {
                     onPressed: () => controller.toggleSearchView(),
                     padding: const EdgeInsets.only(right: 10, left: 5),
                     icon: const Icon(
-                      FlutterIcons.search1_ant,
+                      Atlas.magnifying_glass,
                       color: AppCommonTheme.svgIconColor,
                     ),
                   ),
@@ -68,7 +68,7 @@ class _ChatPageState extends State<ChatPage> {
                     },
                     padding: const EdgeInsets.only(right: 10, left: 5),
                     icon: const Icon(
-                      FlutterIcons.select_mco,
+                      Atlas.menu_square,
                       color: AppCommonTheme.svgIconColor,
                     ),
                   ),
@@ -81,7 +81,7 @@ class _ChatPageState extends State<ChatPage> {
                     },
                     padding: const EdgeInsets.only(right: 10, left: 10),
                     icon: const Icon(
-                      FlutterIcons.md_add_ion,
+                      Atlas.plus_circle_thin,
                       color: AppCommonTheme.svgIconColor,
                     ),
                   ),
