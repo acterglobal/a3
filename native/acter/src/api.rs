@@ -87,7 +87,7 @@ mod api {
     }
 }
 
-fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
+fn init_logging(log_dir: String, filter: String) -> Result<()> {
     platform::init_logging(log_dir, filter)
 }
 
