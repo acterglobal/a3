@@ -26,17 +26,13 @@ lazy_static! {
 
 pub fn init_logging(
     log_dir: String,
-    filter: Option<String>,
+    filter: String,
     console_logger: Option<Box<dyn Log>>,
 ) -> Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
-    let log_level = match filter {
-        Some(ref filter) => FilterBuilder::new().parse(filter).build(),
-        None => FilterBuilder::new().build(),
-    };
-
+    let log_level = FilterBuilder::new().parse(filter.as_str()).build();
     let mut path = PathBuf::from(log_dir.as_str());
     path.push("app_");
 

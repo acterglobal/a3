@@ -16,13 +16,11 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
 
 const APP_TAG: &str = "global.acter.app"; // package name in manifest, application id in build.gradle
 
-pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
+pub fn init_logging(log_dir: String, filter: String) -> Result<()> {
     let mut log_config = Config::default()
         .with_max_level(LevelFilter::Trace)
-        .with_tag(APP_TAG);
-    if let Some(ref filter) = filter {
-        log_config = log_config.with_filter(FilterBuilder::new().parse(filter).build());
-    }
+        .with_tag(APP_TAG)
+        .with_filter(FilterBuilder::new().parse(filter.as_str()).build());
     let console_logger = LoggerWrapper::new(log_config).cloned_boxed_logger();
     native::init_logging(log_dir, filter, Some(console_logger))
 }
