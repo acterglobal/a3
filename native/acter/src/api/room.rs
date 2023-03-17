@@ -23,7 +23,7 @@ use matrix_sdk::{
             MessageLikeEvent, StateEvent,
         },
         room::RoomType,
-        EventId, UInt, UserId,
+        EventId, Int, UInt, UserId,
     },
     Client as MatrixClient,
 };
@@ -961,6 +961,23 @@ impl Room {
                     .redact(&event_id, reason.as_deref(), txn_id.map(Into::into))
                     .await?;
                 Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn update_power_level(&self, user_id: String, level: i32) -> Result<OwnedEventId> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't update power level in a room we are not in")
+        };
+        let user_id = UserId::parse(user_id)?;
+        RUNTIME
+            .spawn(async move {
+                let resp = room
+                    .update_power_levels(vec![(&user_id, Int::from(level))])
+                    .await?;
+                Ok(resp.event_id)
             })
             .await?
     }
