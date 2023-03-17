@@ -5,8 +5,8 @@ use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     room::{
         timeline::{
-            EventTimelineItem, MemberProfileChange, MembershipChange, TimelineDetails, TimelineItem, TimelineItemContent,
-            VirtualTimelineItem,
+            EventTimelineItem, MemberProfileChange, MembershipChange, TimelineDetails,
+            TimelineItem, TimelineItemContent, VirtualTimelineItem,
         },
         Room,
     },

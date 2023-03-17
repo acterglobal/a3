@@ -45,7 +45,7 @@ impl TimelineDiff {
     pub fn index(&self) -> Option<usize> {
         match self.action.as_str() {
             "Insert" | "Set" | "Remove" => self.index,
-            _ => None
+            _ => None,
         }
     }
 

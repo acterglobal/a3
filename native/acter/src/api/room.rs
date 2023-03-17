@@ -186,7 +186,8 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let event_id = EventId::parse(event_id)?;
-                room.event_receipts(ReceiptType::Read, ReceiptThread::Main, &event_id).await?;
+                room.event_receipts(ReceiptType::Read, ReceiptThread::Main, &event_id)
+                    .await?;
                 Ok(true)
             })
             .await?
