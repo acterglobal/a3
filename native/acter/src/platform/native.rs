@@ -1,13 +1,9 @@
 use anyhow::{bail, Result};
-use env_logger::filter::Builder as FilterBuilder;
 use lazy_static::lazy_static;
 use log::{LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
 use matrix_sdk_sled::make_store_config;
-use parse_env_filter::{
-    eager::{filters, Filter, SpanFilter},
-    FieldFilter, ParseError,
-};
+use parse_env_filter::eager::{filters, Filter};
 use std::{
     path::PathBuf,
     sync::{Arc, Mutex},
@@ -36,10 +32,6 @@ pub fn init_logging(
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
-    // let log_level = FilterBuilder::new().parse(filter.as_str()).build();
-    let mut path = PathBuf::from(log_dir.as_str());
-    path.push("app_");
-
     let mut builder = fern::Dispatch::new()
         .format(|out, message, record| {
             out.finish(format_args!(
@@ -49,22 +41,22 @@ pub fn init_logging(
                 record.level(),
                 message
             ))
-        })/*
-        // Add blanket level filter -
-        .level(log_level.filter())
-        // - and per-module overrides
-        .level_for("acter-sdk", log_level.filter())*/;
+        });
 
-    let Ok(items) = filters(&filter) else { anyhow::bail!("Parsing log filters failed"); };
+    let Ok(items) = filters(&filter) else {
+        bail!("Parsing log filters failed");
+    };
     for Filter { target, span, level } in items {
         match level {
             Some(level) => {
                 if let Some(level) = get_log_filter(level) {
+                    // Add level filter per module
                     builder = builder.level_for(target.to_owned(), level);
                 }
             }
             None => {
                 if let Some(level) = get_log_filter(target) {
+                    // Add blanket level filter
                     builder = builder.level(level);
                 }
             }
@@ -77,6 +69,9 @@ pub fn init_logging(
     } else {
         builder = builder.chain(std::io::stdout());
     }
+
+    let mut path = PathBuf::from(log_dir.as_str());
+    path.push("app_");
 
     let (level, dispatch) = builder
         // Output to file

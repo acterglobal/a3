@@ -1,6 +1,5 @@
 use android_logger::{AndroidLogger, Config};
 use anyhow::Result;
-use env_logger::filter::Builder as FilterBuilder;
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use matrix_sdk::ClientBuilder;
 use std::sync::{Arc, Mutex};
@@ -19,8 +18,7 @@ const APP_TAG: &str = "global.acter.app"; // package name in manifest, applicati
 pub fn init_logging(log_dir: String, filter: String) -> Result<()> {
     let mut log_config = Config::default()
         .with_max_level(LevelFilter::Trace)
-        .with_tag(APP_TAG)
-        .with_filter(FilterBuilder::new().parse(filter.as_str()).build());
+        .with_tag(APP_TAG);
     let console_logger = LoggerWrapper::new(log_config).cloned_boxed_logger();
     native::init_logging(log_dir, filter, Some(console_logger))
 }
