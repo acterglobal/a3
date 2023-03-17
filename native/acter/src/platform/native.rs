@@ -55,18 +55,17 @@ pub fn init_logging(
         // - and per-module overrides
         .level_for("acter-sdk", log_level.filter())*/;
 
-    if let Ok(items) = filters(filter.as_str()) {
-        for Filter { target, span, level } in items {
-            match level {
-                Some(level) => {
-                    if let Some(level) = get_log_filter(level) {
-                        builder = builder.level_for(target, level);
-                    }
+    let Ok(items) = filters(&filter) else { anyhow::bail!("Parsing log filters failed"); };
+    for Filter { target, span, level } in items {
+        match level {
+            Some(level) => {
+                if let Some(level) = get_log_filter(level) {
+                    builder = builder.level_for(target.to_owned(), level);
                 }
-                None => {
-                    if let Some(level) = get_log_filter(target) {
-                        builder = builder.level(level);
-                    }
+            }
+            None => {
+                if let Some(level) = get_log_filter(target) {
+                    builder = builder.level(level);
                 }
             }
         }
