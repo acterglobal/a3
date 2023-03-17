@@ -404,16 +404,16 @@ object Conversation {
     /// Send a simple plain text message to the room
     /// returns the event_id as given by the server of the event soon after
     /// received over timeline().next()
-    fn send_plain_message(text_message: string) -> Future<Result<string>>;
+    fn send_plain_message(text_message: string) -> Future<Result<EventId>>;
 
     /// Send a text message in MarkDown format to the room
-    fn send_formatted_message(markdown_message: string) -> Future<Result<string>>;
+    fn send_formatted_message(markdown_message: string) -> Future<Result<EventId>>;
 
     /// Send reaction about existing event
-    fn send_reaction(event_id: string, key: string) -> Future<Result<string>>;
+    fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;
 
     /// send the image message to this room
-    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<string>>;
+    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<EventId>>;
 
     /// get the user status on this room
     fn room_type() -> string;
@@ -436,7 +436,7 @@ object Conversation {
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// send the file message to this room
-    fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<string>>;
+    fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<EventId>>;
 
     /// save file in specified path
     fn save_file(event_id: string, dir_path: string) -> Future<Result<string>>;
@@ -454,16 +454,16 @@ object Conversation {
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 
     /// send reply as text
-    fn send_text_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<string>>;
+    fn send_text_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as image
-    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<string>>;
+    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as file
-    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<string>>;
+    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// redact any message (including text/image/file and reaction)
-    fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<string>>;
+    fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
 }
 
 object CommentDraft {
