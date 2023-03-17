@@ -32,21 +32,25 @@ pub fn init_logging(
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
-    let mut builder = fern::Dispatch::new()
-        .format(|out, message, record| {
-            out.finish(format_args!(
-                "{}[{}][{}] {}",
-                chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
-                record.target(),
-                record.level(),
-                message
-            ))
-        });
+    let mut builder = fern::Dispatch::new().format(|out, message, record| {
+        out.finish(format_args!(
+            "{}[{}][{}] {}",
+            chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
+            record.target(),
+            record.level(),
+            message
+        ))
+    });
 
     let Ok(items) = filters(&filter) else {
         bail!("Parsing log filters failed");
     };
-    for Filter { target, span, level } in items {
+    for Filter {
+        target,
+        span,
+        level,
+    } in items
+    {
         match level {
             Some(level) => {
                 if let Some(level) = get_log_filter(level) {
