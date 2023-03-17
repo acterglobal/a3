@@ -1,9 +1,6 @@
 use acter::{
     api::login_new_client,
-    matrix_sdk::ruma::{
-        events::{AnyMessageLikeEvent, AnyTimelineEvent, MessageLikeEvent},
-        EventId,
-    },
+    matrix_sdk::ruma::events::{AnyMessageLikeEvent, AnyTimelineEvent, MessageLikeEvent},
 };
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
@@ -43,10 +40,9 @@ async fn sisko_replies_message() -> Result<()> {
     let event_id = group.send_plain_message("Hi, everyone".to_string()).await?;
 
     let reply_id = group
-        .send_text_reply("Sorry, it's my bad".to_string(), event_id, None)
+        .send_text_reply("Sorry, it's my bad".to_string(), event_id.to_string(), None)
         .await?;
 
-    let reply_id = EventId::parse(reply_id)?;
     let ev = group.event(&reply_id).await?;
     println!("reply: {ev:?}");
 

@@ -1,4 +1,4 @@
-use acter::{api::login_new_client, matrix_sdk::ruma::EventId};
+use acter::api::login_new_client;
 use anyhow::Result;
 use futures::stream::StreamExt;
 use tempfile::TempDir;
@@ -143,25 +143,24 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         .expect("odo should belong to ops");
 
     kyra_group
-        .send_reaction(event_id.clone(), "👏".to_string())
+        .send_reaction(event_id.to_string(), "👏".to_string())
         .await?;
     worf_group
-        .send_reaction(event_id.clone(), "😎".to_string())
+        .send_reaction(event_id.to_string(), "😎".to_string())
         .await?;
     bashir_group
-        .send_reaction(event_id.clone(), "😜".to_string())
+        .send_reaction(event_id.to_string(), "😜".to_string())
         .await?;
     miles_group
-        .send_reaction(event_id.clone(), "🤩".to_string())
+        .send_reaction(event_id.to_string(), "🤩".to_string())
         .await?;
     jadzia_group
-        .send_reaction(event_id.clone(), "😍".to_string())
+        .send_reaction(event_id.to_string(), "😍".to_string())
         .await?;
     odo_group
-        .send_reaction(event_id.clone(), "😂".to_string())
+        .send_reaction(event_id.to_string(), "😂".to_string())
         .await?;
 
-    let event_id = EventId::parse(event_id)?;
     let event = sisko_group.event(&event_id).await?;
     println!("reactions: {event:?}");
 
