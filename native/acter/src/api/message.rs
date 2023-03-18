@@ -2959,7 +2959,7 @@ impl RoomMessage {
                 let text_desc = p.displayname_change().map(|change| {
                     let fallback = format!(
                         "{} changed display name from {:?} to {:?}",
-                        p.user_id().to_string(),
+                        p.user_id(),
                         change.old.clone(),
                         change.new.clone(),
                     );
