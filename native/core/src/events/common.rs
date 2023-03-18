@@ -1,8 +1,8 @@
-pub use chrono::{DateTime, Utc};
 pub use chrono_tz::Tz as TimeZone;
 pub use csscolorparser::Color;
 pub use matrix_sdk::ruma::events::room::ImageInfo;
 
+use chrono::{DateTime, Utc};
 use matrix_sdk::ruma::OwnedEventId;
 use serde::{Deserialize, Serialize};
 
