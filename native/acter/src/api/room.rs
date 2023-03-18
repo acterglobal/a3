@@ -25,9 +25,8 @@ use matrix_sdk::{
         room::RoomType,
         EventId, Int, UInt, UserId,
     },
-    Client as MatrixClient,
+    Client as MatrixClient, RoomState,
 };
-use matrix_sdk_base::RoomState;
 use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
 
 use super::{

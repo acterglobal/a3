@@ -9,7 +9,7 @@ repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
 [features]
-default = ["with-mocks", "dart", "dep:matrix-sdk-base"]
+default = ["with-mocks", "dart"]
 with-mocks = ["acter-core/with-mocks"]
 testing = ["dep:matrix-sdk-base"]
 dart = ["with-mocks"]
