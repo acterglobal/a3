@@ -372,6 +372,8 @@ CREATE DATABASE synapse ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=tem
 3. Start service with `sudo systemctl start matrix-synapse`
 4. Run this command `cargo run -p acter-cli mock --homeserver-url http://192.168.142.130:8008 --homeserver-name ds9.acter.global`
 
+This server name must be the same as one in `/etc/matrix-synapse/conf.d/server_name.yaml`.
+
 ### Rust integration tests
 
 To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at `$HOMESERVER`. Assuming you are running the docker-compose setup, this would be `http://localhost:8118` (which is the fallback default, so you don't have to put it into your environment). Then you can run the integration test with:
