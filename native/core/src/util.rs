@@ -1,4 +1,4 @@
-pub use chrono::{offset::{Local, Utc}, DateTime};
+pub use chrono::{DateTime, Utc};
 
 use serde::{Deserialize, Deserializer};
 

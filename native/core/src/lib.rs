@@ -20,6 +20,7 @@ pub mod spaces;
 #[cfg(feature = "templates")]
 pub mod templates;
 pub mod util;
+pub use chrono::Local;
 
 #[cfg(feature = "with-mocks")]
 pub mod mocks {

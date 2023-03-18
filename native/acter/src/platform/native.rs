@@ -1,4 +1,4 @@
-use acter_core::util::Local;
+use acter_core::Local;
 use anyhow::{bail, Result};
 use lazy_static::lazy_static;
 use log::{LevelFilter, Log, Metadata, Record};
