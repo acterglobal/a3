@@ -2956,33 +2956,27 @@ impl RoomMessage {
             }
             TimelineItemContent::ProfileChange(p) => {
                 info!("Edit event applies to a state event, discarding");
-                let text_desc = if let Some(change) = p.displayname_change() {
+                let text_desc = p.displayname_change().map(|change| {
                     let fallback = format!(
                         "{} changed display name from {:?} to {:?}",
                         p.user_id().to_string(),
-                        change.old.clone().map(|x| x.to_string()),
-                        change.new.clone().map(|x| x.to_string()),
+                        change.old.clone(),
+                        change.new.clone(),
                     );
-                    Some(TextDesc {
+                    TextDesc {
                         body: fallback,
                         formatted_body: None,
-                    })
-                } else {
-                    None
-                };
-                let image_desc = if let Some(change) = p.avatar_url_change() {
-                    Some(ImageDesc {
-                        name: "new_picture".to_string(),
-                        mimetype: None,
-                        size: None,
-                        width: None,
-                        height: None,
-                        thumbnail_info: None,
-                        thumbnail_source: change.new.clone().map(MediaSource::Plain),
-                    })
-                } else {
-                    None
-                };
+                    }
+                });
+                let image_desc = p.avatar_url_change().map(|change| ImageDesc {
+                    name: "new_picture".to_string(),
+                    mimetype: None,
+                    size: None,
+                    width: None,
+                    height: None,
+                    thumbnail_info: None,
+                    thumbnail_source: change.new.clone().map(MediaSource::Plain),
+                });
                 RoomEventItem::new(
                     event_id,
                     sender,
