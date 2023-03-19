@@ -15,11 +15,7 @@ use matrix_sdk::{
 use parking_lot::Mutex;
 use std::sync::Arc;
 
-use super::{
-    conversation::Conversation,
-    group::Group,
-    room::Room,
-};
+use super::{conversation::Conversation, group::Group};
 
 #[derive(Clone, Debug)]
 pub struct ReceiptRecord {

@@ -45,7 +45,11 @@ struct HistoryState {
 
 impl Group {
     pub fn new(client: Client, inner: Room) -> Self {
-        Group { client, inner, receipt_controller: ReceiptController::new() }
+        Group {
+            client,
+            inner,
+            receipt_controller: ReceiptController::new(),
+        }
     }
 
     pub async fn create_onboarding_data(&self) -> Result<()> {

@@ -86,10 +86,7 @@ pub struct TimelineStream {
 
 impl TimelineStream {
     pub fn new(room: Room, timeline: Arc<Timeline>) -> Self {
-        TimelineStream {
-            room,
-            timeline,
-        }
+        TimelineStream { room, timeline }
     }
 
     pub fn diff_rx(&self) -> impl Stream<Item = TimelineDiff> {
