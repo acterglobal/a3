@@ -34,7 +34,7 @@ use std::sync::Arc;
 use super::{
     client::Client,
     message::{sync_event_to_message, RoomMessage},
-    receipt::ReceiptRecord,
+    receipt::{ReceiptController, ReceiptRecord},
     room::Room,
     RUNTIME,
 };
@@ -43,6 +43,7 @@ use super::{
 pub struct Conversation {
     inner: Room,
     latest_message: Option<RoomMessage>,
+    pub(crate) receipt_controller: ReceiptController,
 }
 
 impl Conversation {
@@ -50,6 +51,7 @@ impl Conversation {
         Conversation {
             inner,
             latest_message: Default::default(),
+            receipt_controller: ReceiptController::new(),
         }
     }
 
@@ -231,10 +233,7 @@ impl ConversationController {
             let mut convos = self.conversations.lock_mut();
             let room_id = room.room_id();
 
-            let mut convo = Conversation::new(Room {
-                client: client.clone(),
-                room: room.clone(),
-            });
+            let mut convo = Conversation::new(Room { room: room.clone() });
             if let Ok(decrypted) = joined.decrypt_event(&raw_event).await {
                 let ev = raw_event
                     .deserialize_as::<OriginalSyncRoomEncryptedEvent>()
@@ -267,10 +266,7 @@ impl ConversationController {
             let mut convos = self.conversations.lock_mut();
             let room_id = room.room_id();
 
-            let mut convo = Conversation::new(Room {
-                client: client.clone(),
-                room: room.clone(),
-            });
+            let mut convo = Conversation::new(Room { room: room.clone() });
             let msg = RoomMessage::room_message_from_sync_event(ev, room, true);
             convo.set_latest_message(msg.clone());
 
@@ -300,10 +296,7 @@ impl ConversationController {
                 let mut convos = self.conversations.lock_mut();
                 let room_id = room.room_id();
 
-                let mut convo = Conversation::new(Room {
-                    client: client.clone(),
-                    room: room.clone(),
-                });
+                let mut convo = Conversation::new(Room { room: room.clone() });
                 let msg = RoomMessage::room_member_from_sync_event(ev, room);
                 convo.set_latest_message(msg.clone());
 
@@ -331,10 +324,7 @@ impl ConversationController {
                     // anyway i prevent this event from being called twice
                     if !conversations.iter().any(|x| x.room_id() == room.room_id()) {
                         // add new room
-                        let conversation = Conversation::new(Room {
-                            client: client.clone(),
-                            room: room.clone(),
-                        });
+                        let conversation = Conversation::new(Room { room: room.clone() });
                         conversations.insert(0, conversation);
                     }
                 }
@@ -362,10 +352,7 @@ impl ConversationController {
             let mut convos = self.conversations.lock_mut();
             let room_id = room.room_id();
 
-            let mut convo = Conversation::new(Room {
-                client: client.clone(),
-                room: room.clone(),
-            });
+            let mut convo = Conversation::new(Room { room: room.clone() });
             let msg = RoomMessage::room_redaction_from_sync_event(ev, room);
             convo.set_latest_message(msg.clone());
 

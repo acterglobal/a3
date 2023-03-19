@@ -22,6 +22,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     client::{devide_groups_from_convos, Client},
+    receipt::ReceiptController,
     room::Room,
 };
 use crate::api::RUNTIME;
@@ -33,6 +34,7 @@ pub type CreateGroupSettingsBuilder = CreateSpaceSettingsBuilder;
 pub struct Group {
     pub client: Client,
     pub(crate) inner: Room,
+    pub(crate) receipt_controller: ReceiptController,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -42,6 +44,10 @@ struct HistoryState {
 }
 
 impl Group {
+    pub fn new(client: Client, inner: Room) -> Self {
+        Group { client, inner, receipt_controller: ReceiptController::new() }
+    }
+
     pub async fn create_onboarding_data(&self) -> Result<()> {
         let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
         engine
@@ -165,7 +171,7 @@ impl Group {
         tracing::trace!(name, "refreshing history");
         let room = self.inner.clone();
         let room_id = room.room_id();
-        let client = room.client.clone();
+        let client = room.room.client();
         room.sync_members().await?;
 
         let custom_storage_key = format!("{room_id}::history");
@@ -290,13 +296,7 @@ impl Client {
     pub async fn get_group(&self, alias_or_id: String) -> Result<Group> {
         if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
             match self.get_room(&room_id) {
-                Some(room) => Ok(Group {
-                    client: self.clone(),
-                    inner: Room {
-                        room,
-                        client: self.core.client().clone(),
-                    },
-                }),
+                Some(room) => Ok(Group::new(self.clone(), Room { room })),
                 None => bail!("Room not found"),
             }
         } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
