@@ -59,18 +59,13 @@ impl TimelineDiff {
 
 #[derive(Clone)]
 pub struct TimelineStream {
-    client: Client,
     room: Room,
     timeline: Arc<Timeline>,
 }
 
 impl TimelineStream {
-    pub fn new(client: Client, room: Room, timeline: Arc<Timeline>) -> Self {
-        TimelineStream {
-            client,
-            room,
-            timeline,
-        }
+    pub fn new(room: Room, timeline: Arc<Timeline>) -> Self {
+        TimelineStream { room, timeline }
     }
 
     pub fn diff_rx(&self) -> impl Stream<Item = TimelineDiff> {
@@ -264,7 +259,7 @@ impl TimelineStream {
         };
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(original_event_id)?;
-        let client = self.client.clone();
+        let client = self.room.client();
 
         RUNTIME
             .spawn(async move {

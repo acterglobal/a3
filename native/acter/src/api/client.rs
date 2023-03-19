@@ -29,7 +29,6 @@ use super::{
     group::Group,
     invitation::InvitationController,
     profile::UserProfile,
-    receipt::ReceiptController,
     room::Room,
     typing::TypingController,
     verification::VerificationController,
@@ -56,7 +55,6 @@ pub struct Client {
     pub(crate) verification_controller: VerificationController,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
-    pub(crate) receipt_controller: ReceiptController,
     pub(crate) conversation_controller: ConversationController,
 }
 
@@ -72,16 +70,10 @@ pub(crate) async fn devide_groups_from_convos(client: Client) -> (Vec<Group>, Ve
         .fold(
             (Vec::new(), Vec::new(), client),
             async move |(mut groups, mut conversations, client), room| {
-                let inner = Room {
-                    room: room.clone(),
-                    client: client.core.client().clone(),
-                };
+                let inner = Room { room: room.clone() };
 
                 if inner.is_acter_group().await {
-                    groups.push(Group {
-                        client: client.clone(),
-                        inner,
-                    });
+                    groups.push(Group::new(client.clone(), inner));
                 } else {
                     conversations.push(Conversation::new(inner));
                 }
@@ -201,7 +193,6 @@ impl Client {
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(),
             typing_controller: TypingController::new(),
-            receipt_controller: ReceiptController::new(),
             conversation_controller: ConversationController::new(),
         };
         Ok(cl)
@@ -265,7 +256,6 @@ impl Client {
 
         self.invitation_controller.add_event_handler(&client);
         self.typing_controller.add_event_handler(&client);
-        self.receipt_controller.add_event_handler(&client);
         self.conversation_controller.add_event_handler(&client);
 
         self.verification_controller
@@ -365,15 +355,22 @@ impl Client {
                                         .spawn(async move {
                                             tracing::trace!(user_id=?me.user_id_ref(), count=?new_spaces.len(), "found new spaces");
 
-                                            try_join_all(new_spaces.into_iter().map(|room| Group { inner: Room { room, client: me.core.client().clone() }, client: me.clone()}).map(|g| {
-                                                let history = history.clone();
-                                                async move {
-                                                    history.lock_mut().started_loading_room(g.room_id().to_owned());
-                                                    g.add_handlers().await;
-                                                    let x = g.refresh_history().await;
-                                                    history.lock_mut().group_loaded();
-                                                    x
-                                                }}))
+                                            try_join_all(
+                                                new_spaces
+                                                    .into_iter()
+                                                    .map(|room| Group::new(me.clone(), Room { room }))
+                                                    .map(|g| {
+                                                        let history = history.clone();
+                                                        async move {
+                                                            history.lock_mut().started_loading_room(g.room_id().to_owned());
+                                                            g.add_handlers().await;
+                                                            let x = g.refresh_history().await;
+                                                            history.lock_mut().group_loaded();
+                                                            x
+                                                        }
+                                                    }
+                                                ),
+                                            )
                                             .await?;
                                             anyhow::Ok(())
                                         }
@@ -492,20 +489,13 @@ impl Client {
             .context("UserId not found. Not logged in?")
     }
 
-    pub async fn room(&self, room_name: String) -> Result<Room> {
+    pub(crate) fn room(&self, room_name: String) -> Result<Room> {
         let room_id = RoomId::parse(room_name)?;
         let l = self.core.client().clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(room) = l.get_room(&room_id) {
-                    return Ok(Room {
-                        room,
-                        client: l.clone(),
-                    });
-                }
-                bail!("Room not found")
-            })
-            .await?
+        match l.get_room(&room_id) {
+            Some(room) => Ok(Room { room }),
+            None => bail!("Room not found"),
+        }
     }
 
     pub fn subscribe(&self, key: String) -> impl Stream<Item = bool> {
@@ -590,7 +580,6 @@ impl Client {
         self.verification_controller
             .remove_sync_event_handler(&client);
         self.typing_controller.remove_event_handler(&client);
-        self.receipt_controller.remove_event_handler(&client);
         self.conversation_controller.remove_event_handler(&client);
 
         RUNTIME

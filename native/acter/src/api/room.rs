@@ -74,7 +74,6 @@ impl Member {
 
 #[derive(Clone, Debug)]
 pub struct Room {
-    pub(crate) client: MatrixClient,
     pub(crate) room: MatrixRoom,
 }
 
@@ -84,7 +83,7 @@ impl Room {
     }
 
     pub async fn get_profile(&self) -> Result<RoomProfile> {
-        let client = self.client.clone();
+        let client = self.room.client();
         let room_id = self.room_id().to_owned();
         RUNTIME
             .spawn(async move {
@@ -96,7 +95,7 @@ impl Room {
     }
 
     pub async fn active_members(&self) -> Result<Vec<Member>> {
-        let client = self.client.clone();
+        let client = self.room.client();
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
@@ -116,7 +115,7 @@ impl Room {
     }
 
     pub async fn active_members_no_sync(&self) -> Result<Vec<Member>> {
-        let client = self.client.clone();
+        let client = self.room.client();
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
@@ -136,7 +135,7 @@ impl Room {
     }
 
     pub async fn get_member(&self, user_id: String) -> Result<Member> {
-        let client = self.client.clone();
+        let client = self.room.client();
         let room = self.room.clone();
         let uid = UserId::parse(user_id)?;
         RUNTIME
@@ -152,11 +151,10 @@ impl Room {
 
     pub async fn timeline_stream(&self) -> Result<TimelineStream> {
         let room = self.room.clone();
-        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let timeline = Arc::new(room.timeline().await);
-                let stream = TimelineStream::new(client, room, timeline);
+                let stream = TimelineStream::new(room, timeline);
                 Ok(stream)
             })
             .await?
@@ -331,7 +329,7 @@ impl Room {
     }
 
     pub async fn get_invitees(&self) -> Result<Vec<Account>> {
-        let my_client = self.client.clone();
+        let my_client = self.room.client();
         let room = if let MatrixRoom::Invited(r) = &self.room {
             r.clone()
         } else {
@@ -363,7 +361,7 @@ impl Room {
         } else {
             bail!("Can't read message from a room we are not in")
         };
-        let client = self.client.clone();
+        let client = self.room.client();
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
@@ -424,7 +422,7 @@ impl Room {
         } else {
             bail!("Can't read message from a room we are not in")
         };
-        let client = self.client.clone();
+        let client = self.room.client();
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
@@ -472,7 +470,7 @@ impl Room {
         } else {
             bail!("Can't read message from a room we are not in")
         };
-        let client = self.client.clone();
+        let client = self.room.client();
         RUNTIME
             .spawn(async move {
                 let eid = EventId::parse(event_id.clone())?;
@@ -510,7 +508,6 @@ impl Room {
         } else {
             bail!("Can't know if a room we are not in is encrypted")
         };
-        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let encrypted = room.is_encrypted().await?;
@@ -525,7 +522,6 @@ impl Room {
         } else {
             bail!("Can't read message from a room we are not in")
         };
-        let client = self.client.clone();
         let r = self.room.clone();
         // any variable in self can't be called directly in spawn
         RUNTIME
@@ -829,7 +825,7 @@ impl Room {
         } else {
             bail!("Can't send reply as image to a room we are not in")
         };
-        let client = self.client.clone();
+        let client = self.room.client();
         let r = self.room.clone();
 
         // any variable in self can't be called directly in spawn
@@ -893,7 +889,7 @@ impl Room {
         } else {
             bail!("Can't send reply as file to a room we are not in")
         };
-        let client = self.client.clone();
+        let client = self.room.client();
         let r = self.room.clone();
 
         // any variable in self can't be called directly in spawn
