@@ -464,6 +464,15 @@ object Conversation {
 
     /// redact any message (including text/image/file and reaction)
     fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
+
+    /// Install event handler
+    fn add_event_handler();
+
+    /// Uninstall event handler
+    fn remove_event_handler();
+
+    /// Return the receipt event receiver
+    fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 }
 
 object CommentDraft {
@@ -823,6 +832,15 @@ object Group {
 
     /// pin draft builder
     fn pin_draft() -> Result<PinDraft>;
+
+    /// Install event handler
+    fn add_event_handler();
+
+    /// Uninstall event handler
+    fn remove_event_handler();
+
+    /// Return the receipt event receiver
+    fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 }
 
 object Member {
@@ -904,6 +922,9 @@ object Client {
     /// deprecated, please use account() instead.
     fn user_id() -> Result<UserId>;
 
+    /// get conversation room
+    fn conversation(room_or_id: string) -> Future<Result<Conversation>>;
+
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Future<Result<UserProfile>>;
 
@@ -952,9 +973,6 @@ object Client {
 
     /// Return the typing event receiver
     fn typing_event_rx() -> Option<Stream<TypingEvent>>;
-
-    /// Return the receipt event receiver
-    fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 
     /// Return the message receiver
     fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
