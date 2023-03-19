@@ -127,7 +127,7 @@ class ChatRoomController extends GetxController {
     super.onClose();
   }
 
-  //get the timeline of room
+  // get the timeline of room
   Future<void> setCurrentRoom(Conversation? convoRoom) async {
     if (convoRoom == null) {
       _messages.clear();
@@ -138,189 +138,189 @@ class ChatRoomController extends GetxController {
       _stream = null;
       _page = 0;
       _currentRoom = null;
-    } else {
-      _currentRoom = convoRoom;
-      update(['room-profile']);
-      isLoading.value = true;
-      activeMembers = (await convoRoom.activeMembers()).toList();
-      update(['active-members']);
-      _fetchUserProfiles();
-      if (_currentRoom == null) {
-        // user may close chat screen before long loading completed
-        isLoading.value = false;
-        return;
-      }
-      _stream = await _currentRoom!.timelineStream();
-      // event handler from paginate
-      _diffSubscription = _stream?.diffRx().listen((event) {
-        switch (event.action()) {
-          case 'Replace':
-            debugPrint('chat room message replace');
-            List<RoomMessage> values = event.values()!.toList();
-            for (RoomMessage msg in values) {
-              var m = _prepareMessage(msg);
-              if (m is types.UnsupportedMessage) {
-                continue;
-              }
-              int index = _messages.indexWhere((msg) => m.id == msg.id);
-              if (index == -1) {
-                _insertMessage(m);
-              } else {
-                // update event may be fetched prior to insert event
-                _updateMessage(m, index);
-              }
-              if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
-                _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
-              }
-              RoomEventItem? eventItem = msg.eventItem();
-              if (eventItem != null) {
-                if (isLoading.isFalse) {
-                  update(['Chat']);
-                }
-                if (eventItem.msgtype() == 'm.image') {
-                  _fetchMessageContent(m.id);
-                }
-              }
-            }
-            break;
-          case 'InsertAt':
-            debugPrint('chat room message insert at');
-            RoomMessage value = event.value()!;
-            var m = _prepareMessage(value);
-            if (m is types.UnsupportedMessage) {
-              break;
-            }
-            int index = _messages.indexWhere((msg) => m.id == msg.id);
-            if (index == -1) {
-              _insertMessage(m);
-            } else {
-              // update event may be fetched prior to insert event
-              _updateMessage(m, index);
-            }
-            if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
-              _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
-            }
-            RoomEventItem? eventItem = value.eventItem();
-            if (eventItem != null) {
-              if (isLoading.isFalse) {
-                update(['Chat']);
-              }
-              if (eventItem.msgtype() == 'm.image') {
-                _fetchMessageContent(m.id);
-              }
-            }
-            break;
-          case 'UpdateAt':
-            debugPrint('chat room message update at');
-            RoomMessage value = event.value()!;
-            var m = _prepareMessage(value);
-            if (m is types.UnsupportedMessage) {
-              break;
-            }
-            int index = _messages.indexWhere((msg) => m.id == msg.id);
-            if (index == -1) {
-              // update event may be fetched prior to insert event
-              _insertMessage(m);
-            } else {
-              _updateMessage(m, index);
-            }
-            if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
-              _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
-            }
-            RoomEventItem? eventItem = value.eventItem();
-            if (eventItem != null) {
-              if (isLoading.isFalse) {
-                update(['Chat']);
-              }
-              if (eventItem.msgtype() == 'm.image') {
-                _fetchMessageContent(m.id);
-              }
-            }
-            break;
-          case 'Push':
-            debugPrint('chat room message push');
-            RoomMessage value = event.value()!;
-            var m = _prepareMessage(value);
-            if (m is types.UnsupportedMessage) {
-              break;
-            }
-            _messages.insert(0, m);
-            if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
-              _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
-            }
-            RoomEventItem? eventItem = value.eventItem();
-            if (eventItem != null) {
-              if (isLoading.isFalse) {
-                update(['Chat']);
-              }
-              if (eventItem.msgtype() == 'm.image') {
-                _fetchMessageContent(m.id);
-              }
-            }
-            break;
-          case 'RemoveAt':
-            int index = event.index()!;
-            _messages.removeAt(_messages.length - 1 - index);
-            if (isLoading.isFalse) {
-              update(['Chat']);
-            }
-            break;
-          case 'Move':
-            int oldIndex = event.oldIndex()!;
-            int newIndex = event.newIndex()!;
-            int i = _messages.length - newIndex;
-            if (oldIndex < newIndex) {
-              i += 1;
-            }
-            var m = _messages.removeAt(_messages.length - 1 - oldIndex);
-            if (m is types.UnsupportedMessage) {
-              break;
-            }
-            _messages.insert(i, m);
-            if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
-              _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
-            }
-            if (isLoading.isFalse) {
-              update(['Chat']);
-            }
-            break;
-          case 'Pop':
-            _messages.removeLast();
-            if (isLoading.isFalse) {
-              update(['Chat']);
-            }
-            break;
-          case 'Clear':
-            _messages.clear();
-            if (isLoading.isFalse) {
-              update(['Chat']);
-            }
-            break;
-        }
-      });
-
-      if (_currentRoom == null) {
-        // user may close chat screen before long loading completed
-        isLoading.value = false;
-        return;
-      }
-      bool hasMore = true;
-      do {
-        hasMore = await _stream!.paginateBackwards(10);
-        // wait for diff rx to be finished
-        sleep(const Duration(milliseconds: 500));
-      } while (hasMore && _messages.length < 10);
-      // load receipt status of room
-      var receiptController = Get.find<ReceiptController>();
-      var receipts = (await convoRoom.userReceipts()).toList();
-      if (_currentRoom == null) {
-        // user may close chat screen before long loading completed
-        isLoading.value = false;
-        return;
-      }
-      receiptController.loadRoom(convoRoom.getRoomId(), receipts);
-      isLoading.value = false;
+      return;
     }
+    _currentRoom = convoRoom;
+    update(['room-profile']);
+    isLoading.value = true;
+    activeMembers = (await convoRoom.activeMembers()).toList();
+    update(['active-members']);
+    _fetchUserProfiles();
+    if (_currentRoom == null) {
+      // user may close chat screen before long loading completed
+      isLoading.value = false;
+      return;
+    }
+    _stream = await _currentRoom!.timelineStream();
+    // event handler from paginate
+    _diffSubscription = _stream?.diffRx().listen((event) {
+      switch (event.action()) {
+        case 'Replace':
+          debugPrint('chat room message replace');
+          List<RoomMessage> values = event.values()!.toList();
+          for (RoomMessage msg in values) {
+            var m = _prepareMessage(msg);
+            if (m is types.UnsupportedMessage) {
+              continue;
+            }
+            int index = _messages.indexWhere((msg) => m.id == msg.id);
+            if (index == -1) {
+              _insertMessage(m);
+            } else {
+              // update event may be fetched prior to insert event
+              _updateMessage(m, index);
+            }
+            if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+              _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+            }
+            RoomEventItem? eventItem = msg.eventItem();
+            if (eventItem != null) {
+              if (isLoading.isFalse) {
+                update(['Chat']);
+              }
+              if (eventItem.msgtype() == 'm.image') {
+                _fetchMessageContent(m.id);
+              }
+            }
+          }
+          break;
+        case 'InsertAt':
+          debugPrint('chat room message insert at');
+          RoomMessage value = event.value()!;
+          var m = _prepareMessage(value);
+          if (m is types.UnsupportedMessage) {
+            break;
+          }
+          int index = _messages.indexWhere((msg) => m.id == msg.id);
+          if (index == -1) {
+            _insertMessage(m);
+          } else {
+            // update event may be fetched prior to insert event
+            _updateMessage(m, index);
+          }
+          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+          }
+          RoomEventItem? eventItem = value.eventItem();
+          if (eventItem != null) {
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            if (eventItem.msgtype() == 'm.image') {
+              _fetchMessageContent(m.id);
+            }
+          }
+          break;
+        case 'UpdateAt':
+          debugPrint('chat room message update at');
+          RoomMessage value = event.value()!;
+          var m = _prepareMessage(value);
+          if (m is types.UnsupportedMessage) {
+            break;
+          }
+          int index = _messages.indexWhere((msg) => m.id == msg.id);
+          if (index == -1) {
+            // update event may be fetched prior to insert event
+            _insertMessage(m);
+          } else {
+            _updateMessage(m, index);
+          }
+          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+          }
+          RoomEventItem? eventItem = value.eventItem();
+          if (eventItem != null) {
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            if (eventItem.msgtype() == 'm.image') {
+              _fetchMessageContent(m.id);
+            }
+          }
+          break;
+        case 'Push':
+          debugPrint('chat room message push');
+          RoomMessage value = event.value()!;
+          var m = _prepareMessage(value);
+          if (m is types.UnsupportedMessage) {
+            break;
+          }
+          _messages.insert(0, m);
+          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+          }
+          RoomEventItem? eventItem = value.eventItem();
+          if (eventItem != null) {
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            if (eventItem.msgtype() == 'm.image') {
+              _fetchMessageContent(m.id);
+            }
+          }
+          break;
+        case 'RemoveAt':
+          int index = event.index()!;
+          _messages.removeAt(_messages.length - 1 - index);
+          if (isLoading.isFalse) {
+            update(['Chat']);
+          }
+          break;
+        case 'Move':
+          int oldIndex = event.oldIndex()!;
+          int newIndex = event.newIndex()!;
+          int i = _messages.length - newIndex;
+          if (oldIndex < newIndex) {
+            i += 1;
+          }
+          var m = _messages.removeAt(_messages.length - 1 - oldIndex);
+          if (m is types.UnsupportedMessage) {
+            break;
+          }
+          _messages.insert(i, m);
+          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+          }
+          if (isLoading.isFalse) {
+            update(['Chat']);
+          }
+          break;
+        case 'Pop':
+          _messages.removeLast();
+          if (isLoading.isFalse) {
+            update(['Chat']);
+          }
+          break;
+        case 'Clear':
+          _messages.clear();
+          if (isLoading.isFalse) {
+            update(['Chat']);
+          }
+          break;
+      }
+    });
+
+    if (_currentRoom == null) {
+      // user may close chat screen before long loading completed
+      isLoading.value = false;
+      return;
+    }
+    bool hasMore = true;
+    do {
+      hasMore = await _stream!.paginateBackwards(10);
+      // wait for diff rx to be finished
+      sleep(const Duration(milliseconds: 500));
+    } while (hasMore && _messages.length < 10);
+    // load receipt status of room
+    var receiptController = Get.find<ReceiptController>();
+    var receipts = (await convoRoom.userReceipts()).toList();
+    if (_currentRoom == null) {
+      // user may close chat screen before long loading completed
+      isLoading.value = false;
+      return;
+    }
+    receiptController.loadRoom(convoRoom, receipts);
+    isLoading.value = false;
   }
 
   String? currentRoomId() {

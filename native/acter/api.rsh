@@ -922,6 +922,9 @@ object Client {
     /// deprecated, please use account() instead.
     fn user_id() -> Result<UserId>;
 
+    /// get conversation room
+    fn conversation(room_or_id: string) -> Future<Result<Conversation>>;
+
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Future<Result<UserProfile>>;
 

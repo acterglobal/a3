@@ -448,17 +448,13 @@ impl Client {
             .context("UserId not found. Not logged in?")
     }
 
-    pub async fn room(&self, room_name: String) -> Result<Room> {
+    pub(crate) fn room(&self, room_name: String) -> Result<Room> {
         let room_id = RoomId::parse(room_name)?;
         let l = self.core.client().clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(room) = l.get_room(&room_id) {
-                    return Ok(Room { room });
-                }
-                bail!("Room not found");
-            })
-            .await?
+        match l.get_room(&room_id) {
+            Some(room) => Ok(Room { room }),
+            None => bail!("Room not found"),
+        }
     }
 
     pub fn subscribe(&self, key: String) -> impl Stream<Item = bool> {
