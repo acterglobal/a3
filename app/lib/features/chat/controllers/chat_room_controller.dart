@@ -129,6 +129,7 @@ class ChatRoomController extends GetxController {
 
   // get the timeline of room
   Future<void> setCurrentRoom(Conversation? convoRoom) async {
+    var receiptController = Get.find<ReceiptController>();
     if (convoRoom == null) {
       _messages.clear();
       typingUsers.clear();
@@ -137,6 +138,9 @@ class ChatRoomController extends GetxController {
       _diffSubscription?.cancel();
       _stream = null;
       _page = 0;
+      if (_currentRoom != null) {
+        receiptController.unloadRoom(_currentRoom!);
+      }
       _currentRoom = null;
       return;
     }
@@ -312,7 +316,6 @@ class ChatRoomController extends GetxController {
       sleep(const Duration(milliseconds: 500));
     } while (hasMore && _messages.length < 10);
     // load receipt status of room
-    var receiptController = Get.find<ReceiptController>();
     var receipts = (await convoRoom.userReceipts()).toList();
     if (_currentRoom == null) {
       // user may close chat screen before long loading completed
