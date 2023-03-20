@@ -719,10 +719,10 @@ class _RoomPageState extends State<RoomPage> {
       case 'm.space.child':
       case 'm.space.parent':
         String? text = customMessage.metadata?['body'];
-        return text != null
+        return text == null
             ? const SizedBox.shrink()
             : Container(
-                width: sqrt(text!.length) * 38.5,
+                width: sqrt(text.length) * 38.5,
                 padding: const EdgeInsets.all(8),
                 constraints: const BoxConstraints(minWidth: 57),
                 child: Text(text, style: ChatTheme01.chatReplyTextStyle),
