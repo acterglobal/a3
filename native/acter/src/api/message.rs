@@ -58,7 +58,10 @@ use matrix_sdk::{
                     OriginalRoomHistoryVisibilityEvent, OriginalSyncRoomHistoryVisibilityEvent,
                 },
                 join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
-                member::{MembershipChange, MembershipState, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
+                member::{
+                    MembershipChange, MembershipState, OriginalRoomMemberEvent,
+                    OriginalSyncRoomMemberEvent,
+                },
                 message::{
                     MessageFormat, MessageType, OriginalRoomMessageEvent,
                     OriginalSyncRoomMessageEvent,
@@ -1740,26 +1743,11 @@ impl RoomMessage {
 
     pub(crate) fn room_member_from_event(event: OriginalRoomMemberEvent, room: &Room) -> Self {
         let (sub_type, fallback) = match event.content.membership {
-            MembershipState::Join => (
-                Some("Joined".to_string()),
-                "joined".to_string(),
-            ),
-            MembershipState::Leave => (
-                Some("Left".to_string()),
-                "left".to_string(),
-            ),
-            MembershipState::Ban => (
-                Some("Banned".to_string()),
-                "banned".to_string(),
-            ),
-            MembershipState::Invite => (
-                Some("Invited".to_string()),
-                "invited".to_string(),
-            ),
-            MembershipState::Knock => (
-                Some("Knocked".to_string()),
-                "knocked".to_string(),
-            ),
+            MembershipState::Join => (Some("Joined".to_string()), "joined".to_string()),
+            MembershipState::Leave => (Some("Left".to_string()), "left".to_string()),
+            MembershipState::Ban => (Some("Banned".to_string()), "banned".to_string()),
+            MembershipState::Invite => (Some("Invited".to_string()), "invited".to_string()),
+            MembershipState::Knock => (Some("Knocked".to_string()), "knocked".to_string()),
             _ => {
                 if let Some(new_name) = event.clone().content.displayname {
                     let mut old_name = None;
@@ -1770,11 +1758,7 @@ impl RoomMessage {
                     }
                     (
                         Some("ProfileChanged".to_string()),
-                        format!(
-                            "changed display name from {:?} to {}",
-                            old_name,
-                            new_name,
-                        ),
+                        format!("changed display name from {:?} to {}", old_name, new_name),
                     )
                 } else if let Some(new_url) = event.clone().content.avatar_url {
                     let mut old_url = None;
@@ -1785,16 +1769,12 @@ impl RoomMessage {
                     }
                     (
                         Some("ProfileChanged".to_string()),
-                        format!(
-                            "changed avatar url from {:?} to {:?}",
-                            old_url,
-                            new_url,
-                        ),
+                        format!("changed avatar url from {:?} to {:?}", old_url, new_url),
                     )
                 } else {
                     (None, "unknown error".to_string())
                 }
-            },
+            }
         };
         let text_desc = TextDesc {
             body: fallback,
@@ -1826,26 +1806,11 @@ impl RoomMessage {
         room: &Room,
     ) -> Self {
         let (sub_type, fallback) = match event.content.membership {
-            MembershipState::Join => (
-                Some("Joined".to_string()),
-                "joined".to_string(),
-            ),
-            MembershipState::Leave => (
-                Some("Left".to_string()),
-                "left".to_string(),
-            ),
-            MembershipState::Ban => (
-                Some("Banned".to_string()),
-                "banned".to_string(),
-            ),
-            MembershipState::Invite => (
-                Some("Invited".to_string()),
-                "invited".to_string(),
-            ),
-            MembershipState::Knock => (
-                Some("Knocked".to_string()),
-                "knocked".to_string(),
-            ),
+            MembershipState::Join => (Some("Joined".to_string()), "joined".to_string()),
+            MembershipState::Leave => (Some("Left".to_string()), "left".to_string()),
+            MembershipState::Ban => (Some("Banned".to_string()), "banned".to_string()),
+            MembershipState::Invite => (Some("Invited".to_string()), "invited".to_string()),
+            MembershipState::Knock => (Some("Knocked".to_string()), "knocked".to_string()),
             _ => {
                 if let Some(new_name) = event.clone().content.displayname {
                     let mut old_name = None;
@@ -1856,11 +1821,7 @@ impl RoomMessage {
                     }
                     (
                         Some("ProfileChanged".to_string()),
-                        format!(
-                            "changed display name from {:?} to {}",
-                            old_name,
-                            new_name,
-                        ),
+                        format!("changed display name from {:?} to {}", old_name, new_name),
                     )
                 } else if let Some(new_url) = event.clone().content.avatar_url {
                     let mut old_url = None;
@@ -1871,16 +1832,12 @@ impl RoomMessage {
                     }
                     (
                         Some("ProfileChanged".to_string()),
-                        format!(
-                            "changed avatar url from {:?} to {:?}",
-                            old_url,
-                            new_url,
-                        ),
+                        format!("changed avatar url from {:?} to {:?}", old_url, new_url),
                     )
                 } else {
                     (None, "unknown error".to_string())
                 }
-            },
+            }
         };
         let text_desc = TextDesc {
             body: fallback,
@@ -2976,30 +2933,22 @@ impl RoomMessage {
                         Some("Error".to_string()),
                         "error in membership change".to_string(),
                     ),
-                    Some(MembershipChange::Joined) => (
-                        Some("Joined".to_string()),
-                        "joined".to_string(),
-                    ),
-                    Some(MembershipChange::Left) => (
-                        Some("Left".to_string()),
-                        "left".to_string(),
-                    ),
-                    Some(MembershipChange::Banned) => (
-                        Some("Banned".to_string()),
-                        "banned".to_string(),
-                    ),
-                    Some(MembershipChange::Unbanned) => (
-                        Some("Unbanned".to_string()),
-                        "unbanned".to_string(),
-                    ),
-                    Some(MembershipChange::Kicked) => (
-                        Some("Kicked".to_string()),
-                        "kicked".to_string(),
-                    ),
-                    Some(MembershipChange::Invited) => (
-                        Some("Invited".to_string()),
-                        "invited".to_string(),
-                    ),
+                    Some(MembershipChange::Joined) => {
+                        (Some("Joined".to_string()), "joined".to_string())
+                    }
+                    Some(MembershipChange::Left) => (Some("Left".to_string()), "left".to_string()),
+                    Some(MembershipChange::Banned) => {
+                        (Some("Banned".to_string()), "banned".to_string())
+                    }
+                    Some(MembershipChange::Unbanned) => {
+                        (Some("Unbanned".to_string()), "unbanned".to_string())
+                    }
+                    Some(MembershipChange::Kicked) => {
+                        (Some("Kicked".to_string()), "kicked".to_string())
+                    }
+                    Some(MembershipChange::Invited) => {
+                        (Some("Invited".to_string()), "invited".to_string())
+                    }
                     Some(MembershipChange::KickedAndBanned) => (
                         Some("KickedAndBanned".to_string()),
                         "kicked and banned".to_string(),
@@ -3016,10 +2965,9 @@ impl RoomMessage {
                         Some("InvitationRevoked".to_string()),
                         "revoked invitation".to_string(),
                     ),
-                    Some(MembershipChange::Knocked) => (
-                        Some("Knocked".to_string()),
-                        "knocked".to_string(),
-                    ),
+                    Some(MembershipChange::Knocked) => {
+                        (Some("Knocked".to_string()), "knocked".to_string())
+                    }
                     Some(MembershipChange::KnockAccepted) => (
                         Some("KnockAccepted".to_string()),
                         "accepted knock".to_string(),
@@ -3028,18 +2976,25 @@ impl RoomMessage {
                         Some("KnockRetracted".to_string()),
                         "retracted knock".to_string(),
                     ),
-                    Some(MembershipChange::KnockDenied) => (
-                        Some("KnockDenied".to_string()),
-                        "denied knock".to_string(),
-                    ),
+                    Some(MembershipChange::KnockDenied) => {
+                        (Some("KnockDenied".to_string()), "denied knock".to_string())
+                    }
                     Some(MembershipChange::ProfileChanged {
                         displayname_change,
                         avatar_url_change,
                     }) => {
                         let fallback = if let Some(change) = displayname_change {
-                            format!("changed display name from {:?} to {:?}", change.old.clone(), change.new.clone())
+                            format!(
+                                "changed display name from {:?} to {:?}",
+                                change.old.clone(),
+                                change.new.clone(),
+                            )
                         } else if let Some(change) = avatar_url_change {
-                            format!("changed avatar url from {:?} to {:?}", change.old.clone(), change.new.clone())
+                            format!(
+                                "changed avatar url from {:?} to {:?}",
+                                change.old.clone(),
+                                change.new.clone(),
+                            )
                         } else {
                             "error in profile change".to_string()
                         };
