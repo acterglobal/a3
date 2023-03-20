@@ -1367,7 +1367,7 @@ impl RoomMessage {
 
     pub(crate) fn room_create_from_event(event: OriginalRoomCreateEvent, room: &Room) -> Self {
         let text_desc = TextDesc {
-            body: format!("{} created this room", event.content.creator),
+            body: "created this room".to_string(),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1396,7 +1396,7 @@ impl RoomMessage {
         room: &Room,
     ) -> Self {
         let text_desc = TextDesc {
-            body: format!("{} created this room", event.content.creator),
+            body: "created this room".to_string(),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -2888,61 +2888,35 @@ impl RoomMessage {
             TimelineItemContent::RoomMember(m) => {
                 info!("Edit event applies to a state event, discarding");
                 let fallback = match m.membership_change() {
-                    Some(MembershipChange::None) => {
-                        format!("{} not changed", m.user_id())
-                    }
-                    Some(MembershipChange::Error) => {
-                        format!("{} membership error", m.user_id())
-                    }
-                    Some(MembershipChange::Joined) => {
-                        format!("{} joined", m.user_id())
-                    }
-                    Some(MembershipChange::Left) => {
-                        format!("{} left", m.user_id())
-                    }
-                    Some(MembershipChange::Banned) => {
-                        format!("{} banned", m.user_id())
-                    }
-                    Some(MembershipChange::Unbanned) => {
-                        format!("{} unbanned", m.user_id())
-                    }
-                    Some(MembershipChange::Kicked) => {
-                        format!("{} kicked", m.user_id())
-                    }
-                    Some(MembershipChange::Invited) => {
-                        format!("{} invited", m.user_id())
-                    }
-                    Some(MembershipChange::KickedAndBanned) => {
-                        format!("{} kicked and banned", m.user_id())
-                    }
-                    Some(MembershipChange::InvitationAccepted) => {
-                        format!("{} accepted invitation", m.user_id())
-                    }
-                    Some(MembershipChange::InvitationRejected) => {
-                        format!("{} rejected invitation", m.user_id())
-                    }
-                    Some(MembershipChange::InvitationRevoked) => {
-                        format!("{} revoked invitation", m.user_id())
-                    }
-                    Some(MembershipChange::Knocked) => {
-                        format!("{} knocked", m.user_id())
-                    }
-                    Some(MembershipChange::KnockAccepted) => {
-                        format!("{} accepted knock", m.user_id())
-                    }
-                    Some(MembershipChange::KnockRetracted) => {
-                        format!("{} retracted knock", m.user_id())
-                    }
-                    Some(MembershipChange::KnockDenied) => {
-                        format!("{} denied knock", m.user_id())
-                    }
+                    Some(MembershipChange::None) => "not changed membership".to_string(),
+                    Some(MembershipChange::Error) => "error in membership change".to_string(),
+                    Some(MembershipChange::Joined) => "joined".to_string(),
+                    Some(MembershipChange::Left) => "left".to_string(),
+                    Some(MembershipChange::Banned) => "banned".to_string(),
+                    Some(MembershipChange::Unbanned) => "unbanned".to_string(),
+                    Some(MembershipChange::Kicked) => "kicked".to_string(),
+                    Some(MembershipChange::Invited) => "invited".to_string(),
+                    Some(MembershipChange::KickedAndBanned) => "kicked and banned".to_string(),
+                    Some(MembershipChange::InvitationAccepted) => "accepted invitation".to_string(),
+                    Some(MembershipChange::InvitationRejected) => "rejected invitation".to_string(),
+                    Some(MembershipChange::InvitationRevoked) => "revoked invitation".to_string(),
+                    Some(MembershipChange::Knocked) => "knocked".to_string(),
+                    Some(MembershipChange::KnockAccepted) => "accepted knock".to_string(),
+                    Some(MembershipChange::KnockRetracted) => "retracted knock".to_string(),
+                    Some(MembershipChange::KnockDenied) => "denied knock".to_string(),
                     Some(MembershipChange::ProfileChanged {
                         displayname_change,
                         avatar_url_change,
                     }) => {
-                        format!("{} changed profile", m.user_id())
+                        if let Some(change) = displayname_change {
+                            format!("changed display name from {:?} to {:?}", change.old.clone(), change.new.clone())
+                        } else if let Some(change) = avatar_url_change {
+                            format!("changed avatar url from {:?} to {:?}", change.old.clone(), change.new.clone())
+                        } else {
+                            "error in profile change".to_string()
+                        }
                     }
-                    Some(MembershipChange::NotImplemented) => "not implemented".to_string(),
+                    Some(MembershipChange::NotImplemented) => "not implemented change".to_string(),
                     _ => "unknown error".to_string(),
                 };
                 let text_desc = TextDesc {
