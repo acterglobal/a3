@@ -749,6 +749,7 @@ class ChatRoomController extends GetxController {
             metadata: {
               'itemType': 'event',
               'eventType': eventType,
+              'subType': eventItem.subType(),
               'messageLength': body.length,
               'body': formattedBody ?? body,
             },
