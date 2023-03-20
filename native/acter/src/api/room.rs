@@ -1,4 +1,9 @@
-use acter_core::{ruma::OwnedEventId, spaces::is_acter_space};
+use acter_core::{
+    ruma::{
+        api::client::receipt::create_receipt::v3::ReceiptType as CreateReceiptType, OwnedEventId,
+    },
+    spaces::is_acter_space,
+};
 use anyhow::{bail, Context, Result};
 use log::{info, warn};
 use matrix_sdk::{
@@ -9,7 +14,7 @@ use matrix_sdk::{
         assign,
         events::{
             reaction::ReactionEventContent,
-            receipt::{ReceiptThread, ReceiptType},
+            receipt::ReceiptThread,
             relation::Annotation,
             room::{
                 message::{
@@ -183,8 +188,12 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let event_id = EventId::parse(event_id)?;
-                room.event_receipts(ReceiptType::Read, ReceiptThread::Main, &event_id)
-                    .await?;
+                room.send_single_receipt(
+                    CreateReceiptType::Read,
+                    ReceiptThread::Unthreaded,
+                    event_id,
+                )
+                .await?;
                 Ok(true)
             })
             .await?
