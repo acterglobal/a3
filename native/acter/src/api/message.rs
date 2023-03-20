@@ -1941,9 +1941,9 @@ impl RoomMessage {
             body: fallback,
             formatted_body: None,
         };
-        let mut image_desc: Option<ImageDesc> = None;
-        let mut video_desc: Option<VideoDesc> = None;
-        let mut file_desc: Option<FileDesc> = None;
+        let mut image_desc = None;
+        let mut video_desc = None;
+        let mut file_desc = None;
         match event.content.msgtype.clone() {
             MessageType::Text(content) => {
                 if let Some(formatted) = &content.formatted {
@@ -1954,43 +1954,37 @@ impl RoomMessage {
             }
             MessageType::Emote(content) => {}
             MessageType::Image(content) => {
-                if let Some(info) = content.info.as_ref() {
-                    image_desc = Some(ImageDesc {
-                        name: content.body.clone(),
-                        mimetype: info.mimetype.clone(),
-                        size: info.size.map(u64::from),
-                        width: info.width.map(u64::from),
-                        height: info.height.map(u64::from),
-                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                        thumbnail_source: info.thumbnail_source.clone(),
-                    });
-                }
+                image_desc = content.info.as_ref().map(|info| ImageDesc {
+                    name: content.body.clone(),
+                    mimetype: info.mimetype.clone(),
+                    size: info.size.map(u64::from),
+                    width: info.width.map(u64::from),
+                    height: info.height.map(u64::from),
+                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                    thumbnail_source: info.thumbnail_source.clone(),
+                });
             }
             MessageType::Video(content) => {
-                if let Some(info) = content.info.as_ref() {
-                    video_desc = Some(VideoDesc {
-                        name: content.body.clone(),
-                        mimetype: info.mimetype.clone(),
-                        size: info.size.map(u64::from),
-                        width: info.width.map(u64::from),
-                        height: info.height.map(u64::from),
-                        blurhash: info.blurhash.clone(),
-                        duration: info.duration,
-                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                        thumbnail_source: info.thumbnail_source.clone(),
-                    });
-                }
+                video_desc = content.info.as_ref().map(|info| VideoDesc {
+                    name: content.body.clone(),
+                    mimetype: info.mimetype.clone(),
+                    size: info.size.map(u64::from),
+                    width: info.width.map(u64::from),
+                    height: info.height.map(u64::from),
+                    blurhash: info.blurhash.clone(),
+                    duration: info.duration,
+                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                    thumbnail_source: info.thumbnail_source.clone(),
+                });
             }
             MessageType::File(content) => {
-                if let Some(info) = content.info.as_ref() {
-                    file_desc = Some(FileDesc {
-                        name: content.body.clone(),
-                        mimetype: info.mimetype.clone(),
-                        size: info.size.map(u64::from),
-                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                        thumbnail_source: info.thumbnail_source.clone(),
-                    });
-                }
+                file_desc = content.info.as_ref().map(|info| FileDesc {
+                    name: content.body.clone(),
+                    mimetype: info.mimetype.clone(),
+                    size: info.size.map(u64::from),
+                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                    thumbnail_source: info.thumbnail_source.clone(),
+                });
             }
             _ => {}
         }
