@@ -1,3 +1,4 @@
+mod calendar;
 mod color;
 mod comments;
 mod news;
@@ -9,6 +10,7 @@ mod test;
 
 use crate::error::Error;
 pub use crate::store::Store;
+pub use calendar::{CalendarEvent, CalendarEventUpdate};
 pub use color::Color;
 pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
 pub use core::fmt::Debug;
@@ -17,7 +19,7 @@ use matrix_sdk::ruma::{
     serde::Raw,
     EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId,
 };
-pub use news::News;
+pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
@@ -30,8 +32,16 @@ use async_recursion::async_recursion;
 use enum_dispatch::enum_dispatch;
 
 use crate::events::{
+    calendar::{
+        OriginalCalendarEventEvent, OriginalCalendarEventUpdateEvent, SyncCalendarEventEvent,
+        SyncCalendarEventUpdateEvent,
+    },
     comments::{
         OriginalCommentEvent, OriginalCommentUpdateEvent, SyncCommentEvent, SyncCommentUpdateEvent,
+    },
+    news::{
+        OriginalNewsEntryEvent, OriginalNewsEntryUpdateEvent, SyncNewsEntryEvent,
+        SyncNewsEntryUpdateEvent,
     },
     pins::{OriginalPinEvent, OriginalPinUpdateEvent, SyncPinEvent, SyncPinUpdateEvent},
     tasks::{
@@ -129,6 +139,10 @@ pub struct EventMeta {
 #[enum_dispatch]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum AnyActerModel {
+    // -- Calendar
+    CalendarEvent,
+    CalendarEventUpdate,
+
     // -- Tasks
     TaskList,
     TaskListUpdate,
@@ -138,6 +152,10 @@ pub enum AnyActerModel {
     // -- Pins
     Pin,
     PinUpdate,
+
+    // -- News
+    NewsEntry,
+    NewsEntryUpdate,
 
     // -- more generics
     Comment,
@@ -153,6 +171,30 @@ impl AnyActerModel {
         };
 
         match m_type {
+            // -- CALENDAR
+            "global.acter.dev.calendar_event" => Ok(AnyActerModel::CalendarEvent(
+                raw.deserialize_as::<OriginalCalendarEventEvent>()
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing calendar_event event failed");
+                        Error::FailedToParse {
+                            model_type: "global.acter.dev.calendar_event".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+            "global.acter.dev.calendar_event.update" => Ok(AnyActerModel::CalendarEventUpdate(
+                raw.deserialize_as::<OriginalCalendarEventUpdateEvent>()
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing pin update event failed");
+                        Error::FailedToParse {
+                            model_type: "global.acter.dev.pin.update".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+
             // -- TASKS
             "global.acter.dev.tasklist" => Ok(AnyActerModel::TaskList(
                 raw.deserialize_as::<OriginalTaskListEvent>()
@@ -200,12 +242,36 @@ impl AnyActerModel {
                     })?
                     .into(),
             )),
-            "global.acter.dev.pin.updae" => Ok(AnyActerModel::PinUpdate(
+            "global.acter.dev.pin.update" => Ok(AnyActerModel::PinUpdate(
                 raw.deserialize_as::<OriginalPinUpdateEvent>()
                     .map_err(|error| {
                         tracing::error!(?error, ?raw, "parsing pin update event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.pin.update".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+
+            // -- News
+            "global.acter.dev.news" => Ok(AnyActerModel::NewsEntry(
+                raw.deserialize_as::<OriginalNewsEntryEvent>()
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing news event failed");
+                        Error::FailedToParse {
+                            model_type: "global.acter.dev.news".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+            "global.acter.dev.news.update" => Ok(AnyActerModel::NewsEntryUpdate(
+                raw.deserialize_as::<OriginalNewsEntryUpdateEvent>()
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing news update event failed");
+                        Error::FailedToParse {
+                            model_type: "global.acter.dev.news.update".to_string(),
                             msg: error.to_string(),
                         }
                     })?
@@ -256,6 +322,36 @@ impl AnyActerModel {
         };
 
         match m_type {
+            // -- Calendar
+            "global.acter.dev.calendar_event" => match raw
+                .deserialize_as::<SyncCalendarEventEvent>()
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing calendar_event event failed");
+                    Error::FailedToParse {
+                        model_type: "global.acter.dev.calendar_event".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::CalendarEvent(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+            "global.acter.dev.calendar_event.update" => match raw
+                .deserialize_as::<SyncCalendarEventUpdateEvent>()
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing calendar_event update event failed");
+                    Error::FailedToParse {
+                        model_type: "global.acter.dev.calendar_event.update".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::CalendarEventUpdate(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+
             // -- Tasks
             "global.acter.dev.tasklist" => match raw
                 .deserialize_as::<SyncTaskListEvent>()
@@ -330,6 +426,36 @@ impl AnyActerModel {
                 _ => Err(Error::UnknownModel(None)),
             },
 
+            // -- NewsEntrys
+            "global.acter.dev.news" => match raw
+                .deserialize_as::<SyncNewsEntryEvent>()
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing news event failed");
+                    Error::FailedToParse {
+                        model_type: "global.acter.dev.news".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::NewsEntry(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+            "global.acter.dev.news.update" => match raw
+                .deserialize_as::<SyncNewsEntryUpdateEvent>()
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing news update event failed");
+                    Error::FailedToParse {
+                        model_type: "global.acter.dev.news.update".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::NewsEntryUpdate(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+
             // generic
 
             // comments
@@ -372,12 +498,6 @@ impl AnyActerModel {
             }
         }
     }
-}
-
-#[cfg(feature = "with-mocks")]
-pub mod mocks {
-    pub use super::color::mocks::ColorFaker;
-    pub use super::news::gen_mocks as gen_mock_news;
 }
 
 #[cfg(test)]

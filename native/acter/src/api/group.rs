@@ -1,6 +1,9 @@
 use acter_core::{
     events::{
+        calendar::{SyncCalendarEventEvent, SyncCalendarEventUpdateEvent},
         comments::{SyncCommentEvent, SyncCommentUpdateEvent},
+        news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
+        pins::{SyncPinEvent, SyncPinUpdateEvent},
         tasks::{SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskUpdateEvent},
     },
     executor::Executor,
@@ -164,6 +167,96 @@ impl Group {
                 }
             },
         );
+
+        // Pins
+        let room_id = self.room_id().to_owned();
+        self.room.add_event_handler(
+            move |ev: SyncPinEvent, client: MatrixClient, Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor.handle(AnyActerModel::Pin(t.into())).await;
+                    }
+                }
+            },
+        );
+        let room_id = self.room_id().to_owned();
+        self.room.add_event_handler(
+            move |ev: SyncPinUpdateEvent, client: MatrixClient, Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor.handle(AnyActerModel::PinUpdate(t.into())).await;
+                    }
+                }
+            },
+        );
+
+        // CalendarEvents
+        let room_id = self.room_id().to_owned();
+        self.room.add_event_handler(
+            move |ev: SyncCalendarEventEvent,
+                  client: MatrixClient,
+                  Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor
+                            .handle(AnyActerModel::CalendarEvent(t.into()))
+                            .await;
+                    }
+                }
+            },
+        );
+        let room_id = self.room_id().to_owned();
+        self.room.add_event_handler(
+            move |ev: SyncCalendarEventUpdateEvent,
+                  client: MatrixClient,
+                  Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor
+                            .handle(AnyActerModel::CalendarEventUpdate(t.into()))
+                            .await;
+                    }
+                }
+            },
+        );
+
+        // NewsEntrys
+        let room_id = self.room_id().to_owned();
+        self.room.add_event_handler(
+            move |ev: SyncNewsEntryEvent, client: MatrixClient, Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor.handle(AnyActerModel::NewsEntry(t.into())).await;
+                    }
+                }
+            },
+        );
+        let room_id = self.room_id().to_owned();
+        self.room.add_event_handler(
+            move |ev: SyncNewsEntryUpdateEvent,
+                  client: MatrixClient,
+                  Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor
+                            .handle(AnyActerModel::NewsEntryUpdate(t.into()))
+                            .await;
+                    }
+                }
+            },
+        );
     }
 
     pub fn get_room_id(&self) -> String {
@@ -211,7 +304,11 @@ impl Group {
                 let model = match AnyActerModel::from_raw_tlevent(&msg.event) {
                     Ok(model) => model,
                     Err(m) => {
-                        tracing::warn!(event=?msg.event, "Model didn't parse {:}", m);
+                        if msg.event.get_field::<String>("state_key").is_ok() {
+                            // ignore state keys
+                        } else {
+                            tracing::warn!(event=?msg.event, "Model didn't parse {:}", m);
+                        }
                         continue;
                     }
                 };

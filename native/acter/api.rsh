@@ -19,9 +19,6 @@ fn guest_client(basepath: string, default_homeserver_name: string, default_homes
 /// Create a new client from the registration token
 fn register_with_token(basepath: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
 
-/// generate news mock items
-fn gen_mock_news() -> Vec<News>;
-
 /// Representing a time frame
 object EfkDuration {}
 
@@ -40,24 +37,68 @@ object UtcDateTime {
     fn to_rfc3339() -> string;
 }
 
-/// A news object
-object News {
-    /// the id of this news
-    fn id() -> string;
-    /// get the text of the news item
-    fn text() -> Option<string>;
-    /// the tags on this item
-    fn tags() -> Vec<Tag>;
-    /// the number of likes on this item
-    fn likes_count() -> u32;
-    /// the number of comments on this item
+object RefDetails {
+    /// gives either `task`, `task-list` or `calendar_client`
+    fn type_str() -> string;
+    /// what type of embed action is requested_inputs
+    fn embed_action_str() -> string;
+    /// if this is a `task` type, what `task-list-id` does it belong to
+    fn task_list_id_str() -> Option<string>;
+}
+
+/// An acter internal link to a different object
+object ObjRef {
+    /// the event id
+    fn event_id_str() -> string;
+    /// if that is in a different room, specified here
+    fn room_id_str() -> Option<string>;
+    /// where to position the element (if given)
+    fn position_str() -> Option<string>;
+    /// further details of the reference
+    fn reference() -> RefDetails;
+}
+
+/// A foreground and background color setting
+object Colorize {
+    /// Foreground or text color
+    fn color() -> Option<EfkColor>;
+    /// Background color
+    fn background() -> Option<EfkColor>;
+}
+
+
+/// A single Slide of a NewsEntry
+object NewsSlide {
+    /// the content of this slide
+    fn type_str() -> string;
+    /// the references linked in this slide,
+    fn references() -> Vec<ObjRef>;
+    /// if this is an image, hand over the description
+    fn image_desc() -> Option<ImageDesc>;
+    /// if this is an image, hand over the data
+    fn image_binary() -> Future<Result<buffer<u8>>>;
+}
+
+/// A news entry
+object NewsEntry {
+    fn slides_count() -> u8;
+    /// The slides belonging to this news item
+    fn get_slide(pos: u8) -> Option<NewsSlide>;
+    /// The color setting
+    fn colors() -> Option<Colorize>;
+
+    /// how many comments on this news entry
     fn comments_count() -> u32;
-    /// if given, the specific foreground color
-    fn fg_color() -> Option<EfkColor>; 
-    /// if given, the specific background color
-    fn bg_color() -> Option<EfkColor>; 
-    /// if given, the image
-    fn image() -> Option<Vec<u8>>;
+    /// how many likes on this news entry
+    fn likes_count() -> u32;
+}
+
+object NewsEntryDraft {
+
+}
+
+object NewsEntryUpdateBuilder {
+
 }
 
 object Tag {
@@ -824,6 +865,12 @@ object Group {
     /// task list draft builder
     fn task_list_draft() -> Result<TaskListDraft>;
 
+    /// get latest news
+    fn latest_news(count: u32) -> Future<Result<Vec<NewsEntry>>>;
+
+    /// news draft builder
+    fn news_draft() -> Result<NewsEntryDraft>;
+
     /// the pins of this Group
     fn pins() -> Future<Result<Vec<ActerPin>>>;
 
@@ -942,7 +989,7 @@ object Client {
     fn get_group(id_or_alias: string) -> Future<Result<Group>>;
 
     /// Get the latest News for the client
-    fn latest_news() -> Future<Result<Vec<News>>>;
+    fn latest_news(count: u32) -> Future<Result<Vec<NewsEntry>>>;
 
     /// Get the Pins for the client
     fn pins() -> Future<Result<Vec<ActerPin>>>;

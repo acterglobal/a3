@@ -2,48 +2,52 @@ use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
-use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store};
-
-use crate::{
-    events::news::{NewsEntryEventContent, NewsEntryUpdateBuilder, NewsEntryUpdateEventContent},
-    statics::KEYS,
+use super::{
+    super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
+    CALENDAR_KEY,
 };
 
-static NEWS_KEY: &str = KEYS::NEWS;
+use crate::events::calendar::{
+    CalendarEventEventContent, CalendarEventUpdateBuilder, CalendarEventUpdateEventContent,
+};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct NewsEntry {
-    inner: NewsEntryEventContent,
+pub struct CalendarEvent {
+    inner: CalendarEventEventContent,
     meta: EventMeta,
 }
-impl Deref for NewsEntry {
-    type Target = NewsEntryEventContent;
+impl Deref for CalendarEvent {
+    type Target = CalendarEventEventContent;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
-impl NewsEntry {
+impl CalendarEvent {
+    pub fn title(&self) -> &String {
+        &self.inner.title
+    }
+
     pub fn room_id(&self) -> &RoomId {
         &self.meta.room_id
+    }
+
+    pub fn updater(&self) -> CalendarEventUpdateBuilder {
+        CalendarEventUpdateBuilder::default()
+            .calendar_event(self.meta.event_id.clone())
+            .to_owned()
     }
 
     pub fn key_from_event(event_id: &EventId) -> String {
         event_id.to_string()
     }
-
-    pub fn updater(&self) -> NewsEntryUpdateBuilder {
-        NewsEntryUpdateBuilder::default()
-            .news_entry(self.meta.event_id.clone())
-            .to_owned()
-    }
 }
 
-impl ActerModel for NewsEntry {
+impl ActerModel for CalendarEvent {
     fn indizes(&self) -> Vec<String> {
         vec![
-            NEWS_KEY.to_string(),
-            format!("{}::{NEWS_KEY}", self.meta.room_id),
+            format!("{}::{}", self.meta.room_id, CALENDAR_KEY),
+            CALENDAR_KEY.to_string(),
         ]
     }
 
@@ -64,7 +68,7 @@ impl ActerModel for NewsEntry {
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
-        let AnyActerModel::NewsEntryUpdate(update) = model else {
+        let AnyActerModel::CalendarEventUpdate(update) = model else {
             return Ok(false)
         };
 
@@ -72,8 +76,8 @@ impl ActerModel for NewsEntry {
     }
 }
 
-impl From<OriginalMessageLikeEvent<NewsEntryEventContent>> for NewsEntry {
-    fn from(outer: OriginalMessageLikeEvent<NewsEntryEventContent>) -> Self {
+impl From<OriginalMessageLikeEvent<CalendarEventEventContent>> for CalendarEvent {
+    fn from(outer: OriginalMessageLikeEvent<CalendarEventEventContent>) -> Self {
         let OriginalMessageLikeEvent {
             content,
             room_id,
@@ -82,7 +86,7 @@ impl From<OriginalMessageLikeEvent<NewsEntryEventContent>> for NewsEntry {
             origin_server_ts,
             ..
         } = outer;
-        NewsEntry {
+        CalendarEvent {
             inner: content,
             meta: EventMeta {
                 room_id,
@@ -95,14 +99,14 @@ impl From<OriginalMessageLikeEvent<NewsEntryEventContent>> for NewsEntry {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct NewsEntryUpdate {
-    inner: NewsEntryUpdateEventContent,
+pub struct CalendarEventUpdate {
+    inner: CalendarEventUpdateEventContent,
     meta: EventMeta,
 }
 
-impl ActerModel for NewsEntryUpdate {
+impl ActerModel for CalendarEventUpdate {
     fn indizes(&self) -> Vec<String> {
-        vec![format!("{:}::history", self.inner.news_entry.event_id)]
+        vec![format!("{:}::history", self.inner.calendar_event.event_id)]
     }
 
     fn event_id(&self) -> &EventId {
@@ -114,21 +118,19 @@ impl ActerModel for NewsEntryUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![NewsEntry::key_from_event(
-            &self.inner.news_entry.event_id,
-        )])
+        None
     }
 }
 
-impl Deref for NewsEntryUpdate {
-    type Target = NewsEntryUpdateEventContent;
+impl Deref for CalendarEventUpdate {
+    type Target = CalendarEventUpdateEventContent;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
-impl From<OriginalMessageLikeEvent<NewsEntryUpdateEventContent>> for NewsEntryUpdate {
-    fn from(outer: OriginalMessageLikeEvent<NewsEntryUpdateEventContent>) -> Self {
+impl From<OriginalMessageLikeEvent<CalendarEventUpdateEventContent>> for CalendarEventUpdate {
+    fn from(outer: OriginalMessageLikeEvent<CalendarEventUpdateEventContent>) -> Self {
         let OriginalMessageLikeEvent {
             content,
             room_id,
@@ -137,7 +139,7 @@ impl From<OriginalMessageLikeEvent<NewsEntryUpdateEventContent>> for NewsEntryUp
             origin_server_ts,
             ..
         } = outer;
-        NewsEntryUpdate {
+        CalendarEventUpdate {
             inner: content,
             meta: EventMeta {
                 room_id,

@@ -1,50 +1,64 @@
-use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId};
+use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, OwnedUserId, RoomId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
-use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store};
-
-use crate::{
-    events::news::{NewsEntryEventContent, NewsEntryUpdateBuilder, NewsEntryUpdateEventContent},
-    statics::KEYS,
+use super::{
+    super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
+    TaskList, TASKS_KEY,
 };
 
-static NEWS_KEY: &str = KEYS::NEWS;
+use crate::events::tasks::{TaskEventContent, TaskUpdateBuilder, TaskUpdateEventContent};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct NewsEntry {
-    inner: NewsEntryEventContent,
+pub struct Task {
+    inner: TaskEventContent,
     meta: EventMeta,
 }
-impl Deref for NewsEntry {
-    type Target = NewsEntryEventContent;
+impl Deref for Task {
+    type Target = TaskEventContent;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
-impl NewsEntry {
+impl Task {
+    pub fn title(&self) -> &String {
+        &self.inner.title
+    }
+
+    pub fn subscribers(&self) -> Vec<OwnedUserId> {
+        self.inner.subscribers.clone()
+    }
+
     pub fn room_id(&self) -> &RoomId {
         &self.meta.room_id
+    }
+
+    pub fn is_done(&self) -> bool {
+        self.inner
+            .progress_percent
+            .map(|u| u >= 100)
+            .unwrap_or_default()
+    }
+
+    pub fn percent(&self) -> Option<u8> {
+        self.inner.progress_percent
+    }
+
+    pub fn updater(&self) -> TaskUpdateBuilder {
+        TaskUpdateBuilder::default()
+            .task(self.meta.event_id.clone())
+            .to_owned()
     }
 
     pub fn key_from_event(event_id: &EventId) -> String {
         event_id.to_string()
     }
-
-    pub fn updater(&self) -> NewsEntryUpdateBuilder {
-        NewsEntryUpdateBuilder::default()
-            .news_entry(self.meta.event_id.clone())
-            .to_owned()
-    }
 }
 
-impl ActerModel for NewsEntry {
+impl ActerModel for Task {
     fn indizes(&self) -> Vec<String> {
-        vec![
-            NEWS_KEY.to_string(),
-            format!("{}::{NEWS_KEY}", self.meta.room_id),
-        ]
+        vec![format!("{}::{TASKS_KEY}", self.inner.task_list_id.event_id)]
     }
 
     fn event_id(&self) -> &EventId {
@@ -60,11 +74,13 @@ impl ActerModel for NewsEntry {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        None
+        Some(vec![TaskList::key_from_event(
+            &self.inner.task_list_id.event_id,
+        )])
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
-        let AnyActerModel::NewsEntryUpdate(update) = model else {
+        let AnyActerModel::TaskUpdate(update) = model else {
             return Ok(false)
         };
 
@@ -72,8 +88,8 @@ impl ActerModel for NewsEntry {
     }
 }
 
-impl From<OriginalMessageLikeEvent<NewsEntryEventContent>> for NewsEntry {
-    fn from(outer: OriginalMessageLikeEvent<NewsEntryEventContent>) -> Self {
+impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
+    fn from(outer: OriginalMessageLikeEvent<TaskEventContent>) -> Self {
         let OriginalMessageLikeEvent {
             content,
             room_id,
@@ -82,7 +98,7 @@ impl From<OriginalMessageLikeEvent<NewsEntryEventContent>> for NewsEntry {
             origin_server_ts,
             ..
         } = outer;
-        NewsEntry {
+        Task {
             inner: content,
             meta: EventMeta {
                 room_id,
@@ -95,14 +111,14 @@ impl From<OriginalMessageLikeEvent<NewsEntryEventContent>> for NewsEntry {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct NewsEntryUpdate {
-    inner: NewsEntryUpdateEventContent,
+pub struct TaskUpdate {
+    inner: TaskUpdateEventContent,
     meta: EventMeta,
 }
 
-impl ActerModel for NewsEntryUpdate {
+impl ActerModel for TaskUpdate {
     fn indizes(&self) -> Vec<String> {
-        vec![format!("{:}::history", self.inner.news_entry.event_id)]
+        vec![format!("{:}::history", self.inner.task.event_id)]
     }
 
     fn event_id(&self) -> &EventId {
@@ -114,21 +130,19 @@ impl ActerModel for NewsEntryUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![NewsEntry::key_from_event(
-            &self.inner.news_entry.event_id,
-        )])
+        Some(vec![Task::key_from_event(&self.inner.task.event_id)])
     }
 }
 
-impl Deref for NewsEntryUpdate {
-    type Target = NewsEntryUpdateEventContent;
+impl Deref for TaskUpdate {
+    type Target = TaskUpdateEventContent;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
-impl From<OriginalMessageLikeEvent<NewsEntryUpdateEventContent>> for NewsEntryUpdate {
-    fn from(outer: OriginalMessageLikeEvent<NewsEntryUpdateEventContent>) -> Self {
+impl From<OriginalMessageLikeEvent<TaskUpdateEventContent>> for TaskUpdate {
+    fn from(outer: OriginalMessageLikeEvent<TaskUpdateEventContent>) -> Self {
         let OriginalMessageLikeEvent {
             content,
             room_id,
@@ -137,7 +151,7 @@ impl From<OriginalMessageLikeEvent<NewsEntryUpdateEventContent>> for NewsEntryUp
             origin_server_ts,
             ..
         } = outer;
-        NewsEntryUpdate {
+        TaskUpdate {
             inner: content,
             meta: EventMeta {
                 room_id,
