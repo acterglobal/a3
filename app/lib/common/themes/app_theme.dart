@@ -4,6 +4,18 @@ import 'package:google_fonts/google_fonts.dart';
 
 AppTheme currentTheme = AppTheme();
 
+extension CustomColorScheme on ColorScheme {
+  Color get success => const Color(0xFF67A24A);
+  Color get tertiary2 => const Color(0xFFFFC333);
+  Color get tertiary3 => const Color(0xFF3AE3E0);
+  Color get neutral => const Color(0xFF121212);
+  Color get neutral2 => const Color(0xFF2F2F2F);
+  Color get neutral3 => const Color(0xFF5D5D5D);
+  Color get neutral4 => const Color(0xFF898989);
+  Color get neutral5 => const Color(0xFFB7B7B7);
+  Color get neutral6 => const Color(0xFFE5E5E5);
+}
+
 class AppTheme {
   static ThemeData get theme {
     return ThemeData(
@@ -28,17 +40,17 @@ class AppTheme {
             titleLarge: TextStyle(
               color: Colors.white,
               fontSize: 24,
-              fontWeight: FontWeight.normal,
+              fontWeight: FontWeight.w500,
             ),
             titleMedium: TextStyle(
               color: Colors.white,
               fontSize: 21,
-              fontWeight: FontWeight.normal,
+              fontWeight: FontWeight.w500,
             ),
             titleSmall: TextStyle(
               color: Colors.white,
               fontSize: 18,
-              fontWeight: FontWeight.normal,
+              fontWeight: FontWeight.w500,
             ),
             bodyLarge: TextStyle(
               color: Colors.white,
@@ -58,24 +70,28 @@ class AppTheme {
             labelLarge: TextStyle(
               color: Colors.white,
               fontSize: 14,
-              fontWeight: FontWeight.w300,
+              fontWeight: FontWeight.w400,
             ),
             labelMedium: TextStyle(
               color: Colors.white,
               fontSize: 13,
-              fontWeight: FontWeight.w300,
+              fontWeight: FontWeight.w400,
             ),
             labelSmall: TextStyle(
               color: Colors.white,
               fontSize: 12,
-              fontWeight: FontWeight.w300,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ),
       ),
-      buttonTheme: const ButtonThemeData(
-        buttonColor: Colors.white,
-        splashColor: Colors.transparent,
+      colorScheme: const ColorScheme.dark(
+        primary: Color(0xff122D46),
+        surface: Color(0xff122D46),
+        secondary: Colors.black,
+        background: Colors.black,
+        tertiary: Color(0xffFF8E00),
+        error: Color(0xffD03838),
       ),
       splashColor: Colors.transparent,
       useMaterial3: true,
@@ -89,7 +105,7 @@ class AppTheme {
         backgroundColor: AppCommonTheme.transparentColor,
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Color(0xff122D46),
+        backgroundColor: Color(0xff1D293E),
         unselectedLabelStyle: TextStyle(
           color: Colors.white,
           fontSize: 12,
@@ -109,7 +125,7 @@ class AppTheme {
         elevation: 0,
       ),
       navigationRailTheme: const NavigationRailThemeData(
-        backgroundColor: Color(0xff122D46),
+        backgroundColor: Color(0xff1D293E),
         indicatorColor: Color(0xff1E4E7B),
         unselectedLabelTextStyle: TextStyle(
           color: Colors.white,

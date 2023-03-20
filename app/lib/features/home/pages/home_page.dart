@@ -276,14 +276,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 BottomNavigationBarItem(
                                   icon: SvgPicture.asset(
                                     'assets/icon/acter.svg',
-                                    height: 28,
-                                    width: 28,
+                                    height: 24,
+                                    width: 24,
                                   ),
                                   activeIcon: CustomSelectedIcon(
                                     icon: SvgPicture.asset(
                                       'assets/icon/acter.svg',
-                                      height: 28,
-                                      width: 28,
+                                      height: 24,
+                                      width: 24,
                                     ),
                                   ),
                                   label: 'Space',
@@ -322,14 +322,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 BottomNavigationBarItem(
                                   icon: SvgPicture.asset(
                                     'assets/icon/acter.svg',
-                                    height: 28,
-                                    width: 28,
+                                    height: 24,
+                                    width: 24,
                                   ),
                                   activeIcon: CustomSelectedIcon(
                                     icon: SvgPicture.asset(
                                       'assets/icon/acter.svg',
-                                      height: 28,
-                                      width: 28,
+                                      height: 24,
+                                      width: 24,
                                     ),
                                   ),
                                   label: 'Space',
