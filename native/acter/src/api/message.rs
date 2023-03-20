@@ -58,7 +58,10 @@ use matrix_sdk::{
                     OriginalRoomHistoryVisibilityEvent, OriginalSyncRoomHistoryVisibilityEvent,
                 },
                 join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
-                member::{MembershipChange, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
+                member::{
+                    MembershipChange, MembershipState, OriginalRoomMemberEvent,
+                    OriginalSyncRoomMemberEvent,
+                },
                 message::{
                     MessageFormat, MessageType, OriginalRoomMessageEvent,
                     OriginalSyncRoomMessageEvent,
@@ -94,7 +97,7 @@ pub struct RoomEventItem {
     sender: String,
     origin_server_ts: u64,
     event_type: String,
-    msgtype: Option<String>,
+    sub_type: Option<String>,
     text_desc: Option<TextDesc>,
     image_desc: Option<ImageDesc>,
     video_desc: Option<VideoDesc>,
@@ -111,7 +114,7 @@ impl RoomEventItem {
         sender: String,
         origin_server_ts: u64,
         event_type: String,
-        msgtype: Option<String>,
+        sub_type: Option<String>,
         text_desc: Option<TextDesc>,
         image_desc: Option<ImageDesc>,
         video_desc: Option<VideoDesc>,
@@ -125,7 +128,7 @@ impl RoomEventItem {
             sender,
             origin_server_ts,
             event_type,
-            msgtype,
+            sub_type,
             text_desc,
             image_desc,
             video_desc,
@@ -152,8 +155,8 @@ impl RoomEventItem {
         self.event_type.clone()
     }
 
-    pub fn msgtype(&self) -> Option<String> {
-        self.msgtype.clone()
+    pub fn sub_type(&self) -> Option<String> {
+        self.sub_type.clone()
     }
 
     pub fn text_desc(&self) -> Option<TextDesc> {
@@ -1367,7 +1370,7 @@ impl RoomMessage {
 
     pub(crate) fn room_create_from_event(event: OriginalRoomCreateEvent, room: &Room) -> Self {
         let text_desc = TextDesc {
-            body: format!("{} created this room", event.content.creator),
+            body: "created this room".to_string(),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1396,7 +1399,7 @@ impl RoomMessage {
         room: &Room,
     ) -> Self {
         let text_desc = TextDesc {
-            body: format!("{} created this room", event.content.creator),
+            body: "created this room".to_string(),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1739,16 +1742,42 @@ impl RoomMessage {
     }
 
     pub(crate) fn room_member_from_event(event: OriginalRoomMemberEvent, room: &Room) -> Self {
-        let mut terms = vec![];
-        if let Some(displayname) = event.content.displayname {
-            terms.push(format!("({displayname})"));
-        }
-        terms.push(format!(
-            "changed its membership to {}",
-            event.content.membership,
-        ));
+        let (sub_type, fallback) = match event.content.membership {
+            MembershipState::Join => (Some("Joined".to_string()), "joined".to_string()),
+            MembershipState::Leave => (Some("Left".to_string()), "left".to_string()),
+            MembershipState::Ban => (Some("Banned".to_string()), "banned".to_string()),
+            MembershipState::Invite => (Some("Invited".to_string()), "invited".to_string()),
+            MembershipState::Knock => (Some("Knocked".to_string()), "knocked".to_string()),
+            _ => {
+                if let Some(new_name) = event.clone().content.displayname {
+                    let mut old_name = None;
+                    if let Some(content) = event.prev_content() {
+                        if let Some(ref name) = content.displayname {
+                            old_name = Some(name.clone());
+                        }
+                    }
+                    (
+                        Some("ProfileChanged".to_string()),
+                        format!("changed display name from {:?} to {}", old_name, new_name),
+                    )
+                } else if let Some(new_url) = event.clone().content.avatar_url {
+                    let mut old_url = None;
+                    if let Some(content) = event.prev_content() {
+                        if let Some(ref url) = content.avatar_url {
+                            old_url = Some(url.clone());
+                        }
+                    }
+                    (
+                        Some("ProfileChanged".to_string()),
+                        format!("changed avatar url from {:?} to {:?}", old_url, new_url),
+                    )
+                } else {
+                    (None, "unknown error".to_string())
+                }
+            }
+        };
         let text_desc = TextDesc {
-            body: terms.join(" "),
+            body: fallback,
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1759,7 +1788,7 @@ impl RoomMessage {
                 event.sender.to_string(),
                 event.origin_server_ts.get().into(),
                 "m.room.member".to_string(),
-                None,
+                sub_type,
                 Some(text_desc),
                 None,
                 None,
@@ -1776,16 +1805,42 @@ impl RoomMessage {
         event: OriginalSyncRoomMemberEvent,
         room: &Room,
     ) -> Self {
-        let mut terms = vec![];
-        if let Some(displayname) = event.content.displayname {
-            terms.push(format!("({displayname})"));
-        }
-        terms.push(format!(
-            "changed its membership to {}",
-            event.content.membership,
-        ));
+        let (sub_type, fallback) = match event.content.membership {
+            MembershipState::Join => (Some("Joined".to_string()), "joined".to_string()),
+            MembershipState::Leave => (Some("Left".to_string()), "left".to_string()),
+            MembershipState::Ban => (Some("Banned".to_string()), "banned".to_string()),
+            MembershipState::Invite => (Some("Invited".to_string()), "invited".to_string()),
+            MembershipState::Knock => (Some("Knocked".to_string()), "knocked".to_string()),
+            _ => {
+                if let Some(new_name) = event.clone().content.displayname {
+                    let mut old_name = None;
+                    if let Some(content) = event.prev_content() {
+                        if let Some(ref name) = content.displayname {
+                            old_name = Some(name.clone());
+                        }
+                    }
+                    (
+                        Some("ProfileChanged".to_string()),
+                        format!("changed display name from {:?} to {}", old_name, new_name),
+                    )
+                } else if let Some(new_url) = event.clone().content.avatar_url {
+                    let mut old_url = None;
+                    if let Some(content) = event.prev_content() {
+                        if let Some(ref url) = content.avatar_url {
+                            old_url = Some(url.clone());
+                        }
+                    }
+                    (
+                        Some("ProfileChanged".to_string()),
+                        format!("changed avatar url from {:?} to {:?}", old_url, new_url),
+                    )
+                } else {
+                    (None, "unknown error".to_string())
+                }
+            }
+        };
         let text_desc = TextDesc {
-            body: terms.join(" "),
+            body: fallback,
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1796,7 +1851,7 @@ impl RoomMessage {
                 event.sender.to_string(),
                 event.origin_server_ts.get().into(),
                 "m.room.member".to_string(),
-                None,
+                sub_type,
                 Some(text_desc),
                 None,
                 None,
@@ -1838,9 +1893,9 @@ impl RoomMessage {
             body: fallback,
             formatted_body: None,
         };
-        let mut image_desc: Option<ImageDesc> = None;
-        let mut video_desc: Option<VideoDesc> = None;
-        let mut file_desc: Option<FileDesc> = None;
+        let mut image_desc = None;
+        let mut video_desc = None;
+        let mut file_desc = None;
         match event.content.msgtype.clone() {
             MessageType::Text(content) => {
                 if let Some(formatted) = &content.formatted {
@@ -1851,35 +1906,37 @@ impl RoomMessage {
             }
             MessageType::Emote(content) => {}
             MessageType::Image(content) => {
-                if let Some(info) = content.info.as_ref() {
-                    image_desc = Some(ImageDesc::new(content.body.clone(), *info.clone()));
-                }
+                image_desc = content.info.as_ref().map(|info| ImageDesc {
+                    name: content.body.clone(),
+                    mimetype: info.mimetype.clone(),
+                    size: info.size.map(u64::from),
+                    width: info.width.map(u64::from),
+                    height: info.height.map(u64::from),
+                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                    thumbnail_source: info.thumbnail_source.clone(),
+                });
             }
             MessageType::Video(content) => {
-                if let Some(info) = content.info.as_ref() {
-                    video_desc = Some(VideoDesc {
-                        name: content.body.clone(),
-                        mimetype: info.mimetype.clone(),
-                        size: info.size.map(u64::from),
-                        width: info.width.map(u64::from),
-                        height: info.height.map(u64::from),
-                        blurhash: info.blurhash.clone(),
-                        duration: info.duration,
-                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                        thumbnail_source: info.thumbnail_source.clone(),
-                    })
-                }
+                video_desc = content.info.as_ref().map(|info| VideoDesc {
+                    name: content.body.clone(),
+                    mimetype: info.mimetype.clone(),
+                    size: info.size.map(u64::from),
+                    width: info.width.map(u64::from),
+                    height: info.height.map(u64::from),
+                    blurhash: info.blurhash.clone(),
+                    duration: info.duration,
+                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                    thumbnail_source: info.thumbnail_source.clone(),
+                });
             }
             MessageType::File(content) => {
-                if let Some(info) = content.info.as_ref() {
-                    file_desc = Some(FileDesc {
-                        name: content.body.clone(),
-                        mimetype: info.mimetype.clone(),
-                        size: info.size.map(u64::from),
-                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                        thumbnail_source: info.thumbnail_source.clone(),
-                    });
-                }
+                file_desc = content.info.as_ref().map(|info| FileDesc {
+                    name: content.body.clone(),
+                    mimetype: info.mimetype.clone(),
+                    size: info.size.map(u64::from),
+                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                    thumbnail_source: info.thumbnail_source.clone(),
+                });
             }
             _ => {}
         }
@@ -1933,9 +1990,9 @@ impl RoomMessage {
             body: fallback,
             formatted_body: None,
         };
-        let mut image_desc: Option<ImageDesc> = None;
-        let mut video_desc: Option<VideoDesc> = None;
-        let mut file_desc: Option<FileDesc> = None;
+        let mut image_desc = None;
+        let mut video_desc = None;
+        let mut file_desc = None;
         match event.content.msgtype.clone() {
             MessageType::Text(content) => {
                 if let Some(formatted) = &content.formatted {
@@ -1946,43 +2003,37 @@ impl RoomMessage {
             }
             MessageType::Emote(content) => {}
             MessageType::Image(content) => {
-                if let Some(info) = content.info.as_ref() {
-                    image_desc = Some(ImageDesc {
-                        name: content.body.clone(),
-                        mimetype: info.mimetype.clone(),
-                        size: info.size.map(u64::from),
-                        width: info.width.map(u64::from),
-                        height: info.height.map(u64::from),
-                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                        thumbnail_source: info.thumbnail_source.clone(),
-                    });
-                }
+                image_desc = content.info.as_ref().map(|info| ImageDesc {
+                    name: content.body.clone(),
+                    mimetype: info.mimetype.clone(),
+                    size: info.size.map(u64::from),
+                    width: info.width.map(u64::from),
+                    height: info.height.map(u64::from),
+                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                    thumbnail_source: info.thumbnail_source.clone(),
+                });
             }
             MessageType::Video(content) => {
-                if let Some(info) = content.info.as_ref() {
-                    video_desc = Some(VideoDesc {
-                        name: content.body.clone(),
-                        mimetype: info.mimetype.clone(),
-                        size: info.size.map(u64::from),
-                        width: info.width.map(u64::from),
-                        height: info.height.map(u64::from),
-                        blurhash: info.blurhash.clone(),
-                        duration: info.duration,
-                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                        thumbnail_source: info.thumbnail_source.clone(),
-                    });
-                }
+                video_desc = content.info.as_ref().map(|info| VideoDesc {
+                    name: content.body.clone(),
+                    mimetype: info.mimetype.clone(),
+                    size: info.size.map(u64::from),
+                    width: info.width.map(u64::from),
+                    height: info.height.map(u64::from),
+                    blurhash: info.blurhash.clone(),
+                    duration: info.duration,
+                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                    thumbnail_source: info.thumbnail_source.clone(),
+                });
             }
             MessageType::File(content) => {
-                if let Some(info) = content.info.as_ref() {
-                    file_desc = Some(FileDesc {
-                        name: content.body.clone(),
-                        mimetype: info.mimetype.clone(),
-                        size: info.size.map(u64::from),
-                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                        thumbnail_source: info.thumbnail_source.clone(),
-                    });
-                }
+                file_desc = content.info.as_ref().map(|info| FileDesc {
+                    name: content.body.clone(),
+                    mimetype: info.mimetype.clone(),
+                    size: info.size.map(u64::from),
+                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                    thumbnail_source: info.thumbnail_source.clone(),
+                });
             }
             _ => {}
         }
@@ -2720,8 +2771,8 @@ impl RoomMessage {
                         sent_by_me = true;
                     }
                 }
-                let msgtype = msg.msgtype();
-                let fallback = match msgtype {
+                let sub_type = msg.msgtype();
+                let fallback = match sub_type {
                     MessageType::Audio(content) => "sent an audio.".to_string(),
                     MessageType::Emote(content) => content.body.clone(),
                     MessageType::File(content) => "sent a file.".to_string(),
@@ -2737,11 +2788,11 @@ impl RoomMessage {
                     body: fallback,
                     formatted_body: None,
                 };
-                let mut image_desc: Option<ImageDesc> = None;
-                let mut video_desc: Option<VideoDesc> = None;
-                let mut file_desc: Option<FileDesc> = None;
+                let mut image_desc = None;
+                let mut video_desc = None;
+                let mut file_desc = None;
                 let mut is_editable = false;
-                match msgtype {
+                match sub_type {
                     MessageType::Text(content) => {
                         if let Some(formatted) = &content.formatted {
                             if formatted.format == MessageFormat::Html {
@@ -2758,43 +2809,37 @@ impl RoomMessage {
                         }
                     }
                     MessageType::Image(content) => {
-                        if let Some(info) = content.info.as_ref() {
-                            image_desc = Some(ImageDesc {
-                                name: content.body.clone(),
-                                mimetype: info.mimetype.clone(),
-                                size: info.size.map(u64::from),
-                                width: info.width.map(u64::from),
-                                height: info.height.map(u64::from),
-                                thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                                thumbnail_source: info.thumbnail_source.clone(),
-                            });
-                        }
+                        image_desc = content.info.as_ref().map(|info| ImageDesc {
+                            name: content.body.clone(),
+                            mimetype: info.mimetype.clone(),
+                            size: info.size.map(u64::from),
+                            width: info.width.map(u64::from),
+                            height: info.height.map(u64::from),
+                            thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                            thumbnail_source: info.thumbnail_source.clone(),
+                        });
                     }
                     MessageType::Video(content) => {
-                        if let Some(info) = content.info.as_ref() {
-                            video_desc = Some(VideoDesc {
-                                name: content.body.clone(),
-                                mimetype: info.mimetype.clone(),
-                                size: info.size.map(u64::from),
-                                width: info.width.map(u64::from),
-                                height: info.height.map(u64::from),
-                                blurhash: info.blurhash.clone(),
-                                duration: info.duration,
-                                thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                                thumbnail_source: info.thumbnail_source.clone(),
-                            });
-                        }
+                        video_desc = content.info.as_ref().map(|info| VideoDesc {
+                            name: content.body.clone(),
+                            mimetype: info.mimetype.clone(),
+                            size: info.size.map(u64::from),
+                            width: info.width.map(u64::from),
+                            height: info.height.map(u64::from),
+                            blurhash: info.blurhash.clone(),
+                            duration: info.duration,
+                            thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                            thumbnail_source: info.thumbnail_source.clone(),
+                        });
                     }
                     MessageType::File(content) => {
-                        if let Some(info) = content.info.as_ref() {
-                            file_desc = Some(FileDesc {
-                                name: content.body.clone(),
-                                mimetype: info.mimetype.clone(),
-                                size: info.size.map(u64::from),
-                                thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                                thumbnail_source: info.thumbnail_source.clone(),
-                            });
-                        }
+                        file_desc = content.info.as_ref().map(|info| FileDesc {
+                            name: content.body.clone(),
+                            mimetype: info.mimetype.clone(),
+                            size: info.size.map(u64::from),
+                            thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                            thumbnail_source: info.thumbnail_source.clone(),
+                        });
                     }
                     _ => {}
                 }
@@ -2807,7 +2852,7 @@ impl RoomMessage {
                     sender,
                     origin_server_ts,
                     "m.room.message".to_string(),
-                    Some(msgtype.msgtype().to_string()),
+                    Some(sub_type.msgtype().to_string()),
                     Some(text_desc),
                     image_desc,
                     video_desc,
@@ -2879,63 +2924,87 @@ impl RoomMessage {
             }
             TimelineItemContent::RoomMember(m) => {
                 info!("Edit event applies to a state event, discarding");
-                let fallback = match m.membership_change() {
-                    Some(MembershipChange::None) => {
-                        format!("{} not changed", m.user_id())
-                    }
-                    Some(MembershipChange::Error) => {
-                        format!("{} membership error", m.user_id())
-                    }
+                let (sub_type, fallback) = match m.membership_change() {
+                    Some(MembershipChange::None) => (
+                        Some("None".to_string()),
+                        "not changed membership".to_string(),
+                    ),
+                    Some(MembershipChange::Error) => (
+                        Some("Error".to_string()),
+                        "error in membership change".to_string(),
+                    ),
                     Some(MembershipChange::Joined) => {
-                        format!("{} joined", m.user_id())
+                        (Some("Joined".to_string()), "joined".to_string())
                     }
-                    Some(MembershipChange::Left) => {
-                        format!("{} left", m.user_id())
-                    }
+                    Some(MembershipChange::Left) => (Some("Left".to_string()), "left".to_string()),
                     Some(MembershipChange::Banned) => {
-                        format!("{} banned", m.user_id())
+                        (Some("Banned".to_string()), "banned".to_string())
                     }
                     Some(MembershipChange::Unbanned) => {
-                        format!("{} unbanned", m.user_id())
+                        (Some("Unbanned".to_string()), "unbanned".to_string())
                     }
                     Some(MembershipChange::Kicked) => {
-                        format!("{} kicked", m.user_id())
+                        (Some("Kicked".to_string()), "kicked".to_string())
                     }
                     Some(MembershipChange::Invited) => {
-                        format!("{} invited", m.user_id())
+                        (Some("Invited".to_string()), "invited".to_string())
                     }
-                    Some(MembershipChange::KickedAndBanned) => {
-                        format!("{} kicked and banned", m.user_id())
-                    }
-                    Some(MembershipChange::InvitationAccepted) => {
-                        format!("{} accepted invitation", m.user_id())
-                    }
-                    Some(MembershipChange::InvitationRejected) => {
-                        format!("{} rejected invitation", m.user_id())
-                    }
-                    Some(MembershipChange::InvitationRevoked) => {
-                        format!("{} revoked invitation", m.user_id())
-                    }
+                    Some(MembershipChange::KickedAndBanned) => (
+                        Some("KickedAndBanned".to_string()),
+                        "kicked and banned".to_string(),
+                    ),
+                    Some(MembershipChange::InvitationAccepted) => (
+                        Some("InvitationAccepted".to_string()),
+                        "accepted invitation".to_string(),
+                    ),
+                    Some(MembershipChange::InvitationRejected) => (
+                        Some("InvitationRejected".to_string()),
+                        "rejected invitation".to_string(),
+                    ),
+                    Some(MembershipChange::InvitationRevoked) => (
+                        Some("InvitationRevoked".to_string()),
+                        "revoked invitation".to_string(),
+                    ),
                     Some(MembershipChange::Knocked) => {
-                        format!("{} knocked", m.user_id())
+                        (Some("Knocked".to_string()), "knocked".to_string())
                     }
-                    Some(MembershipChange::KnockAccepted) => {
-                        format!("{} accepted knock", m.user_id())
-                    }
-                    Some(MembershipChange::KnockRetracted) => {
-                        format!("{} retracted knock", m.user_id())
-                    }
+                    Some(MembershipChange::KnockAccepted) => (
+                        Some("KnockAccepted".to_string()),
+                        "accepted knock".to_string(),
+                    ),
+                    Some(MembershipChange::KnockRetracted) => (
+                        Some("KnockRetracted".to_string()),
+                        "retracted knock".to_string(),
+                    ),
                     Some(MembershipChange::KnockDenied) => {
-                        format!("{} denied knock", m.user_id())
+                        (Some("KnockDenied".to_string()), "denied knock".to_string())
                     }
                     Some(MembershipChange::ProfileChanged {
                         displayname_change,
                         avatar_url_change,
                     }) => {
-                        format!("{} changed profile", m.user_id())
+                        let fallback = if let Some(change) = displayname_change {
+                            format!(
+                                "changed display name from {:?} to {:?}",
+                                change.old.clone(),
+                                change.new.clone(),
+                            )
+                        } else if let Some(change) = avatar_url_change {
+                            format!(
+                                "changed avatar url from {:?} to {:?}",
+                                change.old.clone(),
+                                change.new.clone(),
+                            )
+                        } else {
+                            "error in profile change".to_string()
+                        };
+                        (Some("ProfileChanged".to_string()), fallback)
                     }
-                    Some(MembershipChange::NotImplemented) => "not implemented".to_string(),
-                    _ => "unknown error".to_string(),
+                    Some(MembershipChange::NotImplemented) => (
+                        Some("NotImplemented".to_string()),
+                        "not implemented change".to_string(),
+                    ),
+                    _ => (None, "unknown error".to_string()),
                 };
                 let text_desc = TextDesc {
                     body: fallback,
@@ -2946,7 +3015,7 @@ impl RoomMessage {
                     sender,
                     origin_server_ts,
                     "m.room.member".to_string(),
-                    None,
+                    sub_type,
                     Some(text_desc),
                     None,
                     None,

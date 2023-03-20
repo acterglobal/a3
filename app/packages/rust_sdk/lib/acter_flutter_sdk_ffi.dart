@@ -6951,14 +6951,14 @@ class Api {
       _RoomEventItemEventTypeReturn Function(
     int,
   )>();
-  late final _roomEventItemMsgtypePtr = _lookup<
+  late final _roomEventItemSubTypePtr = _lookup<
       ffi.NativeFunction<
-          _RoomEventItemMsgtypeReturn Function(
+          _RoomEventItemSubTypeReturn Function(
     ffi.Int64,
-  )>>("__RoomEventItem_msgtype");
+  )>>("__RoomEventItem_sub_type");
 
-  late final _roomEventItemMsgtype = _roomEventItemMsgtypePtr.asFunction<
-      _RoomEventItemMsgtypeReturn Function(
+  late final _roomEventItemSubType = _roomEventItemSubTypePtr.asFunction<
+      _RoomEventItemSubTypeReturn Function(
     int,
   )>();
   late final _roomEventItemTextDescPtr = _lookup<
@@ -15063,10 +15063,10 @@ class RoomEventItem {
   }
 
   /// the type of massage, like audio, text, image, file, etc
-  String? msgtype() {
+  String? subType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemMsgtype(
+    final tmp1 = _api._roomEventItemSubType(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -22989,7 +22989,7 @@ class _RoomEventItemEventTypeReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomEventItemMsgtypeReturn extends ffi.Struct {
+class _RoomEventItemSubTypeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
