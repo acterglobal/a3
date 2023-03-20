@@ -107,7 +107,7 @@ class ChatRoomController extends GetxController {
           if (isLoading.isFalse) {
             update(['Chat']);
           }
-          if (eventItem.msgtype() == 'm.image') {
+          if (eventItem.subType() == 'm.image') {
             _fetchMessageContent(m.id);
           }
         }
@@ -182,7 +182,7 @@ class ChatRoomController extends GetxController {
               if (isLoading.isFalse) {
                 update(['Chat']);
               }
-              if (eventItem.msgtype() == 'm.image') {
+              if (eventItem.subType() == 'm.image') {
                 _fetchMessageContent(m.id);
               }
             }
@@ -210,7 +210,7 @@ class ChatRoomController extends GetxController {
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (eventItem.msgtype() == 'm.image') {
+            if (eventItem.subType() == 'm.image') {
               _fetchMessageContent(m.id);
             }
           }
@@ -237,7 +237,7 @@ class ChatRoomController extends GetxController {
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (eventItem.msgtype() == 'm.image') {
+            if (eventItem.subType() == 'm.image') {
               _fetchMessageContent(m.id);
             }
           }
@@ -265,7 +265,7 @@ class ChatRoomController extends GetxController {
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (eventItem.msgtype() == 'm.image') {
+            if (eventItem.subType() == 'm.image') {
               _fetchMessageContent(m.id);
             }
           }
@@ -286,7 +286,7 @@ class ChatRoomController extends GetxController {
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (eventItem.msgtype() == 'm.image') {
+            if (eventItem.subType() == 'm.image') {
               _fetchMessageContent(m.id);
             }
           }
@@ -334,7 +334,7 @@ class ChatRoomController extends GetxController {
               if (isLoading.isFalse) {
                 update(['Chat']);
               }
-              if (eventItem.msgtype() == 'm.image') {
+              if (eventItem.subType() == 'm.image') {
                 _fetchMessageContent(m.id);
               }
             }
@@ -788,6 +788,7 @@ class ChatRoomController extends GetxController {
             metadata: {
               'itemType': 'event',
               'eventType': eventType,
+              'subType': eventItem.subType(),
               'messageLength': body.length,
               'body': formattedBody ?? body,
             },
@@ -795,8 +796,8 @@ class ChatRoomController extends GetxController {
         }
         break;
       case 'm.room.message':
-        String? msgtype = eventItem.msgtype();
-        switch (msgtype) {
+        String? subType = eventItem.subType();
+        switch (subType) {
           case 'm.audio':
             break;
           case 'm.emote':
@@ -860,7 +861,7 @@ class ChatRoomController extends GetxController {
                 text: formattedBody ?? body,
                 metadata: {
                   'itemType': 'event',
-                  'msgType': eventItem.msgtype(),
+                  'msgType': eventItem.subType(),
                   'eventType': eventType,
                   'messageLength': body.length,
                 },
@@ -880,7 +881,7 @@ class ChatRoomController extends GetxController {
                 metadata: {
                   'itemType': 'event',
                   'eventType': eventType,
-                  'msgType': eventItem.msgtype(),
+                  'msgType': eventItem.subType(),
                   'messageLength': body.length,
                 },
               );
@@ -993,7 +994,7 @@ class ChatRoomController extends GetxController {
       // reply is allowed for only EventItem not VirtualItem
       // user should be able to get original event as RoomMessage
       RoomEventItem orgEventItem = roomMsg.eventItem()!;
-      String? orgMsgType = orgEventItem.msgtype();
+      String? orgMsgType = orgEventItem.subType();
       Map<String, dynamic> repliedToContent = {};
       types.Message? repliedTo;
       if (orgMsgType == 'm.text') {

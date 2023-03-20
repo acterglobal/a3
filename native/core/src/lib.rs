@@ -20,8 +20,3 @@ pub mod spaces;
 #[cfg(feature = "templates")]
 pub mod templates;
 pub mod util;
-
-#[cfg(feature = "with-mocks")]
-pub mod mocks {
-    pub use super::models::mocks::*;
-}

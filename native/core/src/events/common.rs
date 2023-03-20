@@ -1,50 +1,20 @@
 pub use chrono_tz::Tz as TimeZone;
-pub use csscolorparser::Color;
 pub use matrix_sdk::ruma::events::room::ImageInfo;
 
 use chrono::{DateTime, Utc};
 use matrix_sdk::ruma::OwnedEventId;
 use serde::{Deserialize, Serialize};
 
+mod labels;
+mod object_reference;
+mod rendering;
+
+pub use labels::Labels;
+pub use object_reference::{CalendarEventAction, ObjRef, RefDetails, TaskAction, TaskListAction};
+pub use rendering::{BrandIcon, Color, Colorize, Icon, Position};
+
 /// Default UTC Datetime Object
 pub type UtcDateTime = DateTime<Utc>;
-
-/// Customize the color scheme
-#[derive(Clone, Debug, Deserialize, Serialize)]
-// #[ruma_event(type = "global.acter.dev.colors")]
-pub struct Colorize {
-    /// The foreground color to be used, as HEX
-    pub color: Option<Color>,
-    /// The background color to be used, as HEX
-    pub background: Option<Color>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(rename_all = "lowercase")]
-pub enum BrandIcon {
-    Matrix,
-    Twitter,
-    Facebook,
-    Email,
-    Youtube,
-    Whatsapp,
-    Reddit,
-    Skype,
-    Zoom,
-    Jitsi,
-    Telegram,
-    GoogleDrive,
-    // FIXME: support for others?
-}
-
-/// Customize the color scheme
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "type")]
-pub enum Icon {
-    Emoji { key: String },
-    BrandIcon { icon: BrandIcon },
-    Image(ImageInfo),
-}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "rel_type", rename = "m.thread")]
@@ -62,7 +32,7 @@ impl From<OwnedEventId> for InThread {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "rel_type", rename = "m.reference")]
 pub struct Reference {
-    /// The event this event archives.
+    /// The event this event references.
     pub event_id: OwnedEventId,
 }
 
@@ -75,7 +45,7 @@ impl From<OwnedEventId> for Reference {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "rel_type", rename = "m.references")]
 pub struct References {
-    /// The event this event archives.
+    /// The event this event references.
     pub event_ids: Vec<OwnedEventId>,
 }
 

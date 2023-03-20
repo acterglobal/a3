@@ -9,10 +9,9 @@ repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
 [features]
-default = ["with-mocks", "dart"]
-with-mocks = ["acter-core/with-mocks"]
+default = ["dart"]
 testing = ["dep:matrix-sdk-base"]
-dart = ["with-mocks"]
+dart = []
 
 [build-dependencies]
 ffi-gen = { git = "https://github.com/acterglobal/ffi-gen" }

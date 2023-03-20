@@ -28,7 +28,7 @@ type = "task"
 title = "Scroll through the news"
 assignees = ["{{ main.user_id }}"]
 "m.relates_to" = { event_id = "{{ start_list.id }}" }
-utc_due = "{{ now().as_rfc3339 }}"
+utc_due = "{{ future(mins=5).as_rfc3339 }}"
 ```
 
 ### Template Execution Context
@@ -41,11 +41,11 @@ As all acter events happen by a user, within a space, these must be supplied for
 
 ## Template Format Reference
 
-Currently only `version = "0.1.0"` is supported. This is a first temporary version, used for tests and in the internal formats. Note that `versions` follow SemVer and everything below `1.0` is considered experimental and its support might be dropped at any time.
+Currently only `version = "0.1.1"` is supported. This is a first temporary version, used for tests and in the internal formats. Note that `versions` follow SemVer and everything below `1.0` is considered experimental and its support might be dropped at any time.
 
 ### version
 
-`String`. Must be `version = "0.1.0"`
+`String`. Must be `version = "0.1.1"`
 
 ### name
 
@@ -71,6 +71,10 @@ Currently only `version = "0.1.0"` is supported. This is a first temporary versi
 #### `object[type="task"]`
 
 #### `object[type="pin"]`
+
+#### `object[type="news-entry"]`
+
+#### `object[type="calendar-events"]`
 
 ## Functions & Filters
 

@@ -15,7 +15,7 @@ import 'package:get/get.dart';
 
 class NewsSideBar extends StatefulWidget {
   final ffi.Client client;
-  final ffi.News news;
+  final ffi.NewsEntry news;
   final int index;
 
   const NewsSideBar({
@@ -35,11 +35,11 @@ class _NewsSideBarState extends State<NewsSideBar> {
   @override
   Widget build(BuildContext context) {
     var bgColor = convertColor(
-      widget.news.bgColor(),
+      widget.news.colors()?.background(),
       AppCommonTheme.backgroundColor,
     );
     var fgColor = convertColor(
-      widget.news.fgColor(),
+      widget.news.colors()?.color(),
       AppCommonTheme.primaryColor,
     );
     TextStyle style = Theme.of(context).textTheme.bodyLarge!.copyWith(

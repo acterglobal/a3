@@ -1,3 +1,14 @@
+use crate::{
+    client::CoreClient,
+    events::{
+        calendar::CalendarEventEventContent,
+        news::NewsEntryEventContent,
+        pins::PinEventContent,
+        tasks::{TaskEventContent, TaskListEventContent},
+    },
+    spaces::CreateSpaceSettings,
+};
+
 use async_stream::try_stream;
 use core::pin::Pin;
 use futures::{
@@ -21,15 +32,6 @@ pub mod functions;
 pub mod values;
 
 use values::{ObjRef, UserValue};
-
-use crate::{
-    client::CoreClient,
-    events::{
-        pins::PinEventContent,
-        tasks::{TaskEventContent, TaskListEventContent},
-    },
-    spaces::CreateSpaceSettings,
-};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -138,6 +140,14 @@ pub enum ObjectInner {
         #[serde(flatten)]
         fields: PinEventContent,
     },
+    CalendarEvent {
+        #[serde(flatten)]
+        fields: CalendarEventEventContent,
+    },
+    NewsEntry {
+        #[serde(flatten)]
+        fields: NewsEntryEventContent,
+    },
 }
 
 #[derive(Deserialize)]
@@ -160,7 +170,7 @@ pub struct TemplateV01 {
 #[derive(Deserialize)]
 #[serde(tag = "version")]
 pub enum TemplatesRoot {
-    #[serde(rename = "0.1.0", alias = "0.1")]
+    #[serde(rename = "0.1.1", alias = "0.1.0", alias = "0.1")]
     V01(TemplateV01),
 }
 
@@ -403,8 +413,8 @@ impl Engine {
                                 Ok(())
                             })
                     }).await?;
-                    continue
 
+                    continue
                 };
 
                 let room_name = match room {
@@ -435,7 +445,6 @@ impl Engine {
                         context.insert(key,
                             Value::from_struct_object(ObjRef::new(id.to_string(), "task-list".to_owned())));
                         yield
-
                     }
                     ObjectInner::Task{ fields } => {
                         let id = room
@@ -446,7 +455,16 @@ impl Engine {
                         context.insert(key,
                             Value::from_struct_object(ObjRef::new(id.to_string(), "task".to_owned())));
                         yield
-
+                    }
+                    ObjectInner::CalendarEvent{ fields } => {
+                        let id = room
+                            .send(fields, None)
+                            .await
+                            .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
+                            .event_id;
+                        context.insert(key,
+                            Value::from_struct_object(ObjRef::new(id.to_string(), "calendar-event".to_owned())));
+                        yield
                     }
                     ObjectInner::Pin{ fields } => {
                         let id = room
@@ -457,15 +475,22 @@ impl Engine {
                         context.insert(key,
                             Value::from_struct_object(ObjRef::new(id.to_string(), "pin".to_owned())));
                         yield
-
+                    }
+                    ObjectInner::NewsEntry{ fields } => {
+                        let id = room
+                            .send(fields, None)
+                            .await
+                            .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
+                            .event_id;
+                        context.insert(key,
+                            Value::from_struct_object(ObjRef::new(id.to_string(), "news-entry".to_owned())));
+                        yield
                     }
                     ObjectInner::Space { .. } => {
                         unreachable!("we already handled that above");
                     }
-
                 }
             }
-
         };
 
         Ok(ExecutionStream::new(
@@ -490,7 +515,7 @@ mod tests {
     #[test]
     fn test_parsing_v1() -> anyhow::Result<()> {
         let tmpl = r#"
-version = "0.1"
+version = "0.1.1"
 name = "Example Template"
 
 [inputs]
@@ -517,7 +542,12 @@ type = "pin"
 title = "Acter Source Code"
 url = "https://github.com/acterglobal/a3"
 
-        "#;
+[objects.example-news]
+type = "news-entry"
+slides = [
+{ body = "This is the news section", info = { size = 3264047, mimetype = "image/jpeg", thumbnail_info = { w = 400, h = 600, mimetype = "image/jpeg", size = 130511   }, w = 3840, h = 5760, "xyz.amorgan.blurhash" = "TQF=,g?uIo},={X5$c#+V@t2sRjF", thumbnail_url = "mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD" }, msgtype = "m.image", url = "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG" }
+]
+       "#;
 
         let _engine = Engine::with_template(tmpl)?;
 
