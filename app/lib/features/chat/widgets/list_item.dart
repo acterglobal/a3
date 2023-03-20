@@ -196,8 +196,8 @@ class _SubtitleWidget extends StatelessWidget {
       case 'm.key.verification.ready':
       case 'm.key.verification.start':
       case 'm.room.message':
-        String? msgtype = eventItem.msgtype();
-        switch (msgtype) {
+        String? subType = eventItem.subType();
+        switch (subType) {
           case 'm.audio':
           case 'm.file':
           case 'm.image':

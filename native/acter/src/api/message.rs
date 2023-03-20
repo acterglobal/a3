@@ -94,7 +94,7 @@ pub struct RoomEventItem {
     sender: String,
     origin_server_ts: u64,
     event_type: String,
-    msgtype: Option<String>,
+    sub_type: Option<String>,
     text_desc: Option<TextDesc>,
     image_desc: Option<ImageDesc>,
     video_desc: Option<VideoDesc>,
@@ -111,7 +111,7 @@ impl RoomEventItem {
         sender: String,
         origin_server_ts: u64,
         event_type: String,
-        msgtype: Option<String>,
+        sub_type: Option<String>,
         text_desc: Option<TextDesc>,
         image_desc: Option<ImageDesc>,
         video_desc: Option<VideoDesc>,
@@ -125,7 +125,7 @@ impl RoomEventItem {
             sender,
             origin_server_ts,
             event_type,
-            msgtype,
+            sub_type,
             text_desc,
             image_desc,
             video_desc,
@@ -152,8 +152,8 @@ impl RoomEventItem {
         self.event_type.clone()
     }
 
-    pub fn msgtype(&self) -> Option<String> {
-        self.msgtype.clone()
+    pub fn sub_type(&self) -> Option<String> {
+        self.sub_type.clone()
     }
 
     pub fn text_desc(&self) -> Option<TextDesc> {
@@ -2728,8 +2728,8 @@ impl RoomMessage {
                         sent_by_me = true;
                     }
                 }
-                let msgtype = msg.msgtype();
-                let fallback = match msgtype {
+                let sub_type = msg.msgtype();
+                let fallback = match sub_type {
                     MessageType::Audio(content) => "sent an audio.".to_string(),
                     MessageType::Emote(content) => content.body.clone(),
                     MessageType::File(content) => "sent a file.".to_string(),
@@ -2749,7 +2749,7 @@ impl RoomMessage {
                 let mut video_desc: Option<VideoDesc> = None;
                 let mut file_desc: Option<FileDesc> = None;
                 let mut is_editable = false;
-                match msgtype {
+                match sub_type {
                     MessageType::Text(content) => {
                         if let Some(formatted) = &content.formatted {
                             if formatted.format == MessageFormat::Html {
@@ -2815,7 +2815,7 @@ impl RoomMessage {
                     sender,
                     origin_server_ts,
                     "m.room.message".to_string(),
-                    Some(msgtype.msgtype().to_string()),
+                    Some(sub_type.msgtype().to_string()),
                     Some(text_desc),
                     image_desc,
                     video_desc,
