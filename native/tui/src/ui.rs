@@ -646,15 +646,14 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
         block = block.border_style(Style::default().fg(PRIMARY));
     }
 
-    let mut logger = TuiLoggerWidget::default()
+    let logger = TuiLoggerWidget::default()
         .style_error(Style::default().fg(Color::Red))
         .style_debug(Style::default().fg(Color::Green))
         .style_warn(Style::default().fg(Color::Yellow))
         .style_trace(Style::default().fg(Color::Gray))
         .style_info(Style::default().fg(Color::Blue))
-        .block(block);
-
-    logger.state(&app.log_state);
+        .block(block)
+        .state(&app.log_state);
 
     f.render_widget(tabs, chunks[0]);
     f.render_widget(status, chunks[2]);

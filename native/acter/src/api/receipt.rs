@@ -5,6 +5,7 @@ use futures::{
 use log::{info, warn};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
+    locks::Mutex,
     room::Room as MatrixRoom,
     ruma::{
         events::receipt::{ReceiptType, SyncReceiptEvent},
@@ -12,7 +13,6 @@ use matrix_sdk::{
     },
     Client as MatrixClient,
 };
-use parking_lot::Mutex;
 use std::sync::Arc;
 
 use super::{conversation::Conversation, group::Group};
@@ -155,7 +155,10 @@ impl Conversation {
     }
 
     pub fn receipt_event_rx(&self) -> Option<Receiver<ReceiptEvent>> {
-        self.receipt_controller.event_rx.lock().take()
+        match self.receipt_controller.event_rx.try_lock() {
+            Ok(mut rx) => rx.take(),
+            Err(e) => None,
+        }
     }
 }
 
@@ -171,6 +174,9 @@ impl Group {
     }
 
     pub fn receipt_event_rx(&self) -> Option<Receiver<ReceiptEvent>> {
-        self.receipt_controller.event_rx.lock().take()
+        match self.receipt_controller.event_rx.try_lock() {
+            Ok(mut r) => r.take(),
+            Err(e) => None,
+        }
     }
 }

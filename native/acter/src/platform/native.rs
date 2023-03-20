@@ -1,4 +1,5 @@
 use anyhow::{bail, Result};
+use chrono::Local;
 use lazy_static::lazy_static;
 use log::{LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
@@ -35,7 +36,7 @@ pub fn init_logging(
     let mut builder = fern::Dispatch::new().format(|out, message, record| {
         out.finish(format_args!(
             "{}[{}][{}] {}",
-            chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
+            Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
             record.target(),
             record.level(),
             message

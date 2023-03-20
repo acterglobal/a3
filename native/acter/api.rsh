@@ -379,23 +379,17 @@ object ReactionDesc {
 }
 
 object TimelineDiff {
-    /// Replace/InsertAt/UpdateAt/Push/RemoveAt/Move/Pop/Clear
+    /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
     fn action() -> string;
 
-    /// for Replace
+    /// for Append/Reset
     fn values() -> Option<Vec<RoomMessage>>;
 
-    /// for InsertAt/UpdateAt/RemoveAt
+    /// for Insert/Set/Remove
     fn index() -> Option<usize>;
 
-    /// for InsertAt/UpdateAt/Push
+    /// for Insert/Set/PushBack/PushFront
     fn value() -> Option<RoomMessage>;
-
-    /// for Move
-    fn new_index() -> Option<usize>;
-
-    /// for Move
-    fn old_index() -> Option<usize>;
 }
 
 /// Timeline with Room Events
@@ -514,6 +508,9 @@ object Conversation {
 
     /// Return the receipt event receiver
     fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
+
+    /// update the power levels of specified member
+    fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
 }
 
 object CommentDraft {

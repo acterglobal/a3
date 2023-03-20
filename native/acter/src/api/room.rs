@@ -1,4 +1,9 @@
-use acter_core::{ruma::OwnedEventId, spaces::is_acter_space};
+use acter_core::{
+    ruma::{
+        api::client::receipt::create_receipt::v3::ReceiptType as CreateReceiptType, OwnedEventId,
+    },
+    spaces::is_acter_space,
+};
 use anyhow::{bail, Context, Result};
 use log::{info, warn};
 use matrix_sdk::{
@@ -9,6 +14,7 @@ use matrix_sdk::{
         assign,
         events::{
             reaction::ReactionEventContent,
+            receipt::ReceiptThread,
             relation::Annotation,
             room::{
                 message::{
@@ -21,9 +27,10 @@ use matrix_sdk::{
             AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyStateEvent, AnyTimelineEvent,
             MessageLikeEvent, StateEvent,
         },
-        EventId, UInt, UserId,
+        room::RoomType,
+        EventId, Int, UInt, UserId,
     },
-    Client as MatrixClient, RoomType,
+    Client as MatrixClient, RoomState,
 };
 use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
 
@@ -181,7 +188,12 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let event_id = EventId::parse(event_id)?;
-                room.read_receipt(&event_id).await?;
+                room.send_single_receipt(
+                    CreateReceiptType::Read,
+                    ReceiptThread::Unthreaded,
+                    event_id,
+                )
+                .await?;
                 Ok(true)
             })
             .await?
@@ -272,10 +284,10 @@ impl Room {
     }
 
     pub fn room_type(&self) -> String {
-        match self.room.room_type() {
-            RoomType::Joined => "joined".to_string(),
-            RoomType::Left => "left".to_string(),
-            RoomType::Invited => "invited".to_string(),
+        match self.room.state() {
+            RoomState::Joined => "joined".to_string(),
+            RoomState::Left => "left".to_string(),
+            RoomState::Invited => "invited".to_string(),
         }
     }
 
@@ -954,6 +966,23 @@ impl Room {
                     .redact(&event_id, reason.as_deref(), txn_id.map(Into::into))
                     .await?;
                 Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn update_power_level(&self, user_id: String, level: i32) -> Result<OwnedEventId> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't update power level in a room we are not in")
+        };
+        let user_id = UserId::parse(user_id)?;
+        RUNTIME
+            .spawn(async move {
+                let resp = room
+                    .update_power_levels(vec![(&user_id, Int::from(level))])
+                    .await?;
+                Ok(resp.event_id)
             })
             .await?
     }

@@ -7,28 +7,24 @@ default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "8cc632ffd15da600b27dc776adb0ebc2c70f46f8"
+rev = "0f7d839c492fb7823e8a0107dc3a12316b7b4209"
 default-features = false
 features = ["rustls-tls"]
 
 [workspace.dependencies.matrix-sdk-base]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "8cc632ffd15da600b27dc776adb0ebc2c70f46f8"
+rev = "0f7d839c492fb7823e8a0107dc3a12316b7b4209"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sled]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "8cc632ffd15da600b27dc776adb0ebc2c70f46f8"
+rev = "0f7d839c492fb7823e8a0107dc3a12316b7b4209"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.ruma]
 git = "https://github.com/ruma/ruma"
-rev = "62ed200a56d00353eea128191311c4c8016def9f"
-
-[workspace.dependencies.ruma-macros]
-git = "https://github.com/ruma/ruma"
-rev = "62ed200a56d00353eea128191311c4c8016def9f"
+rev = "a399a4017a9f0b249ce848a652f2e4fe65435eaf"
 
 [workspace.dependencies]
 async-broadcast = "0.5"

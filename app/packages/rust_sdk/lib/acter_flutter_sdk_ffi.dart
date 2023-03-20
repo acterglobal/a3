@@ -2708,6 +2708,51 @@ class Api {
     return tmp7;
   }
 
+  EventId? __conversationUpdatePowerLevelFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _conversationUpdatePowerLevelFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   EventId? __commentDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -7497,26 +7542,6 @@ class Api {
       _TimelineDiffValueReturn Function(
     int,
   )>();
-  late final _timelineDiffNewIndexPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineDiffNewIndexReturn Function(
-    ffi.Int64,
-  )>>("__TimelineDiff_new_index");
-
-  late final _timelineDiffNewIndex = _timelineDiffNewIndexPtr.asFunction<
-      _TimelineDiffNewIndexReturn Function(
-    int,
-  )>();
-  late final _timelineDiffOldIndexPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineDiffOldIndexReturn Function(
-    ffi.Int64,
-  )>>("__TimelineDiff_old_index");
-
-  late final _timelineDiffOldIndex = _timelineDiffOldIndexPtr.asFunction<
-      _TimelineDiffOldIndexReturn Function(
-    int,
-  )>();
   late final _timelineStreamDiffRxPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -8151,6 +8176,25 @@ class Api {
   late final _conversationReceiptEventRx =
       _conversationReceiptEventRxPtr.asFunction<
           _ConversationReceiptEventRxReturn Function(
+    int,
+  )>();
+  late final _conversationUpdatePowerLevelPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int32,
+  )>>("__Conversation_update_power_level");
+
+  late final _conversationUpdatePowerLevel =
+      _conversationUpdatePowerLevelPtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
     int,
   )>();
   late final _commentDraftContentTextPtr = _lookup<
@@ -11676,6 +11720,21 @@ class Api {
   late final _conversationRedactMessageFuturePoll =
       _conversationRedactMessageFuturePollPtr.asFunction<
           _ConversationRedactMessageFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _conversationUpdatePowerLevelFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationUpdatePowerLevelFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Conversation_update_power_level_future_poll");
+
+  late final _conversationUpdatePowerLevelFuturePoll =
+      _conversationUpdatePowerLevelFuturePollPtr.asFunction<
+          _ConversationUpdatePowerLevelFuturePollReturn Function(
     int,
     int,
     int,
@@ -16097,7 +16156,7 @@ class TimelineDiff {
 
   TimelineDiff._(this._api, this._box);
 
-  /// Replace/InsertAt/UpdateAt/Push/RemoveAt/Move/Pop/Clear
+  /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
   String action() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -16117,7 +16176,7 @@ class TimelineDiff {
     return tmp2;
   }
 
-  /// for Replace
+  /// for Append/Reset
   FfiListRoomMessage? values() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -16137,7 +16196,7 @@ class TimelineDiff {
     return tmp2;
   }
 
-  /// for InsertAt/UpdateAt/RemoveAt
+  /// for Insert/Set/Remove
   int? index() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -16153,7 +16212,7 @@ class TimelineDiff {
     return tmp2;
   }
 
-  /// for InsertAt/UpdateAt/Push
+  /// for Insert/Set/PushBack/PushFront
   RoomMessage? value() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -16169,38 +16228,6 @@ class TimelineDiff {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomMessage");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = RoomMessage._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// for Move
-  int? newIndex() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._timelineDiffNewIndex(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// for Move
-  int? oldIndex() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._timelineDiffOldIndex(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -17534,6 +17561,44 @@ class Conversation {
     final tmp2 =
         _nativeStream(tmp4_1, _api.__conversationReceiptEventRxStreamPoll);
     return tmp2;
+  }
+
+  /// update the power levels of specified member
+  Future<EventId> updatePowerLevel(
+    String userId,
+    int level,
+  ) {
+    final tmp1 = userId;
+    final tmp5 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    tmp6 = tmp5;
+    final tmp7 = _api._conversationUpdatePowerLevel(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+    );
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 =
+        _Box(_api, tmp9_0, "__Conversation_update_power_level_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 =
+        _nativeFuture(tmp9_1, _api.__conversationUpdatePowerLevelFuturePoll);
+    return tmp8;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -23392,20 +23457,6 @@ class _TimelineDiffValueReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _TimelineDiffNewIndexReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _TimelineDiffOldIndexReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
 class _ConversationLatestMessageReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -24662,6 +24713,21 @@ class _ConversationSendFileReplyFuturePollReturn extends ffi.Struct {
 }
 
 class _ConversationRedactMessageFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ConversationUpdatePowerLevelFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
