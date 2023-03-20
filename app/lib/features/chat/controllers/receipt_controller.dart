@@ -54,7 +54,7 @@ class ReceiptController extends GetxController {
   }
 
   void loadRoom(Conversation conversation, List<ReceiptRecord> records) {
-    _subscription?.cancel();
+    conversation.addEventHandler();
     _subscription = conversation.receiptEventRx()?.listen((event) {
       String roomId = event.roomId();
       bool changed = false;
@@ -77,6 +77,11 @@ class ReceiptController extends GetxController {
       String seenBy = record.seenBy();
       room.updateUser(seenBy, record.eventId(), record.ts());
     }
+  }
+
+  void unloadRoom(Conversation conversation) {
+    _subscription?.cancel();
+    conversation.removeEventHandler();
   }
 
   // this will be called via update(['Chat'])
