@@ -1,7 +1,8 @@
 mod auth;
+mod calendar;
 mod formatted_body;
 mod invitation;
-// mod news;
+mod news;
 mod onboarding;
 mod pins;
 mod reaction;

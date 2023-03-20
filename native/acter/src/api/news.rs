@@ -1,124 +1,302 @@
-use acter_core::{events, models::News, ruma::OwnedEventId};
-use anyhow::{bail, Context, Result};
-
-#[cfg(feature = "with-mocks")]
-use acter_core::mocks::gen_mock_news;
-
-use futures_signals::signal::Mutable;
-use matrix_sdk::{room::Joined, Client as MatrixClient};
-use std::{
-    ffi::OsStr,
-    path::PathBuf, // FIXME: make these optional for wasm
+use super::message::{ImageDesc, TextDesc, VideoDesc};
+use acter_core::{
+    events::{
+        news::{self, NewsEntryBuilder},
+        Icon, TextMessageEventContent,
+    },
+    models::{self, ActerModel, AnyActerModel, Color},
+    ruma::{OwnedEventId, OwnedRoomId},
+    statics::KEYS,
 };
+use anyhow::{bail, Context, Result};
+use async_broadcast::Receiver;
+use core::time::Duration;
+use matrix_sdk::{
+    media::{MediaFormat, MediaRequest},
+    room::Joined,
+    room::Room,
+};
+use std::collections::{hash_map::Entry, HashMap};
 
-use super::{client::Client, group::Group, RUNTIME};
+use super::{api::FfiBuffer, client::Client, group::Group, RUNTIME};
 
 impl Client {
-    #[cfg(feature = "with-mocks")]
-    pub async fn latest_news(&self) -> Result<Vec<News>> {
-        Ok(gen_mock_news())
+    pub async fn wait_for_news(
+        &self,
+        key: String,
+        timeout: Option<Box<Duration>>,
+    ) -> Result<NewsEntry> {
+        let AnyActerModel::NewsEntry(content) = self.wait_for(key.clone(), timeout).await? else {
+            bail!("{key} is not a news");
+        };
+        let room = self
+            .core
+            .client()
+            .get_room(content.room_id())
+            .context("Room not found")?;
+        Ok(NewsEntry {
+            client: self.clone(),
+            room,
+            content,
+        })
+    }
+
+    pub async fn latest_news(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
+        let mut news = Vec::new();
+        let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
+        let client = self.clone();
+        let mut all_news: Vec<_> = self
+            .store()
+            .get_list(KEYS::NEWS)
+            .await?
+            .filter_map(|any| {
+                if let AnyActerModel::NewsEntry(t) = any {
+                    Some(t)
+                } else {
+                    None
+                }
+            })
+            .collect();
+        all_news.reverse();
+
+        for t in all_news {
+            if count == 0 {
+                break; // we filled what we wanted
+            }
+            let room_id = t.room_id().to_owned();
+            let room = match rooms_map.entry(room_id) {
+                Entry::Occupied(t) => t.get().clone(),
+                Entry::Vacant(e) => {
+                    if let Some(room) = client.get_room(e.key()) {
+                        e.insert(room.clone());
+                        room
+                    } else {
+                        /// User not part of the room anymore, ignore
+                        continue;
+                    }
+                }
+            };
+            news.push(NewsEntry {
+                client: client.clone(),
+                room,
+                content: t,
+            });
+            count -= 1;
+        }
+        Ok(news)
+    }
+}
+
+impl Group {
+    pub async fn latest_news(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
+        let mut news = Vec::new();
+        let room_id = self.room_id();
+        let mut all_news: Vec<_> = self
+            .client
+            .store()
+            .get_list(&format!("{room_id}::{}", KEYS::NEWS))
+            .await?
+            .filter_map(|any| {
+                if let AnyActerModel::NewsEntry(t) = any {
+                    Some(t)
+                } else {
+                    None
+                }
+            })
+            .collect();
+        all_news.reverse();
+
+        for t in all_news {
+            if count == 0 {
+                break; // we filled what we wanted
+            }
+            news.push(NewsEntry {
+                client: self.client.clone(),
+                room: self.room.clone(),
+                content: t,
+            });
+            count -= 1;
+        }
+        Ok(news)
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct NewsSlide {
+    client: Client,
+    room: Room,
+    inner: news::NewsSlide,
+}
+
+impl std::ops::Deref for NewsSlide {
+    type Target = news::NewsSlide;
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl NewsSlide {
+    pub fn type_str(&self) -> String {
+        self.inner.content().type_str()
+    }
+
+    pub fn image_desc(&self) -> Option<ImageDesc> {
+        self.inner.content().image().and_then(|img| {
+            let Some(info) = img.info else {
+                return None
+            };
+            Some(ImageDesc::new(img.body.clone(), *info))
+        })
+    }
+
+    pub fn text(&self) -> Option<String> {
+        // FIXME: to be implemented
+        None
+    }
+
+    pub async fn image_binary(&self) -> Result<FfiBuffer<u8>> {
+        // any variable in self can't be called directly in spawn
+        let Some(content) = self.inner.content().image() else {
+            bail!("Not an image");
+        };
+        let client = self.client.clone();
+        let request = MediaRequest {
+            source: content.source.clone(),
+            format: MediaFormat::File,
+        };
+        RUNTIME
+            .spawn(async move {
+                Ok(FfiBuffer::new(
+                    client.media().get_media_content(&request, false).await?,
+                ))
+            })
+            .await?
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct NewsEntry {
+    client: Client,
+    room: Room,
+    content: models::NewsEntry,
+}
+
+impl std::ops::Deref for NewsEntry {
+    type Target = models::NewsEntry;
+    fn deref(&self) -> &Self::Target {
+        &self.content
+    }
+}
+
+/// Custom functions
+impl NewsEntry {
+    pub fn slides_count(&self) -> u8 {
+        self.content.slides().len() as u8
+    }
+
+    pub fn get_slide(&self, pos: u8) -> Option<NewsSlide> {
+        self.content
+            .slides()
+            .get(pos as usize)
+            .map(|inner| NewsSlide {
+                inner: inner.clone(),
+                client: self.client.clone(),
+                room: self.room.clone(),
+            })
+    }
+    pub async fn refresh(&self) -> Result<NewsEntry> {
+        let key = self.content.event_id().to_string();
+        let client = self.client.clone();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let AnyActerModel::NewsEntry(content) = client.store().get(&key).await? else {
+                    bail!("Refreshing failed. {key} not a news")
+                };
+                Ok(NewsEntry {
+                    client,
+                    room,
+                    content,
+                })
+            })
+            .await?
+    }
+
+    pub fn update_builder(&self) -> Result<NewsEntryUpdateBuilder> {
+        let Room::Joined(joined) = &self.room else {
+            bail!("Can only update news in joined rooms");
+        };
+        Ok(NewsEntryUpdateBuilder {
+            client: self.client.clone(),
+            room: joined.clone(),
+            content: self.content.updater(),
+        })
+    }
+
+    pub fn subscribe(&self) -> Receiver<()> {
+        let key = self.content.event_id().to_string();
+        self.client.executor().subscribe(key)
+    }
+
+    pub async fn comments(&self) -> Result<crate::CommentsManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.content.event_id().to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::CommentsManager::from_store_and_event_id(client.store(), &event_id)
+                        .await;
+                Ok(crate::CommentsManager::new(client, room, inner))
+            })
+            .await?
+    }
+
+    pub fn comments_count(&self) -> u32 {
+        4
+    }
+
+    pub fn likes_count(&self) -> u32 {
+        19
     }
 }
 
 #[derive(Clone)]
-pub struct NewsDraft {
-    client: MatrixClient,
+pub struct NewsEntryDraft {
+    client: Client,
     room: Joined,
-    content: Mutable<events::NewsEventDevContent>,
+    content: NewsEntryBuilder,
 }
 
-impl NewsDraft {
-    pub async fn add_image(&self, path: String) -> Result<u32> {
-        let p = PathBuf::try_from(path)?;
-        let mime = match p.extension().and_then(OsStr::to_str) {
-            Some(".jpg") | Some(".jpeg") => mime::IMAGE_JPEG,
-            Some(".png") => mime::IMAGE_PNG,
-            _ => mime::IMAGE_STAR,
-        };
-
-        let me = self.clone();
-        // First we need to log in.
-        RUNTIME
-            .spawn(async move {
-                let mut image = std::fs::read(p).context("Couldn't open file for reading")?;
-
-                let response = me.client.media().upload(&mime, image).await?;
-
-                let mut inner = me.content.lock_mut();
-                let counter = inner.contents.len();
-
-                inner.contents.push(events::NewsContentType::Image(
-                    events::ImageMessageEventContent::plain(
-                        "".to_string(),
-                        response.content_uri,
-                        None,
-                    ),
-                ));
-                Ok(counter as u32)
-            })
-            .await?
-    }
-
-    pub fn set_colors(&self, foreground: Option<String>, background: Option<String>) -> Result<()> {
-        let mut inner = self.content.lock_mut();
-        let colors = if foreground.is_none() && background.is_none() {
-            None
-        } else {
-            Some(events::Colorize {
-                color: foreground.map(|c| c.parse()).transpose()?,
-                background: background.map(|c| c.parse()).transpose()?,
-            })
-        };
-        inner.colors = colors;
-        Ok(())
-    }
-
-    pub fn add_text(&self, text: String) -> Result<u32> {
-        let mut inner = self.content.lock_mut();
-        let counter = inner.contents.len();
-        inner.contents.push(events::NewsContentType::Text(
-            events::TextMessageEventContent::plain(text),
-        ));
-        Ok(counter as u32)
-    }
-
-    pub async fn add_video(&self, path: String) -> Result<u32> {
-        let p = PathBuf::try_from(path)?;
-        let mime = match p.extension().and_then(OsStr::to_str) {
-            Some(".jpg") | Some(".jpeg") => mime::IMAGE_JPEG,
-            Some(".png") => mime::IMAGE_PNG,
-            _ => mime::IMAGE_STAR,
-        };
-
-        let me = self.clone();
-        // First we need to log in.
-        RUNTIME
-            .spawn(async move {
-                let mut image = std::fs::read(p).context("Couldn't open file for reading")?;
-
-                let response = me.client.media().upload(&mime, image).await?;
-
-                let mut inner = me.content.lock_mut();
-                let counter = inner.contents.len();
-
-                inner.contents.push(events::NewsContentType::Image(
-                    events::ImageMessageEventContent::plain(
-                        "".to_string(),
-                        response.content_uri,
-                        None,
-                    ),
-                ));
-                Ok(counter as u32)
-            })
-            .await?
-    }
-
+impl NewsEntryDraft {
     pub async fn send(&self) -> Result<OwnedEventId> {
-        let me = self.clone();
+        let room = self.room.clone();
+        let inner = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let inner = me.content.lock_ref().clone();
-                let resp = me.room.send(inner, None).await?;
+                let resp = room.send(inner, None).await?;
+                Ok(resp.event_id)
+            })
+            .await?
+    }
+}
+
+#[derive(Clone)]
+pub struct NewsEntryUpdateBuilder {
+    client: Client,
+    room: Joined,
+    content: news::NewsEntryUpdateBuilder,
+}
+
+impl NewsEntryUpdateBuilder {
+    pub async fn send(&self) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let inner = self.content.build()?;
+        RUNTIME
+            .spawn(async move {
+                let resp = room.send(inner, None).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -126,15 +304,25 @@ impl NewsDraft {
 }
 
 impl Group {
-    // pub fn news_draft(&self) -> Result<NewsDraft> {
-    //     if let matrix_sdk::room::Room::Joined(joined) = &self.inner.room {
-    //         Ok(NewsDraft {
-    //             client: self.client.clone(),
-    //             room: joined.clone(),
-    //             content: Default::default(),
-    //         })
-    //     } else {
-    //         bail!("You can't create news for groups we are not part on")
-    //     }
-    // }
+    pub fn news_draft(&self) -> Result<NewsEntryDraft> {
+        let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
+            bail!("You can't create news for groups we are not part on")
+        };
+        Ok(NewsEntryDraft {
+            client: self.client.clone(),
+            room: joined.clone(),
+            content: Default::default(),
+        })
+    }
+
+    pub fn news_draft_with_builder(&self, content: NewsEntryBuilder) -> Result<NewsEntryDraft> {
+        let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
+            bail!("You can't create news for groups we are not part on")
+        };
+        Ok(NewsEntryDraft {
+            client: self.client.clone(),
+            room: joined.clone(),
+            content,
+        })
+    }
 }

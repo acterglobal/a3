@@ -24,7 +24,6 @@ tracing = { version = "0.1.36", features = ["log"] }
 
 [dependencies.acter-core]
 path = "../core"
-features = ["with-mocks"]
 
 [dependencies.acter]
 path = "../acter"

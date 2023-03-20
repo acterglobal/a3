@@ -1,8 +1,8 @@
-use acter_core::matrix_sdk::{ruma::OwnedUserId, Client, ClientBuilder};
+use acter::api::{login_new_client, Client};
 use anyhow::Result;
 use clap::{crate_version, Parser};
-use dialoguer::{theme::ColorfulTheme, Password};
-use tracing::warn;
+use dialoguer::theme::ColorfulTheme;
+use dialoguer::Password;
 
 use crate::action::Action;
 
@@ -13,6 +13,20 @@ pub const ENV_ROOM: &str = "ACTER_ROOM";
 /// Generic Login Configuration helper
 #[derive(Parser, Debug)]
 pub struct LoginConfig {
+    /// the URL to the homeserver are we running against
+    #[clap(
+        long = "homeserver-url",
+        env = "DEFAULT_HOMESERVER_URL",
+        default_value = "http://localhost:8118"
+    )]
+    pub homeserver: String,
+    /// name of that homeserver
+    #[clap(
+        long = "homeserver-name",
+        env = "DEFAULT_HOMESERVER_NAME",
+        default_value = "localhost"
+    )]
+    pub server_name: String,
     /// Fully qualified @SOMETHING:server.tld username.
     #[clap(
         short = 'u',
@@ -20,39 +34,31 @@ pub struct LoginConfig {
         value_hint = clap::ValueHint::Username,
         env = ENV_USER
     )]
-    login_username: OwnedUserId,
-    #[clap(env = ENV_PASSWORD)]
+    login_username: String,
+    #[clap(long="password", env = ENV_PASSWORD)]
     login_password: Option<String>,
-}
-
-async fn default_client_config() -> Result<ClientBuilder> {
-    Ok(Client::builder().user_agent(format!("acter-cli/{}", crate_version!())))
 }
 
 impl LoginConfig {
     pub async fn client(&self) -> Result<Client> {
         let theme = ColorfulTheme::default();
         let username = self.login_username.clone();
-        warn!("Logging in as {}", username);
+        tracing::warn!("Logging in as {}", username);
         let password = match self.login_password {
             Some(ref pw) => pw.clone(),
             _ => Password::with_theme(&theme)
                 .with_prompt(format!("Password for {username:} :"))
                 .interact()?,
         };
-
-        let client = default_client_config()
-            .await?
-            .server_name(username.server_name())
-            .build()
-            .await?;
-
-        client
-            .login_username(username.localpart(), &password)
-            .send()
-            .await?;
-
-        Ok(client)
+        login_new_client(
+            format!(".local/{username}/"),
+            username.clone(),
+            password,
+            self.server_name.clone(),
+            self.homeserver.clone(),
+            Some(format!("acter-cli/{}", crate_version!())),
+        )
+        .await
     }
 }
 
