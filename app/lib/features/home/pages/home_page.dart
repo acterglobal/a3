@@ -94,11 +94,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     .navigationRailTheme
                                     .backgroundColor!,
                                 selectedIconTheme: const IconThemeData(
-                                  size: 20,
+                                  size: 18,
                                   color: Colors.white,
                                 ),
                                 unselectedIconTheme: const IconThemeData(
-                                  size: 20,
+                                  size: 18,
                                   color: Colors.white,
                                 ),
                                 padding: const EdgeInsets.all(0),
@@ -119,8 +119,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   NavigationRailDestination(
                                     icon: SvgPicture.asset(
                                       'assets/icon/acter.svg',
-                                      height: 28,
-                                      width: 28,
+                                      height: 24,
+                                      width: 24,
                                     ),
                                     label: const Text('Space'),
                                   ),
@@ -145,11 +145,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     .navigationRailTheme
                                     .backgroundColor!,
                                 selectedIconTheme: const IconThemeData(
-                                  size: 20,
+                                  size: 18,
                                   color: Colors.white,
                                 ),
                                 unselectedIconTheme: const IconThemeData(
-                                  size: 20,
+                                  size: 18,
                                   color: Colors.white,
                                 ),
                                 padding: const EdgeInsets.all(0),

@@ -7,10 +7,78 @@ AppTheme currentTheme = AppTheme();
 class AppTheme {
   static ThemeData get theme {
     return ThemeData(
-      textTheme: GoogleFonts.interTextTheme(),
+      typography: Typography(
+        black: GoogleFonts.interTextTheme(
+          const TextTheme(
+            headlineLarge: TextStyle(
+              color: Colors.white,
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+            ),
+            headlineMedium: TextStyle(
+              color: Colors.white,
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+            ),
+            headlineSmall: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+            titleLarge: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.normal,
+            ),
+            titleMedium: TextStyle(
+              color: Colors.white,
+              fontSize: 21,
+              fontWeight: FontWeight.normal,
+            ),
+            titleSmall: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.normal,
+            ),
+            bodyLarge: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w400,
+            ),
+            bodyMedium: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+            bodySmall: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+            ),
+            labelLarge: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w300,
+            ),
+            labelMedium: TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.w300,
+            ),
+            labelSmall: TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w300,
+            ),
+          ),
+        ),
+      ),
+      buttonTheme: const ButtonThemeData(
+        buttonColor: Colors.white,
+        splashColor: Colors.transparent,
+      ),
       splashColor: Colors.transparent,
       useMaterial3: true,
-      scaffoldBackgroundColor: AppCommonTheme.backgroundColor,
       dividerTheme: const DividerThemeData(
         indent: 75,
         endIndent: 15,
@@ -35,8 +103,8 @@ class AppTheme {
           fontWeight: FontWeight.w400,
           height: 1.5,
         ),
-        selectedIconTheme: IconThemeData(color: Colors.white, size: 20),
-        unselectedIconTheme: IconThemeData(color: Colors.white, size: 20),
+        selectedIconTheme: IconThemeData(color: Colors.white, size: 18),
+        unselectedIconTheme: IconThemeData(color: Colors.white, size: 18),
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),
@@ -53,8 +121,8 @@ class AppTheme {
           fontSize: 12,
           fontWeight: FontWeight.w400,
         ),
-        selectedIconTheme: IconThemeData(color: Colors.white, size: 20),
-        unselectedIconTheme: IconThemeData(color: Colors.white, size: 20),
+        selectedIconTheme: IconThemeData(color: Colors.white, size: 18),
+        unselectedIconTheme: IconThemeData(color: Colors.white, size: 18),
       ),
     );
   }
