@@ -53,17 +53,31 @@ class _NewsItemState extends State<NewsItem> {
     bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
     return Stack(
-      alignment: Alignment.bottomCenter,
+      alignment: Alignment.center,
       children: [
-        // Container(
-        //   color: bgColor,
-        //   width: MediaQuery.of(context).size.width,
-        //   height: MediaQuery.of(context).size.height,
-        //   child: newsImage != null
-        //       ? _ImageWidget(image: newsImage, isDesktop: isDesktop)
-        //       : null,
-        //   clipBehavior: Clip.none,
-        // ),
+        Container(
+          color: bgColor,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Container(
+            child: Text(
+              slide.text(),
+              style: GoogleFonts.inter(
+                color: fgColor,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                shadows: [
+                  Shadow(
+                    color: bgColor,
+                    offset: const Offset(1, 1),
+                    blurRadius: 3,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          clipBehavior: Clip.none,
+        ),
         LayoutBuilder(
           builder: (context, constraints) {
             return SizedBox(
@@ -75,29 +89,6 @@ class _NewsItemState extends State<NewsItem> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  Expanded(
-                    flex: 5,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        children: <Widget>[
-                          const Spacer(),
-                          _TitleWidget(
-                            news: widget.news,
-                            backgroundColor: bgColor,
-                            foregroundColor: fgColor,
-                          ),
-                          const SizedBox(height: 10),
-                          _SubtitleWidget(
-                            news: widget.news,
-                            backgroundColor: bgColor,
-                            foregroundColor: fgColor,
-                          ),
-                          const SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-                  ),
                   Expanded(
                     flex: 1,
                     child: NewsSideBar(
@@ -227,6 +218,7 @@ class _ImageSlideState extends State<ImageSlide> {
                     ),
                   ),
                   Expanded(
+                    // FIXME: unify this in the same widget
                     flex: 1,
                     child: NewsSideBar(
                       client: widget.client,
@@ -266,62 +258,6 @@ class _ImageWidget extends StatelessWidget {
       fit: BoxFit.cover,
       cacheWidth: size.width.toInt(),
       cacheHeight: size.height.toInt(),
-    );
-  }
-}
-
-class _TitleWidget extends StatelessWidget {
-  const _TitleWidget({
-    required this.news,
-    required this.backgroundColor,
-    required this.foregroundColor,
-  });
-
-  final NewsEntry news;
-  final ui.Color backgroundColor;
-  final ui.Color foregroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      news.getSlide(0)!.typeStr(),
-    );
-  }
-}
-
-class _SubtitleWidget extends StatelessWidget {
-  const _SubtitleWidget({
-    required this.news,
-    required this.backgroundColor,
-    required this.foregroundColor,
-  });
-
-  final NewsEntry news;
-  final ui.Color backgroundColor;
-  final ui.Color foregroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return ExpandableText(
-      news.getSlide(0)!.typeStr(),
-      maxLines: 2,
-      expandText: '',
-      expandOnTextTap: true,
-      collapseOnTextTap: true,
-      animation: true,
-      linkColor: foregroundColor,
-      style: GoogleFonts.inter(
-        color: foregroundColor,
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        shadows: [
-          Shadow(
-            color: backgroundColor,
-            offset: const Offset(1, 1),
-            blurRadius: 3,
-          ),
-        ],
-      ),
     );
   }
 }
