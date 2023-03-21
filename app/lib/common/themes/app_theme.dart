@@ -87,13 +87,26 @@ class AppTheme {
       colorScheme: const ColorScheme.dark(
         primary: Color(0xff122D46),
         surface: Color(0xff122D46),
-        secondary: Colors.black,
+        secondary: Color(0xFF5C9AD6),
         background: Colors.black,
         tertiary: Color(0xffFF8E00),
         error: Color(0xffD03838),
       ),
       splashColor: Colors.transparent,
       useMaterial3: true,
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: Color(0xffFF8E00),
+        circularTrackColor: Colors.transparent,
+      ),
+      dialogTheme: const DialogTheme(
+        backgroundColor: Color(0xFF5C9AD6),
+        elevation: 0,
+      ),
+      buttonTheme: const ButtonThemeData(
+        splashColor: Colors.transparent,
+        buttonColor: Color(0xFF5C9AD6),
+        disabledColor: Color(0xFF2F2F2F),
+      ),
       dividerTheme: const DividerThemeData(
         indent: 75,
         endIndent: 15,
