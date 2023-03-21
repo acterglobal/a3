@@ -113,7 +113,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 selectedIndex: _selectedIndex,
                                 destinations: <NavigationRailDestination>[
                                   const NavigationRailDestination(
-                                    icon: Icon(Atlas.bullhorn),
+                                    icon: Icon(Atlas.bullhorn_thin),
                                     label: Text('Updates'),
                                   ),
                                   NavigationRailDestination(
@@ -167,17 +167,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   ),
                                 ),
                                 destinations: <NavigationRailDestination>[
-                                  const NavigationRailDestination(
-                                    icon: Icon(Atlas.bullhorn),
-                                    label: Text(
-                                      'Updates',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
                                   NavigationRailDestination(
                                     icon: SvgPicture.asset(
                                       'assets/icon/acter.svg',
@@ -185,7 +174,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       width: 24,
                                     ),
                                     label: const Text(
-                                      'Space',
+                                      'Overview',
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 12,
@@ -194,7 +183,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     ),
                                   ),
                                   const NavigationRailDestination(
-                                    icon: Icon(Atlas.chats),
+                                    icon: Icon(Atlas.chats_thin),
                                     label: Text(
                                       'Chat',
                                       style: TextStyle(
@@ -205,6 +194,25 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     ),
                                   ),
                                 ],
+                                trailing: Expanded(
+                                  child: Column(
+                                    children: [
+                                      const Spacer(),
+                                      Container(
+                                        margin: const EdgeInsets.only(
+                                          left: 22,
+                                          bottom: 8,
+                                        ),
+                                        child: Row(
+                                          children: const [
+                                            Icon(Atlas.exit_thin,
+                                                color: Colors.white),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
                               );
                             },
                           )
@@ -267,9 +275,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                               type: BottomNavigationBarType.fixed,
                               items: <BottomNavigationBarItem>[
                                 const BottomNavigationBarItem(
-                                  icon: Icon(Atlas.bullhorn),
+                                  icon: Icon(Atlas.bullhorn_thin),
                                   activeIcon: CustomSelectedIcon(
-                                    icon: Icon(Atlas.bullhorn),
+                                    icon: Icon(Atlas.bullhorn_thin),
                                   ),
                                   label: 'Updates',
                                 ),
@@ -286,12 +294,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       width: 28,
                                     ),
                                   ),
-                                  label: 'Space',
+                                  label: 'Overview',
                                 ),
                                 const BottomNavigationBarItem(
-                                  icon: Icon(Atlas.chats),
+                                  icon: Icon(Atlas.chats_thin),
                                   activeIcon: CustomSelectedIcon(
-                                    icon: Icon(Atlas.chats),
+                                    icon: Icon(Atlas.chats_thin),
                                   ),
                                   label: 'Chat',
                                 )
