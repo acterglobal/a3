@@ -234,9 +234,30 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           bottom: 8,
                                         ),
                                         child: Row(
-                                          children: const [
-                                            Icon(Atlas.exit_thin,
-                                                color: Colors.white),
+                                          children: [
+                                            Container(
+                                              margin: const EdgeInsets.only(
+                                                left: 5,
+                                                right: 5,
+                                              ),
+                                              child: const Icon(
+                                                Atlas.exit_thin,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            Container(
+                                              margin: const EdgeInsets.only(
+                                                left: 5,
+                                                right: 5,
+                                              ),
+                                              child: GestureDetector(
+                                                onTap: handleBugReport,
+                                                child: const Icon(
+                                                  Icons.bug_report_rounded,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       )
@@ -386,16 +407,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ),
               ),
             ),
-            // place bug report button outside of screenshot
-            floatingActionButton: Visibility(
-              child: FloatingActionButton(
-                onPressed: handleBugReport,
-                backgroundColor: Colors.green,
-                child: const Icon(Icons.bug_report_rounded),
-              ),
-              visible: bugReportVisible,
-            ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
           )
         : const Scaffold(
             body: Center(
