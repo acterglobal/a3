@@ -47,14 +47,13 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     let kyra_syncer = kyra.start_sync();
     let mut first_synced = kyra_syncer.first_synced_rx().expect("note yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let mut kyra_group = kyra
+    let kyra_group = kyra
         .get_group(format!("#ops:{homeserver_name}"))
         .await
         .expect("kyra should belong to ops");
-    kyra_group.add_event_handler();
     kyra_group.read_receipt(event_id.to_string()).await?;
 
-    let mut event_rx = kyra_group.receipt_event_rx().unwrap();
+    let mut event_rx = kyra.receipt_event_rx().unwrap();
     loop {
         match event_rx.try_next() {
             Ok(Some(event)) => {

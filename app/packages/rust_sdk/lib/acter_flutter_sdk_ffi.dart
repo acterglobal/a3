@@ -5714,42 +5714,6 @@ class Api {
     return tmp9;
   }
 
-  ReceiptEvent? __conversationReceiptEventRxStreamPoll(
-    int boxed,
-    int postCobject,
-    int port,
-    int done,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    final tmp6 = done;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    var tmp7 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    tmp7 = tmp6;
-    final tmp8 = _conversationReceiptEventRxStreamPoll(
-      tmp1,
-      tmp3,
-      tmp5,
-      tmp7,
-    );
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
-    if (tmp10 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ReceiptEvent");
-    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = ReceiptEvent._(this, tmp11_1);
-    return tmp9;
-  }
-
   void __taskSubscribeStreamPoll(
     int boxed,
     int postCobject,
@@ -5810,42 +5774,6 @@ class Api {
       return null;
     }
     return;
-  }
-
-  ReceiptEvent? __groupReceiptEventRxStreamPoll(
-    int boxed,
-    int postCobject,
-    int port,
-    int done,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    final tmp6 = done;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    var tmp7 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    tmp7 = tmp6;
-    final tmp8 = _groupReceiptEventRxStreamPoll(
-      tmp1,
-      tmp3,
-      tmp5,
-      tmp7,
-    );
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
-    if (tmp10 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ReceiptEvent");
-    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = ReceiptEvent._(this, tmp11_1);
-    return tmp9;
   }
 
   bool? __syncStateFirstSyncedRxStreamPoll(
@@ -6096,6 +6024,42 @@ class Api {
     final tmp11_1 = _Box(this, tmp11_0, "drop_box_TypingEvent");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
     final tmp9 = TypingEvent._(this, tmp11_1);
+    return tmp9;
+  }
+
+  ReceiptEvent? __clientReceiptEventRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientReceiptEventRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ReceiptEvent");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = ReceiptEvent._(this, tmp11_1);
     return tmp9;
   }
 
@@ -8145,39 +8109,6 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationAddEventHandlerPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-    ffi.Int64,
-  )>>("__Conversation_add_event_handler");
-
-  late final _conversationAddEventHandler =
-      _conversationAddEventHandlerPtr.asFunction<
-          void Function(
-    int,
-  )>();
-  late final _conversationRemoveEventHandlerPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-    ffi.Int64,
-  )>>("__Conversation_remove_event_handler");
-
-  late final _conversationRemoveEventHandler =
-      _conversationRemoveEventHandlerPtr.asFunction<
-          void Function(
-    int,
-  )>();
-  late final _conversationReceiptEventRxPtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationReceiptEventRxReturn Function(
-    ffi.Int64,
-  )>>("__Conversation_receipt_event_rx");
-
-  late final _conversationReceiptEventRx =
-      _conversationReceiptEventRxPtr.asFunction<
-          _ConversationReceiptEventRxReturn Function(
-    int,
-  )>();
   late final _conversationUpdatePowerLevelPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -9980,36 +9911,6 @@ class Api {
       _GroupPinDraftReturn Function(
     int,
   )>();
-  late final _groupAddEventHandlerPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-    ffi.Int64,
-  )>>("__Group_add_event_handler");
-
-  late final _groupAddEventHandler = _groupAddEventHandlerPtr.asFunction<
-      void Function(
-    int,
-  )>();
-  late final _groupRemoveEventHandlerPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-    ffi.Int64,
-  )>>("__Group_remove_event_handler");
-
-  late final _groupRemoveEventHandler = _groupRemoveEventHandlerPtr.asFunction<
-      void Function(
-    int,
-  )>();
-  late final _groupReceiptEventRxPtr = _lookup<
-      ffi.NativeFunction<
-          _GroupReceiptEventRxReturn Function(
-    ffi.Int64,
-  )>>("__Group_receipt_event_rx");
-
-  late final _groupReceiptEventRx = _groupReceiptEventRxPtr.asFunction<
-      _GroupReceiptEventRxReturn Function(
-    int,
-  )>();
   late final _memberGetProfilePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -10456,6 +10357,16 @@ class Api {
 
   late final _clientTypingEventRx = _clientTypingEventRxPtr.asFunction<
       _ClientTypingEventRxReturn Function(
+    int,
+  )>();
+  late final _clientReceiptEventRxPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientReceiptEventRxReturn Function(
+    ffi.Int64,
+  )>>("__Client_receipt_event_rx");
+
+  late final _clientReceiptEventRx = _clientReceiptEventRxPtr.asFunction<
+      _ClientReceiptEventRxReturn Function(
     int,
   )>();
   late final _clientIncomingMessageRxPtr = _lookup<
@@ -12756,23 +12667,6 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationReceiptEventRxStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationReceiptEventRxStreamPollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Conversation_receipt_event_rx_stream_poll");
-
-  late final _conversationReceiptEventRxStreamPoll =
-      _conversationReceiptEventRxStreamPollPtr.asFunction<
-          _ConversationReceiptEventRxStreamPollReturn Function(
-    int,
-    int,
-    int,
-    int,
-  )>();
   late final _taskSubscribeStreamPollPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -12801,23 +12695,6 @@ class Api {
   late final _taskListSubscribeStreamPoll =
       _taskListSubscribeStreamPollPtr.asFunction<
           int Function(
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _groupReceiptEventRxStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _GroupReceiptEventRxStreamPollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Group_receipt_event_rx_stream_poll");
-
-  late final _groupReceiptEventRxStreamPoll =
-      _groupReceiptEventRxStreamPollPtr.asFunction<
-          _GroupReceiptEventRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -12937,6 +12814,23 @@ class Api {
   late final _clientTypingEventRxStreamPoll =
       _clientTypingEventRxStreamPollPtr.asFunction<
           _ClientTypingEventRxStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientReceiptEventRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientReceiptEventRxStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_receipt_event_rx_stream_poll");
+
+  late final _clientReceiptEventRxStreamPoll =
+      _clientReceiptEventRxStreamPollPtr.asFunction<
+          _ClientReceiptEventRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -17522,47 +17416,6 @@ class Conversation {
     return tmp18;
   }
 
-  /// Install event handler
-  void addEventHandler() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._conversationAddEventHandler(
-      tmp0,
-    );
-    return;
-  }
-
-  /// Uninstall event handler
-  void removeEventHandler() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._conversationRemoveEventHandler(
-      tmp0,
-    );
-    return;
-  }
-
-  /// Return the receipt event receiver
-  Stream<ReceiptEvent>? receiptEventRx() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._conversationReceiptEventRx(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 =
-        _Box(_api, tmp4_0, "__Conversation_receipt_event_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 =
-        _nativeStream(tmp4_1, _api.__conversationReceiptEventRxStreamPoll);
-    return tmp2;
-  }
-
   /// update the power levels of specified member
   Future<EventId> updatePowerLevel(
     String userId,
@@ -20406,45 +20259,6 @@ class Group {
     return tmp2;
   }
 
-  /// Install event handler
-  void addEventHandler() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._groupAddEventHandler(
-      tmp0,
-    );
-    return;
-  }
-
-  /// Uninstall event handler
-  void removeEventHandler() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._groupRemoveEventHandler(
-      tmp0,
-    );
-    return;
-  }
-
-  /// Return the receipt event receiver
-  Stream<ReceiptEvent>? receiptEventRx() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._groupReceiptEventRx(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "__Group_receipt_event_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = _nativeStream(tmp4_1, _api.__groupReceiptEventRxStreamPoll);
-    return tmp2;
-  }
-
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -21293,6 +21107,25 @@ class Client {
     final tmp4_1 = _Box(_api, tmp4_0, "__Client_typing_event_rx_stream_drop");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = _nativeStream(tmp4_1, _api.__clientTypingEventRxStreamPoll);
+    return tmp2;
+  }
+
+  /// Return the receipt event receiver
+  Stream<ReceiptEvent>? receiptEventRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientReceiptEventRx(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "__Client_receipt_event_rx_stream_drop");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = _nativeStream(tmp4_1, _api.__clientReceiptEventRxStreamPoll);
     return tmp2;
   }
 
@@ -23482,13 +23315,6 @@ class _ConversationRoomTypeReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ConversationReceiptEventRxReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
 class _CommentContentTextReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -23856,13 +23682,6 @@ class _GroupPinDraftReturn extends ffi.Struct {
   external int arg4;
 }
 
-class _GroupReceiptEventRxReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
 class _MemberUserIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -23953,6 +23772,13 @@ class _ClientDeviceLeftEventRxReturn extends ffi.Struct {
 }
 
 class _ClientTypingEventRxReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _ClientReceiptEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -25747,20 +25573,6 @@ class _TimelineStreamDiffRxStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ConversationReceiptEventRxStreamPollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _GroupReceiptEventRxStreamPollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
 class _SyncStateFirstSyncedRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -25804,6 +25616,13 @@ class _ClientDeviceLeftEventRxStreamPollReturn extends ffi.Struct {
 }
 
 class _ClientTypingEventRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _ClientReceiptEventRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

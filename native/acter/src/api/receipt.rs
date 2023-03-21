@@ -15,7 +15,7 @@ use matrix_sdk::{
 };
 use std::sync::Arc;
 
-use super::{conversation::Conversation, group::Group};
+use super::client::Client;
 
 #[derive(Clone, Debug)]
 pub struct ReceiptRecord {
@@ -143,39 +143,10 @@ impl ReceiptController {
     }
 }
 
-impl Conversation {
-    pub fn add_event_handler(&mut self) {
-        let client = self.room.client();
-        self.receipt_controller.add_event_handler(&client);
-    }
-
-    pub fn remove_event_handler(&mut self) {
-        let client = self.room.client();
-        self.receipt_controller.remove_event_handler(&client);
-    }
-
+impl Client {
     pub fn receipt_event_rx(&self) -> Option<Receiver<ReceiptEvent>> {
         match self.receipt_controller.event_rx.try_lock() {
             Ok(mut rx) => rx.take(),
-            Err(e) => None,
-        }
-    }
-}
-
-impl Group {
-    pub fn add_event_handler(&mut self) {
-        let client = self.room.client();
-        self.receipt_controller.add_event_handler(&client);
-    }
-
-    pub fn remove_event_handler(&mut self) {
-        let client = self.room.client();
-        self.receipt_controller.remove_event_handler(&client);
-    }
-
-    pub fn receipt_event_rx(&self) -> Option<Receiver<ReceiptEvent>> {
-        match self.receipt_controller.event_rx.try_lock() {
-            Ok(mut r) => r.take(),
             Err(e) => None,
         }
     }
