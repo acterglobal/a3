@@ -902,11 +902,7 @@ class ChatRoomController extends GetxController {
                 metadata['reactions'] = reactions;
               }
               //check whether string only contains emoji(s).
-              if (isOnlyEmojis(description.body())) {
-                metadata['enlargeEmoji'] = true;
-              } else {
-                metadata['enlargeEmoji'] = false;
-              }
+              metadata['enlargeEmoji'] = isOnlyEmojis(description.body());
               return types.TextMessage(
                 author: author,
                 createdAt: createdAt,
