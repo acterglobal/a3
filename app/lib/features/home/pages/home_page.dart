@@ -111,24 +111,54 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   ),
                                 ),
                                 selectedIndex: _selectedIndex,
+
                                 destinations: <NavigationRailDestination>[
-                                  const NavigationRailDestination(
-                                    icon: Icon(Atlas.bullhorn_thin),
-                                    label: Text('Updates'),
-                                  ),
                                   NavigationRailDestination(
                                     icon: SvgPicture.asset(
                                       'assets/icon/acter.svg',
-                                      height: 28,
-                                      width: 28,
+                                      height: 24,
+                                      width: 24,
                                     ),
-                                    label: const Text('Space'),
+                                    label: const Text(
+                                      'Overview',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
                                   const NavigationRailDestination(
-                                    icon: Icon(Atlas.chats),
-                                    label: Text('Chat'),
+                                    icon: Icon(Atlas.chats_thin),
+                                    label: Text(
+                                      'Chat',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
                                 ],
+                                trailing: Expanded(
+                                  child: Column(
+                                    children: [
+                                      const Spacer(),
+                                      Container(
+                                        margin: const EdgeInsets.only(
+                                          left: 22,
+                                          bottom: 8,
+                                        ),
+                                        child: Row(
+                                          children: const [
+                                            Icon(Atlas.exit_thin,
+                                                color: Colors.white),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
                               );
                             },
                           ),
