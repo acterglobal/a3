@@ -46,10 +46,7 @@ struct HistoryState {
 
 impl Group {
     pub fn new(client: Client, inner: Room) -> Self {
-        Group {
-            client,
-            inner,
-        }
+        Group { client, inner }
     }
 
     pub async fn create_onboarding_data(&self) -> Result<()> {
