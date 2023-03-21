@@ -1,5 +1,4 @@
 import 'package:acter/common/controllers/network_controller.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/controllers/auth_controller.dart';
@@ -10,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:themed/themed.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
@@ -33,7 +31,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.loginSuccess),
-          backgroundColor: AuthTheme.authSuccess,
           duration: const Duration(seconds: 4),
         ),
       );
@@ -41,7 +38,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.loginFailed),
-          backgroundColor: AuthTheme.authFailed,
           duration: const Duration(seconds: 4),
         ),
       );
@@ -68,12 +64,10 @@ class _SignupPageState extends ConsumerState<SignupPage> {
               const SizedBox(height: 40),
               Text(
                 AppLocalizations.of(context)!.onboardText,
-                style: AuthTheme.authTitleStyle,
               ),
               const SizedBox(height: 10),
               Text(
                 AppLocalizations.of(context)!.createAccountText,
-                style: AuthTheme.authBodyStyle,
               ),
               const SizedBox(height: 20),
               SignUpTextField(
@@ -108,7 +102,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   text: TextSpan(
                     // Note: Styles for TextSpans must be explicitly defined.
                     // Child text spans will inherit styles from parent
-                    style: AuthTheme.authBodyStyle,
+
                     children: <TextSpan>[
                       TextSpan(
                         text: '${AppLocalizations.of(context)!.termsText1} ',
@@ -119,8 +113,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                             debugPrint('Terms of Service"');
                           },
                         text: AppLocalizations.of(context)!.termsText2,
-                        style: AuthTheme.authBodyStyle +
-                            AppCommonTheme.primaryColor,
                       ),
                       TextSpan(
                         text: ' ${AppLocalizations.of(context)!.termsText3} ',
@@ -131,8 +123,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                             debugPrint('policy"');
                           },
                         text: AppLocalizations.of(context)!.termsText4,
-                        style: AuthTheme.authBodyStyle +
-                            AppCommonTheme.primaryColor,
                       ),
                     ],
                   ),
@@ -140,9 +130,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
               ),
               const SizedBox(height: 40),
               authState
-                  ? const CircularProgressIndicator(
-                      color: AppCommonTheme.primaryColor,
-                    )
+                  ? const CircularProgressIndicator()
                   : CustomButton(
                       onPressed: () async {
                         if (formKey.currentState!.validate()) {
@@ -170,7 +158,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                 children: [
                   Text(
                     '${AppLocalizations.of(context)!.haveAccount}  ',
-                    style: AuthTheme.authBodyStyle,
                   ),
                   InkWell(
                     onTap: () {
@@ -183,8 +170,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     },
                     child: Text(
                       AppLocalizations.of(context)!.login,
-                      style:
-                          AuthTheme.authBodyStyle + AppCommonTheme.primaryColor,
                     ),
                   )
                 ],

@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
@@ -13,9 +12,7 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppCommonTheme.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppCommonTheme.backgroundColorLight,
         leading: GestureDetector(
           onTap: () {
             Navigator.pop(context);
@@ -37,22 +34,16 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
         child: ListView.builder(
           itemBuilder: (context, index) {
             return Card(
-              color: AppCommonTheme.backgroundColorLight,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Oct 19 at 3:36am',
-                      style: ToDoTheme.descriptionTextStyle.copyWith(
-                        color: ToDoTheme.calendarColor,
-                        fontSize: 13,
-                      ),
                     ),
                     const Text(
                       'Web application on design',
-                      style: ToDoTheme.listTitleTextStyle,
                     ),
                     const SizedBox(
                       height: 16,
@@ -61,16 +52,12 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
-                          children: [
+                          children: const [
                             Text(
                               'Owner: ',
-                              style: ToDoTheme.listSubtitleTextStyle
-                                  .copyWith(color: ToDoTheme.calendarColor),
                             ),
                             Text(
                               'David Chunli',
-                              style: ToDoTheme.listSubtitleTextStyle
-                                  .copyWith(color: Colors.white),
                             ),
                           ],
                         ),
@@ -78,14 +65,12 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
                           children: const [
                             Text(
                               'View Assigned',
-                              style: ToDoTheme.listSubtitleTextStyle,
                             ),
                             SizedBox(
                               width: 8,
                             ),
                             Icon(
                               Atlas.arrow_right_circle,
-                              color: ToDoTheme.secondaryTextColor,
                               size: 18,
                             ),
                           ],

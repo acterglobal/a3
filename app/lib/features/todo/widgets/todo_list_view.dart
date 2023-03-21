@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/features/todo/widgets/todo_card.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,6 @@ class ToDoListView extends StatelessWidget {
               heightFactor: 10,
               child: Text(
                 'You do not have any todos!',
-                style: ToDoTheme.titleTextStyle,
               ),
             )
           : ListView.builder(

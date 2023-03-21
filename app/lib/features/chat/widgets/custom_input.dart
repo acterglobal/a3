@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -10,7 +9,6 @@ import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:get/get.dart';
-import 'package:themed/themed.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 class CustomChatInput extends StatelessWidget {
@@ -45,8 +43,7 @@ class CustomChatInput extends StatelessWidget {
               children: [
                 Visibility(
                   visible: controller.showReplyView,
-                  child: Container(
-                    color: AppCommonTheme.backgroundColorLight,
+                  child: SizedBox(
                     child: Padding(
                       padding: const EdgeInsets.only(
                         top: 12.0,
@@ -103,7 +100,6 @@ class CustomChatInput extends StatelessWidget {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 15),
-                  color: AppCommonTheme.backgroundColorLight,
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -192,7 +188,6 @@ class _BuildPlusBtn extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppCommonTheme.backgroundColor,
             borderRadius: BorderRadius.circular(5),
           ),
           child: const Icon(Atlas.xmark_circle),
@@ -227,9 +222,6 @@ class _TextInputWidget extends StatelessWidget {
           MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
       minLines: 1,
       focusNode: controller.focusNode,
-      style: const TextStyleRef(
-        TextStyle(color: ChatTheme01.chatInputTextColor),
-      ),
       decoration: InputDecoration(
         isCollapsed: true,
         suffixIcon: InkWell(
@@ -246,24 +238,20 @@ class _TextInputWidget extends StatelessWidget {
           borderSide: const BorderSide(width: 0, style: BorderStyle.none),
         ),
         filled: true,
-        fillColor: AppCommonTheme.backgroundColor,
         hintText: isChatScreen
             ? AppLocalizations.of(context)!.newMessage
             : '${AppLocalizations.of(context)!.messageTo} $roomName',
         contentPadding: const EdgeInsets.all(15),
-        hintStyle: ChatTheme01.chatInputPlaceholderStyle,
         hintMaxLines: 1,
       ),
       mentions: [
         Mention(
           trigger: '@',
-          style: const TextStyle(color: AppCommonTheme.primaryColor),
           data: controller.mentionList,
           matchAll: false,
           suggestionBuilder: (Map<String, dynamic> roomMember) {
             return Container(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              color: AppCommonTheme.backgroundColorLight,
               child: ListTile(
                 contentPadding: const EdgeInsets.only(left: 50),
                 leading: SizedBox(
@@ -366,14 +354,12 @@ class AttachmentWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 15),
           width: double.infinity,
           height: size.height * 0.3,
-          color: AppCommonTheme.backgroundColorLight,
           child: Column(
             children: [
               Container(
                 width: double.infinity,
                 height: size.height * 0.172,
                 decoration: BoxDecoration(
-                  color: AppCommonTheme.backgroundColor,
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: const _BuildSettingBtn(),
@@ -481,19 +467,11 @@ class _BuildSettingBtn extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            AppLocalizations.of(context)!.grantAccessText,
-            style: ChatTheme01.chatTitleStyle + FontWeight.w400,
-          ),
+          child: Text(AppLocalizations.of(context)!.grantAccessText),
         ),
         ElevatedButton(
           onPressed: () {},
           child: Text(AppLocalizations.of(context)!.settings),
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(
-              AppCommonTheme.primaryColor,
-            ),
-          ),
         ),
       ],
     );
@@ -538,18 +516,12 @@ class EmojiPickerWidget extends StatelessWidget {
             config: Config(
               columns: 7,
               verticalSpacing: 0,
-              backspaceColor: AppCommonTheme.primaryColor,
               horizontalSpacing: 0,
               initCategory: Category.SMILEYS,
-              bgColor: AppCommonTheme.backgroundColor,
-              indicatorColor: AppCommonTheme.primaryColor,
-              iconColor: AppCommonTheme.dividerColor,
-              iconColorSelected: AppCommonTheme.primaryColor,
               showRecentsTab: true,
               recentsLimit: 28,
               noRecents: Text(
                 AppLocalizations.of(context)!.noRecents,
-                style: ChatTheme01.chatBodyStyle,
               ),
               tabIndicatorAnimDuration: kTabScrollDuration,
               categoryIcons: const CategoryIcons(),

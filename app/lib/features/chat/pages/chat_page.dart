@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:acter/common/snackbars/not_implemented.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/widgets/invite_info_card.dart';
 import 'package:acter/features/chat/widgets/list_item.dart';
@@ -45,7 +44,6 @@ class _ChatPageState extends State<ChatPage> {
                     margin: const EdgeInsets.only(right: 15),
                     child: Text(
                       AppLocalizations.of(context)!.chat,
-                      style: AppCommonTheme.appBarTitleStyle,
                     ),
                   ),
                 ),
@@ -56,7 +54,6 @@ class _ChatPageState extends State<ChatPage> {
                     padding: const EdgeInsets.only(right: 10, left: 5),
                     icon: const Icon(
                       Atlas.magnifying_glass,
-                      color: AppCommonTheme.svgIconColor,
                     ),
                   ),
                   IconButton(
@@ -69,7 +66,6 @@ class _ChatPageState extends State<ChatPage> {
                     padding: const EdgeInsets.only(right: 10, left: 5),
                     icon: const Icon(
                       Atlas.menu_square,
-                      color: AppCommonTheme.svgIconColor,
                     ),
                   ),
                   IconButton(
@@ -82,7 +78,6 @@ class _ChatPageState extends State<ChatPage> {
                     padding: const EdgeInsets.only(right: 10, left: 10),
                     icon: const Icon(
                       Atlas.plus_circle_thin,
-                      color: AppCommonTheme.svgIconColor,
                     ),
                   ),
                 ],
@@ -107,10 +102,6 @@ class _ChatPageState extends State<ChatPage> {
                             );
                           },
                           controller: controller.searchController,
-                          style: ToDoTheme.taskTitleTextStyle.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                          cursorColor: ToDoTheme.primaryTextColor,
                           decoration: InputDecoration(
                             hintStyle: const TextStyle(
                               color: Colors.white,
@@ -186,13 +177,11 @@ class _ListWidget extends StatelessWidget {
       builder: (ChatListController controller) {
         if (!controller.initialLoaded) {
           return Center(
-            child: Container(
+            child: SizedBox(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              color: AppCommonTheme.backgroundColor,
               child: Text(
                 AppLocalizations.of(context)!.loadingConvo,
-                style: ChatTheme01.emptyMsgTitle,
               ),
             ),
           );
@@ -287,7 +276,6 @@ class _InviteListView extends StatelessWidget {
               padding: const EdgeInsets.only(left: 18),
               child: Text(
                 AppLocalizations.of(context)!.invitedRooms,
-                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
               ),
             ),
             const SizedBox(height: 10),
@@ -307,7 +295,6 @@ class _InviteListView extends StatelessWidget {
               padding: const EdgeInsets.only(left: 18, top: 10),
               child: Text(
                 AppLocalizations.of(context)!.joinedRooms,
-                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
               ),
             ),
             const SizedBox(height: 10),

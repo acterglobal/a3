@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/onboarding/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,11 +11,9 @@ void confirmationDialog(BuildContext ctx, WidgetRef ref) {
       return AlertDialog(
         title: const Text(
           'Logout',
-          style: AppCommonTheme.appBarTitleStyle,
         ),
         content: const Text(
           'Are you sure you want to log out?',
-          style: TextStyle(color: Colors.white, fontSize: 14),
         ),
         actions: <Widget>[
           TextButton(

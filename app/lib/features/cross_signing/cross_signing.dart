@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 
-import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
         Client,
@@ -80,14 +80,11 @@ class CrossSigning {
               isDesktop ? const Icon(Atlas.laptop) : const Icon(Atlas.phone),
           title: const Text(
             'New Session Alert',
-            style: NotificationPopUpTheme.contentTitleStyle,
           ),
           subtitle: const Text(
             'Tap to review and verify!',
-            style: NotificationPopUpTheme.contentSubtitleStyle,
           ),
         ),
-        background: NotificationPopUpTheme.overlayColor,
         duration: const Duration(seconds: 1),
       );
     });
@@ -157,7 +154,6 @@ class CrossSigning {
         builder: (context, setState) => Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: CrossSigningSheetTheme.backgroundColor,
           ),
           child: _buildOnRequest(context, event, flowId, setState),
         ),
@@ -192,7 +188,6 @@ class CrossSigning {
                 ),
                 Text(
                   AppLocalizations.of(context)!.sasIncomingReqNotifTitle,
-                  style: CrossSigningSheetTheme.primaryTextStyle,
                 ),
                 const Spacer(),
                 Padding(
@@ -219,7 +214,6 @@ class CrossSigning {
               AppLocalizations.of(context)!.sasIncomingReqNotifContent,
               [event.sender()],
             ),
-            style: CrossSigningSheetTheme.secondaryTextStyle,
           ),
         ),
         const Spacer(flex: 1),
@@ -240,13 +234,11 @@ class CrossSigning {
     Function setState,
   ) {
     if (acceptingRequest) {
-      return const CircularProgressIndicator(
-        color: CrossSigningSheetTheme.loadingIndicatorColor,
-      );
+      return const CircularProgressIndicator();
     }
     return elevatedButton(
       AppLocalizations.of(context)!.acceptRequest,
-      AppCommonTheme.greenButtonColor,
+      Theme.of(context).colorScheme.success,
       () async {
         if (_mounted) {
           setState(() => acceptingRequest = true);
@@ -259,7 +251,7 @@ class CrossSigning {
           _onKeyVerificationReady(event, true);
         });
       },
-      CrossSigningSheetTheme.buttonTextStyle,
+      const TextStyle(),
     );
   }
 
@@ -282,7 +274,6 @@ class CrossSigning {
         builder: (context, setState) => Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: CrossSigningSheetTheme.backgroundColor,
           ),
           child: _buildOnReady(context, event, flowId),
         ),
@@ -317,7 +308,6 @@ class CrossSigning {
                   _eventMap[flowId]!.verifyingThisDev
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
-                  style: CrossSigningSheetTheme.primaryTextStyle,
                 ),
                 const Spacer(),
                 Padding(
@@ -344,7 +334,6 @@ class CrossSigning {
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
             child: Text(
               AppLocalizations.of(context)!.verificationScanSelfNotice,
-              style: CrossSigningSheetTheme.secondaryTextStyle,
             ),
           ),
         ),
@@ -356,9 +345,7 @@ class CrossSigning {
               child: SizedBox(
                 width: 50,
                 height: 50,
-                child: CircularProgressIndicator(
-                  color: CrossSigningSheetTheme.loadingIndicatorColor,
-                ),
+                child: CircularProgressIndicator(),
               ),
             ),
           ),
@@ -376,10 +363,6 @@ class CrossSigning {
                 ),
                 Text(
                   AppLocalizations.of(context)!.verificationScanWithThisDevice,
-                  style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
-                    color: AppCommonTheme.primaryColor,
-                    fontSize: 12,
-                  ),
                 ),
               ],
             ),
@@ -392,16 +375,13 @@ class CrossSigning {
               ListTile(
                 title: Text(
                   AppLocalizations.of(context)!.verificationScanEmojiTitle,
-                  style: CrossSigningSheetTheme.primaryTextStyle,
                 ),
                 subtitle: Text(
                   AppLocalizations.of(context)!
                       .verificationScanSelfEmojiSubtitle,
-                  style: CrossSigningSheetTheme.secondaryTextStyle,
                 ),
                 trailing: const Icon(
                   Icons.keyboard_arrow_right_outlined,
-                  color: CrossSigningSheetTheme.primaryTextColor,
                 ),
                 onTap: () async {
                   // start sas verification from this device
@@ -436,7 +416,6 @@ class CrossSigning {
         builder: (context, setState) => Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: CrossSigningSheetTheme.backgroundColor,
           ),
           child: _buildOnStart(context, event, flowId),
         ),
@@ -473,7 +452,6 @@ class CrossSigning {
                 _eventMap[flowId]?.verifyingThisDev == true
                     ? AppLocalizations.of(context)!.verifyThisSession
                     : AppLocalizations.of(context)!.verifySession,
-                style: CrossSigningSheetTheme.primaryTextStyle,
               ),
               const Spacer(),
               Padding(
@@ -498,9 +476,7 @@ class CrossSigning {
             child: SizedBox(
               height: 100,
               width: 100,
-              child: CircularProgressIndicator(
-                color: CrossSigningSheetTheme.loadingIndicatorColor,
-              ),
+              child: CircularProgressIndicator(),
             ),
           ),
         ),
@@ -509,7 +485,6 @@ class CrossSigning {
           child: Center(
             child: Text(
               AppLocalizations.of(context)!.pleaseWait,
-              style: CrossSigningSheetTheme.secondaryTextStyle,
             ),
           ),
         ),
@@ -532,7 +507,6 @@ class CrossSigning {
         builder: (context, setState) => Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: CrossSigningSheetTheme.backgroundColor,
           ),
           child: _buildOnCancel(context, event, flowId, manual),
         ),
@@ -568,7 +542,6 @@ class CrossSigning {
                     _eventMap[flowId]?.verifyingThisDev == true
                         ? AppLocalizations.of(context)!.verifyThisSession
                         : AppLocalizations.of(context)!.verifySession,
-                    style: CrossSigningSheetTheme.primaryTextStyle,
                   ),
                   const Spacer(),
                 ],
@@ -587,7 +560,6 @@ class CrossSigning {
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Text(
                 AppLocalizations.of(context)!.verificationConclusionCompromised,
-                style: CrossSigningSheetTheme.secondaryTextStyle,
                 softWrap: false,
               ),
             ),
@@ -599,13 +571,13 @@ class CrossSigning {
               width: MediaQuery.of(context).size.width * 0.40,
               child: elevatedButton(
                 AppLocalizations.of(context)!.sasGotIt,
-                AppCommonTheme.greenButtonColor,
+                Theme.of(context).colorScheme.success,
                 () {
                   // finish verification
                   Get.back();
                   _eventMap.remove(flowId);
                 },
-                CrossSigningSheetTheme.buttonTextStyle,
+                const TextStyle(),
               ),
             ),
           ),
@@ -634,7 +606,6 @@ class CrossSigning {
                     _eventMap[flowId]?.verifyingThisDev == true
                         ? AppLocalizations.of(context)!.verifyThisSession
                         : AppLocalizations.of(context)!.verifySession,
-                    style: CrossSigningSheetTheme.primaryTextStyle,
                   ),
                   const Spacer(),
                 ],
@@ -652,7 +623,6 @@ class CrossSigning {
               padding: const EdgeInsets.all(8),
               child: Text(
                 event.reason()!,
-                style: CrossSigningSheetTheme.secondaryTextStyle,
               ),
             ),
           ),
@@ -663,13 +633,13 @@ class CrossSigning {
               width: MediaQuery.of(context).size.width * 0.40,
               child: elevatedButton(
                 AppLocalizations.of(context)!.sasGotIt,
-                AppCommonTheme.greenButtonColor,
+                Theme.of(context).colorScheme.success,
                 () {
                   // finish verification
                   Get.back();
                   _eventMap.remove(flowId);
                 },
-                CrossSigningSheetTheme.buttonTextStyle,
+                const TextStyle(),
               ),
             ),
           ),
@@ -693,7 +663,6 @@ class CrossSigning {
         builder: (context, setState) => Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: CrossSigningSheetTheme.backgroundColor,
           ),
           child: _buildOnAccept(context, event, flowId),
         ),
@@ -727,7 +696,6 @@ class CrossSigning {
                   _eventMap[flowId]?.verifyingThisDev == true
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
-                  style: CrossSigningSheetTheme.primaryTextStyle,
                 ),
                 const Spacer(),
               ],
@@ -741,9 +709,7 @@ class CrossSigning {
             child: SizedBox(
               height: 100,
               width: 100,
-              child: CircularProgressIndicator(
-                color: CrossSigningSheetTheme.loadingIndicatorColor,
-              ),
+              child: CircularProgressIndicator(),
             ),
           ),
         ),
@@ -755,7 +721,6 @@ class CrossSigning {
               AppLocalizations.of(context)!.verificationRequestWaitingFor,
               [event.sender()],
             ),
-            style: CrossSigningSheetTheme.secondaryTextStyle,
           ),
         ),
         const Spacer(flex: 1),
@@ -778,7 +743,6 @@ class CrossSigning {
           builder: (context, setState) => Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
-              color: CrossSigningSheetTheme.backgroundColor,
             ),
             child: _buildOnKey(context, event, flowId, emoji, setState),
           ),
@@ -818,7 +782,6 @@ class CrossSigning {
                   _eventMap[flowId]?.verifyingThisDev == true
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
-                  style: CrossSigningSheetTheme.primaryTextStyle,
                 ),
                 const Spacer(),
                 Padding(
@@ -844,7 +807,6 @@ class CrossSigning {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Text(
               AppLocalizations.of(context)!.verificationEmojiNotice,
-              style: CrossSigningSheetTheme.secondaryTextStyle,
             ),
           ),
         ),
@@ -856,7 +818,6 @@ class CrossSigning {
               margin: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                color: CrossSigningSheetTheme.gridBackgroundColor,
               ),
               child: Padding(
                 padding: const EdgeInsets.only(top: 10),
@@ -873,11 +834,6 @@ class CrossSigning {
                           ),
                           Text(
                             emojiDescriptions[index],
-                            style: CrossSigningSheetTheme.secondaryTextStyle
-                                .copyWith(
-                              color: CrossSigningSheetTheme.primaryTextColor,
-                              overflow: TextOverflow.ellipsis,
-                            ),
                             maxLines: 1,
                             textAlign: TextAlign.center,
                           ),
@@ -914,7 +870,6 @@ class CrossSigning {
               AppLocalizations.of(context)!.verificationRequestWaitingFor,
               [event.sender()],
             ),
-            style: CrossSigningSheetTheme.secondaryTextStyle,
           ),
         ),
       );
@@ -927,7 +882,7 @@ class CrossSigning {
           width: MediaQuery.of(context).size.width * 0.48,
           child: elevatedButton(
             AppLocalizations.of(context)!.verificationSasDoNotMatch,
-            CrossSigningSheetTheme.redButtonColor,
+            Theme.of(context).colorScheme.success,
             () async {
               // mismatch sas verification
               await event.mismatchSasVerification();
@@ -935,7 +890,7 @@ class CrossSigning {
               Get.back();
               _onKeyVerificationCancel(event, true);
             },
-            CrossSigningSheetTheme.buttonTextStyle,
+            const TextStyle(),
           ),
         ),
         const Spacer(flex: 1),
@@ -944,7 +899,7 @@ class CrossSigning {
           width: MediaQuery.of(context).size.width * 0.48,
           child: elevatedButton(
             AppLocalizations.of(context)!.verificationSasMatch,
-            CrossSigningSheetTheme.greenButtonColor,
+            Theme.of(context).colorScheme.success,
             () async {
               if (_mounted) {
                 setState(() => waitForMatch = true);
@@ -959,7 +914,7 @@ class CrossSigning {
               Get.back();
               _onKeyVerificationMac(event);
             },
-            CrossSigningSheetTheme.buttonTextStyle,
+            const TextStyle(),
           ),
         ),
       ],
@@ -991,7 +946,6 @@ class CrossSigning {
         builder: (context, setState) => Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: CrossSigningSheetTheme.backgroundColor,
           ),
           child: _buildOnDone(context, event, flowId),
         ),
@@ -1024,7 +978,6 @@ class CrossSigning {
                 const SizedBox(width: 5),
                 Text(
                   AppLocalizations.of(context)!.sasVerified,
-                  style: CrossSigningSheetTheme.primaryTextStyle,
                 ),
               ],
             ),
@@ -1041,7 +994,6 @@ class CrossSigning {
                   ? AppLocalizations.of(context)!
                       .verificationConclusionOkSelfNotice
                   : AppLocalizations.of(context)!.verificationConclusionOkDone,
-              style: CrossSigningSheetTheme.secondaryTextStyle,
               textAlign: TextAlign.center,
             ),
           ),
@@ -1059,13 +1011,13 @@ class CrossSigning {
               width: MediaQuery.of(context).size.width * 0.40,
               child: elevatedButton(
                 AppLocalizations.of(context)!.sasGotIt,
-                CrossSigningSheetTheme.greenButtonColor,
+                Theme.of(context).colorScheme.success,
                 () {
                   // finish verification
                   Get.back();
                   _eventMap.remove(flowId);
                 },
-                CrossSigningSheetTheme.buttonTextStyle,
+                const TextStyle(),
               ),
             ),
           ),

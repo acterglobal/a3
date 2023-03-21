@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +57,6 @@ class _PinItemPageState extends State<PinItemPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppCommonTheme.backgroundColor,
         elevation: 0,
         actions: <Widget>[
           IconButton(
@@ -67,7 +65,6 @@ class _PinItemPageState extends State<PinItemPage> {
           )
         ],
       ),
-      backgroundColor: AppCommonTheme.backgroundColor,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -127,7 +124,6 @@ class _PinItemPageState extends State<PinItemPage> {
                           fit: FlexFit.loose,
                           child: Text(
                             widget.pin.title(),
-                            style: PinTheme.titleStyle,
                           ),
                         ),
                         Align(
@@ -158,7 +154,6 @@ class _PinItemPageState extends State<PinItemPage> {
                         margin: const EdgeInsets.only(left: 12),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: PinTheme.supportColor),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,7 +163,6 @@ class _PinItemPageState extends State<PinItemPage> {
                               padding: EdgeInsets.only(left: 8),
                               child: Text(
                                 'Support',
-                                style: PinTheme.teamNameStyle,
                               ),
                             )
                           ],
@@ -191,7 +185,6 @@ class _PinItemPageState extends State<PinItemPage> {
                                 padding: EdgeInsets.only(left: 8),
                                 child: Text(
                                   '0', //widget.pin.likesCount().toString(),
-                                  style: PinTheme.likeAndCommentStyle,
                                 ),
                               ),
                               GestureDetector(
@@ -212,7 +205,6 @@ class _PinItemPageState extends State<PinItemPage> {
                                       padding: EdgeInsets.only(left: 8),
                                       child: Text(
                                         '0', //widget.pin.commentsCount().toString(),
-                                        style: PinTheme.likeAndCommentStyle,
                                       ),
                                     ),
                                   ],

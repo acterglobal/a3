@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoList.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -46,9 +45,7 @@ class _AddTaskDialogBoxState extends State<AddTaskDialog> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16.0),
-                decoration: const BoxDecoration(
-                  color: ToDoTheme.backgroundGradientColor,
-                ),
+                decoration: const BoxDecoration(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -123,7 +120,6 @@ class _InputWidgetState extends State<_InputWidget> {
                   width: MediaQuery.of(context).size.width,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: ToDoTheme.secondaryColor,
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Padding(
@@ -229,35 +225,19 @@ class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: widget.index == widget.buttonIndex
-              ? ToDoTheme.floatingABColor
-              : ToDoTheme.secondaryColor,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Icon(
+            const Icon(
               Atlas.calendar_dots,
-              color: widget.index == widget.buttonIndex
-                  ? ToDoTheme.primaryTextColor
-                  : ToDoTheme.calendarColor,
               size: 16,
             ),
             const SizedBox(width: 4),
             Text(
               widget.text,
               textAlign: TextAlign.center,
-              style: widget.index == widget.buttonIndex
-                  ? ToDoTheme.calendarTextStyle.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: ToDoTheme.primaryTextColor,
-                    )
-                  : ToDoTheme.calendarTextStyle.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
             )
           ],
         ),
@@ -278,13 +258,7 @@ class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
       cancelText: 'Cancel',
       builder: (BuildContext ctx, child) {
         return Theme(
-          data: ThemeData.dark().copyWith(
-            dialogBackgroundColor: ToDoTheme.bottomSheetColor,
-            colorScheme: ColorScheme.fromSwatch().copyWith(
-              primary: ToDoTheme.primaryColor,
-              onSurface: ToDoTheme.primaryTextColor,
-            ),
-          ),
+          data: ThemeData.dark().copyWith(),
           child: child!,
         );
       },

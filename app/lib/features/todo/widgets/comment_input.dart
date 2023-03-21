@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoTask.dart';
@@ -40,9 +39,7 @@ class CommentInputState extends State<CommentInput> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: ToDoTheme.textFieldColor,
-      ),
+      decoration: const BoxDecoration(),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -71,7 +68,6 @@ class CommentInputState extends State<CommentInput> {
                       child: Container(
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
-                          color: AppCommonTheme.textFieldColor,
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: Stack(

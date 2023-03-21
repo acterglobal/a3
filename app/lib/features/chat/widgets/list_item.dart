@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
@@ -84,7 +83,6 @@ class _ChatListItemState extends State<ListItem> {
           child: Divider(
             indent: 75,
             endIndent: 10,
-            color: AppCommonTheme.dividerColor,
           ),
         ),
       ],
@@ -124,12 +122,10 @@ class _TitleWidget extends StatelessWidget {
     if (displayName == null) {
       return Text(
         AppLocalizations.of(context)!.loadingName,
-        style: ChatTheme01.chatTitleStyle,
       );
     }
     return Text(
       displayName!,
-      style: ChatTheme01.chatTitleStyle,
     );
   }
 }
@@ -149,9 +145,6 @@ class _SubtitleWidget extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 10),
         child: Text(
           getUserPlural(typingUsers),
-          style: ChatTheme01.latestChatStyle.copyWith(
-            fontStyle: FontStyle.italic,
-          ),
         ),
       );
     }
@@ -224,8 +217,6 @@ class _SubtitleWidget extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Text(
                     '${simplifyUserId(sender)}: ',
-                    style:
-                        const TextStyle(color: ChatTheme01.chatBodyTextColor),
                   ),
                 ),
                 Flexible(
@@ -235,7 +226,6 @@ class _SubtitleWidget extends StatelessWidget {
                     data: '''$body''',
                     maxLines: 1,
                     defaultTextStyle: const TextStyle(
-                      color: ChatTheme01.chatBodyTextColor,
                       overflow: TextOverflow.ellipsis,
                     ),
                     onLinkTap: (url) => {},
@@ -262,7 +252,6 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
               ),
             ),
             Flexible(
@@ -271,8 +260,7 @@ class _SubtitleWidget extends StatelessWidget {
                 // ignore: unnecessary_string_interpolations
                 data: '''$body''',
                 maxLines: 1,
-                defaultTextStyle: TextStyle(
-                  color: ChatTheme01.chatReplyTextColor.withOpacity(0.70),
+                defaultTextStyle: const TextStyle(
                   overflow: TextOverflow.ellipsis,
                 ),
                 onLinkTap: (url) => {},
@@ -288,12 +276,10 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
               ),
             ),
             Text(
               eventItem.textDesc()!.body(),
-              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
             ),
           ],
         );
@@ -305,15 +291,12 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
               ),
             ),
-            Flexible(
+            const Flexible(
               child: Text(
                 '***This message has been deleted***',
-                style: TextStyle(
-                  color: ChatTheme01.chatReplyTextColor.withOpacity(0.70),
-                ),
+                style: TextStyle(),
               ),
             ),
           ],
@@ -326,15 +309,12 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
               ),
             ),
-            Flexible(
+            const Flexible(
               child: Text(
                 '***Failed to decrypt message. Re-request session keys***',
-                style: TextStyle(
-                  color: ChatTheme01.chatReplyTextColor.withOpacity(0.70),
-                ),
+                style: TextStyle(),
               ),
             ),
           ],
@@ -356,7 +336,6 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
               ),
             ),
             Flexible(
@@ -365,8 +344,7 @@ class _SubtitleWidget extends StatelessWidget {
                 // ignore: unnecessary_string_interpolations
                 data: '''$body''',
                 maxLines: 1,
-                defaultTextStyle: TextStyle(
-                  color: ChatTheme01.chatReplyTextColor.withOpacity(0.70),
+                defaultTextStyle: const TextStyle(
                   overflow: TextOverflow.ellipsis,
                 ),
                 onLinkTap: (url) => {},
@@ -437,7 +415,6 @@ class _TrailingWidget extends StatelessWidget {
           DateFormat.Hm().format(
             DateTime.fromMillisecondsSinceEpoch(ts, isUtc: true),
           ),
-          style: ChatTheme01.latestChatDateStyle,
         ),
         senderID == userId
             ? _CustomStatusWidget(status: messageStatus)

@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoList.dart';
 import 'package:acter/models/ToDoTask.dart';
@@ -69,7 +68,6 @@ class TaskCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      color: ToDoTheme.secondaryCardColor,
       margin: const EdgeInsets.symmetric(vertical: 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,19 +83,14 @@ class TaskCard extends StatelessWidget {
                         .updateToDoTask(task, todoList, null, null, null)
                         .then((res) => debugPrint('TOGGLE CHECK')),
                     child: CircleAvatar(
-                      backgroundColor: AppCommonTheme.transparentColor,
                       radius: 18,
                       child: Container(
                         height: 25,
                         width: 25,
                         decoration: BoxDecoration(
-                          color: (task.progressPercent >= 100)
-                              ? ToDoTheme.activeCheckColor
-                              : ToDoTheme.inactiveCheckColor,
                           shape: BoxShape.circle,
                           border: Border.all(
                             width: 1.5,
-                            color: ToDoTheme.floatingABColor,
                           ),
                         ),
                         child: _CheckWidget(task: task),
@@ -110,11 +103,6 @@ class TaskCard extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 8),
                     child: Text(
                       task.name,
-                      style: ToDoTheme.taskTitleTextStyle.copyWith(
-                        decoration: (task.progressPercent >= 100)
-                            ? TextDecoration.lineThrough
-                            : null,
-                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -153,10 +141,6 @@ class TaskCard extends StatelessWidget {
                                   .format(task.due!.toUtc())
                               : DateFormat('E, d MMM')
                                   .format(task.due!.toUtc()),
-                          style: task.progressPercent >= 100
-                              ? ToDoTheme.todayCalendarTextStyle
-                                  .copyWith(color: Colors.red)
-                              : ToDoTheme.todayCalendarTextStyle,
                         )
                       : const SizedBox.shrink(),
                 ),
@@ -175,8 +159,6 @@ class TaskCard extends StatelessWidget {
                           padding: const EdgeInsets.only(left: 8),
                           child: Text(
                             '${task.commentsManager.commentsCount()}',
-                            style: ToDoTheme.todayCalendarTextStyle
-                                .copyWith(color: Colors.white),
                           ),
                         )
                       ],
@@ -206,7 +188,6 @@ class _CheckWidget extends StatelessWidget {
     }
     return const Icon(
       Icons.done_outlined,
-      color: ToDoTheme.inactiveCheckColor,
       size: 14,
     );
   }

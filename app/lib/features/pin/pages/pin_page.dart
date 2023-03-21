@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/widgets/search_widget.dart';
 import 'package:acter/features/pin/controllers/pin_controller.dart';
 import 'package:acter/features/pin/widgets/pin_list_item.dart';
@@ -24,17 +23,14 @@ class _PinPageState extends State<PinPage> {
       future: widget.client.pins(),
       builder: (BuildContext context, AsyncSnapshot<FfiListActerPin> snapshot) {
         return (!snapshot.hasData)
-            ? Container(
+            ? SizedBox(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
-                color: AppCommonTheme.backgroundColor,
                 child: const Center(
                   child: SizedBox(
                     height: 50,
                     width: 50,
-                    child: CircularProgressIndicator(
-                      color: AppCommonTheme.primaryColor,
-                    ),
+                    child: CircularProgressIndicator(),
                   ),
                 ),
               )
@@ -48,7 +44,6 @@ class _PinPageState extends State<PinPage> {
                         padding: EdgeInsets.only(left: 12),
                         child: Text(
                           'Pins',
-                          style: PinsTheme.titleTextStyle,
                         ),
                       ),
                       SearchWidget(

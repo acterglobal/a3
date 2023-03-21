@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:acter/common/themes/chat_theme.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:flutter/material.dart';
@@ -47,18 +46,12 @@ class TextMessageBuilder extends StatelessWidget {
     final matches = urlRegexp.allMatches(parsedString);
     if (matches.isEmpty) {
       return LinkPreview(
-        metadataTitleStyle: isNotice
-            ? ChatTheme01.chatMutedBodyStyle
-                .copyWith(fontWeight: FontWeight.w800)
-            : controller.userId == message.author.id
-                ? const ActerChatTheme().sentMessageLinkTitleTextStyle
-                : const ActerChatTheme().receivedMessageLinkTitleTextStyle,
-        metadataTextStyle: isNotice
-            ? ChatTheme01.chatMutedBodyStyle.copyWith(fontSize: 12)
-            : controller.userId == message.author.id
-                ? const ActerChatTheme().sentMessageLinkDescriptionTextStyle
-                : const ActerChatTheme()
-                    .receivedMessageLinkDescriptionTextStyle,
+        metadataTitleStyle: controller.userId == message.author.id
+            ? const ActerChatTheme().sentMessageLinkTitleTextStyle
+            : const ActerChatTheme().receivedMessageLinkTitleTextStyle,
+        metadataTextStyle: controller.userId == message.author.id
+            ? const ActerChatTheme().sentMessageLinkDescriptionTextStyle
+            : const ActerChatTheme().receivedMessageLinkDescriptionTextStyle,
         enableAnimation: true,
         imageBuilder: (image) {
           return Padding(
@@ -133,9 +126,6 @@ class _TextWidget extends StatelessWidget {
               // ignore: prefer_single_quotes, unnecessary_string_interpolations
               data: """${message.text}""",
               padding: const EdgeInsets.all(8),
-              defaultTextStyle: isNotice
-                  ? ChatTheme01.chatMutedBodyStyle
-                  : ChatTheme01.chatBodyStyle,
             ),
     );
   }

@@ -1,5 +1,4 @@
 import 'package:acter/common/snackbars/not_implemented.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoComment.dart';
@@ -28,19 +27,15 @@ class TaskDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final ToDoController cntrl = Get.find<ToDoController>();
     return Scaffold(
-      backgroundColor: ToDoTheme.backgroundGradientColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: ToDoTheme.secondaryColor,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Atlas.xmark_circle),
-          color: ToDoTheme.primaryTextColor,
         ),
         title: Obx(
           () => Text(
             cntrl.todos[listIndex].tasks[index].name,
-            style: ToDoTheme.listTitleTextStyle,
           ),
         ),
         centerTitle: true,
@@ -48,7 +43,6 @@ class TaskDetailPage extends StatelessWidget {
           IconButton(
             onPressed: () => showMoreBottomSheet(context),
             icon: const Icon(Atlas.dots_horizontal),
-            color: ToDoTheme.primaryTextColor,
           ),
         ],
       ),
@@ -107,28 +101,22 @@ class TaskDetailPage extends StatelessWidget {
     List<Icon> optionIcons = [
       const Icon(
         Icons.bookmark_border,
-        color: ToDoTheme.primaryTextColor,
       ),
       const Icon(
         Icons.link,
-        color: ToDoTheme.primaryTextColor,
       ),
       const Icon(
         Icons.comments_disabled_outlined,
-        color: ToDoTheme.primaryTextColor,
       ),
       const Icon(
         Icons.delete_outline,
-        color: ToDoTheme.primaryTextColor,
       ),
       const Icon(
         Icons.access_time,
-        color: ToDoTheme.primaryTextColor,
       ),
     ];
     showModalBottomSheet(
       context: context,
-      backgroundColor: ToDoTheme.bottomSheetColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
@@ -145,7 +133,6 @@ class TaskDetailPage extends StatelessWidget {
                   leading: optionIcons[index],
                   title: Text(
                     options[index],
-                    style: ToDoTheme.listMemberTextStyle,
                   ),
                 ),
               ),
@@ -155,13 +142,12 @@ class TaskDetailPage extends StatelessWidget {
               width: double.infinity,
               margin: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                border: Border.all(color: ToDoTheme.primaryTextColor),
+                border: Border.all(),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Center(
                 child: Text(
                   'Share this ToDo',
-                  style: ToDoTheme.listMemberTextStyle,
                 ),
               ),
             )
@@ -180,7 +166,6 @@ class _DividerWidget extends StatelessWidget {
     return const Padding(
       padding: EdgeInsets.symmetric(vertical: 10),
       child: Divider(
-        color: ToDoTheme.dividerColor,
         thickness: 1,
         indent: 10,
         endIndent: 10,
@@ -210,19 +195,14 @@ class _NameWidget extends StatelessWidget {
               debugPrint('Update eventId: $res');
             }),
             child: CircleAvatar(
-              backgroundColor: AppCommonTheme.transparentColor,
               radius: 18,
               child: Container(
                 height: 25,
                 width: 25,
                 decoration: BoxDecoration(
-                  color: (task.progressPercent >= 100)
-                      ? ToDoTheme.activeCheckColor
-                      : ToDoTheme.inactiveCheckColor,
                   shape: BoxShape.circle,
                   border: Border.all(
                     width: 1.5,
-                    color: ToDoTheme.floatingABColor,
                   ),
                 ),
                 child: _CheckWidget(task: task),
@@ -240,12 +220,6 @@ class _NameWidget extends StatelessWidget {
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                     ),
-                    style: ToDoTheme.taskTitleTextStyle.copyWith(
-                      decoration: (task.progressPercent >= 100)
-                          ? TextDecoration.lineThrough
-                          : null,
-                    ),
-                    cursorColor: ToDoTheme.primaryTextColor,
                     onChanged: (val) =>
                         controller.updateNameInput(_nameController, val),
                     onEditingComplete: () async =>
@@ -281,7 +255,6 @@ class _CheckWidget extends StatelessWidget {
     }
     return const Icon(
       Icons.done_outlined,
-      color: ToDoTheme.inactiveCheckColor,
       size: 14,
     );
   }
@@ -306,7 +279,6 @@ class _AssignWidget extends StatelessWidget {
           ),
           child: const Text(
             '+ Assign',
-            style: ToDoTheme.addTaskTextStyle,
           ),
         )
       ],
@@ -334,15 +306,9 @@ class _DueDateWidget extends StatelessWidget {
               child: task.due != null
                   ? Text(
                       'Due ${DateFormat('E, d MMM').format(task.due!.toUtc())}',
-                      style: ToDoTheme.taskTitleTextStyle
-                          .copyWith(color: ToDoTheme.todayCalendarColor),
                     )
-                  : Text(
+                  : const Text(
                       'Add Due Date',
-                      style: ToDoTheme.taskTitleTextStyle.copyWith(
-                        color: ToDoTheme.calendarColor,
-                        fontWeight: FontWeight.w600,
-                      ),
                     ),
             ),
           ],
@@ -370,7 +336,6 @@ class _DueDateWidget extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: ToDoTheme.bottomSheetColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
@@ -391,13 +356,7 @@ class _DueDateWidget extends StatelessWidget {
                 cancelText: 'Cancel',
                 builder: (BuildContext ctx, child) {
                   return Theme(
-                    data: ThemeData.dark().copyWith(
-                      dialogBackgroundColor: ToDoTheme.bottomSheetColor,
-                      colorScheme: ColorScheme.fromSwatch().copyWith(
-                        primary: ToDoTheme.primaryColor,
-                        onSurface: ToDoTheme.primaryTextColor,
-                      ),
-                    ),
+                    data: ThemeData.dark().copyWith(),
                     child: child!,
                   );
                 },
@@ -428,11 +387,8 @@ class _DueDateWidget extends StatelessWidget {
                       );
                       Navigator.pop(context);
                     },
-                    child: Text(
+                    child: const Text(
                       'Remove',
-                      style: ToDoTheme.taskSubtitleTextStyle.copyWith(
-                        color: ToDoTheme.removeColor,
-                      ),
                     ),
                   ),
                 ),
@@ -440,7 +396,6 @@ class _DueDateWidget extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(
                     _selectedDate != null ? 'Change Due Date' : 'Add Due Date',
-                    style: ToDoTheme.taskTitleTextStyle,
                   ),
                 ),
                 Padding(
@@ -456,16 +411,12 @@ class _DueDateWidget extends StatelessWidget {
                       );
                       Navigator.pop(context);
                     },
-                    child: Text(
+                    child: const Text(
                       'Done',
-                      style: ToDoTheme.taskSubtitleTextStyle.copyWith(
-                        color: ToDoTheme.floatingABColor,
-                      ),
                     ),
                   ),
                 ),
                 const Divider(
-                  color: ToDoTheme.bottomSheetDividerColor,
                   height: 0,
                   thickness: 1,
                   indent: 20,
@@ -510,22 +461,14 @@ class _DueDateWidget extends StatelessWidget {
                         });
                       },
                       tileColor: Colors.transparent,
-                      selectedTileColor: tappedIdx != 3
-                          ? ToDoTheme.todayCalendarColor
-                          : Colors.transparent,
                       selected: tappedIdx != null && tappedIdx == index,
                       leading: optionIcons[index],
                       title: Text(
                         options[index],
-                        style: index == options.length - 1
-                            ? ToDoTheme.listMemberTextStyle
-                                .copyWith(color: ToDoTheme.floatingABColor)
-                            : ToDoTheme.listMemberTextStyle,
                       ),
                       trailing: index == options.length - 1
                           ? const Icon(
                               Atlas.arrow_right_circle,
-                              color: ToDoTheme.floatingABColor,
                             )
                           : null,
                     ),
@@ -550,16 +493,12 @@ class _AddFileWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
-          children: <Widget>[
-            const Icon(Atlas.pen),
+          children: const <Widget>[
+            Icon(Atlas.pen),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: EdgeInsets.symmetric(horizontal: 10),
               child: Text(
                 'Add File',
-                style: ToDoTheme.taskTitleTextStyle.copyWith(
-                  color: ToDoTheme.calendarColor,
-                  fontWeight: FontWeight.w600,
-                ),
               ),
             ),
           ],
@@ -572,9 +511,7 @@ class _AddFileWidget extends StatelessWidget {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => CupertinoTheme(
-        data: const CupertinoThemeData(
-          scaffoldBackgroundColor: ToDoTheme.bottomSheetColor,
-        ),
+        data: const CupertinoThemeData(),
         child: CupertinoActionSheet(
           actions: <CupertinoActionSheetAction>[
             CupertinoActionSheetAction(
@@ -593,7 +530,6 @@ class _AddFileWidget extends StatelessWidget {
                       children: const [
                         Text(
                           'Take a Photo',
-                          style: ToDoTheme.listTitleTextStyle,
                         ),
                       ],
                     ),
@@ -617,7 +553,6 @@ class _AddFileWidget extends StatelessWidget {
                       children: const [
                         Text(
                           'Choose from Photos',
-                          style: ToDoTheme.listTitleTextStyle,
                         ),
                       ],
                     ),
@@ -641,7 +576,6 @@ class _AddFileWidget extends StatelessWidget {
                       children: const [
                         Text(
                           'Choose from Files',
-                          style: ToDoTheme.listTitleTextStyle,
                         ),
                       ],
                     ),
@@ -653,7 +587,6 @@ class _AddFileWidget extends StatelessWidget {
           cancelButton: CupertinoActionSheetAction(
             child: const Text(
               'Cancel',
-              style: ToDoTheme.listTitleTextStyle,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -689,20 +622,15 @@ class _DiscussionWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Row(
-                  children: [
-                    const Icon(
+                  children: const <Widget>[
+                    Icon(
                       Atlas.message,
-                      color: ToDoTheme.calendarColor,
                       size: 18,
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
                         'Discussion',
-                        style: ToDoTheme.taskTitleTextStyle.copyWith(
-                          color: ToDoTheme.calendarColor,
-                          fontWeight: FontWeight.w600,
-                        ),
                       ),
                     ),
                   ],
@@ -718,20 +646,16 @@ class _DiscussionWidget extends StatelessWidget {
                   builder: (_) {
                     return Text(
                       '${task.commentsManager.commentsCount()}',
-                      style: ToDoTheme.listMemberTextStyle,
                     );
                   },
                 ),
                 const Spacer(),
                 InkWell(
                   onTap: () => controller.toggleCommentInput(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
                       'Write message',
-                      style: ToDoTheme.taskTitleTextStyle.copyWith(
-                        color: AppCommonTheme.secondaryColor,
-                      ),
                     ),
                   ),
                 ),
@@ -747,9 +671,7 @@ class _DiscussionWidget extends StatelessWidget {
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(
-                          child: CircularProgressIndicator(
-                            color: AppCommonTheme.primaryColor,
-                          ),
+                          child: CircularProgressIndicator(),
                         );
                       } else {
                         if (snapshot.hasData) {
@@ -773,11 +695,9 @@ class _DiscussionWidget extends StatelessWidget {
                                 title: Text(
                                   simplifyUserId(comments[index].userId) ??
                                       'No Name',
-                                  style: ToDoTheme.taskListTextStyle,
                                 ),
                                 subtitle: Text(
                                   comments[index].text ?? '',
-                                  style: ToDoTheme.activeTasksTextStyle,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 2,
                                 ),
@@ -800,16 +720,12 @@ class _DiscussionWidget extends StatelessWidget {
                                               ? 'Yesterday'
                                               : DateFormat('H:mm E, d MMM')
                                                   .format(comments[index].time),
-                                      style: ToDoTheme.todayCalendarTextStyle
-                                          .copyWith(fontSize: 10),
                                     ),
                                   ],
                                 ),
                               ),
                               separatorBuilder: (context, index) =>
-                                  const Divider(
-                                color: ToDoTheme.dividerColor,
-                              ),
+                                  const Divider(),
                             );
                           } else {
                             const SizedBox.shrink();
@@ -818,7 +734,6 @@ class _DiscussionWidget extends StatelessWidget {
                           return Center(
                             child: Text(
                               'Failed to fetch due to ${snapshot.error.toString()} ',
-                              style: ToDoTheme.listMemberTextStyle,
                             ),
                           );
                         }
@@ -840,24 +755,19 @@ class _DiscussionWidget extends StatelessWidget {
     List<Icon> optionIcons = [
       const Icon(
         Icons.bookmark_border,
-        color: ToDoTheme.primaryTextColor,
       ),
       const Icon(
         Icons.link,
-        color: ToDoTheme.primaryTextColor,
       ),
       const Icon(
         Icons.file_upload_outlined,
-        color: ToDoTheme.primaryTextColor,
       ),
       const Icon(
         Icons.warning_amber_rounded,
-        color: Colors.red,
       ),
     ];
     showModalBottomSheet(
       context: context,
-      backgroundColor: ToDoTheme.bottomSheetColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
@@ -873,7 +783,6 @@ class _DiscussionWidget extends StatelessWidget {
                 height: 80,
                 width: 80,
                 decoration: BoxDecoration(
-                  color: ToDoTheme.secondaryCardColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -885,10 +794,6 @@ class _DiscussionWidget extends StatelessWidget {
                     ),
                     Text(
                       options[index],
-                      style: index == options.length - 1
-                          ? ToDoTheme.listMemberTextStyle
-                              .copyWith(color: Colors.red)
-                          : ToDoTheme.listMemberTextStyle,
                     )
                   ],
                 ),
@@ -911,22 +816,14 @@ class _SubscribersWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4.0),
+          const Padding(
+            padding: EdgeInsets.only(bottom: 4.0),
             child: Text(
               'Subscribers',
-              style: ToDoTheme.taskTitleTextStyle.copyWith(
-                color: ToDoTheme.calendarColor,
-                fontWeight: FontWeight.bold,
-              ),
             ),
           ),
-          Text(
+          const Text(
             'No one will be notified when someone comments on this to-do list',
-            style: ToDoTheme.taskTitleTextStyle.copyWith(
-              color: ToDoTheme.calendarColor,
-              fontSize: 13,
-            ),
           ),
           InkWell(
             onTap: () => showNotYetImplementedMsg(
@@ -940,31 +837,19 @@ class _SubscribersWidget extends StatelessWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(100)),
                 border: Border.all(color: Colors.white),
               ),
-              child: Text(
+              child: const Text(
                 'Add/remove people',
-                style: ToDoTheme.taskTitleTextStyle.copyWith(
-                  color: ToDoTheme.calendarColor,
-                  fontSize: 13,
-                ),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4.0),
+          const Padding(
+            padding: EdgeInsets.only(bottom: 4.0),
             child: Text(
               'You are not subscribed',
-              style: ToDoTheme.taskTitleTextStyle.copyWith(
-                color: ToDoTheme.calendarColor,
-                fontWeight: FontWeight.bold,
-              ),
             ),
           ),
-          Text(
+          const Text(
             "You won't be notified when comments are posted",
-            style: ToDoTheme.taskTitleTextStyle.copyWith(
-              color: ToDoTheme.calendarColor,
-              fontSize: 13,
-            ),
           ),
           Container(
             margin: const EdgeInsets.symmetric(vertical: 12),
@@ -973,12 +858,8 @@ class _SubscribersWidget extends StatelessWidget {
               borderRadius: const BorderRadius.all(Radius.circular(100)),
               border: Border.all(color: Colors.white),
             ),
-            child: Text(
+            child: const Text(
               'Subscriber me',
-              style: ToDoTheme.taskTitleTextStyle.copyWith(
-                color: ToDoTheme.calendarColor,
-                fontSize: 13,
-              ),
             ),
           ),
         ],
@@ -998,7 +879,6 @@ class _LastUpdatedWidget extends StatelessWidget {
         width: double.infinity,
         child: Text(
           'Last Update ???',
-          style: ToDoTheme.activeTasksTextStyle,
           textAlign: TextAlign.center,
         ),
       ),

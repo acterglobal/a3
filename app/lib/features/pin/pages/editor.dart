@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/pin/widgets/tag_item.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -68,7 +67,6 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
         },
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: AppCommonTheme.backgroundColor,
             leading: TextButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -83,7 +81,6 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                 padding: const EdgeInsets.all(8),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppCommonTheme.primaryColor,
                     shape: const StadiumBorder(),
                   ),
                   onPressed: () async {
@@ -245,7 +242,6 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                       width: double.infinity,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: AppCommonTheme.textFieldColor,
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: TextField(
@@ -322,7 +318,6 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppCommonTheme.primaryColor,
                         shape: const StadiumBorder(),
                       ),
                       child: const Padding(

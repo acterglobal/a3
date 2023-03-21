@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/pages/link_settings_page.dart';
@@ -40,12 +39,10 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: AppCommonTheme.backgroundColor,
         actions: <Widget>[
           Visibility(
             visible: isAdmin,
             child: PopupMenuButton<int>(
-              color: AppCommonTheme.darkShade,
               onSelected: (item) => handleItemClick(item, context),
               itemBuilder: (context) => [
                 PopupMenuItem<int>(
@@ -55,12 +52,10 @@ class ProfilePage extends StatelessWidget {
                     children: const [
                       Text(
                         'Report',
-                        style: TextStyle(color: AppCommonTheme.primaryColor),
                       ),
                       SizedBox(width: 50),
                       Icon(
                         Atlas.triangle_exclamation,
-                        color: AppCommonTheme.primaryColor,
                       )
                     ],
                   ),
@@ -128,7 +123,6 @@ class ProfilePage extends StatelessWidget {
                 child: Text(
                   roomName!,
                   overflow: TextOverflow.clip,
-                  style: ChatTheme01.chatProfileTitleStyle,
                 ),
               ),
             GestureDetector(
@@ -162,7 +156,6 @@ class ProfilePage extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(16, 8, 16, 20),
                 child: Text(
                   'Online',
-                  style: TextStyle(color: AppCommonTheme.primaryColor),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -180,7 +173,6 @@ class ProfilePage extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Card(
-                  color: AppCommonTheme.darkShade,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -196,7 +188,6 @@ class ProfilePage extends StatelessWidget {
                           padding: EdgeInsets.symmetric(vertical: 12),
                           child: Divider(
                             height: 2,
-                            color: AppCommonTheme.dividerColor,
                           ),
                         ),
                         buildGroupLinkSwitch(context),
@@ -204,7 +195,6 @@ class ProfilePage extends StatelessWidget {
                           padding: EdgeInsets.symmetric(vertical: 12),
                           child: Divider(
                             height: 2,
-                            color: AppCommonTheme.dividerColor,
                           ),
                         ),
                         buildCreateRoomInviteButton(context),
@@ -260,7 +250,6 @@ class ProfilePage extends StatelessWidget {
       },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        color: AppCommonTheme.darkShade,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Column(
@@ -285,7 +274,6 @@ class ProfilePage extends StatelessWidget {
         );
       },
       child: Card(
-        color: AppCommonTheme.darkShade,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -311,7 +299,6 @@ class ProfilePage extends StatelessWidget {
         );
       },
       child: Card(
-        color: AppCommonTheme.darkShade,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -409,7 +396,6 @@ class ProfilePage extends StatelessWidget {
   void showInviteBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppCommonTheme.backgroundColor,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
@@ -448,7 +434,6 @@ class ProfilePage extends StatelessWidget {
                         width: double.infinity,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: AppCommonTheme.darkShade,
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: TextField(
@@ -496,7 +481,6 @@ class ProfilePage extends StatelessWidget {
                             child: const Text(
                               'Edit invite link',
                               style: TextStyle(
-                                color: AppCommonTheme.primaryColor,
                                 fontSize: 14,
                               ),
                             ),
@@ -529,7 +513,6 @@ class ProfilePage extends StatelessWidget {
 
   Widget buildGroupLabel() {
     return Card(
-      color: AppCommonTheme.darkShade,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
@@ -554,7 +537,7 @@ class ProfilePage extends StatelessWidget {
             ),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
-              child: Divider(height: 2, color: AppCommonTheme.dividerColor),
+              child: Divider(height: 2),
             ),
             Row(
               children: const [
@@ -571,7 +554,6 @@ class ProfilePage extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Text(
                     '@marthacraig',
-                    style: TextStyle(color: AppCommonTheme.primaryColor),
                   ),
                 ),
               ],
@@ -584,19 +566,17 @@ class ProfilePage extends StatelessWidget {
 
   Widget buildBlockButton() {
     return Card(
-      color: AppCommonTheme.darkShade,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
           children: const [
-            Icon(Atlas.danger, color: AppCommonTheme.primaryColor),
+            Icon(Atlas.danger),
             Padding(
               padding: EdgeInsets.only(left: 8),
               child: Text(
                 'Block this user',
                 style: TextStyle(
-                  color: AppCommonTheme.primaryColor,
                   fontSize: 16,
                 ),
               ),
@@ -623,7 +603,6 @@ class ProfilePage extends StatelessWidget {
 
   Widget buildMemberList(ChatRoomController roomController) {
     return Card(
-      color: AppCommonTheme.darkShade,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListView.builder(
         itemCount: roomController.activeMembers.length,
@@ -638,9 +617,7 @@ class ProfilePage extends StatelessWidget {
               builder: (ChatRoomController controller) {
                 return (controller.getUserName(userId) == null)
                     ? const Center(
-                        child: CircularProgressIndicator(
-                          color: AppCommonTheme.primaryColor,
-                        ),
+                        child: CircularProgressIndicator(),
                       )
                     : GroupMember(
                         userId: userId,
@@ -669,15 +646,11 @@ class ProfilePage extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            color: ChatTheme01.leaveBtnBg,
           ),
           child: const Padding(
             padding: EdgeInsets.all(8),
             child: Center(
-              child: Text(
-                'Leave Group',
-                style: TextStyle(color: ChatTheme01.redText, fontSize: 18),
-              ),
+              child: Text('Leave Group'),
             ),
           ),
         ),
@@ -693,7 +666,6 @@ class ProfilePage extends StatelessWidget {
 
   void showReportBottomSheet(BuildContext context) {
     showModalBottomSheet(
-      backgroundColor: AppCommonTheme.backgroundColor,
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
@@ -727,7 +699,6 @@ class ProfilePage extends StatelessWidget {
                         decoration: const BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: AppCommonTheme.dividerColor,
                               width: 1.0,
                             ),
                           ),
@@ -748,7 +719,6 @@ class ProfilePage extends StatelessWidget {
                         decoration: const BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: AppCommonTheme.dividerColor,
                               width: 1,
                             ),
                           ),
@@ -769,7 +739,6 @@ class ProfilePage extends StatelessWidget {
                         decoration: const BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: AppCommonTheme.dividerColor,
                               width: 1,
                             ),
                           ),
@@ -790,7 +759,6 @@ class ProfilePage extends StatelessWidget {
                         decoration: const BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: AppCommonTheme.dividerColor,
                               width: 1,
                             ),
                           ),
@@ -814,7 +782,6 @@ class ProfilePage extends StatelessWidget {
 
   void showMuteBottomSheet(BuildContext context) {
     showModalBottomSheet(
-      backgroundColor: AppCommonTheme.backgroundColor,
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
@@ -857,7 +824,6 @@ class ProfilePage extends StatelessWidget {
                           decoration: const BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: AppCommonTheme.dividerColor,
                                 width: 1,
                               ),
                             ),
@@ -881,7 +847,6 @@ class ProfilePage extends StatelessWidget {
                           decoration: const BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: AppCommonTheme.dividerColor,
                                 width: 1,
                               ),
                             ),
@@ -905,7 +870,6 @@ class ProfilePage extends StatelessWidget {
                           decoration: const BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: AppCommonTheme.dividerColor,
                                 width: 1,
                               ),
                             ),
@@ -929,7 +893,6 @@ class ProfilePage extends StatelessWidget {
                           decoration: const BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: AppCommonTheme.dividerColor,
                                 width: 1,
                               ),
                             ),
@@ -953,7 +916,6 @@ class ProfilePage extends StatelessWidget {
                           decoration: const BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: AppCommonTheme.dividerColor,
                                 width: 1,
                               ),
                             ),
@@ -982,7 +944,6 @@ class ProfilePage extends StatelessWidget {
                           decoration: const BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: AppCommonTheme.dividerColor,
                                 width: 1,
                               ),
                             ),

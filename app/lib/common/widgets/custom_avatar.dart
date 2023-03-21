@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
@@ -63,11 +62,11 @@ class _CustomAvatarState extends State<CustomAvatar> {
       future: _avatar,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          const SizedBox(
+          SizedBox(
             height: 20,
             width: 20,
             child: CircularProgressIndicator(
-              color: AppCommonTheme.primaryColor,
+              color: Theme.of(context).colorScheme.tertiary,
             ),
           );
         }

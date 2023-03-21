@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
 
 class InviteUserDialog extends StatefulWidget {
@@ -12,7 +11,6 @@ class _InviteUserDialogState extends State<InviteUserDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: ToDoTheme.backgroundGradientColor,
       child: Wrap(
         children: [
           Container(
@@ -24,53 +22,42 @@ class _InviteUserDialogState extends State<InviteUserDialog> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Invite Friends',
-                    style: ToDoTheme.titleTextStyle.copyWith(fontSize: 18),
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  const Text(
                     'You can invite your friends to ToDo today via',
                     textAlign: TextAlign.center,
-                    style: ToDoTheme.descriptionTextStyle.copyWith(
-                      color: ToDoTheme.calendarColor,
-                      fontSize: 15,
-                    ),
                   ),
                   const SizedBox(height: 16),
                   Column(
                     children: [
                       const _Divider(),
-                      Text(
+                      const Text(
                         'Whatsapp',
-                        style: ToDoTheme.titleTextStyle.copyWith(fontSize: 16),
                       ),
                       const _Divider(),
-                      Text(
+                      const Text(
                         'Email',
-                        style: ToDoTheme.titleTextStyle.copyWith(fontSize: 16),
                       ),
                       const _Divider(),
-                      Text(
+                      const Text(
                         'SMS',
-                        style: ToDoTheme.titleTextStyle.copyWith(fontSize: 16),
                       ),
                       const _Divider(),
-                      Text(
+                      const Text(
                         'Invitation Link',
-                        style: ToDoTheme.titleTextStyle.copyWith(fontSize: 16),
                       ),
                       const _Divider(),
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
                         },
-                        child: Text(
+                        child: const Text(
                           'Cancel',
-                          style: ToDoTheme.titleTextStyle
-                              .copyWith(fontSize: 16, color: Colors.red),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ],

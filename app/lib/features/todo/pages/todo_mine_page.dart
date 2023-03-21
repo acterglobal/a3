@@ -1,5 +1,4 @@
 import 'package:acter/common/snackbars/not_implemented.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/todo/pages/assignments_page.dart';
 import 'package:acter/features/todo/pages/recent_activity_page.dart';
 import 'package:acter/features/todo/pages/bookmarks_page.dart';
@@ -32,7 +31,6 @@ class _ToDoMinePageState extends State<ToDoMinePage> {
           ),
           title: const Text(
             'My assignments',
-            style: ToDoTheme.taskTitleTextStyle,
           ),
         ),
         ListTile(
@@ -49,7 +47,6 @@ class _ToDoMinePageState extends State<ToDoMinePage> {
           ),
           title: const Text(
             'Bookmarks',
-            style: ToDoTheme.taskTitleTextStyle,
           ),
         ),
         ListTile(
@@ -66,7 +63,6 @@ class _ToDoMinePageState extends State<ToDoMinePage> {
           ),
           title: const Text(
             'My recent activity',
-            style: ToDoTheme.taskTitleTextStyle,
           ),
         ),
         ListTile(
@@ -82,7 +78,6 @@ class _ToDoMinePageState extends State<ToDoMinePage> {
           ),
           title: const Text(
             'Upcoming event',
-            style: ToDoTheme.taskTitleTextStyle,
           ),
         ),
       ],

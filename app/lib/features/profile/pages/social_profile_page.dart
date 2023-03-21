@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:acter/common/widgets/nav_bar_title.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -83,7 +82,6 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(60),
                             border: Border.all(
-                              color: AppCommonTheme.primaryColor,
                               width: 5,
                             ),
                           ),
@@ -98,11 +96,9 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
                         ),
                         const Text(
                           'Harjeet kAUR',
-                          style: SideMenuAndProfileTheme.profileNameStyle,
                         ),
                         const Text(
                           'Harjeet@gmail.com',
-                          style: SideMenuAndProfileTheme.profileUserIdStyle,
                         )
                       ],
                     ),
@@ -121,23 +117,19 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
                       Tab(
                         child: Text(
                           'News',
-                          style: SideMenuAndProfileTheme.profileMenuStyle,
                         ),
                       ),
                       Tab(
                         child: Text(
                           'Feed',
-                          style: SideMenuAndProfileTheme.profileMenuStyle,
                         ),
                       ),
                       Tab(
                         child: Text(
                           'More details',
-                          style: SideMenuAndProfileTheme.profileMenuStyle,
                         ),
                       ),
                     ],
-                    indicatorColor: AppCommonTheme.primaryColor,
                   ),
                   SizedBox(
                     height: MediaQuery.of(context).size.height - 100,

@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -23,7 +22,6 @@ class SignUpTextField extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       height: 60,
       decoration: BoxDecoration(
-        color: AppCommonTheme.textFieldColor,
         borderRadius: BorderRadius.circular(4),
       ),
       child: TextFormField(
@@ -101,7 +99,6 @@ class SignInTextField extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       height: 60,
       decoration: BoxDecoration(
-        color: AppCommonTheme.textFieldColor,
         borderRadius: BorderRadius.circular(4),
       ),
       child: TextFormField(

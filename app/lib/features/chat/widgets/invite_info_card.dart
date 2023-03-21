@@ -1,4 +1,4 @@
-import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
@@ -49,7 +49,6 @@ class _InviteInfoCardState extends State<InviteInfoCard> {
   Widget build(BuildContext context) {
     String userId = widget.client.userId().toString();
     return Card(
-      color: AppCommonTheme.darkShade,
       margin: const EdgeInsets.symmetric(vertical: 1),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -67,7 +66,7 @@ class _InviteInfoCardState extends State<InviteInfoCard> {
             title: _TitleWidget(invitation: widget.invitation),
             subtitle: _SubtitleWidget(invitation: widget.invitation),
           ),
-          const Divider(color: AppCommonTheme.dividerColor, indent: 15),
+          Divider(color: Theme.of(context).colorScheme.neutral6, indent: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -97,14 +96,6 @@ class _RejectBtn extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () async => await invitation.reject(),
         child: Text(AppLocalizations.of(context)!.decline),
-        style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(AppCommonTheme.primaryColor),
-          textStyle: MaterialStateProperty.all<TextStyle>(
-            AppCommonTheme.appBarTitleStyle
-                .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
-          ),
-        ),
       ),
     );
   }
@@ -139,11 +130,8 @@ class _AcceptBtn extends StatelessWidget {
         },
         child: Text(AppLocalizations.of(context)!.accept),
         style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(AppCommonTheme.greenButtonColor),
-          textStyle: MaterialStateProperty.all<TextStyle>(
-            AppCommonTheme.appBarTitleStyle
-                .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
+          backgroundColor: MaterialStateProperty.all<Color>(
+            Theme.of(context).colorScheme.success,
           ),
         ),
       ),
@@ -160,10 +148,6 @@ class _TitleWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       invitation.sender(),
-      style: AppCommonTheme.appBarTitleStyle.copyWith(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-      ),
     );
   }
 }
@@ -177,18 +161,9 @@ class _SubtitleWidget extends StatelessWidget {
     return RichText(
       text: TextSpan(
         text: AppLocalizations.of(context)!.invitationText2,
-        style: AppCommonTheme.appBarTitleStyle.copyWith(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: AppCommonTheme.dividerColor,
-        ),
         children: <TextSpan>[
           TextSpan(
             text: invitation.roomName(),
-            style: AppCommonTheme.appBarTitleStyle.copyWith(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
           ),
         ],
       ),

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -45,18 +44,15 @@ class _ImageSelectionPageState extends State<ImageSelectionPage> {
                   initialScale: PhotoViewComputedScale.contained * 0.8,
                 );
               },
-              backgroundDecoration: const BoxDecoration(
-                color: AppCommonTheme.backgroundColor,
-              ),
+              backgroundDecoration: const BoxDecoration(),
               pageController: pageController,
               onPageChanged: (int i) {
                 setState(() => selectedIndex = i);
               },
             ),
           ),
-          Container(
+          SizedBox(
             width: double.infinity,
-            color: AppCommonTheme.backgroundColorLight,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -109,7 +105,6 @@ class _ImageSelectionPageState extends State<ImageSelectionPage> {
                 fit: BoxFit.fill,
                 image: FileImage(File(file.path!)),
               ),
-              color: AppCommonTheme.backgroundColor,
               border: getItemBorder(file),
             ),
           ),
@@ -126,7 +121,6 @@ class _ImageSelectionPageState extends State<ImageSelectionPage> {
               },
               child: const CircleAvatar(
                 radius: 8,
-                backgroundColor: AppCommonTheme.transparentColor,
                 child: Icon(Atlas.xmark_circle),
               ),
             ),
@@ -141,7 +135,6 @@ class _ImageSelectionPageState extends State<ImageSelectionPage> {
       return null;
     }
     return Border.all(
-      color: ChatTheme01.chatSelectedImageBorderColor,
       width: 2,
     );
   }

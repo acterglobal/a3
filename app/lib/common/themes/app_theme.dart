@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -99,10 +98,6 @@ class AppTheme {
         indent: 75,
         endIndent: 15,
         thickness: 0.5,
-        color: AppCommonTheme.dividerColor,
-      ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppCommonTheme.transparentColor,
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Color(0xff1D293E),

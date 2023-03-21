@@ -1435,14 +1435,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.16"
-  themed:
-    dependency: "direct main"
-    description:
-      name: themed
-      sha256: ec7bcc8ee4dcf20ef3ba0df01414b07836fd2d01134d9f0fc36a38d2fe95a53c
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.0"
   timelines:
     dependency: "direct main"
     description:

@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/todo/pages/create_todo_page.dart';
 import 'package:acter/features/todo/pages/todo_mine_page.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
@@ -43,10 +42,9 @@ class _ToDoPageState extends State<ToDoPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: ToDoTheme.backgroundGradient2Color,
         title: const Padding(
           padding: EdgeInsets.only(top: 25),
-          child: Text('Todo', style: ToDoTheme.titleTextStyle),
+          child: Text('Todo'),
         ),
         centerTitle: false,
         actions: [
@@ -93,8 +91,7 @@ class _BodyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: ToDoTheme.toDoDecoration,
+    return SizedBox(
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
@@ -156,7 +153,6 @@ class _RadioBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      splashColor: ToDoTheme.primaryTextColor,
       onTap: () {
         todoController.updateButtonIndex(index);
       },
@@ -166,18 +162,12 @@ class _RadioBtn extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: index == todoController.selectedValueIndex.value
-              ? ToDoTheme.primaryColor
-              : ToDoTheme.secondaryColor,
-          border: Border.all(color: ToDoTheme.btnBorderColor, width: 1),
+          border: Border.all(width: 1),
         ),
         child: Center(
           child: Text(
             text,
-            style: TextStyle(
-              color: index == todoController.selectedValueIndex.value
-                  ? ToDoTheme.primaryTextColor
-                  : ToDoTheme.inactiveTextColor,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),

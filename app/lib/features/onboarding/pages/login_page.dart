@@ -1,5 +1,4 @@
 import 'package:acter/common/controllers/network_controller.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
@@ -9,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:themed/themed.dart';
 import 'package:acter/common/utils/constants.dart' show LoginPageKeys;
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -39,7 +37,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         SnackBar(
           key: LoginPageKeys.snackbarSuccess,
           content: Text(AppLocalizations.of(context)!.loginSuccess),
-          backgroundColor: AuthTheme.authSuccess,
           duration: const Duration(seconds: 4),
         ),
       );
@@ -48,7 +45,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         SnackBar(
           key: LoginPageKeys.snackbarFailed,
           content: Text(AppLocalizations.of(context)!.loginFailed),
-          backgroundColor: AuthTheme.authFailed,
           duration: const Duration(seconds: 4),
         ),
       );
@@ -77,12 +73,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               const SizedBox(height: 40),
               Text(
                 AppLocalizations.of(context)!.welcomeBack,
-                style: AuthTheme.authTitleStyle,
               ),
               const SizedBox(height: 10),
               Text(
                 AppLocalizations.of(context)!.signInContinue,
-                style: AuthTheme.authBodyStyle,
               ),
               const SizedBox(height: 35),
               SignInTextField(
@@ -109,16 +103,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   onPressed: () {},
                   child: Text(
                     AppLocalizations.of(context)!.forgotPassword,
-                    style:
-                        AuthTheme.authBodyStyle + AuthTheme.forgotPasswordColor,
                   ),
                 ),
               ),
               const SizedBox(height: 100),
               authState
-                  ? const CircularProgressIndicator(
-                      color: AppCommonTheme.primaryColor,
-                    )
+                  ? const CircularProgressIndicator()
                   : CustomButton(
                       key: LoginPageKeys.submitBtn,
                       onPressed: () async {
@@ -141,7 +131,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 children: [
                   Text(
                     AppLocalizations.of(context)!.noAccount,
-                    style: AuthTheme.authBodyStyle,
                   ),
                   InkWell(
                     key: LoginPageKeys.signUpBtn,
@@ -150,8 +139,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     },
                     child: Text(
                       AppLocalizations.of(context)!.signUp,
-                      style:
-                          AuthTheme.authBodyStyle + AppCommonTheme.primaryColor,
                     ),
                   )
                 ],

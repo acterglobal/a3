@@ -1,6 +1,5 @@
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:acter/features/home/controllers/home_controller.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show UserProfile;
@@ -44,7 +43,6 @@ class UserAvatarWidget extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
                   'Guest User',
-                  style: SideMenuAndProfileTheme.sideMenuProfileStyle,
                 ),
               )
           ],
@@ -76,7 +74,6 @@ class UserAvatarWidget extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
                   data.getDisplayName() ?? '',
-                  style: SideMenuAndProfileTheme.sideMenuProfileStyle,
                 ),
               )
           ],
@@ -84,9 +81,7 @@ class UserAvatarWidget extends ConsumerWidget {
       },
       error: (error, _) => const Text('Couldn\'t load avatar'),
       loading: () => const Center(
-        child: CircularProgressIndicator(
-          color: AppCommonTheme.primaryColor,
-        ),
+        child: CircularProgressIndicator(),
       ),
     );
   }

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/features/bug_report/controllers/bug_report_controller.dart';
@@ -36,7 +35,6 @@ class _BugReportState extends State<BugReportPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: ToDoTheme.backgroundGradient2Color,
         leading: InkWell(
           onTap: () => Navigator.pop(context),
           child: const Icon(
@@ -54,7 +52,6 @@ class _BugReportState extends State<BugReportPage> {
             const SizedBox(height: 10),
             const Text(
               'Issue description',
-              style: AuthTheme.authBodyStyle,
             ),
             const SizedBox(height: 10),
             TextFormField(
@@ -66,7 +63,6 @@ class _BugReportState extends State<BugReportPage> {
             const SizedBox(height: 10),
             const Text(
               'Issue tag(s)',
-              style: AuthTheme.authBodyStyle,
             ),
             const SizedBox(height: 10),
             SelectTag(),
@@ -74,7 +70,6 @@ class _BugReportState extends State<BugReportPage> {
             CheckboxListTile(
               title: const Text(
                 'Including log file',
-                style: AuthTheme.authBodyStyle,
               ),
               value: withLog,
               onChanged: (bool? value) {
@@ -88,7 +83,6 @@ class _BugReportState extends State<BugReportPage> {
             CheckboxListTile(
               title: const Text(
                 'Including screenshot',
-                style: AuthTheme.authBodyStyle,
               ),
               value: withScreenshot,
               onChanged: (bool? value) {
@@ -114,7 +108,6 @@ class _BugReportState extends State<BugReportPage> {
               ),
             if (withScreenshot) const SizedBox(height: 10),
             const Divider(
-              color: ToDoTheme.dividerColor,
               endIndent: 10,
               indent: 10,
             ),
@@ -123,9 +116,7 @@ class _BugReportState extends State<BugReportPage> {
               id: 'submit',
               builder: (BugReportController controller) {
                 if (controller.isSubmitting) {
-                  return const CircularProgressIndicator(
-                    color: AppCommonTheme.primaryColor,
-                  );
+                  return const CircularProgressIndicator();
                 }
                 return CustomButton(
                   onPressed: () async {

@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +17,6 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
       appBar: AppBar(
         title: const Text('Group Link'),
         elevation: 0.0,
-        backgroundColor: AppCommonTheme.backgroundColor,
         centerTitle: true,
       ),
       body: Column(
@@ -29,7 +27,6 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              color: AppCommonTheme.darkShade,
               child: Column(
                 children: [
                   Row(
@@ -65,7 +62,6 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                               decoration: const BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: AppCommonTheme.dividerColor,
                                     width: 1,
                                   ),
                                 ),
@@ -95,7 +91,6 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                color: AppCommonTheme.darkShade,
                 child: Column(
                   children: [
                     Padding(
@@ -132,7 +127,6 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                           decoration: const BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: AppCommonTheme.dividerColor,
                                 width: 1,
                               ),
                             ),
@@ -174,7 +168,6 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                           decoration: const BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: AppCommonTheme.dividerColor,
                                 width: 1,
                               ),
                             ),
