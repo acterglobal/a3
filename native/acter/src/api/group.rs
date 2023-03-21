@@ -25,7 +25,6 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     client::{devide_groups_from_convos, Client},
-    receipt::ReceiptController,
     room::Room,
 };
 use crate::api::RUNTIME;
@@ -37,7 +36,6 @@ pub type CreateGroupSettingsBuilder = CreateSpaceSettingsBuilder;
 pub struct Group {
     pub client: Client,
     pub(crate) inner: Room,
-    pub(crate) receipt_controller: ReceiptController,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -48,11 +46,7 @@ struct HistoryState {
 
 impl Group {
     pub fn new(client: Client, inner: Room) -> Self {
-        Group {
-            client,
-            inner,
-            receipt_controller: ReceiptController::new(),
-        }
+        Group { client, inner }
     }
 
     pub async fn create_onboarding_data(&self) -> Result<()> {

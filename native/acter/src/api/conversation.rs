@@ -35,7 +35,7 @@ use std::sync::Arc;
 use super::{
     client::Client,
     message::{sync_event_to_message, RoomMessage},
-    receipt::{ReceiptController, ReceiptRecord},
+    receipt::ReceiptRecord,
     room::Room,
     RUNTIME,
 };
@@ -44,7 +44,6 @@ use super::{
 pub struct Conversation {
     inner: Room,
     latest_message: Option<RoomMessage>,
-    pub(crate) receipt_controller: ReceiptController,
 }
 
 impl Conversation {
@@ -52,7 +51,6 @@ impl Conversation {
         Conversation {
             inner,
             latest_message: Default::default(),
-            receipt_controller: ReceiptController::new(),
         }
     }
 

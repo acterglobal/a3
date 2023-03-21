@@ -29,6 +29,7 @@ use super::{
     group::Group,
     invitation::InvitationController,
     profile::UserProfile,
+    receipt::ReceiptController,
     room::Room,
     typing::TypingController,
     verification::VerificationController,
@@ -55,6 +56,7 @@ pub struct Client {
     pub(crate) verification_controller: VerificationController,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
+    pub(crate) receipt_controller: ReceiptController,
     pub(crate) conversation_controller: ConversationController,
 }
 
@@ -120,7 +122,7 @@ impl HistoryLoadState {
 pub struct SyncState {
     handle: Mutable<Option<JoinHandle<()>>>,
     first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
-    history_loading: futures_signals::signal::Mutable<HistoryLoadState>,
+    history_loading: Mutable<HistoryLoadState>,
 }
 
 impl SyncState {
@@ -193,6 +195,7 @@ impl Client {
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(),
             typing_controller: TypingController::new(),
+            receipt_controller: ReceiptController::new(),
             conversation_controller: ConversationController::new(),
         };
         Ok(cl)
@@ -212,10 +215,7 @@ impl Client {
         Ok(self.core.template_engine(template).await?)
     }
 
-    async fn refresh_history(
-        &self,
-        history: futures_signals::signal::Mutable<HistoryLoadState>,
-    ) -> Result<()> {
+    async fn refresh_history(&self, history: Mutable<HistoryLoadState>) -> Result<()> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
@@ -236,10 +236,7 @@ impl Client {
             .await?
     }
 
-    fn refresh_history_on_start(
-        &self,
-        history: futures_signals::signal::Mutable<HistoryLoadState>,
-    ) {
+    fn refresh_history_on_start(&self, history: Mutable<HistoryLoadState>) {
         let me = self.clone();
         RUNTIME.spawn(async move {
             if let Err(e) = me.refresh_history(history).await {
@@ -256,6 +253,7 @@ impl Client {
 
         self.invitation_controller.add_event_handler(&client);
         self.typing_controller.add_event_handler(&client);
+        self.receipt_controller.add_event_handler(&client);
         self.conversation_controller.add_event_handler(&client);
 
         self.verification_controller
@@ -580,6 +578,7 @@ impl Client {
         self.verification_controller
             .remove_sync_event_handler(&client);
         self.typing_controller.remove_event_handler(&client);
+        self.receipt_controller.remove_event_handler(&client);
         self.conversation_controller.remove_event_handler(&client);
 
         RUNTIME

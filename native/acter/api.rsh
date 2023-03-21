@@ -500,15 +500,6 @@ object Conversation {
     /// redact any message (including text/image/file and reaction)
     fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
 
-    /// Install event handler
-    fn add_event_handler();
-
-    /// Uninstall event handler
-    fn remove_event_handler();
-
-    /// Return the receipt event receiver
-    fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
-
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
 }
@@ -876,15 +867,6 @@ object Group {
 
     /// pin draft builder
     fn pin_draft() -> Result<PinDraft>;
-
-    /// Install event handler
-    fn add_event_handler();
-
-    /// Uninstall event handler
-    fn remove_event_handler();
-
-    /// Return the receipt event receiver
-    fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 }
 
 object Member {
@@ -1017,6 +999,9 @@ object Client {
 
     /// Return the typing event receiver
     fn typing_event_rx() -> Option<Stream<TypingEvent>>;
+
+    /// Return the receipt event receiver
+    fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 
     /// Return the message receiver
     fn incoming_message_rx() -> Option<Stream<RoomMessage>>;

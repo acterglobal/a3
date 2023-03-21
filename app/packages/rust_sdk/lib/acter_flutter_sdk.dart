@@ -113,7 +113,7 @@ class ActerSdk {
       );
       _clients.add(client);
       loggedIn = client.loggedIn();
-    await _persistSessions();
+      await _persistSessions();
     }
     debugPrint('Restored $_clients: $loggedIn');
   }

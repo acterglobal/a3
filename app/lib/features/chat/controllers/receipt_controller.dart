@@ -39,23 +39,10 @@ class ReceiptController extends GetxController {
   ReceiptController({required this.client}) : super();
 
   @override
-  void onClose() {
-    _subscription?.cancel();
-    super.onClose();
-  }
+  void onInit() {
+    super.onInit();
 
-  ReceiptRoom _getRoom(String roomId) {
-    if (_rooms.containsKey(roomId)) {
-      return _rooms[roomId]!;
-    }
-    ReceiptRoom room = ReceiptRoom();
-    _rooms[roomId] = room;
-    return room;
-  }
-
-  void loadRoom(Conversation conversation, List<ReceiptRecord> records) {
-    conversation.addEventHandler();
-    _subscription = conversation.receiptEventRx()?.listen((event) {
+    _subscription = client.receiptEventRx()?.listen((event) {
       String roomId = event.roomId();
       bool changed = false;
       for (var record in event.receiptRecords()) {
@@ -71,17 +58,30 @@ class ReceiptController extends GetxController {
         roomController.update(['Chat']);
       }
     });
+  }
 
+  @override
+  void onClose() {
+    _subscription?.cancel();
+
+    super.onClose();
+  }
+
+  ReceiptRoom _getRoom(String roomId) {
+    if (_rooms.containsKey(roomId)) {
+      return _rooms[roomId]!;
+    }
+    ReceiptRoom room = ReceiptRoom();
+    _rooms[roomId] = room;
+    return room;
+  }
+
+  void loadRoom(Conversation conversation, List<ReceiptRecord> records) {
     var room = _getRoom(conversation.getRoomId());
     for (var record in records) {
       String seenBy = record.seenBy();
       room.updateUser(seenBy, record.eventId(), record.ts());
     }
-  }
-
-  void unloadRoom(Conversation conversation) {
-    _subscription?.cancel();
-    conversation.removeEventHandler();
   }
 
   // this will be called via update(['Chat'])

@@ -24,11 +24,10 @@ use matrix_sdk::{
                 },
                 ImageInfo,
             },
-            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyStateEvent, AnyTimelineEvent,
-            MessageLikeEvent, StateEvent,
+            AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent, StateEvent,
         },
         room::RoomType,
-        EventId, Int, UInt, UserId,
+        EventId, Int, TransactionId, UInt, UserId,
     },
     Client as MatrixClient, RoomState,
 };
@@ -207,10 +206,9 @@ impl Room {
         };
         RUNTIME
             .spawn(async move {
-                let content = AnyMessageLikeEventContent::RoomMessage(
-                    RoomMessageEventContent::text_plain(message),
-                );
-                let response = room.send(content, None).await?;
+                let content = RoomMessageEventContent::text_plain(message);
+                let txn_id = TransactionId::new();
+                let response = room.send(content, Some(&txn_id)).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -224,10 +222,9 @@ impl Room {
         };
         RUNTIME
             .spawn(async move {
-                let content = AnyMessageLikeEventContent::RoomMessage(
-                    RoomMessageEventContent::text_markdown(markdown),
-                );
-                let response = room.send(content, None).await?;
+                let content = RoomMessageEventContent::text_markdown(markdown);
+                let txn_id = TransactionId::new();
+                let response = room.send(content, Some(&txn_id)).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -244,7 +241,8 @@ impl Room {
                 let event_id = EventId::parse(event_id)?;
                 let relates_to = Annotation::new(event_id, key);
                 let content = ReactionEventContent::new(relates_to);
-                let response = room.send(content, None).await?;
+                let txn_id = TransactionId::new();
+                let response = room.send(content, Some(&txn_id)).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -805,9 +803,8 @@ impl Room {
                     .context("Couldn't retrieve original message.")?;
 
                 let text_content = TextMessageEventContent::markdown(msg);
-                let reply_content = RoomMessageEventContent::new(MessageType::Text(text_content))
+                let content = RoomMessageEventContent::new(MessageType::Text(text_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
-                let content = AnyMessageLikeEventContent::RoomMessage(reply_content);
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
@@ -872,9 +869,8 @@ impl Room {
                     response.content_uri,
                     Some(Box::new(info)),
                 );
-                let reply_content = RoomMessageEventContent::new(MessageType::Image(image_content))
+                let content = RoomMessageEventContent::new(MessageType::Image(image_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
-                let content = AnyMessageLikeEventContent::RoomMessage(reply_content);
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
@@ -899,7 +895,6 @@ impl Room {
             bail!("Can't send reply as file to a room we are not in")
         };
         let client = self.room.client();
-        let r = self.room.clone();
 
         // any variable in self can't be called directly in spawn
         RUNTIME
@@ -934,9 +929,8 @@ impl Room {
                     response.content_uri,
                     Some(Box::new(info)),
                 );
-                let reply_content = RoomMessageEventContent::new(MessageType::File(file_content))
+                let content = RoomMessageEventContent::new(MessageType::File(file_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
-                let content = AnyMessageLikeEventContent::RoomMessage(reply_content);
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))

@@ -129,7 +129,6 @@ class ChatRoomController extends GetxController {
 
   // get the timeline of room
   Future<void> setCurrentRoom(Conversation? convoRoom) async {
-    var receiptController = Get.find<ReceiptController>();
     if (convoRoom == null) {
       _messages.clear();
       typingUsers.clear();
@@ -138,9 +137,6 @@ class ChatRoomController extends GetxController {
       _diffSubscription?.cancel();
       _stream = null;
       _page = 0;
-      if (_currentRoom != null) {
-        receiptController.unloadRoom(_currentRoom!);
-      }
       _currentRoom = null;
       return;
     }
@@ -361,6 +357,7 @@ class ChatRoomController extends GetxController {
       isLoading.value = false;
       return;
     }
+    var receiptController = Get.find<ReceiptController>();
     receiptController.loadRoom(convoRoom, receipts);
     isLoading.value = false;
   }
@@ -902,11 +899,7 @@ class ChatRoomController extends GetxController {
                 metadata['reactions'] = reactions;
               }
               //check whether string only contains emoji(s).
-              if (isOnlyEmojis(description.body())) {
-                metadata['enlargeEmoji'] = true;
-              } else {
-                metadata['enlargeEmoji'] = false;
-              }
+              metadata['enlargeEmoji'] = isOnlyEmojis(description.body());
               return types.TextMessage(
                 author: author,
                 createdAt: createdAt,
