@@ -1,4 +1,5 @@
 import 'package:acter/common/controllers/network_controller.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/controllers/auth_controller.dart';
@@ -30,6 +31,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     if (isLoggedIn) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.success,
           content: Text(AppLocalizations.of(context)!.loginSuccess),
           duration: const Duration(seconds: 4),
         ),
@@ -37,6 +39,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.error,
           content: Text(AppLocalizations.of(context)!.loginFailed),
           duration: const Duration(seconds: 4),
         ),
@@ -170,6 +173,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     },
                     child: Text(
                       AppLocalizations.of(context)!.login,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.tertiary,
+                      ),
                     ),
                   )
                 ],
