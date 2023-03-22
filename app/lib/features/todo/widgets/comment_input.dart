@@ -5,6 +5,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoTask.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Account;
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,6 +22,7 @@ class CommentInputState extends State<CommentInput> {
   final ToDoController controller = Get.find<ToDoController>();
   bool emojiShowing = false;
   final TextEditingController _inputController = TextEditingController();
+
   void onEmojiSelected(Emoji emoji) {
     _inputController
       ..text += emoji.emoji
@@ -39,10 +41,9 @@ class CommentInputState extends State<CommentInput> {
 
   @override
   Widget build(BuildContext context) {
+    Account account = controller.client.account();
     return Container(
-      decoration: const BoxDecoration(
-        color: ToDoTheme.textFieldColor,
-      ),
+      decoration: const BoxDecoration(color: ToDoTheme.textFieldColor),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -52,14 +53,11 @@ class CommentInputState extends State<CommentInput> {
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: CustomAvatar(
-                    uniqueKey: controller.client.account().userId(),
+                    uniqueKey: account.userId(),
                     radius: 18,
                     isGroup: false,
-                    avatar: controller.client.account().avatar(),
-                    stringName: simplifyUserId(
-                          controller.client.account().userId(),
-                        ) ??
-                        '',
+                    avatar: account.avatar(),
+                    stringName: simplifyUserId(account.userId()) ?? '',
                     cacheHeight: 120,
                     cacheWidth: 120,
                   ),
@@ -80,16 +78,12 @@ class CommentInputState extends State<CommentInput> {
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: TextField(
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                ),
+                                style: const TextStyle(color: Colors.white),
                                 cursorColor: Colors.grey,
                                 controller: _inputController,
                                 decoration: const InputDecoration(
                                   hintText: 'New Message',
-                                  hintStyle: TextStyle(
-                                    color: Colors.grey,
-                                  ),
+                                  hintStyle: TextStyle(color: Colors.grey),
                                   border: InputBorder.none,
                                 ),
                                 onChanged: (val) => cntrl.updateCommentInput(

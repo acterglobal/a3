@@ -11029,22 +11029,22 @@ class Api {
   )>();
   late final _deviceRecordUserIdPtr = _lookup<
       ffi.NativeFunction<
-          _DeviceRecordUserIdReturn Function(
+          ffi.Int64 Function(
     ffi.Int64,
   )>>("__DeviceRecord_user_id");
 
   late final _deviceRecordUserId = _deviceRecordUserIdPtr.asFunction<
-      _DeviceRecordUserIdReturn Function(
+      int Function(
     int,
   )>();
   late final _deviceRecordDeviceIdPtr = _lookup<
       ffi.NativeFunction<
-          _DeviceRecordDeviceIdReturn Function(
+          ffi.Int64 Function(
     ffi.Int64,
   )>>("__DeviceRecord_device_id");
 
   late final _deviceRecordDeviceId = _deviceRecordDeviceIdPtr.asFunction<
-      _DeviceRecordDeviceIdReturn Function(
+      int Function(
     int,
   )>();
   late final _deviceRecordDisplayNamePtr = _lookup<
@@ -20697,7 +20697,7 @@ class Client {
     return tmp2;
   }
 
-  String deviceId() {
+  DeviceId deviceId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._clientDeviceId(
@@ -20708,8 +20708,6 @@ class Client {
     final tmp5 = tmp1.arg2;
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
-    final tmp8 = tmp1.arg5;
-    final tmp9 = tmp1.arg6;
     if (tmp3 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
@@ -20720,13 +20718,10 @@ class Client {
       }
       throw tmp3_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp2 = utf8.decode(tmp7_0.asTypedList(tmp8));
-    if (tmp9 > 0) {
-      final ffi.Pointer<ffi.Void> tmp7_0;
-      tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-      _api.__deallocate(tmp7_0, tmp9 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_DeviceId");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = DeviceId._(_api, tmp7_1);
     return tmp2;
   }
 
@@ -22418,42 +22413,32 @@ class DeviceRecord {
   }
 
   /// get the id of this device user
-  String userId() {
+  UserId userId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._deviceRecordUserId(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
     return tmp2;
   }
 
   /// get the id of this device
-  String deviceId() {
+  DeviceId deviceId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._deviceRecordDeviceId(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_DeviceId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = DeviceId._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -23731,10 +23716,6 @@ class _ClientDeviceIdReturn extends ffi.Struct {
   external int arg3;
   @ffi.Int64()
   external int arg4;
-  @ffi.Uint64()
-  external int arg5;
-  @ffi.Uint64()
-  external int arg6;
 }
 
 class _ClientUserIdReturn extends ffi.Struct {
@@ -23947,24 +23928,6 @@ class _ReceiptRecordTsReturn extends ffi.Struct {
   external int arg0;
   @ffi.Uint64()
   external int arg1;
-}
-
-class _DeviceRecordUserIdReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _DeviceRecordDeviceIdReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
 }
 
 class _DeviceRecordDisplayNameReturn extends ffi.Struct {

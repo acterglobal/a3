@@ -942,7 +942,7 @@ object Client {
     fn account() -> Result<Account>;
 
     // The device_id of the client
-    fn device_id() -> Result<string>;
+    fn device_id() -> Result<DeviceId>;
 
     /// The user_id of the client
     /// deprecated, please use account() instead.
@@ -1197,10 +1197,10 @@ object DeviceRecord {
     fn deleted() -> bool;
 
     /// get the id of this device user
-    fn user_id() -> string;
+    fn user_id() -> UserId;
 
     /// get the id of this device
-    fn device_id() -> string;
+    fn device_id() -> DeviceId;
 
     /// get the display name of this device
     fn display_name() -> Option<string>;

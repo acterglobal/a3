@@ -7,8 +7,7 @@ import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show ReactionDesc;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ReactionDesc;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
@@ -116,6 +115,7 @@ class _ChatBubble extends StatelessWidget {
       msgType = message.metadata?['eventType'];
     }
     bool isMemberEvent = msgType == 'm.room.member';
+    String userId = controller.client.account().userId();
     return GestureDetector(
       onLongPress: isMemberEvent
           ? null
@@ -129,18 +129,12 @@ class _ChatBubble extends StatelessWidget {
             isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           (message.repliedMessage != null)
-              ? userId == message.repliedMessage!.author.id
-                  ? const Text(
-                      'Replied to yourself',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-                    )
-                  : Text(
-                      controller.client.userId().toString() ==
-                              message.repliedMessage!.author.id
-                          ? 'Replied to you'
-                          : 'Replied to ${message.repliedMessage!.author.id}',
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                    )
+              ? Text(
+                  userId == message.repliedMessage!.author.id
+                      ? 'Replied to you'
+                      : 'Replied to ${message.repliedMessage!.author.id}',
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                )
               : const SizedBox(),
           const SizedBox(height: 8),
           //reply bubble
