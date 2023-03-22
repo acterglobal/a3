@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/features/todo/widgets/add_task_dialog.dart';
 import 'package:acter/features/todo/widgets/todo_task_view.dart';
@@ -110,27 +111,22 @@ class _TasksWidget extends StatelessWidget {
           ),
           Row(
             children: <Widget>[
-              ElevatedButton(
-                onPressed: () => controller.toggleExpandBtn(index, expandBtn),
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all<OutlinedBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                  ),
-                ),
+              InkWell(
+                onTap: () => controller.toggleExpandBtn(index, expandBtn),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
                       'Completed (${controller.getCompletedTasks(todo)})',
                       softWrap: false,
+                      style: Theme.of(context).textTheme.labelMedium!,
                     ),
                     Icon(
                       expandBtn
                           ? Icons.expand_more
                           : Icons.keyboard_arrow_right,
                       size: 14,
+                      color: Theme.of(context).colorScheme.tertiary,
                     ),
                   ],
                 ),
@@ -152,7 +148,12 @@ class _TasksWidget extends StatelessWidget {
                     },
                   );
                 },
-                child: const Text('+ Add Task'),
+                child: Text(
+                  '+ Add Task',
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.tertiary2,
+                      ),
+                ),
               ),
             ],
           ),
@@ -196,11 +197,13 @@ class _TasksRatioWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        const Text(
+        Text(
           'Task: ',
+          style: Theme.of(context).textTheme.labelMedium,
         ),
         Text(
           '${controller.getCompletedTasks(todo)}/${todo.tasks.length} completed',
+          style: Theme.of(context).textTheme.labelSmall,
         ),
         const Spacer(),
         IconButton(
@@ -230,15 +233,10 @@ class _CommentsWidget extends StatelessWidget {
           Atlas.heart,
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 8, top: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: InkWell(
             onTap: () {},
-            child: SvgPicture.asset(
-              'assets/images/message.svg',
-              color: Colors.white,
-              height: 18,
-              width: 18,
-            ),
+            child: const Icon(Atlas.chat_dots),
           ),
         ),
         const Spacer(),
@@ -263,7 +261,10 @@ class _DescriptionWidget extends StatelessWidget {
       child: (description != null || description!.isNotEmpty)
           ? description!.length > 80
               ? ExpandableText(description!)
-              : Text(description!)
+              : Text(
+                  description!,
+                  style: Theme.of(context).textTheme.bodySmall,
+                )
           : const SizedBox.shrink(),
     );
   }
@@ -299,6 +300,7 @@ class _HeaderWidget extends StatelessWidget {
         children: [
           Text(
             title,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(
             width: 8.0,
@@ -306,11 +308,13 @@ class _HeaderWidget extends StatelessWidget {
           team != null
               ? Container(
                   padding: const EdgeInsets.all(8.0),
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.tertiary2,
+                    borderRadius: const BorderRadius.all(Radius.circular(10.0)),
                   ),
                   child: Text(
                     team!.name!,
+                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                 )
               : const SizedBox.shrink(),

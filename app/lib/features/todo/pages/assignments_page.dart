@@ -39,11 +39,13 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Oct 19 at 3:36am',
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    const Text(
+                    Text(
                       'Web application on design',
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(
                       height: 16,

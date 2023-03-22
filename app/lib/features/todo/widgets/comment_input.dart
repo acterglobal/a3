@@ -4,6 +4,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoTask.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -76,16 +77,12 @@ class CommentInputState extends State<CommentInput> {
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: TextField(
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                ),
-                                cursorColor: Colors.grey,
+                                style: Theme.of(context).textTheme.bodySmall,
+                                cursorColor:
+                                    Theme.of(context).colorScheme.tertiary,
                                 controller: _inputController,
                                 decoration: const InputDecoration(
                                   hintText: 'New Message',
-                                  hintStyle: TextStyle(
-                                    color: Colors.grey,
-                                  ),
                                   border: InputBorder.none,
                                 ),
                                 onChanged: (val) => cntrl.updateCommentInput(
@@ -132,7 +129,10 @@ class CommentInputState extends State<CommentInput> {
                           }
                           debugPrint('Comment id: $res');
                         }),
-                        icon: const Icon(Icons.send, color: Colors.pink),
+                        icon: Icon(
+                          Atlas.paper_airplane,
+                          color: Theme.of(context).colorScheme.tertiary,
+                        ),
                       ),
                     );
                   },

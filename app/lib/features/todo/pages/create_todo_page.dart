@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/Team.dart';
@@ -135,6 +136,7 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
                     widget.controller.selectedTeam != null
                         ? widget.controller.selectedTeam!.name!
                         : 'Select Team',
+                    style: Theme.of(context).textTheme.labelMedium,
                   ),
                 ),
               );
@@ -168,6 +170,7 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
             height: 24,
             child: Text(
               team.name!,
+              style: Theme.of(ctx).textTheme.labelSmall,
             ),
           ),
         PopupMenuItem(
@@ -177,12 +180,9 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
             () => _showTeamDialog(ctx),
           ),
           height: 24,
-          child: const Text(
+          child: Text(
             '+ Create Team',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(context).textTheme.labelSmall,
           ),
         ),
       ],
@@ -201,17 +201,16 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
                 borderRadius: BorderRadius.circular(12),
               ),
               insetPadding: EdgeInsets.zero,
-              title: const Text('Create new team'),
+              title: Text(
+                'Create new team',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
               contentPadding: const EdgeInsets.all(13),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
                   child: const Text(
                     'Cancel',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
                   ),
                 ),
                 TextButton(
@@ -230,11 +229,12 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
                             Navigator.pop(ctx);
                           }
                         },
-                  child: const Text(
+                  child: Text(
                     'Save',
                     style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
+                      color: teamInputController.text.isNotEmpty
+                          ? Theme.of(context).colorScheme.tertiary2
+                          : null,
                     ),
                   ),
                 )
@@ -246,16 +246,11 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
                   maxLines: 5,
                   maxLength: 50,
                   cursorColor: Colors.white,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     filled: true,
                     hintText: 'Input here.',
-                    hintStyle: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    contentPadding: EdgeInsets.all(13),
-                    enabledBorder: OutlineInputBorder(
+                    contentPadding: const EdgeInsets.all(13),
+                    border: const OutlineInputBorder(
                       borderSide: BorderSide(
                         color: Colors.transparent,
                         style: BorderStyle.none,
@@ -266,8 +261,10 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(width: 0),
-                      borderRadius: BorderRadius.all(
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.tertiary,
+                      ),
+                      borderRadius: const BorderRadius.all(
                         Radius.circular(12),
                       ),
                     ),
@@ -351,14 +348,11 @@ class _DescriptionInputWidget extends StatelessWidget {
           controller: descriptionController,
           keyboardType: TextInputType.text,
           decoration: const InputDecoration(
-            contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
-            border: InputBorder.none,
             hintText: 'List Description',
             // pass the hint text parameter here
-            hintStyle: TextStyle(color: Colors.grey),
           ),
-          style: const TextStyle(color: Colors.white),
-          cursorColor: Colors.white,
+          style: Theme.of(context).textTheme.bodyMedium,
+          cursorColor: Theme.of(context).colorScheme.tertiary,
           maxLines: 5,
         ),
       );
@@ -376,6 +370,7 @@ class _WordCountWidget extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 10, 16, 0),
           child: Text(
             'Word Count: ${controller.taskNameCount.value}',
+            style: Theme.of(context).textTheme.labelMedium,
           ),
         ),
       );
@@ -402,17 +397,13 @@ class _NameInputWidget extends StatelessWidget {
             controller: nameController,
             keyboardType: TextInputType.text,
             decoration: const InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
-              border: InputBorder.none,
-
               hintText: 'List Title',
               // hide default counter helper
               counterText: '',
               // pass the hint text parameter here
-              hintStyle: TextStyle(color: Colors.grey),
             ),
             maxLength: controller.maxLength.value,
-            style: const TextStyle(color: Colors.white),
+            style: Theme.of(context).textTheme.bodyMedium,
             cursorColor: Colors.white,
             validator: (val) {
               if (val == null || val.trim().isEmpty) {
@@ -430,10 +421,11 @@ class _TitleWidget extends StatelessWidget {
   const _TitleWidget();
 
   @override
-  Widget build(BuildContext context) => const Padding(
-        padding: EdgeInsets.only(left: 16.0),
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(left: 16.0),
         child: Text(
           'Create Todo List',
+          style: Theme.of(context).textTheme.titleLarge,
         ),
       );
 }
@@ -443,7 +435,7 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const Divider(
-        endIndent: 10,
-        indent: 10,
+        endIndent: 14,
+        indent: 14,
       );
 }

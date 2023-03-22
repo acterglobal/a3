@@ -36,6 +36,7 @@ class TaskDetailPage extends StatelessWidget {
         title: Obx(
           () => Text(
             cntrl.todos[listIndex].tasks[index].name,
+            style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
         centerTitle: true,
@@ -133,6 +134,7 @@ class TaskDetailPage extends StatelessWidget {
                   leading: optionIcons[index],
                   title: Text(
                     options[index],
+                    style: Theme.of(context).textTheme.labelMedium,
                   ),
                 ),
               ),
@@ -142,12 +144,13 @@ class TaskDetailPage extends StatelessWidget {
               width: double.infinity,
               margin: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                border: Border.all(),
+                color: Theme.of(context).colorScheme.tertiary,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   'Share this ToDo',
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
             )
@@ -194,20 +197,7 @@ class _NameWidget extends StatelessWidget {
                 .then((res) {
               debugPrint('Update eventId: $res');
             }),
-            child: CircleAvatar(
-              radius: 18,
-              child: Container(
-                height: 25,
-                width: 25,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    width: 1.5,
-                  ),
-                ),
-                child: _CheckWidget(task: task),
-              ),
-            ),
+            child: _CheckWidget(task: task),
           ),
           GetBuilder<ToDoController>(
             id: 'task-name',
@@ -219,7 +209,9 @@ class _NameWidget extends StatelessWidget {
                     controller: _nameController,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
                     ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                     onChanged: (val) =>
                         controller.updateNameInput(_nameController, val),
                     onEditingComplete: () async =>
@@ -251,11 +243,16 @@ class _CheckWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if ((task.progressPercent < 100)) {
-      return const SizedBox.shrink();
+      return Icon(
+        Icons.done_outlined,
+        size: 14,
+        color: Theme.of(context).colorScheme.tertiary,
+      );
     }
-    return const Icon(
+    return Icon(
       Icons.done_outlined,
       size: 14,
+      color: Theme.of(context).colorScheme.tertiary,
     );
   }
 }
@@ -277,8 +274,9 @@ class _AssignWidget extends StatelessWidget {
               },
             ),
           ),
-          child: const Text(
+          child: Text(
             '+ Assign',
+            style: Theme.of(context).textTheme.labelSmall,
           ),
         )
       ],
@@ -306,9 +304,11 @@ class _DueDateWidget extends StatelessWidget {
               child: task.due != null
                   ? Text(
                       'Due ${DateFormat('E, d MMM').format(task.due!.toUtc())}',
+                      style: Theme.of(context).textTheme.labelSmall,
                     )
-                  : const Text(
+                  : Text(
                       'Add Due Date',
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
             ),
           ],
@@ -387,8 +387,9 @@ class _DueDateWidget extends StatelessWidget {
                       );
                       Navigator.pop(context);
                     },
-                    child: const Text(
+                    child: Text(
                       'Remove',
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
                   ),
                 ),
@@ -396,6 +397,7 @@ class _DueDateWidget extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(
                     _selectedDate != null ? 'Change Due Date' : 'Add Due Date',
+                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                 ),
                 Padding(
@@ -493,12 +495,13 @@ class _AddFileWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
-          children: const <Widget>[
-            Icon(Atlas.pen),
+          children: <Widget>[
+            const Icon(Atlas.pen),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Text(
                 'Add File',
+                style: Theme.of(context).textTheme.labelMedium,
               ),
             ),
           ],
@@ -527,9 +530,10 @@ class _AddFileWidget extends StatelessWidget {
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
                           'Take a Photo',
+                          style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ],
                     ),
@@ -550,9 +554,10 @@ class _AddFileWidget extends StatelessWidget {
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
                           'Choose from Photos',
+                          style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ],
                     ),
@@ -573,9 +578,10 @@ class _AddFileWidget extends StatelessWidget {
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
                           'Choose from Files',
+                          style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ],
                     ),
@@ -585,8 +591,9 @@ class _AddFileWidget extends StatelessWidget {
             ),
           ],
           cancelButton: CupertinoActionSheetAction(
-            child: const Text(
+            child: Text(
               'Cancel',
+              style: Theme.of(context).textTheme.labelMedium,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -622,15 +629,16 @@ class _DiscussionWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Row(
-                  children: const <Widget>[
-                    Icon(
+                  children: <Widget>[
+                    const Icon(
                       Atlas.message,
                       size: 18,
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
                         'Discussion',
+                        style: Theme.of(context).textTheme.labelMedium,
                       ),
                     ),
                   ],
@@ -646,16 +654,18 @@ class _DiscussionWidget extends StatelessWidget {
                   builder: (_) {
                     return Text(
                       '${task.commentsManager.commentsCount()}',
+                      style: Theme.of(context).textTheme.labelSmall,
                     );
                   },
                 ),
                 const Spacer(),
                 InkWell(
                   onTap: () => controller.toggleCommentInput(),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
                       'Write message',
+                      style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ),
                 ),
@@ -816,14 +826,16 @@ class _SubscribersWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(bottom: 4.0),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4.0),
             child: Text(
               'Subscribers',
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
-          const Text(
+          Text(
             'No one will be notified when someone comments on this to-do list',
+            style: Theme.of(context).textTheme.bodySmall,
           ),
           InkWell(
             onTap: () => showNotYetImplementedMsg(
@@ -837,19 +849,22 @@ class _SubscribersWidget extends StatelessWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(100)),
                 border: Border.all(color: Colors.white),
               ),
-              child: const Text(
+              child: Text(
                 'Add/remove people',
+                style: Theme.of(context).textTheme.labelMedium,
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.only(bottom: 4.0),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4.0),
             child: Text(
               'You are not subscribed',
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
-          const Text(
+          Text(
             "You won't be notified when comments are posted",
+            style: Theme.of(context).textTheme.bodySmall,
           ),
           Container(
             margin: const EdgeInsets.symmetric(vertical: 12),
@@ -858,8 +873,9 @@ class _SubscribersWidget extends StatelessWidget {
               borderRadius: const BorderRadius.all(Radius.circular(100)),
               border: Border.all(color: Colors.white),
             ),
-            child: const Text(
-              'Subscriber me',
+            child: Text(
+              'Subscribe me',
+              style: Theme.of(context).textTheme.labelMedium,
             ),
           ),
         ],

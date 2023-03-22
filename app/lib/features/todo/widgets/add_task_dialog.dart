@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoList.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -110,15 +111,14 @@ class _InputWidgetState extends State<_InputWidget> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               Expanded(
                 child: Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 80,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -138,15 +138,12 @@ class _InputWidgetState extends State<_InputWidget> {
                           );
                         });
                       },
-                      style: const TextStyle(color: Colors.white),
-                      cursorColor: Colors.grey,
+                      style: Theme.of(context).textTheme.bodySmall,
+                      cursorColor: Theme.of(context).colorScheme.tertiary,
                       // focusNode: todoController.addTaskNode,
                       autofocus: true,
                       decoration: const InputDecoration(
                         hintText: 'What is the title of task?',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                        ),
                         border: InputBorder.none,
                       ),
                     ),
@@ -169,8 +166,8 @@ class _InputWidgetState extends State<_InputWidget> {
                 icon: Icon(
                   Atlas.paper_airplane,
                   color: titleInputController.text.isEmpty
-                      ? Colors.grey
-                      : Colors.pink,
+                      ? Theme.of(context).colorScheme.neutral4
+                      : Theme.of(context).colorScheme.tertiary,
                 ),
               )
             ],
@@ -238,6 +235,7 @@ class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
             Text(
               widget.text,
               textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.labelMedium,
             )
           ],
         ),

@@ -156,21 +156,19 @@ class _RadioBtn extends StatelessWidget {
       onTap: () {
         todoController.updateButtonIndex(index);
       },
+      hoverColor: Colors.transparent,
       child: Container(
         height: 35,
         width: 75,
         margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 12),
         decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.tertiary,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(width: 1),
         ),
         child: Center(
           child: Text(
             text,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(context).textTheme.labelMedium,
             textScaleFactor: 0.8,
           ),
         ),

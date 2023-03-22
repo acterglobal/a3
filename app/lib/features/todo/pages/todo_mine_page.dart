@@ -29,8 +29,9 @@ class _ToDoMinePageState extends State<ToDoMinePage> {
             Atlas.check_circle,
             color: Colors.white,
           ),
-          title: const Text(
+          title: Text(
             'My assignments',
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),
         ListTile(
@@ -45,8 +46,9 @@ class _ToDoMinePageState extends State<ToDoMinePage> {
             Atlas.book,
             color: Colors.white,
           ),
-          title: const Text(
+          title: Text(
             'Bookmarks',
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),
         ListTile(
@@ -61,8 +63,9 @@ class _ToDoMinePageState extends State<ToDoMinePage> {
             Atlas.pie_chart,
             color: Colors.white,
           ),
-          title: const Text(
+          title: Text(
             'My recent activity',
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),
         ListTile(
@@ -76,8 +79,9 @@ class _ToDoMinePageState extends State<ToDoMinePage> {
             Atlas.calendar_bell,
             color: Colors.white,
           ),
-          title: const Text(
+          title: Text(
             'Upcoming event',
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),
       ],
