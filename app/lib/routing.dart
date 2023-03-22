@@ -26,14 +26,17 @@ final GlobalKey<NavigatorState> _shellNavigatorKey =
 
 final _routes = [
   GoRoute(
+    name: 'login',
     path: '/login',
     builder: (context, state) => const LoginPage(),
   ),
   GoRoute(
+    name: 'my-profile',
     path: '/profile',
     builder: (context, state) => const SocialProfilePage(),
   ),
   GoRoute(
+    name: 'signup',
     path: '/signup',
     builder: (context, state) => const SignupPage(),
   ),
@@ -42,6 +45,7 @@ final _routes = [
     builder: (context, state) => const GalleryPage(),
   ),
   GoRoute(
+    name: 'bug-report',
     path: '/bug_report',
     builder: (context, state) =>
         BugReportPage(imagePath: state.queryParams['screenshot']),
@@ -50,34 +54,68 @@ final _routes = [
   /// Application shell
   ShellRoute(
     navigatorKey: _shellNavigatorKey,
-    builder: (BuildContext context, GoRouterState state, Widget child) {
-      return HomePage(child: child);
+    pageBuilder: (context, state, child) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: HomePage(child: child),
+      );
     },
     routes: <RouteBase>[
       /// The first screen to display in the bottom navigation bar.
       GoRoute(
-        path: '/news',
-        builder: (BuildContext context, GoRouterState state) {
-          return const NewsPage();
+        name: 'updates',
+        path: '/updates',
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: const NewsPage(),
+          );
+        }
+      ),
+
+      GoRoute(
+        name: 'chat',
+        path: '/chat',
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: const NewsPage()
+          );
         },
       ),
 
       GoRoute(
+        name: 'dashboard',
         path: '/dashboard',
-        builder: (BuildContext context, GoRouterState state) {
-          return const NewsPage();
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: const NewsPage()
+          );
+        },
+      ),
+
+      GoRoute(
+        name: 'space',
+        path: '/:space([!#][^\/]+)', // !spaceId, #spaceName
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: const NewsPage()
+          );
         },
       ),
 
       GoRoute(
         path: '/',
+        name: 'main',
         redirect: (BuildContext context, GoRouterState state) {
           final bool isDesktop =
               desktopPlatforms.contains(Theme.of(context).platform);
           if (isDesktop) {
             return '/dashboard';
           } else {
-            return '/news';
+            return '/updates';
           }
         },
       ),
