@@ -27,7 +27,8 @@ class Navigation {
 }
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key});
+  final Widget child;
+  const HomePage({super.key, required this.child});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _HomePageState();
@@ -292,7 +293,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   config: <Breakpoint, SlotLayoutConfig>{
                     Breakpoints.small: SlotLayout.from(
                       key: const Key('Body Small'),
-                      builder: (BuildContext ctx) => HomeWidget(pageController),
+                      builder: (BuildContext ctx) => widget.child,
                     ),
                     // show dashboard view on desktop only.
                     Breakpoints.mediumAndUp: isDesktop
@@ -310,7 +311,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         : SlotLayout.from(
                             key: const Key('body-meduim-mobile'),
                             builder: (BuildContext ctx) {
-                              return HomeWidget(pageController);
+                              return widget.child;
                             },
                           ),
                   },
@@ -323,7 +324,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           Breakpoints.mediumAndUp: SlotLayout.from(
                             key: const Key('Body Medium'),
                             builder: (BuildContext ctx) {
-                              return HomeWidget(pageController);
+                              return widget.child;
                             },
                           )
                         },
