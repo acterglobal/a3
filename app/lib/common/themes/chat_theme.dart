@@ -48,7 +48,7 @@ class ActerChatTheme extends ChatTheme {
     double messageBorderRadius = 20,
     double messageInsetsHorizontal = 20,
     double messageInsetsVertical = 16,
-    Color primaryColor = const Color.fromRGBO(236, 39, 88, 1),
+    Color primaryColor = const Color(0xffFF8E00),
     TextStyle receivedEmojiMessageTextStyle = const TextStyle(fontSize: 40),
     TextStyle? receivedMessageBodyBoldTextStyle,
     TextStyle? receivedMessageBodyCodeTextStyle,

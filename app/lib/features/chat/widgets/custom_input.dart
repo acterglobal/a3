@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -43,7 +44,8 @@ class CustomChatInput extends StatelessWidget {
               children: [
                 Visibility(
                   visible: controller.showReplyView,
-                  child: SizedBox(
+                  child: Container(
+                    color: Theme.of(context).colorScheme.neutral,
                     child: Padding(
                       padding: const EdgeInsets.only(
                         top: 12.0,
@@ -218,6 +220,8 @@ class _TextInputWidget extends StatelessWidget {
         controller.sendButtonUpdate();
         controller.typingNotice(true);
       },
+      style: Theme.of(context).textTheme.bodySmall,
+      cursorColor: Theme.of(context).colorScheme.tertiary,
       maxLines:
           MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
       minLines: 1,
@@ -237,6 +241,10 @@ class _TextInputWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
           borderSide: const BorderSide(width: 0, style: BorderStyle.none),
         ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(width: 0, style: BorderStyle.none),
+        ),
         filled: true,
         hintText: isChatScreen
             ? AppLocalizations.of(context)!.newMessage
@@ -251,6 +259,7 @@ class _TextInputWidget extends StatelessWidget {
           matchAll: false,
           suggestionBuilder: (Map<String, dynamic> roomMember) {
             return Container(
+              color: Theme.of(context).colorScheme.neutral2,
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: ListTile(
                 contentPadding: const EdgeInsets.only(left: 50),
@@ -267,7 +276,7 @@ class _TextInputWidget extends StatelessWidget {
                 ),
                 title: Text(
                   roomMember['display'],
-                  style: const TextStyle(color: Colors.white),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
             );
@@ -355,7 +364,7 @@ class AttachmentWidget extends StatelessWidget {
           width: double.infinity,
           height: size.height * 0.3,
           child: Column(
-            children: [
+            children: <Widget>[
               Container(
                 width: double.infinity,
                 height: size.height * 0.172,
@@ -466,12 +475,15 @@ class _BuildSettingBtn extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Text(AppLocalizations.of(context)!.grantAccessText),
         ),
         ElevatedButton(
           onPressed: () {},
-          child: Text(AppLocalizations.of(context)!.settings),
+          child: Text(
+            AppLocalizations.of(context)!.settings,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ),
       ],
     );

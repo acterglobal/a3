@@ -98,6 +98,8 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
                   contentPadding: EdgeInsets.all(12),
                   filled: true,
                 ),
+                cursorColor: Theme.of(context).colorScheme.tertiary,
+                cursorHeight: 0.5,
               ),
             ),
             Container(
@@ -118,6 +120,8 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
                   isCollapsed: false,
                   filled: true,
                 ),
+                cursorColor: Theme.of(context).colorScheme.tertiary,
+                cursorHeight: 0.5,
               ),
             ),
           ],

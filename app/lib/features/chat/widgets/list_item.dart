@@ -126,6 +126,7 @@ class _TitleWidget extends StatelessWidget {
     }
     return Text(
       displayName!,
+      style: Theme.of(context).textTheme.bodyMedium,
     );
   }
 }
@@ -145,6 +146,7 @@ class _SubtitleWidget extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 10),
         child: Text(
           getUserPlural(typingUsers),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
       );
     }
@@ -217,6 +219,7 @@ class _SubtitleWidget extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Text(
                     '${simplifyUserId(sender)}: ',
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
                 Flexible(
@@ -227,6 +230,8 @@ class _SubtitleWidget extends StatelessWidget {
                     maxLines: 1,
                     defaultTextStyle: const TextStyle(
                       overflow: TextOverflow.ellipsis,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
                     ),
                     onLinkTap: (url) => {},
                   ),
@@ -252,6 +257,7 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
             Flexible(
@@ -262,6 +268,7 @@ class _SubtitleWidget extends StatelessWidget {
                 maxLines: 1,
                 defaultTextStyle: const TextStyle(
                   overflow: TextOverflow.ellipsis,
+                  fontSize: 14,
                 ),
                 onLinkTap: (url) => {},
               ),
@@ -276,10 +283,12 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
             Text(
               eventItem.textDesc()!.body(),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         );
@@ -291,12 +300,13 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
-            const Flexible(
+            Flexible(
               child: Text(
                 '***This message has been deleted***',
-                style: TextStyle(),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
           ],
@@ -309,12 +319,13 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
-            const Flexible(
+            Flexible(
               child: Text(
                 '***Failed to decrypt message. Re-request session keys***',
-                style: TextStyle(),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
           ],
@@ -336,6 +347,7 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
             Flexible(
@@ -346,6 +358,7 @@ class _SubtitleWidget extends StatelessWidget {
                 maxLines: 1,
                 defaultTextStyle: const TextStyle(
                   overflow: TextOverflow.ellipsis,
+                  fontSize: 14,
                 ),
                 onLinkTap: (url) => {},
               ),
@@ -415,6 +428,7 @@ class _TrailingWidget extends StatelessWidget {
           DateFormat.Hm().format(
             DateTime.fromMillisecondsSinceEpoch(ts, isUtc: true),
           ),
+          style: Theme.of(context).textTheme.labelMedium,
         ),
         senderID == userId
             ? _CustomStatusWidget(status: messageStatus)
@@ -443,7 +457,6 @@ class _CustomStatusWidget extends StatelessWidget {
           height: 10,
           width: 10,
           child: CircularProgressIndicator(
-            backgroundColor: Colors.transparent,
             strokeWidth: 1.5,
           ),
         ),

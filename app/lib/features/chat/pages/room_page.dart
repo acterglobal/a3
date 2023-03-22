@@ -380,8 +380,10 @@ class _RoomPageState extends State<RoomPage> {
     return OrientationBuilder(
       builder: (context, orientation) {
         return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           resizeToAvoidBottomInset: orientation == Orientation.portrait,
           appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.primary,
             elevation: 1,
             centerTitle: true,
             toolbarHeight: 70,
@@ -470,6 +472,7 @@ class _RoomPageState extends State<RoomPage> {
     return Text(
       widget.name!,
       overflow: TextOverflow.clip,
+      style: Theme.of(context).textTheme.bodyLarge,
     );
   }
 
@@ -483,6 +486,7 @@ class _RoomPageState extends State<RoomPage> {
     }
     return Text(
       '${roomController.activeMembers.length} ${AppLocalizations.of(context)!.members}',
+      style: Theme.of(context).textTheme.bodySmall,
     );
   }
 
@@ -711,7 +715,7 @@ class _RoomPageState extends State<RoomPage> {
                 width: sqrt(text!.length) * 38.5,
                 padding: const EdgeInsets.all(8),
                 constraints: const BoxConstraints(minWidth: 57),
-                child: Text(text),
+                child: Text(text, style: Theme.of(context).textTheme.bodySmall),
               );
     }
 
@@ -736,6 +740,7 @@ class _RoomPageState extends State<RoomPage> {
           constraints: const BoxConstraints(minWidth: 57),
           child: Text(
             text,
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         );
       case 'm.room.encrypted':
@@ -745,7 +750,10 @@ class _RoomPageState extends State<RoomPage> {
           width: sqrt(text.length) * 38.5,
           padding: const EdgeInsets.all(8),
           constraints: const BoxConstraints(minWidth: 57),
-          child: Text(text),
+          child: Text(
+            text,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         );
       case 'm.room.redaction':
         String text = '***This message has been deleted.***';
@@ -753,7 +761,7 @@ class _RoomPageState extends State<RoomPage> {
           width: sqrt(text.length) * 38.5,
           padding: const EdgeInsets.all(8),
           constraints: const BoxConstraints(minWidth: 57),
-          child: Text(text),
+          child: Text(text, style: Theme.of(context).textTheme.bodySmall),
         );
       case 'm.sticker':
         return Container(

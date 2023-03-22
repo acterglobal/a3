@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:bubble/bubble.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
@@ -128,22 +129,23 @@ class _ChatBubble extends StatelessWidget {
         children: [
           (message.repliedMessage != null)
               ? userId == message.repliedMessage!.author.id
-                  ? const Text(
+                  ? Text(
                       'Replied to yourself',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
+                      style: Theme.of(context).textTheme.labelSmall,
                     )
                   : Text(
                       controller.client.userId().toString() ==
                               message.repliedMessage!.author.id
                           ? 'Replied to you'
                           : 'Replied to ${message.repliedMessage!.author.id}',
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      style: Theme.of(context).textTheme.labelSmall,
                     )
               : const SizedBox(),
           const SizedBox(height: 8),
           //reply bubble
           (message.repliedMessage != null)
               ? Bubble(
+                  color: Theme.of(context).colorScheme.neutral,
                   child: _OriginalMessageBuilder(message: message),
                   margin: nextMessageInGroup
                       ? const BubbleEdges.symmetric(horizontal: 2)
@@ -159,6 +161,10 @@ class _ChatBubble extends StatelessWidget {
           (enlargeEmoji || isMemberEvent)
               ? child
               : Bubble(
+                  color:
+                      controller.client.userId().toString() == message.author.id
+                          ? Theme.of(context).colorScheme.secondary
+                          : Theme.of(context).colorScheme.primary,
                   child: child,
                   style: BubbleStyle(
                     margin: nextMessageInGroup
@@ -364,7 +370,7 @@ class _EmojiRow extends StatelessWidget {
             : const EdgeInsets.only(bottom: 8, right: 8),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(20)),
-          border: Border.all(width: 0.5),
+          color: Theme.of(context).colorScheme.neutral2,
         ),
         child: EmojiRow(
           onEmojiTap: (String value) async {
@@ -399,6 +405,7 @@ class _OriginalMessageBuilder extends StatelessWidget {
         child: Html(
           data: """${message.repliedMessage!.metadata?['content']}""",
           padding: const EdgeInsets.all(8),
+          defaultTextStyle: Theme.of(context).textTheme.bodySmall,
         ),
       );
     } else if (message.repliedMessage is types.ImageMessage) {
@@ -422,7 +429,7 @@ class _OriginalMessageBuilder extends StatelessWidget {
     } else if (message.repliedMessage is types.FileMessage) {
       return Text(
         message.repliedMessage!.metadata?['content'],
-        style: const TextStyle(color: Colors.white, fontSize: 12),
+        style: Theme.of(context).textTheme.bodySmall,
       );
     } else {
       return const SizedBox();

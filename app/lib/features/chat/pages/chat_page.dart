@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/widgets/invite_info_card.dart';
 import 'package:acter/features/chat/widgets/list_item.dart';
@@ -28,6 +29,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       body: GetBuilder<ChatListController>(
         id: 'chatlist',
         builder: (controller) {
@@ -35,6 +37,7 @@ class _ChatPageState extends State<ChatPage> {
             physics: const BouncingScrollPhysics(),
             slivers: [
               SliverAppBar(
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 pinned: false,
                 snap: false,
                 floating: true,
@@ -44,6 +47,7 @@ class _ChatPageState extends State<ChatPage> {
                     margin: const EdgeInsets.only(right: 15),
                     child: Text(
                       AppLocalizations.of(context)!.chat,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                 ),
@@ -101,11 +105,11 @@ class _ChatPageState extends State<ChatPage> {
                               controller.joinedRooms,
                             );
                           },
+                          cursorColor: Theme.of(context).colorScheme.tertiary2,
                           controller: controller.searchController,
                           decoration: InputDecoration(
                             hintStyle: const TextStyle(
                               color: Colors.white,
-                              fontSize: 13,
                             ),
                             suffixIcon: GestureDetector(
                               onTap: () {
@@ -120,24 +124,6 @@ class _ChatPageState extends State<ChatPage> {
                               left: 12,
                               bottom: 2,
                               top: 2,
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                              ),
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                              ),
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                              ),
-                              borderRadius: BorderRadius.circular(30.0),
                             ),
                           ),
                         ),

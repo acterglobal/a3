@@ -97,6 +97,7 @@ class AppTheme {
         color: Color(0xffFF8E00),
         circularTrackColor: Colors.transparent,
       ),
+      cardTheme: const CardTheme(color: Color(0xFF5C9AD6), elevation: 0),
       dialogTheme: const DialogTheme(
         backgroundColor: Color(0xFF5C9AD6),
         elevation: 0,

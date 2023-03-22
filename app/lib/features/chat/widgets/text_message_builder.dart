@@ -126,6 +126,7 @@ class _TextWidget extends StatelessWidget {
               // ignore: prefer_single_quotes, unnecessary_string_interpolations
               data: """${message.text}""",
               padding: const EdgeInsets.all(8),
+              defaultTextStyle: Theme.of(context).textTheme.bodySmall,
             ),
     );
   }
