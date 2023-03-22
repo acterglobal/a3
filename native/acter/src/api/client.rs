@@ -335,11 +335,8 @@ impl Client {
 
                                 initial.store(false, Ordering::SeqCst);
                                 first_synced_arc.send(true);
-                                match state.try_write() {
-                                    Ok(mut w) => {
-                                        w.has_first_synced = true;
-                                    }
-                                    Err(e) => {}
+                                if let Ok(mut w) = state.try_write() {
+                                    w.has_first_synced = true;
                                 }
                             } else {
                                 // see if we have new spaces to catch up upon
@@ -366,32 +363,16 @@ impl Client {
                                 }
                             }
 
-                            match state.try_read() {
-                                Ok(r) => {
-                                    if r.should_stop_syncing {
-                                        match state.try_write() {
-                                            Ok(mut w) => {
-                                                w.is_syncing = false;
-                                            }
-                                            Err(e) => {}
-                                        }
-                                        return Ok(LoopCtrl::Break);
-                                    }
+                            if let Ok(mut w) = state.try_write() {
+                                if w.should_stop_syncing {
+                                    w.is_syncing = false;
+                                    return Ok(LoopCtrl::Break);
                                 }
-                                Err(e) => {}
                             }
-                            match state.try_read() {
-                                Ok(r) => {
-                                    if !r.is_syncing {
-                                        match state.try_write() {
-                                            Ok(mut w) => {
-                                                w.is_syncing = true;
-                                            }
-                                            Err(e) => {}
-                                        }
-                                    }
+                            if let Ok(mut w) = state.try_write() {
+                                if !w.is_syncing {
+                                    w.is_syncing = true;
                                 }
-                                Err(e) => {}
                             }
                             LoopCtrl::Continue
                         } else {
@@ -405,8 +386,7 @@ impl Client {
                         })
                     }
                 })
-                .await
-                .unwrap();
+                .await;
         });
         sync_state.handle.set(Some(handle));
         sync_state
