@@ -295,7 +295,6 @@ class _TextInputWidget extends StatelessWidget {
     controller.messageTextMapMarkDown.addAll({
       '@$displayName': '[$displayName](https://matrix.to/#/$userId)',
     });
-
     controller.messageTextMapHtml.addAll({
       '@$displayName': '<a href="https://matrix.to/#/$userId">$displayName</a>',
     });

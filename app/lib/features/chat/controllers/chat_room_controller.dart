@@ -34,7 +34,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ChatRoomController extends GetxController {
   Client client;
-  late String userId;
+  late String myId;
   final List<types.Message> _messages = [];
   List<types.User> typingUsers = [];
   TimelineStream? _stream;
@@ -70,7 +70,7 @@ class ChatRoomController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    userId = client.userId().toString();
+    myId = client.account().userId();
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isEmojiVisible.value = false;
@@ -103,7 +103,7 @@ class ChatRoomController extends GetxController {
       }
       RoomEventItem? eventItem = event.eventItem();
       if (eventItem != null) {
-        if (eventItem.sender() != client.userId().toString()) {
+        if (eventItem.sender() != myId) {
           if (isLoading.isFalse) {
             update(['Chat']);
           }
@@ -654,7 +654,7 @@ class ChatRoomController extends GetxController {
         _currentRoom!.getRoomId(),
         m.createdAt!,
       );
-      if (m.author.id == client.userId().toString()) {
+      if (m.author.id == myId) {
         types.Status status = seenByList.isEmpty
             ? types.Status.sent
             : seenByList.length < activeMembers.length
@@ -674,7 +674,7 @@ class ChatRoomController extends GetxController {
         _currentRoom!.getRoomId(),
         m.createdAt!,
       );
-      if (m.author.id == client.userId().toString()) {
+      if (m.author.id == myId) {
         types.Status status = seenByList.isEmpty
             ? types.Status.sent
             : seenByList.length < activeMembers.length
@@ -692,7 +692,7 @@ class ChatRoomController extends GetxController {
     if (virtualItem != null) {
       // should not return null, before we can keep track of index in diff receiver
       return types.UnsupportedMessage(
-        author: types.User(id: client.userId().toString()),
+        author: types.User(id: myId),
         id: UniqueKey().toString(),
         metadata: {
           'itemType': 'virtual',
@@ -1087,7 +1087,7 @@ class ChatRoomController extends GetxController {
   }
 
   bool isAuthor() {
-    return client.userId().toString() == authorId;
+    return myId == authorId;
   }
 
   void toggleEmojiContainer() {
