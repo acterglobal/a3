@@ -68,17 +68,19 @@ class AppTheme {
           labelLarge: TextStyle(
             color: Colors.white,
             fontSize: 14,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w300,
+            decorationThickness: 0.8,
           ),
           labelMedium: TextStyle(
             color: Colors.white,
             fontSize: 13,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w300,
+            decorationThickness: 0.8,
           ),
           labelSmall: TextStyle(
             color: Colors.white,
             fontSize: 12,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w300,
           ),
         ),
       ),
@@ -97,6 +99,7 @@ class AppTheme {
         color: Color(0xffFF8E00),
         circularTrackColor: Colors.transparent,
       ),
+      dividerColor: const Color(0xFFDDEDFC),
       cardTheme: const CardTheme(color: Color(0xFF5C9AD6), elevation: 0),
       dialogTheme: const DialogTheme(
         backgroundColor: Color(0xFF5C9AD6),

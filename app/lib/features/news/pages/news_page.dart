@@ -36,7 +36,7 @@ class _NewsPageState extends ConsumerState<NewsPage>
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: MediaQuery.of(context).size.width < 600
-            ? const UserAvatarWidget(isExtendedRail: false)
+            ? const UserAvatarWidget()
             : const SizedBox.shrink(),
         centerTitle: true,
         title: const ButtonBar(

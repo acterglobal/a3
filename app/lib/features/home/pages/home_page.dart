@@ -89,6 +89,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 // as NavigationRail is not considering
                                 // NavigationRailTheme values from MaterialTheme.
                                 // To be removed once issue is fixed in package.
+                                labelType: NavigationRailLabelType.none,
                                 backgroundColor: Theme.of(context)
                                     .navigationRailTheme
                                     .backgroundColor!,
@@ -103,17 +104,28 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 padding: const EdgeInsets.all(0),
                                 onDestinationSelected:
                                     handleDestinationSelected,
-                                leading: Container(
-                                  margin: const EdgeInsets.only(top: 8),
-                                  child: const UserAvatarWidget(
-                                    isExtendedRail: false,
-                                  ),
+                                leading: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    UserAvatarWidget(),
+                                    Divider(
+                                      height: 24,
+                                      indent: 18,
+                                      endIndent: 18,
+                                    )
+                                  ],
+                                ),
+                                trailing: const Divider(
+                                  indent: 18,
+                                  endIndent: 18,
                                 ),
                                 selectedIndex: _selectedIndex,
                                 destinations: <NavigationRailDestination>[
                                   const NavigationRailDestination(
                                     icon: Icon(Atlas.bullhorn),
-                                    label: Text('Updates'),
+                                    label: Text(
+                                      'Updates',
+                                    ),
                                   ),
                                   NavigationRailDestination(
                                     icon: SvgPicture.asset(
@@ -121,17 +133,32 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       height: 24,
                                       width: 24,
                                     ),
-                                    label: const Text('Space'),
+                                    label: const Text(
+                                      'Space',
+                                    ),
                                   ),
                                   const NavigationRailDestination(
                                     icon: Icon(Atlas.chats),
-                                    label: Text('Chat'),
+                                    label: Text(
+                                      'Chat',
+                                    ),
+                                  ),
+                                  const NavigationRailDestination(
+                                    icon: Icon(Atlas.pin),
+                                    label: Text(
+                                      'Pins',
+                                    ),
+                                  ),
+                                  const NavigationRailDestination(
+                                    icon: Icon(Atlas.list),
+                                    label: Text(
+                                      'Todos',
+                                    ),
                                   ),
                                 ],
                               );
                             },
                           ),
-
                           Breakpoints.large: SlotLayout.from(
                             key: const Key('Large primaryNavigation'),
                             builder: (BuildContext ctx) {
@@ -143,6 +170,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 backgroundColor: Theme.of(context)
                                     .navigationRailTheme
                                     .backgroundColor!,
+                                labelType: NavigationRailLabelType.all,
+                                selectedLabelTextStyle:
+                                    Theme.of(context).textTheme.labelSmall!,
                                 selectedIconTheme: const IconThemeData(
                                   size: 18,
                                   color: Colors.white,
@@ -155,26 +185,31 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 onDestinationSelected:
                                     handleDestinationSelected,
                                 selectedIndex: _selectedIndex,
-                                extended: true,
-                                leading: Container(
-                                  margin: const EdgeInsets.only(
-                                    left: 22,
-                                    top: 8,
-                                  ),
-                                  child: const UserAvatarWidget(
-                                    isExtendedRail: true,
-                                  ),
+                                leading: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(top: 8),
+                                      child: const UserAvatarWidget(),
+                                    ),
+                                    const Divider(
+                                      indent: 18,
+                                      endIndent: 18,
+                                    )
+                                  ],
+                                ),
+                                trailing: const Divider(
+                                  indent: 18,
+                                  endIndent: 18,
                                 ),
                                 destinations: <NavigationRailDestination>[
-                                  const NavigationRailDestination(
-                                    icon: Icon(Atlas.bullhorn),
+                                  NavigationRailDestination(
+                                    icon: const Icon(Atlas.bullhorn),
                                     label: Text(
                                       'Updates',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
                                     ),
                                   ),
                                   NavigationRailDestination(
@@ -183,24 +218,38 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       height: 24,
                                       width: 24,
                                     ),
-                                    label: const Text(
+                                    label: Text(
                                       'Space',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
                                     ),
                                   ),
-                                  const NavigationRailDestination(
-                                    icon: Icon(Atlas.chats),
+                                  NavigationRailDestination(
+                                    icon: const Icon(Atlas.chats),
                                     label: Text(
                                       'Chat',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                    ),
+                                  ),
+                                  NavigationRailDestination(
+                                    icon: const Icon(Atlas.pin),
+                                    label: Text(
+                                      'Pins',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                    ),
+                                  ),
+                                  NavigationRailDestination(
+                                    icon: const Icon(Atlas.list),
+                                    label: Text(
+                                      'Todos',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
                                     ),
                                   ),
                                 ],
@@ -292,6 +341,20 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     icon: Icon(Atlas.chats),
                                   ),
                                   label: 'Chat',
+                                ),
+                                const BottomNavigationBarItem(
+                                  icon: Icon(Atlas.pin),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: Icon(Atlas.pin),
+                                  ),
+                                  label: 'Pins',
+                                ),
+                                const BottomNavigationBarItem(
+                                  icon: Icon(Atlas.list),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: Icon(Atlas.list),
+                                  ),
+                                  label: 'Todos',
                                 )
                               ],
                             ),
@@ -338,6 +401,20 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     icon: Icon(Atlas.chats),
                                   ),
                                   label: 'Chat',
+                                ),
+                                const BottomNavigationBarItem(
+                                  icon: Icon(Atlas.pin),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: Icon(Atlas.pin),
+                                  ),
+                                  label: 'Pins',
+                                ),
+                                const BottomNavigationBarItem(
+                                  icon: Icon(Atlas.list),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: Icon(Atlas.list),
+                                  ),
+                                  label: 'Todos',
                                 )
                               ],
                             ),

@@ -12,8 +12,7 @@ final userProfileProvider = FutureProvider<UserProfile>((ref) async {
 });
 
 class UserAvatarWidget extends ConsumerWidget {
-  final bool isExtendedRail;
-  const UserAvatarWidget({required this.isExtendedRail, super.key});
+  const UserAvatarWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,9 +22,7 @@ class UserAvatarWidget extends ConsumerWidget {
       return GestureDetector(
         onTap: () => Navigator.pushNamed(context, '/login'),
         child: Row(
-          mainAxisAlignment: isExtendedRail
-              ? MainAxisAlignment.start
-              : MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(
               width: 40,
@@ -38,23 +35,14 @@ class UserAvatarWidget extends ConsumerWidget {
                 upperCase: true,
               ),
             ),
-            if (isExtendedRail)
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  'Guest User',
-                ),
-              )
           ],
         ),
       );
     }
     return userProfile.when(
       data: (data) {
-        return Row(
-          mainAxisAlignment: isExtendedRail
-              ? MainAxisAlignment.start
-              : MainAxisAlignment.center,
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             GestureDetector(
               onTap: () => confirmationDialog(context, ref),
@@ -69,13 +57,6 @@ class UserAvatarWidget extends ConsumerWidget {
                 stringName: data.getDisplayName() ?? '',
               ),
             ),
-            if (isExtendedRail)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  data.getDisplayName() ?? '',
-                ),
-              )
           ],
         );
       },
