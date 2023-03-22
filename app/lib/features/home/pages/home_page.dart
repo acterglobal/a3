@@ -19,6 +19,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
 
+class Navigation {
+  final NavigationRailDestination navi;
+  final int targetIndex;
+
+  const Navigation({required this.navi, required this.targetIndex});
+}
+
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
@@ -71,13 +78,49 @@ class _HomePageState extends ConsumerState<HomePage> {
     // get platform of context.
     final bool isDesktop =
         desktopPlatforms.contains(Theme.of(context).platform);
+
+    final sideBarNav = [
+      Navigation(
+        navi: NavigationRailDestination(
+          icon: SvgPicture.asset(
+            'assets/icon/acter.svg',
+            height: 24,
+            width: 24,
+          ),
+          label: const Text(
+            'Overview',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        targetIndex: 0,
+      ),
+      Navigation(
+        navi: const NavigationRailDestination(
+          icon: Icon(Atlas.chats_thin),
+          label: Text(
+            'Chat',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        targetIndex: 2,
+      ),
+    ];
+
     return ref.watch(homeStateProvider) != null
         ? Scaffold(
             body: Screenshot(
               controller: screenshotController,
               child: AdaptiveLayout(
                 key: _key,
-                bodyRatio: 0.2,
+                bodyRatio: 0,
                 primaryNavigation: isDesktop
                     ? SlotLayout(
                         config: <Breakpoint, SlotLayoutConfig?>{
@@ -102,8 +145,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   color: Colors.white,
                                 ),
                                 padding: const EdgeInsets.all(0),
-                                onDestinationSelected:
-                                    handleDestinationSelected,
+                                onDestinationSelected: (x) =>
+                                    handleDestinationSelected(
+                                  sideBarNav[x].targetIndex,
+                                ),
                                 leading: Container(
                                   margin: const EdgeInsets.only(top: 8),
                                   child: const UserAvatarWidget(
@@ -111,35 +156,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   ),
                                 ),
                                 selectedIndex: _selectedIndex,
-
-                                destinations: <NavigationRailDestination>[
-                                  NavigationRailDestination(
-                                    icon: SvgPicture.asset(
-                                      'assets/icon/acter.svg',
-                                      height: 24,
-                                      width: 24,
-                                    ),
-                                    label: const Text(
-                                      'Overview',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                  const NavigationRailDestination(
-                                    icon: Icon(Atlas.chats_thin),
-                                    label: Text(
-                                      'Chat',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                destinations:
+                                    sideBarNav.map((i) => i.navi).toList(),
                                 trailing: Expanded(
                                   child: Column(
                                     children: [
@@ -283,7 +301,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             builder: (BuildContext ctx) => const Scaffold(
                               body: Center(
                                 child: Text(
-                                  'Dashboard view to be implemented',
+                                  'First Screen view to be implemented',
                                   style: AppCommonTheme.appBarTitleStyle,
                                 ),
                               ),

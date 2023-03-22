@@ -49,7 +49,7 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ),
                 ),
-                leadingWidth: 100,
+                leadingWidth: 120,
                 actions: [
                   IconButton(
                     onPressed: () => controller.toggleSearchView(),
