@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:acter/common/snackbars/not_implemented.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/widgets/invite_info_card.dart';
 import 'package:acter/features/chat/widgets/list_item.dart';
@@ -29,6 +29,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       body: GetBuilder<ChatListController>(
         id: 'chatlist',
         builder: (controller) {
@@ -36,6 +37,7 @@ class _ChatPageState extends State<ChatPage> {
             physics: const BouncingScrollPhysics(),
             slivers: [
               SliverAppBar(
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 pinned: false,
                 snap: false,
                 floating: true,
@@ -45,7 +47,7 @@ class _ChatPageState extends State<ChatPage> {
                     margin: const EdgeInsets.only(right: 15),
                     child: Text(
                       AppLocalizations.of(context)!.chat,
-                      style: AppCommonTheme.appBarTitleStyle,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                 ),
@@ -56,7 +58,6 @@ class _ChatPageState extends State<ChatPage> {
                     padding: const EdgeInsets.only(right: 10, left: 5),
                     icon: const Icon(
                       Atlas.magnifying_glass,
-                      color: AppCommonTheme.svgIconColor,
                     ),
                   ),
                   IconButton(
@@ -69,7 +70,6 @@ class _ChatPageState extends State<ChatPage> {
                     padding: const EdgeInsets.only(right: 10, left: 5),
                     icon: const Icon(
                       Atlas.menu_square,
-                      color: AppCommonTheme.svgIconColor,
                     ),
                   ),
                   IconButton(
@@ -82,7 +82,6 @@ class _ChatPageState extends State<ChatPage> {
                     padding: const EdgeInsets.only(right: 10, left: 10),
                     icon: const Icon(
                       Atlas.plus_circle_thin,
-                      color: AppCommonTheme.svgIconColor,
                     ),
                   ),
                 ],
@@ -106,15 +105,11 @@ class _ChatPageState extends State<ChatPage> {
                               controller.joinedRooms,
                             );
                           },
+                          cursorColor: Theme.of(context).colorScheme.tertiary2,
                           controller: controller.searchController,
-                          style: ToDoTheme.taskTitleTextStyle.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                          cursorColor: ToDoTheme.primaryTextColor,
                           decoration: InputDecoration(
                             hintStyle: const TextStyle(
                               color: Colors.white,
-                              fontSize: 13,
                             ),
                             suffixIcon: GestureDetector(
                               onTap: () {
@@ -129,24 +124,6 @@ class _ChatPageState extends State<ChatPage> {
                               left: 12,
                               bottom: 2,
                               top: 2,
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                              ),
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                              ),
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                              ),
-                              borderRadius: BorderRadius.circular(30.0),
                             ),
                           ),
                         ),
@@ -184,13 +161,11 @@ class _ListWidget extends StatelessWidget {
       builder: (ChatListController controller) {
         if (!controller.initialLoaded) {
           return Center(
-            child: Container(
+            child: SizedBox(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              color: AppCommonTheme.backgroundColor,
               child: Text(
                 AppLocalizations.of(context)!.loadingConvo,
-                style: ChatTheme01.emptyMsgTitle,
               ),
             ),
           );
@@ -285,7 +260,6 @@ class _InviteListView extends StatelessWidget {
               padding: const EdgeInsets.only(left: 18),
               child: Text(
                 AppLocalizations.of(context)!.invitedRooms,
-                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
               ),
             ),
             const SizedBox(height: 10),
@@ -305,7 +279,6 @@ class _InviteListView extends StatelessWidget {
               padding: const EdgeInsets.only(left: 18, top: 10),
               child: Text(
                 AppLocalizations.of(context)!.joinedRooms,
-                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
               ),
             ),
             const SizedBox(height: 10),

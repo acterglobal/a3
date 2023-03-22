@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:date_format/date_format.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
@@ -90,49 +89,76 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 // as NavigationRail is not considering
                                 // NavigationRailTheme values from MaterialTheme.
                                 // To be removed once issue is fixed in package.
+                                labelType: NavigationRailLabelType.none,
                                 backgroundColor: Theme.of(context)
                                     .navigationRailTheme
                                     .backgroundColor!,
                                 selectedIconTheme: const IconThemeData(
-                                  size: 20,
+                                  size: 18,
                                   color: Colors.white,
                                 ),
                                 unselectedIconTheme: const IconThemeData(
-                                  size: 20,
+                                  size: 18,
                                   color: Colors.white,
                                 ),
                                 padding: const EdgeInsets.all(0),
                                 onDestinationSelected:
                                     handleDestinationSelected,
-                                leading: Container(
-                                  margin: const EdgeInsets.only(top: 8),
-                                  child: const UserAvatarWidget(
-                                    isExtendedRail: false,
-                                  ),
+                                leading: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    UserAvatarWidget(),
+                                    Divider(
+                                      height: 24,
+                                      indent: 18,
+                                      endIndent: 18,
+                                    )
+                                  ],
+                                ),
+                                trailing: const Divider(
+                                  indent: 18,
+                                  endIndent: 18,
                                 ),
                                 selectedIndex: _selectedIndex,
                                 destinations: <NavigationRailDestination>[
                                   const NavigationRailDestination(
                                     icon: Icon(Atlas.bullhorn),
-                                    label: Text('Updates'),
+                                    label: Text(
+                                      'Updates',
+                                    ),
                                   ),
                                   NavigationRailDestination(
                                     icon: SvgPicture.asset(
                                       'assets/icon/acter.svg',
-                                      height: 28,
-                                      width: 28,
+                                      height: 24,
+                                      width: 24,
                                     ),
-                                    label: const Text('Space'),
+                                    label: const Text(
+                                      'Space',
+                                    ),
                                   ),
                                   const NavigationRailDestination(
                                     icon: Icon(Atlas.chats),
-                                    label: Text('Chat'),
+                                    label: Text(
+                                      'Chat',
+                                    ),
+                                  ),
+                                  const NavigationRailDestination(
+                                    icon: Icon(Atlas.pin),
+                                    label: Text(
+                                      'Pins',
+                                    ),
+                                  ),
+                                  const NavigationRailDestination(
+                                    icon: Icon(Atlas.list),
+                                    label: Text(
+                                      'Todos',
+                                    ),
                                   ),
                                 ],
                               );
                             },
                           ),
-
                           Breakpoints.large: SlotLayout.from(
                             key: const Key('Large primaryNavigation'),
                             builder: (BuildContext ctx) {
@@ -144,38 +170,46 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 backgroundColor: Theme.of(context)
                                     .navigationRailTheme
                                     .backgroundColor!,
+                                labelType: NavigationRailLabelType.all,
+                                selectedLabelTextStyle:
+                                    Theme.of(context).textTheme.labelSmall!,
                                 selectedIconTheme: const IconThemeData(
-                                  size: 20,
+                                  size: 18,
                                   color: Colors.white,
                                 ),
                                 unselectedIconTheme: const IconThemeData(
-                                  size: 20,
+                                  size: 18,
                                   color: Colors.white,
                                 ),
                                 padding: const EdgeInsets.all(0),
                                 onDestinationSelected:
                                     handleDestinationSelected,
                                 selectedIndex: _selectedIndex,
-                                extended: true,
-                                leading: Container(
-                                  margin: const EdgeInsets.only(
-                                    left: 22,
-                                    top: 8,
-                                  ),
-                                  child: const UserAvatarWidget(
-                                    isExtendedRail: true,
-                                  ),
+                                leading: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(top: 8),
+                                      child: const UserAvatarWidget(),
+                                    ),
+                                    const Divider(
+                                      indent: 18,
+                                      endIndent: 18,
+                                    )
+                                  ],
+                                ),
+                                trailing: const Divider(
+                                  indent: 18,
+                                  endIndent: 18,
                                 ),
                                 destinations: <NavigationRailDestination>[
-                                  const NavigationRailDestination(
-                                    icon: Icon(Atlas.bullhorn),
+                                  NavigationRailDestination(
+                                    icon: const Icon(Atlas.bullhorn),
                                     label: Text(
                                       'Updates',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
                                     ),
                                   ),
                                   NavigationRailDestination(
@@ -184,24 +218,38 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       height: 24,
                                       width: 24,
                                     ),
-                                    label: const Text(
+                                    label: Text(
                                       'Space',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
                                     ),
                                   ),
-                                  const NavigationRailDestination(
-                                    icon: Icon(Atlas.chats),
+                                  NavigationRailDestination(
+                                    icon: const Icon(Atlas.chats),
                                     label: Text(
                                       'Chat',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                    ),
+                                  ),
+                                  NavigationRailDestination(
+                                    icon: const Icon(Atlas.pin),
+                                    label: Text(
+                                      'Pins',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                    ),
+                                  ),
+                                  NavigationRailDestination(
+                                    icon: const Icon(Atlas.list),
+                                    label: Text(
+                                      'Todos',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
                                     ),
                                   ),
                                 ],
@@ -225,7 +273,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                               body: Center(
                                 child: Text(
                                   'Dashboard view to be implemented',
-                                  style: AppCommonTheme.appBarTitleStyle,
                                 ),
                               ),
                             ),
@@ -276,14 +323,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 BottomNavigationBarItem(
                                   icon: SvgPicture.asset(
                                     'assets/icon/acter.svg',
-                                    height: 28,
-                                    width: 28,
+                                    height: 24,
+                                    width: 24,
                                   ),
                                   activeIcon: CustomSelectedIcon(
                                     icon: SvgPicture.asset(
                                       'assets/icon/acter.svg',
-                                      height: 28,
-                                      width: 28,
+                                      height: 24,
+                                      width: 24,
                                     ),
                                   ),
                                   label: 'Space',
@@ -294,6 +341,20 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     icon: Icon(Atlas.chats),
                                   ),
                                   label: 'Chat',
+                                ),
+                                const BottomNavigationBarItem(
+                                  icon: Icon(Atlas.pin),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: Icon(Atlas.pin),
+                                  ),
+                                  label: 'Pins',
+                                ),
+                                const BottomNavigationBarItem(
+                                  icon: Icon(Atlas.list),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: Icon(Atlas.list),
+                                  ),
+                                  label: 'Todos',
                                 )
                               ],
                             ),
@@ -322,14 +383,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 BottomNavigationBarItem(
                                   icon: SvgPicture.asset(
                                     'assets/icon/acter.svg',
-                                    height: 28,
-                                    width: 28,
+                                    height: 24,
+                                    width: 24,
                                   ),
                                   activeIcon: CustomSelectedIcon(
                                     icon: SvgPicture.asset(
                                       'assets/icon/acter.svg',
-                                      height: 28,
-                                      width: 28,
+                                      height: 24,
+                                      width: 24,
                                     ),
                                   ),
                                   label: 'Space',
@@ -340,6 +401,20 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     icon: Icon(Atlas.chats),
                                   ),
                                   label: 'Chat',
+                                ),
+                                const BottomNavigationBarItem(
+                                  icon: Icon(Atlas.pin),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: Icon(Atlas.pin),
+                                  ),
+                                  label: 'Pins',
+                                ),
+                                const BottomNavigationBarItem(
+                                  icon: Icon(Atlas.list),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: Icon(Atlas.list),
+                                  ),
+                                  label: 'Todos',
                                 )
                               ],
                             ),
@@ -361,9 +436,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           )
         : const Scaffold(
             body: Center(
-              child: CircularProgressIndicator(
-                color: AppCommonTheme.primaryColor,
-              ),
+              child: CircularProgressIndicator(),
             ),
           );
   }

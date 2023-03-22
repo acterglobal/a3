@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/pin/pages/pin_item_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, ActerPin;
@@ -44,7 +43,6 @@ class PinListItem extends StatelessWidget {
                     Expanded(
                       child: Text(
                         pin.title(),
-                        style: PinTheme.titleStyle,
                       ),
                     ),
                     GestureDetector(
@@ -68,7 +66,6 @@ class PinListItem extends StatelessWidget {
                       margin: const EdgeInsets.only(left: 12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: PinTheme.supportColor),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,7 +75,6 @@ class PinListItem extends StatelessWidget {
                             padding: EdgeInsets.symmetric(horizontal: 8),
                             child: Text(
                               'Support',
-                              style: PinTheme.teamNameStyle,
                             ),
                           )
                         ],
@@ -95,14 +91,12 @@ class PinListItem extends StatelessWidget {
                               onTap: () => debugPrint('Heart icon tapped'),
                               child: Image.asset(
                                 'assets/images/heart_like.png',
-                                color: AppCommonTheme.svgIconColor,
                               ),
                             ),
                             const Padding(
                               padding: EdgeInsets.only(left: 8),
                               child: Text(
                                 '0', //pin.likesCount().toString(),
-                                style: PinTheme.likeAndCommentStyle,
                               ),
                             ),
                             Padding(
@@ -116,7 +110,6 @@ class PinListItem extends StatelessWidget {
                               padding: EdgeInsets.only(left: 8),
                               child: Text(
                                 '0', //pin.commentsCount().toString(),
-                                style: PinTheme.likeAndCommentStyle,
                               ),
                             ),
                           ],
@@ -138,7 +131,6 @@ class PinListItem extends StatelessWidget {
         ),
         margin: const EdgeInsets.only(top: 20),
         decoration: BoxDecoration(
-          color: PinsTheme.cardBackgroundColor,
           borderRadius: BorderRadius.circular(15),
         ),
       ),

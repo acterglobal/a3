@@ -1,4 +1,4 @@
-import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -22,10 +22,6 @@ class SignUpTextField extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       height: 60,
-      decoration: BoxDecoration(
-        color: AppCommonTheme.textFieldColor,
-        borderRadius: BorderRadius.circular(4),
-      ),
       child: TextFormField(
         inputFormatters: (type == SignUpOnboardingTextFieldEnum.userName) ||
                 (type == SignUpOnboardingTextFieldEnum.password)
@@ -33,15 +29,13 @@ class SignUpTextField extends StatelessWidget {
                 FilteringTextInputFormatter.deny(RegExp(r'\s')),
               ]
             : [],
+        style: Theme.of(context).textTheme.labelLarge,
+        cursorColor: Theme.of(context).colorScheme.tertiary2,
         obscureText: type == SignUpOnboardingTextFieldEnum.password,
         controller: controller,
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.fromLTRB(10, 12, 10, 0),
-          border: InputBorder.none,
           hintText: hintText, // pass the hint text parameter here
-          hintStyle: const TextStyle(color: Colors.grey),
         ),
-        style: const TextStyle(color: Colors.white),
         validator: (val) {
           if (val == null || val.trim().isEmpty) {
             return validatorText;
@@ -100,10 +94,6 @@ class SignInTextField extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       height: 60,
-      decoration: BoxDecoration(
-        color: AppCommonTheme.textFieldColor,
-        borderRadius: BorderRadius.circular(4),
-      ),
       child: TextFormField(
         inputFormatters: [
           FilteringTextInputFormatter.deny(RegExp(r'\s')),
@@ -111,12 +101,10 @@ class SignInTextField extends StatelessWidget {
         obscureText: type == SignInOnboardingTextFieldEnum.password,
         controller: controller,
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.fromLTRB(10, 12, 10, 0),
-          border: InputBorder.none,
           hintText: hintText, // pass the hint text parameter here
-          hintStyle: const TextStyle(color: Colors.grey),
         ),
-        style: const TextStyle(color: Colors.white),
+        style: Theme.of(context).textTheme.labelLarge,
+        cursorColor: Theme.of(context).colorScheme.tertiary2,
         validator: (val) {
           if (val == null || val.trim().isEmpty) {
             return validatorText;

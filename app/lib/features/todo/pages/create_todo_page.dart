@@ -1,4 +1,4 @@
-import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/Team.dart';
@@ -31,7 +31,6 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: ToDoTheme.backgroundGradient2Color,
         leading: InkWell(
           onTap: () => Navigator.pop(context),
           child: const Icon(
@@ -40,8 +39,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
           ),
         ),
       ),
-      body: Container(
-        decoration: ToDoTheme.toDoDecoration,
+      body: SizedBox(
         height: MediaQuery.of(context).size.height -
             MediaQuery.of(context).size.height * 0.12,
         child: Column(
@@ -80,7 +78,6 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
     }
     return const Icon(
       Icons.done_outlined,
-      color: ToDoTheme.inactiveCheckColor,
       size: 10,
     );
   }
@@ -133,18 +130,13 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
                   height: MediaQuery.of(context).size.height * 0.06,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: ToDoTheme.textFieldColor,
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Text(
                     widget.controller.selectedTeam != null
                         ? widget.controller.selectedTeam!.name!
                         : 'Select Team',
-                    style: ToDoTheme.selectTeamTextStyle.copyWith(
-                      color: widget.nameController.text.trim().isNotEmpty
-                          ? null
-                          : const Color(0xFF898A8D),
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium,
                   ),
                 ),
               );
@@ -154,7 +146,6 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
             padding: EdgeInsets.only(left: 12.0),
             child: Icon(
               Atlas.group_team_collective,
-              color: ToDoTheme.calendarColor,
             ),
           )
         ],
@@ -169,7 +160,6 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
           BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.3),
       context: ctx,
       position: relRectSize,
-      color: ToDoTheme.bottomSheetColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -180,7 +170,7 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
             height: 24,
             child: Text(
               team.name!,
-              style: ToDoTheme.selectTeamTextStyle,
+              style: Theme.of(ctx).textTheme.labelSmall,
             ),
           ),
         PopupMenuItem(
@@ -190,13 +180,9 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
             () => _showTeamDialog(ctx),
           ),
           height: 24,
-          child: const Text(
+          child: Text(
             '+ Create Team',
-            style: TextStyle(
-              color: ToDoTheme.todayCalendarColor,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(context).textTheme.labelSmall,
           ),
         ),
       ],
@@ -215,20 +201,16 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
                 borderRadius: BorderRadius.circular(12),
               ),
               insetPadding: EdgeInsets.zero,
-              backgroundColor: ToDoTheme.backgroundGradientColor,
-              title: const Text('Create new team'),
-              titleTextStyle: ToDoTheme.listMemberTextStyle,
+              title: Text(
+                'Create new team',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
               contentPadding: const EdgeInsets.all(13),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
                   child: const Text(
                     'Cancel',
-                    style: TextStyle(
-                      color: ToDoTheme.secondaryTextColor,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
                   ),
                 ),
                 TextButton(
@@ -250,12 +232,9 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
                   child: Text(
                     'Save',
                     style: TextStyle(
-                      color:
-                          (!disableBtn && teamInputController.text.isNotEmpty)
-                              ? ToDoTheme.secondaryTextColor
-                              : ToDoTheme.secondaryTextColor.withOpacity(0.45),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
+                      color: teamInputController.text.isNotEmpty
+                          ? Theme.of(context).colorScheme.tertiary2
+                          : null,
                     ),
                   ),
                 )
@@ -267,18 +246,11 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
                   maxLines: 5,
                   maxLength: 50,
                   cursorColor: Colors.white,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     filled: true,
-                    fillColor: ToDoTheme.bottomSheetColor,
                     hintText: 'Input here.',
-                    helperStyle: ToDoTheme.infoAvatarTextStyle,
-                    hintStyle: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    contentPadding: EdgeInsets.all(13),
-                    enabledBorder: OutlineInputBorder(
+                    contentPadding: const EdgeInsets.all(13),
+                    border: const OutlineInputBorder(
                       borderSide: BorderSide(
                         color: Colors.transparent,
                         style: BorderStyle.none,
@@ -289,14 +261,14 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: ToDoTheme.primaryColor, width: 0),
-                      borderRadius: BorderRadius.all(
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.tertiary,
+                      ),
+                      borderRadius: const BorderRadius.all(
                         Radius.circular(12),
                       ),
                     ),
                   ),
-                  style: ToDoTheme.descriptionTextStyle,
                   onChanged: (val) {
                     setState(() {
                       teamInputController.text = val;
@@ -334,9 +306,7 @@ class _CreateBtnWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: controller.isLoading.isTrue
               ? const Center(
-                  child: CircularProgressIndicator(
-                    color: AppCommonTheme.primaryColor,
-                  ),
+                  child: CircularProgressIndicator(),
                 )
               : CustomButton(
                   onPressed: (controller.taskNameCount < 30 &&
@@ -371,7 +341,6 @@ class _DescriptionInputWidget extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
         decoration: BoxDecoration(
-          color: ToDoTheme.textFieldColor,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
         ),
@@ -379,14 +348,11 @@ class _DescriptionInputWidget extends StatelessWidget {
           controller: descriptionController,
           keyboardType: TextInputType.text,
           decoration: const InputDecoration(
-            contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
-            border: InputBorder.none,
             hintText: 'List Description',
             // pass the hint text parameter here
-            hintStyle: TextStyle(color: Colors.grey),
           ),
-          style: const TextStyle(color: Colors.white),
-          cursorColor: Colors.white,
+          style: Theme.of(context).textTheme.bodyMedium,
+          cursorColor: Theme.of(context).colorScheme.tertiary,
           maxLines: 5,
         ),
       );
@@ -404,7 +370,7 @@ class _WordCountWidget extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 10, 16, 0),
           child: Text(
             'Word Count: ${controller.taskNameCount.value}',
-            style: ToDoTheme.textFieldCounterStyle,
+            style: Theme.of(context).textTheme.labelMedium,
           ),
         ),
       );
@@ -424,7 +390,6 @@ class _NameInputWidget extends StatelessWidget {
           margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
           height: 60,
           decoration: BoxDecoration(
-            color: ToDoTheme.textFieldColor,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
           ),
@@ -432,17 +397,13 @@ class _NameInputWidget extends StatelessWidget {
             controller: nameController,
             keyboardType: TextInputType.text,
             decoration: const InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
-              border: InputBorder.none,
-
               hintText: 'List Title',
               // hide default counter helper
               counterText: '',
               // pass the hint text parameter here
-              hintStyle: TextStyle(color: Colors.grey),
             ),
             maxLength: controller.maxLength.value,
-            style: const TextStyle(color: Colors.white),
+            style: Theme.of(context).textTheme.bodyMedium,
             cursorColor: Colors.white,
             validator: (val) {
               if (val == null || val.trim().isEmpty) {
@@ -460,11 +421,11 @@ class _TitleWidget extends StatelessWidget {
   const _TitleWidget();
 
   @override
-  Widget build(BuildContext context) => const Padding(
-        padding: EdgeInsets.only(left: 16.0),
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(left: 16.0),
         child: Text(
           'Create Todo List',
-          style: ToDoTheme.titleTextStyle,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
       );
 }
@@ -474,8 +435,7 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const Divider(
-        color: ToDoTheme.dividerColor,
-        endIndent: 10,
-        indent: 10,
+        endIndent: 14,
+        indent: 14,
       );
 }

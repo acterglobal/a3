@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:bubble/bubble.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
@@ -133,15 +133,15 @@ class _ChatBubble extends StatelessWidget {
                   userId == message.repliedMessage!.author.id
                       ? 'Replied to you'
                       : 'Replied to ${message.repliedMessage!.author.id}',
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                  style: Theme.of(context).textTheme.labelSmall,
                 )
               : const SizedBox(),
           const SizedBox(height: 8),
           //reply bubble
           (message.repliedMessage != null)
               ? Bubble(
+                  color: Theme.of(context).colorScheme.neutral,
                   child: _OriginalMessageBuilder(message: message),
-                  color: AppCommonTheme.backgroundColorLight,
                   margin: nextMessageInGroup
                       ? const BubbleEdges.symmetric(horizontal: 2)
                       : null,
@@ -156,11 +156,12 @@ class _ChatBubble extends StatelessWidget {
           (enlargeEmoji || isMemberEvent)
               ? child
               : Bubble(
+                  color:
+                      controller.client.userId().toString() == message.author.id
+                          ? Theme.of(context).colorScheme.secondary
+                          : Theme.of(context).colorScheme.primary,
                   child: child,
                   style: BubbleStyle(
-                    color: !isAuthor || message is types.ImageMessage
-                        ? AppCommonTheme.backgroundColorLight
-                        : AppCommonTheme.primaryColor,
                     margin: nextMessageInGroup
                         ? const BubbleEdges.symmetric(horizontal: 2)
                         : null,
@@ -225,9 +226,6 @@ class _EmojiContainerState extends State<_EmojiContainer>
           constraints: BoxConstraints(maxWidth: constraints.maxWidth / 3),
           margin: const EdgeInsets.all(2),
           decoration: BoxDecoration(
-            border: keys.isEmpty
-                ? null
-                : Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
             borderRadius: BorderRadius.only(
               topLeft: widget.nextMessageInGroup
                   ? const Radius.circular(12)
@@ -242,7 +240,6 @@ class _EmojiContainerState extends State<_EmojiContainer>
               bottomLeft: const Radius.circular(12),
               bottomRight: const Radius.circular(12),
             ),
-            color: ChatTheme01.chatEmojiContainerColor,
           ),
           padding: const EdgeInsets.all(5),
           child: Wrap(
@@ -262,9 +259,9 @@ class _EmojiContainerState extends State<_EmojiContainer>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(key, style: ChatTheme01.emojiCountStyle),
+                    Text(key),
                     const SizedBox(width: 2),
-                    Text(count.toString(), style: ChatTheme01.emojiCountStyle),
+                    Text(count.toString()),
                   ],
                 ),
               );
@@ -293,7 +290,6 @@ class _EmojiContainerState extends State<_EmojiContainer>
           TabController(length: reactionTabs.length, vsync: this);
     });
     showModalBottomSheet(
-      backgroundColor: AppCommonTheme.backgroundColorLight,
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
@@ -311,7 +307,6 @@ class _EmojiContainerState extends State<_EmojiContainer>
                 overlayColor:
                     MaterialStateProperty.all<Color>(Colors.transparent),
                 indicator: const BoxDecoration(
-                  color: AppCommonTheme.backgroundColor,
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                 ),
                 indicatorSize: TabBarIndicatorSize.tab,
@@ -370,8 +365,7 @@ class _EmojiRow extends StatelessWidget {
             : const EdgeInsets.only(bottom: 8, right: 8),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(20)),
-          color: AppCommonTheme.backgroundColor,
-          border: Border.all(color: AppCommonTheme.dividerColor, width: 0.5),
+          color: Theme.of(context).colorScheme.neutral2,
         ),
         child: EmojiRow(
           onEmojiTap: (String value) async {
@@ -405,9 +399,8 @@ class _OriginalMessageBuilder extends StatelessWidget {
         ),
         child: Html(
           data: """${message.repliedMessage!.metadata?['content']}""",
-          defaultTextStyle:
-              const TextStyle(color: ChatTheme01.chatReplyTextColor),
           padding: const EdgeInsets.all(8),
+          defaultTextStyle: Theme.of(context).textTheme.bodySmall,
         ),
       );
     } else if (message.repliedMessage is types.ImageMessage) {
@@ -431,7 +424,7 @@ class _OriginalMessageBuilder extends StatelessWidget {
     } else if (message.repliedMessage is types.FileMessage) {
       return Text(
         message.repliedMessage!.metadata?['content'],
-        style: const TextStyle(color: Colors.white, fontSize: 12),
+        style: Theme.of(context).textTheme.bodySmall,
       );
     } else {
       return const SizedBox();

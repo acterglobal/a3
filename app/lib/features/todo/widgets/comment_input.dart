@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoTask.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Account;
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,6 +14,7 @@ class CommentInput extends StatefulWidget {
   const CommentInput(this.task, this.callback, {super.key});
   final ToDoTask task;
   final VoidCallback? callback;
+
   @override
   State<CommentInput> createState() => CommentInputState();
 }
@@ -43,7 +44,7 @@ class CommentInputState extends State<CommentInput> {
   Widget build(BuildContext context) {
     Account account = controller.client.account();
     return Container(
-      decoration: const BoxDecoration(color: ToDoTheme.textFieldColor),
+      decoration: const BoxDecoration(),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -69,7 +70,6 @@ class CommentInputState extends State<CommentInput> {
                       child: Container(
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
-                          color: AppCommonTheme.textFieldColor,
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: Stack(
@@ -78,12 +78,12 @@ class CommentInputState extends State<CommentInput> {
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: TextField(
-                                style: const TextStyle(color: Colors.white),
-                                cursorColor: Colors.grey,
+                                style: Theme.of(context).textTheme.bodySmall,
+                                cursorColor:
+                                    Theme.of(context).colorScheme.tertiary,
                                 controller: _inputController,
                                 decoration: const InputDecoration(
                                   hintText: 'New Message',
-                                  hintStyle: TextStyle(color: Colors.grey),
                                   border: InputBorder.none,
                                 ),
                                 onChanged: (val) => cntrl.updateCommentInput(
@@ -98,9 +98,7 @@ class CommentInputState extends State<CommentInput> {
                                 color: Colors.grey,
                               ),
                               onPressed: () {
-                                setState(() {
-                                  emojiShowing = !emojiShowing;
-                                });
+                                setState(() => emojiShowing = !emojiShowing);
                               },
                             ),
                           ],
@@ -130,7 +128,10 @@ class CommentInputState extends State<CommentInput> {
                           }
                           debugPrint('Comment id: $res');
                         }),
-                        icon: const Icon(Icons.send, color: Colors.pink),
+                        icon: Icon(
+                          Atlas.paper_airplane,
+                          color: Theme.of(context).colorScheme.tertiary,
+                        ),
                       ),
                     );
                   },

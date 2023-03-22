@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
@@ -58,7 +57,6 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
         title: const Text('Link Settings'),
         centerTitle: true,
         elevation: 0.0,
-        backgroundColor: AppCommonTheme.backgroundColor,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -108,9 +106,6 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
                         ),
                       ),
                       decoration: BoxDecoration(
-                        color: selectedTimeIndexList.contains(index)
-                            ? AppCommonTheme.primaryColor
-                            : AppCommonTheme.darkShade,
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
@@ -152,9 +147,6 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
                       ),
                     ),
                     decoration: BoxDecoration(
-                      color: selectedUsesIndexList.contains(index)
-                          ? AppCommonTheme.primaryColor
-                          : AppCommonTheme.darkShade,
                       borderRadius: BorderRadius.circular(15),
                     ),
                   ),
@@ -183,7 +175,6 @@ class _NameWidget extends StatelessWidget {
     return Text(
       '!' + displayName!,
       overflow: TextOverflow.clip,
-      style: const TextStyle(color: AppCommonTheme.primaryColor, fontSize: 16),
     );
   }
 }

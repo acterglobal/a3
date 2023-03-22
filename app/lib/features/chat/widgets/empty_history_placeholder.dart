@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/widgets/type_indicator.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +28,6 @@ class EmptyHistoryPlaceholder extends StatelessWidget {
                   alignment: const Alignment(0.0, 0.15),
                   child: Text(
                     '${AppLocalizations.of(context)!.noMessages} ...',
-                    style: ChatTheme01.emptyMsgTitle,
                   ),
                 ),
               ),
@@ -38,7 +36,6 @@ class EmptyHistoryPlaceholder extends StatelessWidget {
                   alignment: const Alignment(0.0, 0.25),
                   child: Text(
                     AppLocalizations.of(context)!.startConvo,
-                    style: ChatTheme01.chatBodyStyle,
                   ),
                 ),
               ),

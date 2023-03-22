@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/news/controllers/news_comment_controller.dart';
 import 'package:acter/models/CommentModel.dart';
 import 'package:acter/features/news/widgets/reply_view.dart';
@@ -40,13 +39,11 @@ class CommentViewState extends State<CommentView> {
               children: [
                 SlidableAction(
                   onPressed: (BuildContext context) {},
-                  backgroundColor: AppCommonTheme.backgroundColor,
                   foregroundColor: Colors.white,
                   icon: Icons.reply,
                 ),
                 SlidableAction(
                   onPressed: (BuildContext context) {},
-                  backgroundColor: AppCommonTheme.backgroundColor,
                   foregroundColor: Colors.white,
                   icon: Icons.report,
                 ),

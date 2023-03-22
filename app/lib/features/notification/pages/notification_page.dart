@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
 
 class NotificationPage extends StatelessWidget {
@@ -13,7 +12,6 @@ class NotificationPage extends StatelessWidget {
         return Container(
           height: 100,
           decoration: BoxDecoration(
-            color: NotificationTheme.notificationcardColor,
             borderRadius: BorderRadius.circular(10),
           ),
           margin: const EdgeInsets.fromLTRB(15, 10, 15, 0),
@@ -41,13 +39,11 @@ class NotificationPage extends StatelessWidget {
                     margin: const EdgeInsets.only(right: 10),
                     child: const Text(
                       'Lorem Ipsum is simply dummy text of the printing',
-                      style: NotificationTheme.titleStyle,
                     ),
                   ),
                   const SizedBox(height: 5),
                   const Text(
                     '35 members',
-                    style: NotificationTheme.subTitleStyle,
                   )
                 ],
               )

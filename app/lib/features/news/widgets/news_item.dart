@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:io' show Platform;
 
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -43,11 +42,11 @@ class _NewsItemState extends State<NewsItem> {
   Widget build(BuildContext context) {
     var bgColor = convertColor(
       widget.news.colors()?.background(),
-      AppCommonTheme.backgroundColor,
+      Theme.of(context).colorScheme.secondary,
     );
     var fgColor = convertColor(
       widget.news.colors()?.color(),
-      AppCommonTheme.primaryColor,
+      Theme.of(context).colorScheme.primary,
     );
     bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 

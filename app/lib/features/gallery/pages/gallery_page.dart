@@ -1,5 +1,4 @@
 import 'package:acter/common/store/MockData.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/widgets/gallery_item.dart';
 import 'package:acter/common/widgets/nav_bar_title.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,6 @@ class GalleryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppCommonTheme.textFieldColor,
         title: navBarTitle(AppLocalizations.of(context)!.gallery),
         centerTitle: true,
       ),

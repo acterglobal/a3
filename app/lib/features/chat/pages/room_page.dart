@@ -6,7 +6,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter/common/themes/chat_theme.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
@@ -25,7 +24,6 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 import 'package:string_validator/string_validator.dart';
-import 'package:themed/themed.dart';
 
 class RoomPage extends StatefulWidget {
   final Future<FfiBufferUint8>? avatar;
@@ -151,7 +149,6 @@ class _RoomPageState extends State<RoomPage> {
         }
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          color: AppCommonTheme.backgroundColorLight,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -182,7 +179,6 @@ class _RoomPageState extends State<RoomPage> {
                             padding: const EdgeInsets.all(16),
                             height: 280,
                             decoration: const BoxDecoration(
-                              color: AppCommonTheme.backgroundColorLight,
                               borderRadius: BorderRadius.all(
                                 Radius.circular(16),
                               ),
@@ -207,15 +203,12 @@ class _RoomPageState extends State<RoomPage> {
                                   const SizedBox(height: 8),
                                   const Text(
                                     'Report This Message',
-                                    style: AppCommonTheme.appBarTitleStyle,
                                   ),
                                   const SizedBox(height: 16),
                                   const Text(
                                     "You can report this message to Acter if you think that it goes against our community guidelines. We won't notify the account that you submitted this report",
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: AppCommonTheme.dividerColor,
-                                    ),
+                                    style: TextStyle(),
                                   ),
                                   GestureDetector(
                                     onTap: () {
@@ -233,7 +226,6 @@ class _RoomPageState extends State<RoomPage> {
                                           borderRadius: BorderRadius.circular(
                                             14,
                                           ),
-                                          color: AppCommonTheme.primaryColor,
                                         ),
                                         child: const Padding(
                                           padding: EdgeInsets.all(8),
@@ -329,7 +321,6 @@ class _RoomPageState extends State<RoomPage> {
                         width: 60,
                         child: CircularProgressIndicator(
                           strokeWidth: 6,
-                          color: AppCommonTheme.primaryColor,
                         ),
                       ),
               );
@@ -347,7 +338,6 @@ class _RoomPageState extends State<RoomPage> {
             width: 60,
             child: CircularProgressIndicator(
               strokeWidth: 6,
-              color: AppCommonTheme.primaryColor,
             ),
           ),
         );
@@ -390,9 +380,10 @@ class _RoomPageState extends State<RoomPage> {
     return OrientationBuilder(
       builder: (context, orientation) {
         return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           resizeToAvoidBottomInset: orientation == Orientation.portrait,
           appBar: AppBar(
-            backgroundColor: AppCommonTheme.backgroundColor,
+            backgroundColor: Theme.of(context).colorScheme.primary,
             elevation: 1,
             centerTitle: true,
             toolbarHeight: 70,
@@ -481,7 +472,7 @@ class _RoomPageState extends State<RoomPage> {
     return Text(
       widget.name!,
       overflow: TextOverflow.clip,
-      style: ChatTheme01.chatTitleStyle,
+      style: Theme.of(context).textTheme.bodyLarge,
     );
   }
 
@@ -490,12 +481,12 @@ class _RoomPageState extends State<RoomPage> {
       return const SizedBox(
         height: 15,
         width: 15,
-        child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
+        child: CircularProgressIndicator(),
       );
     }
     return Text(
       '${roomController.activeMembers.length} ${AppLocalizations.of(context)!.members}',
-      style: ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
+      style: Theme.of(context).textTheme.bodySmall,
     );
   }
 
@@ -505,7 +496,7 @@ class _RoomPageState extends State<RoomPage> {
         child: SizedBox(
           height: 15,
           width: 15,
-          child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
+          child: CircularProgressIndicator(),
         ),
       );
     }
@@ -612,7 +603,6 @@ class _RoomPageState extends State<RoomPage> {
 
   void showMoreOptions() {
     showModalBottomSheet(
-      backgroundColor: AppCommonTheme.backgroundColorLight,
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
@@ -725,7 +715,7 @@ class _RoomPageState extends State<RoomPage> {
                 width: sqrt(text.length) * 38.5,
                 padding: const EdgeInsets.all(8),
                 constraints: const BoxConstraints(minWidth: 57),
-                child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+                child: Text(text, style: Theme.of(context).textTheme.bodySmall),
               );
     }
 
@@ -750,7 +740,7 @@ class _RoomPageState extends State<RoomPage> {
           constraints: const BoxConstraints(minWidth: 57),
           child: Text(
             text,
-            style: ChatTheme01.chatMutedBodyStyle,
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         );
       case 'm.room.encrypted':
@@ -760,7 +750,10 @@ class _RoomPageState extends State<RoomPage> {
           width: sqrt(text.length) * 38.5,
           padding: const EdgeInsets.all(8),
           constraints: const BoxConstraints(minWidth: 57),
-          child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+          child: Text(
+            text,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         );
       case 'm.room.redaction':
         String text = '***This message has been deleted.***';
@@ -768,7 +761,7 @@ class _RoomPageState extends State<RoomPage> {
           width: sqrt(text.length) * 38.5,
           padding: const EdgeInsets.all(8),
           constraints: const BoxConstraints(minWidth: 57),
-          child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+          child: Text(text, style: Theme.of(context).textTheme.bodySmall),
         );
       case 'm.sticker':
         return Container(
@@ -802,7 +795,6 @@ class _RoomPageState extends State<RoomPage> {
                         width: 60,
                         child: CircularProgressIndicator(
                           strokeWidth: 6,
-                          color: AppCommonTheme.primaryColor,
                         ),
                       ),
               );

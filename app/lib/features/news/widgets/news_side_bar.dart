@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:acter/common/snackbars/not_implemented.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/news/controllers/news_comment_controller.dart';
 import 'package:acter/features/news/widgets/comment_view.dart';
 import 'package:acter/common/widgets/like_button.dart';
@@ -36,11 +35,11 @@ class _NewsSideBarState extends State<NewsSideBar> {
   Widget build(BuildContext context) {
     var bgColor = convertColor(
       widget.news.colors()?.background(),
-      AppCommonTheme.backgroundColor,
+      Theme.of(context).colorScheme.secondary,
     );
     var fgColor = convertColor(
       widget.news.colors()?.color(),
-      AppCommonTheme.primaryColor,
+      Theme.of(context).colorScheme.primary,
     );
     TextStyle style = Theme.of(context).textTheme.bodyLarge!.copyWith(
       fontSize: 13,
@@ -80,11 +79,8 @@ class _NewsSideBarState extends State<NewsSideBar> {
       builder: (context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setSheetState) {
-            return Container(
+            return SizedBox(
               width: double.infinity,
-              decoration: const BoxDecoration(
-                color: AppCommonTheme.textFieldColor,
-              ),
               child: Column(
                 children: [
                   Padding(
@@ -218,7 +214,6 @@ class _SideBarItem extends StatelessWidget {
     bool emojiShowing = false;
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppCommonTheme.backgroundColor,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
@@ -306,7 +301,6 @@ class _SideBarItem extends StatelessWidget {
                               child: Container(
                                 width: MediaQuery.of(context).size.width,
                                 decoration: BoxDecoration(
-                                  color: AppCommonTheme.textFieldColor,
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                                 child: Stack(
