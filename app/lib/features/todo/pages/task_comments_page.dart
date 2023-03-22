@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoComment.dart';
@@ -43,7 +42,6 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppCommonTheme.backgroundColorLight,
         leading: GestureDetector(
           onTap: () {
             Navigator.pop(context);
@@ -72,7 +70,6 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
                 heightFactor: MediaQuery.of(context).size.height * 0.03,
                 child: const Text(
                   'Be the first to comment!',
-                  style: ToDoTheme.listTitleTextStyle,
                 ),
               ),
               child: FutureBuilder<List<ToDoComment>>(
@@ -80,9 +77,7 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
-                      child: CircularProgressIndicator(
-                        color: AppCommonTheme.primaryColor,
-                      ),
+                      child: CircularProgressIndicator(),
                     );
                   } else {
                     if (snapshot.hasData) {
@@ -104,7 +99,6 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
                                     snapshot.data![index].userId,
                                   ) ??
                                   'No Name',
-                              style: ToDoTheme.taskTitleTextStyle,
                             ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,15 +106,12 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
                               children: <Widget>[
                                 Text(
                                   snapshot.data![index].text ?? '',
-                                  style: ToDoTheme.activeTasksTextStyle,
                                 ),
                                 Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(0, 8, 8, 8),
                                   child: Text(
                                     timeAgo(snapshot.data![index].time),
-                                    style: ToDoTheme.todayCalendarTextStyle
-                                        .copyWith(fontSize: 10),
                                   ),
                                 ),
                               ],
@@ -141,7 +132,6 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
                       return Center(
                         child: Text(
                           'Failed to fetch due to ${snapshot.error.toString()} ',
-                          style: ToDoTheme.listMemberTextStyle,
                         ),
                       );
                     }
@@ -189,15 +179,12 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
     List<Icon> optionIcons = [
       const Icon(
         Icons.bookmark_border,
-        color: ToDoTheme.primaryTextColor,
       ),
       const Icon(
         Icons.link,
-        color: ToDoTheme.primaryTextColor,
       ),
       const Icon(
         Icons.file_upload_outlined,
-        color: ToDoTheme.primaryTextColor,
       ),
       const Icon(
         Icons.warning_amber_rounded,
@@ -206,7 +193,6 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
     ];
     showModalBottomSheet(
       context: context,
-      backgroundColor: ToDoTheme.bottomSheetColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
@@ -222,7 +208,6 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
                 height: 80,
                 width: 80,
                 decoration: BoxDecoration(
-                  color: ToDoTheme.secondaryCardColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -234,10 +219,6 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
                     ),
                     Text(
                       options[index],
-                      style: index == options.length - 1
-                          ? ToDoTheme.listMemberTextStyle
-                              .copyWith(color: Colors.red)
-                          : ToDoTheme.listMemberTextStyle,
                     )
                   ],
                 ),

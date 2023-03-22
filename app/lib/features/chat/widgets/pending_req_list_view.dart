@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -35,7 +34,6 @@ class PendingReqListView extends StatelessWidget {
         ),
         trailing: const Text(
           'Withdraw',
-          style: TextStyle(color: AppCommonTheme.primaryColor, fontSize: 16),
         ),
       ),
     );

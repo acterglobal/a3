@@ -1,4 +1,4 @@
-import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoList.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -46,9 +46,7 @@ class _AddTaskDialogBoxState extends State<AddTaskDialog> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16.0),
-                decoration: const BoxDecoration(
-                  color: ToDoTheme.backgroundGradientColor,
-                ),
+                decoration: const BoxDecoration(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -113,17 +111,15 @@ class _InputWidgetState extends State<_InputWidget> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               Expanded(
                 child: Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 80,
                   decoration: BoxDecoration(
-                    color: ToDoTheme.secondaryColor,
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Padding(
@@ -142,15 +138,12 @@ class _InputWidgetState extends State<_InputWidget> {
                           );
                         });
                       },
-                      style: const TextStyle(color: Colors.white),
-                      cursorColor: Colors.grey,
+                      style: Theme.of(context).textTheme.bodySmall,
+                      cursorColor: Theme.of(context).colorScheme.tertiary,
                       // focusNode: todoController.addTaskNode,
                       autofocus: true,
                       decoration: const InputDecoration(
                         hintText: 'What is the title of task?',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                        ),
                         border: InputBorder.none,
                       ),
                     ),
@@ -173,8 +166,8 @@ class _InputWidgetState extends State<_InputWidget> {
                 icon: Icon(
                   Atlas.paper_airplane,
                   color: titleInputController.text.isEmpty
-                      ? Colors.grey
-                      : Colors.pink,
+                      ? Theme.of(context).colorScheme.neutral4
+                      : Theme.of(context).colorScheme.tertiary,
                 ),
               )
             ],
@@ -229,35 +222,20 @@ class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: widget.index == widget.buttonIndex
-              ? ToDoTheme.floatingABColor
-              : ToDoTheme.secondaryColor,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Icon(
+            const Icon(
               Atlas.calendar_dots,
-              color: widget.index == widget.buttonIndex
-                  ? ToDoTheme.primaryTextColor
-                  : ToDoTheme.calendarColor,
               size: 16,
             ),
             const SizedBox(width: 4),
             Text(
               widget.text,
               textAlign: TextAlign.center,
-              style: widget.index == widget.buttonIndex
-                  ? ToDoTheme.calendarTextStyle.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: ToDoTheme.primaryTextColor,
-                    )
-                  : ToDoTheme.calendarTextStyle.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+              style: Theme.of(context).textTheme.labelMedium,
             )
           ],
         ),
@@ -278,13 +256,7 @@ class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
       cancelText: 'Cancel',
       builder: (BuildContext ctx, child) {
         return Theme(
-          data: ThemeData.dark().copyWith(
-            dialogBackgroundColor: ToDoTheme.bottomSheetColor,
-            colorScheme: ColorScheme.fromSwatch().copyWith(
-              primary: ToDoTheme.primaryColor,
-              onSurface: ToDoTheme.primaryTextColor,
-            ),
-          ),
+          data: ThemeData.dark().copyWith(),
           child: child!,
         );
       },

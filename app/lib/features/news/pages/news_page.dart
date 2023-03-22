@@ -1,5 +1,4 @@
 import 'package:acter/common/animations/like_animation.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/home/controllers/home_controller.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:acter/features/news/controllers/news_controller.dart';
@@ -37,7 +36,7 @@ class _NewsPageState extends ConsumerState<NewsPage>
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: MediaQuery.of(context).size.width < 600
-            ? const UserAvatarWidget(isExtendedRail: false)
+            ? const UserAvatarWidget()
             : const SizedBox.shrink(),
         centerTitle: true,
         title: const ButtonBar(
@@ -116,9 +115,7 @@ class _NewsPageState extends ConsumerState<NewsPage>
           child: SizedBox(
             height: 50,
             width: 50,
-            child: CircularProgressIndicator(
-              color: AppCommonTheme.primaryColor,
-            ),
+            child: CircularProgressIndicator(),
           ),
         ),
       ),

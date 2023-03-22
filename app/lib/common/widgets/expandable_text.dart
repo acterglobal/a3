@@ -1,5 +1,4 @@
 // ignore_for_file: must_be_immutable
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
 
 class ExpandableText extends StatefulWidget {
@@ -26,9 +25,6 @@ class _ExpandableTextState extends State<ExpandableText>
                 : const BoxConstraints(maxHeight: 50.0),
             child: Text(
               widget.text,
-              style: ToDoTheme.listSubtitleTextStyle.copyWith(
-                color: ToDoTheme.calendarColor,
-              ),
               softWrap: true,
               overflow: TextOverflow.fade,
             ),
@@ -39,7 +35,6 @@ class _ExpandableTextState extends State<ExpandableText>
             : GestureDetector(
                 child: const Text(
                   'more',
-                  style: TextStyle(color: AppCommonTheme.primaryColor),
                 ),
                 onTap: () => setState(() => widget.isExpanded = true),
               )

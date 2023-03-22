@@ -1,4 +1,4 @@
-import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/features/todo/widgets/add_task_dialog.dart';
 import 'package:acter/features/todo/widgets/todo_task_view.dart';
@@ -8,7 +8,6 @@ import 'package:acter/models/ToDoTask.dart';
 import 'package:acter/common/widgets/expandable_text.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class TodoCard extends StatelessWidget {
@@ -31,7 +30,6 @@ class TodoCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),
-      color: ToDoTheme.secondaryColor,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           vertical: 8.0,
@@ -112,48 +110,28 @@ class _TasksWidget extends StatelessWidget {
           ),
           Row(
             children: <Widget>[
-              ElevatedButton(
-                onPressed: () => controller.toggleExpandBtn(index, expandBtn),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                    ToDoTheme.secondaryCardColor,
-                  ),
-                  shape: MaterialStateProperty.all<OutlinedBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                  ),
-                ),
+              InkWell(
+                onTap: () => controller.toggleExpandBtn(index, expandBtn),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
                       'Completed (${controller.getCompletedTasks(todo)})',
-                      style: ToDoTheme.buttonTextStyle.copyWith(
-                        color: ToDoTheme.floatingABColor,
-                      ),
                       softWrap: false,
+                      style: Theme.of(context).textTheme.labelMedium!,
                     ),
                     Icon(
                       expandBtn
                           ? Icons.expand_more
                           : Icons.keyboard_arrow_right,
                       size: 14,
-                      color: ToDoTheme.floatingABColor,
+                      color: Theme.of(context).colorScheme.tertiary,
                     ),
                   ],
                 ),
               ),
               const Spacer(),
               TextButton(
-                style: ButtonStyle(
-                  foregroundColor: MaterialStateProperty.all<Color>(
-                    ToDoTheme.secondaryTextColor,
-                  ),
-                  textStyle: MaterialStateProperty.all<TextStyle>(
-                    ToDoTheme.buttonTextStyle,
-                  ),
-                ),
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -169,7 +147,12 @@ class _TasksWidget extends StatelessWidget {
                     },
                   );
                 },
-                child: const Text('+ Add Task'),
+                child: Text(
+                  '+ Add Task',
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.tertiary2,
+                      ),
+                ),
               ),
             ],
           ),
@@ -213,15 +196,13 @@ class _TasksRatioWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        const Text(
+        Text(
           'Task: ',
-          style: ToDoTheme.listSubtitleTextStyle,
+          style: Theme.of(context).textTheme.labelMedium,
         ),
         Text(
           '${controller.getCompletedTasks(todo)}/${todo.tasks.length} completed',
-          style: ToDoTheme.listSubtitleTextStyle.copyWith(
-            color: ToDoTheme.calendarColor,
-          ),
+          style: Theme.of(context).textTheme.labelSmall,
         ),
         const Spacer(),
         IconButton(
@@ -229,7 +210,6 @@ class _TasksRatioWidget extends StatelessWidget {
           icon: Icon(
             isExpanded ? Atlas.arrow_up_circle : Atlas.arrow_down_circle,
           ),
-          color: ToDoTheme.primaryTextColor,
         ),
       ],
     );
@@ -250,24 +230,17 @@ class _CommentsWidget extends StatelessWidget {
       children: [
         const Icon(
           Atlas.heart,
-          color: ToDoTheme.primaryTextColor,
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 8, top: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: InkWell(
             onTap: () {},
-            child: SvgPicture.asset(
-              'assets/images/message.svg',
-              color: Colors.white,
-              height: 18,
-              width: 18,
-            ),
+            child: const Icon(Atlas.chat_dots),
           ),
         ),
         const Spacer(),
         const Icon(
           Atlas.book,
-          color: ToDoTheme.primaryTextColor,
         ),
       ],
     );
@@ -287,7 +260,10 @@ class _DescriptionWidget extends StatelessWidget {
       child: (description != null || description!.isNotEmpty)
           ? description!.length > 80
               ? ExpandableText(description!)
-              : Text(description!, style: ToDoTheme.descriptionTextStyle)
+              : Text(
+                  description!,
+                  style: Theme.of(context).textTheme.bodySmall,
+                )
           : const SizedBox.shrink(),
     );
   }
@@ -299,7 +275,6 @@ class _DividerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Divider(
-      color: ToDoTheme.listDividerColor,
       indent: 0,
       endIndent: 0,
       thickness: 1,
@@ -324,7 +299,7 @@ class _HeaderWidget extends StatelessWidget {
         children: [
           Text(
             title,
-            style: ToDoTheme.listTitleTextStyle,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(
             width: 8.0,
@@ -332,13 +307,13 @@ class _HeaderWidget extends StatelessWidget {
           team != null
               ? Container(
                   padding: const EdgeInsets.all(8.0),
-                  decoration: const BoxDecoration(
-                    color: AppCommonTheme.secondaryColor,
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.tertiary2,
+                    borderRadius: const BorderRadius.all(Radius.circular(10.0)),
                   ),
                   child: Text(
                     team!.name!,
-                    style: ToDoTheme.listTagTextStyle,
+                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                 )
               : const SizedBox.shrink(),

@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/chat/widgets/pending_req_list_view.dart';
 import 'package:acter/features/chat/widgets/req_list_view.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -76,7 +75,6 @@ class _TabBarWidget extends StatelessWidget {
               unselectedLabelColor: Colors.white,
               indicator: BoxDecoration(
                 borderRadius: BorderRadius.circular(15), // Creates border
-                color: AppCommonTheme.primaryColor,
               ),
               indicatorPadding: const EdgeInsets.symmetric(vertical: 6),
               tabs: const [

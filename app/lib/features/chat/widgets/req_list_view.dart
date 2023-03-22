@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
 
 class ReqListView extends StatelessWidget {
@@ -37,7 +36,6 @@ class ReqListView extends StatelessWidget {
                 child: Text(
                   'Accept',
                   style: TextStyle(
-                    color: AppCommonTheme.greenButtonColor,
                     fontSize: 16,
                   ),
                 ),
@@ -45,7 +43,6 @@ class ReqListView extends StatelessWidget {
               Text(
                 'Decline',
                 style: TextStyle(
-                  color: AppCommonTheme.primaryColor,
                   fontSize: 16,
                 ),
               ),

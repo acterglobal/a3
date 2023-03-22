@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
@@ -52,7 +51,6 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: AppCommonTheme.backgroundColor,
       ),
       body: Padding(
         padding: const EdgeInsets.all(12),
@@ -99,8 +97,9 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
                   isCollapsed: true,
                   contentPadding: EdgeInsets.all(12),
                   filled: true,
-                  fillColor: AppCommonTheme.darkShade,
                 ),
+                cursorColor: Theme.of(context).colorScheme.tertiary,
+                cursorHeight: 0.5,
               ),
             ),
             Container(
@@ -120,8 +119,9 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
                   contentPadding: EdgeInsets.all(12),
                   isCollapsed: false,
                   filled: true,
-                  fillColor: AppCommonTheme.darkShade,
                 ),
+                cursorColor: Theme.of(context).colorScheme.tertiary,
+                cursorHeight: 0.5,
               ),
             ),
           ],

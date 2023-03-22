@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
 
 class InviteListView extends StatelessWidget {
@@ -35,9 +34,6 @@ class InviteListView extends StatelessWidget {
               visible: !isAdded,
               child: ElevatedButton(
                 onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppCommonTheme.greenButtonColor,
-                ),
                 child: const Text(
                   'Invite',
                   style: TextStyle(color: Colors.white),
@@ -49,7 +45,6 @@ class InviteListView extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppCommonTheme.darkShade,
                   elevation: 0.0,
                 ),
                 child: const Text(

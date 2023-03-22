@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/todo/pages/create_todo_page.dart';
 import 'package:acter/features/todo/pages/todo_mine_page.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
@@ -43,10 +42,9 @@ class _ToDoPageState extends State<ToDoPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: ToDoTheme.backgroundGradient2Color,
         title: const Padding(
           padding: EdgeInsets.only(top: 25),
-          child: Text('Todo', style: ToDoTheme.titleTextStyle),
+          child: Text('Todo'),
         ),
         centerTitle: false,
         actions: [
@@ -93,8 +91,7 @@ class _BodyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: ToDoTheme.toDoDecoration,
+    return SizedBox(
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
@@ -156,31 +153,22 @@ class _RadioBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      splashColor: ToDoTheme.primaryTextColor,
       onTap: () {
         todoController.updateButtonIndex(index);
       },
+      hoverColor: Colors.transparent,
       child: Container(
         height: 35,
         width: 75,
         margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 12),
         decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.tertiary,
           borderRadius: BorderRadius.circular(10),
-          color: index == todoController.selectedValueIndex.value
-              ? ToDoTheme.primaryColor
-              : ToDoTheme.secondaryColor,
-          border: Border.all(color: ToDoTheme.btnBorderColor, width: 1),
         ),
         child: Center(
           child: Text(
             text,
-            style: TextStyle(
-              color: index == todoController.selectedValueIndex.value
-                  ? ToDoTheme.primaryTextColor
-                  : ToDoTheme.inactiveTextColor,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(context).textTheme.labelMedium,
             textScaleFactor: 0.8,
           ),
         ),

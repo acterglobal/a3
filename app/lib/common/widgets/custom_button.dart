@@ -1,4 +1,4 @@
-import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
@@ -26,7 +26,8 @@ class CustomButton extends StatelessWidget {
               if (states.contains(MaterialState.pressed)) {
                 return RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: const BorderSide(color: Colors.pink),
+                  side:
+                      BorderSide(color: Theme.of(context).colorScheme.tertiary),
                 );
               } else if (states.contains(MaterialState.disabled)) {
                 return RoundedRectangleBorder(
@@ -35,29 +36,22 @@ class CustomButton extends StatelessWidget {
               }
               return RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: const BorderSide(color: Colors.pink),
+                side: BorderSide(color: Theme.of(context).colorScheme.tertiary),
               );
             },
           ),
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
             (Set<MaterialState> states) {
               if (states.contains(MaterialState.pressed)) {
-                return ToDoTheme.primaryColor;
+                return Theme.of(context).colorScheme.tertiary;
               } else if (states.contains(MaterialState.disabled)) {
-                return ToDoTheme.textFieldColor;
+                return Theme.of(context).colorScheme.neutral3;
               }
-              return ToDoTheme.primaryColor;
+              return Theme.of(context).colorScheme.tertiary;
             },
           ),
         ),
-        child: Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        child: Text(title),
         onPressed: onPressed,
       ),
     );

@@ -1,5 +1,4 @@
 import 'package:acter/common/animations/like_animation.dart';
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
@@ -144,7 +143,7 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                               fill: 1.0,
                               color: Colors.red,
                             ),
-                            color: AppCommonTheme.primaryColor,
+                            color: Theme.of(context).colorScheme.tertiary,
                             isSmall: false,
                           )
                         : _LikeWidget(
@@ -220,7 +219,9 @@ class _SmallHeartWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Icon(
       Icons.favorite,
-      color: AppCommonTheme.primaryColor
+      color: Theme.of(context)
+          .colorScheme
+          .tertiary
           .withOpacity(smallHeartOpacity.value * 0.8),
       size: 12,
     );

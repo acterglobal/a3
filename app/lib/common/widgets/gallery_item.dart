@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
 
 class GalleryItem extends StatelessWidget {
@@ -8,7 +7,6 @@ class GalleryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppCommonTheme.textFieldColor,
         borderRadius: BorderRadius.circular(25),
       ),
       width: double.infinity,
