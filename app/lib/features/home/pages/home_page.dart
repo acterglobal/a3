@@ -8,7 +8,6 @@ import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/home/controllers/home_controller.dart';
-import 'package:acter/features/home/widgets/home_widget.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
@@ -18,13 +17,29 @@ import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
+import 'package:go_router/go_router.dart';
 
-class Navigation {
-  final NavigationRailDestination navi;
-  final int targetIndex;
+class SidebarNavigationItem extends NavigationRailDestination {
+  final String initialLocation;
 
-  const Navigation({required this.navi, required this.targetIndex});
+  const SidebarNavigationItem({
+    required this.initialLocation,
+    required Widget icon,
+    required Widget label
+  }) : super(icon: icon, label: label);
 }
+
+class BottombarNavigationItem extends BottomNavigationBarItem {
+  final String initialLocation;
+
+  const BottombarNavigationItem({
+    required this.initialLocation,
+    required Widget icon,
+    String? label,
+    Widget? activeIcon,
+  }) : super(icon: icon, activeIcon: activeIcon, label: label);
+}
+
 
 class HomePage extends ConsumerStatefulWidget {
   final Widget child;
@@ -35,9 +50,7 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  late final PageController pageController;
   ScreenshotController screenshotController = ScreenshotController();
-  int _selectedIndex = 0;
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   final desktopPlatforms = [
     TargetPlatform.linux,
@@ -47,10 +60,110 @@ class _HomePageState extends ConsumerState<HomePage> {
   late bool bugReportVisible;
   late ShakeDetector detector;
 
+
+  final sideBarNav = [
+    SidebarNavigationItem(
+        icon: SvgPicture.asset(
+          'assets/icon/acter.svg',
+          height: 24,
+          width: 24,
+        ),
+        label: const Text(
+          'Overview',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      initialLocation: "/dashboard",
+    ),
+    SidebarNavigationItem(
+        icon: Icon(Atlas.chats_thin),
+        label: Text(
+          'Chat',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        initialLocation: "/chat",
+    ),
+  ];
+
+  int get _selectedSidebarIndex => _locationToSidebarIndex(GoRouter.of(context).location);
+
+  int _locationToSidebarIndex(String location) {
+    final index =
+        sideBarNav.indexWhere((t) => location.startsWith(t.initialLocation));
+    // if index not found (-1), return 0
+    return index < 0 ? 0 : index;
+  }
+
+  // callback used to navigate to the desired tab
+  void _onSidebarItemTapped(BuildContext context, int tabIndex) {
+    if (tabIndex != _selectedSidebarIndex) {
+      // go to the initial location of the selected tab (by index)
+      context.go(sideBarNav[tabIndex].initialLocation);
+    }
+  }
+
+  final bottomBarNav = [
+      const BottombarNavigationItem(
+        icon: Icon(Atlas.bullhorn_thin),
+        activeIcon: CustomSelectedIcon(
+          icon: Icon(Atlas.bullhorn_thin),
+        ),
+        label: 'Updates',
+        initialLocation: "/updates",
+      ),
+      BottombarNavigationItem(
+        icon: SvgPicture.asset(
+          'assets/icon/acter.svg',
+          height: 28,
+          width: 28,
+        ),
+        activeIcon: CustomSelectedIcon(
+          icon: SvgPicture.asset(
+            'assets/icon/acter.svg',
+            height: 28,
+            width: 28,
+          ),
+        ),
+        label: 'Overview',
+        initialLocation: "/dashboard",
+      ),
+      const BottombarNavigationItem(
+        icon: Icon(Atlas.chats_thin),
+        activeIcon: CustomSelectedIcon(
+          icon: Icon(Atlas.chats_thin),
+        ),
+        label: 'Chat',
+        initialLocation: "/chat",
+      )
+  ];
+
+  int get _selectedBottombarIndex => _locationToBottombarIndex(GoRouter.of(context).location);
+
+  int _locationToBottombarIndex(String location) {
+    final index =
+        bottomBarNav.indexWhere((t) => location.startsWith(t.initialLocation));
+    // if index not found (-1), return 0
+    return index < 0 ? 0 : index;
+  }
+
+  // callback used to navigate to the desired tab
+  void _onBottombarItemTapped(BuildContext context, int tabIndex) {
+    if (tabIndex != _selectedBottombarIndex) {
+      // go to the initial location of the selected tab (by index)
+      context.go(bottomBarNav[tabIndex].initialLocation);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    pageController = PageController(initialPage: _selectedIndex);
     // shake is possible in only mobile
     if (Platform.isAndroid || Platform.isIOS) {
       bugReportVisible = false;
@@ -79,41 +192,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     // get platform of context.
     final bool isDesktop =
         desktopPlatforms.contains(Theme.of(context).platform);
-
-    final sideBarNav = [
-      Navigation(
-        navi: NavigationRailDestination(
-          icon: SvgPicture.asset(
-            'assets/icon/acter.svg',
-            height: 24,
-            width: 24,
-          ),
-          label: const Text(
-            'Overview',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        targetIndex: 0,
-      ),
-      Navigation(
-        navi: const NavigationRailDestination(
-          icon: Icon(Atlas.chats_thin),
-          label: Text(
-            'Chat',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        targetIndex: 2,
-      ),
-    ];
 
     return ref.watch(homeStateProvider) != null
         ? Scaffold(
@@ -146,19 +224,15 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   color: Colors.white,
                                 ),
                                 padding: const EdgeInsets.all(0),
-                                onDestinationSelected: (x) =>
-                                    handleDestinationSelected(
-                                  sideBarNav[x].targetIndex,
-                                ),
                                 leading: Container(
                                   margin: const EdgeInsets.only(top: 8),
                                   child: const UserAvatarWidget(
                                     isExtendedRail: false,
                                   ),
                                 ),
-                                selectedIndex: _selectedIndex,
-                                destinations:
-                                    sideBarNav.map((i) => i.navi).toList(),
+                                selectedIndex: _selectedSidebarIndex,
+                                onDestinationSelected:(index) => _onSidebarItemTapped(context, index),
+                                destinations: sideBarNav,
                                 trailing: Expanded(
                                   child: Column(
                                     children: [
@@ -202,9 +276,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   color: Colors.white,
                                 ),
                                 padding: const EdgeInsets.all(0),
-                                onDestinationSelected:
-                                    handleDestinationSelected,
-                                selectedIndex: _selectedIndex,
                                 extended: true,
                                 leading: Container(
                                   margin: const EdgeInsets.only(
@@ -215,34 +286,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     isExtendedRail: true,
                                   ),
                                 ),
-                                destinations: <NavigationRailDestination>[
-                                  NavigationRailDestination(
-                                    icon: SvgPicture.asset(
-                                      'assets/icon/acter.svg',
-                                      height: 24,
-                                      width: 24,
-                                    ),
-                                    label: const Text(
-                                      'Overview',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                  const NavigationRailDestination(
-                                    icon: Icon(Atlas.chats_thin),
-                                    label: Text(
-                                      'Chat',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                selectedIndex: _selectedSidebarIndex,
+                                onDestinationSelected: (index) => _onSidebarItemTapped(context, index),
+                                destinations: sideBarNav,
                                 trailing: Expanded(
                                   child: Column(
                                     children: [
@@ -309,7 +355,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             ),
                           )
                         : SlotLayout.from(
-                            key: const Key('body-meduim-mobile'),
+                            key: const Key('body-medium-mobile'),
                             builder: (BuildContext ctx) {
                               return widget.child;
                             },
@@ -340,40 +386,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                             inAnimation: AdaptiveScaffold.bottomToTop,
                             outAnimation: AdaptiveScaffold.topToBottom,
                             builder: (BuildContext ctx) => BottomNavigationBar(
-                              currentIndex: _selectedIndex,
-                              onTap: handleDestinationSelected,
+
+                              currentIndex: _selectedBottombarIndex,
+                              onTap:(index) => _onBottombarItemTapped(context, index),
+                              items: bottomBarNav,
                               type: BottomNavigationBarType.fixed,
-                              items: <BottomNavigationBarItem>[
-                                const BottomNavigationBarItem(
-                                  icon: Icon(Atlas.bullhorn_thin),
-                                  activeIcon: CustomSelectedIcon(
-                                    icon: Icon(Atlas.bullhorn_thin),
-                                  ),
-                                  label: 'Updates',
-                                ),
-                                BottomNavigationBarItem(
-                                  icon: SvgPicture.asset(
-                                    'assets/icon/acter.svg',
-                                    height: 28,
-                                    width: 28,
-                                  ),
-                                  activeIcon: CustomSelectedIcon(
-                                    icon: SvgPicture.asset(
-                                      'assets/icon/acter.svg',
-                                      height: 28,
-                                      width: 28,
-                                    ),
-                                  ),
-                                  label: 'Overview',
-                                ),
-                                const BottomNavigationBarItem(
-                                  icon: Icon(Atlas.chats_thin),
-                                  activeIcon: CustomSelectedIcon(
-                                    icon: Icon(Atlas.chats_thin),
-                                  ),
-                                  label: 'Chat',
-                                )
-                              ],
                             ),
                           ),
                         },
@@ -386,40 +403,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                             inAnimation: AdaptiveScaffold.bottomToTop,
                             outAnimation: AdaptiveScaffold.topToBottom,
                             builder: (BuildContext ctx) => BottomNavigationBar(
-                              currentIndex: _selectedIndex,
-                              onTap: handleDestinationSelected,
+                              currentIndex: _selectedBottombarIndex,
+                              onTap:(index) => _onBottombarItemTapped(context, index),
+                              items: bottomBarNav,
                               type: BottomNavigationBarType.fixed,
-                              items: <BottomNavigationBarItem>[
-                                const BottomNavigationBarItem(
-                                  icon: Icon(Atlas.bullhorn),
-                                  activeIcon: CustomSelectedIcon(
-                                    icon: Icon(Atlas.bullhorn),
-                                  ),
-                                  label: 'Updates',
-                                ),
-                                BottomNavigationBarItem(
-                                  icon: SvgPicture.asset(
-                                    'assets/icon/acter.svg',
-                                    height: 28,
-                                    width: 28,
-                                  ),
-                                  activeIcon: CustomSelectedIcon(
-                                    icon: SvgPicture.asset(
-                                      'assets/icon/acter.svg',
-                                      height: 28,
-                                      width: 28,
-                                    ),
-                                  ),
-                                  label: 'Space',
-                                ),
-                                const BottomNavigationBarItem(
-                                  icon: Icon(Atlas.chats),
-                                  activeIcon: CustomSelectedIcon(
-                                    icon: Icon(Atlas.chats),
-                                  ),
-                                  label: 'Chat',
-                                )
-                              ],
                             ),
                           ),
                         },
@@ -436,14 +423,9 @@ class _HomePageState extends ConsumerState<HomePage> {
           );
   }
 
-  void handleDestinationSelected(int index) {
-    setState(() => _selectedIndex = index);
-    pageController.jumpToPage(index);
-  }
-
   Future<void> handleBugReport() async {
     var appDocDir = await getApplicationDocumentsDirectory();
-    // rageshake disallows dot in filename
+    // rage shake disallows dot in filename
     String timestamp = formatDate(
       DateTime.now(),
       [yyyy, '-', mm, '-', dd, '_', hh, '-', nn, '-', ss, '_', SSS],
