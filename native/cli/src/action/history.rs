@@ -56,7 +56,6 @@ impl HistoryOpts {
                 break;
             }
         }
-        client.logout().await?;
         Ok(())
     }
 }
