@@ -24,9 +24,27 @@ impl List {
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         tracing::info!(" - First Sync finished - ");
 
-        println!("## Acter Spaces:");
+        println!("## Spaces:");
         for sp in client.groups().await? {
-            println!(" * {} : {}", sp.room_id(), sp.display_name().await?);
+            let room_id = sp.room_id();
+            let aliases = {
+                let aliases = sp.alt_aliases();
+                if aliases.is_empty() {
+                    "".to_owned()
+                } else {
+                    format!(
+                        " ( {} )",
+                        aliases
+                            .iter()
+                            .map(ToString::to_string)
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    )
+                }
+            };
+            let acter_space = if sp.is_acter_space().await { 'x' } else { ' ' };
+            let display_name = sp.display_name().await?;
+            println!(" * [{acter_space}] {room_id}{aliases}: {display_name}");
         }
 
         if self.include_chat {
@@ -35,8 +53,6 @@ impl List {
                 println!(" * {} : {}", sp.room_id(), sp.display_name().await?);
             }
         }
-
-        client.logout().await?;
         Ok(())
     }
 }

@@ -51,8 +51,6 @@ impl ExecuteOpts {
                 i?
             }
         }
-
-        user.logout().await?;
         Ok(())
     }
 }

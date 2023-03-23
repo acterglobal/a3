@@ -9,7 +9,8 @@ use acter_core::{
     executor::Executor,
     models::AnyActerModel,
     ruma::{events::MessageLikeEvent, OwnedRoomAliasId, OwnedRoomId, OwnedUserId},
-    spaces::{CreateSpaceSettings, CreateSpaceSettingsBuilder},
+    spaces::{is_acter_space, CreateSpaceSettings, CreateSpaceSettingsBuilder},
+    statics::default_acter_space_states,
     templates::Engine,
 };
 use anyhow::{bail, Result};
@@ -20,6 +21,11 @@ use matrix_sdk::{
     event_handler::Ctx,
     room::{Messages, MessagesOptions},
     Client as MatrixClient,
+};
+use ruma::{
+    api::client::state::send_state_event,
+    events::{AnyStateEventContent, StateEventContent, _custom::CustomStateEventContent},
+    serde::Raw,
 };
 use serde::{Deserialize, Serialize};
 
@@ -66,6 +72,10 @@ impl Group {
         }
 
         Ok(())
+    }
+
+    pub async fn is_acter_space(&self) -> bool {
+        is_acter_space(&self.inner).await
     }
 
     pub(crate) async fn add_handlers(&self) {
@@ -255,6 +265,29 @@ impl Group {
 
     pub fn get_room_id(&self) -> String {
         self.room_id().to_string()
+    }
+
+    pub async fn set_acter_space_states(&self) -> Result<()> {
+        let matrix_sdk::room::Room::Joined(ref joined) = self.inner.room else {
+            bail!("You can't convert a space you didn't join");
+        };
+        for state in default_acter_space_states() {
+            println!("{:?}", state);
+            let event_type = state.get_field("type")?.expect("given");
+            let state_key = state.get_field("state_key")?.unwrap_or_default();
+            let body = state
+                .get_field::<Raw<AnyStateEventContent>>("content")?
+                .expect("body is given");
+
+            let request = send_state_event::v3::Request::new_raw(
+                joined.room_id().to_owned(),
+                event_type,
+                state_key,
+                body,
+            );
+            joined.client().send(request, None).await?;
+        }
+        Ok(())
     }
 
     pub(crate) async fn refresh_history(&self) -> Result<()> {

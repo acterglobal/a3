@@ -74,7 +74,7 @@ pub(crate) async fn devide_groups_from_convos(client: Client) -> (Vec<Group>, Ve
             async move |(mut groups, mut conversations, client), room| {
                 let inner = Room { room: room.clone() };
 
-                if inner.is_acter_group().await {
+                if inner.is_space() {
                     groups.push(Group::new(client.clone(), inner));
                 } else {
                     conversations.push(Conversation::new(inner));
@@ -225,8 +225,12 @@ impl Client {
                 history.lock_mut().start(group_ids);
 
                 try_join_all(groups.iter().map(|g| async {
-                    g.add_handlers().await;
-                    let x = g.refresh_history().await;
+                    let x = if g.is_acter_space().await {
+                        g.add_handlers().await;
+                        g.refresh_history().await
+                    } else {
+                        Ok(())
+                    };
                     history.lock_mut().group_loaded();
                     x
                 }))

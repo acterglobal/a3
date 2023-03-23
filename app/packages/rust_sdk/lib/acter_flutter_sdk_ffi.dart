@@ -3250,6 +3250,34 @@ class Api {
     return tmp7;
   }
 
+  bool? __groupIsActerSpaceFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _groupIsActerSpaceFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    if (tmp8 == 0) {
+      return null;
+    }
+    final tmp7 = tmp9 > 0;
+    return tmp7;
+  }
+
   FfiListMember? __groupActiveMembersFuturePoll(
     int boxed,
     int postCobject,
@@ -9803,6 +9831,16 @@ class Api {
       int Function(
     int,
   )>();
+  late final _groupIsActerSpacePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Group_is_acter_space");
+
+  late final _groupIsActerSpace = _groupIsActerSpacePtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _groupActiveMembersPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -11817,6 +11855,21 @@ class Api {
   late final _groupGetProfileFuturePoll =
       _groupGetProfileFuturePollPtr.asFunction<
           _GroupGetProfileFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _groupIsActerSpaceFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _GroupIsActerSpaceFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Group_is_acter_space_future_poll");
+
+  late final _groupIsActerSpaceFuturePoll =
+      _groupIsActerSpaceFuturePollPtr.asFunction<
+          _GroupIsActerSpaceFuturePollReturn Function(
     int,
     int,
     int,
@@ -20056,6 +20109,21 @@ class Group {
     return tmp2;
   }
 
+  /// whether this an acter space
+  Future<bool> isActerSpace() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._groupIsActerSpace(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Group_is_acter_space_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__groupIsActerSpaceFuturePoll);
+    return tmp2;
+  }
+
   /// the members currently in the group
   Future<FfiListMember> activeMembers() {
     var tmp0 = 0;
@@ -24770,6 +24838,13 @@ class _GroupGetProfileFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
+}
+
+class _GroupIsActerSpaceFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
 }
 
 class _GroupActiveMembersFuturePollReturn extends ffi.Struct {
