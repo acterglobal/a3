@@ -1,13 +1,10 @@
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
+import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/home_page.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/sign_up_page.dart';
 import 'package:acter/features/profile/pages/social_profile_page.dart';
-
-import 'package:acter/features/chat/pages/chat_page.dart';
-import 'package:acter/features/home/controllers/home_controller.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 
 import 'package:flutter/material.dart';
@@ -70,17 +67,14 @@ final _routes = [
             key: state.pageKey,
             child: const NewsPage(),
           );
-        }
+        },
       ),
 
       GoRoute(
         name: 'chat',
         path: '/chat',
         pageBuilder: (context, state) {
-          return NoTransitionPage(
-            key: state.pageKey,
-            child: const NewsPage()
-          );
+          return NoTransitionPage(key: state.pageKey, child: const ChatPage());
         },
       ),
 
@@ -88,10 +82,7 @@ final _routes = [
         name: 'dashboard',
         path: '/dashboard',
         pageBuilder: (context, state) {
-          return NoTransitionPage(
-            key: state.pageKey,
-            child: const NewsPage()
-          );
+          return NoTransitionPage(key: state.pageKey, child: const NewsPage());
         },
       ),
 
@@ -99,10 +90,7 @@ final _routes = [
         name: 'space',
         path: '/:space([!#][^\/]+)', // !spaceId, #spaceName
         pageBuilder: (context, state) {
-          return NoTransitionPage(
-            key: state.pageKey,
-            child: const NewsPage()
-          );
+          return NoTransitionPage(key: state.pageKey, child: const NewsPage());
         },
       ),
 

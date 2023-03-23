@@ -5,29 +5,25 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/widgets/invite_info_card.dart';
 import 'package:acter/features/chat/widgets/list_item.dart';
+import 'package:acter/features/home/controllers/home_controller.dart';
 import 'package:acter/models/JoinedRoom.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Invitation;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reorderable_list_2.dart';
 import 'package:implicitly_animated_reorderable_list_2/transitions.dart';
 
-class ChatPage extends StatefulWidget {
-  final Client client;
-
-  const ChatPage({Key? key, required this.client}) : super(key: key);
+class ChatPage extends ConsumerWidget {
+  const ChatPage({Key? key}) : super(key: key);
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
-}
-
-class _ChatPageState extends State<ChatPage> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final client = ref.watch(homeStateProvider)!;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       body: GetBuilder<ChatListController>(
@@ -128,10 +124,10 @@ class _ChatPageState extends State<ChatPage> {
                           ),
                         ),
                       ),
-                    if (widget.client.isGuest())
+                    if (client.isGuest())
                       empty
                     else
-                      _ListWidget(client: widget.client),
+                      _ListWidget(client: client),
                   ],
                 ),
               ),

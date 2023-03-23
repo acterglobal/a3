@@ -20,7 +20,7 @@ class HomeWidget extends ConsumerWidget {
         const SizedBox(
           child: Center(child: Text('Space Overview is yet to be implemented')),
         ),
-        ChatPage(client: client),
+        const ChatPage(),
         PinPage(client: client),
         ToDoPage(client: client),
       ],
