@@ -26,9 +26,9 @@ class _StreamTypesSelectionState extends State<StreamTypesSelection> {
     return SegmentedButton<StreamTypes>(
       segments: const <ButtonSegment<StreamTypes>>[
         ButtonSegment<StreamTypes>(
-            value: StreamTypes.news, icon: Icon(Atlas.newspaper_thin)),
+            value: StreamTypes.news, icon: Icon(Atlas.newspaper_thin),),
         ButtonSegment<StreamTypes>(
-            value: StreamTypes.stories, icon: Icon(Atlas.image_message_thin)),
+            value: StreamTypes.stories, icon: Icon(Atlas.image_message_thin),),
       ],
       selected: selection,
       onSelectionChanged: (Set<StreamTypes> newSelection) {

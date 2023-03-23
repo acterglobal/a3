@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:date_format/date_format.dart';
@@ -8,7 +7,7 @@ import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/home/controllers/home_controller.dart';
-import 'package:acter/features/home/widgets/user_avatar.dart';
+import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,15 +17,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
 import 'package:go_router/go_router.dart';
-
-class SidebarNavigationItem extends NavigationRailDestination {
-  final String initialLocation;
-  const SidebarNavigationItem({
-    required this.initialLocation,
-    required Widget icon,
-    required Widget label,
-  }) : super(icon: icon, label: label);
-}
 
 class BottombarNavigationItem extends BottomNavigationBarItem {
   final String initialLocation;
@@ -57,57 +47,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   ];
   late bool bugReportVisible;
   late ShakeDetector detector;
-
-  final sideBarNav = [
-    SidebarNavigationItem(
-      icon: SvgPicture.asset(
-        'assets/icon/acter.svg',
-        height: 24,
-        width: 24,
-      ),
-      label: const Text(
-        'Overview',
-        //TODO: remove manual styling later and apply app theme values.
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w400,
-        ),
-        softWrap: false,
-      ),
-      initialLocation: '/dashboard',
-    ),
-    const SidebarNavigationItem(
-      icon: Icon(Atlas.chats_thin),
-      label: Text(
-        'Chat',
-        //TODO: remove manual styling later and apply app theme values.
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w400,
-        ),
-        softWrap: false,
-      ),
-      initialLocation: '/chat',
-    ),
-  ];
-
-  int get _selectedSidebarIndex =>
-      _locationToSidebarIndex(GoRouter.of(context).location);
-
-  int _locationToSidebarIndex(String location) {
-    final index =
-        sideBarNav.indexWhere((t) => location.startsWith(t.initialLocation));
-    // if index not found (-1), return 0
-    return index < 0 ? 0 : index;
-  }
-
-  // callback used to navigate to the desired tab
-  void _onSidebarItemTapped(BuildContext context, int tabIndex) {
-    if (tabIndex != _selectedSidebarIndex) {
-      // go to the initial location of the selected tab (by index)
-      context.go(sideBarNav[tabIndex].initialLocation);
-    }
-  }
 
   final bottomBarNav = [
     const BottombarNavigationItem(
@@ -207,219 +146,18 @@ class _HomePageState extends ConsumerState<HomePage> {
                           Breakpoints.medium: SlotLayout.from(
                             key: const Key('primaryNavigation'),
                             builder: (BuildContext ctx) {
-                              return AdaptiveScaffold.standardNavigationRail(
-                                // Todo: Applied literal theme values here
-                                // as NavigationRail is not considering
-                                // NavigationRailTheme values from MaterialTheme.
-                                // To be removed once issue is fixed in package.
+                              return SidebarWidget(
                                 labelType: NavigationRailLabelType.none,
-                                backgroundColor: Theme.of(context)
-                                    .navigationRailTheme
-                                    .backgroundColor!,
-                                selectedIconTheme: const IconThemeData(
-                                  size: 18,
-                                  color: Colors.white,
-                                ),
-                                unselectedIconTheme: const IconThemeData(
-                                  size: 18,
-                                  color: Colors.white,
-                                ),
-                                padding: const EdgeInsets.all(0),
-                                leading: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    UserAvatarWidget(),
-                                    Divider(
-                                      height: 24,
-                                      indent: 18,
-                                      endIndent: 18,
-                                    )
-                                  ],
-                                ),
-
-                                selectedIndex: _selectedSidebarIndex,
-                                onDestinationSelected: (index) =>
-                                    _onSidebarItemTapped(context, index),
-                                destinations: sideBarNav,
-                                trailing: Expanded(
-                                  child: Column(
-                                    children: [
-                                      const Divider(
-                                        indent: 18,
-                                        endIndent: 18,
-                                      ),
-                                      const Spacer(),
-                                      Visibility(
-                                        visible: !ref
-                                            .watch(homeStateProvider)!
-                                            .isGuest(),
-                                        child: InkWell(
-                                          onTap: () =>
-                                              confirmationDialog(context, ref),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 5,
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                const Icon(
-                                                  Atlas.exit_thin,
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                    vertical: 5,
-                                                  ),
-                                                  child: Text(
-                                                    'Log Out',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .labelSmall,
-                                                    softWrap: false,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 8,
-                                        ),
-                                        child: GestureDetector(
-                                          onTap: handleBugReport,
-                                          child: Column(
-                                            children: [
-                                              const Icon(
-                                                Icons.bug_report_rounded,
-                                                color: Colors.white,
-                                              ),
-                                              Text(
-                                                'Report',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .labelSmall,
-                                                softWrap: false,
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                handleBugReport: handleBugReport,
                               );
                             },
                           ),
                           Breakpoints.large: SlotLayout.from(
                             key: const Key('Large primaryNavigation'),
                             builder: (BuildContext ctx) {
-                              return AdaptiveScaffold.standardNavigationRail(
-                                // Todo: Applied literal theme values here
-                                // as NavigationRail is not considering
-                                // NavigationRailTheme values from MaterialTheme.
-                                // To be removed once issue is fixed in package.
-                                backgroundColor: Theme.of(context)
-                                    .navigationRailTheme
-                                    .backgroundColor!,
+                              return SidebarWidget(
                                 labelType: NavigationRailLabelType.all,
-                                selectedLabelTextStyle:
-                                    Theme.of(context).textTheme.labelSmall!,
-                                selectedIconTheme: const IconThemeData(
-                                  size: 18,
-                                  color: Colors.white,
-                                ),
-                                unselectedIconTheme: const IconThemeData(
-                                  size: 18,
-                                  color: Colors.white,
-                                ),
-                                padding: const EdgeInsets.all(0),
-                                leading: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      margin: const EdgeInsets.only(top: 8),
-                                      child: const UserAvatarWidget(),
-                                    ),
-                                    const Divider(
-                                      indent: 18,
-                                      endIndent: 18,
-                                    )
-                                  ],
-                                ),
-                                selectedIndex: _selectedSidebarIndex,
-                                onDestinationSelected: (index) =>
-                                    _onSidebarItemTapped(context, index),
-                                destinations: sideBarNav,
-                                trailing: Expanded(
-                                  child: Column(
-                                    children: [
-                                      const Divider(
-                                        indent: 18,
-                                        endIndent: 18,
-                                      ),
-                                      const Spacer(),
-                                      Visibility(
-                                        visible: !ref
-                                            .watch(homeStateProvider)!
-                                            .isGuest(),
-                                        child: InkWell(
-                                          onTap: () =>
-                                              confirmationDialog(context, ref),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 5,
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                const Icon(
-                                                  Atlas.exit_thin,
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                    vertical: 5,
-                                                  ),
-                                                  child: Text(
-                                                    'Log Out',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .labelSmall,
-                                                    softWrap: false,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 8,
-                                        ),
-                                        child: GestureDetector(
-                                          onTap: handleBugReport,
-                                          child: Column(
-                                            children: [
-                                              const Icon(
-                                                Icons.bug_report_rounded,
-                                                color: Colors.white,
-                                              ),
-                                              Text(
-                                                'Report',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .labelSmall,
-                                                softWrap: false,
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                handleBugReport: handleBugReport, 
                               );
                             },
                           )

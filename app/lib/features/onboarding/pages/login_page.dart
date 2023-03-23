@@ -140,7 +140,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 await ref
                                     .read(authControllerProvider.notifier)
                                     .login(
-                                        username.text, password.text, context);
+                                        username.text, password.text, context,);
                                 _validateLogin();
                               }
                             }

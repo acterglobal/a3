@@ -113,6 +113,7 @@ final _routes = [
 
 // GoRouter configuration
 final router = GoRouter(
+  navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
   debugLogDiagnostics: true,
   routes: _routes,

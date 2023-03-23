@@ -11,6 +11,16 @@ final homeStateProvider = StateNotifierProvider<HomeStateNotifier, Client?>(
   (ref) => HomeStateNotifier(ref),
 );
 
+// final initialSyncedProvider = FutureProvider((ref) async {
+//   final homeState = ref.watch(homeStateProvider);
+//   await for (final value in homeState.syncState.firstSyncedRx()) {
+//     if (value) {
+//       return true;
+//     }
+//   }
+//   return false;
+// });
+
 class HomeStateNotifier extends StateNotifier<Client?> {
   final Ref ref;
   late ActerSdk sdk;

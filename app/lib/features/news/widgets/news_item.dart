@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 import 'dart:io' show Platform;
 
 import 'package:acter/features/news/widgets/news_side_bar.dart';
@@ -58,21 +57,19 @@ class _NewsItemState extends State<NewsItem> {
           color: bgColor,
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: Container(
-            child: Text(
-              slide.text(),
-              style: GoogleFonts.inter(
-                color: fgColor,
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                shadows: [
-                  Shadow(
-                    color: bgColor,
-                    offset: const Offset(1, 1),
-                    blurRadius: 3,
-                  ),
-                ],
-              ),
+          child: Text(
+            slide.text(),
+            style: GoogleFonts.inter(
+              color: fgColor,
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              shadows: [
+                Shadow(
+                  color: bgColor,
+                  offset: const Offset(1, 1),
+                  blurRadius: 3,
+                ),
+              ],
             ),
           ),
           clipBehavior: Clip.none,

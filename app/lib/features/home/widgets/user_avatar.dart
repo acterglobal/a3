@@ -1,4 +1,3 @@
-import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:acter/features/home/controllers/home_controller.dart';
