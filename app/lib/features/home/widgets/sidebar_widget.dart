@@ -103,7 +103,7 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
         color: Colors.white,
       ),
       padding: const EdgeInsets.all(0),
-      leading: Expanded(child: Column(
+      leading: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
@@ -115,15 +115,42 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
             endIndent: 18,
           )
         ],
-      ),),
+      ),
       trailing: Expanded(
         child: Column(
           children: [
+            const Spacer(),
             const Divider(
               indent: 18,
               endIndent: 18,
             ),
-            const Spacer(),
+            InkWell(
+              onTap: () => widget.handleBugReport(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                ),
+                child: Column(
+                  children: [
+                    const Icon(
+                      Atlas.bug_file_thin,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      'Report',
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall,
+                      softWrap: false,
+                    )
+                  ],
+                ),
+              ),
+            ),
+            const Divider(
+              indent: 18,
+              endIndent: 18,
+            ),
             Visibility(
               visible: !ref
                   .watch(homeStateProvider)!
@@ -155,29 +182,6 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
                       ),
                     ],
                   ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8,
-              ),
-              child: GestureDetector(
-                onTap: () => widget.handleBugReport(),
-                child: Column(
-                  children: [
-                    const Icon(
-                      Icons.bug_report_rounded,
-                      color: Colors.white,
-                    ),
-                    Text(
-                      'Report',
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelSmall,
-                      softWrap: false,
-                    )
-                  ],
                 ),
               ),
             ),
