@@ -67,6 +67,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
       label: const Text(
         'Overview',
+        //TODO: remove manual styling later and apply app theme values.
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w400,
@@ -79,6 +80,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       icon: Icon(Atlas.chats_thin),
       label: Text(
         'Chat',
+        //TODO: remove manual styling later and apply app theme values.
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w400,
