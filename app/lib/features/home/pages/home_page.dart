@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:date_format/date_format.dart';
@@ -58,36 +59,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   late bool bugReportVisible;
   late ShakeDetector detector;
 
-  final sideBarNav = [
-    SidebarNavigationItem(
-      icon: SvgPicture.asset(
-        'assets/icon/acter.svg',
-        height: 24,
-        width: 24,
-      ),
-      label: const Text(
-        'Overview',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      initialLocation: '/dashboard',
-    ),
-    const SidebarNavigationItem(
-      icon: Icon(Atlas.chats_thin),
-      label: Text(
-        'Chat',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      initialLocation: '/chat',
-    ),
-  ];
+  final sideBarNav = [];
 
   int get _selectedSidebarIndex =>
       _locationToSidebarIndex(GoRouter.of(context).location);
@@ -239,7 +211,32 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 selectedIndex: _selectedSidebarIndex,
                                 onDestinationSelected: (index) =>
                                     _onSidebarItemTapped(context, index),
-                                destinations: sideBarNav,
+                                destinations: [
+                                  SidebarNavigationItem(
+                                    icon: SvgPicture.asset(
+                                      'assets/icon/acter.svg',
+                                      height: 24,
+                                      width: 24,
+                                    ),
+                                    label: Text(
+                                      'Overview',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                    ),
+                                    initialLocation: '/dashboard',
+                                  ),
+                                  SidebarNavigationItem(
+                                    icon: const Icon(Atlas.chats_thin),
+                                    label: Text(
+                                      'Chat',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                    ),
+                                    initialLocation: '/chat',
+                                  ),
+                                ],
                                 trailing: Expanded(
                                   child: Column(
                                     children: [
@@ -248,19 +245,58 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         endIndent: 18,
                                       ),
                                       const Spacer(),
-                                      Container(
-                                        margin: const EdgeInsets.only(
-                                          left: 22,
+                                      InkWell(
+                                        onTap: () =>
+                                            confirmationDialog(context, ref),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 5,
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              const Icon(
+                                                Atlas.exit_thin,
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  vertical: 5,
+                                                ),
+                                                child: Text(
+                                                  'Log Out',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .labelSmall,
+                                                  softWrap: false,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                        child: Row(
-                                          children: const [
-                                            Icon(
-                                              Atlas.exit_thin,
-                                              color: Colors.white,
-                                            ),
-                                          ],
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 8,
                                         ),
-                                      )
+                                        child: GestureDetector(
+                                          onTap: handleBugReport,
+                                          child: Column(
+                                            children: [
+                                              const Icon(
+                                                Icons.bug_report_rounded,
+                                                color: Colors.white,
+                                              ),
+                                              Text(
+                                                'Report',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelSmall,
+                                                softWrap: false,
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -306,7 +342,33 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 selectedIndex: _selectedSidebarIndex,
                                 onDestinationSelected: (index) =>
                                     _onSidebarItemTapped(context, index),
-                                destinations: sideBarNav,
+                                destinations: [
+                                  SidebarNavigationItem(
+                                    icon: SvgPicture.asset(
+                                      'assets/icon/acter.svg',
+                                      height: 24,
+                                      width: 24,
+                                    ),
+                                    label: Text(
+                                      'Overview',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                      softWrap: false,
+                                    ),
+                                    initialLocation: '/dashboard',
+                                  ),
+                                  SidebarNavigationItem(
+                                    icon: const Icon(Atlas.chats_thin),
+                                    label: Text(
+                                      'Chat',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                    ),
+                                    initialLocation: '/chat',
+                                  ),
+                                ],
                                 trailing: Expanded(
                                   child: Column(
                                     children: [
@@ -315,39 +377,58 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         endIndent: 18,
                                       ),
                                       const Spacer(),
-                                      Container(
-                                        margin: const EdgeInsets.only(
-                                          left: 22,
-                                          bottom: 8,
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Container(
-                                              margin: const EdgeInsets.only(
-                                                left: 5,
-                                                right: 5,
-                                              ),
-                                              child: const Icon(
+                                      InkWell(
+                                        onTap: () =>
+                                            confirmationDialog(context, ref),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 5,
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              const Icon(
                                                 Atlas.exit_thin,
-                                                color: Colors.white,
                                               ),
-                                            ),
-                                            Container(
-                                              margin: const EdgeInsets.only(
-                                                left: 5,
-                                                right: 5,
-                                              ),
-                                              child: GestureDetector(
-                                                onTap: handleBugReport,
-                                                child: const Icon(
-                                                  Icons.bug_report_rounded,
-                                                  color: Colors.white,
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  vertical: 5,
+                                                ),
+                                                child: Text(
+                                                  'Log Out',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .labelSmall,
+                                                  softWrap: false,
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      )
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 8,
+                                        ),
+                                        child: GestureDetector(
+                                          onTap: handleBugReport,
+                                          child: Column(
+                                            children: [
+                                              const Icon(
+                                                Icons.bug_report_rounded,
+                                                color: Colors.white,
+                                              ),
+                                              Text(
+                                                'Report',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelSmall,
+                                                softWrap: false,
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
