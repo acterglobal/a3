@@ -5,11 +5,13 @@ import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/controllers/auth_controller.dart';
 import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:acter/common/utils/constants.dart' show LoginPageKeys;
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -22,7 +24,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
-
+  final desktopPlatforms = [
+    TargetPlatform.linux,
+    TargetPlatform.macOS,
+    TargetPlatform.windows
+  ];
   @override
   void dispose() {
     username.dispose();
@@ -56,104 +62,117 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
     final authState = ref.watch(authControllerProvider);
     var network = ref.watch(networkAwareProvider);
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Form(
-          key: formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 100),
-              SizedBox(
-                height: 50,
-                width: 50,
-                child: SvgPicture.asset(
-                  'assets/icon/acter.svg',
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                AppLocalizations.of(context)!.welcomeBack,
-              ),
-              const SizedBox(height: 20),
-              Text(
-                AppLocalizations.of(context)!.signInContinue,
-              ),
-              const SizedBox(height: 40),
-              SignInTextField(
-                key: LoginPageKeys.usernameField,
-                hintText: AppLocalizations.of(context)!.username,
-                controller: username,
-                validatorText: AppLocalizations.of(context)!.emptyUsername,
-                type: SignInOnboardingTextFieldEnum.userName,
-              ),
-              const SizedBox(height: 20),
-              SignInTextField(
-                key: LoginPageKeys.passwordField,
-                hintText: AppLocalizations.of(context)!.password,
-                controller: password,
-                validatorText: AppLocalizations.of(context)!.emptyPassword,
-                type: SignInOnboardingTextFieldEnum.password,
-              ),
-              const SizedBox(height: 40),
-              Container(
-                key: LoginPageKeys.forgotPassBtn,
-                margin: const EdgeInsets.only(right: 20),
-                width: double.infinity,
-                alignment: Alignment.bottomRight,
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    AppLocalizations.of(context)!.forgotPassword,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 40),
-              authState
-                  ? const CircularProgressIndicator()
-                  : CustomButton(
-                      key: LoginPageKeys.submitBtn,
-                      onPressed: () async {
-                        if (formKey.currentState!.validate()) {
-                          if (network == NetworkStatus.Off) {
-                            showNoInternetNotification();
-                          } else {
-                            await ref
-                                .read(authControllerProvider.notifier)
-                                .login(username.text, password.text, context);
-                            _validateLogin();
-                          }
-                        }
-                      },
-                      title: AppLocalizations.of(context)!.login,
-                    ),
-              const SizedBox(height: 40),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            leading: isDesktop
+                ? InkWell(
+                    onTap: () => context.go('/'),
+                    child: const Icon(Atlas.arrow_left_circle),
+                  )
+                : null,
+          ),
+          SliverToBoxAdapter(
+            child: Form(
+              key: formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    AppLocalizations.of(context)!.noAccount,
+                  const SizedBox(height: 100),
+                  SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: SvgPicture.asset(
+                      'assets/icon/acter.svg',
+                    ),
                   ),
-                  const SizedBox(width: 2),
-                  InkWell(
-                    key: LoginPageKeys.signUpBtn,
-                    onTap: () {
-                      Navigator.pushReplacementNamed(context, '/signup');
-                    },
-                    child: Text(
-                      AppLocalizations.of(context)!.signUp,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.tertiary,
+                  const SizedBox(height: 20),
+                  Text(
+                    AppLocalizations.of(context)!.welcomeBack,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    AppLocalizations.of(context)!.signInContinue,
+                  ),
+                  const SizedBox(height: 40),
+                  SignInTextField(
+                    key: LoginPageKeys.usernameField,
+                    hintText: AppLocalizations.of(context)!.username,
+                    controller: username,
+                    validatorText: AppLocalizations.of(context)!.emptyUsername,
+                    type: SignInOnboardingTextFieldEnum.userName,
+                  ),
+                  const SizedBox(height: 20),
+                  SignInTextField(
+                    key: LoginPageKeys.passwordField,
+                    hintText: AppLocalizations.of(context)!.password,
+                    controller: password,
+                    validatorText: AppLocalizations.of(context)!.emptyPassword,
+                    type: SignInOnboardingTextFieldEnum.password,
+                  ),
+                  const SizedBox(height: 40),
+                  Container(
+                    key: LoginPageKeys.forgotPassBtn,
+                    margin: const EdgeInsets.only(right: 20),
+                    width: double.infinity,
+                    alignment: Alignment.bottomRight,
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        AppLocalizations.of(context)!.forgotPassword,
                       ),
                     ),
-                  )
+                  ),
+                  const SizedBox(height: 40),
+                  authState
+                      ? const CircularProgressIndicator()
+                      : CustomButton(
+                          key: LoginPageKeys.submitBtn,
+                          onPressed: () async {
+                            if (formKey.currentState!.validate()) {
+                              if (network == NetworkStatus.Off) {
+                                showNoInternetNotification();
+                              } else {
+                                await ref
+                                    .read(authControllerProvider.notifier)
+                                    .login(
+                                        username.text, password.text, context);
+                                _validateLogin();
+                              }
+                            }
+                          },
+                          title: AppLocalizations.of(context)!.login,
+                        ),
+                  const SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.noAccount,
+                      ),
+                      const SizedBox(width: 2),
+                      InkWell(
+                        key: LoginPageKeys.signUpBtn,
+                        onTap: () => context.go('/signup'),
+                        child: Text(
+                          AppLocalizations.of(context)!.signUp,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 20),
                 ],
-              )
-            ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

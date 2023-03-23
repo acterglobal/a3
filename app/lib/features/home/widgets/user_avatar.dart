@@ -5,6 +5,7 @@ import 'package:acter/features/home/controllers/home_controller.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show UserProfile;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 final userProfileProvider = FutureProvider<UserProfile>((ref) async {
   final client = ref.watch(homeStateProvider);
@@ -20,7 +21,7 @@ class UserAvatarWidget extends ConsumerWidget {
     final userProfile = ref.watch(userProfileProvider);
     if (client.isGuest()) {
       return GestureDetector(
-        onTap: () => Navigator.pushNamed(context, '/login'),
+        onTap: () => context.go('/login'),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -44,18 +45,15 @@ class UserAvatarWidget extends ConsumerWidget {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: () => confirmationDialog(context, ref),
-              child: CustomAvatar(
-                uniqueKey: client.userId().toString(),
-                radius: 20,
-                isGroup: false,
-                cacheHeight: 120,
-                cacheWidth: 120,
-                avatar: data.getAvatar(),
-                displayName: data.getDisplayName(),
-                stringName: data.getDisplayName() ?? '',
-              ),
+            CustomAvatar(
+              uniqueKey: client.userId().toString(),
+              radius: 20,
+              isGroup: false,
+              cacheHeight: 120,
+              cacheWidth: 120,
+              avatar: data.getAvatar(),
+              displayName: data.getDisplayName(),
+              stringName: data.getDisplayName() ?? '',
             ),
           ],
         );
