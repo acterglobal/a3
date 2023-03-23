@@ -163,7 +163,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     // get platform of context.
     final bool isDesktop =
         desktopPlatforms.contains(Theme.of(context).platform);
-
+    final bool isGuest = ref.watch(homeStateProvider)!.isGuest();
     return ref.watch(homeStateProvider) != null
         ? Scaffold(
             body: Screenshot(
@@ -245,32 +245,35 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         endIndent: 18,
                                       ),
                                       const Spacer(),
-                                      InkWell(
-                                        onTap: () =>
-                                            confirmationDialog(context, ref),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 5,
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              const Icon(
-                                                Atlas.exit_thin,
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  vertical: 5,
+                                      Visibility(
+                                        visible: !isGuest,
+                                        child: InkWell(
+                                          onTap: () =>
+                                              confirmationDialog(context, ref),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 5,
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                const Icon(
+                                                  Atlas.exit_thin,
                                                 ),
-                                                child: Text(
-                                                  'Log Out',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .labelSmall,
-                                                  softWrap: false,
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 5,
+                                                  ),
+                                                  child: Text(
+                                                    'Log Out',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .labelSmall,
+                                                    softWrap: false,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -377,32 +380,35 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         endIndent: 18,
                                       ),
                                       const Spacer(),
-                                      InkWell(
-                                        onTap: () =>
-                                            confirmationDialog(context, ref),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 5,
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              const Icon(
-                                                Atlas.exit_thin,
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  vertical: 5,
+                                      Visibility(
+                                        visible: !isGuest,
+                                        child: InkWell(
+                                          onTap: () =>
+                                              confirmationDialog(context, ref),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 5,
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                const Icon(
+                                                  Atlas.exit_thin,
                                                 ),
-                                                child: Text(
-                                                  'Log Out',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .labelSmall,
-                                                  softWrap: false,
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 5,
+                                                  ),
+                                                  child: Text(
+                                                    'Log Out',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .labelSmall,
+                                                    softWrap: false,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
