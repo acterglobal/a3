@@ -160,6 +160,24 @@ pub async fn login_new_client_under_config(
         .await?
 }
 
+pub async fn smart_login(
+    base_path: String,
+    username: String,
+    password: String,
+    default_homeserver_name: String,
+    default_homeserver_url: String,
+    device_name: Option<String>,
+) -> Result<Client> {
+    let (config, user_id) = make_client_config(
+        base_path,
+        &username,
+        &default_homeserver_name,
+        &default_homeserver_url,
+    )
+    .await?;
+    login_new_client_under_config(config, user_id, password, device_name).await
+}
+
 pub async fn login_new_client(
     base_path: String,
     username: String,

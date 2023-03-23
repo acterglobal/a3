@@ -837,6 +837,9 @@ object Group {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> Future<Result<RoomProfile>>;
 
+    /// whether this an acter space
+    fn is_acter_space() -> Future<bool>;
+
     /// the members currently in the group
     fn active_members() -> Future<Result<Vec<Member>>>;
 
