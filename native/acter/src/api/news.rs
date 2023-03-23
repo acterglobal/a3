@@ -1,8 +1,8 @@
 use super::message::{ImageDesc, TextDesc, VideoDesc};
 use acter_core::{
     events::{
-        news::{self, NewsEntryBuilder},
-        Icon, TextMessageEventContent,
+        news::{self, NewsContent, NewsEntryBuilder},
+        Icon, ImageMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
     },
     models::{self, ActerModel, AnyActerModel, Color},
     ruma::{OwnedEventId, OwnedRoomId},
@@ -149,9 +149,20 @@ impl NewsSlide {
         })
     }
 
-    pub fn text(&self) -> Option<String> {
-        // FIXME: to be implemented
-        None
+    pub fn text(&self) -> String {
+        match self.inner.content() {
+            NewsContent::Image(ImageMessageEventContent { body, .. })
+            | NewsContent::Video(VideoMessageEventContent { body, .. }) => body.clone(),
+            NewsContent::Text(TextMessageEventContent {
+                formatted, body, ..
+            }) => {
+                if let Some(formatted) = formatted {
+                    formatted.body.clone()
+                } else {
+                    body.clone()
+                }
+            }
+        }
     }
 
     pub async fn image_binary(&self) -> Result<FfiBuffer<u8>> {

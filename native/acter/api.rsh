@@ -71,6 +71,8 @@ object Colorize {
 object NewsSlide {
     /// the content of this slide
     fn type_str() -> string;
+    /// the textual content of this slide
+    fn text() -> string;
     /// the references linked in this slide,
     fn references() -> Vec<ObjRef>;
     /// if this is an image, hand over the description

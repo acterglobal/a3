@@ -3,8 +3,43 @@ import 'package:acter/features/home/controllers/home_controller.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:acter/features/news/controllers/news_controller.dart';
 import 'package:acter/features/news/widgets/news_item.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+enum StreamTypes { news, stories }
+
+class StreamTypesSelection extends StatefulWidget {
+  const StreamTypesSelection({super.key});
+
+  @override
+  State<StreamTypesSelection> createState() => _StreamTypesSelectionState();
+}
+
+class _StreamTypesSelectionState extends State<StreamTypesSelection> {
+  Set<StreamTypes> selection = <StreamTypes>{
+    StreamTypes.news,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return SegmentedButton<StreamTypes>(
+      segments: const <ButtonSegment<StreamTypes>>[
+        ButtonSegment<StreamTypes>(
+            value: StreamTypes.news, icon: Icon(Atlas.newspaper_thin)),
+        ButtonSegment<StreamTypes>(
+            value: StreamTypes.stories, icon: Icon(Atlas.image_message_thin)),
+      ],
+      selected: selection,
+      onSelectionChanged: (Set<StreamTypes> newSelection) {
+        setState(() {
+          selection = newSelection;
+        });
+      },
+      multiSelectionEnabled: true,
+    );
+  }
+}
 
 class NewsPage extends ConsumerStatefulWidget {
   const NewsPage({super.key});
@@ -39,57 +74,7 @@ class _NewsPageState extends ConsumerState<NewsPage>
             ? const UserAvatarWidget()
             : const SizedBox.shrink(),
         centerTitle: true,
-        title: const ButtonBar(
-          alignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'All',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                shadows: <Shadow>[
-                  Shadow(
-                    blurRadius: 1.0,
-                    color: Colors.black,
-                  ),
-                ],
-                fontWeight: FontWeight.w100,
-              ),
-            ),
-            Text(
-              'News',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                shadows: <Shadow>[
-                  Shadow(
-                    blurRadius: 5.0,
-                    color: Colors.white,
-                  ),
-                  Shadow(
-                    blurRadius: 3.0,
-                    color: Colors.black,
-                  ),
-                ],
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            Text(
-              'Stories',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                shadows: <Shadow>[
-                  Shadow(
-                    blurRadius: 1.0,
-                    color: Colors.black,
-                  ),
-                ],
-                fontWeight: FontWeight.w100,
-              ),
-            ),
-          ],
-        ),
+        title: const StreamTypesSelection(),
       ),
       body: newsList.when(
         data: (data) {
