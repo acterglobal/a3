@@ -6,6 +6,7 @@ import 'package:acter/features/home/repositories/sdk_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 final authControllerProvider =
     StateNotifierProvider<AuthController, bool>((ref) => AuthController(ref));
@@ -33,7 +34,7 @@ class AuthController extends StateNotifier<bool> {
       Get.replace(ChatRoomController(client: client));
       Get.replace(ReceiptController(client: client));
       state = false;
-      Navigator.pushReplacementNamed(context, '/');
+      context.go('/');
     } catch (e) {
       debugPrint('$e');
       state = false;
@@ -55,7 +56,7 @@ class AuthController extends StateNotifier<bool> {
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(homeStateProvider.notifier).state = client;
       state = false;
-      Navigator.pushReplacementNamed(context, '/');
+      context.go('/');
     } catch (e) {
       state = false;
     }
@@ -70,6 +71,6 @@ class AuthController extends StateNotifier<bool> {
     Get.delete<ChatListController>();
     Get.delete<ChatRoomController>();
     Get.delete<ReceiptController>();
-    Navigator.pushReplacementNamed(context, '/');
+    context.go('/');
   }
 }

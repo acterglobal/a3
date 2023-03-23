@@ -21,12 +21,11 @@ import 'package:go_router/go_router.dart';
 
 class SidebarNavigationItem extends NavigationRailDestination {
   final String initialLocation;
-
-  const SidebarNavigationItem(
-      {required this.initialLocation,
-      required Widget icon,
-      required Widget label})
-      : super(icon: icon, label: label);
+  const SidebarNavigationItem({
+    required this.initialLocation,
+    required Widget icon,
+    required Widget label,
+  }) : super(icon: icon, label: label);
 }
 
 class BottombarNavigationItem extends BottomNavigationBarItem {
@@ -59,7 +58,36 @@ class _HomePageState extends ConsumerState<HomePage> {
   late bool bugReportVisible;
   late ShakeDetector detector;
 
-  final sideBarNav = [];
+  final sideBarNav = [
+    SidebarNavigationItem(
+      icon: SvgPicture.asset(
+        'assets/icon/acter.svg',
+        height: 24,
+        width: 24,
+      ),
+      label: const Text(
+        'Overview',
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+        ),
+        softWrap: false,
+      ),
+      initialLocation: '/dashboard',
+    ),
+    const SidebarNavigationItem(
+      icon: Icon(Atlas.chats_thin),
+      label: Text(
+        'Chat',
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+        ),
+        softWrap: false,
+      ),
+      initialLocation: '/chat',
+    ),
+  ];
 
   int get _selectedSidebarIndex =>
       _locationToSidebarIndex(GoRouter.of(context).location);
@@ -163,7 +191,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     // get platform of context.
     final bool isDesktop =
         desktopPlatforms.contains(Theme.of(context).platform);
-    final bool isGuest = ref.watch(homeStateProvider)!.isGuest();
     return ref.watch(homeStateProvider) != null
         ? Scaffold(
             body: Screenshot(
@@ -211,32 +238,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 selectedIndex: _selectedSidebarIndex,
                                 onDestinationSelected: (index) =>
                                     _onSidebarItemTapped(context, index),
-                                destinations: [
-                                  SidebarNavigationItem(
-                                    icon: SvgPicture.asset(
-                                      'assets/icon/acter.svg',
-                                      height: 24,
-                                      width: 24,
-                                    ),
-                                    label: Text(
-                                      'Overview',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall,
-                                    ),
-                                    initialLocation: '/dashboard',
-                                  ),
-                                  SidebarNavigationItem(
-                                    icon: const Icon(Atlas.chats_thin),
-                                    label: Text(
-                                      'Chat',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall,
-                                    ),
-                                    initialLocation: '/chat',
-                                  ),
-                                ],
+                                destinations: sideBarNav,
                                 trailing: Expanded(
                                   child: Column(
                                     children: [
@@ -246,7 +248,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       ),
                                       const Spacer(),
                                       Visibility(
-                                        visible: !isGuest,
+                                        visible: !ref
+                                            .watch(homeStateProvider)!
+                                            .isGuest(),
                                         child: InkWell(
                                           onTap: () =>
                                               confirmationDialog(context, ref),
@@ -345,33 +349,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 selectedIndex: _selectedSidebarIndex,
                                 onDestinationSelected: (index) =>
                                     _onSidebarItemTapped(context, index),
-                                destinations: [
-                                  SidebarNavigationItem(
-                                    icon: SvgPicture.asset(
-                                      'assets/icon/acter.svg',
-                                      height: 24,
-                                      width: 24,
-                                    ),
-                                    label: Text(
-                                      'Overview',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall,
-                                      softWrap: false,
-                                    ),
-                                    initialLocation: '/dashboard',
-                                  ),
-                                  SidebarNavigationItem(
-                                    icon: const Icon(Atlas.chats_thin),
-                                    label: Text(
-                                      'Chat',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall,
-                                    ),
-                                    initialLocation: '/chat',
-                                  ),
-                                ],
+                                destinations: sideBarNav,
                                 trailing: Expanded(
                                   child: Column(
                                     children: [
@@ -381,7 +359,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       ),
                                       const Spacer(),
                                       Visibility(
-                                        visible: !isGuest,
+                                        visible: !ref
+                                            .watch(homeStateProvider)!
+                                            .isGuest(),
                                         child: InkWell(
                                           onTap: () =>
                                               confirmationDialog(context, ref),
@@ -543,15 +523,14 @@ class _HomePageState extends ConsumerState<HomePage> {
       fileName: 'screenshot_$timestamp.png',
     );
     if (imagePath != null) {
-      Navigator.pushNamed(
-        context,
+      context.go(
         '/bug_report',
-        arguments: {
+        extra: {
           'screenshot': imagePath,
         },
       );
     } else {
-      Navigator.pushNamed(context, '/bug_report');
+      context.go('/bug_report');
     }
   }
 }
