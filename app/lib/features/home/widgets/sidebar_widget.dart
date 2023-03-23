@@ -1,4 +1,3 @@
-
 import 'package:acter/features/home/controllers/home_controller.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-
 class SidebarNavigationItem extends NavigationRailDestination {
   final String initialLocation;
   const SidebarNavigationItem({
@@ -19,9 +17,9 @@ class SidebarNavigationItem extends NavigationRailDestination {
   }) : super(icon: icon, label: label);
 }
 
-
 // provider that returns a string value
-final sidebarItemsProvider = Provider.family<List<SidebarNavigationItem>, BuildContext> ((ref, context) {
+final sidebarItemsProvider =
+    Provider.family<List<SidebarNavigationItem>, BuildContext>((ref, context) {
   return [
     SidebarNavigationItem(
       icon: SvgPicture.asset(
@@ -31,9 +29,7 @@ final sidebarItemsProvider = Provider.family<List<SidebarNavigationItem>, BuildC
       ),
       label: Text(
         'Overview',
-        style: Theme.of(context)
-            .textTheme
-            .labelSmall,
+        style: Theme.of(context).textTheme.labelSmall,
         softWrap: false,
       ),
       initialLocation: '/dashboard',
@@ -42,20 +38,21 @@ final sidebarItemsProvider = Provider.family<List<SidebarNavigationItem>, BuildC
       icon: const Icon(Atlas.chats_thin),
       label: Text(
         'Chat',
-        style: Theme.of(context)
-            .textTheme
-            .labelSmall,
+        style: Theme.of(context).textTheme.labelSmall,
         softWrap: false,
       ),
       initialLocation: '/chat',
     ),
   ];
 });
-final goRouterProvider = ChangeNotifierProvider.family<GoRouter, BuildContext>((ref, context) => GoRouter.of(context));
+final goRouterProvider = ChangeNotifierProvider.family<GoRouter, BuildContext>(
+    (ref, context) => GoRouter.of(context));
 
-final currentSelectedSidebarIndexProvider = Provider.family<int, BuildContext> ((ref, context) {
+final currentSelectedSidebarIndexProvider =
+    Provider.family<int, BuildContext>((ref, context) {
   final items = ref.watch(sidebarItemsProvider(context));
-  final location = ref.watch(goRouterProvider(context).select((g) => g.location));
+  final location =
+      ref.watch(goRouterProvider(context).select((g) => g.location));
   final index = items.indexWhere((t) => location.startsWith(t.initialLocation));
   // if index not found (-1), return 0
   return index < 0 ? 0 : index;
@@ -66,16 +63,18 @@ class SidebarWidget extends ConsumerStatefulWidget {
   final void Function() handleBugReport;
   @override
   ConsumerState<SidebarWidget> createState() => _SidebarWidgetState();
-  const SidebarWidget({super.key, required this.handleBugReport, required this.labelType});
+  const SidebarWidget(
+      {super.key, required this.handleBugReport, required this.labelType});
 }
 
 class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
-
   @override
   Widget build(BuildContext context) {
     final sidebarNavItems = ref.watch(sidebarItemsProvider(context));
-    final selectedSidebarIndex = ref.watch(currentSelectedSidebarIndexProvider(context));
-    
+    final selectedSidebarIndex =
+        ref.watch(currentSelectedSidebarIndexProvider(context));
+    final isGuest = ref.watch(homeStateProvider)!.isGuest();
+
     return AdaptiveScaffold.standardNavigationRail(
       // main logic
       destinations: sidebarNavItems,
@@ -91,9 +90,7 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
 
       labelType: widget.labelType,
 
-      backgroundColor: Theme.of(context)
-          .navigationRailTheme
-          .backgroundColor!,
+      backgroundColor: Theme.of(context).navigationRailTheme.backgroundColor!,
       selectedIconTheme: const IconThemeData(
         size: 18,
         color: Colors.white,
@@ -106,9 +103,12 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
       leading: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            margin: const EdgeInsets.only(top: 8),
-            child: const UserAvatarWidget(),
+          Visibility(
+            visible: !ref.watch(homeStateProvider)!.isGuest(),
+            child: Container(
+              margin: const EdgeInsets.only(top: 8),
+              child: const UserAvatarWidget(),
+            ),
           ),
           const Divider(
             indent: 18,
@@ -138,9 +138,7 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
                     ),
                     Text(
                       'Report',
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelSmall,
+                      style: Theme.of(context).textTheme.labelSmall,
                       softWrap: false,
                     )
                   ],
@@ -152,12 +150,9 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
               endIndent: 18,
             ),
             Visibility(
-              visible: !ref
-                  .watch(homeStateProvider)!
-                  .isGuest(),
+              visible: !isGuest,
               child: InkWell(
-                onTap: () =>
-                    confirmationDialog(context, ref),
+                onTap: () => confirmationDialog(context, ref),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     vertical: 5,
@@ -168,15 +163,40 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
                         Atlas.exit_thin,
                       ),
                       Padding(
-                        padding: const EdgeInsets
-                            .symmetric(
+                        padding: const EdgeInsets.symmetric(
                           vertical: 5,
                         ),
                         child: Text(
                           'Log Out',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelSmall,
+                          style: Theme.of(context).textTheme.labelSmall,
+                          softWrap: false,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Visibility(
+              visible: isGuest,
+              child: InkWell(
+                onTap: () => context.pushNamed('login'),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5,
+                  ),
+                  child: Column(
+                    children: [
+                      const Icon(
+                        Atlas.entrance_thin,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 5,
+                        ),
+                        child: Text(
+                          'Log In',
+                          style: Theme.of(context).textTheme.labelSmall,
                           softWrap: false,
                         ),
                       ),

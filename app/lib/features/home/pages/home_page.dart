@@ -45,7 +45,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     TargetPlatform.macOS,
     TargetPlatform.windows
   ];
-  late bool bugReportVisible;
   late ShakeDetector detector;
 
   final bottomBarNav = [
@@ -106,16 +105,12 @@ class _HomePageState extends ConsumerState<HomePage> {
     super.initState();
     // shake is possible in only mobile
     if (Platform.isAndroid || Platform.isIOS) {
-      bugReportVisible = false;
       detector = ShakeDetector.waitForStart(
         onPhoneShake: () {
           detector.stopListening();
-          setState(() => bugReportVisible = true);
         },
       );
       detector.startListening();
-    } else {
-      bugReportVisible = true;
     }
   }
 
@@ -157,7 +152,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             builder: (BuildContext ctx) {
                               return SidebarWidget(
                                 labelType: NavigationRailLabelType.all,
-                                handleBugReport: handleBugReport, 
+                                handleBugReport: handleBugReport,
                               );
                             },
                           )
