@@ -5,7 +5,6 @@ import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/controllers/auth_controller.dart';
 import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,11 +61,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
     final authState = ref.watch(authControllerProvider);
     var network = ref.watch(networkAwareProvider);
     return SimpleDialog(
-      title: Text("Login"),
+      title: const Text('Login'),
       children: [
         Form(
           key: formKey,

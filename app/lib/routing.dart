@@ -88,7 +88,7 @@ final _routes = [
 
       GoRoute(
         name: 'space',
-        path: '/:space([!#][^\/]+)', // !spaceId, #spaceName
+        path: '/:space([!#][^/]+)', // !spaceId, #spaceName
         pageBuilder: (context, state) {
           return NoTransitionPage(key: state.pageKey, child: const NewsPage());
         },

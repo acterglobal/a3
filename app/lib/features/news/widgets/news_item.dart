@@ -108,17 +108,17 @@ class ImageSlide extends StatefulWidget {
   final NewsSlide slide;
   final NewsEntry news;
   final int index;
-  EfkColor? background;
-  EfkColor? foreground;
+  final EfkColor? background;
+  final EfkColor? foreground;
 
-  ImageSlide({
+  const ImageSlide({
     Key? key,
-    EfkColor? background,
-    EfkColor? foreground,
     required this.news,
     required this.index,
     required this.client,
     required this.slide,
+    this.background,
+    this.foreground,
   }) : super(key: key);
 
   @override
