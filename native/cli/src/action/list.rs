@@ -9,9 +9,11 @@ use futures::StreamExt;
 pub struct List {
     #[clap(flatten)]
     pub login: LoginConfig,
-    /// Whether to include chat in the lists
+    /// Whether to list chat, too
     #[clap(long)]
-    pub include_chat: bool,
+    pub list_chats: bool,
+    #[clap(long)]
+    pub details: bool,
 }
 
 impl List {
@@ -27,27 +29,52 @@ impl List {
         println!("## Spaces:");
         for sp in client.spaces().await? {
             let room_id = sp.room_id();
-            let aliases = {
-                let aliases = sp.alt_aliases();
-                if aliases.is_empty() {
-                    "".to_owned()
-                } else {
-                    format!(
-                        " ( {} )",
-                        aliases
-                            .iter()
-                            .map(ToString::to_string)
-                            .collect::<Vec<_>>()
-                            .join(", ")
-                    )
-                }
-            };
-            let acter_space = if sp.is_acter_space().await { 'x' } else { ' ' };
+            let is_acter_space = sp.is_acter_space().await;
+            let acter_space = if is_acter_space { 'x' } else { ' ' };
             let display_name = sp.display_name().await?;
-            println!(" * [{acter_space}] {room_id}{aliases}: {display_name}");
+            println!(" ## [{acter_space}] {room_id}: {display_name}");
+            if self.details {
+                let aliases = {
+                    let aliases = sp.alt_aliases();
+                    if aliases.is_empty() {
+                        "".to_owned()
+                    } else {
+                        format!(
+                            " ( {} )",
+                            aliases
+                                .iter()
+                                .map(ToString::to_string)
+                                .collect::<Vec<_>>()
+                                .join(", ")
+                        )
+                    }
+                };
+                if !aliases.is_empty() {
+                    println!(" - aliases: {aliases}");
+                }
+                let topic = sp.topic().unwrap_or_default();
+                println!(" - topic: {topic}");
+
+                if let Some(avatar_url) = sp.avatar_url() {
+                    println!(" - avatar: {avatar_url}");
+                }
+
+                if is_acter_space {
+                    let news_count = sp.latest_news(100).await?.len();
+                    let task_lists = sp.task_lists().await?.len();
+                    let pins = sp.pins().await?.len();
+                    let pinned_links = sp.pinned_links().await?.len();
+                    println!(" - Objects: ");
+                    println!("   * {news_count} NewsItems ");
+                    println!("   * {task_lists} TaskList ");
+                    println!("   * {pins} Pins of which {pinned_links} are links");
+                }
+
+                println!(""); // give it space to breath
+            }
         }
 
-        if self.include_chat {
+        if self.list_chats {
             println!("## Chat rooms:");
             for sp in client.conversations().await? {
                 println!(" * {} : {}", sp.room_id(), sp.display_name().await?);
