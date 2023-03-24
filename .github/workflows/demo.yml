@@ -87,6 +87,7 @@ jobs:
         uses: tj-actions/branch-names@v6
 
       - id: tag
+        name: "Create Tag"
         run: echo "tag=${{ steps.branch-name.outputs.current_branch }}-`date +%FT%k%M`" >> $GITHUB_OUTPUT
         shell: bash
 
@@ -149,7 +150,8 @@ jobs:
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
 
-      - env:
+      - name: Flutter build
+        env:
           RAGESHAKE_URL: ${{ secrets.RAGESHAKE_URL }}
           RAGESHAKE_APP_NAME: ${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }}
         run: |
@@ -170,3 +172,9 @@ jobs:
         working-directory: ${{ matrix.artifact_path }}
         run: |
           7z a "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.zip" ${{ matrix.artifact_files }}
+
+      - name: Archive demo artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: |
+            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.*
