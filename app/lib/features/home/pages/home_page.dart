@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:date_format/date_format.dart';
@@ -17,17 +18,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
 import 'package:go_router/go_router.dart';
-
-class BottombarNavigationItem extends BottomNavigationBarItem {
-  final String initialLocation;
-
-  const BottombarNavigationItem({
-    required this.initialLocation,
-    required Widget icon,
-    String? label,
-    Widget? activeIcon,
-  }) : super(icon: icon, activeIcon: activeIcon, label: label);
-}
 
 class HomePage extends ConsumerStatefulWidget {
   final Widget child;

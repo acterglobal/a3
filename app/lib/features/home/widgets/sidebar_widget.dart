@@ -1,4 +1,6 @@
 import 'package:acter/features/home/controllers/home_controller.dart';
+import 'package:acter/features/home/data/models/nav_item.dart';
+import 'package:acter/features/home/data/models/profile_data.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -8,23 +10,6 @@ import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-
-import 'dart:typed_data';
-
-class SidebarNavigationItem extends NavigationRailDestination {
-  final String? location;
-  const SidebarNavigationItem({
-    this.location,
-    required Widget icon,
-    required Widget label,
-  }) : super(icon: icon, label: label);
-}
-
-class ProfileData {
-  final String displayName;
-  final Uint8List? avatar;
-  const ProfileData(this.displayName, this.avatar);
-}
 
 final groupProfileDataProvider =
     FutureProvider.family<ProfileData, Group>((ref, group) async {

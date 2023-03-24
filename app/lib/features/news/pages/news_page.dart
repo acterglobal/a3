@@ -3,43 +3,9 @@ import 'package:acter/features/home/controllers/home_controller.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:acter/features/news/controllers/news_controller.dart';
 import 'package:acter/features/news/widgets/news_item.dart';
-import 'package:atlas_icons/atlas_icons.dart';
+import 'package:acter/features/news/widgets/stream_types_selection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-enum StreamTypes { news, stories }
-
-class StreamTypesSelection extends StatefulWidget {
-  const StreamTypesSelection({super.key});
-
-  @override
-  State<StreamTypesSelection> createState() => _StreamTypesSelectionState();
-}
-
-class _StreamTypesSelectionState extends State<StreamTypesSelection> {
-  Set<StreamTypes> selection = <StreamTypes>{
-    StreamTypes.news,
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return SegmentedButton<StreamTypes>(
-      segments: const <ButtonSegment<StreamTypes>>[
-        ButtonSegment<StreamTypes>(
-            value: StreamTypes.news, icon: Icon(Atlas.newspaper_thin),),
-        ButtonSegment<StreamTypes>(
-            value: StreamTypes.stories, icon: Icon(Atlas.image_message_thin),),
-      ],
-      selected: selection,
-      onSelectionChanged: (Set<StreamTypes> newSelection) {
-        setState(() {
-          selection = newSelection;
-        });
-      },
-      multiSelectionEnabled: true,
-    );
-  }
-}
 
 class NewsPage extends ConsumerStatefulWidget {
   const NewsPage({super.key});

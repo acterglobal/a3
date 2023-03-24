@@ -2,7 +2,7 @@ import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/home/controllers/home_controller.dart';
-import 'package:acter/features/home/repositories/sdk_repository.dart';
+import 'package:acter/features/home/data/repositories/sdk_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
