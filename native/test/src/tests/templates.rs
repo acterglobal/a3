@@ -59,10 +59,10 @@ async fn template_creates_space() -> Result<()> {
     assert_eq!(user.pins().await?.len(), 2);
     assert_eq!(user.task_lists().await?.len(), 1);
 
-    let groups = user.groups().await?;
-    assert_eq!(groups.len(), 1);
+    let spaces = user.spaces().await?;
+    assert_eq!(spaces.len(), 1);
 
-    let main_space = groups.first().unwrap();
+    let main_space = spaces.first().unwrap();
     assert_eq!(main_space.pins().await?.len(), 2);
     assert_eq!(main_space.task_lists().await?.len(), 1);
     Ok(())

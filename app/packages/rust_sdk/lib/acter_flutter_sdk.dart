@@ -281,8 +281,8 @@ class ActerSdk {
     return _clients;
   }
 
-  ffi.CreateGroupSettings newGroupSettings(String name) {
-    return _api.newGroupSettings(name);
+  ffi.CreateSpaceSettings newSpaceSettings(String name) {
+    return _api.newSpaceSettings(name);
   }
 
   String rotateLogFile() {

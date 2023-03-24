@@ -116,28 +116,28 @@ async fn task_smoketests() -> Result<()> {
     let (mut user, room_id) = random_user_with_random_space("tasks_smoketest").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
-    let group = user.get_group(room_id.to_string()).await?;
+    let space = user.get_space(room_id.to_string()).await?;
 
     assert_eq!(
-        group.task_lists().await?.len(),
+        space.task_lists().await?.len(),
         0,
         "Why are there tasks in our fresh space!?!"
     );
 
     let task_list_id = {
-        let mut draft = group.task_list_draft()?;
+        let mut draft = space.task_list_draft()?;
         draft.name("Starting up".to_owned());
         draft.send().await?
     };
 
     let task_list_key = acter_core::models::TaskList::key_from_event(&task_list_id);
 
-    let wait_for_group = group.clone();
+    let wait_for_space = space.clone();
     let Some(task_list) = wait_for(move || {
-        let group = wait_for_group.clone();
+        let space = wait_for_space.clone();
         let task_list_key = task_list_key.clone();
         async move {
-            let result = group.task_list(&task_list_key).await.ok();
+            let result = space.task_list(&task_list_key).await.ok();
             Ok(result)
         }
     }).await? else {
@@ -285,28 +285,28 @@ async fn task_lists_comments_smoketests() -> Result<()> {
     let (mut user, room_id) = random_user_with_random_space("tasklist_comments_smoketest").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
-    let group = user.get_group(room_id.to_string()).await?;
+    let space = user.get_space(room_id.to_string()).await?;
 
     assert_eq!(
-        group.task_lists().await?.len(),
+        space.task_lists().await?.len(),
         0,
         "Why are there tasks in our fresh space!?!"
     );
 
     let task_list_id = {
-        let mut draft = group.task_list_draft()?;
+        let mut draft = space.task_list_draft()?;
         draft.name("Comments test".to_owned());
         draft.send().await?
     };
 
     let task_list_key = acter_core::models::TaskList::key_from_event(&task_list_id);
 
-    let wait_for_group = group.clone();
+    let wait_for_space = space.clone();
     let Some(task_list) = wait_for(move || {
-        let group = wait_for_group.clone();
+        let space = wait_for_space.clone();
         let task_list_key = task_list_key.clone();
         async move {
-            Ok(group.task_list(&task_list_key).await.ok())
+            Ok(space.task_list(&task_list_key).await.ok())
     }}).await? else {
         bail!("freshly created Task List couldn't be found");
     };
@@ -359,28 +359,28 @@ async fn task_comment_smoketests() -> Result<()> {
     let (mut user, room_id) = random_user_with_random_space("tasks_smoketest").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
-    let group = user.get_group(room_id.to_string()).await?;
+    let space = user.get_space(room_id.to_string()).await?;
 
     assert_eq!(
-        group.task_lists().await?.len(),
+        space.task_lists().await?.len(),
         0,
         "Why are there tasks in our fresh space!?!"
     );
 
     let task_list_id = {
-        let mut draft = group.task_list_draft()?;
+        let mut draft = space.task_list_draft()?;
         draft.name("Starting up".to_owned());
         draft.send().await?
     };
 
     let task_list_key = acter_core::models::TaskList::key_from_event(&task_list_id);
 
-    let wait_for_group = group.clone();
+    let wait_for_space = space.clone();
     let Some(task_list) = wait_for(move || {
-        let group = wait_for_group.clone();
+        let space = wait_for_space.clone();
         let task_list_key = task_list_key.clone();
         async move {
-            Ok(group.task_list(&task_list_key).await.ok())
+            Ok(space.task_list(&task_list_key).await.ok())
     }}).await? else {
         bail!("freshly created Task List couldn't be found");
     };

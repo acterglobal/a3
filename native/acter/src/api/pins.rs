@@ -13,7 +13,7 @@ use core::time::Duration;
 use matrix_sdk::{room::Joined, room::Room};
 use std::collections::{hash_map::Entry, HashMap};
 
-use super::{client::Client, group::Group, RUNTIME};
+use super::{client::Client, spaces::Space, RUNTIME};
 
 impl Client {
     pub async fn wait_for_pin(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Pin> {
@@ -98,7 +98,7 @@ impl Client {
     }
 }
 
-impl Group {
+impl Space {
     pub async fn pins(&self) -> Result<Vec<Pin>> {
         let mut pins = Vec::new();
         let room_id = self.room_id();
@@ -351,10 +351,10 @@ impl PinUpdateBuilder {
     }
 }
 
-impl Group {
+impl Space {
     pub fn pin_draft(&self) -> Result<PinDraft> {
         let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create pins for groups we are not part on")
+            bail!("You can't create pins for spaces we are not part on")
         };
         Ok(PinDraft {
             client: self.client.clone(),
@@ -365,7 +365,7 @@ impl Group {
 
     pub fn pin_draft_with_builder(&self, content: PinBuilder) -> Result<PinDraft> {
         let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create pins for groups we are not part on")
+            bail!("You can't create pins for spaces we are not part on")
         };
         Ok(PinDraft {
             client: self.client.clone(),

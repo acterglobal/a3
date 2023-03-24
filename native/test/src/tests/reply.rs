@@ -30,20 +30,20 @@ async fn sisko_replies_message() -> Result<()> {
     let mut synced = syncer.first_synced_rx().expect("note yet read");
     while synced.next().await != Some(true) {} // let's wait for it to have synced
 
-    let group = sisko
-        .get_group(format!(
+    let space = sisko
+        .get_space(format!(
             "#ops:{}",
             option_env!("DEFAULT_HOMESERVER_NAME").unwrap_or("localhost")
         ))
         .await
         .expect("sisko should belong to ops");
-    let event_id = group.send_plain_message("Hi, everyone".to_string()).await?;
+    let event_id = space.send_plain_message("Hi, everyone".to_string()).await?;
 
-    let reply_id = group
+    let reply_id = space
         .send_text_reply("Sorry, it's my bad".to_string(), event_id.to_string(), None)
         .await?;
 
-    let ev = group.event(&reply_id).await?;
+    let ev = space.event(&reply_id).await?;
     println!("reply: {ev:?}");
 
     let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(MessageLikeEvent::Original(m)))) = ev.event.deserialize() else {

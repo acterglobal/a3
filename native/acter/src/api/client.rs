@@ -26,11 +26,11 @@ use super::{
     account::Account,
     conversation::{Conversation, ConversationController},
     device::DeviceController,
-    group::Group,
     invitation::InvitationController,
     profile::UserProfile,
     receipt::ReceiptController,
     room::Room,
+    spaces::Space,
     typing::TypingController,
     verification::VerificationController,
     RUNTIME,
@@ -67,54 +67,54 @@ impl std::ops::Deref for Client {
     }
 }
 
-pub(crate) async fn devide_groups_from_convos(client: Client) -> (Vec<Group>, Vec<Conversation>) {
-    let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
+pub(crate) async fn devide_spaces_from_convos(client: Client) -> (Vec<Space>, Vec<Conversation>) {
+    let (spaces, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
             (Vec::new(), Vec::new(), client),
-            async move |(mut groups, mut conversations, client), room| {
+            async move |(mut spaces, mut conversations, client), room| {
                 let inner = Room { room: room.clone() };
 
                 if inner.is_space() {
-                    groups.push(Group::new(client.clone(), inner));
+                    spaces.push(Space::new(client.clone(), inner));
                 } else {
                     conversations.push(Conversation::new(inner));
                 }
 
-                (groups, conversations, client)
+                (spaces, conversations, client)
             },
         )
         .await;
-    (groups, convos)
+    (spaces, convos)
 }
 
 #[derive(Clone, Debug, Default)]
 pub struct HistoryLoadState {
     pub has_started: bool,
-    pub known_groups: Vec<OwnedRoomId>,
-    pub total_groups: usize,
-    pub loaded_groups: usize,
+    pub known_spaces: Vec<OwnedRoomId>,
+    pub total_spaces: usize,
+    pub loaded_spaces: usize,
 }
 
 impl HistoryLoadState {
     pub fn is_done_loading(&self) -> bool {
-        self.has_started && self.known_groups.len() == self.loaded_groups
+        self.has_started && self.known_spaces.len() == self.loaded_spaces
     }
 
-    pub fn start(&mut self, known_groups: Vec<OwnedRoomId>) {
+    pub fn start(&mut self, known_spaces: Vec<OwnedRoomId>) {
         self.has_started = true;
-        self.known_groups = known_groups;
+        self.known_spaces = known_spaces;
     }
 
     pub fn knows_room(&self, room_id: &OwnedRoomId) -> bool {
-        self.known_groups.contains(room_id)
+        self.known_spaces.contains(room_id)
     }
 
     pub fn started_loading_room(&mut self, room_id: OwnedRoomId) {
-        self.known_groups.push(room_id);
+        self.known_spaces.push(room_id);
     }
 
-    fn group_loaded(&mut self) {
-        self.loaded_groups = self.loaded_groups.checked_add(1).unwrap_or(usize::MAX)
+    fn space_loaded(&mut self) {
+        self.loaded_spaces = self.loaded_spaces.checked_add(1).unwrap_or(usize::MAX)
     }
 }
 
@@ -153,7 +153,7 @@ impl SyncState {
         while let Some(next_state) = signal.next().await {
             if next_state.is_done_loading() {
                 tracing::trace!(?next_state, "History sync completed");
-                return Ok(next_state.loaded_groups as u32);
+                return Ok(next_state.loaded_spaces as u32);
             }
         }
         unimplemented!("We never reach this state")
@@ -220,18 +220,18 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 tracing::trace!(user_id=?me.user_id_ref(), "refreshing history");
-                let groups = me.groups().await?;
-                let group_ids = groups.iter().map(|r| r.room_id().to_owned()).collect();
-                history.lock_mut().start(group_ids);
+                let spaces = me.spaces().await?;
+                let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
+                history.lock_mut().start(space_ids);
 
-                try_join_all(groups.iter().map(|g| async {
+                try_join_all(spaces.iter().map(|g| async {
                     let x = if g.is_acter_space().await {
                         g.add_handlers().await;
                         g.refresh_history().await
                     } else {
                         Ok(())
                     };
-                    history.lock_mut().group_loaded();
+                    history.lock_mut().space_loaded();
                     x
                 }))
                 .await?;
@@ -317,8 +317,8 @@ impl Client {
                             ) == Ok(true)
                             {
                                 tracing::trace!(user_id=?client.user_id(), "initial synced");
-                                // devide_groups_from_convos must be called after first sync
-                                let (_, convos) = devide_groups_from_convos(me.clone()).await;
+                                // devide_spaces_from_convos must be called after first sync
+                                let (_, convos) = devide_spaces_from_convos(me.clone()).await;
                                 conversation_controller.load_rooms(&convos).await;
                                 // load invitations after first sync
                                 invitation_controller.load_invitations(&client).await;
@@ -360,14 +360,14 @@ impl Client {
                                             try_join_all(
                                                 new_spaces
                                                     .into_iter()
-                                                    .map(|room| Group::new(me.clone(), Room { room }))
+                                                    .map(|room| Space::new(me.clone(), Room { room }))
                                                     .map(|g| {
                                                         let history = history.clone();
                                                         async move {
                                                             history.lock_mut().started_loading_room(g.room_id().to_owned());
                                                             g.add_handlers().await;
                                                             let x = g.refresh_history().await;
-                                                            history.lock_mut().group_loaded();
+                                                            history.lock_mut().space_loaded();
                                                             x
                                                         }
                                                     }
@@ -469,7 +469,7 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let (groups, conversations) = devide_groups_from_convos(client).await;
+                let (spaces, conversations) = devide_spaces_from_convos(client).await;
                 Ok(conversations)
             })
             .await?

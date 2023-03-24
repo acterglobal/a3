@@ -1,6 +1,5 @@
 import 'package:acter/features/home/controllers/home_controller.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart'
-    show ActerSdk, Client;
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show ActerSdk, Client;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final sdkRepositoryProvider = Provider<SdkRepository>((ref) {
@@ -46,9 +45,9 @@ class SdkRepository {
     }
   }
 
-  void setGroupSettings(String name) async {
+  void setSpaceSettings(String name) async {
     try {
-      sdk.newGroupSettings(name);
+      sdk.newSpaceSettings(name);
     } catch (e) {
       rethrow;
     }

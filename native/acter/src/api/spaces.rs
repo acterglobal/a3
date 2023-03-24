@@ -1,3 +1,4 @@
+pub use acter_core::spaces::{CreateSpaceSettings, CreateSpaceSettingsBuilder};
 use acter_core::{
     events::{
         calendar::{SyncCalendarEventEvent, SyncCalendarEventUpdateEvent},
@@ -9,7 +10,7 @@ use acter_core::{
     executor::Executor,
     models::AnyActerModel,
     ruma::{events::MessageLikeEvent, OwnedRoomAliasId, OwnedRoomId, OwnedUserId},
-    spaces::{is_acter_space, CreateSpaceSettings, CreateSpaceSettingsBuilder},
+    spaces::is_acter_space,
     statics::default_acter_space_states,
     templates::Engine,
 };
@@ -30,16 +31,13 @@ use ruma::{
 use serde::{Deserialize, Serialize};
 
 use super::{
-    client::{devide_groups_from_convos, Client},
+    client::{devide_spaces_from_convos, Client},
     room::Room,
 };
 use crate::api::RUNTIME;
 
-pub type CreateGroupSettings = CreateSpaceSettings;
-pub type CreateGroupSettingsBuilder = CreateSpaceSettingsBuilder;
-
 #[derive(Debug, Clone)]
-pub struct Group {
+pub struct Space {
     pub client: Client,
     pub(crate) inner: Room,
 }
@@ -50,9 +48,9 @@ struct HistoryState {
     seen: String,
 }
 
-impl Group {
+impl Space {
     pub fn new(client: Client, inner: Room) -> Self {
-        Group { client, inner }
+        Space { client, inner }
     }
 
     pub async fn create_onboarding_data(&self) -> Result<()> {
@@ -380,20 +378,20 @@ impl Group {
     }
 }
 
-impl std::ops::Deref for Group {
+impl std::ops::Deref for Space {
     type Target = Room;
     fn deref(&self) -> &Room {
         &self.inner
     }
 }
 
-// impl CreateGroupSettingsBuilder {
+// impl CreateSpaceSettingsBuilder {
 //     pub fn add_invite(&mut self, user_id: OwnedUserId) {
 //         self.invites.get_or_insert_with(Vec::new).push(user_id);
 //     }
 // }
 
-pub fn new_group_settings(name: String) -> CreateSpaceSettings {
+pub fn new_space_settings(name: String) -> CreateSpaceSettings {
     CreateSpaceSettingsBuilder::default()
         .name(name)
         .build()
@@ -401,9 +399,9 @@ pub fn new_group_settings(name: String) -> CreateSpaceSettings {
 }
 
 impl Client {
-    pub async fn create_acter_group(
+    pub async fn create_acter_space(
         &self,
-        settings: Box<CreateGroupSettings>,
+        settings: Box<CreateSpaceSettings>,
     ) -> Result<OwnedRoomId> {
         let c = self.core.clone();
         RUNTIME
@@ -411,27 +409,27 @@ impl Client {
             .await?
     }
 
-    pub async fn groups(&self) -> Result<Vec<Group>> {
+    pub async fn spaces(&self) -> Result<Vec<Space>> {
         let c = self.clone();
         RUNTIME
             .spawn(async move {
-                let (groups, _) = devide_groups_from_convos(c).await;
-                Ok(groups)
+                let (spaces, _) = devide_spaces_from_convos(c).await;
+                Ok(spaces)
             })
             .await?
     }
 
-    pub async fn get_group(&self, alias_or_id: String) -> Result<Group> {
+    pub async fn get_space(&self, alias_or_id: String) -> Result<Space> {
         if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
             match self.get_room(&room_id) {
-                Some(room) => Ok(Group::new(self.clone(), Room { room })),
+                Some(room) => Ok(Space::new(self.clone(), Room { room })),
                 None => bail!("Room not found"),
             }
         } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
-            for group in self.groups().await?.into_iter() {
-                if let Some(group_alias) = group.inner.room.canonical_alias() {
-                    if group_alias == alias_id {
-                        return Ok(group);
+            for space in self.spaces().await?.into_iter() {
+                if let Some(space_alias) = space.inner.room.canonical_alias() {
+                    if space_alias == alias_id {
+                        return Ok(space);
                     }
                 }
             }

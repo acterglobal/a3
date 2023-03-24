@@ -1,7 +1,7 @@
 use acter::{
     platform::sanitize,
     testing::{ensure_user, wait_for},
-    Client as EfkClient, CreateGroupSettingsBuilder,
+    Client as EfkClient, CreateSpaceSettingsBuilder,
 };
 use acter_core::{
     models::ActerModel,
@@ -195,7 +195,7 @@ impl Mock {
             .collect();
 
         let ops_settings = Box::new(
-            CreateGroupSettingsBuilder::default()
+            CreateSpaceSettingsBuilder::default()
                 .name("Ops".to_owned())
                 .alias("ops".to_owned())
                 .invites(team_ids)
@@ -204,7 +204,7 @@ impl Mock {
 
         let admin = self.client("admin".to_owned()).await.unwrap();
 
-        match admin.create_acter_group(ops_settings).await {
+        match admin.create_acter_space(ops_settings).await {
             Ok(ops_id) => {
                 tracing::info!("Ops Room Id: {:?}", ops_id);
             }
@@ -220,7 +220,7 @@ impl Mock {
         }
 
         let promenade_settings = Box::new(
-            CreateGroupSettingsBuilder::default()
+            CreateSpaceSettingsBuilder::default()
                 .name("Promenade".to_owned())
                 .alias("promenade".to_owned())
                 .visibility(Visibility::Public)
@@ -228,7 +228,7 @@ impl Mock {
                 .build()?,
         );
 
-        match admin.create_acter_group(promenade_settings).await {
+        match admin.create_acter_space(promenade_settings).await {
             Ok(promenade_room_id) => {
                 tracing::info!("Promenade Room Id: {:?}", promenade_room_id);
             }
@@ -244,7 +244,7 @@ impl Mock {
         }
 
         let quarks_settings = Box::new(
-            CreateGroupSettingsBuilder::default()
+            CreateSpaceSettingsBuilder::default()
                 .name("Quarks'".to_owned())
                 .alias("quarks".to_owned())
                 .visibility(Visibility::Public)
@@ -252,7 +252,7 @@ impl Mock {
                 .build()?,
         );
 
-        match admin.create_acter_group(quarks_settings).await {
+        match admin.create_acter_space(quarks_settings).await {
             Ok(quarks_id) => {
                 tracing::info!("Quarks Room Id: {:?}", quarks_id);
             }
@@ -319,9 +319,9 @@ impl Mock {
                     let cloned_odo = cloned_odo.clone();
                     let alias = alias.clone();
                     async move {
-                        println!("tasks get_group {alias}");
-                        let group = cloned_odo.get_group(alias).await?;
-                        Ok(Some(group))
+                        println!("tasks get_space {alias}");
+                        let space = cloned_odo.get_space(alias).await?;
+                        Ok(Some(space))
                     }
                 }).await? else {
                     bail!("Odo couldn't be found in Ops");

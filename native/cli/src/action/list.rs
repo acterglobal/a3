@@ -25,7 +25,7 @@ impl List {
         tracing::info!(" - First Sync finished - ");
 
         println!("## Spaces:");
-        for sp in client.groups().await? {
+        for sp in client.spaces().await? {
             let room_id = sp.room_id();
             let aliases = {
                 let aliases = sp.alt_aliases();

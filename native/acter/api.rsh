@@ -833,14 +833,14 @@ object TaskListUpdateBuilder {
     fn send() -> Future<Result<EventId>>;
 }
 
-object Group {
+object Space {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> Future<Result<RoomProfile>>;
 
     /// whether this an acter space
     fn is_acter_space() -> Future<bool>;
 
-    /// the members currently in the group
+    /// the members currently in the space
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     /// the room id
@@ -852,7 +852,7 @@ object Group {
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
 
-    /// the Tasks lists of this Group
+    /// the Tasks lists of this Space
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
 
     /// task list draft builder
@@ -864,10 +864,10 @@ object Group {
     /// news draft builder
     fn news_draft() -> Result<NewsEntryDraft>;
 
-    /// the pins of this Group
+    /// the pins of this Space
     fn pins() -> Future<Result<Vec<ActerPin>>>;
 
-    /// the links pinned to this Group
+    /// the links pinned to this Space
     fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
 
     /// pin draft builder
@@ -908,18 +908,18 @@ object SyncState {
     fn cancel();
 }
 
-object CreateGroupSettings {
-    /// set the alias of group
+object CreateSpaceSettings {
+    /// set the alias of space
     fn alias(value: string);
 
-    /// set the group's visibility to either Public or Private
+    /// set the space's visibility to either Public or Private
     fn visibility(value: string);
 
-    /// add the id of user that will be invited to this group
+    /// add the id of user that will be invited to this space
     fn add_invitee(value: string);
 }
 
-fn new_group_settings(name: string) -> CreateGroupSettings;
+fn new_space_settings(name: string) -> CreateSpaceSettings;
 
 /// Main entry point for `acter`.
 object Client {
@@ -965,12 +965,12 @@ object Client {
     /// The update event of conversations the user is involved in
     fn conversations_rx() -> Stream<Vec<Conversation>>;
 
-    /// The groups the user is part of
-    fn groups() -> Future<Result<Vec<Group>>>;
+    /// The spaces the user is part of
+    fn spaces() -> Future<Result<Vec<Space>>>;
 
-    /// Get the following group the user is part of by
+    /// Get the following space the user is part of by
     /// roomId or room alias;
-    fn get_group(id_or_alias: string) -> Future<Result<Group>>;
+    fn get_space(id_or_alias: string) -> Future<Result<Space>>;
 
     /// Get the latest News for the client
     fn latest_news(count: u32) -> Future<Result<Vec<NewsEntry>>>;
@@ -1011,11 +1011,11 @@ object Client {
     /// Return the message receiver
     fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
 
-    /// the Tasks lists of this Group
+    /// the Tasks lists of this Space
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
 
-    /// create default group
-    fn create_acter_group(settings: CreateGroupSettings) -> Future<Result<RoomId>>;
+    /// create default space
+    fn create_acter_space(settings: CreateSpaceSettings) -> Future<Result<RoomId>>;
 
     /// listen to updates to any model key
     fn subscribe(key: string) -> Stream<bool>;

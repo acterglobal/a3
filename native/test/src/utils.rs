@@ -1,4 +1,4 @@
-use acter::{matrix_sdk::config::StoreConfig, testing::ensure_user, CreateGroupSettingsBuilder};
+use acter::{matrix_sdk::config::StoreConfig, testing::ensure_user, CreateSpaceSettingsBuilder};
 use acter_core::{ruma::OwnedRoomId, templates::Engine};
 use anyhow::Result;
 use futures::{pin_mut, StreamExt};
@@ -14,11 +14,11 @@ pub async fn random_user_with_random_space(prefix: &str) -> Result<(acter::Clien
     .await?;
 
     let settings = Box::new(
-        CreateGroupSettingsBuilder::default()
+        CreateSpaceSettingsBuilder::default()
             .name(format!("it-room-{prefix}-{uuid}"))
             .build()?,
     );
-    let room_id = user.create_acter_group(settings).await?;
+    let room_id = user.create_acter_space(settings).await?;
     Ok((user, room_id))
 }
 

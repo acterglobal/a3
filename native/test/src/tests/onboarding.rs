@@ -12,15 +12,15 @@ async fn onboarding_is_created() -> Result<()> {
     let (mut user, room_id) = random_user_with_random_space("onboarding").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
-    let group = user.get_group(room_id.to_string()).await?;
+    let space = user.get_space(room_id.to_string()).await?;
 
     assert_eq!(
-        group.task_lists().await?.len(),
+        space.task_lists().await?.len(),
         0,
         "Why are there tasks in our fresh space!?!"
     );
 
-    group.create_onboarding_data().await?;
+    space.create_onboarding_data().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let calendar_client = user.clone();

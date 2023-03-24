@@ -12,7 +12,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 final groupProfileDataProvider =
-    FutureProvider.family<ProfileData, Group>((ref, group) async {
+    FutureProvider.family<ProfileData, Space>((ref, group) async {
   // FIXME: how to get informed about updates!?!
   final profile = await group.getProfile();
   final name = profile.getDisplayName();
@@ -24,10 +24,10 @@ final groupProfileDataProvider =
   return ProfileData(displayName, avatar.asTypedList());
 });
 
-final spacesProvider = FutureProvider<List<Group>>((ref) async {
+final spacesProvider = FutureProvider<List<Space>>((ref) async {
   final client = ref.watch(homeStateProvider)!;
   // FIXME: how to get informed about updates!?!
-  final groups = await client.groups();
+  final groups = await client.spaces();
   return groups.toList();
 });
 
@@ -176,7 +176,8 @@ final currentSelectedSidebarIndexProvider =
   final location =
       ref.watch(goRouterProvider(context).select((g) => g.location));
   final index = items.indexWhere(
-      (t) => t.location != null && location.startsWith(t.location!));
+    (t) => t.location != null && location.startsWith(t.location!),
+  );
   // if index not found (-1), return 0
   return index < 0 ? 0 : index;
 });

@@ -412,10 +412,10 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 if let Ok(room) = me.room(name_or_id) {
-                    if !room.is_acter_group().await {
+                    if !room.is_acter_space().await {
                         Ok(Conversation::new(room))
                     } else {
-                        bail!("Not a regular conversation but an acter group!")
+                        bail!("Not a regular conversation but an acter space!")
                     }
                 } else {
                     bail!("Neither roomId nor alias provided")

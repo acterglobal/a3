@@ -27,7 +27,7 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-use super::{client::Client, group::Group, RUNTIME};
+use super::{client::Client, spaces::Space, RUNTIME};
 
 impl Client {
     pub async fn wait_for_calendar_event(
@@ -85,7 +85,7 @@ impl Client {
     }
 }
 
-impl Group {
+impl Space {
     pub async fn calendar_events(&self) -> Result<Vec<CalendarEvent>> {
         let mut calendar_events = Vec::new();
         let room_id = self.room_id();
@@ -281,10 +281,10 @@ impl CalendarEventUpdateBuilder {
     }
 }
 
-impl Group {
+impl Space {
     pub fn calendar_event_draft(&self) -> Result<CalendarEventDraft> {
         let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create calendar_events for groups we are not part on")
+            bail!("You can't create calendar_events for spaces we are not part on")
         };
         Ok(CalendarEventDraft {
             client: self.client.clone(),
@@ -298,7 +298,7 @@ impl Group {
         inner: CalendarEventBuilder,
     ) -> Result<CalendarEventDraft> {
         let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create calendar_events for groups we are not part on")
+            bail!("You can't create calendar_events for spaces we are not part on")
         };
         Ok(CalendarEventDraft {
             client: self.client.clone(),

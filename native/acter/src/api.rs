@@ -17,7 +17,6 @@ mod comments;
 mod common;
 mod conversation;
 mod device;
-mod group;
 mod invitation;
 mod message;
 mod news;
@@ -25,6 +24,7 @@ mod pins;
 mod profile;
 mod receipt;
 mod room;
+mod spaces;
 mod stream;
 mod tasks;
 mod typing;
@@ -45,7 +45,6 @@ pub use common::duration_from_secs;
 pub use conversation::{Conversation, CreateConversationSettingsBuilder};
 pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
-pub use group::{new_group_settings, CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use invitation::Invitation;
 pub use message::{
     FileDesc, ImageDesc, ReactionDesc, RoomEventItem, RoomMessage, RoomVirtualItem, TextDesc,
@@ -56,6 +55,7 @@ pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
+pub use spaces::{new_space_settings, CreateSpaceSettings, CreateSpaceSettingsBuilder, Space};
 pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,

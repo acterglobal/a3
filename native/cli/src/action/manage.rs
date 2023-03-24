@@ -39,7 +39,7 @@ impl Manage {
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         tracing::info!(" - First Sync finished - ");
 
-        let space = client.get_group(room_id.to_string()).await?;
+        let space = client.get_space(room_id.to_string()).await?;
 
         if !space.is_space() {
             tracing::warn!("{room_id} is not a space. quitting.");
@@ -65,7 +65,7 @@ impl Manage {
                 .build()?,
         );
 
-        let room_id = client.create_acter_group(settings).await?;
+        let room_id = client.create_acter_space(settings).await?;
 
         tracing::info!(" - Syncing -");
         let sync_state = client.start_sync();
@@ -74,7 +74,7 @@ impl Manage {
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         tracing::info!(" - First Sync finished - ");
 
-        let room = client.get_group(room_id.to_string()).await?;
+        let room = client.get_space(room_id.to_string()).await?;
 
         room.create_onboarding_data().await?;
 
