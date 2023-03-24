@@ -81,8 +81,13 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
+
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v6
+
       - id: tag
-        run: echo "tag=${{ github.ref_name }}-`date +%FT%k:%M`" >> $GITHUB_OUTPUT
+        run: echo "tag=${{ steps.branch-name.outputs.current_branch }}-`date +%FT%k%M`" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Install supported toolchain
