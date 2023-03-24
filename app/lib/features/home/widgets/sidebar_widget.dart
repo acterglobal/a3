@@ -59,50 +59,58 @@ final spaceItemsProvider =
         location: null,
       )
     ],
-    data: (spaces) => spaces.map((space) {
-      final profileData = ref.watch(groupProfileDataProvider(space));
-      final roomId = space.getRoomId();
-      return profileData.when(
-        loading: () => SidebarNavigationItem(
-          icon: const Icon(Atlas.arrows_dots_rotate_thin),
-          label: Text(
-            roomId,
-            style: Theme.of(context).textTheme.labelSmall,
-            softWrap: false,
+    data: (spaces) {
+      spaces.sort((a, b) {
+        // FIXME probably not the way we want to sort
+        /// but at least this gives us a predictable order
+        return a.getRoomId().compareTo(b.getRoomId());
+      });
+
+      return spaces.map((space) {
+        final profileData = ref.watch(groupProfileDataProvider(space));
+        final roomId = space.getRoomId();
+        return profileData.when(
+          loading: () => SidebarNavigationItem(
+            icon: const Icon(Atlas.arrows_dots_rotate_thin),
+            label: Text(
+              roomId,
+              style: Theme.of(context).textTheme.labelSmall,
+              softWrap: false,
+            ),
+            location: '/$roomId',
           ),
-          location: '/$roomId',
-        ),
-        error: (err, _trace) => SidebarNavigationItem(
-          icon: const Icon(Atlas.warning_bold),
-          label: Text(
-            '$roomId: $err',
-            style: Theme.of(context).textTheme.labelSmall,
-            softWrap: false,
+          error: (err, _trace) => SidebarNavigationItem(
+            icon: const Icon(Atlas.warning_bold),
+            label: Text(
+              '$roomId: $err',
+              style: Theme.of(context).textTheme.labelSmall,
+              softWrap: false,
+            ),
+            location: '/$roomId',
           ),
-          location: '/$roomId',
-        ),
-        data: (info) => SidebarNavigationItem(
-          icon: info.avatar != null
-              ? CircleAvatar(
-                  foregroundImage: MemoryImage(
-                    info.avatar!,
+          data: (info) => SidebarNavigationItem(
+            icon: info.avatar != null
+                ? CircleAvatar(
+                    foregroundImage: MemoryImage(
+                      info.avatar!,
+                    ),
+                    radius: 24,
+                  )
+                : SvgPicture.asset(
+                    'assets/icon/acter.svg',
+                    height: 24,
+                    width: 24,
                   ),
-                  radius: 24,
-                )
-              : SvgPicture.asset(
-                  'assets/icon/acter.svg',
-                  height: 24,
-                  width: 24,
-                ),
-          label: Text(
-            info.displayName,
-            style: Theme.of(context).textTheme.labelSmall,
-            softWrap: false,
+            label: Text(
+              info.displayName,
+              style: Theme.of(context).textTheme.labelSmall,
+              softWrap: false,
+            ),
+            location: '/$roomId',
           ),
-          location: '/$roomId',
-        ),
-      );
-    }).toList(),
+        );
+      }).toList();
+    },
   );
 });
 
