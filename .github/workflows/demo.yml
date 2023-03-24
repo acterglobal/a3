@@ -14,7 +14,7 @@ concurrency:
 jobs:
   run_checker:
     runs-on: ubuntu-latest
-    name: Check latest commit
+    name: Check legibility
     outputs:
       should_run: steps.pr.outputs.pr_found && contains(steps.PR.outputs.pr_labels, "build-demo")
     steps:
