@@ -146,6 +146,7 @@ final sidebarItemsProvider =
       location: '/dashboard',
     ),
     SidebarNavigationItem(
+      // icon: const Badge(child: Icon(Atlas.chats_thin)), // TODO: Badge example
       icon: const Icon(Atlas.chats_thin),
       label: Text(
         'Chat',
