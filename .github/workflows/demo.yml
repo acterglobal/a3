@@ -162,19 +162,24 @@ jobs:
             --dart-define=RAGESHAKE_APP_VERSION="Demo-${{ steps.tag.outputs.tag }}/${{ matrix.name }}"
         working-directory: ./app
 
-      - name: Package Tar file
-        if: matrix.os != 'windows-latest'
-        working-directory: ${{ matrix.artifact_path }}
-        run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.tar.bz2" ${{ matrix.artifact_files }}
-
-      - name: Package Zip file
-        if: matrix.os == 'windows-latest'
-        working-directory: ${{ matrix.artifact_path }}
-        run: |
-          7z a "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.zip" ${{ matrix.artifact_files }}
-
       - name: Archive demo artifacts
         uses: actions/upload-artifact@v3
         with:
-          path: |
-            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.*
+          name: ${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}
+          retention-days: 14
+          path: ${{ matrix.artifact_files }}
+
+  artifacts-url-comments:
+    name: Add links to artifacts in the given jobs
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Post artifacts links
+        uses: tonyhallett/artifacts-url-comments@v1.1.0
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+            prefix: "Here are the Demo Builds for this PR"
+            suffix: Enjoy
+            format: name
+            addTo: pull
