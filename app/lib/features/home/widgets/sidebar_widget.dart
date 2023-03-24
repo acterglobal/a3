@@ -20,7 +20,7 @@ final groupProfileDataProvider =
   if (!profile.hasAvatar()) {
     return ProfileData(displayName, null);
   }
-  final avatar = await profile.getThumbnail(24, 24);
+  final avatar = await profile.getThumbnail(48, 48);
   return ProfileData(displayName, avatar.asTypedList());
 });
 
@@ -84,12 +84,8 @@ final spaceItemsProvider =
         data: (info) => SidebarNavigationItem(
           icon: info.avatar != null
               ? CircleAvatar(
-                  foregroundImage: ResizeImage(
-                    MemoryImage(
-                      info.avatar!,
-                    ),
-                    width: 24,
-                    height: 24,
+                  foregroundImage: MemoryImage(
+                    info.avatar!,
                   ),
                   radius: 24,
                 )
