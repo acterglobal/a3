@@ -133,10 +133,19 @@ final sidebarItemsProvider =
     SidebarNavigationItem(
       // icon: const Badge(child: Icon(Atlas.chats_thin)), // TODO: Badge example
       icon: const Icon(Atlas.chats_thin),
-      label: Text(
-        'Chat',
-        style: Theme.of(context).textTheme.labelSmall,
-        softWrap: false,
+      label: Column(
+        children: [
+          Text(
+            'Chat',
+            style: Theme.of(context).textTheme.labelSmall,
+            softWrap: false,
+          ),
+          const SizedBox(height: 10),
+          const Divider(
+            indent: 10,
+            endIndent: 10,
+          )
+        ],
       ),
       location: '/chat',
     ),
@@ -149,14 +158,7 @@ final sidebarItemsProvider =
       if (spaces.isEmpty) {
         return features;
       }
-      return [
-        ...features,
-        const SidebarNavigationItem(
-          icon: Divider(color: Colors.blueGrey),
-          label: Text(''),
-        ),
-        ...spaces
-      ];
+      return [...features, ...spaces];
     },
   );
 });
@@ -203,9 +205,7 @@ class SidebarWidget extends ConsumerWidget {
       },
 
       // configuration
-
       labelType: labelType,
-
       backgroundColor: Theme.of(context).navigationRailTheme.backgroundColor!,
       selectedIconTheme: const IconThemeData(
         size: 18,
