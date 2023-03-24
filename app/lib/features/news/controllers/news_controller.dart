@@ -1,4 +1,4 @@
-import 'package:acter/features/home/controllers/home_controller.dart';
+import 'package:acter/common/controllers/client_controller.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,7 +15,7 @@ class NewsListNotifier extends StateNotifier<AsyncValue<List<NewsEntry>>> {
 
   Future<void> _fetchNews() async {
     state = const AsyncLoading();
-    final client = ref.read(homeStateProvider);
+    final client = ref.read(clientProvider);
     state = await AsyncValue.guard(() async {
       return await client!.latestNews(25).then((ffiList) => ffiList.toList());
     });

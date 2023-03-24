@@ -1,35 +1,15 @@
-import 'package:acter/features/home/controllers/home_controller.dart';
+import 'package:acter/common/controllers/client_controller.dart';
+import 'package:acter/common/controllers/spaces_controller.dart';
+import 'package:acter/common/controllers/router_controller.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
-import 'package:acter/features/home/data/models/profile_data.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-
-final groupProfileDataProvider =
-    FutureProvider.family<ProfileData, Space>((ref, group) async {
-  // FIXME: how to get informed about updates!?!
-  final profile = await group.getProfile();
-  final name = profile.getDisplayName();
-  final displayName = name ?? group.getRoomId();
-  if (!profile.hasAvatar()) {
-    return ProfileData(displayName, null);
-  }
-  final avatar = await profile.getThumbnail(48, 48);
-  return ProfileData(displayName, avatar.asTypedList());
-});
-
-final spacesProvider = FutureProvider<List<Space>>((ref) async {
-  final client = ref.watch(homeStateProvider)!;
-  // FIXME: how to get informed about updates!?!
-  final groups = await client.spaces();
-  return groups.toList();
-});
 
 final spaceItemsProvider =
     FutureProvider.family<List<SidebarNavigationItem>, BuildContext>(
@@ -67,7 +47,7 @@ final spaceItemsProvider =
       });
 
       return spaces.map((space) {
-        final profileData = ref.watch(groupProfileDataProvider(space));
+        final profileData = ref.watch(spaceProfileDataProvider(space));
         final roomId = space.getRoomId();
         return profileData.when(
           loading: () => SidebarNavigationItem(
@@ -166,9 +146,6 @@ final sidebarItemsProvider =
     },
   );
 });
-final goRouterProvider = ChangeNotifierProvider.family<GoRouter, BuildContext>(
-  (ref, context) => GoRouter.of(context),
-);
 
 final currentSelectedSidebarIndexProvider =
     Provider.family<int, BuildContext>((ref, context) {
@@ -195,7 +172,7 @@ class SidebarWidget extends ConsumerWidget {
     final sidebarNavItems = ref.watch(sidebarItemsProvider(context));
     final selectedSidebarIndex =
         ref.watch(currentSelectedSidebarIndexProvider(context));
-    final isGuest = ref.watch(homeStateProvider)!.isGuest();
+    final isGuest = ref.watch(clientProvider)!.isGuest();
 
     return AdaptiveScaffold.standardNavigationRail(
       // main logic
@@ -225,7 +202,7 @@ class SidebarWidget extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Visibility(
-            visible: !ref.watch(homeStateProvider)!.isGuest(),
+            visible: !ref.watch(clientProvider)!.isGuest(),
             child: Container(
               margin: const EdgeInsets.only(top: 8),
               child: const UserAvatarWidget(),

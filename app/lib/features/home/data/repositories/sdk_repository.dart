@@ -1,9 +1,9 @@
-import 'package:acter/features/home/controllers/home_controller.dart';
+import 'package:acter/common/controllers/client_controller.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show ActerSdk, Client;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final sdkRepositoryProvider = Provider<SdkRepository>((ref) {
-  final sdk = ref.watch(homeStateProvider.notifier).sdk;
+  final sdk = ref.watch(clientProvider.notifier).sdk;
   return SdkRepository(sdk);
 });
 

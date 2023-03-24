@@ -5,7 +5,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/widgets/invite_info_card.dart';
 import 'package:acter/features/chat/widgets/list_item.dart';
-import 'package:acter/features/home/controllers/home_controller.dart';
+import 'package:acter/common/controllers/client_controller.dart';
 import 'package:acter/models/JoinedRoom.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Invitation;
@@ -23,7 +23,7 @@ class ChatPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(homeStateProvider)!;
+    final client = ref.watch(clientProvider)!;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       body: GetBuilder<ChatListController>(
