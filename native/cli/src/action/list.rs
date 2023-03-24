@@ -1,5 +1,6 @@
 use crate::config::LoginConfig;
 
+use acter_core::spaces::SpaceRelation;
 use anyhow::Result;
 use clap::Parser;
 use futures::StreamExt;
@@ -53,10 +54,70 @@ impl List {
                     println!(" - aliases: {aliases}");
                 }
                 let topic = sp.topic().unwrap_or_default();
-                println!(" - topic: {topic}");
+                println!(" - Topic: {topic}");
 
                 if let Some(avatar_url) = sp.avatar_url() {
-                    println!(" - avatar: {avatar_url}");
+                    println!(" - Avatar: {avatar_url}");
+                }
+
+                let relations = &sp.space_relations().await?;
+
+                if let Some(p) = relations.main_parent() {
+                    println!(" - Canonical parent: {} ({})", p.room_id(), p.target_type());
+                }
+
+                if relations.other_parents().is_empty() {
+                    if relations.main_parent().is_some() {
+                        println!(" - No other space parents");
+                    } else {
+                        println!(" - No space parents");
+                    }
+                } else {
+                    println!(
+                        " - Other Space parents: {}",
+                        relations
+                            .other_parents()
+                            .iter()
+                            .map(|r| format!("{} ({})", r.room_id(), r.target_type()))
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    )
+                }
+                let children = relations.children();
+                if children.is_empty() {
+                    println!(" - No space children");
+                } else {
+                    let (suggested, other): (Vec<&SpaceRelation>, Vec<&SpaceRelation>) =
+                        children.iter().partition(|p| *p.suggested());
+                    if !suggested.is_empty() {
+                        println!(
+                            " - Suggested space children: {}",
+                            suggested
+                                .iter()
+                                .map(|r| format!("{} ({})", r.room_id(), r.target_type()))
+                                .collect::<Vec<_>>()
+                                .join(", ")
+                        );
+                        if !other.is_empty() {
+                            println!(
+                                " - Other space children: {}",
+                                other
+                                    .iter()
+                                    .map(|r| format!("{} ({})", r.room_id(), r.target_type()))
+                                    .collect::<Vec<_>>()
+                                    .join(", ")
+                            );
+                        }
+                    } else if !other.is_empty() {
+                        println!(
+                            " - Space children: {}",
+                            other
+                                .iter()
+                                .map(|r| format!("{} ({})", r.room_id(), r.target_type()))
+                                .collect::<Vec<_>>()
+                                .join(", ")
+                        )
+                    };
                 }
 
                 if is_acter_space {
@@ -70,7 +131,7 @@ impl List {
                     println!("   * {pins} Pins of which {pinned_links} are links");
                 }
 
-                println!(""); // give it space to breath
+                println!(); // give it space to breath
             }
         }
 

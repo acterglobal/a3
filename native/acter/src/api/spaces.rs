@@ -10,7 +10,7 @@ use acter_core::{
     executor::Executor,
     models::AnyActerModel,
     ruma::{events::MessageLikeEvent, OwnedRoomAliasId, OwnedRoomId, OwnedUserId},
-    spaces::is_acter_space,
+    spaces::{is_acter_space, SpaceRelations},
     statics::default_acter_space_states,
     templates::Engine,
 };
@@ -375,6 +375,10 @@ impl Space {
         }
         tracing::trace!(name, "history loaded");
         Ok(())
+    }
+
+    pub async fn space_relations(&self) -> Result<SpaceRelations> {
+        Ok(self.client.core.space_relations(&self.room).await?)
     }
 }
 
