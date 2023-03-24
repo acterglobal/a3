@@ -14,7 +14,7 @@ concurrency:
 jobs:
   run_checker:
     runs-on: ubuntu-latest
-    name: Check latest commit
+    name: Check legibility
     outputs:
       should_run: steps.pr.outputs.pr_found && contains(steps.PR.outputs.pr_labels, "build-demo")
     steps:
@@ -82,7 +82,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - id: tag
-        run: echo "tag=${{ github.ref }}-`date +%FT%k:%M`" >> $GITHUB_OUTPUT
+        run: echo "tag=${{ github.ref_name }}-`date +%FT%k:%M`" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Install supported toolchain
