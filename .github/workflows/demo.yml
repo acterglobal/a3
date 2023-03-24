@@ -82,7 +82,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - id: tag
-        run: echo "tag=${{ github.ref }}-`date +%FT%k:%M`" >> $GITHUB_OUTPUT
+        run: echo "tag=${{ github.ref_name }}-`date +%FT%k:%M`" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Install supported toolchain
