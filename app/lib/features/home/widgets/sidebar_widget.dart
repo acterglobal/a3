@@ -190,21 +190,16 @@ final currentSelectedSidebarIndexProvider =
   return index < 0 ? 0 : index;
 });
 
-class SidebarWidget extends ConsumerStatefulWidget {
+class SidebarWidget extends ConsumerWidget {
   final NavigationRailLabelType labelType;
   final void Function() handleBugReport;
-  @override
-  ConsumerState<SidebarWidget> createState() => _SidebarWidgetState();
   const SidebarWidget({
     super.key,
     required this.handleBugReport,
     required this.labelType,
   });
-}
-
-class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final sidebarNavItems = ref.watch(sidebarItemsProvider(context));
     final selectedSidebarIndex =
         ref.watch(currentSelectedSidebarIndexProvider(context));
@@ -224,7 +219,7 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
 
       // configuration
 
-      labelType: widget.labelType,
+      labelType: labelType,
 
       backgroundColor: Theme.of(context).navigationRailTheme.backgroundColor!,
       selectedIconTheme: const IconThemeData(
@@ -261,7 +256,7 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
               endIndent: 18,
             ),
             InkWell(
-              onTap: () => widget.handleBugReport(),
+              onTap: () => handleBugReport(),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 8,
