@@ -1,10 +1,11 @@
 import 'package:acter/common/controllers/spaces_controller.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class SpaceShell extends ConsumerWidget {
+class SpaceShell extends ConsumerStatefulWidget {
   final String spaceIdOrAlias;
   final Widget child;
   const SpaceShell({
@@ -14,9 +15,19 @@ class SpaceShell extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _SpaceShellState();
+}
+
+class _SpaceShellState extends ConsumerState<SpaceShell> {
+  String _dropDownValue = 'Member';
+  List<String> dropDownItems = [
+    'Member',
+    'Admin',
+  ];
+  @override
+  Widget build(BuildContext context) {
     // get platform of context.
-    final space = ref.watch(spaceProvider(spaceIdOrAlias));
+    final space = ref.watch(spaceProvider(widget.spaceIdOrAlias));
     return space.when(
       data: (space) {
         final profileData = ref.watch(spaceProfileDataProvider(space));
@@ -73,11 +84,47 @@ class SpaceShell extends ConsumerWidget {
                             ),
                           ),
                         ),
+                        Positioned(
+                          right: 40,
+                          top: 230,
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              elevation: 0,
+                              focusColor: Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                              value: _dropDownValue,
+                              onChanged: (String? value) {
+                                _dropDownValue = value!;
+                              },
+                              items: dropDownItems
+                                  .map<DropdownMenuItem<String>>((String item) {
+                                return DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(
+                                    item,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                        ),
+                                  ),
+                                );
+                              }).toList(),
+                              icon: Icon(
+                                Icons.expand_more,
+                                color: Theme.of(context).colorScheme.tertiary,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   const TopNavBar(isDesktop: true),
-                  Expanded(child: child),
+                  Expanded(child: widget.child),
                 ],
               ),
             ),
