@@ -1,7 +1,6 @@
 import 'package:acter/common/controllers/client_controller.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final spaceProfileDataProvider =
@@ -22,4 +21,11 @@ final spacesProvider = FutureProvider<List<Space>>((ref) async {
   // FIXME: how to get informed about updates!?!
   final spaces = await client.spaces();
   return spaces.toList();
+});
+
+final spaceProvider = FutureProvider.autoDispose
+    .family<Space, String>((ref, roomIdOrAlias) async {
+  final client = ref.watch(clientProvider)!;
+  // FIXME: fallback to fetching a public data, if not found
+  return await client.getSpace(roomIdOrAlias);
 });

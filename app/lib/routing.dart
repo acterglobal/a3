@@ -5,6 +5,7 @@ import 'package:acter/features/home/pages/home_page.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/sign_up_page.dart';
 import 'package:acter/features/profile/pages/social_profile_page.dart';
+import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 
 import 'package:flutter/material.dart';
@@ -88,9 +89,12 @@ final _routes = [
 
       GoRoute(
         name: 'space',
-        path: '/:space([!#][^/]+)', // !spaceId, #spaceName
+        path: '/:spaceId([!#][^/]+)', // !spaceId, #spaceName
         pageBuilder: (context, state) {
-          return NoTransitionPage(key: state.pageKey, child: const NewsPage());
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: SpaceOverview(spaceIdOrAlias: state.params['spaceId']!),
+          );
         },
       ),
 
