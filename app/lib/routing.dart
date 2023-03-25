@@ -6,6 +6,7 @@ import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/sign_up_page.dart';
 import 'package:acter/features/profile/pages/social_profile_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
+import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 
 import 'package:flutter/material.dart';
@@ -21,6 +22,8 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'shell');
+final GlobalKey<NavigatorState> _spaceNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'space');
 
 final _routes = [
   GoRoute(
@@ -87,15 +90,30 @@ final _routes = [
         },
       ),
 
-      GoRoute(
-        name: 'space',
-        path: '/:spaceId([!#][^/]+)', // !spaceId, #spaceName
-        pageBuilder: (context, state) {
+      /// Space subshell
+      ShellRoute(
+        navigatorKey: _spaceNavigatorKey,
+        pageBuilder: (context, state, child) {
           return NoTransitionPage(
             key: state.pageKey,
-            child: SpaceOverview(spaceIdOrAlias: state.params['spaceId']!),
+            child: SpaceShell(
+              spaceIdOrAlias: state.params['spaceId']!,
+              child: child,
+            ),
           );
         },
+        routes: <RouteBase>[
+          GoRoute(
+            name: 'space',
+            path: '/:spaceId([!#][^/]+)', // !spaceId, #spaceName
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: SpaceOverview(spaceIdOrAlias: state.params['spaceId']!),
+              );
+            },
+          ),
+        ],
       ),
 
       GoRoute(
