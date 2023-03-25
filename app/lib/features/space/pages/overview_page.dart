@@ -1,4 +1,5 @@
-import 'package:acter/common/controllers/spaces_controller.dart';
+import 'package:acter/features/space/widgets/about_card.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,14 +20,21 @@ class _SpaceOverviewState extends ConsumerState<SpaceOverview> {
   @override
   Widget build(BuildContext context) {
     // get platform of context.
-    final space = ref.watch(spaceProvider(widget.spaceIdOrAlias));
-    return space.when(
-      data: (space) {
-        final topic = space.topic();
-        return Text(topic ?? 'no topic found');
-      },
-      error: (error, stack) => Text('Loading failed: $error'),
-      loading: () => const Text('Loading'),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: AboutCard(spaceId: widget.spaceIdOrAlias),
+      // Row(
+      //   children: [
+      //     Column(
+      //       children: [
+
+      //       ],
+      //     ),
+      //     Column(
+      //       children: [Text('placeholder')],
+      //     ),
+      //   ],
+      // ),
     );
   }
 }

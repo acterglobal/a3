@@ -2,6 +2,7 @@ import 'package:acter/common/controllers/client_controller.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:core';
 
 final spaceProfileDataProvider =
     FutureProvider.family<ProfileData, Space>((ref, space) async {
@@ -23,9 +24,16 @@ final spacesProvider = FutureProvider<List<Space>>((ref) async {
   return spaces.toList();
 });
 
-final spaceProvider = FutureProvider.autoDispose
-    .family<Space, String>((ref, roomIdOrAlias) async {
+final spaceProvider =
+    FutureProvider.family<Space, String>((ref, roomIdOrAlias) async {
   final client = ref.watch(clientProvider)!;
   // FIXME: fallback to fetching a public data, if not found
   return await client.getSpace(roomIdOrAlias);
+});
+
+final spaceMembersProvider =
+    FutureProvider.family<List<Member>, String>((ref, roomIdOrAlias) async {
+  final space = ref.watch(spaceProvider(roomIdOrAlias)).requireValue;
+  final members = await space.activeMembers();
+  return members.toList();
 });
