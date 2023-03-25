@@ -93,6 +93,7 @@ class AppTheme {
         tertiary: Color(0xffFF8E00),
         error: Color(0xffD03838),
       ),
+      scaffoldBackgroundColor: const Color(0x122334),
       splashColor: Colors.transparent,
       useMaterial3: true,
       progressIndicatorTheme: const ProgressIndicatorThemeData(
