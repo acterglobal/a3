@@ -24,57 +24,57 @@ class SpaceShell extends ConsumerWidget {
           data: (profile) => Scaffold(
             body: SafeArea(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          // FIXME: load image from actual settings
-                          // and add default fallback to assets
-                          'https://images.unsplash.com/photo-1439405326854-014607f694d7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 200,
-                      child: Row(
-                        children: [
-                          Container(
-                            alignment: const Alignment(-0.95, 5.0),
-                            child: profile.avatar != null
-                                ? CircleAvatar(
-                                    foregroundImage: MemoryImage(
-                                      profile.avatar!,
-                                    ),
-                                    radius: 80,
-                                  )
-                                : SvgPicture.asset(
-                                    'assets/icon/acter.svg',
-                                    height: 24,
-                                    width: 24,
-                                  ),
-                          ),
-                          Container(
-                            alignment: const Alignment(2, 1.70),
-                            child: Text(
-                              profile.displayName,
-                              style: const TextStyle(
-                                fontSize: 25.0,
-                                color: Colors.blueGrey,
-                                letterSpacing: 2.0,
-                                fontWeight: FontWeight.w400,
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.42,
+                    child: Stack(
+                      children: <Widget>[
+                        Container(
+                          height: MediaQuery.of(context).size.height * 0.28,
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                // FIXME: load image from actual settings
+                                // and add default fallback to assets
+                                'https://images.unsplash.com/photo-1439405326854-014607f694d7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
                               ),
+                              fit: BoxFit.cover,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        Positioned(
+                          left: 30,
+                          top: 110,
+                          child: profile.avatar != null
+                              ? CircleAvatar(
+                                  foregroundImage: MemoryImage(
+                                    profile.avatar!,
+                                  ),
+                                  radius: 80,
+                                )
+                              : CircleAvatar(
+                                  radius: 80,
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.secondary,
+                                  child: SvgPicture.asset(
+                                    'assets/icon/acter.svg',
+                                  ),
+                                ),
+                        ),
+                        Positioned(
+                          left: 180,
+                          top: 210,
+                          child: Container(
+                            margin: const EdgeInsets.only(left: 20),
+                            child: Text(
+                              profile.displayName,
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(
-                    height: 110,
-                    width: double.infinity,
                   ),
                   const TopNavBar(isDesktop: true),
                   Expanded(child: child),
