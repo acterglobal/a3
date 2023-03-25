@@ -18,7 +18,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 0.0.1+1
 
 environment:
-  sdk: ">=2.19.0 <3.0.0"
+  sdk: ">=2.19.0 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -60,7 +60,7 @@ dependencies:
   # Code Generation
   flutter_localizations:
     sdk: flutter
-  intl: ^0.17.0
+  intl: ^0.18.0
   acter_flutter_sdk:
     path: packages/rust_sdk
 
@@ -69,6 +69,10 @@ dependencies:
   flutter_riverpod: ^2.2.0
   # Routing
   go_router: 6.4.1
+
+  # widgets
+  table_calendar: ^3.0.9
+
   
   # Utilities
   path_provider: ^2.0.8
@@ -91,7 +95,7 @@ dependencies:
   shake: ^2.2.0
 
   # Testing
-  mockito: ^5.3.2
+  mockito:
   image_picker_for_web: ^2.1.11
 
 dev_dependencies:
