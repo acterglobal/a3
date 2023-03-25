@@ -88,7 +88,7 @@ impl List {
                     println!(" - No space children");
                 } else {
                     let (suggested, other): (Vec<&SpaceRelation>, Vec<&SpaceRelation>) =
-                        children.iter().partition(|p| *p.suggested());
+                        children.iter().partition(|p| p.suggested());
                     if !suggested.is_empty() {
                         println!(
                             " - Suggested space children: {}",
@@ -125,9 +125,11 @@ impl List {
                     let task_lists = sp.task_lists().await?.len();
                     let pins = sp.pins().await?.len();
                     let pinned_links = sp.pinned_links().await?.len();
+                    let events_count = sp.calendar_events().await?.len();
                     println!(" - Objects: ");
                     println!("   * {news_count} NewsItems ");
                     println!("   * {task_lists} TaskList ");
+                    println!("   * {events_count} Calendar Events ");
                     println!("   * {pins} Pins of which {pinned_links} are links");
                 }
 
