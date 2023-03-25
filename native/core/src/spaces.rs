@@ -1,5 +1,4 @@
 use derive_builder::Builder;
-use derive_getters::Getters;
 use matrix_sdk::{
     room::Room as MatrixRoom,
     ruma::{
@@ -96,7 +95,7 @@ pub enum RelationTargetType {
     ActerSpace,
 }
 
-#[derive(Debug, Clone, Getters)]
+#[derive(Debug, Clone)]
 pub struct SpaceRelation {
     room_id: OwnedRoomId,
     suggested: bool,
@@ -104,11 +103,39 @@ pub struct SpaceRelation {
     via: Vec<String>,
 }
 
-#[derive(Clone, Debug, Getters)]
+impl SpaceRelation {
+    pub fn suggested(&self) -> bool {
+        self.suggested
+    }
+    pub fn room_id(&self) -> OwnedRoomId {
+        self.room_id.clone()
+    }
+    pub fn target_type(&self) -> RelationTargetType {
+        self.target_type.clone()
+    }
+    pub fn via(&self) -> Vec<String> {
+        self.via.clone()
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct SpaceRelations {
     main_parent: Option<SpaceRelation>,
     other_parents: Vec<SpaceRelation>,
     children: Vec<SpaceRelation>,
+}
+
+impl SpaceRelations {
+    pub fn main_parent(&self) -> Option<SpaceRelation> {
+        self.main_parent.clone()
+    }
+
+    pub fn other_parents(&self) -> Vec<SpaceRelation> {
+        self.other_parents.clone()
+    }
+    pub fn children(&self) -> Vec<SpaceRelation> {
+        self.children.clone()
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent)]

@@ -1,4 +1,7 @@
-pub use acter_core::spaces::{CreateSpaceSettings, CreateSpaceSettingsBuilder};
+pub use acter_core::spaces::{
+    CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
+    SpaceRelations,
+};
 use acter_core::{
     events::{
         calendar::{SyncCalendarEventEvent, SyncCalendarEventUpdateEvent},
@@ -10,7 +13,7 @@ use acter_core::{
     executor::Executor,
     models::AnyActerModel,
     ruma::{events::MessageLikeEvent, OwnedRoomAliasId, OwnedRoomId, OwnedUserId},
-    spaces::{is_acter_space, SpaceRelations},
+    spaces::is_acter_space,
     statics::default_acter_space_states,
     templates::Engine,
 };
@@ -378,7 +381,11 @@ impl Space {
     }
 
     pub async fn space_relations(&self) -> Result<SpaceRelations> {
-        Ok(self.client.core.space_relations(&self.room).await?)
+        let c = self.client.core.clone();
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move { Ok(c.space_relations(&room).await?) })
+            .await?
     }
 }
 

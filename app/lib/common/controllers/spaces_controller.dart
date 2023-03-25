@@ -37,3 +37,9 @@ final spaceMembersProvider =
   final members = await space.activeMembers();
   return members.toList();
 });
+
+final spaceRelationsProvider =
+    FutureProvider.family<SpaceRelations, String>((ref, spaceId) async {
+  final space = ref.watch(spaceProvider(spaceId)).requireValue;
+  return await space.spaceRelations();
+});

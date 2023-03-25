@@ -836,9 +836,39 @@ object TaskListUpdateBuilder {
     fn send() -> Future<Result<EventId>>;
 }
 
+enum RelationTargetType {
+    Unknown,
+    ChatRoom,
+    Space,
+    ActerSpace
+}
+
+object SpaceRelation {
+    /// the room ID this Relation links to
+    fn room_id() -> RoomId;
+    /// is this a suggested room?
+    fn suggested() -> bool;
+    /// how to find this room
+    fn via() -> Vec<string>;
+    /// of what type is the targeted room?
+    fn target_type() -> RelationTargetType;
+}
+
+object SpaceRelations {
+    /// do we have a canonical parent?!?
+    fn main_parent() -> Option<SpaceRelation>;
+    /// other parents we belong to
+    fn other_parents() -> Vec<SpaceRelation>;
+    /// children
+    fn children() -> Vec<SpaceRelation>;
+}
+
 object Space {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> Future<Result<RoomProfile>>;
+
+    /// get the room profile that contains avatar and display name
+    fn space_relations() -> Future<Result<SpaceRelations>>;
 
     /// what is the description / topic
     fn topic() -> Option<string>;

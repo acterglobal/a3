@@ -1,5 +1,7 @@
 import 'package:acter/features/space/widgets/about_card.dart';
 import 'package:acter/features/space/widgets/links_card.dart';
+import 'package:acter/features/space/widgets/chats_card.dart';
+import 'package:acter/features/space/widgets/spaces_card.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +18,9 @@ class SpaceOverview extends ConsumerWidget {
       child: Column(
         children: [
           AboutCard(spaceId: spaceIdOrAlias),
-          LinksCard(spaceId: spaceIdOrAlias),
+          // LinksCard(spaceId: spaceIdOrAlias),
+          // ChatsCard(spaceId: spaceIdOrAlias),
+          SpacesCard(spaceId: spaceIdOrAlias),
         ],
       ),
       // Row(
