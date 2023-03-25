@@ -1,10 +1,10 @@
 import 'package:acter/common/controllers/spaces_controller.dart';
+import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:flutter/material.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class SpaceShell extends ConsumerStatefulWidget {
+class SpaceShell extends ConsumerWidget {
   final String spaceIdOrAlias;
   final Widget child;
   const SpaceShell({
@@ -14,29 +14,9 @@ class SpaceShell extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _SpaceShellState();
-}
-
-class _SpaceShellState extends ConsumerState<SpaceShell>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(vsync: this, length: 5);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // get platform of context.
-    final space = ref.watch(spaceProvider(widget.spaceIdOrAlias));
+    final space = ref.watch(spaceProvider(spaceIdOrAlias));
     return space.when(
       data: (space) {
         final profileData = ref.watch(spaceProfileDataProvider(space));
@@ -96,75 +76,8 @@ class _SpaceShellState extends ConsumerState<SpaceShell>
                     height: 110,
                     width: double.infinity,
                   ),
-                  SizedBox(
-                    height: 70,
-                    width: double.infinity,
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: TabBar(
-                        controller: _tabController,
-                        indicatorSize: TabBarIndicatorSize.label,
-                        tabs: <Widget>[
-                          Tab(
-                            child: Row(
-                              children: const [
-                                Icon(Atlas.layout_half_thin),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 10.0),
-                                  child: Text('Overview'),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Tab(
-                            child: Row(
-                              children: const [
-                                Icon(Atlas.chats_thin),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 10.0),
-                                  child: Text('Chat'),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Tab(
-                            child: Row(
-                              children: const [
-                                Icon(Atlas.connection_thin),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 10.0),
-                                  child: Text('Groups'),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Tab(
-                            child: Row(
-                              children: const [
-                                Icon(Atlas.calendar_dots_thin),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 10.0),
-                                  child: Text('Events'),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Tab(
-                            child: Row(
-                              children: const [
-                                Icon(Atlas.check_folder_thin),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 10.0),
-                                  child: Text('Tasks'),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(child: widget.child),
+                  const TopNavBar(isDesktop: true),
+                  Expanded(child: child),
                 ],
               ),
             ),

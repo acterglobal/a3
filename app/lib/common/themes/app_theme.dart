@@ -85,7 +85,7 @@ class AppTheme {
         ),
       ),
       colorScheme: const ColorScheme.dark(
-        primary: Color(0xff122D46),
+        primary: Color(0xff10273D),
         primaryContainer: Colors.black,
         surface: Color(0xff122D46),
         background: Color(0xff122D46),

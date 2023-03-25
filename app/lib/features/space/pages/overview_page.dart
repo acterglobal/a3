@@ -2,24 +2,14 @@ import 'package:acter/common/controllers/spaces_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SpaceOverview extends ConsumerStatefulWidget {
+class SpaceOverview extends ConsumerWidget {
   final String spaceIdOrAlias;
   const SpaceOverview({super.key, required this.spaceIdOrAlias});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _SpaceOverviewState();
-}
-
-class _SpaceOverviewState extends ConsumerState<SpaceOverview> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // get platform of context.
-    final space = ref.watch(spaceProvider(widget.spaceIdOrAlias));
+    final space = ref.watch(spaceProvider(spaceIdOrAlias));
     return space.when(
       data: (space) {
         final topic = space.topic();
