@@ -18,8 +18,8 @@ class SpaceOverview extends ConsumerWidget {
       child: Column(
         children: [
           AboutCard(spaceId: spaceIdOrAlias),
-          // LinksCard(spaceId: spaceIdOrAlias),
-          // ChatsCard(spaceId: spaceIdOrAlias),
+          LinksCard(spaceId: spaceIdOrAlias),
+          ChatsCard(spaceId: spaceIdOrAlias),
           SpacesCard(spaceId: spaceIdOrAlias),
         ],
       ),
