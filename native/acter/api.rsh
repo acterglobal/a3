@@ -413,6 +413,9 @@ object Conversation {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> Future<Result<RoomProfile>>;
 
+    /// what is the description / topic
+    fn topic() -> Option<string>;
+
     /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
 
@@ -836,6 +839,9 @@ object TaskListUpdateBuilder {
 object Space {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> Future<Result<RoomProfile>>;
+
+    /// what is the description / topic
+    fn topic() -> Option<string>;
 
     /// whether this an acter space
     fn is_acter_space() -> Future<bool>;

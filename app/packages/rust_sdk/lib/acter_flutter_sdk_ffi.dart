@@ -7617,6 +7617,16 @@ class Api {
       int Function(
     int,
   )>();
+  late final _conversationTopicPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationTopicReturn Function(
+    ffi.Int64,
+  )>>("__Conversation_topic");
+
+  late final _conversationTopic = _conversationTopicPtr.asFunction<
+      _ConversationTopicReturn Function(
+    int,
+  )>();
   late final _conversationActiveMembersPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -9829,6 +9839,16 @@ class Api {
 
   late final _spaceGetProfile = _spaceGetProfilePtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _spaceTopicPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceTopicReturn Function(
+    ffi.Int64,
+  )>>("__Space_topic");
+
+  late final _spaceTopic = _spaceTopicPtr.asFunction<
+      _SpaceTopicReturn Function(
     int,
   )>();
   late final _spaceIsActerSpacePtr = _lookup<
@@ -16370,6 +16390,30 @@ class Conversation {
     return tmp2;
   }
 
+  /// what is the description / topic
+  String? topic() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._conversationTopic(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// the members currently in the room
   Future<FfiListMember> activeMembers() {
     var tmp0 = 0;
@@ -20109,6 +20153,30 @@ class Space {
     return tmp2;
   }
 
+  /// what is the description / topic
+  String? topic() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceTopic(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// whether this an acter space
   Future<bool> isActerSpace() {
     var tmp0 = 0;
@@ -23397,6 +23465,17 @@ class _TimelineDiffValueReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _ConversationTopicReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
 class _ConversationLatestMessageReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -23739,6 +23818,17 @@ class _TaskListUpdateBuilderReturn extends ffi.Struct {
   external int arg3;
   @ffi.Int64()
   external int arg4;
+}
+
+class _SpaceTopicReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class _SpaceGetRoomIdReturn extends ffi.Struct {
