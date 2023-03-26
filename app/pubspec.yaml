@@ -60,7 +60,7 @@ dependencies:
   # Code Generation
   flutter_localizations:
     sdk: flutter
-  intl: ^0.18.0
+  intl: 0.17.0
   acter_flutter_sdk:
     path: packages/rust_sdk
 
@@ -71,8 +71,9 @@ dependencies:
   go_router: 6.4.1
 
   # widgets
-  table_calendar: ^3.0.9
-
+  table_calendar:
+    git:
+      url: https://github.com/acterglobal/table_calendar.git
   
   # Utilities
   path_provider: ^2.0.8
