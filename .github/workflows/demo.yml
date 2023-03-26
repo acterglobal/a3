@@ -88,7 +88,7 @@ jobs:
 
       - id: tag
         name: "Create Tag"
-        run: echo "tag=${{ steps.branch-name.outputs.current_branch }}-`date +%FT%k%M`" >> $GITHUB_OUTPUT
+        run: echo "tag=${{ steps.branch-name.outputs.current_branch }}-`date +%FT%H%M`" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Install supported toolchain
