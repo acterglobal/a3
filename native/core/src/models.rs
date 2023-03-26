@@ -1,6 +1,7 @@
 mod calendar;
 mod color;
 mod comments;
+mod common;
 mod news;
 mod pins;
 mod tag;
@@ -9,10 +10,12 @@ mod tasks;
 mod test;
 
 use crate::error::Error;
+
 pub use crate::store::Store;
 pub use calendar::{CalendarEvent, CalendarEventUpdate};
 pub use color::Color;
 pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
+pub use common::*;
 pub use core::fmt::Debug;
 use matrix_sdk::ruma::{
     events::{AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent},

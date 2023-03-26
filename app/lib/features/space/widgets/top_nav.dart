@@ -30,7 +30,7 @@ class _TopNavBarState extends State<TopNavBar>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 5);
+    _tabController = TabController(vsync: this, length: tabLabels.length);
   }
 
   @override
@@ -53,7 +53,7 @@ class _TopNavBarState extends State<TopNavBar>
         indicatorPadding: const EdgeInsets.symmetric(horizontal: 30),
         indicatorColor: Theme.of(context).colorScheme.tertiary,
         tabs: List.generate(
-          5,
+          tabLabels.length,
           (index) => Tab(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

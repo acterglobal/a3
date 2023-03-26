@@ -43,3 +43,9 @@ final spaceRelationsProvider =
   final space = ref.watch(spaceProvider(spaceId)).requireValue;
   return await space.spaceRelations();
 });
+
+final spaceEventsProvider =
+    FutureProvider.family<List<CalendarEvent>, String>((ref, spaceId) async {
+  final space = ref.watch(spaceProvider(spaceId)).requireValue;
+  return (await space.calendarEvents()).toList();
+});

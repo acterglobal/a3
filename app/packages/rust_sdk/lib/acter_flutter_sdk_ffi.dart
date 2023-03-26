@@ -3548,6 +3548,52 @@ class Api {
     return tmp7;
   }
 
+  FfiListCalendarEvent? __spaceCalendarEventsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceCalendarEventsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListCalendarEvent");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListCalendarEvent._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   FfiListActerPin? __spacePinsFuturePoll(
     int boxed,
     int postCobject,
@@ -6467,6 +6513,17 @@ class Api {
       _UtcDateTimeToRfc3339Return Function(
     int,
   )>();
+  late final _utcDateTimeTimestampMillisPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__UtcDateTime_timestamp_millis");
+
+  late final _utcDateTimeTimestampMillis =
+      _utcDateTimeTimestampMillisPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _refDetailsTypeStrPtr = _lookup<
       ffi.NativeFunction<
           _RefDetailsTypeStrReturn Function(
@@ -6960,6 +7017,79 @@ class Api {
 
   late final _pinUpdateBuilderSend = _pinUpdateBuilderSendPtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _textMessageContentBodyPtr = _lookup<
+      ffi.NativeFunction<
+          _TextMessageContentBodyReturn Function(
+    ffi.Int64,
+  )>>("__TextMessageContent_body");
+
+  late final _textMessageContentBody = _textMessageContentBodyPtr.asFunction<
+      _TextMessageContentBodyReturn Function(
+    int,
+  )>();
+  late final _textMessageContentFormattedPtr = _lookup<
+      ffi.NativeFunction<
+          _TextMessageContentFormattedReturn Function(
+    ffi.Int64,
+  )>>("__TextMessageContent_formatted");
+
+  late final _textMessageContentFormatted =
+      _textMessageContentFormattedPtr.asFunction<
+          _TextMessageContentFormattedReturn Function(
+    int,
+  )>();
+  late final _calendarEventTitlePtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventTitleReturn Function(
+    ffi.Int64,
+  )>>("__CalendarEvent_title");
+
+  late final _calendarEventTitle = _calendarEventTitlePtr.asFunction<
+      _CalendarEventTitleReturn Function(
+    int,
+  )>();
+  late final _calendarEventDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventDescriptionReturn Function(
+    ffi.Int64,
+  )>>("__CalendarEvent_description");
+
+  late final _calendarEventDescription =
+      _calendarEventDescriptionPtr.asFunction<
+          _CalendarEventDescriptionReturn Function(
+    int,
+  )>();
+  late final _calendarEventUtcStartPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__CalendarEvent_utc_start");
+
+  late final _calendarEventUtcStart = _calendarEventUtcStartPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _calendarEventUtcEndPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__CalendarEvent_utc_end");
+
+  late final _calendarEventUtcEnd = _calendarEventUtcEndPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _calendarEventShowWithoutTimePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__CalendarEvent_show_without_time");
+
+  late final _calendarEventShowWithoutTime =
+      _calendarEventShowWithoutTimePtr.asFunction<
+          int Function(
     int,
   )>();
   late final _deviceIdToStringPtr = _lookup<
@@ -10066,6 +10196,16 @@ class Api {
     int,
     int,
   )>();
+  late final _spaceCalendarEventsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Space_calendar_events");
+
+  late final _spaceCalendarEvents = _spaceCalendarEventsPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _spaceNewsDraftPtr = _lookup<
       ffi.NativeFunction<
           _SpaceNewsDraftReturn Function(
@@ -12111,6 +12251,21 @@ class Api {
     int,
     int,
   )>();
+  late final _spaceCalendarEventsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceCalendarEventsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Space_calendar_events_future_poll");
+
+  late final _spaceCalendarEventsFuturePoll =
+      _spaceCalendarEventsFuturePollPtr.asFunction<
+          _SpaceCalendarEventsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _spacePinsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _SpacePinsFuturePollReturn Function(
@@ -13193,6 +13348,55 @@ class Api {
 
   late final _ffiListActerPinInsert =
       _ffiListActerPinInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListCalendarEvent createFfiListCalendarEvent() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListCalendarEventCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListCalendarEvent");
+    return FfiListCalendarEvent._(this, list_box);
+  }
+
+  late final _ffiListCalendarEventCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListCalendarEventCreate");
+
+  late final _ffiListCalendarEventCreate =
+      _ffiListCalendarEventCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListCalendarEventLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListCalendarEventLen");
+
+  late final _ffiListCalendarEventLen =
+      _ffiListCalendarEventLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListCalendarEventElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListCalendarEventElementAt");
+
+  late final _ffiListCalendarEventElementAt =
+      _ffiListCalendarEventElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListCalendarEventRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListCalendarEventRemove");
+
+  late final _ffiListCalendarEventRemove =
+      _ffiListCalendarEventRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListCalendarEventAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListCalendarEventAdd");
+
+  late final _ffiListCalendarEventAdd =
+      _ffiListCalendarEventAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListCalendarEventInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListCalendarEventInsert");
+
+  late final _ffiListCalendarEventInsert =
+      _ffiListCalendarEventInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListComment createFfiListComment() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListCommentCreate());
@@ -14136,6 +14340,17 @@ class UtcDateTime {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
+    return tmp2;
+  }
+
+  int timestampMillis() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._utcDateTimeTimestampMillis(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
     return tmp2;
   }
 
@@ -15091,6 +15306,153 @@ class PinUpdateBuilder {
     final tmp3_1 = _Box(_api, tmp3_0, "__PinUpdateBuilder_send_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__pinUpdateBuilderSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class TextMessageContent {
+  final Api _api;
+  final _Box _box;
+
+  TextMessageContent._(this._api, this._box);
+
+  String body() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._textMessageContentBody(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? formatted() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._textMessageContentFormatted(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class CalendarEvent {
+  final Api _api;
+  final _Box _box;
+
+  CalendarEvent._(this._api, this._box);
+
+  /// the title of the event
+  String title() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventTitle(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// description text
+  TextMessageContent? description() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventDescription(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TextMessageContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = TextMessageContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// When the event starts
+  UtcDateTime utcStart() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventUtcStart(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UtcDateTime");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UtcDateTime._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// When the event end
+  UtcDateTime utcEnd() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventUtcEnd(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UtcDateTime");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UtcDateTime._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// whether to show the time or just the dates
+  bool showWithoutTime() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventShowWithoutTime(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 
@@ -20682,6 +21044,21 @@ class Space {
     return tmp4;
   }
 
+  /// get all calendar events
+  Future<FfiListCalendarEvent> calendarEvents() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceCalendarEvents(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Space_calendar_events_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__spaceCalendarEventsFuturePoll);
+    return tmp2;
+  }
+
   /// news draft builder
   NewsEntryDraft newsDraft() {
     var tmp0 = 0;
@@ -23403,6 +23780,42 @@ class _ActerPinUpdateBuilderReturn extends ffi.Struct {
   external int arg4;
 }
 
+class _TextMessageContentBodyReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _TextMessageContentFormattedReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _CalendarEventTitleReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _CalendarEventDescriptionReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _DeviceIdToStringReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -25438,6 +25851,21 @@ class _SpaceLatestNewsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _SpaceCalendarEventsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _SpacePinsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -26385,6 +26813,67 @@ class FfiListActerPin extends Iterable<ActerPin>
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, ActerPin element) {
     _api._ffiListActerPinInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListCalendarEvent extends Iterable<CalendarEvent>
+    implements CustomIterable<CalendarEvent> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListCalendarEvent._(this._api, this._box);
+
+  @override
+  Iterator<CalendarEvent> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListCalendarEventLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  CalendarEvent elementAt(int index) {
+    final address = _api._ffiListCalendarEventElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return CalendarEvent._(_api, reference);
+  }
+
+  CalendarEvent operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  CalendarEvent remove(int index) {
+    final address = _api._ffiListCalendarEventRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_CalendarEvent");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return CalendarEvent._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(CalendarEvent element) {
+    _api._ffiListCalendarEventAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, CalendarEvent element) {
+    _api._ffiListCalendarEventInsert(
+        _box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

@@ -3,12 +3,18 @@ use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
 use super::{
-    super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
+    super::{
+        default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store,
+        TextMessageContent,
+    },
     CALENDAR_KEY,
 };
 
-use crate::events::calendar::{
-    CalendarEventEventContent, CalendarEventUpdateBuilder, CalendarEventUpdateEventContent,
+use crate::events::{
+    calendar::{
+        CalendarEventEventContent, CalendarEventUpdateBuilder, CalendarEventUpdateEventContent,
+    },
+    UtcDateTime,
 };
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -24,8 +30,12 @@ impl Deref for CalendarEvent {
 }
 
 impl CalendarEvent {
-    pub fn title(&self) -> &String {
-        &self.inner.title
+    pub fn title(&self) -> String {
+        self.inner.title.clone()
+    }
+
+    pub fn description(&self) -> Option<TextMessageContent> {
+        self.inner.description.clone().map(Into::into)
     }
 
     pub fn room_id(&self) -> &RoomId {
@@ -40,6 +50,18 @@ impl CalendarEvent {
 
     pub fn key_from_event(event_id: &EventId) -> String {
         event_id.to_string()
+    }
+
+    pub fn utc_end(&self) -> UtcDateTime {
+        self.inner.utc_end.clone()
+    }
+
+    pub fn utc_start(&self) -> UtcDateTime {
+        self.inner.utc_start.clone()
+    }
+
+    pub fn show_without_time(&self) -> bool {
+        self.inner.show_without_time
     }
 }
 

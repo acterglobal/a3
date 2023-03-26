@@ -35,6 +35,7 @@ object UtcDateTime {
     fn timestamp() -> i64;
     fn to_rfc2822() -> string;
     fn to_rfc3339() -> string;
+    fn timestamp_millis()-> i64;
 }
 
 object RefDetails {
@@ -176,7 +177,42 @@ object PinUpdateBuilder {
     // fire this update over - the event_id is the confirmation
     // from the server.
     fn send() -> Future<Result<EventId>>;
+}
 
+// enum LocationType {
+//    Physical,
+//    Virtual
+// }
+
+
+// object Location {
+//    /// "physical" or "virtual" 
+//    fn location_type() -> string;
+//    fn name() -> Option<string>;
+//    fn description() -> Option<TextMessageContent>;
+//    fn coordinates() -> Option<string>;
+//    fn uri() -> Option<string>;
+//}
+
+
+object TextMessageContent {
+    fn body() -> string;
+    fn formatted() -> Option<string>;
+}
+
+object CalendarEvent {
+    /// the title of the event
+    fn title() -> string;
+    /// description text
+    fn description() -> Option<TextMessageContent>; 
+    /// When the event starts
+    fn utc_start() -> UtcDateTime;
+    /// When the event end
+    fn utc_end() -> UtcDateTime;
+    /// whether to show the time or just the dates
+    fn show_without_time() -> bool;
+    // locations
+    // fn locations() -> Vec<Location>;
 }
 
 object MediaSource {}
@@ -896,6 +932,9 @@ object Space {
 
     /// get latest news
     fn latest_news(count: u32) -> Future<Result<Vec<NewsEntry>>>;
+
+    /// get all calendar events
+    fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
 
     /// news draft builder
     fn news_draft() -> Result<NewsEntryDraft>;
