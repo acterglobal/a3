@@ -37,31 +37,58 @@ class ChatsCard extends ConsumerWidget {
 
     return Card(
       elevation: 0,
-      child: Column(
-        children: [
-          const ListTile(title: Text('Chats')),
-          ...chats.when(
-            data: (chats) => chats.map(
-              (chat) {
-                final roomId = chat.getRoomId();
-                final profile = ref.watch(chatProfileDataProvider(chat));
-                return OutlinedButton(
-                  onPressed: () {
-                    context.go('/chat/$roomId');
-                  },
-                  child: profile.when(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Chats',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 10),
+            ...chats.when(
+              data: (chats) => chats.map(
+                (chat) {
+                  final roomId = chat.getRoomId();
+                  final profile = ref.watch(chatProfileDataProvider(chat));
+                  return profile.when(
                     data: (profile) => ListTile(
-                      title: Text(profile.displayName),
-                      leading: profile.hasAvatar()
-                          ? CircleAvatar(
-                              foregroundImage: profile.getAvatarImage(),
-                              radius: 24,
-                            )
-                          : SvgPicture.asset(
-                              'assets/icon/acter.svg',
-                              height: 24,
-                              width: 24,
+                      onTap: () => context.go('/chat/$roomId'),
+                      title: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              profile.hasAvatar()
+                                  ? CircleAvatar(
+                                      foregroundImage: profile.getAvatarImage(),
+                                      radius: 24,
+                                    )
+                                  : SvgPicture.asset(
+                                      'assets/icon/acter.svg',
+                                      height: 24,
+                                      width: 24,
+                                    ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                child: Text(
+                                  profile.displayName,
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 16,
                             ),
+                            child: const Divider(indent: 0),
+                          ),
+                        ],
+                      ),
                     ),
                     error: (error, stack) => ListTile(
                       title: Text('Error loading: $roomId'),
@@ -71,14 +98,14 @@ class ChatsCard extends ConsumerWidget {
                       title: Text(roomId),
                       subtitle: const Text('loading'),
                     ),
-                  ),
-                );
-              },
-            ),
-            error: (error, stack) => [Text('Loading chats failed: $error')],
-            loading: () => [const Text('Loading')],
-          )
-        ],
+                  );
+                },
+              ),
+              error: (error, stack) => [Text('Loading chats failed: $error')],
+              loading: () => [const Text('Loading')],
+            )
+          ],
+        ),
       ),
     );
   }

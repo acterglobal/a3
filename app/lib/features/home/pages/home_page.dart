@@ -156,40 +156,42 @@ class _HomePageState extends ConsumerState<HomePage> {
                       builder: (BuildContext ctx) => widget.child,
                     ),
                     // show dashboard view on desktop only.
-                    Breakpoints.mediumAndUp: isDesktop
-                        ? SlotLayout.from(
-                            key: const Key('Body Medium'),
-                            builder: (BuildContext ctx) => Scaffold(
-                              body: Center(
-                                child: Text(
-                                  'First Screen view to be implemented',
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                ),
-                              ),
-                            ),
-                          )
-                        : SlotLayout.from(
-                            key: const Key('body-medium-mobile'),
-                            builder: (BuildContext ctx) {
-                              return widget.child;
-                            },
-                          ),
+                    Breakpoints.mediumAndUp:
+                        // isDesktop
+                        //     ? SlotLayout.from(
+                        //         key: const Key('Body Medium'),
+                        //         builder: (BuildContext ctx) => Scaffold(
+                        //           body: Center(
+                        //             child: Text(
+                        //               'First Screen view to be implemented',
+                        //               style: Theme.of(context).textTheme.titleLarge,
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       )
+                        //     :
+                        SlotLayout.from(
+                      key: const Key('body-medium-mobile'),
+                      builder: (BuildContext ctx) {
+                        return widget.child;
+                      },
+                    ),
                   },
                 ),
                 // helper UI for body view but since its doesn't fit for mobile view,
                 // hide it instead.
-                secondaryBody: isDesktop
-                    ? SlotLayout(
-                        config: <Breakpoint, SlotLayoutConfig>{
-                          Breakpoints.mediumAndUp: SlotLayout.from(
-                            key: const Key('Body Medium'),
-                            builder: (BuildContext ctx) {
-                              return widget.child;
-                            },
-                          )
-                        },
-                      )
-                    : null,
+                // secondaryBody: isDesktop
+                //     ? SlotLayout(
+                //         config: <Breakpoint, SlotLayoutConfig>{
+                //           Breakpoints.mediumAndUp: SlotLayout.from(
+                //             key: const Key('Body Medium'),
+                //             builder: (BuildContext ctx) {
+                //               return widget.child;
+                //             },
+                //           )
+                //         },
+                //       )
+                //     : null,
                 bottomNavigation: isDesktop
                     ? SlotLayout(
                         config: <Breakpoint, SlotLayoutConfig>{

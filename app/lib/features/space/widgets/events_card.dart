@@ -63,71 +63,84 @@ class EventsCard extends ConsumerWidget {
 
     return Card(
       elevation: 0,
-      child: Column(
-        children: [
-          const ListTile(title: Text('Events')),
-          events.when(
-            error: (error, stackTrace) =>
-                Text('Loading calendars failed: $error'),
-            data: (events) {
-              print(events);
-              return Column(
-                children: [
-                  TableCalendar<CalendarEvent>(
-                    firstDay: kFirstDay,
-                    lastDay: kLastDay,
-                    focusedDay: _focusedDay,
-                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                    rangeStartDay: _rangeStart,
-                    rangeEndDay: _rangeEnd,
-                    calendarFormat: _calendarFormat,
-                    rangeSelectionMode: _rangeSelectionMode,
-                    eventLoader: (targetDate) =>
-                        eventsForDay(events, targetDate),
-                    startingDayOfWeek: StartingDayOfWeek.monday,
-                    calendarStyle: CalendarStyle(
-                      // Use `CalendarStyle` to customize the UI
-                      outsideDaysVisible: false,
-                    ),
-                    // onDaySelected: _onDaySelected,
-                    // onRangeSelected: _onRangeSelected,
-                    // onFormatChanged: (format) {
-                    //   if (_calendarFormat != format) {
-                    //     setState(() {
-                    //       _calendarFormat = format;
-                    //     });
-                    //   }
-                    // },
-                    onPageChanged: (focusedDay) {
-                      _focusedDay = focusedDay;
-                    },
-                  ),
-                  const SizedBox(height: 8.0),
-                  ...events.map(
-                    (e) => ListTile(
-                      onTap: () => print('$e'),
-                      title: Text(e.title()),
-                      subtitle: Text(formatDt(e)),
-                    ),
-                  ),
-                ],
-              );
-            },
-            loading: () => TableCalendar(
-              firstDay: kFirstDay,
-              lastDay: kLastDay,
-              focusedDay: _focusedDay,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Events',
+              style: Theme.of(context).textTheme.titleMedium,
             ),
-          ),
-          // space.when(
-          //   data: (space) {
-          //     final topic = space.topic();
-          //     return Text(topic ?? 'no topic found');
-          //   },
-          //   error: (error, stack) => Text('Loading failed: $error'),
-          //   loading: () => const Text('Loading'),
-          // ),
-        ],
+            events.when(
+              error: (error, stackTrace) =>
+                  Text('Loading calendars failed: $error'),
+              data: (events) {
+                print(events);
+                return Column(
+                  children: [
+                    TableCalendar<CalendarEvent>(
+                      firstDay: kFirstDay,
+                      lastDay: kLastDay,
+                      focusedDay: _focusedDay,
+                      selectedDayPredicate: (day) =>
+                          isSameDay(_selectedDay, day),
+                      rangeStartDay: _rangeStart,
+                      rangeEndDay: _rangeEnd,
+                      calendarFormat: _calendarFormat,
+                      rangeSelectionMode: _rangeSelectionMode,
+                      eventLoader: (targetDate) =>
+                          eventsForDay(events, targetDate),
+                      startingDayOfWeek: StartingDayOfWeek.monday,
+                      calendarStyle: CalendarStyle(
+                        // Use `CalendarStyle` to customize the UI
+                        outsideDaysVisible: false,
+                        rangeHighlightColor:
+                            Theme.of(context).colorScheme.tertiary,
+                        markerDecoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.tertiary,
+                        ),
+                      ),
+                      // onDaySelected: _onDaySelected,
+                      // onRangeSelected: _onRangeSelected,
+                      // onFormatChanged: (format) {
+                      //   if (_calendarFormat != format) {
+                      //     setState(() {
+                      //       _calendarFormat = format;
+                      //     });
+                      //   }
+                      // },
+                      onPageChanged: (focusedDay) {
+                        _focusedDay = focusedDay;
+                      },
+                    ),
+                    const SizedBox(height: 8.0),
+                    ...events.map(
+                      (e) => ListTile(
+                        onTap: () => print('$e'),
+                        title: Text(e.title()),
+                        subtitle: Text(formatDt(e)),
+                      ),
+                    ),
+                  ],
+                );
+              },
+              loading: () => TableCalendar(
+                firstDay: kFirstDay,
+                lastDay: kLastDay,
+                focusedDay: _focusedDay,
+              ),
+            ),
+            // space.when(
+            //   data: (space) {
+            //     final topic = space.topic();
+            //     return Text(topic ?? 'no topic found');
+            //   },
+            //   error: (error, stack) => Text('Loading failed: $error'),
+            //   loading: () => const Text('Loading'),
+            // ),
+          ],
+        ),
       ),
     );
   }

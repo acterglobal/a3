@@ -37,7 +37,7 @@ class _TopNavBarState extends State<TopNavBar>
   Widget build(BuildContext context) {
     return Container(
       height: 50,
-      width: double.infinity,
+      width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(10),
@@ -50,7 +50,6 @@ class _TopNavBarState extends State<TopNavBar>
         controller: _tabController,
         labelStyle: Theme.of(context).textTheme.bodySmall,
         labelColor: Colors.white,
-        indicatorPadding: const EdgeInsets.symmetric(horizontal: 30),
         indicatorColor: Theme.of(context).colorScheme.tertiary,
         tabs: List.generate(
           tabLabels.length,

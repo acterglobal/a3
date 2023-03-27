@@ -14,33 +14,52 @@ class AboutCard extends ConsumerWidget {
 
     return Card(
       elevation: 0,
-      child: Column(
-        children: [
-          const ListTile(title: Text('About')),
-          space.when(
-            data: (space) {
-              final topic = space.topic();
-              return Text(topic ?? 'no topic found');
-            },
-            error: (error, stack) => Text('Loading failed: $error'),
-            loading: () => const Text('Loading'),
-          ),
-          ...members.when(
-            data: (members) {
-              final membersCount = members.length;
-              if (membersCount > 10) {
-                // too many to display, means we limit to 10
-                members = members.sublist(0, 10);
-              }
-              return [
-                ListTile(title: Text('Members ($membersCount)')),
-                ...members.map((a) => MemberAvatar(member: a))
-              ];
-            },
-            error: (error, stack) => [Text('Loading members failed: $error')],
-            loading: () => [const Text('Loading')],
-          )
-        ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'About',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            space.when(
+              data: (space) {
+                final topic = space.topic();
+                return Text(
+                  topic ?? 'no topic found',
+                  style: Theme.of(context).textTheme.bodySmall,
+                );
+              },
+              error: (error, stack) => Text('Loading failed: $error'),
+              loading: () => const Text('Loading'),
+            ),
+            const SizedBox(height: 10),
+            ...members.when(
+              data: (members) {
+                final membersCount = members.length;
+                if (membersCount > 10) {
+                  // too many to display, means we limit to 10
+                  members = members.sublist(0, 10);
+                }
+                return [
+                  Text(
+                    'Members ($membersCount)',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  ...members.map(
+                    (a) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: MemberAvatar(member: a),
+                    ),
+                  )
+                ];
+              },
+              error: (error, stack) => [Text('Loading members failed: $error')],
+              loading: () => [const Text('Loading')],
+            )
+          ],
+        ),
       ),
     );
   }
