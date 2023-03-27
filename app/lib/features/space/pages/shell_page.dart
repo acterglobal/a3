@@ -4,6 +4,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 class SpaceShell extends ConsumerStatefulWidget {
   final String spaceIdOrAlias;
@@ -31,6 +32,8 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
     return space.when(
       data: (space) {
         final profileData = ref.watch(spaceProfileDataProvider(space));
+        final canonicalParent =
+            ref.watch(canonicalParentProvider(widget.spaceIdOrAlias));
         return profileData.when(
           data: (profile) => Scaffold(
             body: SafeArea(
@@ -71,6 +74,47 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                                       'assets/icon/acter.svg',
                                     ),
                                   ),
+                          ),
+                          ...canonicalParent.when(
+                            data: (parentProfile) {
+                              if (parentProfile == null) {
+                                return [];
+                              }
+                              return [
+                                Positioned(
+                                  left: 145,
+                                  top: 230,
+                                  child: Tooltip(
+                                    message: parentProfile.profile.displayName,
+                                    child: InkWell(
+                                      onTap: () {
+                                        final roomId =
+                                            parentProfile.space.getRoomId();
+                                        context.go("/$roomId");
+                                      },
+                                      child: parentProfile.profile.hasAvatar()
+                                          ? CircleAvatar(
+                                              foregroundImage: parentProfile
+                                                  .profile
+                                                  .getAvatarImage(),
+                                              radius: 20,
+                                            )
+                                          : CircleAvatar(
+                                              radius: 20,
+                                              backgroundColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                              child: SvgPicture.asset(
+                                                'assets/icon/acter.svg',
+                                              ),
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                              ];
+                            },
+                            error: (error, stackTrace) => [],
+                            loading: () => [],
                           ),
                           Positioned(
                             left: 180,
