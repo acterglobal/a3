@@ -1,12 +1,13 @@
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
-import 'package:acter/features/home/pages/home_page.dart';
+import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/sign_up_page.dart';
 import 'package:acter/features/profile/pages/social_profile_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
+import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 
 import 'package:flutter/material.dart';
@@ -58,7 +59,7 @@ final _routes = [
     pageBuilder: (context, state, child) {
       return NoTransitionPage(
         key: state.pageKey,
-        child: HomePage(child: child),
+        child: HomeShell(child: child),
       );
     },
     routes: <RouteBase>[
@@ -86,7 +87,7 @@ final _routes = [
         name: 'dashboard',
         path: '/dashboard',
         pageBuilder: (context, state) {
-          return NoTransitionPage(key: state.pageKey, child: const NewsPage());
+          return NoTransitionPage(key: state.pageKey, child: const Dashboard());
         },
       ),
 

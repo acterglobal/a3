@@ -19,15 +19,15 @@ import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
 import 'package:go_router/go_router.dart';
 
-class HomePage extends ConsumerStatefulWidget {
+class HomeShell extends ConsumerStatefulWidget {
   final Widget child;
-  const HomePage({super.key, required this.child});
+  const HomeShell({super.key, required this.child});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _HomePageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _HomeShellState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _HomeShellState extends ConsumerState<HomeShell> {
   ScreenshotController screenshotController = ScreenshotController();
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   final desktopPlatforms = [
