@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:acter/common/controllers/spaces_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:core';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
 
 final pinnedLinksProvider =
     FutureProvider.family<List<ActerPin>, String>((ref, spaceId) async {
@@ -26,9 +28,17 @@ class LinksCard extends ConsumerWidget {
           ...pins.when(
             data: (pins) => pins.map(
               (pin) => OutlinedButton(
-                onPressed: () {
-                  final url = pin.url()!;
-                  print('FIXME: OPEN $url');
+                onPressed: () async {
+                  final target = pin.url()!;
+                  final Uri? url = Uri.tryParse(target);
+                  if (url == null) {
+                    print('Opening internally: $url');
+                    // not a valid URL, try local routing
+                    context.go(target);
+                  } else {
+                    print('Opening external URL: $url');
+                    !await launchUrl(url);
+                  }
                 },
                 child: Text(pin.title()),
               ),

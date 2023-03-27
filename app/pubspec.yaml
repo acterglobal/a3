@@ -78,6 +78,7 @@ dependencies:
   
   # Utilities
   path_provider: ^2.0.8
+  url_launcher: ^6.1.10
   file_picker: ^5.2.5
   filesystem_picker: ^2.0.1
   open_app_file: ^4.0.1
