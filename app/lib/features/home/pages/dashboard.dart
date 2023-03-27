@@ -1,74 +1,51 @@
-import 'package:acter/common/animations/like_animation.dart';
-import 'package:acter/common/controllers/client_controller.dart';
-import 'package:acter/features/home/widgets/user_avatar.dart';
-import 'package:acter/features/news/controllers/news_controller.dart';
-import 'package:acter/features/news/widgets/news_item.dart';
-import 'package:acter/features/news/widgets/stream_types_selection.dart';
+import 'dart:math';
+
+import 'package:acter/features/home/widgets/my_spaces_section.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-class Dashboard extends ConsumerStatefulWidget {
+class Dashboard extends ConsumerWidget {
   const Dashboard({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _DashboardState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Center(child: Text('Dashboard - replace me'));
+    return const MySpacesSection();
+    final widthCount = (MediaQuery.of(context).size.width ~/ 280).toInt();
 
-class _DashboardState extends ConsumerState<Dashboard>
-    with SingleTickerProviderStateMixin {
-  late AnimationController controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final newsList = ref.watch(newsListProvider);
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: MediaQuery.of(context).size.width < 600
-            ? const UserAvatarWidget()
-            : const SizedBox.shrink(),
-        centerTitle: true,
-        title: const StreamTypesSelection(),
-      ),
-      body: newsList.when(
-        data: (data) {
-          return PageView.builder(
-            itemCount: data.length,
-            onPageChanged: (int page) {},
-            scrollDirection: Axis.vertical,
-            itemBuilder: (context, index) => InkWell(
-              onDoubleTap: () {
-                LikeAnimation.run(index);
-              },
-              child: NewsItem(
-                client: ref.read(clientProvider)!,
-                news: data[index],
-                index: index,
-              ),
-            ),
-          );
-        },
-        error: (error, stackTrace) =>
-            const Center(child: Text('Couldn\'t fetch news')),
-        loading: () => const Center(
-          child: SizedBox(
-            height: 50,
-            width: 50,
-            child: CircularProgressIndicator(),
-          ),
+    const int minCount = 2;
+    // get platform of context.
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      child: Container(
+        margin: const EdgeInsets.all(20),
+        child: StaggeredGrid.count(
+          axisDirection: AxisDirection.down,
+          crossAxisCount: min(widthCount, minCount),
+          children: const <Widget>[
+            MySpacesSection(),
+            MySpacesSection(),
+            // AboutCard(spaceId: spaceIdOrAlias),
+            // EventsCard(spaceId: spaceIdOrAlias),
+            // LinksCard(spaceId: spaceIdOrAlias),
+            // ChatsCard(spaceId: spaceIdOrAlias),
+            // SpacesCard(spaceId: spaceIdOrAlias),
+          ],
         ),
+        // Row(
+        //   children: [
+        //     Column(
+        //       children: [
+
+        //       ],
+        //     ),
+        //     Column(
+        //       children: [Text('placeholder')],
+        //     ),
+        //   ],
+        // ),
       ),
     );
   }
