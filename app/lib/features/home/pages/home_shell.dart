@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:acter/common/controllers/router_controller.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
+import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:date_format/date_format.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
@@ -117,13 +119,18 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     // get platform of context.
     final bool isDesktop =
         desktopPlatforms.contains(Theme.of(context).platform);
+    final location =
+        ref.watch(goRouterProvider(context).select((g) => g.location));
+
+    final showInSidebar = isDesktop && location == "/dashboard";
+    final bodyRatio = showInSidebar ? 0.3 : 0.0;
     return ref.watch(clientProvider) != null
         ? Scaffold(
             body: Screenshot(
               controller: screenshotController,
               child: AdaptiveLayout(
                 key: _key,
-                bodyRatio: 0,
+                bodyRatio: bodyRatio,
                 primaryNavigation: isDesktop
                     ? SlotLayout(
                         config: <Breakpoint, SlotLayoutConfig?>{
@@ -149,49 +156,58 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                         },
                       )
                     : null,
-                body: SlotLayout(
-                  config: <Breakpoint, SlotLayoutConfig>{
-                    Breakpoints.small: SlotLayout.from(
-                      key: const Key('Body Small'),
-                      builder: (BuildContext ctx) => widget.child,
-                    ),
-                    // show dashboard view on desktop only.
-                    Breakpoints.mediumAndUp:
-                        // isDesktop
-                        //     ? SlotLayout.from(
-                        //         key: const Key('Body Medium'),
-                        //         builder: (BuildContext ctx) => Scaffold(
-                        //           body: Center(
-                        //             child: Text(
-                        //               'First Screen view to be implemented',
-                        //               style: Theme.of(context).textTheme.titleLarge,
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       )
-                        //     :
-                        SlotLayout.from(
-                      key: const Key('body-medium-mobile'),
-                      builder: (BuildContext ctx) {
-                        return widget.child;
-                      },
-                    ),
-                  },
-                ),
+                body: showInSidebar
+                    ? SlotLayout(
+                        config: <Breakpoint, SlotLayoutConfig>{
+                          Breakpoints.smallAndUp: SlotLayout.from(
+                            key: const Key('Body Small'),
+                            builder: (BuildContext ctx) => NewsWidget(),
+                          ),
+                        },
+                      )
+                    : SlotLayout(
+                        config: <Breakpoint, SlotLayoutConfig>{
+                          Breakpoints.small: SlotLayout.from(
+                            key: const Key('Body Small'),
+                            builder: (BuildContext ctx) => widget.child,
+                          ),
+                          // show dashboard view on desktop only.
+                          Breakpoints.mediumAndUp:
+                              // isDesktop
+                              //     ? SlotLayout.from(
+                              //         key: const Key('Body Medium'),
+                              //         builder: (BuildContext ctx) => Scaffold(
+                              //           body: Center(
+                              //             child: Text(
+                              //               'First Screen view to be implemented',
+                              //               style: Theme.of(context).textTheme.titleLarge,
+                              //             ),
+                              //           ),
+                              //         ),
+                              //       )
+                              //     :
+                              SlotLayout.from(
+                            key: const Key('body-medium-mobile'),
+                            builder: (BuildContext ctx) {
+                              return widget.child;
+                            },
+                          ),
+                        },
+                      ),
                 // helper UI for body view but since its doesn't fit for mobile view,
                 // hide it instead.
-                // secondaryBody: isDesktop
-                //     ? SlotLayout(
-                //         config: <Breakpoint, SlotLayoutConfig>{
-                //           Breakpoints.mediumAndUp: SlotLayout.from(
-                //             key: const Key('Body Medium'),
-                //             builder: (BuildContext ctx) {
-                //               return widget.child;
-                //             },
-                //           )
-                //         },
-                //       )
-                //     : null,
+                secondaryBody: showInSidebar
+                    ? SlotLayout(
+                        config: <Breakpoint, SlotLayoutConfig>{
+                          Breakpoints.mediumAndUp: SlotLayout.from(
+                            key: const Key('Body Medium'),
+                            builder: (BuildContext ctx) {
+                              return widget.child;
+                            },
+                          )
+                        },
+                      )
+                    : null,
                 bottomNavigation: isDesktop
                     ? SlotLayout(
                         config: <Breakpoint, SlotLayoutConfig>{
