@@ -126,7 +126,7 @@ class ImageSlide extends StatefulWidget {
 }
 
 class _ImageSlideState extends State<ImageSlide> {
-  late Future<Uint8List> newsImage;
+  late Future<FfiBufferUint8> newsImage;
   @override
   void initState() {
     super.initState();
@@ -134,7 +134,7 @@ class _ImageSlideState extends State<ImageSlide> {
   }
 
   Future<void> getNewsImage() async {
-    newsImage = widget.slide.imageBinary().then((value) => value.asTypedList());
+    newsImage = widget.slide.imageBinary();
     setState(() {});
   }
 
@@ -158,7 +158,7 @@ class _ImageSlideState extends State<ImageSlide> {
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: FutureBuilder<Uint8List>(
-            future: newsImage,
+            future: newsImage.then((value) => value.asTypedList()),
             builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
               if (snapshot.hasData) {
                 return _ImageWidget(image: snapshot.data, isDesktop: isDesktop);
