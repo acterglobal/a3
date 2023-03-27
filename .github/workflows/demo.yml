@@ -44,7 +44,7 @@ jobs:
             apt_install: ninja-build libgtk-3-dev
             cargo_make_args: desktop
             flutter_config: "--enable-linux-desktop"
-            flutter_build_args: "build linux"
+            flutter_build_args: "build linux --debug"
             artifact_prefix: acter-demo-linux-x64
             artifact_path: app/build/linux/x64/debug/bundle/
             artifact_files: lib/ data/ acter
@@ -60,7 +60,7 @@ jobs:
             os: macos-12
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
-            flutter_build_args: "build macos"
+            flutter_build_args: "build macos --debug"
             artifact_prefix: acter-demo-macosx
             artifact_path: app/build/macos/Build/Products/Debug/
             artifact_files: "Acter.app"
