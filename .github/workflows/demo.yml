@@ -4,8 +4,8 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  RELEASE: true
+# env:
+#   RELEASE: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -46,7 +46,7 @@ jobs:
             flutter_config: "--enable-linux-desktop"
             flutter_build_args: "build linux"
             artifact_prefix: acter-demo-linux-x64
-            artifact_path: app/build/linux/x64/release/bundle/
+            artifact_path: app/build/linux/x64/debug/bundle/
             artifact_files: lib/ data/ acter
           # - name: iOS
           #   os: macos-latest
@@ -62,7 +62,7 @@ jobs:
             flutter_config: "--enable-macos-desktop"
             flutter_build_args: "build macos"
             artifact_prefix: acter-demo-macosx
-            artifact_path: app/build/macos/Build/Products/Release/
+            artifact_path: app/build/macos/Build/Products/Debug/
             artifact_files: "Acter.app"
           # - name: Windows
           #   os: windows-latest
