@@ -34,98 +34,105 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
         return profileData.when(
           data: (profile) => Scaffold(
             body: SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.42,
-                    child: Stack(
-                      children: <Widget>[
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.28,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                // FIXME: load image from actual settings
-                                // and add default fallback to assets
-                                'https://images.unsplash.com/photo-1439405326854-014607f694d7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
-                              ),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          left: 30,
-                          top: 110,
-                          child: profile.avatar != null
-                              ? CircleAvatar(
-                                  foregroundImage: MemoryImage(
-                                    profile.avatar!,
-                                  ),
-                                  radius: 80,
-                                )
-                              : CircleAvatar(
-                                  radius: 80,
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.secondary,
-                                  child: SvgPicture.asset(
-                                    'assets/icon/acter.svg',
-                                  ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.42,
+                      child: Stack(
+                        children: <Widget>[
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.28,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                image: NetworkImage(
+                                  // FIXME: load image from actual settings
+                                  // and add default fallback to assets
+                                  'https://images.unsplash.com/photo-1439405326854-014607f694d7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
                                 ),
-                        ),
-                        Positioned(
-                          left: 180,
-                          top: 210,
-                          child: Container(
-                            margin: const EdgeInsets.only(left: 20),
-                            child: Text(
-                              profile.displayName,
-                              style: Theme.of(context).textTheme.headlineMedium,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          right: 40,
-                          top: 230,
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton(
-                              elevation: 0,
-                              focusColor: Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
-                              value: _dropDownValue,
-                              onChanged: (String? value) {
-                                _dropDownValue = value!;
-                              },
-                              items: dropDownItems
-                                  .map<DropdownMenuItem<String>>((String item) {
-                                return DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(
-                                    item,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .tertiary,
-                                        ),
-                                  ),
-                                );
-                              }).toList(),
-                              icon: Icon(
-                                Icons.expand_more,
-                                color: Theme.of(context).colorScheme.tertiary,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                          Positioned(
+                            left: 30,
+                            top: 110,
+                            child: profile.avatar != null
+                                ? CircleAvatar(
+                                    foregroundImage: MemoryImage(
+                                      profile.avatar!,
+                                    ),
+                                    radius: 80,
+                                  )
+                                : CircleAvatar(
+                                    radius: 80,
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.secondary,
+                                    child: SvgPicture.asset(
+                                      'assets/icon/acter.svg',
+                                    ),
+                                  ),
+                          ),
+                          Positioned(
+                            left: 180,
+                            top: 210,
+                            child: Container(
+                              margin: const EdgeInsets.only(left: 20),
+                              child: Text(
+                                profile.displayName,
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            right: 40,
+                            top: 230,
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton(
+                                elevation: 0,
+                                focusColor: Colors.transparent,
+                                borderRadius: BorderRadius.circular(10),
+                                value: _dropDownValue,
+                                onChanged: (String? value) {
+                                  _dropDownValue = value!;
+                                },
+                                items: dropDownItems
+                                    .map<DropdownMenuItem<String>>(
+                                        (String item) {
+                                  return DropdownMenuItem<String>(
+                                    value: item,
+                                    child: Text(
+                                      item,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .tertiary,
+                                          ),
+                                    ),
+                                  );
+                                }).toList(),
+                                icon: Icon(
+                                  Icons.expand_more,
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const TopNavBar(isDesktop: true),
-                  Expanded(child: widget.child),
-                ],
+                    const TopNavBar(isDesktop: true),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 1.2,
+                      child: widget.child,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

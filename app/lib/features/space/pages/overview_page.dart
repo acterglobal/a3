@@ -14,29 +14,32 @@ class SpaceOverview extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // get platform of context.
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          EventsCard(spaceId: spaceIdOrAlias),
-          AboutCard(spaceId: spaceIdOrAlias),
-          LinksCard(spaceId: spaceIdOrAlias),
-          ChatsCard(spaceId: spaceIdOrAlias),
-          SpacesCard(spaceId: spaceIdOrAlias),
-        ],
-      ),
-      // Row(
-      //   children: [
-      //     Column(
-      //       children: [
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            EventsCard(spaceId: spaceIdOrAlias),
+            AboutCard(spaceId: spaceIdOrAlias),
+            LinksCard(spaceId: spaceIdOrAlias),
+            ChatsCard(spaceId: spaceIdOrAlias),
+            SpacesCard(spaceId: spaceIdOrAlias),
+          ],
+        ),
+        // Row(
+        //   children: [
+        //     Column(
+        //       children: [
 
-      //       ],
-      //     ),
-      //     Column(
-      //       children: [Text('placeholder')],
-      //     ),
-      //   ],
-      // ),
+        //       ],
+        //     ),
+        //     Column(
+        //       children: [Text('placeholder')],
+        //     ),
+        //   ],
+        // ),
+      ),
     );
   }
 }
