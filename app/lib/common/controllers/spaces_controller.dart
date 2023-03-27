@@ -13,8 +13,8 @@ final spaceProfileDataProvider =
   if (!profile.hasAvatar()) {
     return ProfileData(displayName, null);
   }
-  final avatar = await profile.getThumbnail(48, 48);
-  return ProfileData(displayName, avatar.asTypedList());
+  final avatar = await profile.getAvatar();
+  return ProfileData(displayName, avatar);
 });
 
 final spacesProvider = FutureProvider<List<Space>>((ref) async {

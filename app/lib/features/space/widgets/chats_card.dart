@@ -52,11 +52,9 @@ class ChatsCard extends ConsumerWidget {
                   child: profile.when(
                     data: (profile) => ListTile(
                       title: Text(profile.displayName),
-                      leading: profile.avatar != null
+                      leading: profile.hasAvatar()
                           ? CircleAvatar(
-                              foregroundImage: MemoryImage(
-                                profile.avatar!,
-                              ),
+                              foregroundImage: profile.getAvatarImage(),
                               radius: 24,
                             )
                           : SvgPicture.asset(

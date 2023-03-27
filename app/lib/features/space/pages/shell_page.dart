@@ -58,11 +58,9 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                           Positioned(
                             left: 30,
                             top: 110,
-                            child: profile.avatar != null
+                            child: profile.hasAvatar()
                                 ? CircleAvatar(
-                                    foregroundImage: MemoryImage(
-                                      profile.avatar!,
-                                    ),
+                                    foregroundImage: profile.getAvatarImage(),
                                     radius: 80,
                                   )
                                 : CircleAvatar(

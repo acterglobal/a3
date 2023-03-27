@@ -69,11 +69,9 @@ final spaceItemsProvider =
             location: '/$roomId',
           ),
           data: (info) => SidebarNavigationItem(
-            icon: info.avatar != null
+            icon: info.hasAvatar()
                 ? CircleAvatar(
-                    foregroundImage: MemoryImage(
-                      info.avatar!,
-                    ),
+                    foregroundImage: info.getAvatarImage()!,
                     radius: 24,
                   )
                 : SvgPicture.asset(

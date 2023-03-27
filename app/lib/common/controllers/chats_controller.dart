@@ -2,6 +2,7 @@ import 'package:acter/common/controllers/client_controller.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import 'dart:core';
 
 final chatProfileDataProvider =
@@ -14,7 +15,7 @@ final chatProfileDataProvider =
     return ProfileData(displayName, null);
   }
   final avatar = await profile.getThumbnail(48, 48);
-  return ProfileData(displayName, avatar.asTypedList());
+  return ProfileData(displayName, avatar);
 });
 
 final chatsProvider = FutureProvider<List<Conversation>>((ref) async {
