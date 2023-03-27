@@ -19,7 +19,7 @@ class MemberAvatar extends ConsumerWidget {
     return profile.when(
       data: (data) {
         return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             CustomAvatar(
               uniqueKey: member.userId().toString(),

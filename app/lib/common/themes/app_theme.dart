@@ -15,6 +15,16 @@ extension CustomColorScheme on ColorScheme {
   Color get neutral6 => const Color(0xFFE5E5E5);
 }
 
+const brandColorScheme = ColorScheme.dark(
+  primary: Color(0xff10273D),
+  primaryContainer: Colors.black,
+  surface: Color(0xff122D46),
+  background: Color(0xff122D46),
+  secondary: Color(0xFF5C9AD6),
+  tertiary: Color(0xffFF8E00),
+  error: Color(0xffD03838),
+);
+
 class AppTheme {
   static ThemeData get theme {
     return ThemeData(
@@ -84,15 +94,7 @@ class AppTheme {
           ),
         ),
       ),
-      colorScheme: const ColorScheme.dark(
-        primary: Color(0xff10273D),
-        primaryContainer: Colors.black,
-        surface: Color(0xff122D46),
-        background: Color(0xff122D46),
-        secondary: Color(0xFF5C9AD6),
-        tertiary: Color(0xffFF8E00),
-        error: Color(0xffD03838),
-      ),
+      colorScheme: brandColorScheme,
       scaffoldBackgroundColor: const Color(0x122334FF),
       splashColor: Colors.transparent,
       useMaterial3: true,
@@ -101,7 +103,7 @@ class AppTheme {
         circularTrackColor: Colors.transparent,
       ),
       dividerColor: const Color(0xFFDDEDFC),
-      cardTheme: const CardTheme(color: Color(0xFF5C9AD6), elevation: 0),
+      cardTheme: CardTheme(color: brandColorScheme.background, elevation: 0),
       dialogTheme: const DialogTheme(
         backgroundColor: Color(0xFF5C9AD6),
         elevation: 0,
