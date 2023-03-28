@@ -53,11 +53,11 @@ impl CalendarEvent {
     }
 
     pub fn utc_end(&self) -> UtcDateTime {
-        self.inner.utc_end.clone()
+        self.inner.utc_end
     }
 
     pub fn utc_start(&self) -> UtcDateTime {
-        self.inner.utc_start.clone()
+        self.inner.utc_start
     }
 
     pub fn show_without_time(&self) -> bool {
