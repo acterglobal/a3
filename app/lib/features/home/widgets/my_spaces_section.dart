@@ -14,57 +14,68 @@ class MySpacesSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spaces = ref.watch(spacesProvider);
-
-    return Row(
-      children: [
-        Text(
-          'My Spaces',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 10),
-        ...spaces.when(
-          data: (spaces) => spaces.map(
-            (space) {
-              final roomId = space.getRoomId();
-              final profile = ref.watch(spaceProfileDataProvider(space));
-              return profile.when(
-                data: (profile) => Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: 10,
-                  ),
-                  child: ListTile(
-                    onTap: () => context.go('/$roomId'),
-                    title: Text(
-                      profile.displayName,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    leading: profile.hasAvatar()
-                        ? CircleAvatar(
-                            foregroundImage: profile.getAvatarImage(),
-                            radius: 24,
-                          )
-                        : SvgPicture.asset(
-                            'assets/icon/acter.svg',
-                            height: 24,
-                            width: 24,
-                          ),
-                  ),
-                ),
-                error: (error, stack) => ListTile(
-                  title: Text('Error loading: $roomId'),
-                  subtitle: Text('$error'),
-                ),
-                loading: () => ListTile(
-                  title: Text(roomId),
-                  subtitle: const Text('loading'),
-                ),
-              );
-            },
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'My Spaces',
+            style: Theme.of(context).textTheme.titleMedium,
           ),
-          error: (error, stack) => [Text('Loading spaces failed: $error')],
-          loading: () => [const Text('Loading')],
-        )
-      ],
+          const SizedBox(height: 10),
+          ...spaces.when(
+            data: (spaces) => spaces.map(
+              (space) {
+                final roomId = space.getRoomId();
+                final profile = ref.watch(spaceProfileDataProvider(space));
+                return profile.when(
+                  data: (profile) => Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 10,
+                    ),
+                    child: ListTile(
+                      onTap: () => context.go('/$roomId'),
+                      title: Text(
+                        profile.displayName,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      leading: profile.hasAvatar()
+                          ? CircleAvatar(
+                              foregroundImage: profile.getAvatarImage(),
+                              radius: 24,
+                            )
+                          : Container(
+                              height: 36,
+                              width: 36,
+                              margin: const EdgeInsets.only(left: 8),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(36),
+                              ),
+                              child: SvgPicture.asset(
+                                'assets/icon/acter.svg',
+                                height: 24,
+                                width: 24,
+                              ),
+                            ),
+                    ),
+                  ),
+                  error: (error, stack) => ListTile(
+                    title: Text('Error loading: $roomId'),
+                    subtitle: Text('$error'),
+                  ),
+                  loading: () => ListTile(
+                    title: Text(roomId),
+                    subtitle: const Text('loading'),
+                  ),
+                );
+              },
+            ),
+            error: (error, stack) => [Text('Loading spaces failed: $error')],
+            loading: () => [const Text('Loading')],
+          )
+        ],
+      ),
     );
   }
 }
