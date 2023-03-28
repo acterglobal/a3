@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -21,15 +22,23 @@ class MemberAvatar extends ConsumerWidget {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            CustomAvatar(
-              uniqueKey: member.userId().toString(),
-              radius: 20,
-              isGroup: false,
-              cacheHeight: 120,
-              cacheWidth: 120,
-              avatar: data.getAvatar(),
-              displayName: data.getDisplayName(),
-              stringName: data.getDisplayName() ?? '',
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.neutral4,
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: CustomAvatar(
+                uniqueKey: member.userId().toString(),
+                radius: 20,
+                isGroup: false,
+                cacheHeight: 120,
+                cacheWidth: 120,
+                avatar: data.getAvatar(),
+                displayName: data.getDisplayName(),
+                stringName: data.getDisplayName() ?? '',
+              ),
             ),
           ],
         );

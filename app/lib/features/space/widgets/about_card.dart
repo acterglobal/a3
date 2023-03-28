@@ -47,12 +47,16 @@ class AboutCard extends ConsumerWidget {
                     'Members ($membersCount)',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  ...members.map(
-                    (a) => Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: MemberAvatar(member: a),
-                    ),
-                  )
+                  const SizedBox(height: 5),
+                  Wrap(
+                    direction: Axis.horizontal,
+                    spacing: -6,
+                    children: [
+                      ...members.map(
+                        (a) => MemberAvatar(member: a),
+                      )
+                    ],
+                  ),
                 ];
               },
               error: (error, stack) => [Text('Loading members failed: $error')],
