@@ -15,6 +15,8 @@ pub struct List {
     pub list_chats: bool,
     #[clap(long)]
     pub details: bool,
+    #[clap(long)]
+    pub await_history_sync: bool,
 }
 
 impl List {
@@ -26,6 +28,12 @@ impl List {
         let mut is_synced = sync_state.first_synced_rx().expect("note yet read");
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         tracing::info!(" - First Sync finished - ");
+
+        if self.await_history_sync {
+            tracing::info!(" - Waiting for history to have synced - ");
+            sync_state.await_has_synced_history().await?;
+            tracing::info!(" - History synced - ");
+        }
 
         println!("## Spaces:");
         for sp in client.spaces().await? {

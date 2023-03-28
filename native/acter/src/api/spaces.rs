@@ -293,11 +293,11 @@ impl Space {
 
     pub(crate) async fn refresh_history(&self) -> Result<()> {
         let name = self.inner.name();
-        tracing::trace!(name, "refreshing history");
         let room = self.inner.clone();
         let room_id = room.room_id();
+        tracing::trace!(name, ?room_id, "refreshing history");
         let client = room.room.client();
-        room.sync_members().await?;
+        // room.sync_members().await?;
 
         let custom_storage_key = format!("{room_id}::history");
 
@@ -332,7 +332,8 @@ impl Space {
                 let model = match AnyActerModel::from_raw_tlevent(&msg.event) {
                     Ok(model) => model,
                     Err(m) => {
-                        if msg.event.get_field::<String>("state_key").is_ok() {
+                        if let Ok(state_key) = msg.event.get_field::<String>("state_key") {
+                            tracing::trace!(state_key, "ignoring state event");
                             // ignore state keys
                         } else {
                             tracing::warn!(event=?msg.event, "Model didn't parse {:}", m);

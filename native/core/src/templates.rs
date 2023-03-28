@@ -367,7 +367,11 @@ impl Engine {
         tracing::trace!(?default_user_key, "starting stream");
 
         let stream = try_stream! {
+            tracing::trace!(total = objects.len(), "starting execution");
+            let mut count = 0;
             for (key, fields) in objects.into_iter() {
+                tracing::trace!(?key, count, "executing");
+                count += 1;
                 let reformatted = execute_value_template(TomlValue::Table(fields), &env, &context)
                     .map_err(|e| Error::RenderingObject(key.clone(), e.to_string()))?;
                 let TomlValue::Table(t) = reformatted else {
@@ -433,10 +437,11 @@ impl Engine {
                     .map_err(|e| Error::Remap(format!("{key}.room({room_name}).id({room_id_str}) parse failed"), e.to_string()))?;
 
                 let room = client.client().get_joined_room(&room_id)
-                        .ok_or_else(|| Error::UnknownReference("user.room".to_string(),  room_name.clone(), key.clone()))?;
+                        .ok_or_else(|| Error::UnknownReference(format!("{key}.room"),  room_name.clone(), key.clone()))?;
 
                 match obj {
                     ObjectInner::TaskList{ fields } => {
+                        tracing::trace!(?fields, "submitting task list");
                         let id = room
                             .send(fields, None)
                             .await
@@ -447,6 +452,7 @@ impl Engine {
                         yield
                     }
                     ObjectInner::Task{ fields } => {
+                        tracing::trace!(?fields, "submitting task");
                         let id = room
                             .send(fields, None)
                             .await
@@ -457,6 +463,7 @@ impl Engine {
                         yield
                     }
                     ObjectInner::CalendarEvent{ fields } => {
+                        tracing::trace!(?fields, "submitting calendar event");
                         let id = room
                             .send(fields, None)
                             .await
@@ -467,6 +474,7 @@ impl Engine {
                         yield
                     }
                     ObjectInner::Pin{ fields } => {
+                        tracing::trace!(?fields, "submitting pin");
                         let id = room
                             .send(fields, None)
                             .await
@@ -477,6 +485,7 @@ impl Engine {
                         yield
                     }
                     ObjectInner::NewsEntry{ fields } => {
+                        tracing::trace!(?fields, "submitting news entry");
                         let id = room
                             .send(fields, None)
                             .await

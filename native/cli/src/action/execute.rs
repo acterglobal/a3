@@ -12,6 +12,9 @@ pub struct ExecuteOpts {
     #[clap(short, long = "input-value")]
     pub inputs: Vec<String>,
 
+    #[clap(long)]
+    pub ignore_sync: bool,
+
     #[clap()]
     pub templates: Vec<PathBuf>,
 }
@@ -27,8 +30,10 @@ impl ExecuteOpts {
 
         let sync_state = user.start_sync();
 
-        let mut is_synced = sync_state.first_synced_rx().expect("note yet read");
-        while is_synced.next().await != Some(true) {} // let's wait for it to have synced
+        if !self.ignore_sync {
+            let mut is_synced = sync_state.first_synced_rx().expect("note yet read");
+            while is_synced.next().await != Some(true) {} // let's wait for it to have synced
+        }
 
         for tmpl_path in self.templates.iter() {
             let template = std::fs::read_to_string(tmpl_path)?;
