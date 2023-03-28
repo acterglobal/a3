@@ -817,6 +817,9 @@ object TaskList {
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<TaskList>>;
+
+    /// the space this TaskList belongs to
+    fn space() -> Space;
 }
 
 object TaskListDraft {
@@ -1103,6 +1106,9 @@ object Client {
 
     /// Fetch the Task or use its event_id to wait for it to come down the wire
     fn wait_for_task(key: string, timeout: Option<EfkDuration>) -> Future<Result<Task>>;
+
+    /// get all calendar events
+    fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
 }
 
 object UserProfile {

@@ -281,6 +281,15 @@ impl TaskList {
     pub fn categories(&self) -> Vec<String> {
         self.content.categories.clone()
     }
+
+    pub fn space(&self) -> Space {
+        Space {
+            client: self.client.clone(),
+            inner: crate::Room {
+                room: self.room.clone(),
+            },
+        }
+    }
 }
 
 impl TaskList {

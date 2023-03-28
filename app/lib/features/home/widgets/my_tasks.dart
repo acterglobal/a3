@@ -34,17 +34,47 @@ class MyTasksSection extends ConsumerWidget {
                   ...tasks
                       .sublist(0, tasks.length > limit ? limit : tasks.length)
                       .map(
-                        (task) => Padding(
+                        (brief) => Padding(
                           padding: const EdgeInsets.only(
                             bottom: 10,
                           ),
                           child: ListTile(
                             // onTap: () => context.go('/$roomId'),
                             title: Text(
-                              task.title(),
-                              style: Theme.of(context).textTheme.bodySmall,
+                              brief.task.title(),
+                              style: Theme.of(context).textTheme.bodyMedium,
                             ),
-                            leading: task.isDone()
+                            subtitle: Row(
+                              children: [
+                                Text(
+                                  brief.taskList.name(),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall!
+                                      .apply(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .neutral5,
+                                      ),
+                                ),
+                                Text(
+                                  ' in ',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                Text(
+                                  brief.space.profile.displayName,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall!
+                                      .apply(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
+                                ),
+                              ],
+                            ),
+                            leading: brief.task.isDone()
                                 ? const Icon(Atlas.check_circle_thin)
                                 : const Icon(
                                     Icons.check_box_outline_blank_outlined),

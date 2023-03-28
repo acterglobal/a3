@@ -4682,6 +4682,52 @@ class Api {
     return tmp7;
   }
 
+  FfiListCalendarEvent? __clientCalendarEventsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientCalendarEventsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListCalendarEvent");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListCalendarEvent._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   FfiBufferUint8? __userProfileGetAvatarFuturePoll(
     int boxed,
     int postCobject,
@@ -9628,6 +9674,16 @@ class Api {
       int Function(
     int,
   )>();
+  late final _taskListSpacePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__TaskList_space");
+
+  late final _taskListSpace = _taskListSpacePtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _taskListDraftNamePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -10810,6 +10866,16 @@ class Api {
     int,
     int,
     int,
+    int,
+  )>();
+  late final _clientCalendarEventsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Client_calendar_events");
+
+  late final _clientCalendarEvents = _clientCalendarEventsPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _userProfileUserIdPtr = _lookup<
@@ -12617,6 +12683,21 @@ class Api {
   late final _clientWaitForTaskFuturePoll =
       _clientWaitForTaskFuturePollPtr.asFunction<
           _ClientWaitForTaskFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientCalendarEventsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientCalendarEventsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_calendar_events_future_poll");
+
+  late final _clientCalendarEventsFuturePoll =
+      _clientCalendarEventsFuturePollPtr.asFunction<
+          _ClientCalendarEventsFuturePollReturn Function(
     int,
     int,
     int,
@@ -20230,6 +20311,21 @@ class TaskList {
     return tmp2;
   }
 
+  /// the space this TaskList belongs to
+  Space space() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListSpace(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_Space");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = Space._(_api, tmp3_1);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -22234,6 +22330,21 @@ class Client {
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
     final tmp10 = _nativeFuture(tmp11_1, _api.__clientWaitForTaskFuturePoll);
     return tmp10;
+  }
+
+  /// get all calendar events
+  Future<FfiListCalendarEvent> calendarEvents() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientCalendarEvents(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_calendar_events_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientCalendarEventsFuturePoll);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -26183,6 +26294,21 @@ class _ClientWaitForTaskListFuturePollReturn extends ffi.Struct {
 }
 
 class _ClientWaitForTaskFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientCalendarEventsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

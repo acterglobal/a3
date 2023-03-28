@@ -10,6 +10,6 @@ class NewsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return NewsWidget();
+    return const NewsWidget();
   }
 }
