@@ -79,6 +79,20 @@ class EventsCard extends ConsumerWidget {
                 print(events);
                 return Column(
                   children: [
+                    ...events.map(
+                      (e) => ListTile(
+                        onTap: () => print('$e'),
+                        title: Text(
+                          e.title(),
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        subtitle: Text(
+                          formatDt(e),
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                     TableCalendar<CalendarEvent>(
                       firstDay: kFirstDay,
                       lastDay: kLastDay,
@@ -113,14 +127,6 @@ class EventsCard extends ConsumerWidget {
                       onPageChanged: (focusedDay) {
                         _focusedDay = focusedDay;
                       },
-                    ),
-                    const SizedBox(height: 8.0),
-                    ...events.map(
-                      (e) => ListTile(
-                        onTap: () => print('$e'),
-                        title: Text(e.title()),
-                        subtitle: Text(formatDt(e)),
-                      ),
                     ),
                   ],
                 );
