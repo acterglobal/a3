@@ -368,10 +368,10 @@ impl Engine {
 
         let stream = try_stream! {
             tracing::trace!(total = objects.len(), "starting execution");
-            let mut count = 0;
-            for (key, fields) in objects.into_iter().enumerate() {
-                tracing::trace!("{} {} executing", key.to_string(), count);
-                count += 1;
+            let _count = 0;
+            for (mut _count, (key, fields)) in objects.into_iter().enumerate().enumerate() {
+                tracing::trace!("{} {} executing", key.to_string(), _count);
+                _count += 1;
                 let reformatted = execute_value_template(TomlValue::Table(fields.1), &env, &context)
                     .map_err(|e| Error::RenderingObject(key.to_string(), e.to_string()))?;
                 let TomlValue::Table(t) = reformatted else {
