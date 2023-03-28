@@ -14,7 +14,7 @@ class Dashboard extends ConsumerWidget {
     // return Center(child: Text('Dashboard - replace me'));
     return Column(
       children: const [
-        MySpacesSection(),
+        MySpacesSection(limit: 5),
       ],
     );
     // final widthCount = (MediaQuery.of(context).size.width ~/ 280).toInt();
