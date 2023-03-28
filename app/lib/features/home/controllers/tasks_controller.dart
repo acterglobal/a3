@@ -5,7 +5,6 @@ import 'dart:core';
 
 final myTasksProvider = FutureProvider<List<TaskBrief>>((ref) async {
   final client = ref.watch(clientProvider)!;
-  final myId = client.userId();
   // FIXME: how to get informed about updates!?!
   final taskLists = await client.taskLists();
   final myTasks = List<TaskBrief>.empty(growable: true);

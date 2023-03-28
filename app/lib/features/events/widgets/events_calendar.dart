@@ -42,8 +42,8 @@ String formatDt(CalendarEvent e) {
   }
 }
 
+// ignore: must_be_immutable
 class EventsCalendar extends ConsumerWidget {
-  late final ValueNotifier<List<CalendarEvent>> _selectedEvents;
   final CalendarFormat _calendarFormat = CalendarFormat.month;
   final RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
@@ -72,7 +72,7 @@ class EventsCalendar extends ConsumerWidget {
               children: [
                 ...events.map(
                   (e) => ListTile(
-                    onTap: () => print('$e'),
+                    onTap: () => debugPrint('$e'),
                     title: Text(
                       e.title(),
                       style: Theme.of(context).textTheme.bodyLarge,

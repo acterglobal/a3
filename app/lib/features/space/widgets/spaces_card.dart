@@ -16,9 +16,7 @@ final relatedSpacesProvider =
     if (related.targetType().tag != RelationTargetTypeTag.ChatRoom) {
       final roomId = related.roomId().toString();
       final space = await client.getSpace(roomId);
-      if (space != null) {
-        spaces.add(space);
-      }
+      spaces.add(space);
     }
   }
   return List<Space>.from(spaces);

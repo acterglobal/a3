@@ -60,16 +60,12 @@ final canonicalParentProvider =
   final relations = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
   final parent = relations.mainParent();
   if (parent == null) {
-    print('no parent');
+    debugPrint('no parent');
     return null;
   }
 
   final client = ref.watch(clientProvider)!;
   final space = await client.getSpace(parent.roomId().toString());
-  if (space == null) {
-    print('no space');
-    return null;
-  }
   final profile = await getProfileData(space);
   return SpaceWithProfileData(space, profile);
 });
