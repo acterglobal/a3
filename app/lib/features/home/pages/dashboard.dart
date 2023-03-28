@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
+import 'package:acter/features/home/widgets/my_tasks.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +15,7 @@ class Dashboard extends ConsumerWidget {
     // return Center(child: Text('Dashboard - replace me'));
     return Column(
       children: const [
+        MyTasksSection(limit: 5),
         MySpacesSection(limit: 5),
       ],
     );
