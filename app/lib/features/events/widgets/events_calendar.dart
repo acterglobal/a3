@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -45,8 +44,8 @@ String formatDt(CalendarEvent e) {
 
 class EventsCalendar extends ConsumerWidget {
   late final ValueNotifier<List<CalendarEvent>> _selectedEvents;
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-  RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
+  final CalendarFormat _calendarFormat = CalendarFormat.month;
+  final RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;

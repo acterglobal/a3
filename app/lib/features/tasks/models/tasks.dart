@@ -14,7 +14,7 @@ class TaskBrief {
 }
 
 Future<TaskBrief> fromTask(TaskList tl, Task task) async {
-  final space = await tl.space()!;
+  final space = tl.space();
   final profile = await getProfileData(space);
   return TaskBrief(
     task: task,

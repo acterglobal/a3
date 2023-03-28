@@ -1,12 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter/common/controllers/client_controller.dart';
-import 'package:acter/common/models/profile_data.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/features/home/controllers/tasks_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'dart:core';
 
@@ -77,7 +72,7 @@ class MyTasksSection extends ConsumerWidget {
                             leading: brief.task.isDone()
                                 ? const Icon(Atlas.check_circle_thin)
                                 : const Icon(
-                                    Icons.check_box_outline_blank_outlined),
+                                    Icons.check_box_outline_blank_outlined,),
                           ),
                         ),
                       ),
@@ -87,7 +82,7 @@ class MyTasksSection extends ConsumerWidget {
                             left: 30,
                           ),
                           child: Text(
-                              'see all my ${tasks.length} tasks')) // FIXME: click and where?
+                              'see all my ${tasks.length} tasks',),) // FIXME: click and where?
                       : const Text(''),
                 ];
               }

@@ -1,6 +1,3 @@
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter/common/controllers/client_controller.dart';
-import 'package:acter/common/models/profile_data.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/controllers/spaces_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -81,7 +78,7 @@ class MySpacesSection extends ConsumerWidget {
                         left: 30,
                       ),
                       child: Text(
-                          'see all ${spaces.length} spaces')) // FIXME: click and where?
+                          'see all ${spaces.length} spaces',),) // FIXME: click and where?
                   : const Text(''),
             ],
             error: (error, stack) => [Text('Loading spaces failed: $error')],

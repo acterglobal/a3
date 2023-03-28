@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:acter/common/controllers/spaces_controller.dart';
-import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter/features/events/widgets/events_calendar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
 class EventsCard extends ConsumerWidget {
   final String spaceId;
