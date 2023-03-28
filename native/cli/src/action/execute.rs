@@ -1,32 +1,16 @@
-use crate::config::{LoginConfig, ENV_ROOM};
-use acter_core::matrix_sdk::ruma::OwnedRoomId;
+use crate::config::LoginConfig;
 use anyhow::Result;
 use clap::Parser;
 use futures::{pin_mut, StreamExt};
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 #[derive(Parser, Debug)]
 pub struct ExecuteOpts {
-    /// the URL to the homeserver are we running against
-    #[clap(
-        long = "homeserver-url",
-        env = "DEFAULT_HOMESERVER_URL",
-        default_value = "http://localhost:8118"
-    )]
-    pub homeserver: String,
-    /// name of that homeserver
-    #[clap(
-        long = "homeserver-name",
-        env = "DEFAULT_HOMESERVER_NAME",
-        default_value = "localhost"
-    )]
-    pub server_name: String,
-
-    /// The room you want to post the news to
-    #[clap(short, long, env = ENV_ROOM)]
-    pub room: OwnedRoomId,
     #[clap(flatten)]
     pub login: LoginConfig,
+
+    #[clap(short, long = "input-value")]
+    pub inputs: Vec<String>,
 
     #[clap()]
     pub templates: Vec<PathBuf>,
@@ -34,6 +18,11 @@ pub struct ExecuteOpts {
 
 impl ExecuteOpts {
     pub async fn run(&self) -> Result<()> {
+        let mapped_inputs = self
+            .inputs
+            .iter()
+            .filter_map(|v| v.split_once("="))
+            .collect::<HashMap<&str, &str>>();
         let mut user = self.login.client().await?;
 
         let sync_state = user.start_sync();
@@ -44,7 +33,38 @@ impl ExecuteOpts {
         for tmpl_path in self.templates.iter() {
             let template = std::fs::read_to_string(tmpl_path)?;
 
-            let tmpl_engine = user.template_engine(&template).await?;
+            let mut tmpl_engine = user.template_engine(&template).await?;
+            let input_values = {
+                tmpl_engine
+                    .requested_inputs()
+                    .iter()
+                    .map(|(key, input)| (key.clone(), (input.is_required(), input.is_space())))
+                    .collect::<Vec<_>>()
+            };
+            for (key, (is_required, is_space)) in input_values {
+                if let Some(res) = mapped_inputs.get(key.as_str()) {
+                    if is_space {
+                        tmpl_engine.add_ref(
+                            key.to_string(),
+                            "space".to_owned(),
+                            res.to_string(),
+                        )?;
+                    } else {
+                        anyhow::bail!("{key} : non-space input values not yet supported")
+                    }
+                } else {
+                    if is_required {
+                        if key == "main" {
+                            tracing::info!("Main user has been provided, ignoring.")
+                        } else {
+                            anyhow::bail!("Missing required input value {key} for {tmpl_path:?}");
+                        }
+                    } else {
+                        tracing::info!("No value provided for {key} for for {tmpl_path:?}");
+                    }
+                }
+            }
+
             let exec_stream = tmpl_engine.execute()?;
             pin_mut!(exec_stream);
             while let Some(i) = exec_stream.next().await {
