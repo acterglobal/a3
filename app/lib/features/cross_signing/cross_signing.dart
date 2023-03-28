@@ -68,7 +68,7 @@ class CrossSigning {
     _deviceSubscription = client.deviceChangedEventRx()?.listen((event) async {
       var records = await event.deviceRecords(false);
       for (var record in records) {
-        debugPrint('found device id: ' + record.deviceId());
+        debugPrint('found device id: ' + record.deviceId().toString());
       }
 
       if (!_shouldShowNewDevicePopup()) {

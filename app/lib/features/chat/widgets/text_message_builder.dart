@@ -11,6 +11,12 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:get/get.dart';
 
 class TextMessageBuilder extends StatelessWidget {
+  final types.TextMessage message;
+  final void Function(types.TextMessage, types.PreviewData)?
+      onPreviewDataFetched;
+  final int messageWidth;
+  final controller = Get.find<ChatRoomController>();
+
   TextMessageBuilder({
     Key? key,
     required this.message,
@@ -18,11 +24,6 @@ class TextMessageBuilder extends StatelessWidget {
     required this.messageWidth,
   }) : super(key: key);
 
-  final types.TextMessage message;
-  final void Function(types.TextMessage, types.PreviewData)?
-      onPreviewDataFetched;
-  final int messageWidth;
-  final controller = Get.find<ChatRoomController>();
   @override
   Widget build(BuildContext context) {
     String msgType = '';
@@ -46,10 +47,10 @@ class TextMessageBuilder extends StatelessWidget {
     final matches = urlRegexp.allMatches(parsedString);
     if (matches.isEmpty) {
       return LinkPreview(
-        metadataTitleStyle: controller.userId == message.author.id
+        metadataTitleStyle: controller.myId == message.author.id
             ? const ActerChatTheme().sentMessageLinkTitleTextStyle
             : const ActerChatTheme().receivedMessageLinkTitleTextStyle,
-        metadataTextStyle: controller.userId == message.author.id
+        metadataTextStyle: controller.myId == message.author.id
             ? const ActerChatTheme().sentMessageLinkDescriptionTextStyle
             : const ActerChatTheme().receivedMessageLinkDescriptionTextStyle,
         enableAnimation: true,
@@ -95,19 +96,21 @@ class TextMessageBuilder extends StatelessWidget {
 }
 
 class _TextWidget extends StatelessWidget {
+  final ChatRoomController controller;
+  final types.TextMessage message;
+  final bool enlargeEmoji;
+  final bool isNotice;
+
   const _TextWidget({
     required this.controller,
     required this.message,
     required this.enlargeEmoji,
     required this.isNotice,
   });
-  final ChatRoomController controller;
-  final types.TextMessage message;
-  final bool enlargeEmoji;
-  final bool isNotice;
+
   @override
   Widget build(BuildContext context) {
-    final emojiTextStyle = controller.userId == message.author.id
+    final emojiTextStyle = controller.myId == message.author.id
         ? const ActerChatTheme().sentEmojiMessageTextStyle
         : const ActerChatTheme().receivedEmojiMessageTextStyle;
     return ConstrainedBox(

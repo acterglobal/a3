@@ -12,7 +12,7 @@ class SocialProfilePage extends StatefulWidget {
 }
 
 class _SocialProfilePageState extends State<SocialProfilePage> {
-  String? userId;
+  String? myId;
   Future<FfiBufferUint8>? avatar;
   String? displayName;
 
@@ -21,7 +21,7 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
     super.initState();
 
     final client = ModalRoute.of(context)!.settings.arguments as Client;
-    setState(() => userId = client.userId().toString());
+    setState(() => myId = client.account().userId());
     client.getUserProfile().then((value) {
       if (mounted) {
         setState(() {
@@ -86,7 +86,7 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
                             ),
                           ),
                           child: CustomAvatar(
-                            uniqueKey: userId ?? UniqueKey().toString(),
+                            uniqueKey: myId ?? UniqueKey().toString(),
                             avatar: avatar,
                             displayName: displayName,
                             isGroup: false,

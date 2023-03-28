@@ -7,7 +7,10 @@ use log::{info, warn};
 use matrix_sdk::{
     encryption::identities::Device,
     locks::Mutex,
-    ruma::{device_id, events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch},
+    ruma::{
+        device_id, events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch,
+        OwnedDeviceId, OwnedUserId,
+    },
     sync::SyncResponse,
     Client as MatrixClient,
 };
@@ -227,12 +230,12 @@ impl DeviceRecord {
         self.device.is_deleted()
     }
 
-    pub fn user_id(&self) -> String {
-        self.device.user_id().to_string()
+    pub fn user_id(&self) -> OwnedUserId {
+        self.device.user_id().to_owned()
     }
 
-    pub fn device_id(&self) -> String {
-        self.device.device_id().to_string()
+    pub fn device_id(&self) -> OwnedDeviceId {
+        self.device.device_id().to_owned()
     }
 
     pub fn display_name(&self) -> Option<String> {

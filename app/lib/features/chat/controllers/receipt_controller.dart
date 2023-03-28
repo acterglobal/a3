@@ -43,11 +43,12 @@ class ReceiptController extends GetxController {
     super.onInit();
 
     _subscription = client.receiptEventRx()?.listen((event) {
+      String myId = client.account().userId();
       String roomId = event.roomId();
       bool changed = false;
       for (var record in event.receiptRecords()) {
         String seenBy = record.seenBy();
-        if (seenBy != client.userId().toString()) {
+        if (seenBy != myId) {
           var room = _getRoom(roomId);
           room.updateUser(seenBy, record.eventId(), record.ts());
           changed = true;

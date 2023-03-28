@@ -75,6 +75,7 @@ impl TimelineStream {
         async_stream::stream! {
             let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
             let mut remap = timeline_stream.map(move |diff| match diff {
+                // Append the given elements at the end of the `Vector` and notify subscribers
                 VectorDiff::Append { values } => TimelineDiff {
                     action: "Append".to_string(),
                     values: Some(
@@ -86,48 +87,56 @@ impl TimelineStream {
                     index: None,
                     value: None,
                 },
+                // Insert an element at the given position and notify subscribers
                 VectorDiff::Insert { index, value } => TimelineDiff {
                     action: "Insert".to_string(),
                     values: None,
                     index: Some(index),
                     value: Some(timeline_item_to_message(value, room.clone())),
                 },
+                // Replace the element at the given position, notify subscribers and return the previous element at that position
                 VectorDiff::Set { index, value } => TimelineDiff {
                     action: "Set".to_string(),
                     values: None,
                     index: Some(index),
                     value: Some(timeline_item_to_message(value, room.clone())),
                 },
+                // Remove the element at the given position, notify subscribers and return the element
                 VectorDiff::Remove { index } => TimelineDiff {
                     action: "Remove".to_string(),
                     values: None,
                     index: Some(index),
                     value: None,
                 },
+                // Add an element at the back of the list and notify subscribers
                 VectorDiff::PushBack { value } => TimelineDiff {
                     action: "PushBack".to_string(),
                     values: None,
                     index: None,
                     value: Some(timeline_item_to_message(value, room.clone())),
                 },
+                // Add an element at the front of the list and notify subscribers
                 VectorDiff::PushFront { value } => TimelineDiff {
                     action: "PushFront".to_string(),
                     values: None,
                     index: None,
                     value: Some(timeline_item_to_message(value, room.clone())),
                 },
+                // Remove the last element, notify subscribers and return the element
                 VectorDiff::PopBack => TimelineDiff {
                     action: "PopBack".to_string(),
                     values: None,
                     index: None,
                     value: None,
                 },
+                // Remove the first element, notify subscribers and return the element
                 VectorDiff::PopFront => TimelineDiff {
                     action: "PopFront".to_string(),
                     values: None,
                     index: None,
                     value: None,
                 },
+                // Clear out all of the elements in this `Vector` and notify subscribers
                 VectorDiff::Clear => TimelineDiff {
                     action: "Clear".to_string(),
                     values: None,

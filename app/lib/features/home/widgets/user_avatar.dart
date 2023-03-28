@@ -47,7 +47,7 @@ class UserAvatarWidget extends ConsumerWidget {
             GestureDetector(
               onTap: () => confirmationDialog(context, ref),
               child: CustomAvatar(
-                uniqueKey: client.userId().toString(),
+                uniqueKey: client.account().userId(),
                 radius: 20,
                 isGroup: false,
                 cacheHeight: 120,
