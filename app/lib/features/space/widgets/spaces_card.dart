@@ -15,9 +15,8 @@ final relatedSpacesProvider =
   for (final related in relatedSpaces.children()) {
     if (related.targetType().tag != RelationTargetTypeTag.ChatRoom) {
       final roomId = related.roomId().toString();
-      final space = await client.getSpace(related.roomId().toString());
-      if (space == null) {
-      } else {
+      final space = await client.getSpace(roomId);
+      if (space != null) {
         spaces.add(space);
       }
     }

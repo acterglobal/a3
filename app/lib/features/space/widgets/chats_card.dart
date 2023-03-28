@@ -16,12 +16,8 @@ final relatedChatsProvider =
   for (final related in relatedSpaces.children()) {
     if (related.targetType().tag == RelationTargetTypeTag.ChatRoom) {
       final roomId = related.roomId().toString();
-      final room = await client.conversation(related.roomId().toString());
-      if (room == null) {
-        print('Related room unknown');
-      } else {
-        chats.add(room);
-      }
+      final room = await client.conversation(roomId);
+      chats.add(room);
     }
   }
   return List<Conversation>.from(chats);

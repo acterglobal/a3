@@ -45,11 +45,11 @@ class LinksCard extends ConsumerWidget {
                         final target = pin.url()!;
                         final Uri? url = Uri.tryParse(target);
                         if (url == null) {
-                          print('Opening internally: $url');
+                          debugPrint('Opening internally: $url');
                           // not a valid URL, try local routing
                           context.go(target);
                         } else {
-                          print('Opening external URL: $url');
+                          debugPrint('Opening external URL: $url');
                           !await launchUrl(url);
                         }
                       },

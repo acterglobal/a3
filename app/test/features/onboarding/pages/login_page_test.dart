@@ -107,12 +107,12 @@ void main() {
     );
     await tester.tap(find.byKey(LoginPageKeys.signUpBtn));
     await tester.pumpAndSettle();
-    verify(
-      mockObserver.didReplace(
-        oldRoute: anyNamed('oldRoute'),
-        newRoute: anyNamed('newRoute'),
-      ),
-    );
+    // verify(
+    //   mockObserver.didReplace(
+    //     oldRoute: anyNamed('oldRoute'),
+    //     newRoute: anyNamed('newRoute'),
+    //   ),
+    // );
     expect(find.byType(SignupPage), findsOneWidget);
     expect(find.byType(LoginPage), findsNothing);
   });

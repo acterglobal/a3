@@ -369,23 +369,23 @@ impl Engine {
         let stream = try_stream! {
             tracing::trace!(total = objects.len(), "starting execution");
             let mut count = 0;
-            for (key, fields) in objects.into_iter() {
-                tracing::trace!(?key, count, "executing");
+            for (i, (k, v)) in objects.into_iter().enumerate() {
+                tracing::trace!(?i, count, "executing");
                 count += 1;
-                let reformatted = execute_value_template(TomlValue::Table(fields), &env, &context)
-                    .map_err(|e| Error::RenderingObject(key.clone(), e.to_string()))?;
+                let reformatted = execute_value_template(TomlValue::Table(v), &env, &context)
+                    .map_err(|e| Error::RenderingObject(i.to_string(), e.to_string()))?;
                 let TomlValue::Table(t) = reformatted else {
                     unreachable!("We always get back a table after sending in a table.");
                 };
                 let Object { room, user, obj } = Table::try_into::<Object>(t)?;
 
                 let client = if user.is_none() || user == default_user_key  {
-                    default_user.clone().ok_or_else(|| Error::NoDefaultSet("user".to_string(), key.clone()))?
+                    default_user.clone().ok_or_else(|| Error::NoDefaultSet("user".to_string(), i.to_string()))?
                 } else { // must be the case
                     let Some(username) = user else {
                         unimplemented!("never reached");
                     };
-                    users.get(&username).ok_or_else(|| Error::UnknownReference("user".to_string(), key.clone(), username))?.clone()
+                    users.get(&username).ok_or_else(|| Error::UnknownReference("user".to_string(), i.to_string(), username))?.clone()
                 };
 
                 if let ObjectInner::Space { is_default, fields } = obj {
@@ -395,10 +395,10 @@ impl Engine {
                     let new_room_id = client
                         .create_acter_space(fields)
                         .await
-                        .map_err(|e| Error::Remap(format!("Creating space '{key}' failed"), e.to_string()))?;
-                    context.insert(key.clone(), Value::from_struct_object(ObjRef::new(new_room_id.to_string() , "space".to_owned())));
+                        .map_err(|e| Error::Remap(format!("Creating space '{i}' failed"), e.to_string()))?;
+                    context.insert(i.to_string(), Value::from_struct_object(ObjRef::new(new_room_id.to_string() , "space".to_owned())));
                     if is_default {
-                        default_space = Some(key.clone());
+                        default_space = Some(i.to_string());
                     }
                     let retry_strategy = FibonacciBackoff::from_millis(100)
                         .map(jitter)
@@ -409,7 +409,7 @@ impl Engine {
                             .get_joined_room(&new_room_id)
                             .is_none() {
                                 Err(Error::Remap(
-                                    format!("created space '{key}' ({new_room_id}) could not be found"),
+                                    format!("created space '{i}' ({new_room_id}) could not be found"),
                                         "Do you have a sync running?".to_owned()
                                     )
                                 )
@@ -423,21 +423,21 @@ impl Engine {
 
                 let room_name = match room {
                     Some(r) => r,
-                    None => default_space.clone().ok_or_else(|| Error::NoDefaultSet("room".to_string(), key.clone()))?
+                    None => default_space.clone().ok_or_else(|| Error::NoDefaultSet("room".to_string(), i.to_string()))?
                 };
 
                 let room_id_str = context
                     .get(&room_name)
-                    .ok_or_else(|| Error::UnknownReference("room".to_string(),  room_name.clone(), key.clone()))?
+                    .ok_or_else(|| Error::UnknownReference("room".to_string(),  room_name.clone(), i.to_string()))?
                     .get_attr("id")
-                    .map_err(|e| Error::Remap(format!("{key} room={room_name} attr=id"), e.to_string()))?
+                    .map_err(|e| Error::Remap(format!("{i} room={room_name} attr=id"), e.to_string()))?
                     .to_string();
 
                 let room_id = RoomId::parse(room_id_str.clone())
-                    .map_err(|e| Error::Remap(format!("{key}.room({room_name}).id({room_id_str}) parse failed"), e.to_string()))?;
+                    .map_err(|e| Error::Remap(format!("{i}.room({room_name}).id({room_id_str}) parse failed"), e.to_string()))?;
 
                 let room = client.client().get_joined_room(&room_id)
-                        .ok_or_else(|| Error::UnknownReference(format!("{key}.room"),  room_name.clone(), key.clone()))?;
+                        .ok_or_else(|| Error::UnknownReference(format!("{i}.room"),  room_name.clone(), i.to_string()))?;
 
                 match obj {
                     ObjectInner::TaskList{ fields } => {
@@ -445,9 +445,9 @@ impl Engine {
                         let id = room
                             .send(fields, None)
                             .await
-                            .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
+                            .map_err(|e| Error::Remap(format!("{i} submission failed"), e.to_string()))?
                             .event_id;
-                        context.insert(key,
+                        context.insert(i.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "task-list".to_owned())));
                         yield
                     }
@@ -456,9 +456,9 @@ impl Engine {
                         let id = room
                             .send(fields, None)
                             .await
-                            .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
+                            .map_err(|e| Error::Remap(format!("{i} submission failed"), e.to_string()))?
                             .event_id;
-                        context.insert(key,
+                        context.insert(i.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "task".to_owned())));
                         yield
                     }
@@ -467,9 +467,9 @@ impl Engine {
                         let id = room
                             .send(fields, None)
                             .await
-                            .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
+                            .map_err(|e| Error::Remap(format!("{i} submission failed"), e.to_string()))?
                             .event_id;
-                        context.insert(key,
+                        context.insert(i.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "calendar-event".to_owned())));
                         yield
                     }
@@ -478,9 +478,9 @@ impl Engine {
                         let id = room
                             .send(fields, None)
                             .await
-                            .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
+                            .map_err(|e| Error::Remap(format!("{i} submission failed"), e.to_string()))?
                             .event_id;
-                        context.insert(key,
+                        context.insert(i.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "pin".to_owned())));
                         yield
                     }
@@ -489,9 +489,9 @@ impl Engine {
                         let id = room
                             .send(fields, None)
                             .await
-                            .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
+                            .map_err(|e| Error::Remap(format!("{i} submission failed"), e.to_string()))?
                             .event_id;
-                        context.insert(key,
+                        context.insert(i.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "news-entry".to_owned())));
                         yield
                     }
