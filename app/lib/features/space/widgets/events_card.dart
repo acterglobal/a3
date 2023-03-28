@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:acter/common/controllers/spaces_controller.dart';
-import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -44,10 +43,10 @@ String formatDt(CalendarEvent e) {
   }
 }
 
+// ignore: must_be_immutable
 class EventsCard extends ConsumerWidget {
-  late final ValueNotifier<List<CalendarEvent>> _selectedEvents;
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-  RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
+  final CalendarFormat _calendarFormat = CalendarFormat.month;
+  final RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -76,12 +75,12 @@ class EventsCard extends ConsumerWidget {
               error: (error, stackTrace) =>
                   Text('Loading calendars failed: $error'),
               data: (events) {
-                print(events);
+                debugPrint('$events');
                 return Column(
                   children: [
                     ...events.map(
                       (e) => ListTile(
-                        onTap: () => print('$e'),
+                        onTap: () => debugPrint('$e'),
                         title: Text(
                           e.title(),
                           style: Theme.of(context).textTheme.bodyLarge,

@@ -99,7 +99,7 @@ dependencies:
   shake: ^2.2.0
 
   # Testing
-  mockito:
+  mockito: ^5.0.0
   image_picker_for_web: ^2.1.11
 
 dev_dependencies:

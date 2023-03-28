@@ -1,9 +1,7 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/controllers/client_controller.dart';
-import 'package:acter/common/models/profile_data.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/controllers/spaces_controller.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,9 +15,8 @@ final relatedSpacesProvider =
   for (final related in relatedSpaces.children()) {
     if (related.targetType().tag != RelationTargetTypeTag.ChatRoom) {
       final roomId = related.roomId().toString();
-      final space = await client.getSpace(related.roomId().toString());
-      if (space == null) {
-      } else {
+      final space = await client.getSpace(roomId);
+      if (space != null) {
         spaces.add(space);
       }
     }

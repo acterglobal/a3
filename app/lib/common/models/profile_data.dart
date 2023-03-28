@@ -1,7 +1,5 @@
-import 'dart:typed_data';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class ProfileData {
   final String displayName;

@@ -122,7 +122,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     final location =
         ref.watch(goRouterProvider(context).select((g) => g.location));
 
-    final showInSidebar = isDesktop && location == "/dashboard";
+    final showInSidebar = isDesktop && location == '/dashboard';
     final bodyRatio = showInSidebar ? 0.3 : 0.0;
     return ref.watch(clientProvider) != null
         ? Scaffold(
@@ -161,7 +161,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                         config: <Breakpoint, SlotLayoutConfig>{
                           Breakpoints.smallAndUp: SlotLayout.from(
                             key: const Key('Body Small'),
-                            builder: (BuildContext ctx) => NewsWidget(),
+                            builder: (BuildContext ctx) => const NewsWidget(),
                           ),
                         },
                       )

@@ -1,6 +1,5 @@
 import 'package:acter/common/controllers/spaces_controller.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -90,7 +89,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                                       onTap: () {
                                         final roomId =
                                             parentProfile.space.getRoomId();
-                                        context.go("/$roomId");
+                                        context.go('/$roomId');
                                       },
                                       child: parentProfile.profile.hasAvatar()
                                           ? CircleAvatar(

@@ -2,7 +2,6 @@ import 'package:acter/common/controllers/client_controller.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
 import 'dart:core';
 
 final chatProfileDataProvider =

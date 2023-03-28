@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:acter/features/news/widgets/news_widget.dart';
 
 import 'package:flutter/material.dart';
@@ -10,6 +8,6 @@ class NewsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return NewsWidget();
+    return const NewsWidget();
   }
 }
