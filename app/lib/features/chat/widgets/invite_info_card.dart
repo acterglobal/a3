@@ -47,7 +47,7 @@ class _InviteInfoCardState extends State<InviteInfoCard> {
 
   @override
   Widget build(BuildContext context) {
-    String userId = widget.client.userId().toString();
+    String myId = widget.client.account().userId();
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 1),
       child: Column(
@@ -56,12 +56,12 @@ class _InviteInfoCardState extends State<InviteInfoCard> {
           ListTile(
             // leading: CircleAvatar(backgroundColor: avatarColor),
             leading: CustomAvatar(
-              uniqueKey: userId,
+              uniqueKey: myId,
               avatar: avatar,
               displayName: displayName,
               radius: 20,
               isGroup: true,
-              stringName: simplifyUserId(userId)!,
+              stringName: simplifyUserId(myId)!,
             ),
             title: _TitleWidget(invitation: widget.invitation),
             subtitle: _SubtitleWidget(invitation: widget.invitation),

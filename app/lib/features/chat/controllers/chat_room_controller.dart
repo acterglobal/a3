@@ -34,7 +34,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ChatRoomController extends GetxController {
   Client client;
-  late String userId;
+  late String myId;
   final List<types.Message> _messages = [];
   List<types.User> typingUsers = [];
   TimelineStream? _stream;
@@ -70,7 +70,7 @@ class ChatRoomController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    userId = client.userId().toString();
+    myId = client.account().userId();
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isEmojiVisible.value = false;
@@ -103,7 +103,7 @@ class ChatRoomController extends GetxController {
       }
       RoomEventItem? eventItem = event.eventItem();
       if (eventItem != null) {
-        if (eventItem.sender() != client.userId().toString()) {
+        if (eventItem.sender() != myId) {
           if (isLoading.isFalse) {
             update(['Chat']);
           }
@@ -154,7 +154,9 @@ class ChatRoomController extends GetxController {
     _stream = await _currentRoom!.timelineStream();
     // event handler from paginate
     _diffSubscription = _stream?.diffRx().listen((event) {
+      // stream is rendered in reverse order
       switch (event.action()) {
+        // Append the given elements at the end of the `Vector` and notify subscribers
         case 'Append':
           debugPrint('chat room message append');
           List<RoomMessage> values = event.values()!.toList();
@@ -163,13 +165,7 @@ class ChatRoomController extends GetxController {
             if (m is types.UnsupportedMessage) {
               continue;
             }
-            int index = _messages.indexWhere((msg) => m.id == msg.id);
-            if (index == -1) {
-              _insertMessage(m);
-            } else {
-              // update event may be fetched prior to insert event
-              _updateMessage(m, index);
-            }
+            _messages.insert(0, m);
             if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
               _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
             }
@@ -184,6 +180,7 @@ class ChatRoomController extends GetxController {
             }
           }
           break;
+        // Insert an element at the given position and notify subscribers
         case 'Insert':
           debugPrint('chat room message insert');
           RoomMessage value = event.value()!;
@@ -211,6 +208,7 @@ class ChatRoomController extends GetxController {
             }
           }
           break;
+        // Replace the element at the given position, notify subscribers and return the previous element at that position
         case 'Set':
           debugPrint('chat room message set');
           RoomMessage value = event.value()!;
@@ -238,36 +236,20 @@ class ChatRoomController extends GetxController {
             }
           }
           break;
+        // Remove the element at the given position, notify subscribers and return the element
         case 'Remove':
+          debugPrint('chat room message remove');
           int index = event.index()!;
-          _messages.removeAt(_messages.length - 1 - index);
-          if (isLoading.isFalse) {
-            update(['Chat']);
-          }
-          break;
-        case 'PushBack':
-          debugPrint('chat room message push_back');
-          RoomMessage value = event.value()!;
-          var m = _prepareMessage(value);
-          if (m is types.UnsupportedMessage) {
-            break;
-          }
-          _messages.add(m);
-          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
-            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
-          }
-          RoomEventItem? eventItem = value.eventItem();
-          if (eventItem != null) {
+          if (index < _messages.length) {
+            _messages.removeAt(_messages.length - 1 - index);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (eventItem.subType() == 'm.image') {
-              _fetchMessageContent(m.id);
-            }
           }
           break;
-        case 'PushFront':
-          debugPrint('chat room message push_front');
+        // Add an element at the back of the list and notify subscribers
+        case 'PushBack':
+          debugPrint('chat room message push_back');
           RoomMessage value = event.value()!;
           var m = _prepareMessage(value);
           if (m is types.UnsupportedMessage) {
@@ -287,21 +269,51 @@ class ChatRoomController extends GetxController {
             }
           }
           break;
+        // Add an element at the front of the list and notify subscribers
+        case 'PushFront':
+          debugPrint('chat room message push_front');
+          RoomMessage value = event.value()!;
+          var m = _prepareMessage(value);
+          if (m is types.UnsupportedMessage) {
+            break;
+          }
+          _messages.add(m);
+          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+          }
+          RoomEventItem? eventItem = value.eventItem();
+          if (eventItem != null) {
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            if (eventItem.subType() == 'm.image') {
+              _fetchMessageContent(m.id);
+            }
+          }
+          break;
+        // Remove the last element, notify subscribers and return the element
         case 'PopBack':
           debugPrint('chat room message pop_back');
-          _messages.removeLast();
-          if (isLoading.isFalse) {
-            update(['Chat']);
+          if (_messages.isNotEmpty) {
+            _messages.removeAt(0);
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
           }
           break;
+        // Remove the first element, notify subscribers and return the element
         case 'PopFront':
           debugPrint('chat room message pop_front');
-          _messages.removeAt(0);
-          if (isLoading.isFalse) {
-            update(['Chat']);
+          if (_messages.isNotEmpty) {
+            _messages.removeLast();
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
           }
           break;
+        // Clear out all of the elements in this `Vector` and notify subscribers
         case 'Clear':
+          debugPrint('chat room message clear');
           _messages.clear();
           if (isLoading.isFalse) {
             update(['Chat']);
@@ -642,7 +654,7 @@ class ChatRoomController extends GetxController {
         _currentRoom!.getRoomId(),
         m.createdAt!,
       );
-      if (m.author.id == client.userId().toString()) {
+      if (m.author.id == myId) {
         types.Status status = seenByList.isEmpty
             ? types.Status.sent
             : seenByList.length < activeMembers.length
@@ -662,7 +674,7 @@ class ChatRoomController extends GetxController {
         _currentRoom!.getRoomId(),
         m.createdAt!,
       );
-      if (m.author.id == client.userId().toString()) {
+      if (m.author.id == myId) {
         types.Status status = seenByList.isEmpty
             ? types.Status.sent
             : seenByList.length < activeMembers.length
@@ -680,7 +692,7 @@ class ChatRoomController extends GetxController {
     if (virtualItem != null) {
       // should not return null, before we can keep track of index in diff receiver
       return types.UnsupportedMessage(
-        author: types.User(id: client.userId().toString()),
+        author: types.User(id: myId),
         id: UniqueKey().toString(),
         metadata: {
           'itemType': 'virtual',
@@ -1075,7 +1087,7 @@ class ChatRoomController extends GetxController {
   }
 
   bool isAuthor() {
-    return client.userId().toString() == authorId;
+    return myId == authorId;
   }
 
   void toggleEmojiContainer() {

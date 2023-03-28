@@ -72,10 +72,10 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let mut bob_rx = bob.verification_event_rx().unwrap();
 
     // according to alice bob is not verfied:
-    assert!(!alice.verified_device(bob_device_id.clone()).await?);
+    assert!(!alice.verified_device(bob_device_id.to_string()).await?);
 
     // according to bob alice is not verfied:
-    assert!(!bob.verified_device(alice_device_id).await?);
+    assert!(!bob.verified_device(alice_device_id.to_string()).await?);
 
     // ----------------------------------------------------------------------------
     // On Alice's device:
@@ -87,7 +87,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
                 // Alice sends a verification request with her desired methods to Bob
                 event
                     .request_verification_to_device_with_methods(
-                        bob_device_id,
+                        bob_device_id.to_string(),
                         &mut vec!["m.sas.v1".to_string()],
                     )
                     .await?;

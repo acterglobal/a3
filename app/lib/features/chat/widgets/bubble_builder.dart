@@ -89,6 +89,15 @@ class BubbleBuilder extends StatelessWidget {
 }
 
 class _ChatBubble extends StatelessWidget {
+  final ChatRoomController controller;
+  final bool isAuthor;
+  final String userId;
+  final types.Message message;
+  final bool nextMessageInGroup;
+  final Widget child;
+  final bool enlargeEmoji;
+  final bool isMemberEvent;
+
   const _ChatBubble({
     required this.controller,
     required this.isAuthor,
@@ -99,14 +108,6 @@ class _ChatBubble extends StatelessWidget {
     required this.enlargeEmoji,
     required this.isMemberEvent,
   });
-  final ChatRoomController controller;
-  final bool isAuthor;
-  final String userId;
-  final types.Message message;
-  final bool nextMessageInGroup;
-  final Widget child;
-  final bool enlargeEmoji;
-  final bool isMemberEvent;
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +116,7 @@ class _ChatBubble extends StatelessWidget {
       msgType = message.metadata?['eventType'];
     }
     bool isMemberEvent = msgType == 'm.room.member';
+    String myId = controller.client.account().userId();
     return GestureDetector(
       onLongPress: isMemberEvent
           ? null
@@ -128,18 +130,12 @@ class _ChatBubble extends StatelessWidget {
             isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           (message.repliedMessage != null)
-              ? userId == message.repliedMessage!.author.id
-                  ? Text(
-                      'Replied to yourself',
-                      style: Theme.of(context).textTheme.labelSmall,
-                    )
-                  : Text(
-                      controller.client.userId().toString() ==
-                              message.repliedMessage!.author.id
-                          ? 'Replied to you'
-                          : 'Replied to ${message.repliedMessage!.author.id}',
-                      style: Theme.of(context).textTheme.labelSmall,
-                    )
+              ? Text(
+                  myId == message.repliedMessage!.author.id
+                      ? 'Replied to you'
+                      : 'Replied to ${message.repliedMessage!.author.id}',
+                  style: Theme.of(context).textTheme.labelSmall,
+                )
               : const SizedBox(),
           const SizedBox(height: 8),
           //reply bubble
@@ -161,10 +157,9 @@ class _ChatBubble extends StatelessWidget {
           (enlargeEmoji || isMemberEvent)
               ? child
               : Bubble(
-                  color:
-                      controller.client.userId().toString() == message.author.id
-                          ? Theme.of(context).colorScheme.secondary
-                          : Theme.of(context).colorScheme.primary,
+                  color: myId == message.author.id
+                      ? Theme.of(context).colorScheme.secondary
+                      : Theme.of(context).colorScheme.primary,
                   child: child,
                   style: BubbleStyle(
                     margin: nextMessageInGroup
