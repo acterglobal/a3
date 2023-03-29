@@ -39,7 +39,8 @@ class MyTasksSection extends ConsumerWidget {
                               brief.task.title(),
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
-                            subtitle: Row(
+                            subtitle: Wrap(
+                              direction: Axis.horizontal,
                               children: [
                                 Text(
                                   brief.taskList.name(),
@@ -72,7 +73,8 @@ class MyTasksSection extends ConsumerWidget {
                             leading: brief.task.isDone()
                                 ? const Icon(Atlas.check_circle_thin)
                                 : const Icon(
-                                    Icons.check_box_outline_blank_outlined,),
+                                    Icons.check_box_outline_blank_outlined,
+                                  ),
                           ),
                         ),
                       ),
@@ -82,7 +84,9 @@ class MyTasksSection extends ConsumerWidget {
                             left: 30,
                           ),
                           child: Text(
-                              'see all my ${tasks.length} tasks',),) // FIXME: click and where?
+                            'see all my ${tasks.length} tasks',
+                          ),
+                        ) // FIXME: click and where?
                       : const Text(''),
                 ];
               }

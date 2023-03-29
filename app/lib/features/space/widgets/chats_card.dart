@@ -43,63 +43,71 @@ class ChatsCard extends ConsumerWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 10),
-            ...chats.when(
-              data: (chats) => chats.map(
-                (chat) {
-                  final roomId = chat.getRoomId();
-                  final profile = ref.watch(chatProfileDataProvider(chat));
-                  return profile.when(
-                    data: (profile) => ListTile(
-                      onTap: () => context.go('/chat/$roomId'),
-                      title: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              profile.hasAvatar()
-                                  ? CircleAvatar(
-                                      foregroundImage: profile.getAvatarImage(),
-                                      radius: 24,
-                                    )
-                                  : SvgPicture.asset(
-                                      'assets/icon/acter.svg',
-                                      height: 24,
-                                      width: 24,
-                                    ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
-                                child: Text(
-                                  profile.displayName,
-                                  style: Theme.of(context).textTheme.titleSmall,
+            chats.when(
+              error: (error, stack) => Text('Loading chats failed: $error'),
+              loading: () => const Text('Loading'),
+              data: (chats) {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: chats.length,
+                  itemBuilder: ((context, index) {
+                    final roomId = chats[index].getRoomId();
+                    final profile =
+                        ref.watch(chatProfileDataProvider(chats[index]));
+                    return profile.when(
+                      data: (profile) => ListTile(
+                        onTap: () => context.go('/chat/$roomId'),
+                        title: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                profile.hasAvatar()
+                                    ? CircleAvatar(
+                                        foregroundImage:
+                                            profile.getAvatarImage(),
+                                        radius: 24,
+                                      )
+                                    : SvgPicture.asset(
+                                        'assets/icon/acter.svg',
+                                        height: 24,
+                                        width: 24,
+                                      ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 8),
+                                  child: Text(
+                                    profile.displayName,
+                                    style:
+                                        Theme.of(context).textTheme.titleSmall,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 16,
+                              ],
                             ),
-                            child: const Divider(indent: 0),
-                          ),
-                        ],
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 16,
+                              ),
+                              child: const Divider(indent: 0),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    error: (error, stack) => ListTile(
-                      title: Text('Error loading: $roomId'),
-                      subtitle: Text('$error'),
-                    ),
-                    loading: () => ListTile(
-                      title: Text(roomId),
-                      subtitle: const Text('loading'),
-                    ),
-                  );
-                },
-              ),
-              error: (error, stack) => [Text('Loading chats failed: $error')],
-              loading: () => [const Text('Loading')],
-            )
+                      error: (error, stack) => ListTile(
+                        title: Text('Error loading: $roomId'),
+                        subtitle: Text('$error'),
+                      ),
+                      loading: () => ListTile(
+                        title: Text(roomId),
+                        subtitle: const Text('loading'),
+                      ),
+                    );
+                  }),
+                );
+              },
+            ),
           ],
         ),
       ),

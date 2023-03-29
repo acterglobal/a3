@@ -16,37 +16,22 @@ class SpaceOverview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final widthCount = (MediaQuery.of(context).size.width ~/ 280).toInt();
+    final widthCount = (MediaQuery.of(context).size.width ~/ 300).toInt();
 
-    const int minCount = 1;
+    const int minCount = 2;
     // get platform of context.
-    return SingleChildScrollView(
-      physics: const NeverScrollableScrollPhysics(),
-      child: Container(
-        margin: const EdgeInsets.all(20),
-        child: StaggeredGrid.count(
-          axisDirection: AxisDirection.down,
-          crossAxisCount: min(widthCount, minCount),
-          children: <Widget>[
-            AboutCard(spaceId: spaceIdOrAlias),
-            EventsCard(spaceId: spaceIdOrAlias),
-            LinksCard(spaceId: spaceIdOrAlias),
-            ChatsCard(spaceId: spaceIdOrAlias),
-            SpacesCard(spaceId: spaceIdOrAlias),
-          ],
-        ),
-        // Row(
-        //   children: [
-        //     Column(
-        //       children: [
-
-        //       ],
-        //     ),
-        //     Column(
-        //       children: [Text('placeholder')],
-        //     ),
-        //   ],
-        // ),
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: StaggeredGrid.count(
+        axisDirection: AxisDirection.down,
+        crossAxisCount: min(widthCount, minCount),
+        children: <Widget>[
+          AboutCard(spaceId: spaceIdOrAlias),
+          EventsCard(spaceId: spaceIdOrAlias),
+          LinksCard(spaceId: spaceIdOrAlias),
+          ChatsCard(spaceId: spaceIdOrAlias),
+          SpacesCard(spaceId: spaceIdOrAlias),
+        ],
       ),
     );
   }

@@ -13,15 +13,15 @@ class Dashboard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final widthCount = (MediaQuery.of(context).size.width ~/ 280).toInt();
+    final widthCount = (MediaQuery.of(context).size.width ~/ 300).toInt();
 
-    const int minCount = 1;
+    const int minCount = 2;
     // get platform of context.
     return SingleChildScrollView(
-      physics: const NeverScrollableScrollPhysics(),
       child: Container(
         margin: const EdgeInsets.all(20),
         child: StaggeredGrid.count(
+          crossAxisSpacing: 20,
           axisDirection: AxisDirection.down,
           crossAxisCount: min(widthCount, minCount),
           children: const [

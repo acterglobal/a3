@@ -28,6 +28,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
   Widget build(BuildContext context) {
     // get platform of context.
     final space = ref.watch(spaceProvider(widget.spaceIdOrAlias));
+    double h = MediaQuery.of(context).size.height;
     return space.when(
       data: (space) {
         final profileData = ref.watch(spaceProfileDataProvider(space));
@@ -41,11 +42,11 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.42,
+                      height: 300,
                       child: Stack(
                         children: <Widget>[
                           Container(
-                            height: MediaQuery.of(context).size.height * 0.28,
+                            height: 200,
                             decoration: const BoxDecoration(
                               image: DecorationImage(
                                 image: NetworkImage(
@@ -169,7 +170,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                     ),
                     const TopNavBar(isDesktop: true),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 1.2,
+                      height: h < 800 ? h * 2 : h,
                       child: widget.child,
                     ),
                   ],
