@@ -222,6 +222,8 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                             inAnimation: AdaptiveScaffold.bottomToTop,
                             outAnimation: AdaptiveScaffold.topToBottom,
                             builder: (BuildContext ctx) => BottomNavigationBar(
+                              showSelectedLabels: false,
+                              showUnselectedLabels: false,
                               currentIndex: _selectedBottombarIndex,
                               onTap: (index) =>
                                   _onBottombarItemTapped(context, index),
@@ -239,6 +241,8 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                             inAnimation: AdaptiveScaffold.bottomToTop,
                             outAnimation: AdaptiveScaffold.topToBottom,
                             builder: (BuildContext ctx) => BottomNavigationBar(
+                              showSelectedLabels: false,
+                              showUnselectedLabels: false,
                               currentIndex: _selectedBottombarIndex,
                               onTap: (index) =>
                                   _onBottombarItemTapped(context, index),
