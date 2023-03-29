@@ -15,7 +15,7 @@ class Dashboard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final widthCount = (MediaQuery.of(context).size.width ~/ 280).toInt();
 
-    const int minCount = 2;
+    const int minCount = 1;
     // get platform of context.
     return SingleChildScrollView(
       physics: const NeverScrollableScrollPhysics(),

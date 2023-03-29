@@ -81,7 +81,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     final index =
         bottomBarNav.indexWhere((t) => location.startsWith(t.initialLocation));
     // if index not found (-1), return 0
-    return index < 0 ? 0 : index;
+    return index < 0 ? 1 : index;
   }
 
   // callback used to navigate to the desired tab
@@ -159,9 +159,13 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                 body: showInSidebar
                     ? SlotLayout(
                         config: <Breakpoint, SlotLayoutConfig>{
-                          Breakpoints.smallAndUp: SlotLayout.from(
+                          Breakpoints.mediumAndUp: SlotLayout.from(
                             key: const Key('Body Small'),
                             builder: (BuildContext ctx) => const NewsWidget(),
+                          ),
+                          Breakpoints.small: SlotLayout.from(
+                            key: const Key('Body Small'),
+                            builder: (BuildContext ctx) => widget.child,
                           ),
                         },
                       )

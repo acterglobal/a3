@@ -243,7 +243,7 @@ class _ImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = WidgetsBinding.instance.window.physicalSize;
+    // Size size = WidgetsBinding.instance.window.physicalSize;
     if (image == null) {
       return const SizedBox.shrink();
     }
@@ -252,8 +252,8 @@ class _ImageWidget extends StatelessWidget {
     return Image.memory(
       Uint8List.fromList(image!),
       fit: BoxFit.cover,
-      cacheWidth: size.width.toInt(),
-      cacheHeight: size.height.toInt(),
+      // cacheWidth: size.width.toInt(),
+      // cacheHeight: size.height.toInt(),
     );
   }
 }
