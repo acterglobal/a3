@@ -37,62 +37,13 @@ class ChatPage extends ConsumerWidget {
                 pinned: false,
                 snap: false,
                 floating: true,
-                leading: TextButton(
-                  onPressed: () {},
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 15),
-                    child: Text(
-                      AppLocalizations.of(context)!.chat,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                  ),
-                ),
-                leadingWidth: 120,
-                actions: [
-                  IconButton(
-                    onPressed: () => controller.toggleSearchView(),
-                    padding: const EdgeInsets.only(right: 10, left: 5),
-                    icon: const Icon(
-                      Atlas.magnifying_glass,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      showNotYetImplementedMsg(
-                        context,
-                        'Multiselect is not implemented yet',
-                      );
-                    },
-                    padding: const EdgeInsets.only(right: 10, left: 5),
-                    icon: const Icon(
-                      Atlas.menu_square,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      showNotYetImplementedMsg(
-                        context,
-                        'Starting a new chat is not implemented yet',
-                      );
-                    },
-                    padding: const EdgeInsets.only(right: 10, left: 10),
-                    icon: const Icon(
-                      Atlas.plus_circle_thin,
-                    ),
-                  ),
-                ],
-              ),
-              SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (controller.showSearch)
-                      Padding(
+                flexibleSpace: controller.showSearch
+                    ? Padding(
                         padding: const EdgeInsets.only(
                           top: 5,
                           bottom: 6,
                           left: 10,
-                          right: 10,
+                          right: 5,
                         ),
                         child: TextField(
                           onChanged: (value) {
@@ -123,7 +74,54 @@ class ChatPage extends ConsumerWidget {
                             ),
                           ),
                         ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Text(
+                          AppLocalizations.of(context)!.chat,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
                       ),
+                actions: controller.showSearch
+                    ? []
+                    : [
+                        IconButton(
+                          onPressed: () => controller.toggleSearchView(),
+                          padding: const EdgeInsets.only(right: 10, left: 5),
+                          icon: const Icon(
+                            Atlas.magnifying_glass,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            showNotYetImplementedMsg(
+                              context,
+                              'Multiselect is not implemented yet',
+                            );
+                          },
+                          padding: const EdgeInsets.only(right: 10, left: 5),
+                          icon: const Icon(
+                            Atlas.menu_square,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            showNotYetImplementedMsg(
+                              context,
+                              'Starting a new chat is not implemented yet',
+                            );
+                          },
+                          padding: const EdgeInsets.only(right: 10, left: 10),
+                          icon: const Icon(
+                            Atlas.plus_circle_thin,
+                          ),
+                        ),
+                      ],
+              ),
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
                     if (client.isGuest())
                       empty
                     else
