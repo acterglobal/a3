@@ -74,6 +74,13 @@ final _routes = [
           );
         },
       ),
+      GoRoute(
+        name: 'chatroom',
+        path: '/chat/:spaceId([!#][^/]+)', // !roomId, #roomName
+        pageBuilder: (context, state) {
+          return NoTransitionPage(key: state.pageKey, child: const ChatPage());
+        },
+      ),
 
       GoRoute(
         name: 'chat',
