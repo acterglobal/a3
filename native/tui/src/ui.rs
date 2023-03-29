@@ -626,7 +626,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
         titles.push(Spans::from(vec![Span::styled(
             format!(
                 "{} / {} spaces history loaded",
-                app.history_load_state.loaded_spaces, app.history_load_state.total_spaces
+                app.history_load_state.known_spaces.len(), app.history_load_state.total_spaces()
             ),
             Style::default().fg(BG_GRAY),
         )]));
