@@ -1,5 +1,5 @@
 name = "Onboarding Template"
-version = "0.1"
+version = "0.1.1"
 
 [inputs]
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
