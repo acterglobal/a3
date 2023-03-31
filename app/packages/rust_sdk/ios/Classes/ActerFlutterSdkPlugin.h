@@ -3,4 +3,4 @@
 @interface ActerFlutterSdkPlugin : NSObject<FlutterPlugin>
 @end
 
-int64_t __gen_mock_news(void);
+void __hello_world(void);

@@ -13,7 +13,8 @@ public class SwiftActerFlutterSdkPlugin: NSObject, FlutterPlugin {
   }
 
   public func dummyMethodToEnforceBundling() {
-    // This will never be executed
-    __gen_mock_news();
+    // This will never be executed but is needed to ensure
+    // the lib is linked properly
+    __hello_world();
   }
 }

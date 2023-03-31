@@ -5,6 +5,15 @@ use tokio::runtime::Runtime;
 
 use crate::platform;
 
+#[no_mangle]
+pub extern "C" fn __hello_world() {
+    // DO NOT REMOVE.
+    // empty external linking helper, noop but needed for
+    // iOS to properly link the headers and lib into
+    // the binary.
+    // DO NOT REMOVE.
+}
+
 lazy_static! {
     pub static ref RUNTIME: Runtime = Runtime::new().expect("Can't start Tokio runtime");
 }
