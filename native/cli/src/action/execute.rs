@@ -24,7 +24,7 @@ impl ExecuteOpts {
         let mapped_inputs = self
             .inputs
             .iter()
-            .filter_map(|v| v.split_once("="))
+            .filter_map(|v| v.split_once('='))
             .collect::<HashMap<&str, &str>>();
         let mut user = self.login.client().await?;
 
@@ -57,16 +57,14 @@ impl ExecuteOpts {
                     } else {
                         anyhow::bail!("{key} : non-space input values not yet supported")
                     }
-                } else {
-                    if is_required {
-                        if key == "main" {
-                            tracing::info!("Main user has been provided, ignoring.")
-                        } else {
-                            anyhow::bail!("Missing required input value {key} for {tmpl_path:?}");
-                        }
+                } else if is_required {
+                    if key == "main" {
+                        tracing::info!("Main user has been provided, ignoring.")
                     } else {
-                        tracing::info!("No value provided for {key} for for {tmpl_path:?}");
+                        anyhow::bail!("Missing required input value {key} for {tmpl_path:?}");
                     }
+                } else {
+                    tracing::info!("No value provided for {key} for for {tmpl_path:?}");
                 }
             }
 
