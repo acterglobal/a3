@@ -451,6 +451,7 @@ impl Engine {
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
+                        tracing::trace!(?id, "task list created");
                         context.insert(
                             key.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "task-list".to_owned())),
@@ -464,6 +465,7 @@ impl Engine {
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
+                        tracing::trace!(?id, "task created");
                         context.insert(
                             key.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "task".to_owned())),
@@ -477,6 +479,7 @@ impl Engine {
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
+                        tracing::trace!(?id, "calendar event created");
                         context.insert(
                             key.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "calendar-event".to_owned())),
@@ -490,6 +493,7 @@ impl Engine {
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
+                        tracing::trace!(?id, "pin created");
                         context.insert(
                             key.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "pin".to_owned())),
@@ -503,6 +507,7 @@ impl Engine {
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
+                        tracing::trace!(?id, "news created");
                         context.insert(
                             key.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "news-entry".to_owned())),
