@@ -235,7 +235,7 @@ impl Client {
                 if !g.is_acter_space().await {
                     tracing::trace!(room_id=?g.room_id(), "not an acter space");
                     history.lock_mut().unknow_room(&g.room_id().to_owned());
-                    return ;
+                    return;
                 }
 
                 g.add_handlers().await;
