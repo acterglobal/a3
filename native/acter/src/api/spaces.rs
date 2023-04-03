@@ -83,6 +83,7 @@ impl Space {
         self.room
             .client()
             .add_event_handler_context(self.client.executor().clone());
+        tracing::trace!(room_id=?self.room.room_id(), "adding handlers");
         let room_id = self.room_id().to_owned();
         // FIXME: combine into one handler
 

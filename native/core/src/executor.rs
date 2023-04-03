@@ -90,6 +90,7 @@ impl Executor {
     }
 
     pub async fn handle(&self, model: AnyActerModel) -> Result<()> {
+        tracing::trace!(?model, "handle");
         self.notify(model.execute(&self.store).await?);
         Ok(())
     }
