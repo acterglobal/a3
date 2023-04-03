@@ -42,7 +42,11 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
       Finder submitBtn = find.byKey(LoginPageKeys.submitBtn);
       context.expect(submitBtn, findsOneWidget);
       await context.world.appDriver.tap(submitBtn);
-      await context.world.appDriver.waitForAppToSettle();
+      await context.world.appDriver.waitForAppToSettle(
+          //   duration: const Duration(
+          //     seconds: 10,
+          //   ),
+          );
 
       // we are back on the news screen
       Finder successBar = find.byKey(LoginPageKeys.snackbarSuccess);

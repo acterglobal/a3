@@ -23,11 +23,15 @@ void main() async {
 
 Future<void> startFreshTestApp(String key) async {
   await ActerSdk.resetSessionsAndClients(key);
-  await startApp();
+  await startAppInner();
 }
 
 Future<void> startApp() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await startAppInner();
+}
+
+Future<void> startAppInner() async {
   bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
   if (isDesktop) {
     setWindowTitle('Acter');
