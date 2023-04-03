@@ -1,6 +1,7 @@
 import 'package:acter/common/controllers/client_controller.dart';
 import 'package:acter/common/controllers/spaces_controller.dart';
 import 'package:acter/common/controllers/router_controller.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
@@ -248,6 +249,7 @@ class SidebarWidget extends ConsumerWidget {
             Visibility(
               visible: !isGuest,
               child: InkWell(
+                key: Keys.logoutBtn,
                 onTap: () => confirmationDialog(context, ref),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -276,6 +278,7 @@ class SidebarWidget extends ConsumerWidget {
             Visibility(
               visible: isGuest,
               child: InkWell(
+                key: Keys.loginBtn,
                 onTap: () => context.pushNamed('login'),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(

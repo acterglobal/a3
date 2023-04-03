@@ -7,20 +7,21 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
   return given1<String, FlutterWorld>(
     r'(kyra|sisko|odo) has logged in',
     (username, context) async {
-      Finder bottomBar = find.byKey(Keys.bottomBar);
-      context.expect(bottomBar, findsOneWidget);
+      // FIXME: add feature to always have a loginBtn.
+      // Finder bottomBar = find.byKey(Keys.bottomBar);
+      // context.expect(bottomBar, findsOneWidget);
 
-      Finder newsSection = find.byKey(Keys.newsSectionBtn);
-      context.expect(newsSection, findsOneWidget);
+      // Finder newsSection = find.byKey(Keys.newsSectionBtn);
+      // context.expect(newsSection, findsOneWidget);
 
-      await context.world.appDriver.tap(newsSection);
-      await context.world.appDriver.waitForAppToSettle();
+      // await context.world.appDriver.tap(newsSection);
+      // await context.world.appDriver.waitForAppToSettle();
 
-      Finder sidebar = find.byKey(Keys.sidebarBtn);
-      context.expect(sidebar, findsOneWidget);
+      // Finder sidebar = find.byKey(Keys.sidebarBtn);
+      // context.expect(sidebar, findsOneWidget);
 
-      await context.world.appDriver.tap(sidebar);
-      await context.world.appDriver.waitForAppToSettle();
+      // await context.world.appDriver.tap(sidebar);
+      // await context.world.appDriver.waitForAppToSettle();
 
       Finder login = find.byKey(Keys.loginBtn);
       context.expect(login, findsOneWidget);

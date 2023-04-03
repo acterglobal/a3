@@ -22,6 +22,7 @@ class Keys {
   static const bottomBar = Key('bottom-bar');
   static const newsSectionBtn = Key('news-section-btn');
   static const sidebarBtn = Key('sidebar-btn');
+  static const logoutBtn = Key('login-btn');
   static const loginBtn = Key('login-btn');
   static const usernameLabel = Key('username-lbl');
 }
