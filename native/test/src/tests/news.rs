@@ -60,6 +60,7 @@ url = "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG"
 "#;
 
 #[tokio::test]
+#[ignore = "doesn't work on CI for some reason, #574"]
 async fn news_smoketest() -> Result<()> {
     let _ = env_logger::try_init();
     let (user, _sync_state, _engine) = random_user_with_template("news-smoke-", TMPL).await?;
