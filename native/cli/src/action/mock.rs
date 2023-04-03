@@ -95,7 +95,7 @@ impl Mock {
                 tracing::trace!("client not found. creating for {:}", username);
 
                 let store_config = if self.persist {
-                    let path = sanitize(".local".to_string(), username.clone());
+                    let path = sanitize(".local", &username);
                     make_store_config(path, Some(&username)).await?
                 } else {
                     StoreConfig::new().state_store(MemoryStore::new())
@@ -384,10 +384,7 @@ impl Mock {
 
         futures::future::try_join_all(self.users.values().map(|cl| async move {
             let full_username = cl.user_id().unwrap();
-            let user_export_file = sanitize(
-                ".local".to_string(),
-                format!("mock_export_{full_username:}"),
-            );
+            let user_export_file = sanitize(".local", &format!("mock_export_{full_username:}"));
 
             cl.sync_once(Default::default()).await?;
 
