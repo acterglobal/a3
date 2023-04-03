@@ -6,7 +6,7 @@
    fill="none"
    version="1.1"
    id="svg14"
-   sodipodi:docname="acter.svg"
+   sodipodi:docname="acter-logo.svg"
    inkscape:export-filename="logo.png"
    inkscape:export-xdpi="409.60001"
    inkscape:export-ydpi="409.60001"
@@ -28,14 +28,29 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
      inkscape:zoom="1.9666667"
-     inkscape:cx="25.423728"
+     inkscape:cx="255.50847"
      inkscape:cy="254.74576"
      inkscape:window-width="2880"
      inkscape:window-height="1739"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer2" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="bg"
+     style="display:inline">
+    <rect
+       style="fill:#1d293e;fill-opacity:1;stroke:#1d293e;stroke-width:4.086;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       id="rect369"
+       width="491.64209"
+       height="488.93878"
+       x="10.178952"
+       y="11.530612"
+       inkscape:label="rect369"
+       ry="53.907398" />
+  </g>
   <g
      inkscape:groupmode="layer"
      id="layer1"
