@@ -11,6 +11,7 @@ import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 final desktopPlatforms = [
@@ -147,4 +148,8 @@ final router = GoRouter(
   initialLocation: '/',
   debugLogDiagnostics: true,
   routes: _routes,
+);
+
+final goRouterProvider = Provider<GoRouter>(
+  (ref) => router,
 );

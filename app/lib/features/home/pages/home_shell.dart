@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:acter/common/controllers/router_controller.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
+import 'package:acter/routing.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:date_format/date_format.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
@@ -120,7 +120,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     final bool isDesktop =
         desktopPlatforms.contains(Theme.of(context).platform);
     final location =
-        ref.watch(goRouterProvider(context).select((g) => g.location));
+        ref.watch(goRouterProvider.select((value) => value.location));
 
     final showInSidebar = isDesktop && location == '/dashboard';
     final bodyRatio = showInSidebar ? 0.3 : 0.0;

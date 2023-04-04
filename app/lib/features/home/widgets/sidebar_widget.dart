@@ -1,10 +1,10 @@
 import 'package:acter/common/controllers/client_controller.dart';
 import 'package:acter/common/controllers/spaces_controller.dart';
-import 'package:acter/common/controllers/router_controller.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
+import 'package:acter/routing.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
@@ -150,7 +150,7 @@ final currentSelectedSidebarIndexProvider =
     Provider.family<int, BuildContext>((ref, context) {
   final items = ref.watch(sidebarItemsProvider(context));
   final location =
-      ref.watch(goRouterProvider(context).select((g) => g.location));
+      ref.watch(goRouterProvider.select((value) => value.location));
   final index = items.indexWhere(
     (t) => t.location != null && location.startsWith(t.location!),
   );
