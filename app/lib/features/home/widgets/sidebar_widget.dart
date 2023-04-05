@@ -203,6 +203,7 @@ class SidebarWidget extends ConsumerWidget {
           Visibility(
             visible: !ref.watch(clientProvider)!.isGuest(),
             child: Container(
+              key: Keys.avatar,
               margin: const EdgeInsets.only(top: 8),
               child: const UserAvatarWidget(),
             ),

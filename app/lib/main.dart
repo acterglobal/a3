@@ -50,15 +50,16 @@ Future<void> startAppInner() async {
   runApp(const ProviderScope(child: Acter()));
 }
 
-class Acter extends StatelessWidget {
+class Acter extends ConsumerWidget {
   const Acter({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appRouter = ref.watch(goRouterProvider);
     return Portal(
       child: OverlaySupport.global(
         child: MaterialApp.router(
-          routerConfig: router,
+          routerConfig: appRouter,
           debugShowCheckedModeBanner: false,
           theme: AppTheme.theme,
           title: 'Acter',
