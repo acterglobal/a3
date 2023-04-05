@@ -42,7 +42,9 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
       Finder submitBtn = find.byKey(LoginPageKeys.submitBtn);
       context.expect(submitBtn, findsOneWidget);
       await context.world.appDriver.tap(submitBtn);
-      await context.world.appDriver.waitForAppToSettle();
+      await context.world.appDriver.waitForAppToSettle(
+        duration: const Duration(milliseconds: 750),
+      );
 
       // we are back on the news screen
       // On successful login, user avatar should appear.
