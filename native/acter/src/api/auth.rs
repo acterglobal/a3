@@ -31,7 +31,7 @@ pub async fn make_client_config(
 
     // fully qualified username, good to go
     if let Ok(user_id) = OwnedUserId::try_from(formatted_username.as_str()) {
-        let builder = platform::new_client_config(base_path, user_id.to_string())
+        let builder = platform::new_client_config(base_path, user_id.to_string(), true)
             .await?
             .server_name(user_id.server_name());
         return Ok((builder, user_id));
@@ -39,7 +39,7 @@ pub async fn make_client_config(
 
     // we need to fallback to the testing/default scenario
     let user_id = OwnedUserId::try_from(format!("{formatted_username}:{default_homeserver_name}"))?;
-    let builder = platform::new_client_config(base_path, user_id.to_string())
+    let builder = platform::new_client_config(base_path, user_id.to_string(), true)
         .await?
         .homeserver_url(default_homeserver_url);
     Ok((builder, user_id))
@@ -51,7 +51,7 @@ pub async fn guest_client(
     default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let config = platform::new_client_config(base_path, default_homeserver_name)
+    let config = platform::new_client_config(base_path, default_homeserver_name, true)
         .await?
         .homeserver_url(default_homeserver_url);
     RUNTIME
@@ -125,7 +125,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         is_guest,
     } = serde_json::from_str(&restore_token).context("Deserializing Restore Token failed")?;
     let user_id = session.user_id.to_string();
-    let config = platform::new_client_config(base_path, user_id.clone())
+    let config = platform::new_client_config(base_path, user_id.clone(), false)
         .await
         .context("can't build client")?;
     login_with_token_under_config(restore_token, config).await
@@ -158,6 +158,24 @@ pub async fn login_new_client_under_config(
             Ok(c)
         })
         .await?
+}
+
+pub async fn smart_login(
+    base_path: String,
+    username: String,
+    password: String,
+    default_homeserver_name: String,
+    default_homeserver_url: String,
+    device_name: Option<String>,
+) -> Result<Client> {
+    let (config, user_id) = make_client_config(
+        base_path,
+        &username,
+        &default_homeserver_name,
+        &default_homeserver_url,
+    )
+    .await?;
+    login_new_client_under_config(config, user_id, password, device_name).await
 }
 
 pub async fn login_new_client(

@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use acter::{Conversation, Group, HistoryLoadState, Task, TaskList};
+use acter::{Conversation, HistoryLoadState, Space, Task, TaskList};
 use anyhow::Result;
 use async_broadcast::Receiver as Subscription;
 use clap::crate_version;
@@ -34,7 +34,7 @@ pub enum AppUpdate {
     SetUsername(String), // set the username
     SetSynced(bool),     // set the synced state
     UpdateConversations(Vec<Conversation>),
-    UpdateGroups(Vec<Group>),
+    UpdateSpaces(Vec<Space>),
     SetHistoryLoadState(HistoryLoadState),
     SetTasksList(Vec<TaskList>),
 }
@@ -204,9 +204,9 @@ impl TasksState {
                 }
             }
             // KeyCode::Char('n') => {
-            //     let groups = &self.groups;
+            //     let spaces = &self.spaces;
             //     let names: Vec<String> =
-            //         join_all(groups.iter().map(|g| g.display_name()))
+            //         join_all(spaces.iter().map(|g| g.display_name()))
             //             .await
             //             .into_iter()
             //             .map(|d| d.map(|i| format!("{}", i)))
@@ -219,13 +219,13 @@ impl TasksState {
             //         .unwrap();
 
             //     let chosen: usize = Select::new()
-            //         .with_prompt("Under which Group?")
+            //         .with_prompt("Under which Space?")
             //         .items(&names)
             //         .interact()
             //         .unwrap();
 
-            //     let group = &groups[chosen];
-            //     let mut tl_draft = group.task_list_draft().unwrap();
+            //     let space = &spaces[chosen];
+            //     let mut tl_draft = space.task_list_draft().unwrap();
             //     tl_draft.name(list_title);
 
             //     tl_draft.send().await.unwrap();
@@ -364,7 +364,7 @@ struct App {
     pub log_state: tui_logger::TuiWidgetState,
     pub logs_fullscreen: bool,
     pub tools: Vec<Tool>,
-    pub groups: Vec<Group>,
+    pub spaces: Vec<Space>,
     pub conversations: Vec<Conversation>,
     pub history_load_state: HistoryLoadState,
     pub index: usize,
@@ -384,7 +384,7 @@ impl App {
             logs_fullscreen,
             selected_widget,
             log_state: Default::default(),
-            groups: Default::default(),
+            spaces: Default::default(),
             conversations: Default::default(),
             history_load_state: Default::default(),
             username: None,
@@ -406,8 +406,8 @@ impl App {
         match update {
             AppUpdate::SetUsername(u) => self.username = Some(u),
             AppUpdate::SetSynced(synced) => self.synced = synced,
-            AppUpdate::UpdateGroups(groups) => {
-                self.groups = groups;
+            AppUpdate::UpdateSpaces(spaces) => {
+                self.spaces = spaces;
             }
             AppUpdate::SetTasksList(t) => {
                 for m in self.tools.iter_mut() {
@@ -625,14 +625,15 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
     if !app.history_load_state.is_done_loading() {
         titles.push(Spans::from(vec![Span::styled(
             format!(
-                "{} / {} groups history loaded",
-                app.history_load_state.loaded_groups, app.history_load_state.total_groups
+                "{} / {} spaces history loaded",
+                app.history_load_state.known_spaces.len(),
+                app.history_load_state.total_spaces()
             ),
             Style::default().fg(BG_GRAY),
         )]));
     } else {
         titles.push(Spans::from(vec![Span::styled(
-            format!("{} Groups", app.groups.len()),
+            format!("{} Spaces", app.spaces.len()),
             Style::default().fg(BG_GRAY),
         )]));
     }

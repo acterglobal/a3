@@ -26,11 +26,11 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     let sisko_syncer = sisko.start_sync();
     let mut first_synced = sisko_syncer.first_synced_rx().expect("note yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let group = sisko
-        .get_group(format!("#ops:{homeserver_name}"))
+    let space = sisko
+        .get_space(format!("#ops:{homeserver_name}"))
         .await
         .expect("sisko should belong to ops");
-    let sent = group.typing_notice(true).await?;
+    let sent = space.typing_notice(true).await?;
     println!("sent: {sent:?}");
 
     let tmp_dir = TempDir::new()?;

@@ -418,7 +418,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "06bdc7f595a5cfc86b707c34377f4a636dfcf254"
+      resolved-ref: "721d96d51c33ef7be918bb572f54af660bdcca0b"
       url: "https://github.com/acterglobal/flyer-flutter_chat_ui.git"
     source: git
     version: "1.6.6"
@@ -594,14 +594,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
-  flutter_rust_bridge:
-    dependency: transitive
-    description:
-      name: flutter_rust_bridge
-      sha256: a339173f23a40dacb7265a2c6920269ef4a931453ac6a0476da5e22860d03e89
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.14.0"
   flutter_slidable:
     dependency: "direct main"
     description:
@@ -610,6 +602,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.2"
+  flutter_staggered_grid_view:
+    dependency: "direct main"
+    description:
+      name: flutter_staggered_grid_view
+      sha256: "1312314293acceb65b92754298754801b0e1f26a1845833b740b30415bbbcf07"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.2"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -665,6 +665,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  go_router:
+    dependency: "direct main"
+    description:
+      name: go_router
+      sha256: e2a90e1d4eed378ea12e0771be9e32766a2f8d2de3064e42f3a55f1b04fb8af8
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.4.1"
   google_fonts:
     dependency: "direct main"
     description:
@@ -1310,6 +1318,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.3"
+  simple_gesture_detector:
+    dependency: transitive
+    description:
+      name: simple_gesture_detector
+      sha256: "86d08f85f1f58583b7b4b941d989f48ea6ce08c1724a1d10954a277c2ec36592"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -1396,13 +1412,13 @@ packages:
     source: hosted
     version: "1.2.0"
   string_validator:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: string_validator
-      sha256: "50dd8ecf91db6a732f4a851eeae81ee12406eedc62d0da72f2d91a04a2d10dd8"
+      sha256: b419cf5d21d608522e6e7cafed4deb34b6f268c43df866e63c320bab98a08cf6
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.0"
+    version: "1.0.0"
   sync_http:
     dependency: transitive
     description:
@@ -1419,6 +1435,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
+  table_calendar:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "319ffdedb3e00c9377bc158444612b8d2e9f4009"
+      url: "https://github.com/acterglobal/table_calendar.git"
+    source: git
+    version: "3.0.9"
   term_glyph:
     dependency: transitive
     description:
@@ -1476,13 +1501,13 @@ packages:
     source: hosted
     version: "2.0.4"
   url_launcher:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: url_launcher
-      sha256: "698fa0b4392effdc73e9e184403b627362eb5fbf904483ac9defbb1c2191d809"
+      sha256: "75f2846facd11168d007529d6cd8fcb2b750186bea046af9711f10b907e1587e"
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.8"
+    version: "6.1.10"
   url_launcher_android:
     dependency: transitive
     description:

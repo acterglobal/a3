@@ -35,6 +35,7 @@ object UtcDateTime {
     fn timestamp() -> i64;
     fn to_rfc2822() -> string;
     fn to_rfc3339() -> string;
+    fn timestamp_millis()-> i64;
 }
 
 object RefDetails {
@@ -71,6 +72,8 @@ object Colorize {
 object NewsSlide {
     /// the content of this slide
     fn type_str() -> string;
+    /// the textual content of this slide
+    fn text() -> string;
     /// the references linked in this slide,
     fn references() -> Vec<ObjRef>;
     /// if this is an image, hand over the description
@@ -174,7 +177,42 @@ object PinUpdateBuilder {
     // fire this update over - the event_id is the confirmation
     // from the server.
     fn send() -> Future<Result<EventId>>;
+}
 
+// enum LocationType {
+//    Physical,
+//    Virtual
+// }
+
+
+// object Location {
+//    /// "physical" or "virtual" 
+//    fn location_type() -> string;
+//    fn name() -> Option<string>;
+//    fn description() -> Option<TextMessageContent>;
+//    fn coordinates() -> Option<string>;
+//    fn uri() -> Option<string>;
+//}
+
+
+object TextMessageContent {
+    fn body() -> string;
+    fn formatted() -> Option<string>;
+}
+
+object CalendarEvent {
+    /// the title of the event
+    fn title() -> string;
+    /// description text
+    fn description() -> Option<TextMessageContent>; 
+    /// When the event starts
+    fn utc_start() -> UtcDateTime;
+    /// When the event end
+    fn utc_end() -> UtcDateTime;
+    /// whether to show the time or just the dates
+    fn show_without_time() -> bool;
+    // locations
+    // fn locations() -> Vec<Location>;
 }
 
 object MediaSource {}
@@ -410,6 +448,9 @@ object TimelineStream {
 object Conversation {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> Future<Result<RoomProfile>>;
+
+    /// what is the description / topic
+    fn topic() -> Option<string>;
 
     /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
@@ -776,6 +817,9 @@ object TaskList {
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<TaskList>>;
+
+    /// the space this TaskList belongs to
+    fn space() -> Space;
 }
 
 object TaskListDraft {
@@ -831,11 +875,47 @@ object TaskListUpdateBuilder {
     fn send() -> Future<Result<EventId>>;
 }
 
-object Group {
+enum RelationTargetType {
+    Unknown,
+    ChatRoom,
+    Space,
+    ActerSpace
+}
+
+object SpaceRelation {
+    /// the room ID this Relation links to
+    fn room_id() -> RoomId;
+    /// is this a suggested room?
+    fn suggested() -> bool;
+    /// how to find this room
+    fn via() -> Vec<string>;
+    /// of what type is the targeted room?
+    fn target_type() -> RelationTargetType;
+}
+
+object SpaceRelations {
+    /// do we have a canonical parent?!?
+    fn main_parent() -> Option<SpaceRelation>;
+    /// other parents we belong to
+    fn other_parents() -> Vec<SpaceRelation>;
+    /// children
+    fn children() -> Vec<SpaceRelation>;
+}
+
+object Space {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> Future<Result<RoomProfile>>;
 
-    /// the members currently in the group
+    /// get the room profile that contains avatar and display name
+    fn space_relations() -> Future<Result<SpaceRelations>>;
+
+    /// what is the description / topic
+    fn topic() -> Option<string>;
+
+    /// whether this an acter space
+    fn is_acter_space() -> Future<bool>;
+
+    /// the members currently in the space
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     /// the room id
@@ -847,7 +927,7 @@ object Group {
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
 
-    /// the Tasks lists of this Group
+    /// the Tasks lists of this Space
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
 
     /// task list draft builder
@@ -856,13 +936,16 @@ object Group {
     /// get latest news
     fn latest_news(count: u32) -> Future<Result<Vec<NewsEntry>>>;
 
+    /// get all calendar events
+    fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
+
     /// news draft builder
     fn news_draft() -> Result<NewsEntryDraft>;
 
-    /// the pins of this Group
+    /// the pins of this Space
     fn pins() -> Future<Result<Vec<ActerPin>>>;
 
-    /// the links pinned to this Group
+    /// the links pinned to this Space
     fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
 
     /// pin draft builder
@@ -903,18 +986,18 @@ object SyncState {
     fn cancel();
 }
 
-object CreateGroupSettings {
-    /// set the alias of group
+object CreateSpaceSettings {
+    /// set the alias of space
     fn alias(value: string);
 
-    /// set the group's visibility to either Public or Private
+    /// set the space's visibility to either Public or Private
     fn visibility(value: string);
 
-    /// add the id of user that will be invited to this group
+    /// add the id of user that will be invited to this space
     fn add_invitee(value: string);
 }
 
-fn new_group_settings(name: string) -> CreateGroupSettings;
+fn new_space_settings(name: string) -> CreateSpaceSettings;
 
 /// Main entry point for `acter`.
 object Client {
@@ -960,12 +1043,12 @@ object Client {
     /// The update event of conversations the user is involved in
     fn conversations_rx() -> Stream<Vec<Conversation>>;
 
-    /// The groups the user is part of
-    fn groups() -> Future<Result<Vec<Group>>>;
+    /// The spaces the user is part of
+    fn spaces() -> Future<Result<Vec<Space>>>;
 
-    /// Get the following group the user is part of by
+    /// Get the following space the user is part of by
     /// roomId or room alias;
-    fn get_group(id_or_alias: string) -> Future<Result<Group>>;
+    fn get_space(id_or_alias: string) -> Future<Result<Space>>;
 
     /// Get the latest News for the client
     fn latest_news(count: u32) -> Future<Result<Vec<NewsEntry>>>;
@@ -1006,11 +1089,11 @@ object Client {
     /// Return the message receiver
     fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
 
-    /// the Tasks lists of this Group
+    /// the Tasks lists of this Space
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
 
-    /// create default group
-    fn create_acter_group(settings: CreateGroupSettings) -> Future<Result<RoomId>>;
+    /// create default space
+    fn create_acter_space(settings: CreateSpaceSettings) -> Future<Result<RoomId>>;
 
     /// listen to updates to any model key
     fn subscribe(key: string) -> Stream<bool>;
@@ -1023,6 +1106,9 @@ object Client {
 
     /// Fetch the Task or use its event_id to wait for it to come down the wire
     fn wait_for_task(key: string, timeout: Option<EfkDuration>) -> Future<Result<Task>>;
+
+    /// get all calendar events
+    fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
 }
 
 object UserProfile {

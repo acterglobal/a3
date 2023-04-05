@@ -14,7 +14,7 @@ use core::time::Duration;
 use matrix_sdk::{room::Joined, room::Room};
 use std::collections::{hash_map::Entry, HashMap};
 
-use super::{client::Client, group::Group, RUNTIME};
+use super::{client::Client, spaces::Space, RUNTIME};
 
 impl Client {
     pub async fn wait_for_task_list(
@@ -104,7 +104,7 @@ impl Client {
     }
 }
 
-impl Group {
+impl Space {
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut task_lists = Vec::new();
         let room_id = self.room_id();
@@ -280,6 +280,15 @@ impl TaskList {
 
     pub fn categories(&self) -> Vec<String> {
         self.content.categories.clone()
+    }
+
+    pub fn space(&self) -> Space {
+        Space {
+            client: self.client.clone(),
+            inner: crate::Room {
+                room: self.room.clone(),
+            },
+        }
     }
 }
 
@@ -1000,10 +1009,10 @@ impl TaskListUpdateBuilder {
     }
 }
 
-impl Group {
+impl Space {
     pub fn task_list_draft(&self) -> Result<TaskListDraft> {
         let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create tasks for groups we are not part on")
+            bail!("You can't create tasks for spaces we are not part on")
         };
         Ok(TaskListDraft {
             client: self.client.clone(),
@@ -1014,7 +1023,7 @@ impl Group {
 
     pub fn task_list_draft_with_builder(&self, content: TaskListBuilder) -> Result<TaskListDraft> {
         let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create tasks for groups we are not part on")
+            bail!("You can't create tasks for spaces we are not part on")
         };
         Ok(TaskListDraft {
             client: self.client.clone(),

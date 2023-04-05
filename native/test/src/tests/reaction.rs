@@ -26,11 +26,11 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let sisko_syncer = sisko.start_sync();
     let mut sisko_synced = sisko_syncer.first_synced_rx().expect("note yet read");
     while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let sisko_group = sisko
-        .get_group(format!("#ops:{homeserver_name}"))
+    let sisko_space = sisko
+        .get_space(format!("#ops:{homeserver_name}"))
         .await
         .expect("sisko should belong to ops");
-    let event_id = sisko_group
+    let event_id = sisko_space
         .send_plain_message("Hi, everyone".to_string())
         .await?;
 
@@ -47,8 +47,8 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let kyra_syncer = kyra.start_sync();
     let mut first_synced = kyra_syncer.first_synced_rx().expect("note yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let kyra_group = kyra
-        .get_group(format!("#ops:{homeserver_name}"))
+    let kyra_space = kyra
+        .get_space(format!("#ops:{homeserver_name}"))
         .await
         .expect("kyra should belong to ops");
 
@@ -65,8 +65,8 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let worf_syncer = worf.start_sync();
     let mut first_synced = worf_syncer.first_synced_rx().expect("note yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let worf_group = worf
-        .get_group(format!("#ops:{homeserver_name}"))
+    let worf_space = worf
+        .get_space(format!("#ops:{homeserver_name}"))
         .await
         .expect("worf should belong to ops");
 
@@ -83,8 +83,8 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let bashir_syncer = bashir.start_sync();
     let mut first_synced = bashir_syncer.first_synced_rx().expect("note yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let bashir_group = bashir
-        .get_group(format!("#ops:{homeserver_name}"))
+    let bashir_space = bashir
+        .get_space(format!("#ops:{homeserver_name}"))
         .await
         .expect("bashir should belong to ops");
 
@@ -101,8 +101,8 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let miles_syncer = miles.start_sync();
     let mut first_synced = miles_syncer.first_synced_rx().expect("note yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let miles_group = miles
-        .get_group(format!("#ops:{homeserver_name}"))
+    let miles_space = miles
+        .get_space(format!("#ops:{homeserver_name}"))
         .await
         .expect("miles should belong to ops");
 
@@ -119,8 +119,8 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let jadzia_syncer = jadzia.start_sync();
     let mut first_synced = jadzia_syncer.first_synced_rx().expect("note yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let jadzia_group = jadzia
-        .get_group(format!("#ops:{homeserver_name}"))
+    let jadzia_space = jadzia
+        .get_space(format!("#ops:{homeserver_name}"))
         .await
         .expect("jadzia should belong to ops");
 
@@ -137,31 +137,31 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let odo_syncer = odo.start_sync();
     let mut first_synced = odo_syncer.first_synced_rx().expect("note yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let odo_group = odo
-        .get_group(format!("#ops:{homeserver_name}"))
+    let odo_space = odo
+        .get_space(format!("#ops:{homeserver_name}"))
         .await
         .expect("odo should belong to ops");
 
-    kyra_group
+    kyra_space
         .send_reaction(event_id.to_string(), "👏".to_string())
         .await?;
-    worf_group
+    worf_space
         .send_reaction(event_id.to_string(), "😎".to_string())
         .await?;
-    bashir_group
+    bashir_space
         .send_reaction(event_id.to_string(), "😜".to_string())
         .await?;
-    miles_group
+    miles_space
         .send_reaction(event_id.to_string(), "🤩".to_string())
         .await?;
-    jadzia_group
+    jadzia_space
         .send_reaction(event_id.to_string(), "😍".to_string())
         .await?;
-    odo_group
+    odo_space
         .send_reaction(event_id.to_string(), "😂".to_string())
         .await?;
 
-    let event = sisko_group.event(&event_id).await?;
+    let event = sisko_space.event(&event_id).await?;
     println!("reactions: {event:?}");
 
     Ok(())

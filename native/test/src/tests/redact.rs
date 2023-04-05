@@ -13,18 +13,18 @@ async fn message_redaction() -> Result<()> {
     let mut synced = syncer.first_synced_rx().expect("note yet read");
     while synced.next().await != Some(true) {} // let's wait for it to have synced
 
-    let group = user
-        .get_group(room_id.to_string())
+    let space = user
+        .get_space(room_id.to_string())
         .await
         .expect("user belongs to its space");
-    let event_id = group.send_plain_message("Hi, everyone".to_string()).await?;
+    let event_id = space.send_plain_message("Hi, everyone".to_string()).await?;
     println!("event id: {event_id:?}");
 
-    let redact_id = group
+    let redact_id = space
         .redact_message(event_id.to_string(), Some("redact-test".to_string()), None)
         .await?;
 
-    let ev = group.event(&redact_id).await?;
+    let ev = space.event(&redact_id).await?;
     println!("redact: {ev:?}");
 
     let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(r))) = ev.event.deserialize() else {

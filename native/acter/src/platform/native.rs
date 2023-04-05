@@ -5,13 +5,27 @@ use log::{LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
 use matrix_sdk_sled::make_store_config;
 use parse_env_filter::eager::{filters, Filter};
+use ruma::api::client::backup;
 use std::{
     path::PathBuf,
     sync::{Arc, Mutex},
 };
 
-pub async fn new_client_config(base_path: String, home: String) -> Result<ClientBuilder> {
-    let data_path = sanitize(base_path, home);
+pub async fn new_client_config(
+    base_path: String,
+    home: String,
+    reset_if_existing: bool,
+) -> Result<ClientBuilder> {
+    let data_path = sanitize(&base_path, &home);
+
+    if reset_if_existing && std::path::Path::new(&data_path).try_exists()? {
+        let backup_path = sanitize(
+            &base_path,
+            &format!("{home}_backup_{}", Local::now().to_rfc3339()),
+        );
+        tracing::warn!("{data_path:?} already existing. Moving to backup at {backup_path:?}.");
+        std::fs::rename(&data_path, backup_path)?;
+    }
 
     std::fs::create_dir_all(&data_path)?;
 
@@ -126,8 +140,8 @@ pub fn write_log(text: String, level: String) -> Result<()> {
     Ok(())
 }
 
-pub fn sanitize(base_path: String, home: String) -> PathBuf {
-    PathBuf::from(base_path).join(sanitize_filename_reader_friendly::sanitize(&home))
+pub fn sanitize(base_path: &str, home: &str) -> PathBuf {
+    PathBuf::from(base_path).join(sanitize_filename_reader_friendly::sanitize(home))
 }
 
 struct NopLogger;

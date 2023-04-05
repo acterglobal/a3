@@ -1,8 +1,8 @@
 use super::message::{ImageDesc, TextDesc, VideoDesc};
 use acter_core::{
     events::{
-        news::{self, NewsEntryBuilder},
-        Icon, TextMessageEventContent,
+        news::{self, NewsContent, NewsEntryBuilder},
+        Icon, ImageMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
     },
     models::{self, ActerModel, AnyActerModel, Color},
     ruma::{OwnedEventId, OwnedRoomId},
@@ -18,7 +18,7 @@ use matrix_sdk::{
 };
 use std::collections::{hash_map::Entry, HashMap};
 
-use super::{api::FfiBuffer, client::Client, group::Group, RUNTIME};
+use super::{api::FfiBuffer, client::Client, spaces::Space, RUNTIME};
 
 impl Client {
     pub async fn wait_for_news(
@@ -87,7 +87,7 @@ impl Client {
     }
 }
 
-impl Group {
+impl Space {
     pub async fn latest_news(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
         let mut news = Vec::new();
         let room_id = self.room_id();
@@ -149,9 +149,20 @@ impl NewsSlide {
         })
     }
 
-    pub fn text(&self) -> Option<String> {
-        // FIXME: to be implemented
-        None
+    pub fn text(&self) -> String {
+        match self.inner.content() {
+            NewsContent::Image(ImageMessageEventContent { body, .. })
+            | NewsContent::Video(VideoMessageEventContent { body, .. }) => body.clone(),
+            NewsContent::Text(TextMessageEventContent {
+                formatted, body, ..
+            }) => {
+                if let Some(formatted) = formatted {
+                    formatted.body.clone()
+                } else {
+                    body.clone()
+                }
+            }
+        }
     }
 
     pub async fn image_binary(&self) -> Result<FfiBuffer<u8>> {
@@ -303,10 +314,10 @@ impl NewsEntryUpdateBuilder {
     }
 }
 
-impl Group {
+impl Space {
     pub fn news_draft(&self) -> Result<NewsEntryDraft> {
         let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create news for groups we are not part on")
+            bail!("You can't create news for spaces we are not part on")
         };
         Ok(NewsEntryDraft {
             client: self.client.clone(),
@@ -317,7 +328,7 @@ impl Group {
 
     pub fn news_draft_with_builder(&self, content: NewsEntryBuilder) -> Result<NewsEntryDraft> {
         let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create news for groups we are not part on")
+            bail!("You can't create news for spaces we are not part on")
         };
         Ok(NewsEntryDraft {
             client: self.client.clone(),

@@ -2,7 +2,7 @@
 name = "acter"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.58"
+rust-version = "1.63"
 description = "SDK of the acter app"
 homepage = "https://effekto.org"
 repository = "https://github.com/acterglobal/a3"

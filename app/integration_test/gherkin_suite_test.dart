@@ -1,6 +1,7 @@
 import 'package:flutter_gherkin/flutter_gherkin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gherkin/gherkin.dart';
+import 'package:integration_test/integration_test.dart';
 import 'steps/given_login.dart';
 
 import 'package:acter/main.dart' as app;
@@ -40,7 +41,9 @@ Future<void> main() async {
   );
   await executeTestSuite(
     configuration: config,
-    appMainFunction: (World world) async =>
-        await app.startFreshTestApp('kyra_can_login_smoketest'),
+    appMainFunction: (World world) async {
+      IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+      return await app.startFreshTestApp('kyra_can_login_smoketest');
+    },
   );
 }

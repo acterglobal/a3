@@ -64,6 +64,10 @@ Color convertColor(ffi.EfkColor? primary, Color fallback) {
   );
 }
 
+DateTime toDartDatetime(ffi.UtcDateTime dt) {
+  return DateTime.fromMillisecondsSinceEpoch(dt.timestampMillis(), isUtc: true);
+}
+
 class ActerSdk {
   static ActerSdk? _instance;
   late final ffi.Api _api;
@@ -281,8 +285,8 @@ class ActerSdk {
     return _clients;
   }
 
-  ffi.CreateGroupSettings newGroupSettings(String name) {
-    return _api.newGroupSettings(name);
+  ffi.CreateSpaceSettings newSpaceSettings(String name) {
+    return _api.newSpaceSettings(name);
   }
 
   String rotateLogFile() {

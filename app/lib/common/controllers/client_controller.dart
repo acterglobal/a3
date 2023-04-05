@@ -7,15 +7,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
-final homeStateProvider = StateNotifierProvider<HomeStateNotifier, Client?>(
-  (ref) => HomeStateNotifier(ref),
+final clientProvider = StateNotifierProvider<ClientNotifier, Client?>(
+  (ref) => ClientNotifier(ref),
 );
 
-class HomeStateNotifier extends StateNotifier<Client?> {
+class ClientNotifier extends StateNotifier<Client?> {
   final Ref ref;
   late ActerSdk sdk;
   late SyncState syncState;
-  HomeStateNotifier(this.ref) : super(null) {
+  ClientNotifier(this.ref) : super(null) {
     _loadUp();
   }
 

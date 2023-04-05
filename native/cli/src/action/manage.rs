@@ -3,11 +3,14 @@ use acter_core::spaces::CreateSpaceSettingsBuilder;
 use anyhow::Result;
 use clap::Parser;
 use futures::StreamExt;
+use matrix_sdk::ruma::OwnedRoomId;
 
 #[derive(clap::Subcommand, Debug, Clone)]
 pub enum Action {
     /// List rooms
     CreateOnboardingSpace,
+    /// Mark the space as an acter space
+    MarkAsActerSpace { room_id: OwnedRoomId },
 }
 
 /// Posting a news item to a given room
@@ -21,6 +24,40 @@ pub struct Manage {
 
 impl Manage {
     pub async fn run(&self) -> Result<()> {
+        match self.action {
+            Action::CreateOnboardingSpace => self.run_create_onboarding_space().await,
+            Action::MarkAsActerSpace { ref room_id } => self.run_marking_space(room_id).await,
+        }
+    }
+
+    async fn run_marking_space(&self, room_id: &OwnedRoomId) -> Result<()> {
+        let mut client = self.login.client().await?;
+        tracing::info!(" - Syncing -");
+        let sync_state = client.start_sync();
+
+        let mut is_synced = sync_state.first_synced_rx().expect("note yet read");
+        while is_synced.next().await != Some(true) {} // let's wait for it to have synced
+        tracing::info!(" - First Sync finished - ");
+
+        let space = client.get_space(room_id.to_string()).await?;
+
+        if !space.is_space() {
+            tracing::warn!("{room_id} is not a space. quitting.");
+            return Ok(());
+        } else if space.is_acter_space().await {
+            tracing::warn!("{room_id} is already an acter space. quitting.");
+            return Ok(());
+        }
+
+        space.set_acter_space_states().await?;
+
+        tracing::info!("States sent");
+
+        // FIXME DO SOMETHING
+        Ok(())
+    }
+
+    async fn run_create_onboarding_space(&self) -> Result<()> {
         let mut client = self.login.client().await?;
         let settings = Box::new(
             CreateSpaceSettingsBuilder::default()
@@ -28,7 +65,7 @@ impl Manage {
                 .build()?,
         );
 
-        let room_id = client.create_acter_group(settings).await?;
+        let room_id = client.create_acter_space(settings).await?;
 
         tracing::info!(" - Syncing -");
         let sync_state = client.start_sync();
@@ -37,13 +74,11 @@ impl Manage {
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         tracing::info!(" - First Sync finished - ");
 
-        let room = client.get_group(room_id.to_string()).await?;
+        let room = client.get_space(room_id.to_string()).await?;
 
         room.create_onboarding_data().await?;
 
         println!("Onboarding Space created: {room_id}");
-
-        client.logout().await?;
         Ok(())
     }
 }

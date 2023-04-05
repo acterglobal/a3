@@ -79,9 +79,9 @@ async fn main() -> Result<()> {
                             .send(AppUpdate::UpdateConversations(conversastions))
                             .unwrap();
 
-                        // let's update the groups;
-                        let groups = client.groups().await.unwrap();
-                        sender.send(AppUpdate::UpdateGroups(groups)).unwrap();
+                        // let's update the spaces;
+                        let spaces = client.spaces().await.unwrap();
+                        sender.send(AppUpdate::UpdateSpaces(spaces)).unwrap();
                     }
                 }
                 Some(Either::Right(history)) => {

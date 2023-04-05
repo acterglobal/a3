@@ -9,9 +9,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         Comment,
         CommentDraft,
         CommentsManager,
-        CreateGroupSettings,
+        CreateSpaceSettings,
         FfiString,
-        Group,
+        Space,
         RoomProfile,
         Task,
         TaskList,
@@ -46,17 +46,17 @@ class ToDoController extends GetxController {
   /// creates team (group).
   Future<String> createTeam(String name) async {
     final sdk = await ActerSdk.instance;
-    CreateGroupSettings settings = sdk.newGroupSettings(name);
+    CreateSpaceSettings settings = sdk.newSpaceSettings(name);
     String roomId =
-        await client.createActerGroup(settings).then((id) => id.toString());
+        await client.createActerSpace(settings).then((id) => id.toString());
     return roomId;
   }
 
   /// fetches teams (groups) for client.
   Future<List<Team>> getTeams() async {
     final List<Team> teams = [];
-    List<Group> listTeams =
-        await client.groups().then((groups) => groups.toList());
+    List<Space> listTeams =
+        await client.spaces().then((groups) => groups.toList());
     if (listTeams.isNotEmpty) {
       for (var team in listTeams) {
         RoomProfile teamProfile = await team.getProfile();
@@ -73,8 +73,8 @@ class ToDoController extends GetxController {
 
   /// fetches todos for client.
   void getTodoList() async {
-    List<Group> groups =
-        await client.groups().then((groups) => groups.toList());
+    List<Space> groups =
+        await client.spaces().then((groups) => groups.toList());
     for (var group in groups) {
       RoomProfile grpProfile = await group.getProfile();
       Team team = Team(
@@ -172,13 +172,13 @@ class ToDoController extends GetxController {
     String name,
     String? description,
   ) async {
-    final Group group = await client.getGroup(teamId);
-    final RoomProfile teamProfile = await group.getProfile();
+    final Space space = await client.getSpace(teamId);
+    final RoomProfile teamProfile = await space.getProfile();
     final Team team = Team(
-      id: group.getRoomId(),
+      id: space.getRoomId(),
       name: teamProfile.getDisplayName(),
     );
-    final TaskListDraft listDraft = group.taskListDraft();
+    final TaskListDraft listDraft = space.taskListDraft();
     listDraft.name(name);
     listDraft.descriptionText(description ?? '');
     String eventId = await listDraft.send().then((res) => res.toString());

@@ -10,6 +10,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:acter/common/utils/constants.dart' show LoginPageKeys;
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -22,7 +23,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
-
+  final desktopPlatforms = [
+    TargetPlatform.linux,
+    TargetPlatform.macOS,
+    TargetPlatform.windows
+  ];
   @override
   void dispose() {
     username.dispose();
@@ -58,14 +63,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
     var network = ref.watch(networkAwareProvider);
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Form(
+    return SimpleDialog(
+      title: const Text('Login'),
+      children: [
+        Form(
           key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 100),
               SizedBox(
                 height: 50,
                 width: 50,
@@ -122,7 +127,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           } else {
                             await ref
                                 .read(authControllerProvider.notifier)
-                                .login(username.text, password.text, context);
+                                .login(
+                                  username.text,
+                                  password.text,
+                                  context,
+                                );
                             _validateLogin();
                           }
                         }
@@ -139,9 +148,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   const SizedBox(width: 2),
                   InkWell(
                     key: LoginPageKeys.signUpBtn,
-                    onTap: () {
-                      Navigator.pushReplacementNamed(context, '/signup');
-                    },
+                    onTap: () => context.go('/signup'),
                     child: Text(
                       AppLocalizations.of(context)!.signUp,
                       style: TextStyle(
@@ -150,11 +157,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                   )
                 ],
-              )
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 }

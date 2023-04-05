@@ -1,0 +1,182 @@
+name: Demo builds
+
+on:
+  pull_request:
+    branches: [ main ]
+
+# env:
+#   RELEASE: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run_checker:
+    runs-on: ubuntu-latest
+    name: Check legibility
+    outputs:
+      should_run: steps.pr.outputs.pr_found && contains(steps.PR.outputs.pr_labels, "build-demo")
+    steps:
+    
+      - uses: 8BitJonny/gh-get-current-pr@2.2.0
+        id: pr
+        with:
+          # Only return if PR is still open. (By default it returns PRs in any state.)
+          filterOutClosed: true
+          # Only return if PR is not in draft state. (By default it returns PRs in any state.)
+          filterOutDraft: true
+  build:
+    strategy:
+      matrix:
+       include:
+          # - name: Android Arm64
+          #   os: ubuntu-latest
+          #   cargo_make_setup: setup-android
+          #   cargo_make_args: android-arm
+          #   with_ndk_version: r23c
+          #   flutter_build_args: "build apk --target-platform android-arm64"
+          #   artifact_prefix: acter-demo-android-arm64
+          #   artifact_path:  app/build/app/outputs/apk/release/
+          #   artifact_files: "app-release.apk"
+          - name: Linux x64
+            os: ubuntu-latest
+            apt_install: ninja-build libgtk-3-dev
+            cargo_make_args: desktop
+            flutter_config: "--enable-linux-desktop"
+            flutter_build_args: "build linux --debug"
+            artifact_prefix: acter-demo-linux-x64
+            artifact_path: app/build/linux/x64/debug/bundle/
+            artifact_files: lib/ data/ acter
+          # - name: iOS
+          #   os: macos-latest
+          #   cargo_make_setup: setup-ios
+          #   cargo_make_args: ios
+          #   flutter_build_args: "build ipa --no-codesign"
+          #   artifact_prefix: acter-demo-ios
+          #   artifact_path:  app/build/ios/archive/
+          #   artifact_files: Runner.xcarchive
+          - name: Mac OSx 
+            os: macos-12
+            cargo_make_args: desktop
+            flutter_config: "--enable-macos-desktop"
+            flutter_build_args: "build macos --debug"
+            artifact_prefix: acter-demo-macosx
+            artifact_path: app/build/macos/Build/Products/Debug/
+            artifact_files: "Acter.app"
+          # - name: Windows
+          #   os: windows-latest
+          #   cargo_make_args: desktop
+          #   flutter_config: "--enable-windows-desktop"
+          #   flutter_build_args: "build windows"
+          #   artifact_prefix: acter-demo-windows
+          #   artifact_path: app/build/windows/runner/
+          #   artifact_files: "Release"
+
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    needs: run_checker
+    if: ${{ needs.run_checker.outputs.should_run != 'false' }}
+
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v6
+
+      - id: tag
+        name: "Create Tag"
+        run: echo "tag=${{ steps.branch-name.outputs.current_branch }}-`date +%FT%H%M`" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Install supported toolchain
+        id: rust_toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Cache Cargo
+        id: cache-cargo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+      - name: Cache Rust
+        uses: actions/cache@v2
+        with:
+          path: |
+            target
+          key: ${{ runner.os }}-demo-${{matrix.artifact_prefix}}-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+      - name: Install extra deps
+        if: matrix.apt_install
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ${{ matrix.apt_install }}
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        if: matrix.with_ndk_version
+        with:
+          ndk-version: ${{ matrix.with_ndk_version }}
+
+      - name: Install cargo-make
+        if: steps.cache-cargo.outputs.cache-hit != 'true'
+        uses: davidB/rust-cargo-make@v1
+
+      - name: Rust Setup
+        if: matrix.cargo_make_setup
+        run: cargo make ${{ matrix.cargo_make_setup }}
+
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
+
+      - name: Flutter info
+        run: flutter doctor -v
+
+      - name: Flutter config
+        if: matrix.flutter_config
+        run: flutter config ${{ matrix.flutter_config }}
+
+      - name: Build Rust Lib
+        run: cargo make --profile release ${{ matrix.cargo_make_args}}
+
+      - name: Ensure ffi-interface is up to date
+        run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+
+      - name: Flutter build
+        env:
+          RAGESHAKE_URL: ${{ secrets.RAGESHAKE_URL }}
+          RAGESHAKE_APP_NAME: ${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }}
+        run: |
+          flutter ${{ matrix.flutter_build_args }} \
+            --dart-define=VERSION_NAME=Demo+${{ steps.tag.outputs.tag }} \
+            --dart-define=RAGESHAKE_URL=$RAGESHAKE_URL \
+            --dart-define=RAGESHAKE_APP_NAME=$RAGESHAKE_APP_NAME \
+            --dart-define=RAGESHAKE_APP_VERSION="Demo-${{ steps.tag.outputs.tag }}/${{ matrix.name }}"
+        working-directory: ./app
+
+      - name: Package Tar file
+        if: matrix.os != 'windows-latest'
+        working-directory: ${{ matrix.artifact_path }}
+        run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.tar.bz2" ${{ matrix.artifact_files }}
+
+      - name: Package Zip file
+        if: matrix.os == 'windows-latest'
+        working-directory: ${{ matrix.artifact_path }}
+        run: |
+          7z a "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.zip" ${{ matrix.artifact_files }}
+
+      - name: Archive demo artifacts
+        uses: actions/upload-artifact@v3
+        
+        with:
+          name: ${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}
+          retention-days: 14
+          path: ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.*

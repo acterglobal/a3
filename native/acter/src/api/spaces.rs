@@ -1,3 +1,7 @@
+pub use acter_core::spaces::{
+    CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
+    SpaceRelations,
+};
 use acter_core::{
     events::{
         calendar::{SyncCalendarEventEvent, SyncCalendarEventUpdateEvent},
@@ -9,7 +13,8 @@ use acter_core::{
     executor::Executor,
     models::AnyActerModel,
     ruma::{events::MessageLikeEvent, OwnedRoomAliasId, OwnedRoomId, OwnedUserId},
-    spaces::{CreateSpaceSettings, CreateSpaceSettingsBuilder},
+    spaces::is_acter_space,
+    statics::default_acter_space_states,
     templates::Engine,
 };
 use anyhow::{bail, Result};
@@ -21,19 +26,21 @@ use matrix_sdk::{
     room::{Messages, MessagesOptions},
     Client as MatrixClient,
 };
+use ruma::{
+    api::client::state::send_state_event,
+    events::{AnyStateEventContent, StateEventContent, _custom::CustomStateEventContent},
+    serde::Raw,
+};
 use serde::{Deserialize, Serialize};
 
 use super::{
-    client::{devide_groups_from_convos, Client},
+    client::{devide_spaces_from_convos, Client},
     room::Room,
 };
 use crate::api::RUNTIME;
 
-pub type CreateGroupSettings = CreateSpaceSettings;
-pub type CreateGroupSettingsBuilder = CreateSpaceSettingsBuilder;
-
 #[derive(Debug, Clone)]
-pub struct Group {
+pub struct Space {
     pub client: Client,
     pub(crate) inner: Room,
 }
@@ -44,9 +51,9 @@ struct HistoryState {
     seen: String,
 }
 
-impl Group {
+impl Space {
     pub fn new(client: Client, inner: Room) -> Self {
-        Group { client, inner }
+        Space { client, inner }
     }
 
     pub async fn create_onboarding_data(&self) -> Result<()> {
@@ -68,10 +75,15 @@ impl Group {
         Ok(())
     }
 
+    pub async fn is_acter_space(&self) -> bool {
+        is_acter_space(&self.inner).await
+    }
+
     pub(crate) async fn add_handlers(&self) {
         self.room
             .client()
             .add_event_handler_context(self.client.executor().clone());
+        tracing::trace!(room_id=?self.room.room_id(), "adding handlers");
         let room_id = self.room_id().to_owned();
         // FIXME: combine into one handler
 
@@ -257,13 +269,36 @@ impl Group {
         self.room_id().to_string()
     }
 
+    pub async fn set_acter_space_states(&self) -> Result<()> {
+        let matrix_sdk::room::Room::Joined(ref joined) = self.inner.room else {
+            bail!("You can't convert a space you didn't join");
+        };
+        for state in default_acter_space_states() {
+            println!("{:?}", state);
+            let event_type = state.get_field("type")?.expect("given");
+            let state_key = state.get_field("state_key")?.unwrap_or_default();
+            let body = state
+                .get_field::<Raw<AnyStateEventContent>>("content")?
+                .expect("body is given");
+
+            let request = send_state_event::v3::Request::new_raw(
+                joined.room_id().to_owned(),
+                event_type,
+                state_key,
+                body,
+            );
+            joined.client().send(request, None).await?;
+        }
+        Ok(())
+    }
+
     pub(crate) async fn refresh_history(&self) -> Result<()> {
         let name = self.inner.name();
-        tracing::trace!(name, "refreshing history");
         let room = self.inner.clone();
         let room_id = room.room_id();
+        tracing::trace!(name, ?room_id, "refreshing history");
         let client = room.room.client();
-        room.sync_members().await?;
+        // room.sync_members().await?;
 
         let custom_storage_key = format!("{room_id}::history");
 
@@ -298,7 +333,8 @@ impl Group {
                 let model = match AnyActerModel::from_raw_tlevent(&msg.event) {
                     Ok(model) => model,
                     Err(m) => {
-                        if msg.event.get_field::<String>("state_key").is_ok() {
+                        if let Ok(state_key) = msg.event.get_field::<String>("state_key") {
+                            tracing::trace!(state_key, "ignoring state event");
                             // ignore state keys
                         } else {
                             tracing::warn!(event=?msg.event, "Model didn't parse {:}", m);
@@ -345,22 +381,30 @@ impl Group {
         tracing::trace!(name, "history loaded");
         Ok(())
     }
+
+    pub async fn space_relations(&self) -> Result<SpaceRelations> {
+        let c = self.client.core.clone();
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move { Ok(c.space_relations(&room).await?) })
+            .await?
+    }
 }
 
-impl std::ops::Deref for Group {
+impl std::ops::Deref for Space {
     type Target = Room;
     fn deref(&self) -> &Room {
         &self.inner
     }
 }
 
-// impl CreateGroupSettingsBuilder {
+// impl CreateSpaceSettingsBuilder {
 //     pub fn add_invite(&mut self, user_id: OwnedUserId) {
 //         self.invites.get_or_insert_with(Vec::new).push(user_id);
 //     }
 // }
 
-pub fn new_group_settings(name: String) -> CreateSpaceSettings {
+pub fn new_space_settings(name: String) -> CreateSpaceSettings {
     CreateSpaceSettingsBuilder::default()
         .name(name)
         .build()
@@ -368,9 +412,9 @@ pub fn new_group_settings(name: String) -> CreateSpaceSettings {
 }
 
 impl Client {
-    pub async fn create_acter_group(
+    pub async fn create_acter_space(
         &self,
-        settings: Box<CreateGroupSettings>,
+        settings: Box<CreateSpaceSettings>,
     ) -> Result<OwnedRoomId> {
         let c = self.core.clone();
         RUNTIME
@@ -378,27 +422,27 @@ impl Client {
             .await?
     }
 
-    pub async fn groups(&self) -> Result<Vec<Group>> {
+    pub async fn spaces(&self) -> Result<Vec<Space>> {
         let c = self.clone();
         RUNTIME
             .spawn(async move {
-                let (groups, _) = devide_groups_from_convos(c).await;
-                Ok(groups)
+                let (spaces, _) = devide_spaces_from_convos(c).await;
+                Ok(spaces)
             })
             .await?
     }
 
-    pub async fn get_group(&self, alias_or_id: String) -> Result<Group> {
+    pub async fn get_space(&self, alias_or_id: String) -> Result<Space> {
         if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
             match self.get_room(&room_id) {
-                Some(room) => Ok(Group::new(self.clone(), Room { room })),
+                Some(room) => Ok(Space::new(self.clone(), Room { room })),
                 None => bail!("Room not found"),
             }
         } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
-            for group in self.groups().await?.into_iter() {
-                if let Some(group_alias) = group.inner.room.canonical_alias() {
-                    if group_alias == alias_id {
-                        return Ok(group);
+            for space in self.spaces().await?.into_iter() {
+                if let Some(space_alias) = space.inner.room.canonical_alias() {
+                    if space_alias == alias_id {
+                        return Ok(space);
                     }
                 }
             }

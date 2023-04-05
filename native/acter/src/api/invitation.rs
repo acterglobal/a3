@@ -14,7 +14,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
 
 use super::{
-    client::{devide_groups_from_convos, Client},
+    client::{devide_spaces_from_convos, Client},
     profile::UserProfile,
     RUNTIME,
 };
@@ -307,7 +307,7 @@ impl Client {
                 }
                 // iterate my rooms to get user list
                 let mut profiles: Vec<UserProfile> = vec![];
-                let (groups, convos) = devide_groups_from_convos(client.clone()).await;
+                let (spaces, convos) = devide_spaces_from_convos(client.clone()).await;
                 for convo in convos {
                     if convo.room_id() == room_id {
                         continue;

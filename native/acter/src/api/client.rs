@@ -5,7 +5,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
-use futures::{future::try_join_all, pin_mut, stream, Stream, StreamExt};
+use futures::{future::join_all, pin_mut, stream, Stream, StreamExt};
 use futures_signals::signal::{
     channel, Mutable, MutableSignalCloned, Receiver, SignalExt, SignalStream,
 };
@@ -17,9 +17,12 @@ use matrix_sdk::{
     ruma::{device_id, OwnedDeviceId, OwnedUserId, RoomId, UserId},
     Client as MatrixClient, LoopCtrl, RumaApiError,
 };
-use std::sync::{
-    atomic::{AtomicBool, Ordering},
-    Arc,
+use std::{
+    collections::BTreeMap,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    },
 };
 use tokio::task::JoinHandle;
 
@@ -27,11 +30,11 @@ use super::{
     account::Account,
     conversation::{Conversation, ConversationController},
     device::DeviceController,
-    group::Group,
     invitation::InvitationController,
     profile::UserProfile,
     receipt::ReceiptController,
     room::Room,
+    spaces::Space,
     typing::TypingController,
     verification::VerificationController,
     RUNTIME,
@@ -68,54 +71,65 @@ impl std::ops::Deref for Client {
     }
 }
 
-pub(crate) async fn devide_groups_from_convos(client: Client) -> (Vec<Group>, Vec<Conversation>) {
-    let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
+pub(crate) async fn devide_spaces_from_convos(client: Client) -> (Vec<Space>, Vec<Conversation>) {
+    let (spaces, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
             (Vec::new(), Vec::new(), client),
-            async move |(mut groups, mut conversations, client), room| {
+            async move |(mut spaces, mut conversations, client), room| {
                 let inner = Room { room: room.clone() };
 
-                if inner.is_acter_group().await {
-                    groups.push(Group::new(client.clone(), inner));
+                if inner.is_space() {
+                    spaces.push(Space::new(client.clone(), inner));
                 } else {
                     conversations.push(Conversation::new(inner));
                 }
 
-                (groups, conversations, client)
+                (spaces, conversations, client)
             },
         )
         .await;
-    (groups, convos)
+    (spaces, convos)
 }
 
 #[derive(Clone, Debug, Default)]
 pub struct HistoryLoadState {
     pub has_started: bool,
-    pub known_groups: Vec<OwnedRoomId>,
-    pub total_groups: usize,
-    pub loaded_groups: usize,
+    pub known_spaces: BTreeMap<OwnedRoomId, bool>,
 }
 
 impl HistoryLoadState {
     pub fn is_done_loading(&self) -> bool {
-        self.has_started && self.known_groups.len() == self.loaded_groups
+        self.has_started && !self.known_spaces.values().any(|x| *x)
     }
 
-    pub fn start(&mut self, known_groups: Vec<OwnedRoomId>) {
+    pub fn start(&mut self, known_spaces: Vec<OwnedRoomId>) {
+        tracing::trace!(?known_spaces, "Starting History loading");
         self.has_started = true;
-        self.known_groups = known_groups;
+        self.known_spaces.clear();
+        for space in known_spaces.into_iter() {
+            self.known_spaces.insert(space, true);
+        }
+    }
+
+    pub fn unknow_room(&mut self, room_id: &OwnedRoomId) -> bool {
+        self.known_spaces.remove(room_id).unwrap_or_default()
     }
 
     pub fn knows_room(&self, room_id: &OwnedRoomId) -> bool {
-        self.known_groups.contains(room_id)
+        self.known_spaces.contains_key(room_id)
     }
 
-    pub fn started_loading_room(&mut self, room_id: OwnedRoomId) {
-        self.known_groups.push(room_id);
+    pub fn is_loading(&mut self, room_id: &OwnedRoomId) -> bool {
+        self.known_spaces.get(room_id).cloned().unwrap_or(false)
     }
 
-    fn group_loaded(&mut self) {
-        self.loaded_groups = self.loaded_groups.checked_add(1).unwrap_or(usize::MAX)
+    pub fn set_loading(&mut self, room_id: OwnedRoomId, value: bool) -> bool {
+        tracing::trace!(?room_id, loading = value, "Setting room for loading");
+        self.known_spaces.insert(room_id, value).unwrap_or_default()
+    }
+
+    pub fn total_spaces(&self) -> usize {
+        self.known_spaces.len()
     }
 }
 
@@ -152,9 +166,10 @@ impl SyncState {
         let signal = self.history_loading.signal_cloned().to_stream();
         pin_mut!(signal);
         while let Some(next_state) = signal.next().await {
+            tracing::trace!(?next_state, "History updated");
             if next_state.is_done_loading() {
                 tracing::trace!(?next_state, "History sync completed");
-                return Ok(next_state.loaded_groups as u32);
+                return Ok(next_state.total_spaces() as u32);
             }
         }
         unimplemented!("We never reach this state")
@@ -212,17 +227,27 @@ impl Client {
         let me = self.clone();
         RUNTIME.spawn(async move {
             tracing::trace!(user_id=?me.user_id_ref(), "refreshing history");
-            let groups = me.groups().await?;
-            let group_ids = groups.iter().map(|r| r.room_id().to_owned()).collect();
-            history.lock_mut().start(group_ids);
+            let spaces = me.spaces().await?;
+            let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
+            history.lock_mut().start(space_ids);
 
-            try_join_all(groups.iter().map(|g| async {
+            join_all(spaces.iter().map(|g| async {
+                if !g.is_acter_space().await {
+                    tracing::trace!(room_id=?g.room_id(), "not an acter space");
+                    history.lock_mut().unknow_room(&g.room_id().to_owned());
+                    return;
+                }
+
                 g.add_handlers().await;
-                let x = g.refresh_history().await;
-                history.lock_mut().group_loaded();
-                x
+
+                if let Err(err) = g.refresh_history().await {
+                    tracing::error!(?err, room_id=?g.room_id(),  "Loading space history failed");
+                };
+                history
+                    .lock_mut()
+                    .set_loading(g.room_id().to_owned(), false);
             }))
-            .await?;
+            .await;
             anyhow::Ok(())
         });
     }
@@ -233,28 +258,39 @@ impl Client {
         new_spaces: Vec<MatrixRoom>,
     ) {
         let me = self.clone();
-        RUNTIME.spawn(async move {
-            tracing::trace!(user_id=?me.user_id_ref(), count=?new_spaces.len(), "found new spaces");
-            try_join_all(
-                new_spaces
-                    .into_iter()
-                    .map(|room| Group::new(me.clone(), Room { room }))
-                    .map(|g| {
-                        let history = history.clone();
-                        async move {
-                            history
-                                .lock_mut()
-                                .started_loading_room(g.room_id().to_owned());
-                            g.add_handlers().await;
-                            let x = g.refresh_history().await;
-                            history.lock_mut().group_loaded();
-                            x
+        RUNTIME
+            .spawn(async move {
+                tracing::trace!(user_id=?me.user_id_ref(), count=?new_spaces.len(), "found new spaces");
+
+                join_all(
+                    new_spaces
+                        .into_iter()
+                        .map(|room| Space::new(me.clone(), Room { room }))
+                        .map(|g| {
+                            let history = history.clone();
+                            async move {
+                                {
+                                    let room_id = g.room_id().to_owned();
+                                    let mut history = history.lock_mut();
+                                    if history.is_loading(&room_id) {
+                                        tracing::trace!(room_id=?room_id, "Already loading room.");
+                                        return;
+                                    }
+                                    history.set_loading(room_id, true);
+                                }
+                                g.add_handlers().await;
+                                if let Err(err) = g.refresh_history().await {
+                                    tracing::error!(?err, room_id=?g.room_id(), "refreshing history failed");
+                                }
+                                history.lock_mut().set_loading(g.room_id().to_owned(), false);
+                            }
                         }
-                    }),
-            )
-            .await?;
-            anyhow::Ok(())
-        });
+                    ),
+                )
+                .await;
+                anyhow::Ok(())
+            }
+        );
     }
 
     pub fn start_sync(&mut self) -> SyncState {
@@ -299,7 +335,7 @@ impl Client {
             // fetch the events that received when offline
             client
                 .clone()
-                .sync_with_result_callback(SyncSettings::new(), |result| {
+                .sync_with_result_callback(SyncSettings::new(), |result| async {
                     let client = client.clone();
                     let me = me.clone();
                     let executor = executor.clone();
@@ -313,78 +349,75 @@ impl Client {
                     let sync_state_history = sync_state_history.clone();
                     let initial = initial_arc.clone();
 
-                    async move {
-                        Ok(if let Ok(response) = result {
-                            device_controller.process_device_lists(&client, &response);
-
-                            if initial.compare_exchange(
-                                true,
-                                false,
-                                Ordering::Relaxed,
-                                Ordering::Relaxed,
-                            ) == Ok(true)
-                            {
-                                tracing::trace!(user_id=?client.user_id(), "initial synced");
-                                // devide_groups_from_convos must be called after first sync
-                                let (groups, convos) = devide_groups_from_convos(me.clone()).await;
-                                conversation_controller.load_rooms(&convos).await;
-                                // load invitations after first sync
-                                invitation_controller.load_invitations(&client).await;
-
-                                me.refresh_history_on_start(sync_state_history.clone());
-
-                                initial.store(false, Ordering::SeqCst);
-                                first_synced_arc.send(true);
-                                if let Ok(mut w) = state.try_write() {
-                                    w.has_first_synced = true;
-                                }
-                            } else {
-                                // see if we have new spaces to catch up upon
-                                let mut new_spaces = Vec::new();
-                                for (room_id, room) in response.rooms.join {
-                                    if sync_state_history.lock_mut().knows_room(&room_id) {
-                                        // we are already loading this room
-                                        continue;
-                                    }
-                                    let Some(full_room) = me.get_room(&room_id) else {
-                                        tracing::warn!("room not found. how can that be?");
-                                        continue;
-                                    };
-                                    if is_acter_space(&full_room).await {
-                                        new_spaces.push(full_room);
-                                    }
-                                }
-
-                                if !new_spaces.is_empty() {
-                                    me.refresh_history_on_way(
-                                        sync_state_history.clone(),
-                                        new_spaces,
-                                    );
-                                }
+                    let response = match result {
+                        Ok(response) => response,
+                        Err(err) => {
+                            if let Some(RumaApiError::ClientApi(e)) = err.as_ruma_api_error() {
+                                tracing::warn!(?e, "Client error");
+                                return Ok(LoopCtrl::Break);
                             }
+                            tracing::warn!(?err, "Other error, continuing");
+                            return Ok(LoopCtrl::Continue);
+                        }
+                    };
 
-                            if let Ok(mut w) = state.try_write() {
-                                if w.should_stop_syncing {
-                                    w.is_syncing = false;
-                                    return Ok(LoopCtrl::Break);
-                                }
+                    device_controller.process_device_lists(&client, &response);
+                    tracing::trace!("post device controller");
+
+                    if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
+                        == Ok(true)
+                    {
+                        tracing::trace!(user_id=?client.user_id(), "initial synced");
+                        // divide_spaces_from_convos must be called after first sync
+                        let (spaces, convos) = devide_spaces_from_convos(me.clone()).await;
+                        conversation_controller.load_rooms(&convos).await;
+                        // load invitations after first sync
+                        invitation_controller.load_invitations(&client).await;
+
+                        me.refresh_history_on_start(sync_state_history.clone());
+
+                        initial.store(false, Ordering::SeqCst);
+                        first_synced_arc.send(true);
+                        if let Ok(mut w) = state.try_write() {
+                            w.has_first_synced = true;
+                        }
+                    } else {
+                        // see if we have new spaces to catch up upon
+                        let mut new_spaces = Vec::new();
+                        for (room_id, room) in response.rooms.join {
+                            if sync_state_history.lock_mut().knows_room(&room_id) {
+                                // we are already loading this room
+                                continue;
                             }
-                            if let Ok(mut w) = state.try_write() {
-                                if !w.is_syncing {
-                                    w.is_syncing = true;
-                                }
+                            let Some(full_room) = me.get_room(&room_id) else {
+                                    tracing::warn!("room not found. how can that be?");
+                                    continue;
+                                };
+                            if is_acter_space(&full_room).await {
+                                new_spaces.push(full_room);
                             }
-                            LoopCtrl::Continue
-                        } else {
-                            let mut control = LoopCtrl::Continue;
-                            if let Some(err) = result.err() {
-                                if let Some(RumaApiError::ClientApi(e)) = err.as_ruma_api_error() {
-                                    control = LoopCtrl::Break;
-                                }
-                            }
-                            control
-                        })
+                        }
+
+                        if !new_spaces.is_empty() {
+                            me.refresh_history_on_way(sync_state_history.clone(), new_spaces);
+                        }
                     }
+
+                    if let Ok(mut w) = state.try_write() {
+                        if w.should_stop_syncing {
+                            w.is_syncing = false;
+                            tracing::trace!("Stopping syncing upon user request");
+                            return Ok(LoopCtrl::Break);
+                        }
+                    }
+                    if let Ok(mut w) = state.try_write() {
+                        if !w.is_syncing {
+                            w.is_syncing = true;
+                        }
+                    }
+
+                    tracing::trace!("ready for the next round");
+                    Ok(LoopCtrl::Continue)
                 })
                 .await;
         });
@@ -435,7 +468,7 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let (groups, conversations) = devide_groups_from_convos(client).await;
+                let (spaces, conversations) = devide_spaces_from_convos(client).await;
                 Ok(conversations)
             })
             .await?

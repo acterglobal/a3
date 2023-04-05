@@ -5,6 +5,15 @@ use tokio::runtime::Runtime;
 
 use crate::platform;
 
+#[no_mangle]
+pub extern "C" fn __hello_world() {
+    // DO NOT REMOVE.
+    // empty external linking helper, noop but needed for
+    // iOS to properly link the headers and lib into
+    // the binary.
+    // DO NOT REMOVE.
+}
+
 lazy_static! {
     pub static ref RUNTIME: Runtime = Runtime::new().expect("Can't start Tokio runtime");
 }
@@ -17,7 +26,6 @@ mod comments;
 mod common;
 mod conversation;
 mod device;
-mod group;
 mod invitation;
 mod message;
 mod news;
@@ -25,6 +33,7 @@ mod pins;
 mod profile;
 mod receipt;
 mod room;
+mod spaces;
 mod stream;
 mod tasks;
 mod typing;
@@ -33,19 +42,19 @@ mod verification;
 pub use account::Account;
 pub use acter_core::{
     events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
-    models::{Color as EfkColor, Tag},
+    models::{Color as EfkColor, Tag, TextMessageContent},
 };
 pub use auth::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token,
     login_with_token_under_config, make_client_config, register_with_token,
 };
+pub use calendar_events::CalendarEvent;
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::duration_from_secs;
 pub use conversation::{Conversation, CreateConversationSettingsBuilder};
 pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
-pub use group::{new_group_settings, CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use invitation::Invitation;
 pub use message::{
     FileDesc, ImageDesc, ReactionDesc, RoomEventItem, RoomMessage, RoomVirtualItem, TextDesc,
@@ -56,6 +65,10 @@ pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
+pub use spaces::{
+    new_space_settings, CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, Space,
+    SpaceRelation, SpaceRelations,
+};
 pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,

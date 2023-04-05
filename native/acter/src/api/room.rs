@@ -82,7 +82,7 @@ pub struct Room {
 }
 
 impl Room {
-    pub(crate) async fn is_acter_group(&self) -> bool {
+    pub(crate) async fn is_acter_space(&self) -> bool {
         is_acter_space(&self.room).await
     }
 
