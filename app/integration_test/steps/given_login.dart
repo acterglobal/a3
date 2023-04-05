@@ -43,14 +43,14 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
       context.expect(submitBtn, findsOneWidget);
       await context.world.appDriver.tap(submitBtn);
       await context.world.appDriver.waitForAppToSettle(
-          //   duration: const Duration(
-          //     seconds: 10,
-          //   ),
-          );
+        duration: const Duration(
+          milliseconds: 500,
+        ),
+      );
 
       // we are back on the news screen
-      // Finder logoutBtn = find.byKey(Keys.logoutBtn);
-      // context.expect(logoutBtn, findsOneWidget);
+      Finder successBar = find.byKey(LoginPageKeys.snackbarSuccess);
+      context.expect(successBar, findsOneWidget);
       // implement your code
     },
   );
