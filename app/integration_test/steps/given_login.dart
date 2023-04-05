@@ -42,15 +42,13 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
       Finder submitBtn = find.byKey(LoginPageKeys.submitBtn);
       context.expect(submitBtn, findsOneWidget);
       await context.world.appDriver.tap(submitBtn);
-      await context.world.appDriver.waitForAppToSettle(
-        duration: const Duration(
-          milliseconds: 500,
-        ),
-      );
+      await context.world.appDriver.waitForAppToSettle();
 
       // we are back on the news screen
-      Finder successBar = find.byKey(LoginPageKeys.snackbarSuccess);
-      context.expect(successBar, findsOneWidget);
+      // On successful login, user avatar should appear.
+      Finder userAvatar = find.byKey(Keys.avatar);
+      context.expect(userAvatar, findsOneWidget);
+
       // implement your code
     },
   );
