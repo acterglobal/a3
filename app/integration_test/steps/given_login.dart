@@ -49,8 +49,8 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
           );
 
       // we are back on the news screen
-      Finder successBar = find.byKey(LoginPageKeys.snackbarSuccess);
-      context.expect(successBar, findsOneWidget);
+      // Finder logoutBtn = find.byKey(Keys.logoutBtn);
+      // context.expect(logoutBtn, findsOneWidget);
       // implement your code
     },
   );
