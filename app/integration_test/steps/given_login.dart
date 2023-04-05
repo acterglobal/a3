@@ -45,11 +45,13 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
       await context.world.appDriver.waitForAppToSettle(
         duration: const Duration(milliseconds: 750),
       );
-
+      bool verify =
+          await context.world.appDriver.isPresent(find.byKey(Keys.avatar));
+      context.expect(true, verify);
       // we are back on the news screen
       // On successful login, user avatar should appear.
-      Finder userAvatar = find.byKey(Keys.avatar);
-      context.expect(userAvatar, findsOneWidget);
+      // Finder userAvatar = find.byKey(Keys.avatar);
+      // context.expect(userAvatar, findsOneWidget);
 
       // implement your code
     },
