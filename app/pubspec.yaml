@@ -62,6 +62,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: 0.17.0
+  freezed: ^2.3.2
   acter_flutter_sdk:
     path: packages/rust_sdk
 
