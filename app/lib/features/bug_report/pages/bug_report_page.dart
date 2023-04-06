@@ -7,6 +7,7 @@ import 'package:acter/features/bug_report/widgets/select_tag.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 class BugReportPage extends StatefulWidget {
   final String? imagePath;
@@ -36,7 +37,7 @@ class _BugReportState extends State<BugReportPage> {
     return Scaffold(
       appBar: AppBar(
         leading: InkWell(
-          onTap: () => Navigator.pop(context),
+          onTap: () => context.go('/'),
           child: const Icon(
             Atlas.arrow_left_circle,
             color: Colors.white,
