@@ -5,6 +5,9 @@ static API_DESC_FILENAME: &str = "api.rsh";
 static API_DART_FILENAME: &str = "bindings.dart";
 static API_RUST_FILENAME: &str = "api_generated.rs";
 
+static API_C_HEADER_FILENAME: &str = "bindings.h";
+static API_CBINDGEN_CONFIG_FILENAME: &str = "cbindgen.toml";
+
 fn main() {
     let crate_dir = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap());
     let path = crate_dir.join(API_DESC_FILENAME);
@@ -28,6 +31,21 @@ fn main() {
         ffigen
             .generate_dart(dart, "acter", "acter")
             .expect("Failure generating dart side of ffigen");
+    }
+
+    if std::env::var("SKIP_CBINDGEN").is_err() {
+        // once the setup is ready, let's create the c-headers
+        // this needs the rust API to be generated first, as it
+        // imports that via the `cbindings`-feature to scan an build the headers
+        let config = cbindgen::Config::from_file(crate_dir.join(API_CBINDGEN_CONFIG_FILENAME))
+            .expect("Reading cbindgen.toml failed");
+
+        cbindgen::Builder::new()
+            .with_config(config)
+            .with_crate(crate_dir)
+            .generate()
+            .expect("Unable to generate C-headers")
+            .write_to_file(API_C_HEADER_FILENAME);
     }
 
     // let js = dir.join("bindings.mjs");

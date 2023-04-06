@@ -11,10 +11,13 @@ license-file = "../../LICENSE.txt"
 [features]
 default = ["dart"]
 testing = ["dep:matrix-sdk-base"]
+cbindgen = []
 dart = []
 
 [build-dependencies]
 ffi-gen = { git = "https://github.com/acterglobal/ffi-gen" }
+cbindgen = "0.24.3"
+
 
 [dependencies]
 anyhow = "1.0.51"

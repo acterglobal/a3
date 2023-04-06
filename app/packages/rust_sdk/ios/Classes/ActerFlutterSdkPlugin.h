@@ -1,6 +1,4 @@
 #import <Flutter/Flutter.h>
-
+#import <libacter.h>
 @interface ActerFlutterSdkPlugin : NSObject<FlutterPlugin>
 @end
-
-void __hello_world(void);
