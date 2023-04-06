@@ -18,6 +18,19 @@ jobs:
         uses: adriangl/check-new-commits-action@v1
         with:
           seconds: 86400 # One day in seconds
+
+  tags:
+    runs-on: ubuntu-latest
+    # Map a step output to a job output
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+      build_num: ${{ steps.build_num.outputs.build_num }}
+    steps:
+      - id: tag
+        run: echo "tag=`date +%F`" >> $GITHUB_OUTPUT
+      - id: build_num
+        run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
+
   build:
     strategy:
       matrix:
@@ -45,7 +58,7 @@ jobs:
             with_apple_cert: true
             cargo_make_setup: setup-ios
             cargo_make_args: ios
-            flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_nightly_adhoc.plist"
+            flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_nightly_adhoc.plist --build-number=${{ needs.tags.outputs.build_num }}"
             artifact_prefix: acter-nightly-ios
             artifact_path:  app/build/ios/ipa/
             artifact_files: "acter.ipa"
@@ -68,15 +81,14 @@ jobs:
 
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
-    needs: check_date
+    needs:
+     - check_date
+     - tags
     if: ${{ needs.check_date.outputs.should_run != 'false' }}
 
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
-      - id: tag
-        run: echo "tag=`date +%F`" >> $GITHUB_OUTPUT
-        shell: bash
 
       - name: Install supported toolchain
         id: rust_toolchain
@@ -169,10 +181,10 @@ jobs:
           RAGESHAKE_APP_NAME: ${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }}
         run: |
           flutter ${{ matrix.flutter_build_args }} \
-            --dart-define=VERSION_NAME=Nightly+${{ steps.tag.outputs.tag }} \
+            --dart-define=VERSION_NAME=Nightly+${{ needs.tags.outputs.tag }} \
             --dart-define=RAGESHAKE_URL=$RAGESHAKE_URL \
             --dart-define=RAGESHAKE_APP_NAME=$RAGESHAKE_APP_NAME \
-            --dart-define=RAGESHAKE_APP_VERSION="Nightly-${{ steps.tag.outputs.tag }}/${{ matrix.name }}"
+            --dart-define=RAGESHAKE_APP_VERSION="Nightly-${{ needs.tags.outputs.tag }}/${{ matrix.name }}"
         working-directory: ./app
 
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
@@ -185,23 +197,23 @@ jobs:
       - name: Package Tar file
         if: matrix.os != 'windows-latest'
         working-directory: ${{ matrix.artifact_path }}
-        run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.tar.bz2" ${{ matrix.artifact_files }}
+        run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.tar.bz2" ${{ matrix.artifact_files }}
 
       - name: Package Zip file
         if: matrix.os == 'windows-latest'
         working-directory: ${{ matrix.artifact_path }}
         run: |
-          7z a "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.zip" ${{ matrix.artifact_files }}
+          7z a "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.zip" ${{ matrix.artifact_files }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
-          name: Nightly ${{ steps.tag.outputs.tag }}
-          tag_name: nightly-${{ steps.tag.outputs.tag }}
+          name: Nightly ${{ needs.tags.outputs.tag }}
+          tag_name: nightly-${{ needs.tags.outputs.tag }}
           prerelease: true
           files: |
-            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.*
+            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
 
       - name: Report issue
         if: ${{ failure() }}
@@ -221,24 +233,22 @@ jobs:
     name: Publish
     if: ${{ github.event.schedule }}
     needs:
+      - tags
       - build
     steps:
       - uses: actions/checkout@v2
-      - id: tag
-        run: echo "tag=`date +%F`" >> $GITHUB_OUTPUT
-        shell: bash
       - name: Tag for nightly release
         run: |
-          git tag nightly-${{ steps.tag.outputs.tag }}
-          git push origin nightly-${{ steps.tag.outputs.tag }}
+          git tag nightly-${{ needs.tags.outputs.tag }}
+          git push origin nightly-${{ needs.tags.outputs.tag }}
       - name: Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           # publish this nightly release now
           draft: true
-          name: Nightly ${{ steps.tag.outputs.tag }}
-          tag_name: nightly-${{ steps.tag.outputs.tag }}
+          name: Nightly ${{ needs.tags.outputs.tag }}
+          tag_name: nightly-${{ needs.tags.outputs.tag }}
           prerelease: true
       - uses: eregon/publish-release@v1
         env:
