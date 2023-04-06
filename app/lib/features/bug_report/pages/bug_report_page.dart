@@ -117,24 +117,21 @@ class _BugReportState extends ConsumerState<BugReportPage> {
             ),
             const SizedBox(height: 10),
             isLoading
-                ? const CircularProgressIndicator()
+                ? const Center(child: CircularProgressIndicator())
                 : CustomButton(
                     onPressed: () async {
                       bool res;
                       if (bugReport.description.isEmpty) {
-                        await _descriptionDialog();
+                        _descriptionDialog();
+                        return;
                       }
                       if (bugReport.tags.isEmpty) {
-                        Future.delayed(Duration.zero, () async {
-                          res = await _tagsDialog();
-                          if (!res) {
-                            return;
-                          }
-                        });
+                        res = await _tagsDialog();
+                        if (!res) {
+                          return;
+                        }
                       }
-                      Future.delayed(Duration.zero, () {
-                        reportBug(bugReport);
-                      });
+                      reportBug(bugReport);
                     },
                     title: 'Submit',
                   ),
@@ -144,8 +141,8 @@ class _BugReportState extends ConsumerState<BugReportPage> {
     );
   }
 
-  Future<void> _descriptionDialog() async {
-    await showDialog<void>(
+  void _descriptionDialog() async {
+    showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext ctx) => AlertDialog(
