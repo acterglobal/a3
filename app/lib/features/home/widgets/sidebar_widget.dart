@@ -1,5 +1,5 @@
-import 'package:acter/common/controllers/client_controller.dart';
-import 'package:acter/common/controllers/spaces_controller.dart';
+import 'package:acter/features/home/states/client_state.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';

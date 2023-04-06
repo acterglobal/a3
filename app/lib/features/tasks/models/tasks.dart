@@ -1,4 +1,4 @@
-import 'package:acter/common/controllers/spaces_controller.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 

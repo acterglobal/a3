@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:acter/common/providers/loading_provider.dart';
+import 'package:acter/features/bug_report/data/bug_report.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
@@ -13,78 +17,55 @@ const rageshakeUrl = String.fromEnvironment(
   defaultValue: 'http://localhost/api/submit',
 );
 
-class BugReportController extends GetxController {
-  List<String> tags = [];
-  String errorText = '';
-  bool isSubmitting = false;
+final bugReportNotifierProvider =
+    StateNotifierProvider<BugReportStateNotifier, BugReport>(
+  (ref) => BugReportStateNotifier(ref),
+);
 
-  void setTags(List<String> values) {
-    tags = values;
+class BugReportStateNotifier extends StateNotifier<BugReport> {
+  final Ref ref;
+  BugReportStateNotifier(this.ref)
+      : super(const BugReport(description: '', tags: []));
+
+  void setTags(List<String> tags) {
+    state = state.copyWith(
+      tags: tags,
+    );
+  }
+
+  void toggleWithLog() {
+    state = state.copyWith(
+      withLog: !state.withLog,
+    );
+  }
+
+  void toggleWithScreenshot() {
+    state = state.copyWith(
+      withLog: !state.withScreenshot,
+    );
+  }
+
+  void setDescription(String description) {
+    state = state.copyWith(
+      description: description,
+    );
   }
 
   Future<String?> report(
-    BuildContext context,
-    String description,
-    bool withLog,
     String? screenshotPath,
   ) async {
-    // validate issue description
-    if (description.isEmpty) {
-      showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext ctx) => AlertDialog(
-          title: const Text('Empty description'),
-          content: const Text('Please enter the issue description'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Ok'),
-            ),
-          ],
-        ),
-      );
-      return '';
-    }
-
-    // validate issue tag
-    if (tags.isEmpty) {
-      bool? res = await showDialog<bool>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext ctx) => AlertDialog(
-          title: const Text('Empty tag'),
-          content: const Text('Will you submit without any tag?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('No'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Yes'),
-            ),
-          ],
-        ),
-      );
-      if (res == false) {
-        return '';
-      }
-    }
-
-    isSubmitting = true;
-    update(['submit']);
+    ref.read(loadingProvider.notifier).update((state) => !state);
     final sdk = await ActerSdk.instance;
     String logFile = sdk.rotateLogFile();
 
     var request = http.MultipartRequest('POST', Uri.parse(rageshakeUrl));
     request.fields.addAll({
-      'text': description,
+      'text': state.description,
       'user_agent': userAgent,
       'app': appName, // should be same as one among github_project_mappings
       'version': versionName,
     });
-    request.fields.addIf(tags.isNotEmpty, 'label', tags.join(','));
+    request.fields.addIf(state.tags.isNotEmpty, 'label', state.tags.join(','));
     request.files.addIf(
       logFile.isNotEmpty,
       http.MultipartFile.fromBytes(
@@ -114,7 +95,7 @@ class BugReportController extends GetxController {
       // example - https://github.com/bitfriend/acter-bugs/issues/9
       reportUrl = json['report_url'];
     }
-    isSubmitting = false;
+    ref.read(loadingProvider.notifier).update((state) => !state);
     return reportUrl;
   }
 }

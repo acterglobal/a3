@@ -1,21 +1,21 @@
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
-import 'package:acter/common/controllers/client_controller.dart';
+import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/features/home/data/repositories/sdk_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
-final authControllerProvider =
-    StateNotifierProvider<AuthController, bool>((ref) => AuthController(ref));
+final authStateProvider = StateNotifierProvider<AuthStateNotifier, bool>(
+    (ref) => AuthStateNotifier(ref));
 
 final isLoggedInProvider = StateProvider<bool>((ref) => false);
 
-class AuthController extends StateNotifier<bool> {
+class AuthStateNotifier extends StateNotifier<bool> {
   final Ref ref;
-  AuthController(this.ref) : super(false);
+  AuthStateNotifier(this.ref) : super(false);
 
   Future<void> login(
     String username,

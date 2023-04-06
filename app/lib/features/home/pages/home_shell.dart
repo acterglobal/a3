@@ -9,7 +9,7 @@ import 'package:date_format/date_format.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
-import 'package:acter/common/controllers/client_controller.dart';
+import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
