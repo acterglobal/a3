@@ -24,10 +24,13 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   final formKey = GlobalKey<FormState>();
 
   Future<void> reportBug(BugReport report) async {
-    String? reportUrl =
-        await ref.read(bugReportNotifierProvider.notifier).report(
-              report.withScreenshot ? widget.imagePath : null,
-            );
+    String? reportUrl = await ref
+        .read(
+          bugReportNotifierProvider.notifier,
+        )
+        .report(
+          report.withScreenshot ? widget.imagePath : null,
+        );
     String msg = 'Error occurred in bug report';
     if (reportUrl != null) {
       String? issueId = getIssueId(reportUrl);

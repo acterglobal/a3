@@ -28,32 +28,22 @@ class BugReportStateNotifier extends StateNotifier<BugReport> {
       : super(const BugReport(description: '', tags: []));
 
   void setTags(List<String> tags) {
-    state = state.copyWith(
-      tags: tags,
-    );
+    state = state.copyWith(tags: tags);
   }
 
   void toggleWithLog() {
-    state = state.copyWith(
-      withLog: !state.withLog,
-    );
+    state = state.copyWith(withLog: !state.withLog);
   }
 
   void toggleWithScreenshot() {
-    state = state.copyWith(
-      withLog: !state.withScreenshot,
-    );
+    state = state.copyWith(withScreenshot: !state.withScreenshot);
   }
 
   void setDescription(String description) {
-    state = state.copyWith(
-      description: description,
-    );
+    state = state.copyWith(description: description);
   }
 
-  Future<String?> report(
-    String? screenshotPath,
-  ) async {
+  Future<String?> report(String? screenshotPath) async {
     ref.read(loadingProvider.notifier).update((state) => !state);
     final sdk = await ActerSdk.instance;
     String logFile = sdk.rotateLogFile();
