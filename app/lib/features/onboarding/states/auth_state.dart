@@ -9,7 +9,8 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
 final authStateProvider = StateNotifierProvider<AuthStateNotifier, bool>(
-    (ref) => AuthStateNotifier(ref));
+  (ref) => AuthStateNotifier(ref),
+);
 
 final isLoggedInProvider = StateProvider<bool>((ref) => false);
 

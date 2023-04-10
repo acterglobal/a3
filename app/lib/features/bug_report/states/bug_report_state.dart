@@ -4,17 +4,15 @@ import 'dart:io';
 import 'package:acter/common/providers/loading_provider.dart';
 import 'package:acter/features/bug_report/data/bug_report.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
 
 const rageshakeUrl = String.fromEnvironment(
   'RAGESHAKE_URL',
-  defaultValue: 'http://localhost/api/submit',
+  defaultValue: 'https://rageshake.acter.global/api/submit',
 );
 
 final bugReportNotifierProvider =
