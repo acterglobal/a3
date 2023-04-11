@@ -1,5 +1,5 @@
 import 'package:acter/common/animations/like_animation.dart';
-import 'package:acter/common/controllers/client_controller.dart';
+import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:acter/features/news/controllers/news_controller.dart';
 import 'package:acter/features/news/widgets/news_item.dart';

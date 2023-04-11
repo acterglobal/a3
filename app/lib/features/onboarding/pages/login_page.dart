@@ -1,9 +1,9 @@
-import 'package:acter/common/controllers/network_controller.dart';
+import 'package:acter/common/states/network_state.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
-import 'package:acter/features/onboarding/controllers/auth_controller.dart';
+import 'package:acter/features/onboarding/states/auth_state.dart';
 import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -61,7 +61,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authControllerProvider);
+    final authState = ref.watch(authStateProvider);
     var network = ref.watch(networkAwareProvider);
     return SimpleDialog(
       title: const Text('Login'),
@@ -125,9 +125,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           if (network == NetworkStatus.Off) {
                             showNoInternetNotification();
                           } else {
-                            await ref
-                                .read(authControllerProvider.notifier)
-                                .login(
+                            await ref.read(authStateProvider.notifier).login(
                                   username.text,
                                   password.text,
                                   context,

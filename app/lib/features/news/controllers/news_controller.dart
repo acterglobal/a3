@@ -1,4 +1,4 @@
-import 'package:acter/common/controllers/client_controller.dart';
+import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

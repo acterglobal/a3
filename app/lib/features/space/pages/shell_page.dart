@@ -1,4 +1,4 @@
-import 'package:acter/common/controllers/spaces_controller.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

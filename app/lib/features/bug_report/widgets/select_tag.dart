@@ -1,8 +1,8 @@
-import 'package:acter/features/bug_report/controllers/bug_report_controller.dart';
+import 'package:acter/features/bug_report/states/bug_report_state.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_selector/flutter_custom_selector.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // rageshake supports only single tag for issue.
 // when it supports multi tag, we can convert single selector into multi selector,
@@ -11,7 +11,7 @@ import 'package:get/get.dart';
 Color labelColor = Colors.white; // customized color
 Color errorColor = const Color(0xFFFF5858);
 
-class SelectTag extends StatelessWidget {
+class SelectTag extends ConsumerWidget {
   final List<String> tags = [
     'bug',
     'documentation',
@@ -27,38 +27,30 @@ class SelectTag extends StatelessWidget {
   SelectTag({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return GetBuilder<BugReportController>(
-      builder: (BugReportController controller) {
-        return CustomSingleSelectField(
-          items: tags,
-          title: 'Select issue tag',
-          onSelectionDone: (value) {
-            controller.setTags([value.toString()]);
-          },
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.all(15),
-            errorBorder: inputFieldBorder(color: errorColor),
-            errorMaxLines: 2,
-            errorStyle: defaultTextStyle(
-              color: errorColor,
-              fontSize: 11,
-            ),
-            floatingLabelBehavior: FloatingLabelBehavior.never,
-            labelText: 'Select issue tag',
-            labelStyle: defaultTextStyle(
-              color: labelColor,
-              fontSize: 16,
-            ),
-            suffixIcon: const Icon(Atlas.arrow_down_circle),
-            suffixIconColor: Colors.white,
-            enabledBorder: inputFieldBorder(),
-            border: inputFieldBorder(),
-            focusedBorder: inputFieldBorder(),
-            focusedErrorBorder: inputFieldBorder(color: errorColor),
-          ),
-        );
-      },
+  Widget build(BuildContext context, WidgetRef ref) {
+    return CustomSingleSelectField(
+      items: tags,
+      title: 'Select issue tag',
+      onSelectionDone: (value) => ref
+          .read(bugReportNotifierProvider.notifier)
+          .setTags([value.toString()]),
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(15),
+        errorBorder:
+            inputFieldBorder(color: Theme.of(context).colorScheme.error),
+        errorMaxLines: 2,
+        errorStyle: Theme.of(context).textTheme.labelSmall,
+        floatingLabelBehavior: FloatingLabelBehavior.never,
+        labelText: 'Select issue tag',
+        labelStyle: Theme.of(context).textTheme.labelMedium,
+        suffixIcon: const Icon(Atlas.arrow_down_circle),
+        suffixIconColor: Colors.white,
+        enabledBorder: inputFieldBorder(),
+        border: inputFieldBorder(),
+        focusedBorder: inputFieldBorder(),
+        focusedErrorBorder:
+            inputFieldBorder(color: Theme.of(context).colorScheme.error),
+      ),
     );
   }
 }

@@ -1,8 +1,8 @@
-import 'package:acter/common/controllers/network_controller.dart';
+import 'package:acter/common/states/network_state.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
-import 'package:acter/features/onboarding/controllers/auth_controller.dart';
+import 'package:acter/features/onboarding/states/auth_state.dart';
 import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/gestures.dart';
@@ -56,7 +56,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
-    final authState = ref.watch(authControllerProvider);
+    final authState = ref.watch(authStateProvider);
     var network = ref.watch(networkAwareProvider);
 
     return Dialog(
@@ -165,7 +165,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                   showNoInternetNotification();
                                 } else {
                                   await ref
-                                      .read(authControllerProvider.notifier)
+                                      .read(authStateProvider.notifier)
                                       .signUp(
                                         username.text,
                                         password.text,
