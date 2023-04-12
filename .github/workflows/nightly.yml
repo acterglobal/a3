@@ -126,17 +126,24 @@ jobs:
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          echo "vars set"
           # import certificate and provisioning profile from secrets
           echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
           echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output $PP_PATH
           # create temporary keychain
+          echo "creating keychain"
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          echo "setting keychain"
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          echo "unlocking keychain"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           # import certificate to keychain
+          echo "importing certificate"
           security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          echo "listing keychains"
           security list-keychain -d user -s $KEYCHAIN_PATH
           # apply provisioning profile
+          echo "copying over"
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
