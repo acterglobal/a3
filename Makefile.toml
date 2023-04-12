@@ -389,6 +389,7 @@ dependencies = [
     "desktop-build-release",
     "desktop-build-release-mac",
     "copy-desktop-lib",
+    "copy-desktop-lib-release",
 ]
 
 [tasks.desktop-build]
@@ -421,9 +422,9 @@ script = [
         -output $MAC_LIPO \
         "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-darwin/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib" \
         "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/x86_64-apple-darwin/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib"
-    cp "$MAC_LIPO" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/mac/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib"
+    cp "$MAC_LIPO" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/macos/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib"
     cp "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/bindings.h" \
-        "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/mac/Classes/libacter.h"
+        "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/macos/Classes/libacter.h"
     """,
 ]
 
@@ -431,6 +432,25 @@ script = [
 [tasks.copy-desktop-lib]
 # Copy desktop library to plugin
 script_runner = "@duckscript"
+condition = { env_true = ["DEV"] }
+script = [
+    """
+    os = os_family
+
+    if eq ${os} "linux"
+        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.so ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/linux/lib${CARGO_MAKE_CRATE_FS_NAME}.so
+    elseif eq ${os} "mac"
+        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/macos/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
+    elseif eq ${os} "windows"
+        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/${CARGO_MAKE_CRATE_FS_NAME}.dll ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/windows/${CARGO_MAKE_CRATE_FS_NAME}.dll
+    end
+    """
+]
+
+[tasks.copy-desktop-lib-release]
+# Copy desktop library to plugin
+script_runner = "@duckscript"
+condition = { env_true = ["RELEASE"] }
 script = [
     """
     os = os_family
