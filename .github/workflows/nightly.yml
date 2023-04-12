@@ -58,7 +58,7 @@ jobs:
       matrix:
        include:
           - name: Android Arm64
-            id: android
+            target: android
             os: ubuntu-latest
             cargo_make_setup: setup-android
             cargo_make_args: android-arm
@@ -210,9 +210,19 @@ jobs:
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
 
-      - env:
+      - name: Expose JKS file
+        if: matrix.target == 'android'
+        working-directory: ./app/android
+        env:
+          KEYSTORE_JKS: ${{ secrets.ANDROID_KEYSTORE_JKS }}
+        run: echo $KEYSTORE_JKS > key.jks
+
+      - name: Flutter Build
+        env:
           RAGESHAKE_URL: ${{ secrets.RAGESHAKE_URL }}
           RAGESHAKE_APP_NAME: ${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         shell: bash
         run: |
           flutter ${{ matrix.flutter_build_args }} \
