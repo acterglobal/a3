@@ -7,18 +7,6 @@ concurrency:
 on:
   workflow_dispatch:
     inputs:
-      # target:
-      #   description: 'Targets to build'
-      #   required: true
-      #   default: 'all'
-      #   type: choice
-      #   options:
-      #   - all
-      #   - android
-      #   - linux
-      #   - ios
-      #   - windows
-      #   - macos
       custom_tag:
         description: 'Provide the tag name for this scenario'
         required: true
@@ -54,6 +42,7 @@ jobs:
         run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
 
   build:
+    environment: nightly
     strategy:
       matrix:
        include:
@@ -68,7 +57,6 @@ jobs:
             artifact_path:  app/build/app/outputs/apk/release/
             artifact_files: "app-release.apk"
           - name: Linux x64
-            id: linux
             os: ubuntu-latest
             apt_install: ninja-build libgtk-3-dev
             cargo_make_args: desktop
@@ -78,7 +66,6 @@ jobs:
             artifact_path: app/build/linux/x64/release/bundle/
             artifact_files: lib/ data/ acter
           - name: iOS
-            id: ios
             os: macos-latest
             with_apple_cert: true
             cargo_make_setup: setup-ios
@@ -89,7 +76,7 @@ jobs:
             artifact_files: "acter.ipa"
           - name: Mac OSx 
             os: macos-12
-            id: macos
+            with_apple_cert: true
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
             flutter_build_args: "build macos"
@@ -97,7 +84,6 @@ jobs:
             artifact_path: app/build/macos/Build/Products/Release/
             artifact_files: "Acter.app"
           - name: Windows
-            id: windows
             os: windows-latest
             cargo_make_args: desktop
             flutter_config: "--enable-windows-desktop"
@@ -116,40 +102,6 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
-
-      # Install the Apple certificate and provisioning profile 
-      - name: Install the Apple certificate and provisioning profile
-        if: matrix.with_apple_cert
-        env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.NIGHTLY_ADHOC_CERT_BASE64 }}
-          P12_PASSWORD: ${{ secrets.NIGHTLY_ADHOC_CERT_PASSWORD }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.NIGHTLY_MOBILEPROVISION_BASE64 }}
-          KEYCHAIN_PASSWORD: ${{ secrets.NIGHTLY_KEYCHAIN_PASSWORD }}
-        run: |
-          # create variables
-          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          echo "vars set"
-          # import certificate and provisioning profile from secrets
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output $PP_PATH
-          # create temporary keychain
-          echo "creating keychain"
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          echo "setting keychain"
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          echo "unlocking keychain"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          # import certificate to keychain
-          echo "importing certificate"
-          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          echo "listing keychains"
-          security list-keychain -d user -s $KEYCHAIN_PATH
-          # apply provisioning profile
-          echo "copying over"
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Install supported toolchain
         id: rust_toolchain
@@ -210,12 +162,45 @@ jobs:
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
 
+      # Install the Apple certificate and provisioning profile
+      - name: Install the Apple certificate and provisioning profile
+        if: matrix.with_apple_cert
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.NIGHTLY_ADHOC_CERT_BASE64 }}
+          P12_PASSWORD: ${{ secrets.NIGHTLY_ADHOC_CERT_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.NIGHTLY_MOBILEPROVISION_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.NIGHTLY_KEYCHAIN_PASSWORD }}
+        run: |
+          echo "starting in $RUNNER_TEMP"
+          # create variables
+          CERTIFICATE_PATH="$RUNNER_TEMP/build_certificate.p12"
+          PP_PATH="$RUNNER_TEMP/build_pp.mobileprovision"
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          echo "vars set"
+          # import certificate and provisioning profile from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output "$CERTIFICATE_PATH"
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output "$PP_PATH"
+          # create temporary keychain
+          echo "creating keychain"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          echo "setting keychain"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          echo "unlocking keychain"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          # import certificate to keychain
+          echo "importing certificate"
+          security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          echo "listing keychains"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          # apply provisioning profile
+          echo "copying over"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
       - name: Expose JKS file
         if: matrix.target == 'android'
         working-directory: ./app/android
-        env:
-          KEYSTORE_JKS: ${{ secrets.ANDROID_KEYSTORE_JKS }}
-        run: echo $KEYSTORE_JKS > key.jks
+        run: echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 --decode > key.jks
 
       - name: Flutter Build
         env:

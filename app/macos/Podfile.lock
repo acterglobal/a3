@@ -74,9 +74,9 @@ SPEC CHECKSUMS:
   package_info: 6eba2fd8d3371dda2d85c8db6fe97488f24b74b2
   path_provider_macos: 05fb0ef0cedf3e5bd179b9e41a638682b37133ea
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
-  shared_preferences_foundation: 297b3ebca31b34ec92be11acd7fb0ba932c822ca
+  shared_preferences_foundation: 986fc17f3d3251412d18b0265f9c64113a8c2472
   sqflite: a5789cceda41d54d23f31d6de539d65bb14100ea
-  url_launcher_macos: c04e4fa86382d4f94f6b38f14625708be3ae52e2
+  url_launcher_macos: 5335912b679c073563f29d89d33d10d459f95451
   window_size: 339dafa0b27a95a62a843042038fa6c3c48de195
 
 PODFILE CHECKSUM: c9ecb3d66f6525488bf5d99914f1d5ce05b05dd9
