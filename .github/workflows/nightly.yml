@@ -213,6 +213,7 @@ jobs:
       - env:
           RAGESHAKE_URL: ${{ secrets.RAGESHAKE_URL }}
           RAGESHAKE_APP_NAME: ${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }}
+        shell: bash
         run: |
           flutter ${{ matrix.flutter_build_args }} \
             --dart-define=VERSION_NAME=Nightly+${{ needs.tags.outputs.tag }} \
