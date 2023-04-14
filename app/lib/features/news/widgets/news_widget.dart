@@ -4,8 +4,10 @@ import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:acter/features/news/controllers/news_controller.dart';
 import 'package:acter/features/news/widgets/news_item.dart';
 import 'package:acter/features/news/widgets/stream_types_selection.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stories_editor/stories_editor.dart';
 
 class NewsWidget extends ConsumerStatefulWidget {
   const NewsWidget({super.key});
@@ -41,6 +43,30 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
             : const SizedBox.shrink(),
         centerTitle: true,
         title: const StreamTypesSelection(),
+        actions: [
+          IconButton(
+            icon: const Icon(Atlas.plus_circle_thin),
+            onPressed: () async {
+              final image_uri = await showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => Dialog(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: StoriesEditor(
+                      giphyKey: '[HERE YOUR API KEY]',
+                      middleBottomWidget: const Center(
+                        child: Text('Posting Update to <SPACE>'),
+                      ),
+                      onDone: (uri) {
+                        Navigator.pop(context, uri);
+                      },
+                    ),
+                  ),
+                ),
+              );
+            },
+          )
+        ],
       ),
       body: newsList.when(
         data: (data) {

@@ -33,6 +33,9 @@ dependencies:
   # UI
   flutter_adaptive_scaffold: ^0.1.0
   atlas_icons: ^0.0.12
+  stories_editor:
+    git:
+      url: https://github.com/acterglobal/flutter_stories_editor.git
   flutter_chat_ui:
     git:
       url: https://github.com/acterglobal/flyer-flutter_chat_ui.git
