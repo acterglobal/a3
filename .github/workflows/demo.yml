@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Check legibility
     outputs:
-      should_run: steps.pr.outputs.pr_found && contains(steps.PR.outputs.pr_labels, "build-demo")
+      should_run: ${{steps.pr.outputs.pr_found == "true" && contains(steps.PR.outputs.pr_labels, "build-demo")}}
     steps:
     
       - uses: 8BitJonny/gh-get-current-pr@2.2.0
