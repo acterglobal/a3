@@ -55,7 +55,8 @@ jobs:
             flutter_build_args: "build apk --target-platform android-arm64"
             artifact_prefix: acter-nightly-android-arm64
             artifact_path:  app/build/app/outputs/apk/release/
-            artifact_files: "app-release.apk"
+            rename_file: "app-release.apk"
+            rename_suffix: "apk"
           - name: Linux x64
             os: ubuntu-latest
             apt_install: ninja-build libgtk-3-dev
@@ -64,16 +65,19 @@ jobs:
             flutter_build_args: "build linux"
             artifact_prefix: acter-nightly-linux-x64
             artifact_path: app/build/linux/x64/release/bundle/
-            artifact_files: lib/ data/ acter
+            tar_files: lib/ data/ acter
           - name: iOS
             os: macos-latest
+            target: ios
             with_apple_cert: true
             cargo_make_setup: setup-ios
             cargo_make_args: ios
             flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_nightly_adhoc.plist --build-number=${{ needs.tags.outputs.build_num }}"
             artifact_prefix: acter-nightly-ios
             artifact_path:  app/build/ios/ipa/
-            artifact_files: "acter.ipa"
+            rename_file: "acter.ipa"
+            rename_suffix: "ipa"
+            extra_artifacts: "ios-manifest.plist"
           - name: Mac OSx 
             os: macos-12
             with_apple_cert: true
@@ -82,7 +86,7 @@ jobs:
             flutter_build_args: "build macos"
             artifact_prefix: acter-nightly-macosx
             artifact_path: app/build/macos/Build/Products/Release/
-            artifact_files: "Acter.app"
+            tar_files: "Acter.app"
           - name: Windows
             os: windows-latest
             cargo_make_args: desktop
@@ -90,7 +94,7 @@ jobs:
             flutter_build_args: "build windows"
             artifact_prefix: acter-nightly-windows
             artifact_path: app/build/windows/runner/
-            artifact_files: "Release"
+            zip_files: "Release"
 
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -224,16 +228,30 @@ jobs:
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
           rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
 
-      - name: Package Tar file
-        if: matrix.os != 'windows-latest'
-        working-directory: ${{ matrix.artifact_path }}
-        run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.tar.bz2" ${{ matrix.artifact_files }}
+      - name: Generate manifest
+        if: matrix.target == 'ios'
+        env:
+          TAG: ${{needs.tags.outputs.tag}}
+          VERSION: ${{ needs.tags.outputs.build_num }}
+        run: |
+          sed "s/__TAG__/$TAG/g ; s/__VERSION__/$VERSION/g" .github/templates/ios-manifest.plist.tmpl > ios-manifest.plist
 
-      - name: Package Zip file
-        if: matrix.os == 'windows-latest'
+      - name: Rename file
+        if: matrix.rename_file
         working-directory: ${{ matrix.artifact_path }}
         run: |
-          7z a "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.zip" ${{ matrix.artifact_files }}
+          mv "${{matrix.rename_file}}" "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.${{matrix.rename_suffix}}"
+
+      - name: Package Tar file
+        if: matrix.tar_files
+        working-directory: ${{ matrix.artifact_path }}
+        run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.tar.bz2" ${{ matrix.tar_files }}
+
+      - name: Package Zip file
+        if: matrix.zip_files
+        working-directory: ${{ matrix.artifact_path }}
+        run: |
+          7z a "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.zip" ${{ matrix.zip_files }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -244,9 +262,10 @@ jobs:
           prerelease: true
           files: |
             ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
+            ${{ matrix.extra_artifacts }}
 
       - name: Report issue
-        if: ${{ failure() }}
+        if: ${{ github.event.schedule && failure() }}
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -255,7 +274,7 @@ jobs:
           ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         with:
           assignees: gnunicorn
-          filename: .github/failure-report-template.md
+          filename: .github/templates/failure-report-template.md.tmpl
           update_existing: true
 
   publish:
