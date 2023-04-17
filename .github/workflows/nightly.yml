@@ -304,3 +304,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ steps.create_release.outputs.id }}
+
+      - name: Send message to nightly channel
+        id: matrix-chat-message
+        uses: fadenb/matrix-chat-message@v0.0.6
+        with:
+          homeserver: 'matrix.acter.global'
+          token: ${{ secrets.NIGHTLY_MATRIX_TOKEN }}
+          channel:  '!PsBFWhNhPEAfCBdApa:acter.global'
+          message: |
+            ## Nightly ${{ needs.tags.outputs.tag }} released
+
+            Latest nightly builds have been built and [can be downloaded from here](https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/).
+            Direct install links:
+             - 🤖 [Android devices](https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/acter-nightly-android-arm64-${{ needs.tags.outputs.tag }}.apk)
+             - 🍎 [iOS devices](itms-services://?action=download-manifest&amp;url=https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/ios-manifest.plist) (for ad-hoc registered devices only)
