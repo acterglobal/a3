@@ -27,7 +27,7 @@
 .dart_tool/
 .packages
 build/
-ios/Classes/bindings.h
+macos/Classes/libacter.h
 
 linux/libacter.so
 macos/libacter.dylib

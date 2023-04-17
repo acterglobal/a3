@@ -6,10 +6,6 @@
 # default: "C++"
 language = "C"
 
-header = """
-#import <Flutter/Flutter.h>
-"""
-
 # An optional string of text to output between major sections of the generated
 # file as a warning against manual editing
 #
