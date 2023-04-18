@@ -278,6 +278,7 @@ jobs:
           update_existing: true
 
   publish:
+    environment: nightly
     runs-on: ubuntu-latest
     name: Publish
     if: ${{ github.event.schedule }}
