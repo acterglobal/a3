@@ -316,7 +316,7 @@ jobs:
           message: |
             ## Nightly ${{ needs.tags.outputs.tag }} released
 
-            Latest nightly builds have been built and [can be downloaded from here](https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/).
+            Latest nightly builds have been built and [can be downloaded from here](https://github.com/acterglobal/a3/releases/nightly-${{ needs.tags.outputs.tag }}/).
             Direct install links:
              - 🤖 [Android devices](https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/acter-nightly-android-arm64-${{ needs.tags.outputs.tag }}.apk)
              - 🍎 [iOS devices](itms-services://?action=download-manifest&amp;url=https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/ios-manifest.plist) (for ad-hoc registered devices only)
