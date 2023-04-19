@@ -48,8 +48,8 @@ pub struct Member {
 }
 
 impl std::ops::Deref for Member {
-    type Target = matrix_sdk::room::RoomMember;
-    fn deref(&self) -> &matrix_sdk::room::RoomMember {
+    type Target = RoomMember;
+    fn deref(&self) -> &RoomMember {
         &self.member
     }
 }

@@ -1,4 +1,3 @@
-use super::message::{ImageDesc, TextDesc, VideoDesc};
 use acter_core::{
     events::{
         news::{self, NewsContent, NewsEntryBuilder},
@@ -13,12 +12,17 @@ use async_broadcast::Receiver;
 use core::time::Duration;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
-    room::Joined,
-    room::Room,
+    room::{Joined, Room},
 };
 use std::collections::{hash_map::Entry, HashMap};
 
-use super::{api::FfiBuffer, client::Client, spaces::Space, RUNTIME};
+use super::{
+    api::FfiBuffer,
+    client::Client,
+    message::{ImageDesc, TextDesc, VideoDesc},
+    spaces::Space,
+    RUNTIME,
+};
 
 impl Client {
     pub async fn wait_for_news(
@@ -215,6 +219,7 @@ impl NewsEntry {
                 room: self.room.clone(),
             })
     }
+
     pub async fn refresh(&self) -> Result<NewsEntry> {
         let key = self.content.event_id().to_string();
         let client = self.client.clone();
@@ -316,7 +321,7 @@ impl NewsEntryUpdateBuilder {
 
 impl Space {
     pub fn news_draft(&self) -> Result<NewsEntryDraft> {
-        let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
+        let Room::Joined(joined) = &self.inner.room else {
             bail!("You can't create news for spaces we are not part on")
         };
         Ok(NewsEntryDraft {
@@ -327,7 +332,7 @@ impl Space {
     }
 
     pub fn news_draft_with_builder(&self, content: NewsEntryBuilder) -> Result<NewsEntryDraft> {
-        let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
+        let Room::Joined(joined) = &self.inner.room else {
             bail!("You can't create news for spaces we are not part on")
         };
         Ok(NewsEntryDraft {
