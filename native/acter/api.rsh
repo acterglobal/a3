@@ -225,6 +225,10 @@ object EventId {
     fn to_string() -> string;
 }
 
+object MxcUri {
+    fn to_string() -> string;
+}
+
 object RoomId {
     fn to_string() -> string;
 }
@@ -669,20 +673,20 @@ object TaskUpdateBuilder {
     fn unset_color_update();
 
     /// set the utc_due for this task list in rfc3339 format
-    fn utc_due_from_rfc3339(utc_due: string) -> Result<bool>;
+    fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
     /// set the utc_due for this task list in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string)-> Result<bool>;
+    fn utc_due_from_rfc2822(utc_due: string)-> Result<()>;
     /// set the utc_due for this task list in custom format
-    fn utc_due_from_format(utc_due: string, format: string)-> Result<bool>;
+    fn utc_due_from_format(utc_due: string, format: string)-> Result<()>;
     fn unset_utc_due();
     fn unset_utc_due_update();
 
     /// set the utc_start for this task list in rfc3339 format
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<bool>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this task list in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string)-> Result<bool>;
+    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
     /// set the utc_start for this task list in custom format
-    fn utc_start_from_format(utc_start: string, format: string)-> Result<bool>;
+    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
     fn unset_utc_start();
     fn unset_utc_start_update();
 
@@ -738,19 +742,19 @@ object TaskDraft {
     fn unset_color();
 
     /// set the utc_due for this task list in rfc3339 format
-    fn utc_due_from_rfc3339(utc_due: string) -> Result<bool>;
+    fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
     /// set the utc_due for this task list in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string)-> Result<bool>;
+    fn utc_due_from_rfc2822(utc_due: string)-> Result<()>;
     /// set the utc_due for this task list in custom format
-    fn utc_due_from_format(utc_due: string, format: string)-> Result<bool>;
+    fn utc_due_from_format(utc_due: string, format: string)-> Result<()>;
     fn unset_utc_due();
 
     /// set the utc_start for this task list in rfc3339 format
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<bool>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this task list in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string)-> Result<bool>;
+    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
     /// set the utc_start for this task list in custom format
-    fn utc_start_from_format(utc_start: string, format: string)-> Result<bool>;
+    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
     fn unset_utc_start();
 
     /// set the sort order for this task list
@@ -975,7 +979,7 @@ object Account {
 
     /// Change the avatar of the account
     /// provide the c_type as MIME, e.g. `image/jpeg`
-    fn set_avatar(c_type: string, data: Vec<u8>) -> Future<Result<bool>>;
+    fn set_avatar(c_type: string, data: Vec<u8>) -> Future<Result<MxcUri>>;
 }
 
 object SyncState {

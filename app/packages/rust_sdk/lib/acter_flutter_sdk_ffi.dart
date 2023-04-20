@@ -3869,7 +3869,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __accountSetAvatarFuturePoll(
+  MxcUri? __accountSetAvatarFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3907,7 +3907,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_MxcUri");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = MxcUri._(this, tmp13_1);
     return tmp7;
   }
 
@@ -7156,6 +7159,16 @@ class Api {
 
   late final _eventIdToString = _eventIdToStringPtr.asFunction<
       _EventIdToStringReturn Function(
+    int,
+  )>();
+  late final _mxcUriToStringPtr = _lookup<
+      ffi.NativeFunction<
+          _MxcUriToStringReturn Function(
+    ffi.Int64,
+  )>>("__MxcUri_to_string");
+
+  late final _mxcUriToString = _mxcUriToStringPtr.asFunction<
+      _MxcUriToStringReturn Function(
     int,
   )>();
   late final _roomIdToStringPtr = _lookup<
@@ -15617,6 +15630,37 @@ class EventId {
   }
 }
 
+class MxcUri {
+  final Api _api;
+  final _Box _box;
+
+  MxcUri._(this._api, this._box);
+
+  String toString() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._mxcUriToString(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class RoomId {
   final Api _api;
   final _Box _box;
@@ -18948,7 +18992,7 @@ class TaskUpdateBuilder {
   }
 
   /// set the utc_due for this task list in rfc3339 format
-  bool utcDueFromRfc3339(
+  void utcDueFromRfc3339(
     String utcDue,
   ) {
     final tmp1 = utcDue;
@@ -18974,7 +19018,6 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -18985,12 +19028,11 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
   /// set the utc_due for this task list in rfc2822 format
-  bool utcDueFromRfc2822(
+  void utcDueFromRfc2822(
     String utcDue,
   ) {
     final tmp1 = utcDue;
@@ -19016,7 +19058,6 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -19027,12 +19068,11 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
   /// set the utc_due for this task list in custom format
-  bool utcDueFromFormat(
+  void utcDueFromFormat(
     String utcDue,
     String format,
   ) {
@@ -19073,7 +19113,6 @@ class TaskUpdateBuilder {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
       final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
@@ -19084,8 +19123,7 @@ class TaskUpdateBuilder {
       }
       throw tmp11_0;
     }
-    final tmp10 = tmp15 > 0;
-    return tmp10;
+    return;
   }
 
   void unsetUtcDue() {
@@ -19107,7 +19145,7 @@ class TaskUpdateBuilder {
   }
 
   /// set the utc_start for this task list in rfc3339 format
-  bool utcStartFromRfc3339(
+  void utcStartFromRfc3339(
     String utcStart,
   ) {
     final tmp1 = utcStart;
@@ -19133,7 +19171,6 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -19144,12 +19181,11 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
   /// set the utc_start for this task list in rfc2822 format
-  bool utcStartFromRfc2822(
+  void utcStartFromRfc2822(
     String utcStart,
   ) {
     final tmp1 = utcStart;
@@ -19175,7 +19211,6 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -19186,12 +19221,11 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
   /// set the utc_start for this task list in custom format
-  bool utcStartFromFormat(
+  void utcStartFromFormat(
     String utcStart,
     String format,
   ) {
@@ -19232,7 +19266,6 @@ class TaskUpdateBuilder {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
       final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
@@ -19243,8 +19276,7 @@ class TaskUpdateBuilder {
       }
       throw tmp11_0;
     }
-    final tmp10 = tmp15 > 0;
-    return tmp10;
+    return;
   }
 
   void unsetUtcStart() {
@@ -19586,7 +19618,7 @@ class TaskDraft {
   }
 
   /// set the utc_due for this task list in rfc3339 format
-  bool utcDueFromRfc3339(
+  void utcDueFromRfc3339(
     String utcDue,
   ) {
     final tmp1 = utcDue;
@@ -19612,7 +19644,6 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -19623,12 +19654,11 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
   /// set the utc_due for this task list in rfc2822 format
-  bool utcDueFromRfc2822(
+  void utcDueFromRfc2822(
     String utcDue,
   ) {
     final tmp1 = utcDue;
@@ -19654,7 +19684,6 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -19665,12 +19694,11 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
   /// set the utc_due for this task list in custom format
-  bool utcDueFromFormat(
+  void utcDueFromFormat(
     String utcDue,
     String format,
   ) {
@@ -19711,7 +19739,6 @@ class TaskDraft {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
       final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
@@ -19722,8 +19749,7 @@ class TaskDraft {
       }
       throw tmp11_0;
     }
-    final tmp10 = tmp15 > 0;
-    return tmp10;
+    return;
   }
 
   void unsetUtcDue() {
@@ -19736,7 +19762,7 @@ class TaskDraft {
   }
 
   /// set the utc_start for this task list in rfc3339 format
-  bool utcStartFromRfc3339(
+  void utcStartFromRfc3339(
     String utcStart,
   ) {
     final tmp1 = utcStart;
@@ -19762,7 +19788,6 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -19773,12 +19798,11 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
   /// set the utc_start for this task list in rfc2822 format
-  bool utcStartFromRfc2822(
+  void utcStartFromRfc2822(
     String utcStart,
   ) {
     final tmp1 = utcStart;
@@ -19804,7 +19828,6 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -19815,12 +19838,11 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
   /// set the utc_start for this task list in custom format
-  bool utcStartFromFormat(
+  void utcStartFromFormat(
     String utcStart,
     String format,
   ) {
@@ -19861,7 +19883,6 @@ class TaskDraft {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
       final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
@@ -19872,8 +19893,7 @@ class TaskDraft {
       }
       throw tmp11_0;
     }
-    final tmp10 = tmp15 > 0;
-    return tmp10;
+    return;
   }
 
   void unsetUtcStart() {
@@ -21385,7 +21405,7 @@ class Account {
 
   /// Change the avatar of the account
   /// provide the c_type as MIME, e.g. `image/jpeg`
-  Future<bool> setAvatar(
+  Future<MxcUri> setAvatar(
     String cType,
     List<int> data,
   ) {
@@ -23930,6 +23950,15 @@ class _EventIdToStringReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _MxcUriToStringReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _RoomIdToStringReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -24511,8 +24540,6 @@ class _TaskUpdateBuilderUtcDueFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcDueFromRfc2822Return extends ffi.Struct {
@@ -24524,8 +24551,6 @@ class _TaskUpdateBuilderUtcDueFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcDueFromFormatReturn extends ffi.Struct {
@@ -24537,8 +24562,6 @@ class _TaskUpdateBuilderUtcDueFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
@@ -24550,8 +24573,6 @@ class _TaskUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
@@ -24563,8 +24584,6 @@ class _TaskUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
@@ -24576,8 +24595,6 @@ class _TaskUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskDraftUtcDueFromRfc3339Return extends ffi.Struct {
@@ -24589,8 +24606,6 @@ class _TaskDraftUtcDueFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskDraftUtcDueFromRfc2822Return extends ffi.Struct {
@@ -24602,8 +24617,6 @@ class _TaskDraftUtcDueFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskDraftUtcDueFromFormatReturn extends ffi.Struct {
@@ -24615,8 +24628,6 @@ class _TaskDraftUtcDueFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskDraftUtcStartFromRfc3339Return extends ffi.Struct {
@@ -24628,8 +24639,6 @@ class _TaskDraftUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskDraftUtcStartFromRfc2822Return extends ffi.Struct {
@@ -24641,8 +24650,6 @@ class _TaskDraftUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskDraftUtcStartFromFormatReturn extends ffi.Struct {
@@ -24654,8 +24661,6 @@ class _TaskDraftUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskListNameReturn extends ffi.Struct {
@@ -26045,7 +26050,7 @@ class _AccountSetAvatarFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint64()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.Int64()
   external int arg5;
 }
 

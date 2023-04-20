@@ -161,8 +161,8 @@ impl TaskListDraft {
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
-        self.content
-            .description(Some(TextMessageEventContent::plain(body)));
+        let desc = TextMessageEventContent::plain(body);
+        self.content.description(Some(desc));
         self
     }
 
@@ -543,8 +543,8 @@ impl TaskDraft {
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
-        self.content
-            .description(Some(TextMessageEventContent::plain(body)));
+        let desc = TextMessageEventContent::plain(body);
+        self.content.description(Some(desc));
         self
     }
 
@@ -568,22 +568,22 @@ impl TaskDraft {
         self
     }
 
-    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<bool> {
-        self.content
-            .utc_due(Some(DateTime::parse_from_rfc3339(&utc_due)?.into()));
-        Ok(true)
+    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc3339(&utc_due)?.into();
+        self.content.utc_due(Some(dt));
+        Ok(())
     }
 
-    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<bool> {
-        self.content
-            .utc_due(Some(DateTime::parse_from_rfc2822(&utc_due)?.into()));
-        Ok(true)
+    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc2822(&utc_due)?.into();
+        self.content.utc_due(Some(dt));
+        Ok(())
     }
 
-    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<bool> {
-        self.content
-            .utc_due(Some(DateTime::parse_from_str(&utc_due, &format)?.into()));
-        Ok(true)
+    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<()> {
+        let dt = DateTime::parse_from_str(&utc_due, &format)?.into();
+        self.content.utc_due(Some(dt));
+        Ok(())
     }
 
     pub fn unset_utc_due(&mut self) -> &mut Self {
@@ -591,22 +591,22 @@ impl TaskDraft {
         self
     }
 
-    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<bool> {
-        self.content
-            .utc_start(Some(DateTime::parse_from_rfc3339(&utc_start)?.into()));
-        Ok(true)
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc3339(&utc_start)?.into();
+        self.content.utc_start(Some(dt));
+        Ok(())
     }
 
-    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<bool> {
-        self.content
-            .utc_start(Some(DateTime::parse_from_rfc2822(&utc_start)?.into()));
-        Ok(true)
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc2822(&utc_start)?.into();
+        self.content.utc_start(Some(dt));
+        Ok(())
     }
 
-    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<bool> {
-        self.content
-            .utc_start(Some(DateTime::parse_from_str(&utc_start, &format)?.into()));
-        Ok(true)
+    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<()> {
+        let dt = DateTime::parse_from_str(&utc_start, &format)?.into();
+        self.content.utc_start(Some(dt));
+        Ok(())
     }
 
     pub fn unset_utc_start(&mut self) -> &mut Self {
@@ -699,8 +699,8 @@ impl TaskUpdateBuilder {
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
-        self.content
-            .description(Some(Some(TextMessageEventContent::plain(body))));
+        let desc = TextMessageEventContent::plain(body);
+        self.content.description(Some(Some(desc)));
         self
     }
 
@@ -810,24 +810,24 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<bool> {
-        self.content
-            .utc_due(Some(Some(DateTime::parse_from_rfc3339(&utc_due)?.into())));
-        Ok(true)
+    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc3339(&utc_due)?.into();
+        self.content.utc_due(Some(Some(dt)));
+        Ok(())
     }
 
-    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<bool> {
-        self.content
-            .utc_due(Some(Some(DateTime::parse_from_rfc2822(&utc_due)?.into())));
-        Ok(true)
+    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc2822(&utc_due)?.into();
+        self.content.utc_due(Some(Some(dt)));
+        Ok(())
     }
 
-    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<bool> {
-        self.content.utc_due(Some(Some(
-            DateTime::parse_from_str(&utc_due, &format)?.into(),
-        )));
-        Ok(true)
+    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<()> {
+        let dt = DateTime::parse_from_str(&utc_due, &format)?.into();
+        self.content.utc_due(Some(Some(dt)));
+        Ok(())
     }
+
     pub fn unset_utc_due(&mut self) -> &mut Self {
         self.content.utc_due(Some(None));
         self
@@ -838,29 +838,29 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<bool> {
-        self.content
-            .utc_start(Some(Some(DateTime::parse_from_rfc3339(&utc_start)?.into())));
-        Ok(true)
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc3339(&utc_start)?.into();
+        self.content.utc_start(Some(Some(dt)));
+        Ok(())
     }
 
-    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<bool> {
-        self.content
-            .utc_start(Some(Some(DateTime::parse_from_rfc2822(&utc_start)?.into())));
-        Ok(true)
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc2822(&utc_start)?.into();
+        self.content.utc_start(Some(Some(dt)));
+        Ok(())
     }
 
-    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<bool> {
-        self.content.utc_start(Some(Some(
-            DateTime::parse_from_str(&utc_start, &format)?.into(),
-        )));
-        Ok(true)
+    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<()> {
+        let dt = DateTime::parse_from_str(&utc_start, &format)?.into();
+        self.content.utc_start(Some(Some(dt)));
+        Ok(())
     }
 
     pub fn unset_utc_start(&mut self) -> &mut Self {
         self.content.utc_start(Some(None));
         self
     }
+
     pub fn unset_utc_start_update(&mut self) -> &mut Self {
         self.content.utc_start(None);
         self
@@ -916,8 +916,8 @@ impl TaskListUpdateBuilder {
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
-        self.content
-            .description(Some(TextMessageEventContent::plain(body)));
+        let desc = TextMessageEventContent::plain(body);
+        self.content.description(Some(desc));
         self
     }
 

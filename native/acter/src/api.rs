@@ -43,6 +43,7 @@ pub use account::Account;
 pub use acter_core::{
     events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
     models::{Color as EfkColor, Tag, TextMessageContent},
+    ruma::events::room::MediaSource,
 };
 pub use auth::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token,
@@ -76,10 +77,9 @@ pub use tasks::{
 pub use typing::TypingEvent;
 pub use verification::{VerificationEmoji, VerificationEvent};
 
-pub use acter_core::ruma::events::room::MediaSource;
-
 pub type DeviceId = acter_core::ruma::OwnedDeviceId;
 pub type EventId = acter_core::ruma::OwnedEventId;
+pub type MxcUri = acter_core::ruma::OwnedMxcUri;
 pub type RoomId = acter_core::ruma::OwnedRoomId;
 pub type UserId = acter_core::ruma::OwnedUserId;
 
