@@ -2,7 +2,7 @@ import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
-import 'package:acter/features/home/widgets/user_avatar.dart';
+import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/routing.dart';
 import 'package:atlas_icons/atlas_icons.dart';
