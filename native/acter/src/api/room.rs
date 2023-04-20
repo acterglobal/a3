@@ -383,13 +383,13 @@ impl Room {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        let data = client.media().get_media_content(&request, false).await?;
-                        Ok(FfiBuffer::new(data))
+                        let buf = client.media().get_media_content(&request, false).await?;
+                        Ok(FfiBuffer::new(buf))
                     } else {
                         bail!("Invalid file format")
                     }
                 } else {
-                    bail!("Invalid file format")
+                    bail!("Could not get timeline event from deserialization")
                 }
             })
             .await?

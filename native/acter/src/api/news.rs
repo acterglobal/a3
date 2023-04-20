@@ -181,9 +181,8 @@ impl NewsSlide {
         };
         RUNTIME
             .spawn(async move {
-                Ok(FfiBuffer::new(
-                    client.media().get_media_content(&request, false).await?,
-                ))
+                let buf = client.media().get_media_content(&request, false).await?;
+                Ok(FfiBuffer::new(buf))
             })
             .await?
     }

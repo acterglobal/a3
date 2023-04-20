@@ -57,11 +57,11 @@ impl Account {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let data = account
+                let buf = account
                     .get_avatar(MediaFormat::File)
                     .await?
                     .context("No avatar URL given")?;
-                Ok(FfiBuffer::new(data))
+                Ok(FfiBuffer::new(buf))
             })
             .await?
     }

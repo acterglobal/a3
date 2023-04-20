@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 use log::info;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest, MediaThumbnailSize},
@@ -68,12 +68,13 @@ impl UserProfile {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::File,
                 };
-                if let Ok(result) = client.media().get_media_content(&request, true).await {
-                    return Ok(FfiBuffer::new(result));
-                }
-                // sometimes fetching failed, i don't know that reason
-                log::warn!("Could not get media content from user profile");
-                Ok(FfiBuffer::new(vec![]))
+                let buf = client
+                    .media()
+                    .get_media_content(&request, true)
+                    .await
+                    // sometimes fetching failed, i don't know that reason
+                    .context("Could not get media content from user profile")?;
+                Ok(FfiBuffer::new(buf))
             })
             .await?
     }
@@ -92,12 +93,13 @@ impl UserProfile {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::Thumbnail(size),
                 };
-                if let Ok(result) = client.media().get_media_content(&request, true).await {
-                    return Ok(FfiBuffer::new(result));
-                }
-                // sometimes fetching failed, i don't know that reason
-                info!("Could not get media content from user profile");
-                Ok(FfiBuffer::new(vec![]))
+                let buf = client
+                    .media()
+                    .get_media_content(&request, true)
+                    .await
+                    // sometimes fetching failed, i don't know that reason
+                    .context("Could not get media content from user profile")?;
+                Ok(FfiBuffer::new(buf))
             })
             .await?
     }
@@ -149,12 +151,13 @@ impl RoomProfile {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::File,
                 };
-                if let Ok(result) = client.media().get_media_content(&request, true).await {
-                    return Ok(FfiBuffer::new(result));
-                }
-                // sometimes fetching failed, i don't know that reason
-                info!("Could not get media content from room profile");
-                Ok(FfiBuffer::new(vec![]))
+                let buf = client
+                    .media()
+                    .get_media_content(&request, true)
+                    .await
+                    // sometimes fetching failed, i don't know that reason
+                    .context("Could not get media content from room profile")?;
+                Ok(FfiBuffer::new(buf))
             })
             .await?
     }
@@ -173,12 +176,13 @@ impl RoomProfile {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::Thumbnail(size),
                 };
-                if let Ok(result) = client.media().get_media_content(&request, true).await {
-                    return Ok(FfiBuffer::new(result));
-                }
-                // sometimes fetching failed, i don't know that reason
-                info!("Could not get media content from room profile");
-                Ok(FfiBuffer::new(vec![]))
+                let buf = client
+                    .media()
+                    .get_media_content(&request, true)
+                    .await
+                    // sometimes fetching failed, i don't know that reason
+                    .context("Could not get media content from room profile")?;
+                Ok(FfiBuffer::new(buf))
             })
             .await?
     }
