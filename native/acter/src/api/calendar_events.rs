@@ -283,7 +283,7 @@ impl CalendarEventUpdateBuilder {
 
 impl Space {
     pub fn calendar_event_draft(&self) -> Result<CalendarEventDraft> {
-        let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
+        let Room::Joined(joined) = &self.inner.room else {
             bail!("You can't create calendar_events for spaces we are not part on")
         };
         Ok(CalendarEventDraft {
@@ -297,7 +297,7 @@ impl Space {
         &self,
         inner: CalendarEventBuilder,
     ) -> Result<CalendarEventDraft> {
-        let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
+        let Room::Joined(joined) = &self.inner.room else {
             bail!("You can't create calendar_events for spaces we are not part on")
         };
         Ok(CalendarEventDraft {

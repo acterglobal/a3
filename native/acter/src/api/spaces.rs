@@ -23,7 +23,7 @@ use log::warn;
 use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
     event_handler::Ctx,
-    room::{Messages, MessagesOptions},
+    room::{Messages, MessagesOptions, Room as MatrixRoom},
     Client as MatrixClient,
 };
 use ruma::{
@@ -270,7 +270,7 @@ impl Space {
     }
 
     pub async fn set_acter_space_states(&self) -> Result<()> {
-        let matrix_sdk::room::Room::Joined(ref joined) = self.inner.room else {
+        let MatrixRoom::Joined(ref joined) = self.inner.room else {
             bail!("You can't convert a space you didn't join");
         };
         for state in default_acter_space_states() {
