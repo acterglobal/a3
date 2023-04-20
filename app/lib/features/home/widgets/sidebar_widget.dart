@@ -1,9 +1,9 @@
-import 'package:acter/features/home/states/client_state.dart';
+import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
-import 'package:acter/common/dialogs/logout_confirmation.dart';
+import 'package:acter/features/home/data/models/nav_item.dart';
+import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/routing.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -124,10 +124,7 @@ final sidebarItemsProvider =
             softWrap: false,
           ),
           const SizedBox(height: 10),
-          const Divider(
-            indent: 10,
-            endIndent: 10,
-          )
+          const Divider(indent: 10, endIndent: 10)
         ],
       ),
       location: '/chat',
@@ -188,14 +185,8 @@ class SidebarWidget extends ConsumerWidget {
       // configuration
       labelType: labelType,
       backgroundColor: Theme.of(context).navigationRailTheme.backgroundColor!,
-      selectedIconTheme: const IconThemeData(
-        size: 18,
-        color: Colors.white,
-      ),
-      unselectedIconTheme: const IconThemeData(
-        size: 18,
-        color: Colors.white,
-      ),
+      selectedIconTheme: const IconThemeData(size: 18, color: Colors.white),
+      unselectedIconTheme: const IconThemeData(size: 18, color: Colors.white),
       padding: const EdgeInsets.all(0),
       leading: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -208,32 +199,21 @@ class SidebarWidget extends ConsumerWidget {
               child: const UserAvatarWidget(),
             ),
           ),
-          const Divider(
-            indent: 18,
-            endIndent: 18,
-          )
+          const Divider(indent: 18, endIndent: 18)
         ],
       ),
       trailing: Expanded(
         child: Column(
           children: [
             const Spacer(),
-            const Divider(
-              indent: 18,
-              endIndent: 18,
-            ),
+            const Divider(indent: 18, endIndent: 18),
             InkWell(
               onTap: () => handleBugReport(),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Column(
                   children: [
-                    const Icon(
-                      Atlas.bug_file_thin,
-                      color: Colors.white,
-                    ),
+                    const Icon(Atlas.bug_file_thin, color: Colors.white),
                     Text(
                       'Report',
                       style: Theme.of(context).textTheme.labelSmall,
@@ -243,28 +223,19 @@ class SidebarWidget extends ConsumerWidget {
                 ),
               ),
             ),
-            const Divider(
-              indent: 18,
-              endIndent: 18,
-            ),
+            const Divider(indent: 18, endIndent: 18),
             Visibility(
               visible: !isGuest,
               child: InkWell(
                 key: Keys.logoutBtn,
                 onTap: () => confirmationDialog(context, ref),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 5,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 5),
                   child: Column(
                     children: [
-                      const Icon(
-                        Atlas.exit_thin,
-                      ),
+                      const Icon(Atlas.exit_thin),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 5,
-                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 5),
                         child: Text(
                           'Log Out',
                           style: Theme.of(context).textTheme.labelSmall,
@@ -282,18 +253,12 @@ class SidebarWidget extends ConsumerWidget {
                 key: Keys.loginBtn,
                 onTap: () => context.pushNamed('login'),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 5,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 5),
                   child: Column(
                     children: [
-                      const Icon(
-                        Atlas.entrance_thin,
-                      ),
+                      const Icon(Atlas.entrance_thin),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 5,
-                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 5),
                         child: Text(
                           'Log In',
                           style: Theme.of(context).textTheme.labelSmall,
