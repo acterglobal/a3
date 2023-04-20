@@ -1011,7 +1011,7 @@ impl TaskListUpdateBuilder {
 
 impl Space {
     pub fn task_list_draft(&self) -> Result<TaskListDraft> {
-        let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
+        let Room::Joined(joined) = &self.inner.room else {
             bail!("You can't create tasks for spaces we are not part on")
         };
         Ok(TaskListDraft {
@@ -1022,7 +1022,7 @@ impl Space {
     }
 
     pub fn task_list_draft_with_builder(&self, content: TaskListBuilder) -> Result<TaskListDraft> {
-        let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
+        let Room::Joined(joined) = &self.inner.room else {
             bail!("You can't create tasks for spaces we are not part on")
         };
         Ok(TaskListDraft {

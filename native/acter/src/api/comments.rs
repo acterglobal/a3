@@ -70,6 +70,7 @@ impl Comment {
     pub fn content_text(&self) -> String {
         self.inner.content.body.clone()
     }
+
     pub fn content_formatted(&self) -> Option<String> {
         self.inner
             .content

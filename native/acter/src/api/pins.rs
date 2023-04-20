@@ -353,7 +353,7 @@ impl PinUpdateBuilder {
 
 impl Space {
     pub fn pin_draft(&self) -> Result<PinDraft> {
-        let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
+        let Room::Joined(joined) = &self.inner.room else {
             bail!("You can't create pins for spaces we are not part on")
         };
         Ok(PinDraft {
@@ -364,7 +364,7 @@ impl Space {
     }
 
     pub fn pin_draft_with_builder(&self, content: PinBuilder) -> Result<PinDraft> {
-        let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
+        let Room::Joined(joined) = &self.inner.room else {
             bail!("You can't create pins for spaces we are not part on")
         };
         Ok(PinDraft {
