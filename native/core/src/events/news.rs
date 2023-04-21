@@ -13,62 +13,62 @@ use super::{
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum NewsContent {
-    /// An audio message.
-    Audio(AudioMessageEventContent),
-    /// A file message.
-    File(FileMessageEventContent),
     /// An image message.
     Image(ImageMessageEventContent),
     /// A text message.
     Text(TextMessageEventContent),
     /// A video message.
     Video(VideoMessageEventContent),
+    /// An audio message.
+    Audio(AudioMessageEventContent),
+    /// A file message.
+    File(FileMessageEventContent),
 }
 
 impl NewsContent {
     pub fn type_str(&self) -> String {
         match self {
-            NewsContent::Audio(_) => "audio".to_owned(),
-            NewsContent::File(_) => "file".to_owned(),
             NewsContent::Image(_) => "image".to_owned(),
             NewsContent::Text(_) => "text".to_owned(),
             NewsContent::Video(_) => "video".to_owned(),
+            NewsContent::Audio(_) => "audio".to_owned(),
+            NewsContent::File(_) => "file".to_owned(),
+        }
+    }
+
+    pub fn image(&self) -> Option<ImageMessageEventContent> {
+        match self {
+            NewsContent::Image(content) => Some(content.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn text(&self) -> Option<TextMessageEventContent> {
+        match self {
+            NewsContent::Text(content) => Some(content.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn video(&self) -> Option<VideoMessageEventContent> {
+        match self {
+            NewsContent::Video(content) => Some(content.clone()),
+            _ => None,
         }
     }
 
     pub fn audio(&self) -> Option<AudioMessageEventContent> {
-        let NewsContent::Audio(i) = self else {
-            return None;
-        };
-        Some(i.clone())
+        match self {
+            NewsContent::Audio(content) => Some(content.clone()),
+            _ => None,
+        }
     }
 
     pub fn file(&self) -> Option<FileMessageEventContent> {
-        let NewsContent::File(i) = self else {
-            return None;
-        };
-        Some(i.clone())
-    }
-
-    pub fn image(&self) -> Option<ImageMessageEventContent> {
-        let NewsContent::Image(i) = self else {
-            return None;
-        };
-        Some(i.clone())
-    }
-
-    pub fn text(&self) -> Option<TextMessageEventContent> {
-        let NewsContent::Text(i) = self else {
-            return None;
-        };
-        Some(i.clone())
-    }
-
-    pub fn video(&self) -> Option<VideoMessageEventContent> {
-        let NewsContent::Video(i) = self else {
-            return None;
-        };
-        Some(i.clone())
+        match self {
+            NewsContent::File(content) => Some(content.clone()),
+            _ => None,
+        }
     }
 }
 
