@@ -17,7 +17,8 @@ class NewsListNotifier extends StateNotifier<AsyncValue<List<NewsEntry>>> {
     state = const AsyncLoading();
     final client = ref.read(clientProvider);
     state = await AsyncValue.guard(() async {
-      return await client!.latestNews(25).then((ffiList) => ffiList.toList());
+      var entries = await client!.latestNewsEntries(25).then((v) => v.toList());
+      return entries;
     });
   }
 }

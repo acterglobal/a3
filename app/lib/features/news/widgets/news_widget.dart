@@ -47,8 +47,9 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
           ),
         );
       },
-      error: (error, stackTrace) =>
-          const Center(child: Text('Couldn\'t fetch news')),
+      error: (error, stackTrace) {
+        return const Center(child: Text("Couldn't fetch news"));
+      },
       loading: () => const Center(
         child: SizedBox(
           height: 50,

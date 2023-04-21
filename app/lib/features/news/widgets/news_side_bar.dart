@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:atlas_icons/atlas_icons.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/features/news/controllers/news_comment_controller.dart';
 import 'package:acter/features/news/widgets/comment_view.dart';
-import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:atlas_icons/atlas_icons.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -84,27 +84,33 @@ class _NewsSideBarState extends State<NewsSideBar> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: const [
-                        Text('Spam', style: TextStyle(color: Colors.white)),
+                        Text(
+                          'Spam',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         Icon(Icons.keyboard_arrow_right, color: Colors.white)
                       ],
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: const [
-                        Text('Violence', style: TextStyle(color: Colors.white)),
+                        Text(
+                          'Violence',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         Icon(Icons.keyboard_arrow_right, color: Colors.white)
                       ],
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: const [
@@ -117,7 +123,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: const [
@@ -130,7 +136,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: const [
@@ -153,11 +159,11 @@ class _NewsSideBarState extends State<NewsSideBar> {
 }
 
 class _ProfileImageWidget extends StatelessWidget {
+  final Color borderColor;
+
   const _ProfileImageWidget({
     required this.borderColor,
   });
-
-  final Color borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -190,14 +196,16 @@ class _ProfileImageWidget extends StatelessWidget {
 }
 
 class _SideBarItem extends StatelessWidget {
+  final Widget icon;
+  final String label;
+  final TextStyle style;
+
   const _SideBarItem({
     required this.icon,
     required this.label,
     required this.style,
   });
-  final Widget icon;
-  final String label;
-  final TextStyle style;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -210,8 +218,9 @@ class _SideBarItem extends StatelessWidget {
   }
 
   void showBottomSheet(BuildContext context) {
-    TextEditingController commentTextController = TextEditingController();
+    TextEditingController textCtlr = TextEditingController();
     bool emojiShowing = false;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -222,26 +231,22 @@ class _SideBarItem extends StatelessWidget {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             void onEmojiSelected(Emoji emoji) {
-              commentTextController
-                ..text += emoji.emoji
-                ..selection = TextSelection.fromPosition(
-                  TextPosition(offset: commentTextController.text.length),
-                );
+              textCtlr.text += emoji.emoji;
+              textCtlr.selection = TextSelection.fromPosition(
+                TextPosition(offset: textCtlr.text.length),
+              );
             }
 
             void onBackspacePressed() {
-              commentTextController
-                ..text =
-                    commentTextController.text.characters.skipLast(1).toString()
-                ..selection = TextSelection.fromPosition(
-                  TextPosition(offset: commentTextController.text.length),
-                );
+              textCtlr.text = textCtlr.text.characters.skipLast(1).toString();
+              textCtlr.selection = TextSelection.fromPosition(
+                TextPosition(offset: textCtlr.text.length),
+              );
             }
 
             return DraggableScrollableSheet(
               expand: false,
-              builder:
-                  (BuildContext context, ScrollController scrollController) {
+              builder: (BuildContext context, ScrollController scrollCtlr) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Column(
@@ -255,7 +260,7 @@ class _SideBarItem extends StatelessWidget {
                               '101 Comments',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 16.0,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -263,18 +268,18 @@ class _SideBarItem extends StatelessWidget {
                         ),
                       ),
                       GetBuilder<NewsCommentController>(
-                        builder: (NewsCommentController newsCommentController) {
+                        builder: (NewsCommentController commentCtlr) {
                           return Expanded(
                             child: ListView.builder(
                               physics: const BouncingScrollPhysics(),
-                              controller: scrollController,
+                              controller: scrollCtlr,
                               itemCount: 10,
                               itemBuilder: (context, index) {
                                 return Padding(
                                   padding: const EdgeInsets.all(12),
                                   child: CommentView(
-                                    commentModel: newsCommentController
-                                        .listComments[index],
+                                    commentModel:
+                                        commentCtlr.listComments[index],
                                     postition: index,
                                   ),
                                 );
@@ -313,7 +318,7 @@ class _SideBarItem extends StatelessWidget {
                                           color: Colors.white,
                                         ),
                                         cursorColor: Colors.grey,
-                                        controller: commentTextController,
+                                        controller: textCtlr,
                                         decoration: const InputDecoration(
                                           hintText: 'Add a comment',
                                           hintStyle: TextStyle(
@@ -362,7 +367,7 @@ class _SideBarItem extends StatelessWidget {
                             onBackspacePressed: onBackspacePressed,
                             config: Config(
                               columns: 7,
-                              emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                              emojiSizeMax: 32 * (Platform.isIOS ? 1.3 : 1),
                               verticalSpacing: 0,
                               horizontalSpacing: 0,
                               initCategory: Category.RECENT,

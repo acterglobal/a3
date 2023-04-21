@@ -1,11 +1,10 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
+import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:acter/features/news/widgets/stream_types_selection.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

@@ -1,5 +1,5 @@
-import 'dart:typed_data';
 import 'dart:io' show Platform;
+import 'dart:typed_data';
 
 import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
