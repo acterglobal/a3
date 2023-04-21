@@ -129,7 +129,7 @@ impl List {
                 }
 
                 if is_acter_space {
-                    let news_count = sp.latest_news(100).await?.len();
+                    let news_count = sp.latest_news_entries(100).await?.len();
                     let task_lists = sp.task_lists().await?.len();
                     let pins = sp.pins().await?.len();
                     let pinned_links = sp.pinned_links().await?.len();

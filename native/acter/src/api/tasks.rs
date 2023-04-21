@@ -22,34 +22,34 @@ impl Client {
         key: String,
         timeout: Option<Box<Duration>>,
     ) -> Result<TaskList> {
-        let AnyActerModel::TaskList(content) = self.wait_for(key.clone(), timeout).await? else {
+        let AnyActerModel::TaskList(inner) = self.wait_for(key.clone(), timeout).await? else {
             bail!("{key} is not a task");
         };
         let room = self
             .core
             .client()
-            .get_room(content.room_id())
+            .get_room(inner.room_id())
             .context("Room not found")?;
         Ok(TaskList {
             client: self.clone(),
             room,
-            content,
+            inner,
         })
     }
 
     pub async fn wait_for_task(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Task> {
-        let AnyActerModel::Task(content) = self.wait_for(key.clone(), timeout).await? else {
+        let AnyActerModel::Task(inner) = self.wait_for(key.clone(), timeout).await? else {
             bail!("{key} is not a task");
         };
         let room = self
             .core
             .client()
-            .get_room(content.room_id())
+            .get_room(inner.room_id())
             .context("Room not found")?;
         Ok(Task {
             client: self.clone(),
             room,
-            content,
+            inner,
         })
     }
 
@@ -59,8 +59,8 @@ impl Client {
         let client = self.clone();
         for mdl in self.store().get_list(KEYS::TASKS).await? {
             #[allow(irrefutable_let_patterns)]
-            if let AnyActerModel::TaskList(t) = mdl {
-                let room_id = t.room_id().to_owned();
+            if let AnyActerModel::TaskList(inner) = mdl {
+                let room_id = inner.room_id().to_owned();
                 let room = match rooms_map.entry(room_id) {
                     Entry::Occupied(t) => t.get().clone(),
                     Entry::Vacant(e) => {
@@ -76,7 +76,7 @@ impl Client {
                 task_lists.push(TaskList {
                     client: client.clone(),
                     room,
-                    content: t,
+                    inner,
                 })
             } else {
                 tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
@@ -89,17 +89,17 @@ impl Client {
         let client = self.clone();
         let mdl = self.store().get(key).await?;
 
-        let AnyActerModel::TaskList(task_list) = mdl else  {
+        let AnyActerModel::TaskList(inner) = mdl else  {
             bail!("Not a Tasklist model: {key}")
         };
-        let Some(room) = client.get_room(task_list.room_id()) else {
+        let Some(room) = client.get_room(inner.room_id()) else {
             bail!("Room not found for task_list item");
         };
 
         Ok(TaskList {
             client: client.clone(),
             room,
-            content: task_list,
+            inner,
         })
     }
 }
@@ -115,11 +115,11 @@ impl Space {
             .await?
         {
             #[allow(irrefutable_let_patterns)]
-            if let AnyActerModel::TaskList(t) = mdl {
+            if let AnyActerModel::TaskList(inner) = mdl {
                 task_lists.push(TaskList {
                     client: self.client.clone(),
                     room: self.room.clone(),
-                    content: t,
+                    inner,
                 })
             } else {
                 tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
@@ -131,18 +131,18 @@ impl Space {
     pub async fn task_list(&self, key: &str) -> Result<TaskList> {
         let mdl = self.client.store().get(key).await?;
 
-        let AnyActerModel::TaskList(task_list) = mdl else  {
+        let AnyActerModel::TaskList(inner) = mdl else  {
             bail!("Not a Tasklist model: {key}")
         };
         assert!(
-            self.room_id() == task_list.room_id(),
+            self.room_id() == inner.room_id(),
             "This task doesn't belong to this room"
         );
 
         Ok(TaskList {
             client: self.client.clone(),
             room: self.room.clone(),
-            content: task_list,
+            inner,
         })
     }
 }
@@ -232,19 +232,19 @@ impl TaskListDraft {
 pub struct TaskList {
     client: Client,
     room: Room,
-    content: models::TaskList,
+    inner: models::TaskList,
 }
 
 impl std::ops::Deref for TaskList {
     type Target = models::TaskList;
     fn deref(&self) -> &Self::Target {
-        &self.content
+        &self.inner
     }
 }
 
 impl TaskList {
     pub fn name(&self) -> String {
-        self.content.name.clone()
+        self.inner.name.clone()
     }
 
     pub fn description_text(&self) -> Option<String> {
@@ -252,34 +252,34 @@ impl TaskList {
     }
 
     pub fn subscribers(&self) -> Vec<OwnedUserId> {
-        self.content.subscribers.clone()
+        self.inner.subscribers.clone()
     }
 
     pub fn role(&self) -> Option<String> {
-        self.content
+        self.inner
             .role
             .as_ref()
             .and_then(|t| serde_json::to_string(t).ok())
     }
 
     pub fn sort_order(&self) -> u32 {
-        self.content.sort_order
+        self.inner.sort_order
     }
 
     pub fn color(&self) -> Option<Color> {
-        self.content.color.clone()
+        self.inner.color.clone()
     }
 
     pub fn time_zone(&self) -> Option<String> {
-        self.content.time_zone.as_ref().map(ToString::to_string)
+        self.inner.time_zone.as_ref().map(ToString::to_string)
     }
 
     pub fn keywords(&self) -> Vec<String> {
-        self.content.keywords.clone()
+        self.inner.keywords.clone()
     }
 
     pub fn categories(&self) -> Vec<String> {
-        self.content.categories.clone()
+        self.inner.categories.clone()
     }
 
     pub fn space(&self) -> Space {
@@ -298,26 +298,26 @@ impl TaskList {
     }
 
     pub async fn refresh(&self) -> Result<TaskList> {
-        let key = self.content.event_id().to_string();
+        let key = self.inner.event_id().to_string();
         let client = self.client.clone();
         let room = self.room.clone();
 
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::TaskList(content) = client.store().get(&key).await? else {
+                let AnyActerModel::TaskList(inner) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a task")
                 };
                 Ok(TaskList {
                     client,
                     room,
-                    content,
+                    inner,
                 })
             })
             .await?
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.content.event_id().to_string();
+        let key = self.inner.event_id().to_string();
         self.client.executor().subscribe(key)
     }
 
@@ -341,19 +341,19 @@ impl TaskList {
         Ok(TaskListUpdateBuilder {
             client: self.client.clone(),
             room: joined.clone(),
-            content: self.content.updater(),
+            inner: self.inner.updater(),
         })
     }
 
     pub fn tasks_stats(&self) -> Result<TaskStats> {
-        Ok(self.content.stats().clone())
+        Ok(self.inner.stats().clone())
     }
 
     pub async fn tasks(&self) -> Result<Vec<Task>> {
-        if !self.content.stats().has_tasks() {
+        if !self.inner.stats().has_tasks() {
             return Ok(vec![]);
         };
-        let tasks_key = self.content.tasks_key();
+        let tasks_key = self.inner.tasks_key();
         let client = self.client.clone();
         let room = self.room.clone();
         Ok(RUNTIME
@@ -365,11 +365,11 @@ impl TaskList {
                     .into_iter()
                     .flatten()
                     .filter_map(|e| {
-                        if let AnyActerModel::Task(content) = e {
+                        if let AnyActerModel::Task(inner) = e {
                             Some(Task {
                                 client: client.clone(),
                                 room: room.clone(),
-                                content,
+                                inner,
                             })
                         } else {
                             None
@@ -383,7 +383,7 @@ impl TaskList {
     pub async fn comments(&self) -> Result<crate::CommentsManager> {
         let client = self.client.clone();
         let room = self.room.clone();
-        let event_id = self.content.event_id().to_owned();
+        let event_id = self.inner.event_id().to_owned();
 
         RUNTIME
             .spawn(async move {
@@ -400,40 +400,40 @@ impl TaskList {
 pub struct Task {
     client: Client,
     room: Room,
-    content: models::Task,
+    inner: models::Task,
 }
 
 impl std::ops::Deref for Task {
     type Target = models::Task;
     fn deref(&self) -> &Self::Target {
-        &self.content
+        &self.inner
     }
 }
 
 /// helpers for content
 impl Task {
     pub fn title(&self) -> String {
-        self.content.title.clone()
+        self.inner.title.clone()
     }
 
     pub fn description_text(&self) -> Option<String> {
-        self.content.description.as_ref().map(|t| t.body.clone())
+        self.inner.description.as_ref().map(|t| t.body.clone())
     }
 
     pub fn assignees(&self) -> Vec<OwnedUserId> {
-        self.content.assignees.clone()
+        self.inner.assignees.clone()
     }
 
     pub fn subscribers(&self) -> Vec<OwnedUserId> {
-        self.content.subscribers.clone()
+        self.inner.subscribers.clone()
     }
 
     pub fn sort_order(&self) -> u32 {
-        self.content.sort_order
+        self.inner.sort_order
     }
 
     pub fn priority(&self) -> Option<u8> {
-        Some(match self.content.priority {
+        Some(match self.inner.priority {
             Priority::Undefined => return None,
             Priority::Highest => 1,
             Priority::SecondHighest => 2,
@@ -448,50 +448,50 @@ impl Task {
     }
 
     pub fn utc_due(&self) -> Option<UtcDateTime> {
-        self.content.utc_due
+        self.inner.utc_due
     }
 
     pub fn utc_start(&self) -> Option<UtcDateTime> {
-        self.content.utc_start
+        self.inner.utc_start
     }
 
     pub fn color(&self) -> Option<Color> {
-        self.content.color.clone()
+        self.inner.color.clone()
     }
 
     pub fn is_done(&self) -> bool {
-        self.content.is_done()
+        self.inner.is_done()
     }
 
     pub fn progress_percent(&self) -> Option<u8> {
-        self.content.progress_percent
+        self.inner.progress_percent
     }
 
     pub fn keywords(&self) -> Vec<String> {
-        self.content.keywords.clone()
+        self.inner.keywords.clone()
     }
 
     pub fn categories(&self) -> Vec<String> {
-        self.content.categories.clone()
+        self.inner.categories.clone()
     }
 }
 
 /// Custom functions
 impl Task {
     pub async fn refresh(&self) -> Result<Task> {
-        let key = self.content.event_id().to_string();
+        let key = self.inner.event_id().to_string();
         let client = self.client.clone();
         let room = self.room.clone();
 
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Task(content) = client.store().get(&key).await? else {
+                let AnyActerModel::Task(inner) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a task")
                 };
                 Ok(Task {
                     client,
                     room,
-                    content,
+                    inner,
                 })
             })
             .await?
@@ -504,19 +504,19 @@ impl Task {
         Ok(TaskUpdateBuilder {
             client: self.client.clone(),
             room: joined.clone(),
-            content: self.content.updater(),
+            inner: self.inner.updater(),
         })
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.content.event_id().to_string();
+        let key = self.inner.event_id().to_string();
         self.client.executor().subscribe(key)
     }
 
     pub async fn comments(&self) -> Result<crate::CommentsManager> {
         let client = self.client.clone();
         let room = self.room.clone();
-        let event_id = self.content.event_id().to_owned();
+        let event_id = self.inner.event_id().to_owned();
 
         RUNTIME
             .spawn(async move {
@@ -684,185 +684,185 @@ impl TaskDraft {
 pub struct TaskUpdateBuilder {
     client: Client,
     room: Joined,
-    content: tasks::TaskUpdateBuilder,
+    inner: tasks::TaskUpdateBuilder,
 }
 
 impl TaskUpdateBuilder {
     pub fn title(&mut self, title: String) -> &mut Self {
-        self.content.title(Some(title));
+        self.inner.title(Some(title));
         self
     }
 
     pub fn unset_title_update(&mut self) -> &mut Self {
-        self.content.title(None);
+        self.inner.title(None);
         self
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
         let desc = TextMessageEventContent::plain(body);
-        self.content.description(Some(Some(desc)));
+        self.inner.description(Some(Some(desc)));
         self
     }
 
     pub fn unset_description(&mut self) -> &mut Self {
-        self.content.description(Some(None));
+        self.inner.description(Some(None));
         self
     }
 
     pub fn unset_description_update(&mut self) -> &mut Self {
-        self.content
+        self.inner
             .description(None::<Option<TextMessageEventContent>>);
         self
     }
 
     pub fn sort_order(&mut self, sort_order: u32) -> &mut Self {
-        self.content.sort_order(Some(sort_order));
+        self.inner.sort_order(Some(sort_order));
         self
     }
 
     pub fn unset_sort_order_update(&mut self) -> &mut Self {
-        self.content.sort_order(None);
+        self.inner.sort_order(None);
         self
     }
 
     pub fn color(&mut self, color: Box<Color>) -> &mut Self {
-        self.content.color(Some(Some(Box::into_inner(color))));
+        self.inner.color(Some(Some(Box::into_inner(color))));
         self
     }
 
     pub fn unset_color(&mut self) -> &mut Self {
-        self.content.color(Some(None));
+        self.inner.color(Some(None));
         self
     }
 
     pub fn unset_color_update(&mut self) -> &mut Self {
-        self.content.color(None::<Option<Color>>);
+        self.inner.color(None::<Option<Color>>);
         self
     }
 
     pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
-        self.content.keywords(Some(keywords.to_vec()));
+        self.inner.keywords(Some(keywords.to_vec()));
         self
     }
 
     pub fn unset_keywords(&mut self) -> &mut Self {
-        self.content.keywords(Some(vec![]));
+        self.inner.keywords(Some(vec![]));
         self
     }
 
     pub fn unset_keywords_update(&mut self) -> &mut Self {
-        self.content.keywords(None);
+        self.inner.keywords(None);
         self
     }
 
     pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
-        self.content.categories(Some(categories.to_vec()));
+        self.inner.categories(Some(categories.to_vec()));
         self
     }
 
     pub fn unset_categories(&mut self) -> &mut Self {
-        self.content.categories(Some(vec![]));
+        self.inner.categories(Some(vec![]));
         self
     }
 
     pub fn unset_categories_update(&mut self) -> &mut Self {
-        self.content.categories(None);
+        self.inner.categories(None);
         self
     }
 
     pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
-        self.content.subscribers(Some(subscribers.to_vec()));
+        self.inner.subscribers(Some(subscribers.to_vec()));
         self
     }
 
     pub fn unset_subscribers(&mut self) -> &mut Self {
-        self.content.subscribers(Some(vec![]));
+        self.inner.subscribers(Some(vec![]));
         self
     }
 
     pub fn unset_subscribers_update(&mut self) -> &mut Self {
-        self.content.subscribers(None);
+        self.inner.subscribers(None);
         self
     }
 
     pub fn assignees(&mut self, assignees: &mut [OwnedUserId]) -> &mut Self {
-        self.content.assignees(Some(assignees.to_vec()));
+        self.inner.assignees(Some(assignees.to_vec()));
         self
     }
 
     pub fn unset_assignees(&mut self) -> &mut Self {
-        self.content.assignees(Some(vec![]));
+        self.inner.assignees(Some(vec![]));
         self
     }
 
     pub fn unset_assignees_update(&mut self) -> &mut Self {
-        self.content.assignees(None);
+        self.inner.assignees(None);
         self
     }
 
     pub fn mark_done(&mut self) -> &mut Self {
-        self.content.progress_percent(Some(Some(100)));
+        self.inner.progress_percent(Some(Some(100)));
         self
     }
 
     pub fn mark_undone(&mut self) -> &mut Self {
-        self.content.progress_percent(Some(None));
+        self.inner.progress_percent(Some(None));
         self
     }
 
     pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<()> {
         let dt = DateTime::parse_from_rfc3339(&utc_due)?.into();
-        self.content.utc_due(Some(Some(dt)));
+        self.inner.utc_due(Some(Some(dt)));
         Ok(())
     }
 
     pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<()> {
         let dt = DateTime::parse_from_rfc2822(&utc_due)?.into();
-        self.content.utc_due(Some(Some(dt)));
+        self.inner.utc_due(Some(Some(dt)));
         Ok(())
     }
 
     pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<()> {
         let dt = DateTime::parse_from_str(&utc_due, &format)?.into();
-        self.content.utc_due(Some(Some(dt)));
+        self.inner.utc_due(Some(Some(dt)));
         Ok(())
     }
 
     pub fn unset_utc_due(&mut self) -> &mut Self {
-        self.content.utc_due(Some(None));
+        self.inner.utc_due(Some(None));
         self
     }
 
     pub fn unset_utc_due_update(&mut self) -> &mut Self {
-        self.content.utc_due(None);
+        self.inner.utc_due(None);
         self
     }
 
     pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
         let dt = DateTime::parse_from_rfc3339(&utc_start)?.into();
-        self.content.utc_start(Some(Some(dt)));
+        self.inner.utc_start(Some(Some(dt)));
         Ok(())
     }
 
     pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<()> {
         let dt = DateTime::parse_from_rfc2822(&utc_start)?.into();
-        self.content.utc_start(Some(Some(dt)));
+        self.inner.utc_start(Some(Some(dt)));
         Ok(())
     }
 
     pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<()> {
         let dt = DateTime::parse_from_str(&utc_start, &format)?.into();
-        self.content.utc_start(Some(Some(dt)));
+        self.inner.utc_start(Some(Some(dt)));
         Ok(())
     }
 
     pub fn unset_utc_start(&mut self) -> &mut Self {
-        self.content.utc_start(Some(None));
+        self.inner.utc_start(Some(None));
         self
     }
 
     pub fn unset_utc_start_update(&mut self) -> &mut Self {
-        self.content.utc_start(None);
+        self.inner.utc_start(None);
         self
     }
 
@@ -871,23 +871,23 @@ impl TaskUpdateBuilder {
             // ensure the builder won't kill us later
             progress_percent = 100;
         }
-        self.content.progress_percent(Some(Some(progress_percent)));
+        self.inner.progress_percent(Some(Some(progress_percent)));
         self
     }
 
     pub fn unset_progress_percent(&mut self) -> &mut Self {
-        self.content.progress_percent(Some(None));
+        self.inner.progress_percent(Some(None));
         self
     }
 
     pub fn unset_progress_percent_update(&mut self) -> &mut Self {
-        self.content.progress_percent(None);
+        self.inner.progress_percent(None);
         self
     }
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self.content.build()?;
+        let inner = self.inner.build()?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(inner, None).await?;
@@ -901,105 +901,105 @@ impl TaskUpdateBuilder {
 pub struct TaskListUpdateBuilder {
     client: Client,
     room: Joined,
-    content: tasks::TaskListUpdateBuilder,
+    inner: tasks::TaskListUpdateBuilder,
 }
 
 impl TaskListUpdateBuilder {
     pub fn name(&mut self, name: String) -> &mut Self {
-        self.content.name(Some(name));
+        self.inner.name(Some(name));
         self
     }
 
     pub fn unset_name(&mut self) -> &mut Self {
-        self.content.name(None);
+        self.inner.name(None);
         self
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
         let desc = TextMessageEventContent::plain(body);
-        self.content.description(Some(desc));
+        self.inner.description(Some(desc));
         self
     }
 
     pub fn unset_description(&mut self) -> &mut Self {
-        self.content.description(Some(None));
+        self.inner.description(Some(None));
         self
     }
 
     pub fn unset_description_update(&mut self) -> &mut Self {
-        self.content
+        self.inner
             .description(None::<Option<TextMessageEventContent>>);
         self
     }
 
     pub fn sort_order(&mut self, sort_order: u32) -> &mut Self {
-        self.content.sort_order(Some(sort_order));
+        self.inner.sort_order(Some(sort_order));
         self
     }
 
     pub fn color(&mut self, color: Box<Color>) -> &mut Self {
-        self.content.color(Some(Box::into_inner(color)));
+        self.inner.color(Some(Box::into_inner(color)));
         self
     }
 
     pub fn unset_color(&mut self) -> &mut Self {
-        self.content.color(Some(None));
+        self.inner.color(Some(None));
         self
     }
 
     pub fn unset_color_update(&mut self) -> &mut Self {
-        self.content.color(None::<Option<Color>>);
+        self.inner.color(None::<Option<Color>>);
         self
     }
 
     pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
-        self.content.keywords(Some(keywords.to_vec()));
+        self.inner.keywords(Some(keywords.to_vec()));
         self
     }
 
     pub fn unset_keywords(&mut self) -> &mut Self {
-        self.content.keywords(Some(vec![]));
+        self.inner.keywords(Some(vec![]));
         self
     }
 
     pub fn unset_keywords_update(&mut self) -> &mut Self {
-        self.content.keywords(None);
+        self.inner.keywords(None);
         self
     }
 
     pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
-        self.content.categories(Some(categories.to_vec()));
+        self.inner.categories(Some(categories.to_vec()));
         self
     }
 
     pub fn unset_categories(&mut self) -> &mut Self {
-        self.content.categories(Some(vec![]));
+        self.inner.categories(Some(vec![]));
         self
     }
 
     pub fn unset_categories_update(&mut self) -> &mut Self {
-        self.content.categories(None);
+        self.inner.categories(None);
         self
     }
 
     pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
-        self.content.subscribers(Some(subscribers.to_vec()));
+        self.inner.subscribers(Some(subscribers.to_vec()));
         self
     }
 
     pub fn unset_subscribers(&mut self) -> &mut Self {
-        self.content.subscribers(Some(vec![]));
+        self.inner.subscribers(Some(vec![]));
         self
     }
 
     pub fn unset_subscribers_update(&mut self) -> &mut Self {
-        self.content.subscribers(None);
+        self.inner.subscribers(None);
         self
     }
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self.content.build()?;
+        let inner = self.inner.build()?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(inner, None).await?;
