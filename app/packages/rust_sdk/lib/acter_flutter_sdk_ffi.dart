@@ -7489,6 +7489,16 @@ class Api {
       _RoomEventItemImageDescReturn Function(
     int,
   )>();
+  late final _roomEventItemAudioDescPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemAudioDescReturn Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_audio_desc");
+
+  late final _roomEventItemAudioDesc = _roomEventItemAudioDescPtr.asFunction<
+      _RoomEventItemAudioDescReturn Function(
+    int,
+  )>();
   late final _roomEventItemVideoDescPtr = _lookup<
       ffi.NativeFunction<
           _RoomEventItemVideoDescReturn Function(
@@ -7739,6 +7749,46 @@ class Api {
   late final _imageDescThumbnailSource =
       _imageDescThumbnailSourcePtr.asFunction<
           _ImageDescThumbnailSourceReturn Function(
+    int,
+  )>();
+  late final _audioDescNamePtr = _lookup<
+      ffi.NativeFunction<
+          _AudioDescNameReturn Function(
+    ffi.Int64,
+  )>>("__AudioDesc_name");
+
+  late final _audioDescName = _audioDescNamePtr.asFunction<
+      _AudioDescNameReturn Function(
+    int,
+  )>();
+  late final _audioDescMimetypePtr = _lookup<
+      ffi.NativeFunction<
+          _AudioDescMimetypeReturn Function(
+    ffi.Int64,
+  )>>("__AudioDesc_mimetype");
+
+  late final _audioDescMimetype = _audioDescMimetypePtr.asFunction<
+      _AudioDescMimetypeReturn Function(
+    int,
+  )>();
+  late final _audioDescSizePtr = _lookup<
+      ffi.NativeFunction<
+          _AudioDescSizeReturn Function(
+    ffi.Int64,
+  )>>("__AudioDesc_size");
+
+  late final _audioDescSize = _audioDescSizePtr.asFunction<
+      _AudioDescSizeReturn Function(
+    int,
+  )>();
+  late final _audioDescDurationPtr = _lookup<
+      ffi.NativeFunction<
+          _AudioDescDurationReturn Function(
+    ffi.Int64,
+  )>>("__AudioDesc_duration");
+
+  late final _audioDescDuration = _audioDescDurationPtr.asFunction<
+      _AudioDescDurationReturn Function(
     int,
   )>();
   late final _videoDescNamePtr = _lookup<
@@ -16321,6 +16371,25 @@ class RoomEventItem {
   }
 
   /// contains source data, name, mimetype, size, width and height
+  AudioDesc? audioDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemAudioDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_AudioDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = AudioDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// contains source data, name, mimetype, size, width and height
   VideoDesc? videoDesc() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -16840,6 +16909,94 @@ class ImageDesc {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MediaSource");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = MediaSource._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class AudioDesc {
+  final Api _api;
+  final _Box _box;
+
+  AudioDesc._(this._api, this._box);
+
+  /// file name
+  String name() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._audioDescName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// MIME
+  String? mimetype() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._audioDescMimetype(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// file size in bytes
+  int? size() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._audioDescSize(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// duration in seconds
+  int? duration() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._audioDescDuration(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -24487,6 +24644,13 @@ class _RoomEventItemImageDescReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _RoomEventItemAudioDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _RoomEventItemVideoDescReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -24668,6 +24832,40 @@ class _ImageDescThumbnailSourceReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
+  external int arg1;
+}
+
+class _AudioDescNameReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _AudioDescMimetypeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _AudioDescSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _AudioDescDurationReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
   external int arg1;
 }
 

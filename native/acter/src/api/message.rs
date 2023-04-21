@@ -61,8 +61,8 @@ use matrix_sdk::{
                 join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
                 member::{MembershipState, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
                 message::{
-                    MessageFormat, MessageType, OriginalRoomMessageEvent,
-                    OriginalSyncRoomMessageEvent,
+                    AudioInfo, FileInfo, MessageFormat, MessageType, OriginalRoomMessageEvent,
+                    OriginalSyncRoomMessageEvent, VideoInfo,
                 },
                 name::{OriginalRoomNameEvent, OriginalSyncRoomNameEvent},
                 pinned_events::{OriginalRoomPinnedEventsEvent, OriginalSyncRoomPinnedEventsEvent},
@@ -98,6 +98,7 @@ pub struct RoomEventItem {
     sub_type: Option<String>,
     text_desc: Option<TextDesc>,
     image_desc: Option<ImageDesc>,
+    audio_desc: Option<AudioDesc>,
     video_desc: Option<VideoDesc>,
     file_desc: Option<FileDesc>,
     in_reply_to: Option<OwnedEventId>,
@@ -115,6 +116,7 @@ impl RoomEventItem {
         sub_type: Option<String>,
         text_desc: Option<TextDesc>,
         image_desc: Option<ImageDesc>,
+        audio_desc: Option<AudioDesc>,
         video_desc: Option<VideoDesc>,
         file_desc: Option<FileDesc>,
         in_reply_to: Option<OwnedEventId>,
@@ -129,6 +131,7 @@ impl RoomEventItem {
             sub_type,
             text_desc,
             image_desc,
+            audio_desc,
             video_desc,
             file_desc,
             in_reply_to,
@@ -163,6 +166,10 @@ impl RoomEventItem {
 
     pub fn image_desc(&self) -> Option<ImageDesc> {
         self.image_desc.clone()
+    }
+
+    pub fn audio_desc(&self) -> Option<AudioDesc> {
+        self.audio_desc.clone()
     }
 
     pub fn video_desc(&self) -> Option<VideoDesc> {
@@ -256,6 +263,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -281,6 +289,7 @@ impl RoomMessage {
                 "m.call.answer".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -321,6 +330,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -357,6 +367,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -379,6 +390,7 @@ impl RoomMessage {
                 "m.call.hangup".to_string(),
                 None,
                 text_desc,
+                None,
                 None,
                 None,
                 None,
@@ -412,6 +424,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -434,6 +447,7 @@ impl RoomMessage {
                 "m.call.invite".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -463,6 +477,7 @@ impl RoomMessage {
                 "m.call.invite".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -504,6 +519,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -541,6 +557,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -566,6 +583,7 @@ impl RoomMessage {
                 "m.key.verification.cancel".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -599,6 +617,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -624,6 +643,7 @@ impl RoomMessage {
                 "m.key.verification.done".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -657,6 +677,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -682,6 +703,7 @@ impl RoomMessage {
                 "m.key.verification.key".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -715,6 +737,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -744,6 +767,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -767,6 +791,7 @@ impl RoomMessage {
                 event.sender.to_string(),
                 event.origin_server_ts.get().into(),
                 "m.key.verification.mac".to_string(),
+                None,
                 None,
                 None,
                 None,
@@ -815,6 +840,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -857,6 +883,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -887,6 +914,7 @@ impl RoomMessage {
                 "m.key.verification.start".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -925,6 +953,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -958,6 +987,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -983,6 +1013,7 @@ impl RoomMessage {
                 "m.policy.rule.room".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1016,6 +1047,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -1041,6 +1073,7 @@ impl RoomMessage {
                 "m.policy.rule.server".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1074,6 +1107,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -1099,6 +1133,7 @@ impl RoomMessage {
                 "m.policy.rule.user".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1129,6 +1164,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -1151,6 +1187,7 @@ impl RoomMessage {
                 "m.reaction".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1184,6 +1221,7 @@ impl RoomMessage {
                 "m.room.aliases".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1224,6 +1262,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -1246,6 +1285,7 @@ impl RoomMessage {
                 "m.room.avatar".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1275,6 +1315,7 @@ impl RoomMessage {
                 "m.room.avatar".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1319,6 +1360,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -1359,6 +1401,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -1381,6 +1424,7 @@ impl RoomMessage {
                 "m.room.create".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1410,6 +1454,7 @@ impl RoomMessage {
                 "m.room.create".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1448,6 +1493,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -1482,6 +1528,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -1511,6 +1558,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -1536,6 +1584,7 @@ impl RoomMessage {
                 "m.room.encryption".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1572,6 +1621,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -1600,6 +1650,7 @@ impl RoomMessage {
                 "m.room.guest.access".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1636,6 +1687,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -1664,6 +1716,7 @@ impl RoomMessage {
                 "m.room.history.visibility".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1700,6 +1753,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -1728,6 +1782,7 @@ impl RoomMessage {
                 "m.room.join.rules".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1788,6 +1843,7 @@ impl RoomMessage {
                 "m.room.member".to_string(),
                 sub_type,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -1855,6 +1911,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -1892,6 +1949,7 @@ impl RoomMessage {
             formatted_body: None,
         };
         let mut image_desc = None;
+        let mut audio_desc = None;
         let mut video_desc = None;
         let mut file_desc = None;
         match event.content.msgtype.clone() {
@@ -1904,37 +1962,24 @@ impl RoomMessage {
             }
             MessageType::Emote(content) => {}
             MessageType::Image(content) => {
-                image_desc = content.info.as_ref().map(|info| ImageDesc {
-                    name: content.body.clone(),
-                    mimetype: info.mimetype.clone(),
-                    size: info.size.map(u64::from),
-                    width: info.width.map(u64::from),
-                    height: info.height.map(u64::from),
-                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                    thumbnail_source: info.thumbnail_source.clone(),
-                });
+                image_desc = content
+                    .info
+                    .and_then(|info| Some(ImageDesc::new(content.body, *info)));
+            }
+            MessageType::Audio(content) => {
+                audio_desc = content
+                    .info
+                    .and_then(|info| Some(AudioDesc::new(content.body, *info)));
             }
             MessageType::Video(content) => {
-                video_desc = content.info.as_ref().map(|info| VideoDesc {
-                    name: content.body.clone(),
-                    mimetype: info.mimetype.clone(),
-                    size: info.size.map(u64::from),
-                    width: info.width.map(u64::from),
-                    height: info.height.map(u64::from),
-                    blurhash: info.blurhash.clone(),
-                    duration: info.duration,
-                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                    thumbnail_source: info.thumbnail_source.clone(),
-                });
+                video_desc = content
+                    .info
+                    .and_then(|info| Some(VideoDesc::new(content.body, *info)));
             }
             MessageType::File(content) => {
-                file_desc = content.info.as_ref().map(|info| FileDesc {
-                    name: content.body.clone(),
-                    mimetype: info.mimetype.clone(),
-                    size: info.size.map(u64::from),
-                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                    thumbnail_source: info.thumbnail_source.clone(),
-                });
+                file_desc = content
+                    .info
+                    .and_then(|info| Some(FileDesc::new(content.body, *info)));
             }
             _ => {}
         }
@@ -1949,6 +1994,7 @@ impl RoomMessage {
                 Some(event.content.msgtype().to_string()),
                 Some(text_desc),
                 image_desc,
+                audio_desc,
                 video_desc,
                 file_desc,
                 None,
@@ -1989,6 +2035,7 @@ impl RoomMessage {
             formatted_body: None,
         };
         let mut image_desc = None;
+        let mut audio_desc = None;
         let mut video_desc = None;
         let mut file_desc = None;
         match event.content.msgtype.clone() {
@@ -2001,37 +2048,24 @@ impl RoomMessage {
             }
             MessageType::Emote(content) => {}
             MessageType::Image(content) => {
-                image_desc = content.info.as_ref().map(|info| ImageDesc {
-                    name: content.body.clone(),
-                    mimetype: info.mimetype.clone(),
-                    size: info.size.map(u64::from),
-                    width: info.width.map(u64::from),
-                    height: info.height.map(u64::from),
-                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                    thumbnail_source: info.thumbnail_source.clone(),
-                });
+                image_desc = content
+                    .info
+                    .and_then(|info| Some(ImageDesc::new(content.body, *info)));
+            }
+            MessageType::Audio(content) => {
+                audio_desc = content
+                    .info
+                    .and_then(|info| Some(AudioDesc::new(content.body, *info)));
             }
             MessageType::Video(content) => {
-                video_desc = content.info.as_ref().map(|info| VideoDesc {
-                    name: content.body.clone(),
-                    mimetype: info.mimetype.clone(),
-                    size: info.size.map(u64::from),
-                    width: info.width.map(u64::from),
-                    height: info.height.map(u64::from),
-                    blurhash: info.blurhash.clone(),
-                    duration: info.duration,
-                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                    thumbnail_source: info.thumbnail_source.clone(),
-                });
+                video_desc = content
+                    .info
+                    .and_then(|info| Some(VideoDesc::new(content.body, *info)));
             }
             MessageType::File(content) => {
-                file_desc = content.info.as_ref().map(|info| FileDesc {
-                    name: content.body.clone(),
-                    mimetype: info.mimetype.clone(),
-                    size: info.size.map(u64::from),
-                    thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                    thumbnail_source: info.thumbnail_source.clone(),
-                });
+                file_desc = content
+                    .info
+                    .and_then(|info| Some(FileDesc::new(content.body, *info)));
             }
             _ => {}
         }
@@ -2046,6 +2080,7 @@ impl RoomMessage {
                 Some(event.content.msgtype().to_string()),
                 Some(text_desc),
                 image_desc,
+                audio_desc,
                 video_desc,
                 file_desc,
                 None,
@@ -2074,6 +2109,7 @@ impl RoomMessage {
                 "m.room.name".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -2107,6 +2143,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -2136,6 +2173,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -2161,6 +2199,7 @@ impl RoomMessage {
                 "m.room.pinned.events".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -2201,6 +2240,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -2237,6 +2277,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -2266,6 +2307,7 @@ impl RoomMessage {
                 "m.room.redaction".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -2306,6 +2348,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -2338,6 +2381,7 @@ impl RoomMessage {
                 "m.room.server.acl".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -2378,6 +2422,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -2403,6 +2448,7 @@ impl RoomMessage {
                 "m.room.third.party.invite".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -2436,6 +2482,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -2461,6 +2508,7 @@ impl RoomMessage {
                 "m.room.tombstone".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -2494,6 +2542,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -2516,6 +2565,7 @@ impl RoomMessage {
                 "m.room.topic".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -2549,6 +2599,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -2574,6 +2625,7 @@ impl RoomMessage {
                 "m.space.child".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -2610,6 +2662,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -2641,6 +2694,7 @@ impl RoomMessage {
                 "m.space.parent".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -2683,6 +2737,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -2709,6 +2764,7 @@ impl RoomMessage {
                 None,
                 None,
                 None,
+                None,
                 Default::default(),
                 false,
             )),
@@ -2731,6 +2787,7 @@ impl RoomMessage {
                 "m.sticker".to_string(),
                 None,
                 Some(text_desc),
+                None,
                 None,
                 None,
                 None,
@@ -2782,6 +2839,7 @@ impl RoomMessage {
                     formatted_body: None,
                 };
                 let mut image_desc = None;
+                let mut audio_desc = None;
                 let mut video_desc = None;
                 let mut file_desc = None;
                 let mut is_editable = false;
@@ -2802,36 +2860,23 @@ impl RoomMessage {
                         }
                     }
                     MessageType::Image(content) => {
-                        image_desc = content.info.as_ref().map(|info| ImageDesc {
-                            name: content.body.clone(),
-                            mimetype: info.mimetype.clone(),
-                            size: info.size.map(u64::from),
-                            width: info.width.map(u64::from),
-                            height: info.height.map(u64::from),
-                            thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                            thumbnail_source: info.thumbnail_source.clone(),
+                        image_desc = content.info.as_ref().and_then(|info| {
+                            Some(ImageDesc::new(content.body.clone(), *info.clone()))
+                        });
+                    }
+                    MessageType::Audio(content) => {
+                        audio_desc = content.info.as_ref().and_then(|info| {
+                            Some(AudioDesc::new(content.body.clone(), *info.clone()))
                         });
                     }
                     MessageType::Video(content) => {
-                        video_desc = content.info.as_ref().map(|info| VideoDesc {
-                            name: content.body.clone(),
-                            mimetype: info.mimetype.clone(),
-                            size: info.size.map(u64::from),
-                            width: info.width.map(u64::from),
-                            height: info.height.map(u64::from),
-                            blurhash: info.blurhash.clone(),
-                            duration: info.duration,
-                            thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                            thumbnail_source: info.thumbnail_source.clone(),
+                        video_desc = content.info.as_ref().and_then(|info| {
+                            Some(VideoDesc::new(content.body.clone(), *info.clone()))
                         });
                     }
                     MessageType::File(content) => {
-                        file_desc = content.info.as_ref().map(|info| FileDesc {
-                            name: content.body.clone(),
-                            mimetype: info.mimetype.clone(),
-                            size: info.size.map(u64::from),
-                            thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                            thumbnail_source: info.thumbnail_source.clone(),
+                        file_desc = content.info.as_ref().and_then(|info| {
+                            Some(FileDesc::new(content.body.clone(), *info.clone()))
                         });
                     }
                     _ => {}
@@ -2848,6 +2893,7 @@ impl RoomMessage {
                     Some(sub_type.msgtype().to_string()),
                     Some(text_desc),
                     image_desc,
+                    audio_desc,
                     video_desc,
                     file_desc,
                     replied_to_id,
@@ -2868,21 +2914,14 @@ impl RoomMessage {
                     None,
                     None,
                     None,
+                    None,
                     Default::default(),
                     false,
                 )
             }
             TimelineItemContent::Sticker(s) => {
                 let content = s.content();
-                let image_desc = ImageDesc {
-                    name: content.body.clone(),
-                    mimetype: content.info.mimetype.clone(),
-                    size: content.info.size.map(u64::from),
-                    width: content.info.width.map(u64::from),
-                    height: content.info.height.map(u64::from),
-                    thumbnail_info: content.info.thumbnail_info.to_owned().map(|x| *x),
-                    thumbnail_source: content.info.thumbnail_source.clone(),
-                };
+                let image_desc = ImageDesc::new(content.body.clone(), content.info.clone());
                 RoomEventItem::new(
                     event_id,
                     sender,
@@ -2891,6 +2930,7 @@ impl RoomMessage {
                     None,
                     None,
                     Some(image_desc),
+                    None,
                     None,
                     None,
                     None,
@@ -2905,6 +2945,7 @@ impl RoomMessage {
                     sender,
                     origin_server_ts,
                     "m.room.encrypted".to_string(),
+                    None,
                     None,
                     None,
                     None,
@@ -2993,6 +3034,7 @@ impl RoomMessage {
                     None,
                     None,
                     None,
+                    None,
                     Default::default(),
                     false,
                 )
@@ -3042,6 +3084,7 @@ impl RoomMessage {
                     None,
                     None,
                     None,
+                    None,
                     Default::default(),
                     false,
                 )
@@ -3053,6 +3096,7 @@ impl RoomMessage {
                     sender,
                     origin_server_ts,
                     s.content().event_type().to_string(),
+                    None,
                     None,
                     None,
                     None,
@@ -3076,6 +3120,7 @@ impl RoomMessage {
                     None,
                     None,
                     None,
+                    None,
                     Default::default(),
                     false,
                 )
@@ -3091,6 +3136,7 @@ impl RoomMessage {
                     sender,
                     origin_server_ts,
                     event_type.to_string(),
+                    None,
                     None,
                     None,
                     None,
@@ -3211,6 +3257,7 @@ impl ImageDesc {
             thumbnail_source: info.thumbnail_source,
         }
     }
+
     pub fn name(&self) -> String {
         self.name.clone()
     }
@@ -3265,6 +3312,41 @@ impl ImageDesc {
 }
 
 #[derive(Clone, Debug)]
+pub struct AudioDesc {
+    name: String,
+    mimetype: Option<String>,
+    size: Option<u64>,
+    duration: Option<Duration>,
+}
+
+impl AudioDesc {
+    pub fn new(name: String, info: AudioInfo) -> Self {
+        AudioDesc {
+            name,
+            mimetype: info.mimetype.clone(),
+            size: info.size.map(u64::from),
+            duration: info.duration,
+        }
+    }
+
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+
+    pub fn mimetype(&self) -> Option<String> {
+        self.mimetype.clone()
+    }
+
+    pub fn size(&self) -> Option<u64> {
+        self.size
+    }
+
+    pub fn duration(&self) -> Option<u64> {
+        self.duration.map(|x| x.as_secs())
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct VideoDesc {
     name: String,
     mimetype: Option<String>,
@@ -3278,6 +3360,20 @@ pub struct VideoDesc {
 }
 
 impl VideoDesc {
+    pub fn new(name: String, info: VideoInfo) -> Self {
+        VideoDesc {
+            name,
+            mimetype: info.mimetype.clone(),
+            size: info.size.map(u64::from),
+            width: info.width.map(u64::from),
+            height: info.height.map(u64::from),
+            blurhash: info.blurhash.clone(),
+            duration: info.duration,
+            thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+            thumbnail_source: info.thumbnail_source.clone(),
+        }
+    }
+
     pub fn name(&self) -> String {
         self.name.clone()
     }
@@ -3349,6 +3445,16 @@ pub struct FileDesc {
 }
 
 impl FileDesc {
+    pub fn new(name: String, info: FileInfo) -> Self {
+        FileDesc {
+            name,
+            mimetype: info.mimetype.clone(),
+            size: info.size.map(u64::from),
+            thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+            thumbnail_source: info.thumbnail_source.clone(),
+        }
+    }
+
     pub fn name(&self) -> String {
         self.name.clone()
     }

@@ -287,6 +287,9 @@ object RoomEventItem {
     fn image_desc() -> Option<ImageDesc>;
 
     /// contains source data, name, mimetype, size, width and height
+    fn audio_desc() -> Option<AudioDesc>;
+
+    /// contains source data, name, mimetype, size, width and height
     fn video_desc() -> Option<VideoDesc>;
 
     /// contains source data, name, mimetype and size
@@ -366,6 +369,20 @@ object ImageDesc {
 
     /// thumbnail source
     fn thumbnail_source() -> Option<MediaSource>;
+}
+
+object AudioDesc {
+    /// file name
+    fn name() -> string;
+
+    /// MIME
+    fn mimetype() -> Option<string>;
+
+    /// file size in bytes
+    fn size() -> Option<u64>;
+
+    /// duration in seconds
+    fn duration() -> Option<u64>;
 }
 
 object VideoDesc {
