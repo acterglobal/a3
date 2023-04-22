@@ -168,7 +168,7 @@ impl NewsSlide {
         self.inner.content().image().and_then(|content| {
             content
                 .info
-                .and_then(|info| Some(ImageDesc::new(content.body, *info)))
+                .map(|info| ImageDesc::new(content.body, *info))
         })
     }
 
