@@ -3358,7 +3358,7 @@ impl VideoDesc {
             blurhash: info.blurhash.clone(),
             duration: info.duration,
             thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-            thumbnail_source: info.thumbnail_source.clone(),
+            thumbnail_source: info.thumbnail_source,
         }
     }
 
@@ -3439,7 +3439,7 @@ impl FileDesc {
             mimetype: info.mimetype.clone(),
             size: info.size.map(u64::from),
             thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-            thumbnail_source: info.thumbnail_source.clone(),
+            thumbnail_source: info.thumbnail_source,
         }
     }
 
