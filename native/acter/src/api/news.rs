@@ -165,11 +165,10 @@ impl NewsSlide {
     }
 
     pub fn image_desc(&self) -> Option<ImageDesc> {
-        self.inner.content().image().and_then(|content| {
-            content
-                .info
-                .map(|info| ImageDesc::new(content.body, *info))
-        })
+        self.inner
+            .content()
+            .image()
+            .and_then(|content| content.info.map(|info| ImageDesc::new(content.body, *info)))
     }
 
     pub async fn image_binary(&self) -> Result<FfiBuffer<u8>> {
