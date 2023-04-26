@@ -176,21 +176,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                             builder: (BuildContext ctx) => widget.child,
                           ),
                           // show dashboard view on desktop only.
-                          Breakpoints.mediumAndUp:
-                              // isDesktop
-                              //     ? SlotLayout.from(
-                              //         key: const Key('Body Medium'),
-                              //         builder: (BuildContext ctx) => Scaffold(
-                              //           body: Center(
-                              //             child: Text(
-                              //               'First Screen view to be implemented',
-                              //               style: Theme.of(context).textTheme.titleLarge,
-                              //             ),
-                              //           ),
-                              //         ),
-                              //       )
-                              //     :
-                              SlotLayout.from(
+                          Breakpoints.mediumAndUp: SlotLayout.from(
                             key: const Key('body-medium-mobile'),
                             builder: (BuildContext ctx) {
                               return widget.child;

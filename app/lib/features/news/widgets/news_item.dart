@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'dart:typed_data';
 
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -142,32 +143,38 @@ class _ImageSlideState extends State<ImageSlide> {
   Widget build(BuildContext context) {
     var bgColor = convertColor(
       widget.news.colors()?.background(),
-      Theme.of(context).colorScheme.secondary,
+      Theme.of(context).colorScheme.neutral6,
     );
     var fgColor = convertColor(
       widget.news.colors()?.color(),
-      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.neutral6,
     );
     bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        Container(
-          color: bgColor,
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: FutureBuilder<Uint8List>(
-            future: newsImage.then((value) => value.asTypedList()),
-            builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-              if (snapshot.hasData) {
-                return _ImageWidget(image: snapshot.data, isDesktop: isDesktop);
-              } else {
-                return const Center(child: Text('Loading image'));
-              }
-            },
+        Positioned.fill(
+          child: Container(
+            color: bgColor,
+            child: FutureBuilder<Uint8List>(
+              future: newsImage.then((value) => value.asTypedList()),
+              builder:
+                  (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
+                if (snapshot.hasData) {
+                  return FittedBox(
+                    child: _ImageWidget(
+                      image: snapshot.data,
+                      isDesktop: isDesktop,
+                    ),
+                    fit: BoxFit.fill,
+                  );
+                } else {
+                  return const Center(child: Text('Loading image'));
+                }
+              },
+            ),
           ),
-          clipBehavior: Clip.none,
         ),
         LayoutBuilder(
           builder: (context, constraints) {
@@ -251,7 +258,6 @@ class _ImageWidget extends StatelessWidget {
     // return Image.memory(Uint8List.fromList(image), fit: BoxFit.cover);
     return Image.memory(
       Uint8List.fromList(image!),
-      fit: BoxFit.cover,
       // cacheWidth: size.width.toInt(),
       // cacheHeight: size.height.toInt(),
     );

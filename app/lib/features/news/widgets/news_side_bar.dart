@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/features/news/controllers/news_comment_controller.dart';
 import 'package:acter/features/news/widgets/comment_view.dart';
@@ -35,11 +36,11 @@ class _NewsSideBarState extends State<NewsSideBar> {
   Widget build(BuildContext context) {
     var bgColor = convertColor(
       widget.news.colors()?.background(),
-      Theme.of(context).colorScheme.secondary,
+      Theme.of(context).colorScheme.neutral6,
     );
     var fgColor = convertColor(
       widget.news.colors()?.color(),
-      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.neutral6,
     );
     TextStyle style = Theme.of(context).textTheme.bodyLarge!.copyWith(
       fontSize: 13,
