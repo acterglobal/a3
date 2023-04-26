@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
-import 'package:acter/features/news/widgets/news_widget.dart';
+import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/routing.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:date_format/date_format.dart';
@@ -121,7 +121,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         desktopPlatforms.contains(Theme.of(context).platform);
     final location =
         ref.watch(goRouterProvider.select((value) => value.location));
-
+    debugPrint(location);
     final showInSidebar = isDesktop && location == '/dashboard';
     final bodyRatio = showInSidebar ? 0.3 : 0.0;
     return ref.watch(clientProvider) != null
@@ -161,7 +161,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                         config: <Breakpoint, SlotLayoutConfig>{
                           Breakpoints.mediumAndUp: SlotLayout.from(
                             key: const Key('Body Small'),
-                            builder: (BuildContext ctx) => const NewsWidget(),
+                            builder: (BuildContext ctx) => const NewsPage(),
                           ),
                           Breakpoints.small: SlotLayout.from(
                             key: const Key('Body Small'),

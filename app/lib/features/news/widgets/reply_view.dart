@@ -1,8 +1,6 @@
-import 'package:acter/features/news/controllers/news_comment_controller.dart';
 import 'package:acter/models/CommentModel.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class ReplyView extends StatefulWidget {
   final ReplyModel replyModel;
@@ -21,8 +19,6 @@ class ReplyView extends StatefulWidget {
 }
 
 class ReplyViewState extends State<ReplyView> {
-  final newsCommentController = Get.put(NewsCommentController());
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -72,12 +68,7 @@ class ReplyViewState extends State<ReplyView> {
             ),
           ),
           GestureDetector(
-            onTap: () {
-              newsCommentController.handleReplyLikeClick(
-                widget.commentPos,
-                widget.currentPos,
-              );
-            },
+            onTap: () {},
             child: widget.replyModel.liked
                 ? const Icon(Atlas.heart, color: Colors.red)
                 : const Icon(Atlas.heart),
