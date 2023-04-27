@@ -49,14 +49,17 @@ class _NewsSideBarState extends State<NewsSideBar> {
       ],
     );
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        LikeButton(
-          likeCount: widget.news.likesCount().toString(),
-          style: style,
-          color: fgColor,
-          index: widget.index,
+        Expanded(
+          child: LikeButton(
+            likeCount: widget.news.likesCount().toString(),
+            style: style,
+            color: fgColor,
+            index: widget.index,
+          ),
         ),
+        const SizedBox(height: 8),
         GestureDetector(
           onTap: () => showCommentsBottomSheet(context),
           child: _SideBarItem(
@@ -79,6 +82,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
           ),
         ),
         _ProfileImageWidget(borderColor: fgColor),
+        const SizedBox(height: 8),
       ],
     );
   }

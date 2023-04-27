@@ -1,13 +1,9 @@
-import 'dart:io' show Platform;
 import 'dart:typed_data';
 
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class NewsItem extends StatefulWidget {
   final Client client;
@@ -30,16 +26,7 @@ class _NewsItemState extends State<NewsItem> {
   Widget build(BuildContext context) {
     var slide = widget.news.getSlide(0)!;
     var slideType = slide.typeStr();
-    if (slideType == 'image') {
-      return ImageSlide(
-        news: widget.news,
-        index: widget.index,
-        background: widget.news.colors()?.background(),
-        foreground: widget.news.colors()?.color(),
-        client: widget.client,
-        slide: slide,
-      );
-    }
+
     // else
     var bgColor = convertColor(
       widget.news.colors()?.background(),
@@ -49,55 +36,46 @@ class _NewsItemState extends State<NewsItem> {
       widget.news.colors()?.color(),
       Theme.of(context).colorScheme.primary,
     );
-    bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
-
     return Stack(
-      alignment: Alignment.center,
+      alignment: Alignment.bottomRight,
       children: [
-        Container(
-          color: bgColor,
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: Text(
-            slide.text(),
-            style: GoogleFonts.inter(
-              color: fgColor,
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              shadows: [
-                Shadow(
-                  color: bgColor,
-                  offset: const Offset(1, 1),
-                  blurRadius: 3,
-                ),
-              ],
-            ),
-          ),
-          clipBehavior: Clip.none,
-        ),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            return SizedBox(
-              height: constraints.maxWidth >= 600
-                  ? isDesktop
-                      ? MediaQuery.of(context).size.height * 0.5
-                      : MediaQuery.of(context).size.height * 0.7
-                  : MediaQuery.of(context).size.height * 0.4,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: NewsSideBar(
-                      client: widget.client,
-                      news: widget.news,
-                      index: widget.index,
-                    ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (slideType == 'image')
+              Center(
+                child: SizedBox.square(
+                  dimension: 346,
+                  child: ImageSlide(
+                    slide: slide,
                   ),
-                ],
+                ),
               ),
-            );
-          },
+            Container(
+              width: MediaQuery.of(context).size.width * 0.78,
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+              child: Text(
+                slide.text(),
+                softWrap: true,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: fgColor,
+                  shadows: [
+                    Shadow(
+                      color: bgColor,
+                      offset: const Offset(1, 1),
+                      blurRadius: 1,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        NewsSideBar(
+          client: widget.client,
+          news: widget.news,
+          index: widget.index,
         ),
       ],
     );
@@ -105,21 +83,11 @@ class _NewsItemState extends State<NewsItem> {
 }
 
 class ImageSlide extends StatefulWidget {
-  final Client client;
   final NewsSlide slide;
-  final NewsEntry news;
-  final int index;
-  final EfkColor? background;
-  final EfkColor? foreground;
 
   const ImageSlide({
     Key? key,
-    required this.news,
-    required this.index,
-    required this.client,
     required this.slide,
-    this.background,
-    this.foreground,
   }) : super(key: key);
 
   @override
@@ -128,6 +96,7 @@ class ImageSlide extends StatefulWidget {
 
 class _ImageSlideState extends State<ImageSlide> {
   late Future<FfiBufferUint8> newsImage;
+  late ImageDesc? imageDesc;
   @override
   void initState() {
     super.initState();
@@ -136,105 +105,24 @@ class _ImageSlideState extends State<ImageSlide> {
 
   Future<void> getNewsImage() async {
     newsImage = widget.slide.imageBinary();
+    imageDesc = widget.slide.imageDesc();
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    var bgColor = convertColor(
-      widget.news.colors()?.background(),
-      Theme.of(context).colorScheme.neutral6,
-    );
-    var fgColor = convertColor(
-      widget.news.colors()?.color(),
-      Theme.of(context).colorScheme.neutral6,
-    );
-    bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
-
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        Positioned.fill(
-          child: Container(
-            color: bgColor,
-            child: FutureBuilder<Uint8List>(
-              future: newsImage.then((value) => value.asTypedList()),
-              builder:
-                  (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-                if (snapshot.hasData) {
-                  return FittedBox(
-                    child: _ImageWidget(
-                      image: snapshot.data,
-                      isDesktop: isDesktop,
-                    ),
-                    fit: BoxFit.fill,
-                  );
-                } else {
-                  return const Center(child: Text('Loading image'));
-                }
-              },
-            ),
-          ),
-        ),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            return SizedBox(
-              height: constraints.maxWidth >= 600
-                  ? isDesktop
-                      ? MediaQuery.of(context).size.height * 0.5
-                      : MediaQuery.of(context).size.height * 0.7
-                  : MediaQuery.of(context).size.height * 0.4,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Expanded(
-                    flex: 5,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        children: <Widget>[
-                          const Spacer(),
-                          ExpandableText(
-                            widget.slide.text(),
-                            maxLines: 2,
-                            expandText: '',
-                            expandOnTextTap: true,
-                            collapseOnTextTap: true,
-                            animation: true,
-                            linkColor: fgColor,
-                            style: GoogleFonts.inter(
-                              color: fgColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              shadows: [
-                                Shadow(
-                                  color: bgColor,
-                                  offset: const Offset(1, 1),
-                                  blurRadius: 3,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    // FIXME: unify this in the same widget
-                    flex: 1,
-                    child: NewsSideBar(
-                      client: widget.client,
-                      news: widget.news,
-                      index: widget.index,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ],
+    return FutureBuilder<Uint8List>(
+      future: newsImage.then((value) => value.asTypedList()),
+      builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
+        if (snapshot.hasData) {
+          return _ImageWidget(
+            image: snapshot.data,
+            imageDesc: imageDesc,
+          );
+        } else {
+          return const Center(child: Text('Loading image'));
+        }
+      },
     );
   }
 }
@@ -242,11 +130,11 @@ class _ImageSlideState extends State<ImageSlide> {
 class _ImageWidget extends StatelessWidget {
   const _ImageWidget({
     required this.image,
-    required this.isDesktop,
+    required this.imageDesc,
   });
 
   final List<int>? image;
-  final bool isDesktop;
+  final ImageDesc? imageDesc;
 
   @override
   Widget build(BuildContext context) {
@@ -256,10 +144,13 @@ class _ImageWidget extends StatelessWidget {
     }
 
     // return Image.memory(Uint8List.fromList(image), fit: BoxFit.cover);
-    return Image.memory(
-      Uint8List.fromList(image!),
-      // cacheWidth: size.width.toInt(),
-      // cacheHeight: size.height.toInt(),
+    return FittedBox(
+      fit: BoxFit.contain,
+      child: Image.memory(
+        Uint8List.fromList(image!),
+        height: imageDesc!.height()!.toDouble(),
+        width: imageDesc!.width()!.toDouble(),
+      ),
     );
   }
 }
