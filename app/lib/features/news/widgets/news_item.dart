@@ -43,15 +43,7 @@ class _NewsItemState extends State<NewsItem> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (slideType == 'image')
-              Center(
-                child: SizedBox.square(
-                  dimension: 346,
-                  child: ImageSlide(
-                    slide: slide,
-                  ),
-                ),
-              ),
+            slideWidget(slideType, slide),
             Container(
               width: MediaQuery.of(context).size.width * 0.78,
               margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
@@ -79,6 +71,28 @@ class _NewsItemState extends State<NewsItem> {
         ),
       ],
     );
+  }
+
+  Widget slideWidget(String slideType, NewsSlide slide) {
+    switch (slideType) {
+      case 'image':
+        return Center(
+          child: SizedBox.square(
+            dimension: 346,
+            child: ImageSlide(
+              slide: slide,
+            ),
+          ),
+        );
+      case 'text':
+        return const SizedBox();
+
+      case 'video':
+        return const SizedBox();
+
+      default:
+        return const SizedBox();
+    }
   }
 }
 

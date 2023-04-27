@@ -55,7 +55,7 @@ class NewsPage extends ConsumerWidget {
         centerTitle: true,
         actions: <Widget>[
           IconButton(
-            onPressed: () {},
+            onPressed: () => context.go('/updates/post'),
             icon: Icon(
               Atlas.plus_circle_thin,
               color: Theme.of(context).colorScheme.neutral5,

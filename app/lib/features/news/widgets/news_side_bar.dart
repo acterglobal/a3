@@ -51,13 +51,11 @@ class _NewsSideBarState extends State<NewsSideBar> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Expanded(
-          child: LikeButton(
-            likeCount: widget.news.likesCount().toString(),
-            style: style,
-            color: fgColor,
-            index: widget.index,
-          ),
+        LikeButton(
+          likeCount: widget.news.likesCount().toString(),
+          style: style,
+          color: fgColor,
+          index: widget.index,
         ),
         const SizedBox(height: 8),
         GestureDetector(

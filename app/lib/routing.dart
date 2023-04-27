@@ -2,6 +2,7 @@ import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/features/news/pages/post_page.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/sign_up_page.dart';
 import 'package:acter/features/profile/pages/social_profile_page.dart';
@@ -66,6 +67,7 @@ final _routes = [
     routes: <RouteBase>[
       /// The first screen to display in the bottom navigation bar.
       GoRoute(
+        parentNavigatorKey: _shellNavigatorKey,
         name: 'updates',
         path: '/updates',
         pageBuilder: (context, state) {
@@ -74,7 +76,21 @@ final _routes = [
             child: const NewsPage(),
           );
         },
+        routes: <RouteBase>[
+          GoRoute(
+            parentNavigatorKey: _shellNavigatorKey,
+            name: 'post-updates',
+            path: 'post',
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const PostPage(),
+              );
+            },
+          ),
+        ],
       ),
+
       GoRoute(
         name: 'chatroom',
         path: '/chat/:spaceId([!#][^/]+)', // !roomId, #roomName
