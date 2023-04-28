@@ -74,7 +74,7 @@ use matrix_sdk::{
                 },
                 tombstone::{OriginalRoomTombstoneEvent, OriginalSyncRoomTombstoneEvent},
                 topic::{OriginalRoomTopicEvent, OriginalSyncRoomTopicEvent},
-                ImageInfo, MediaSource as MatrixMediaSource, ThumbnailInfo,
+                ImageInfo, MediaSource as MatrixMediaSource, ThumbnailInfo as MatrixThumbnailInfo,
             },
             space::{
                 child::{OriginalSpaceChildEvent, OriginalSyncSpaceChildEvent},
@@ -3212,6 +3212,29 @@ impl MediaSource {
     }
 }
 
+#[derive(Clone)]
+pub struct ThumbnailInfo {
+    inner: MatrixThumbnailInfo,
+}
+
+impl ThumbnailInfo {
+    pub fn mimetype(&self) -> Option<String> {
+        self.inner.mimetype.clone()
+    }
+
+    pub fn size(&self) -> Option<u64> {
+        self.inner.size.map(u64::from)
+    }
+
+    pub fn width(&self) -> Option<u64> {
+        self.inner.width.map(u64::from)
+    }
+
+    pub fn height(&self) -> Option<u64> {
+        self.inner.height.map(u64::from)
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct ImageDesc {
     name: String,
@@ -3220,7 +3243,7 @@ pub struct ImageDesc {
     size: Option<u64>,
     width: Option<u64>,
     height: Option<u64>,
-    thumbnail_info: Option<ThumbnailInfo>,
+    thumbnail_info: Option<MatrixThumbnailInfo>,
     thumbnail_source: Option<MatrixMediaSource>,
 }
 
@@ -3262,32 +3285,10 @@ impl ImageDesc {
         self.height
     }
 
-    pub fn thumbnail_mimetype(&self) -> Option<String> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.mimetype.clone(),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_size(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.size.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_width(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.width.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_height(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.height.map(u64::from),
-            None => None,
-        }
+    pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
+        self.thumbnail_info
+            .clone()
+            .map(|inner| ThumbnailInfo { inner })
     }
 
     pub fn thumbnail_source(&self) -> Option<MediaSource> {
@@ -3307,7 +3308,7 @@ pub struct VideoDesc {
     height: Option<u64>,
     blurhash: Option<String>,
     duration: Option<Duration>,
-    thumbnail_info: Option<ThumbnailInfo>,
+    thumbnail_info: Option<MatrixThumbnailInfo>,
     thumbnail_source: Option<MatrixMediaSource>,
 }
 
@@ -3346,32 +3347,10 @@ impl VideoDesc {
         self.duration.map(|x| x.as_secs())
     }
 
-    pub fn thumbnail_mimetype(&self) -> Option<String> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.mimetype.clone(),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_size(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.size.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_width(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.width.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_height(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.height.map(u64::from),
-            None => None,
-        }
+    pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
+        self.thumbnail_info
+            .clone()
+            .map(|inner| ThumbnailInfo { inner })
     }
 
     pub fn thumbnail_source(&self) -> Option<MediaSource> {
@@ -3387,7 +3366,7 @@ pub struct FileDesc {
     source: MatrixMediaSource,
     mimetype: Option<String>,
     size: Option<u64>,
-    thumbnail_info: Option<ThumbnailInfo>,
+    thumbnail_info: Option<MatrixThumbnailInfo>,
     thumbnail_source: Option<MatrixMediaSource>,
 }
 
@@ -3410,32 +3389,10 @@ impl FileDesc {
         self.size
     }
 
-    pub fn thumbnail_mimetype(&self) -> Option<String> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.mimetype.clone(),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_size(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.size.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_width(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.width.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_height(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.height.map(u64::from),
-            None => None,
-        }
+    pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
+        self.thumbnail_info
+            .clone()
+            .map(|inner| ThumbnailInfo { inner })
     }
 
     pub fn thumbnail_source(&self) -> Option<MediaSource> {

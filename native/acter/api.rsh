@@ -219,6 +219,17 @@ object MediaSource {
     fn url() -> string;
 }
 
+object ThumbnailInfo {
+    /// thumbnail mimetype
+    fn mimetype() -> Option<string>;
+    /// thumbnail size
+    fn size() -> Option<u64>;
+    /// thumbnail width
+    fn width() -> Option<u64>;
+    /// thumbnail height
+    fn height() -> Option<u64>;
+}
+
 object DeviceId {
     fn to_string() -> string;
 }
@@ -327,17 +338,8 @@ object ImageDesc {
     /// image height
     fn height() -> Option<u64>;
 
-    /// thumbnail mimetype
-    fn thumbnail_mimetype() -> Option<string>;
-
-    /// thumbnail file size
-    fn thumbnail_size() -> Option<u64>;
-
-    /// thumbnail image width
-    fn thumbnail_width() -> Option<u64>;
-
-    /// thumbnail image height
-    fn thumbnail_height() -> Option<u64>;
+    /// thumbnail info
+    fn thumbnail_info() -> Option<ThumbnailInfo>;
 
     /// thumbnail source
     fn thumbnail_source() -> Option<MediaSource>;
@@ -368,17 +370,8 @@ object VideoDesc {
     /// duration in seconds
     fn duration() -> Option<u64>;
 
-    /// thumbnail mimetype
-    fn thumbnail_mimetype() -> Option<string>;
-
-    /// thumbnail file size
-    fn thumbnail_size() -> Option<u64>;
-
-    /// thumbnail image width
-    fn thumbnail_width() -> Option<u64>;
-
-    /// thumbnail image height
-    fn thumbnail_height() -> Option<u64>;
+    /// thumbnail info
+    fn thumbnail_info() -> Option<ThumbnailInfo>;
 
     /// thumbnail source
     fn thumbnail_source() -> Option<MediaSource>;
@@ -397,17 +390,8 @@ object FileDesc {
     /// file size in bytes
     fn size() -> Option<u64>;
 
-    /// thumbnail mimetype
-    fn thumbnail_mimetype() -> Option<string>;
-
-    /// thumbnail file size
-    fn thumbnail_size() -> Option<u64>;
-
-    /// thumbnail image width
-    fn thumbnail_width() -> Option<u64>;
-
-    /// thumbnail image height
-    fn thumbnail_height() -> Option<u64>;
+    /// thumbnail info
+    fn thumbnail_info() -> Option<ThumbnailInfo>;
 
     /// thumbnail source
     fn thumbnail_source() -> Option<MediaSource>;

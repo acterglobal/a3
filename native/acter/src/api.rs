@@ -58,7 +58,7 @@ pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use invitation::Invitation;
 pub use message::{
     FileDesc, ImageDesc, MediaSource, ReactionDesc, RoomEventItem, RoomMessage, RoomVirtualItem,
-    TextDesc, VideoDesc,
+    TextDesc, ThumbnailInfo, VideoDesc,
 };
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
