@@ -215,7 +215,9 @@ object CalendarEvent {
     // fn locations() -> Vec<Location>;
 }
 
-object MediaSource {}
+object MediaSource {
+    fn url() -> string;
+}
 
 object DeviceId {
     fn to_string() -> string;
@@ -230,13 +232,7 @@ object RoomId {
 }
 
 object UserId {
-    // full name as string
-    //fn as_str() -> string;
-
     fn to_string() -> string;
-
-    // only the user name itself
-    //fn localpart() -> string;
 }
 
 /// A room Message metadata and content
@@ -316,6 +312,9 @@ object ImageDesc {
     /// file name
     fn name() -> string;
 
+    /// image source
+    fn source() -> Option<MediaSource>;
+
     /// MIME
     fn mimetype() -> Option<string>;
 
@@ -347,6 +346,9 @@ object ImageDesc {
 object VideoDesc {
     /// file name
     fn name() -> string;
+
+    /// video source
+    fn source() -> MediaSource;
 
     /// MIME
     fn mimetype() -> Option<string>;
@@ -385,6 +387,9 @@ object VideoDesc {
 object FileDesc {
     /// file name
     fn name() -> string;
+
+    /// file source
+    fn source() -> MediaSource;
 
     /// MIME
     fn mimetype() -> Option<string>;

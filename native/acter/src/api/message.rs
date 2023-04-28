@@ -74,7 +74,7 @@ use matrix_sdk::{
                 },
                 tombstone::{OriginalRoomTombstoneEvent, OriginalSyncRoomTombstoneEvent},
                 topic::{OriginalRoomTopicEvent, OriginalSyncRoomTopicEvent},
-                ImageInfo, MediaSource, ThumbnailInfo,
+                ImageInfo, MediaSource as MatrixMediaSource, ThumbnailInfo,
             },
             space::{
                 child::{OriginalSpaceChildEvent, OriginalSyncSpaceChildEvent},
@@ -1906,6 +1906,7 @@ impl RoomMessage {
             MessageType::Image(content) => {
                 image_desc = content.info.as_ref().map(|info| ImageDesc {
                     name: content.body.clone(),
+                    source: Some(content.source.clone()),
                     mimetype: info.mimetype.clone(),
                     size: info.size.map(u64::from),
                     width: info.width.map(u64::from),
@@ -1917,6 +1918,7 @@ impl RoomMessage {
             MessageType::Video(content) => {
                 video_desc = content.info.as_ref().map(|info| VideoDesc {
                     name: content.body.clone(),
+                    source: content.source.clone(),
                     mimetype: info.mimetype.clone(),
                     size: info.size.map(u64::from),
                     width: info.width.map(u64::from),
@@ -1930,6 +1932,7 @@ impl RoomMessage {
             MessageType::File(content) => {
                 file_desc = content.info.as_ref().map(|info| FileDesc {
                     name: content.body.clone(),
+                    source: content.source.clone(),
                     mimetype: info.mimetype.clone(),
                     size: info.size.map(u64::from),
                     thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
@@ -2003,6 +2006,7 @@ impl RoomMessage {
             MessageType::Image(content) => {
                 image_desc = content.info.as_ref().map(|info| ImageDesc {
                     name: content.body.clone(),
+                    source: Some(content.source.clone()),
                     mimetype: info.mimetype.clone(),
                     size: info.size.map(u64::from),
                     width: info.width.map(u64::from),
@@ -2014,6 +2018,7 @@ impl RoomMessage {
             MessageType::Video(content) => {
                 video_desc = content.info.as_ref().map(|info| VideoDesc {
                     name: content.body.clone(),
+                    source: content.source.clone(),
                     mimetype: info.mimetype.clone(),
                     size: info.size.map(u64::from),
                     width: info.width.map(u64::from),
@@ -2027,6 +2032,7 @@ impl RoomMessage {
             MessageType::File(content) => {
                 file_desc = content.info.as_ref().map(|info| FileDesc {
                     name: content.body.clone(),
+                    source: content.source.clone(),
                     mimetype: info.mimetype.clone(),
                     size: info.size.map(u64::from),
                     thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
@@ -2804,6 +2810,7 @@ impl RoomMessage {
                     MessageType::Image(content) => {
                         image_desc = content.info.as_ref().map(|info| ImageDesc {
                             name: content.body.clone(),
+                            source: Some(content.source.clone()),
                             mimetype: info.mimetype.clone(),
                             size: info.size.map(u64::from),
                             width: info.width.map(u64::from),
@@ -2815,6 +2822,7 @@ impl RoomMessage {
                     MessageType::Video(content) => {
                         video_desc = content.info.as_ref().map(|info| VideoDesc {
                             name: content.body.clone(),
+                            source: content.source.clone(),
                             mimetype: info.mimetype.clone(),
                             size: info.size.map(u64::from),
                             width: info.width.map(u64::from),
@@ -2828,6 +2836,7 @@ impl RoomMessage {
                     MessageType::File(content) => {
                         file_desc = content.info.as_ref().map(|info| FileDesc {
                             name: content.body.clone(),
+                            source: content.source.clone(),
                             mimetype: info.mimetype.clone(),
                             size: info.size.map(u64::from),
                             thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
@@ -2876,6 +2885,7 @@ impl RoomMessage {
                 let content = s.content();
                 let image_desc = ImageDesc {
                     name: content.body.clone(),
+                    source: Some(content.url.clone()).map(MatrixMediaSource::Plain),
                     mimetype: content.info.mimetype.clone(),
                     size: content.info.size.map(u64::from),
                     width: content.info.width.map(u64::from),
@@ -3020,12 +3030,13 @@ impl RoomMessage {
                     };
                     let image_desc = ImageDesc {
                         name: "new_picture".to_string(),
+                        source: change.new.clone().map(MatrixMediaSource::Plain),
                         mimetype: None,
                         size: None,
                         width: None,
                         height: None,
                         thumbnail_info: None,
-                        thumbnail_source: change.new.clone().map(MediaSource::Plain),
+                        thumbnail_source: change.new.clone().map(MatrixMediaSource::Plain),
                     };
                     (Some(text_desc), Some(image_desc))
                 } else {
@@ -3188,21 +3199,36 @@ impl TextDesc {
     }
 }
 
+pub struct MediaSource {
+    inner: MatrixMediaSource,
+}
+
+impl MediaSource {
+    pub fn url(&self) -> String {
+        match self.inner.clone() {
+            MatrixMediaSource::Plain(url) => url.to_string(),
+            MatrixMediaSource::Encrypted(file) => file.url.to_string(),
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct ImageDesc {
     name: String,
+    source: Option<MatrixMediaSource>,
     mimetype: Option<String>,
     size: Option<u64>,
     width: Option<u64>,
     height: Option<u64>,
     thumbnail_info: Option<ThumbnailInfo>,
-    thumbnail_source: Option<MediaSource>,
+    thumbnail_source: Option<MatrixMediaSource>,
 }
 
 impl ImageDesc {
-    pub fn new(name: String, info: ImageInfo) -> Self {
+    pub fn new(name: String, source: Option<MatrixMediaSource>, info: ImageInfo) -> Self {
         ImageDesc {
             name,
+            source,
             mimetype: info.mimetype,
             size: info.size.map(u64::from),
             width: info.width.map(u64::from),
@@ -3211,8 +3237,13 @@ impl ImageDesc {
             thumbnail_source: info.thumbnail_source,
         }
     }
+
     pub fn name(&self) -> String {
         self.name.clone()
+    }
+
+    pub fn source(&self) -> Option<MediaSource> {
+        self.source.clone().map(|inner| MediaSource { inner })
     }
 
     pub fn mimetype(&self) -> Option<String> {
@@ -3260,13 +3291,16 @@ impl ImageDesc {
     }
 
     pub fn thumbnail_source(&self) -> Option<MediaSource> {
-        self.thumbnail_source.clone()
+        self.thumbnail_source
+            .clone()
+            .map(|inner| MediaSource { inner })
     }
 }
 
 #[derive(Clone, Debug)]
 pub struct VideoDesc {
     name: String,
+    source: MatrixMediaSource,
     mimetype: Option<String>,
     size: Option<u64>,
     width: Option<u64>,
@@ -3274,12 +3308,18 @@ pub struct VideoDesc {
     blurhash: Option<String>,
     duration: Option<Duration>,
     thumbnail_info: Option<ThumbnailInfo>,
-    thumbnail_source: Option<MediaSource>,
+    thumbnail_source: Option<MatrixMediaSource>,
 }
 
 impl VideoDesc {
     pub fn name(&self) -> String {
         self.name.clone()
+    }
+
+    pub fn source(&self) -> MediaSource {
+        MediaSource {
+            inner: self.source.clone(),
+        }
     }
 
     pub fn mimetype(&self) -> Option<String> {
@@ -3335,22 +3375,31 @@ impl VideoDesc {
     }
 
     pub fn thumbnail_source(&self) -> Option<MediaSource> {
-        self.thumbnail_source.clone()
+        self.thumbnail_source
+            .clone()
+            .map(|inner| MediaSource { inner })
     }
 }
 
 #[derive(Clone, Debug)]
 pub struct FileDesc {
     name: String,
+    source: MatrixMediaSource,
     mimetype: Option<String>,
     size: Option<u64>,
     thumbnail_info: Option<ThumbnailInfo>,
-    thumbnail_source: Option<MediaSource>,
+    thumbnail_source: Option<MatrixMediaSource>,
 }
 
 impl FileDesc {
     pub fn name(&self) -> String {
         self.name.clone()
+    }
+
+    pub fn source(&self) -> MediaSource {
+        MediaSource {
+            inner: self.source.clone(),
+        }
     }
 
     pub fn mimetype(&self) -> Option<String> {
@@ -3390,7 +3439,9 @@ impl FileDesc {
     }
 
     pub fn thumbnail_source(&self) -> Option<MediaSource> {
-        self.thumbnail_source.clone()
+        self.thumbnail_source
+            .clone()
+            .map(|inner| MediaSource { inner })
     }
 }
 

@@ -149,7 +149,7 @@ impl NewsSlide {
             let Some(info) = img.info else {
                 return None
             };
-            Some(ImageDesc::new(img.body.clone(), *info))
+            Some(ImageDesc::new(img.body.clone(), Some(img.source), *info))
         })
     }
 

@@ -57,8 +57,8 @@ pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use invitation::Invitation;
 pub use message::{
-    FileDesc, ImageDesc, ReactionDesc, RoomEventItem, RoomMessage, RoomVirtualItem, TextDesc,
-    VideoDesc,
+    FileDesc, ImageDesc, MediaSource, ReactionDesc, RoomEventItem, RoomMessage, RoomVirtualItem,
+    TextDesc, VideoDesc,
 };
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
@@ -75,8 +75,6 @@ pub use tasks::{
 };
 pub use typing::TypingEvent;
 pub use verification::{VerificationEmoji, VerificationEvent};
-
-pub use acter_core::ruma::events::room::MediaSource;
 
 pub type DeviceId = acter_core::ruma::OwnedDeviceId;
 pub type EventId = acter_core::ruma::OwnedEventId;
