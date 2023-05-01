@@ -1,7 +1,7 @@
 use core::time::Duration;
 use matrix_sdk::ruma::{
     events::room::{
-        message::{FileInfo, VideoInfo},
+        message::{AudioInfo, FileInfo, VideoInfo},
         ImageInfo, MediaSource as MatrixMediaSource, ThumbnailInfo as MatrixThumbnailInfo,
     },
     OwnedUserId,
@@ -81,12 +81,12 @@ impl TextDesc {
 #[derive(Clone, Debug)]
 pub struct ImageDesc {
     name: String,
-    source: Option<MatrixMediaSource>,
+    source: MatrixMediaSource,
     info: ImageInfo,
 }
 
 impl ImageDesc {
-    pub fn new(name: String, source: Option<MatrixMediaSource>, info: ImageInfo) -> Self {
+    pub fn new(name: String, source: MatrixMediaSource, info: ImageInfo) -> Self {
         ImageDesc { name, source, info }
     }
 
@@ -94,8 +94,10 @@ impl ImageDesc {
         self.name.clone()
     }
 
-    pub fn source(&self) -> Option<MediaSource> {
-        self.source.clone().map(|inner| MediaSource { inner })
+    pub fn source(&self) -> MediaSource {
+        MediaSource {
+            inner: self.source.clone(),
+        }
     }
 
     pub fn mimetype(&self) -> Option<String> {
@@ -126,6 +128,41 @@ impl ImageDesc {
             .thumbnail_source
             .clone()
             .map(|inner| MediaSource { inner })
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct AudioDesc {
+    name: String,
+    source: MatrixMediaSource,
+    info: AudioInfo,
+}
+
+impl AudioDesc {
+    pub fn new(name: String, source: MatrixMediaSource, info: AudioInfo) -> Self {
+        AudioDesc { name, source, info }
+    }
+
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+
+    pub fn source(&self) -> MediaSource {
+        MediaSource {
+            inner: self.source.clone(),
+        }
+    }
+
+    pub fn duration(&self) -> Option<u64> {
+        self.info.duration.map(|x| x.as_secs())
+    }
+
+    pub fn mimetype(&self) -> Option<String> {
+        self.info.mimetype.clone()
+    }
+
+    pub fn size(&self) -> Option<u64> {
+        self.info.size.map(u64::from)
     }
 }
 
