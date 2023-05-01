@@ -1860,7 +1860,16 @@ impl RoomMessage {
                 image_desc = content.info.as_ref().map(|info| {
                     ImageDesc::new(
                         content.body.clone(),
-                        Some(content.source.clone()),
+                        content.source.clone(),
+                        *info.to_owned(),
+                    )
+                });
+            }
+            MessageType::Audio(content) => {
+                audio_desc = content.info.as_ref().map(|info| {
+                    AudioDesc::new(
+                        content.body.clone(),
+                        content.source.clone(),
                         *info.to_owned(),
                     )
                 });
@@ -1955,7 +1964,16 @@ impl RoomMessage {
                 image_desc = content.info.as_ref().map(|info| {
                     ImageDesc::new(
                         content.body.clone(),
-                        Some(content.source.clone()),
+                        content.source.clone(),
+                        *info.to_owned(),
+                    )
+                });
+            }
+            MessageType::Audio(content) => {
+                audio_desc = content.info.as_ref().map(|info| {
+                    AudioDesc::new(
+                        content.body.clone(),
+                        content.source.clone(),
                         *info.to_owned(),
                     )
                 });
@@ -2730,7 +2748,16 @@ impl RoomMessage {
                         image_desc = content.info.as_ref().map(|info| {
                             ImageDesc::new(
                                 content.body.clone(),
-                                Some(content.source.clone()),
+                                content.source.clone(),
+                                *info.clone(),
+                            )
+                        });
+                    }
+                    MessageType::Audio(content) => {
+                        audio_desc = content.info.as_ref().map(|info| {
+                            AudioDesc::new(
+                                content.body.clone(),
+                                content.source.clone(),
                                 *info.clone(),
                             )
                         });
@@ -2806,7 +2833,7 @@ impl RoomMessage {
                 let content = s.content();
                 let image_desc = ImageDesc::new(
                     content.body.clone(),
-                    Some(content.url.clone()).map(MatrixMediaSource::Plain),
+                    MatrixMediaSource::Plain(content.url.clone()),
                     content.info.clone(),
                 );
                 RoomEventItem::new(
@@ -2935,12 +2962,14 @@ impl RoomMessage {
                         None,
                     )
                 });
-                let image_desc = p.avatar_url_change().map(|change| {
-                    ImageDesc::new(
-                        "new_picture".to_string(),
-                        change.new.clone().map(MatrixMediaSource::Plain),
-                        ImageInfo::new(),
-                    )
+                let image_desc = p.avatar_url_change().and_then(|change| {
+                    change.new.as_ref().map(|uri| {
+                        ImageDesc::new(
+                            "new_picture".to_string(),
+                            MatrixMediaSource::Plain(uri.clone()),
+                            ImageInfo::new(),
+                        )
+                    })
                 });
                 RoomEventItem::new(
                     event_id,

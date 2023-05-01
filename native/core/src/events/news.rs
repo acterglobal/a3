@@ -9,7 +9,7 @@ use super::{
     TextMessageEventContent, Update, VideoMessageEventContent,
 };
 
-/// The content that is specific to
+// if you change the order of these enum variables, enum value will change and parsing of old content will fail
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum NewsContent {
@@ -28,11 +28,25 @@ pub enum NewsContent {
 impl NewsContent {
     pub fn type_str(&self) -> String {
         match self {
+            NewsContent::Audio(_) => "audio".to_owned(),
+            NewsContent::File(_) => "file".to_owned(),
             NewsContent::Image(_) => "image".to_owned(),
             NewsContent::Text(_) => "text".to_owned(),
             NewsContent::Video(_) => "video".to_owned(),
-            NewsContent::Audio(_) => "audio".to_owned(),
-            NewsContent::File(_) => "file".to_owned(),
+        }
+    }
+
+    pub fn audio(&self) -> Option<AudioMessageEventContent> {
+        match self {
+            NewsContent::Audio(content) => Some(content.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn file(&self) -> Option<FileMessageEventContent> {
+        match self {
+            NewsContent::File(content) => Some(content.clone()),
+            _ => None,
         }
     }
 
@@ -53,20 +67,6 @@ impl NewsContent {
     pub fn video(&self) -> Option<VideoMessageEventContent> {
         match self {
             NewsContent::Video(content) => Some(content.clone()),
-            _ => None,
-        }
-    }
-
-    pub fn audio(&self) -> Option<AudioMessageEventContent> {
-        match self {
-            NewsContent::Audio(content) => Some(content.clone()),
-            _ => None,
-        }
-    }
-
-    pub fn file(&self) -> Option<FileMessageEventContent> {
-        match self {
-            NewsContent::File(content) => Some(content.clone()),
             _ => None,
         }
     }

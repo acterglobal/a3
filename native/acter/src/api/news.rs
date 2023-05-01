@@ -167,7 +167,7 @@ impl NewsSlide {
         self.inner.content().image().and_then(|content| {
             content
                 .info
-                .map(|info| ImageDesc::new(content.body.clone(), Some(content.source), *info))
+                .map(|info| ImageDesc::new(content.body, content.source, *info))
         })
     }
 
@@ -176,7 +176,7 @@ impl NewsSlide {
         let content = self.inner.content().image().context("Not an image")?;
         let client = self.client.clone();
         let request = MediaRequest {
-            source: content.source.clone(),
+            source: content.source,
             format: MediaFormat::File,
         };
         RUNTIME
@@ -191,7 +191,7 @@ impl NewsSlide {
         self.inner.content().audio().and_then(|content| {
             content
                 .info
-                .map(|info| AudioDesc::new(content.body.clone(), content.source.clone(), *info))
+                .map(|info| AudioDesc::new(content.body, content.source, *info))
         })
     }
 
@@ -215,7 +215,7 @@ impl NewsSlide {
         self.inner.content().video().and_then(|content| {
             content
                 .info
-                .map(|info| VideoDesc::new(content.body.clone(), content.source.clone(), *info))
+                .map(|info| VideoDesc::new(content.body, content.source, *info))
         })
     }
 
@@ -239,7 +239,7 @@ impl NewsSlide {
         self.inner.content().file().and_then(|content| {
             content
                 .info
-                .map(|info| FileDesc::new(content.body.clone(), content.source.clone(), *info))
+                .map(|info| FileDesc::new(content.body, content.source, *info))
         })
     }
 
