@@ -21,7 +21,7 @@ use std::collections::{hash_map::Entry, HashMap};
 use super::{
     api::FfiBuffer,
     client::Client,
-    message::{AudioDesc, FileDesc, ImageDesc, TextDesc, VideoDesc},
+    common::{AudioDesc, FileDesc, ImageDesc, VideoDesc},
     spaces::Space,
     RUNTIME,
 };
@@ -146,6 +146,15 @@ impl NewsSlide {
         self.inner.content().type_str()
     }
 
+    pub fn image_desc(&self) -> Option<ImageDesc> {
+        self.inner.content().image().and_then(|img| {
+            let Some(info) = img.info else {
+                return None
+            };
+            Some(ImageDesc::new(img.body.clone(), Some(img.source), *info))
+        })
+    }
+
     pub fn text(&self) -> String {
         match self.inner.content() {
             NewsContent::Image(ImageMessageEventContent { body, .. }) => body.clone(),
@@ -162,13 +171,6 @@ impl NewsSlide {
                 }
             }
         }
-    }
-
-    pub fn image_desc(&self) -> Option<ImageDesc> {
-        self.inner
-            .content()
-            .image()
-            .and_then(|content| content.info.map(|info| ImageDesc::new(content.body, *info)))
     }
 
     pub async fn image_binary(&self) -> Result<FfiBuffer<u8>> {
@@ -192,7 +194,11 @@ impl NewsSlide {
             let Some(info) = content.info else {
                 return None
             };
-            Some(AudioDesc::new(content.body.clone(), *info))
+            Some(AudioDesc::new(
+                content.body.clone(),
+                content.source.clone(),
+                *info,
+            ))
         })
     }
 
@@ -217,7 +223,11 @@ impl NewsSlide {
             let Some(info) = content.info else {
                 return None
             };
-            Some(VideoDesc::new(content.body.clone(), *info))
+            Some(VideoDesc::new(
+                content.body.clone(),
+                content.source.clone(),
+                *info,
+            ))
         })
     }
 
@@ -242,7 +252,11 @@ impl NewsSlide {
             let Some(info) = content.info else {
                 return None
             };
-            Some(FileDesc::new(content.body.clone(), *info))
+            Some(FileDesc::new(
+                content.body.clone(),
+                content.source.clone(),
+                *info,
+            ))
         })
     }
 

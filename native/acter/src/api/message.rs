@@ -74,7 +74,7 @@ use matrix_sdk::{
                 },
                 tombstone::{OriginalRoomTombstoneEvent, OriginalSyncRoomTombstoneEvent},
                 topic::{OriginalRoomTopicEvent, OriginalSyncRoomTopicEvent},
-                ImageInfo, MediaSource, ThumbnailInfo,
+                ImageInfo, MediaSource as MatrixMediaSource,
             },
             space::{
                 child::{OriginalSpaceChildEvent, OriginalSyncSpaceChildEvent},
@@ -88,6 +88,8 @@ use matrix_sdk::{
     },
 };
 use std::{collections::HashMap, sync::Arc};
+
+use super::common::{AudioDesc, FileDesc, ImageDesc, ReactionDesc, TextDesc, VideoDesc};
 
 #[derive(Clone, Debug)]
 pub struct RoomEventItem {
@@ -245,10 +247,7 @@ impl RoomMessage {
     }
 
     pub(crate) fn call_answer_from_event(event: OriginalCallAnswerEvent, room: &Room) -> Self {
-        let text_desc = TextDesc {
-            body: event.content.answer.sdp,
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(event.content.answer.sdp, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -275,10 +274,7 @@ impl RoomMessage {
         event: OriginalSyncCallAnswerEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: event.content.answer.sdp,
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(event.content.answer.sdp, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -312,10 +308,7 @@ impl RoomMessage {
             .map(|x| x.candidate)
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc {
-            body: format!("changed candidates to {candidates}"),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("changed candidates to {candidates}"), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -349,10 +342,7 @@ impl RoomMessage {
             .map(|x| x.candidate)
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc {
-            body: format!("changed candidates to {candidates}"),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("changed candidates to {candidates}"), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -376,10 +366,10 @@ impl RoomMessage {
     }
 
     pub(crate) fn call_hangup_from_event(event: OriginalCallHangupEvent, room: &Room) -> Self {
-        let text_desc = event.content.reason.map(|x| TextDesc {
-            body: format!("hangup this call because {x}"),
-            formatted_body: None,
-        });
+        let text_desc = event
+            .content
+            .reason
+            .map(|x| TextDesc::new(format!("hangup this call because {x}"), None));
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -406,10 +396,10 @@ impl RoomMessage {
         event: OriginalSyncCallHangupEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = event.content.reason.map(|x| TextDesc {
-            body: format!("hangup this call because {x}"),
-            formatted_body: None,
-        });
+        let text_desc = event
+            .content
+            .reason
+            .map(|x| TextDesc::new(format!("hangup this call because {x}"), None));
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -433,10 +423,7 @@ impl RoomMessage {
     }
 
     pub(crate) fn call_invite_from_event(event: OriginalCallInviteEvent, room: &Room) -> Self {
-        let text_desc = TextDesc {
-            body: event.content.offer.sdp,
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(event.content.offer.sdp, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -463,10 +450,7 @@ impl RoomMessage {
         event: OriginalSyncCallInviteEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: event.content.offer.sdp,
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(event.content.offer.sdp, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -501,10 +485,7 @@ impl RoomMessage {
         } else {
             "accepted verification".to_string()
         };
-        let text_desc = TextDesc {
-            body,
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -539,10 +520,7 @@ impl RoomMessage {
         } else {
             "accepted verification".to_string()
         };
-        let text_desc = TextDesc {
-            body,
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -569,10 +547,10 @@ impl RoomMessage {
         event: OriginalKeyVerificationCancelEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!("canceled verification because {}", event.content.reason),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(
+            format!("canceled verification because {}", event.content.reason),
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -599,10 +577,10 @@ impl RoomMessage {
         event: OriginalSyncKeyVerificationCancelEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!("canceled verification because {}", event.content.reason),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(
+            format!("canceled verification because {}", event.content.reason),
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -629,10 +607,7 @@ impl RoomMessage {
         event: OriginalKeyVerificationDoneEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: "done verification".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("done verification".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -659,10 +634,7 @@ impl RoomMessage {
         event: OriginalSyncKeyVerificationDoneEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: "done verification".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("done verification".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -689,10 +661,7 @@ impl RoomMessage {
         event: OriginalKeyVerificationKeyEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: "sent ephemeral public key for device".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("sent ephemeral public key for device".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -719,10 +688,7 @@ impl RoomMessage {
         event: OriginalSyncKeyVerificationKeyEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: "sent ephemeral public key for device".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("sent ephemeral public key for device".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -749,10 +715,7 @@ impl RoomMessage {
         event: OriginalKeyVerificationMacEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: "sent MAC of device's key".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("sent MAC of device's key".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -779,10 +742,7 @@ impl RoomMessage {
         event: OriginalSyncKeyVerificationMacEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: "sent MAC of device's key".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("sent MAC of device's key".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -822,10 +782,7 @@ impl RoomMessage {
             })
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc {
-            body: format!("ready verification with {methods}"),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("ready verification with {methods}"), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -865,10 +822,7 @@ impl RoomMessage {
             })
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc {
-            body: format!("ready verification with {methods}"),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("ready verification with {methods}"), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -900,10 +854,7 @@ impl RoomMessage {
             StartMethod::ReciprocateV1(s) => "ReciprocateV1".to_string(),
             _ => "Unknown".to_string(),
         };
-        let text_desc = TextDesc {
-            body: format!("started verification with {method}"),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("started verification with {method}"), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -935,10 +886,7 @@ impl RoomMessage {
             StartMethod::ReciprocateV1(s) => "ReciprocateV1".to_string(),
             _ => "Unknown".to_string(),
         };
-        let text_desc = TextDesc {
-            body: format!("started verification with {method}"),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("started verification with {method}"), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -969,10 +917,7 @@ impl RoomMessage {
             "recommended {} about {} because {}",
             event.content.0.recommendation, event.content.0.entity, event.content.0.reason,
         );
-        let text_desc = TextDesc {
-            body,
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -999,10 +944,11 @@ impl RoomMessage {
         event: OriginalSyncPolicyRuleRoomEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: "changed policy rule room".to_string(),
-            formatted_body: None,
-        };
+        let body = format!(
+            "recommended {} about {} because {}",
+            event.content.0.recommendation, event.content.0.entity, event.content.0.reason,
+        );
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1029,10 +975,7 @@ impl RoomMessage {
         event: OriginalPolicyRuleServerEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: "changed policy rule server".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("changed policy rule server".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1059,10 +1002,7 @@ impl RoomMessage {
         event: OriginalSyncPolicyRuleServerEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: "changed policy rule server".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("changed policy rule server".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1089,10 +1029,7 @@ impl RoomMessage {
         event: OriginalPolicyRuleUserEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: "changed policy rule user".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("changed policy rule user".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1119,10 +1056,7 @@ impl RoomMessage {
         event: OriginalSyncPolicyRuleUserEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: "changed policy rule user".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("changed policy rule user".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1146,10 +1080,7 @@ impl RoomMessage {
     }
 
     pub(crate) fn reaction_from_event(event: OriginalReactionEvent, room: &Room) -> Self {
-        let text_desc = TextDesc {
-            body: format!("reacted by {}", event.content.relates_to.key),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("reacted by {}", event.content.relates_to.key), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1173,10 +1104,7 @@ impl RoomMessage {
     }
 
     pub(crate) fn reaction_from_sync_event(event: OriginalSyncReactionEvent, room: &Room) -> Self {
-        let text_desc = TextDesc {
-            body: format!("reacted by {}", event.content.relates_to.key),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("reacted by {}", event.content.relates_to.key), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1207,10 +1135,7 @@ impl RoomMessage {
             .map(|x| x.to_string())
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc {
-            body: format!("changed room aliases to {aliases}"),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("changed room aliases to {aliases}"), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1244,10 +1169,7 @@ impl RoomMessage {
             .map(|x| x.to_string())
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc {
-            body: format!("changed room aliases to {aliases}"),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("changed room aliases to {aliases}"), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1271,10 +1193,7 @@ impl RoomMessage {
     }
 
     pub(crate) fn room_avatar_from_event(event: OriginalRoomAvatarEvent, room: &Room) -> Self {
-        let text_desc = TextDesc {
-            body: "changed room avatar".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("changed room avatar".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1301,10 +1220,7 @@ impl RoomMessage {
         event: OriginalSyncRoomAvatarEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: "changed room avatar".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("changed room avatar".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1338,14 +1254,14 @@ impl RoomMessage {
             .map(|x| x.to_string())
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc {
-            body: format!(
+        let text_desc = TextDesc::new(
+            format!(
                 "changed canonical aliases ({}) of room alias ({:?})",
                 alt_aliases,
                 event.content.alias.map(|x| x.to_string()),
             ),
-            formatted_body: None,
-        };
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1379,14 +1295,14 @@ impl RoomMessage {
             .map(|x| x.to_string())
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc {
-            body: format!(
+        let text_desc = TextDesc::new(
+            format!(
                 "changed canonical aliases ({}) of room alias ({:?})",
                 alt_aliases,
                 event.content.alias.map(|x| x.to_string()),
             ),
-            formatted_body: None,
-        };
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1410,10 +1326,7 @@ impl RoomMessage {
     }
 
     pub(crate) fn room_create_from_event(event: OriginalRoomCreateEvent, room: &Room) -> Self {
-        let text_desc = TextDesc {
-            body: "created this room".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("created this room".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1440,10 +1353,7 @@ impl RoomMessage {
         event: OriginalSyncRoomCreateEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: "created this room".to_string(),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new("created this room".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1475,10 +1385,7 @@ impl RoomMessage {
             EncryptedEventScheme::OlmV1Curve25519AesSha2(s) => "OlmV1Curve25519AesSha2".to_string(),
             _ => "Unknown".to_string(),
         };
-        let text_desc = TextDesc {
-            body: format!("encrypted by {scheme}"),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("encrypted by {scheme}"), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1510,10 +1417,7 @@ impl RoomMessage {
             EncryptedEventScheme::OlmV1Curve25519AesSha2(s) => "OlmV1Curve25519AesSha2".to_string(),
             _ => "Unknown".to_string(),
         };
-        let text_desc = TextDesc {
-            body: format!("encrypted by {scheme}"),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("encrypted by {scheme}"), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1540,10 +1444,10 @@ impl RoomMessage {
         event: OriginalRoomEncryptionEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!("changed encryption to {}", event.content.algorithm),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(
+            format!("changed encryption to {}", event.content.algorithm),
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1570,10 +1474,10 @@ impl RoomMessage {
         event: OriginalSyncRoomEncryptionEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!("changed encryption to {}", event.content.algorithm),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(
+            format!("changed encryption to {}", event.content.algorithm),
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1600,13 +1504,13 @@ impl RoomMessage {
         event: OriginalRoomGuestAccessEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!(
+        let text_desc = TextDesc::new(
+            format!(
                 "changed room's guest access to {}",
                 event.content.guest_access,
             ),
-            formatted_body: None,
-        };
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1633,13 +1537,13 @@ impl RoomMessage {
         event: OriginalSyncRoomGuestAccessEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!(
+        let text_desc = TextDesc::new(
+            format!(
                 "changed room's guest access to {}",
                 event.content.guest_access,
             ),
-            formatted_body: None,
-        };
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1666,13 +1570,13 @@ impl RoomMessage {
         event: OriginalRoomHistoryVisibilityEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!(
+        let text_desc = TextDesc::new(
+            format!(
                 "changed room's history visibility to {}",
                 event.content.history_visibility,
             ),
-            formatted_body: None,
-        };
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1699,13 +1603,13 @@ impl RoomMessage {
         event: OriginalSyncRoomHistoryVisibilityEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!(
+        let text_desc = TextDesc::new(
+            format!(
                 "changed room's history visibility to {}",
                 event.content.history_visibility,
             ),
-            formatted_body: None,
-        };
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1732,13 +1636,13 @@ impl RoomMessage {
         event: OriginalRoomJoinRulesEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!(
+        let text_desc = TextDesc::new(
+            format!(
                 "changed room's join rules to {}",
                 event.content.join_rule.as_str(),
             ),
-            formatted_body: None,
-        };
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1765,13 +1669,13 @@ impl RoomMessage {
         event: OriginalSyncRoomJoinRulesEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!(
+        let text_desc = TextDesc::new(
+            format!(
                 "changed room's join rules to {}",
                 event.content.join_rule.as_str(),
             ),
-            formatted_body: None,
-        };
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1829,10 +1733,7 @@ impl RoomMessage {
                 }
             }
         };
-        let text_desc = TextDesc {
-            body: fallback,
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(fallback, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1893,10 +1794,7 @@ impl RoomMessage {
                 }
             }
         };
-        let text_desc = TextDesc {
-            body: fallback,
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(fallback, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1944,10 +1842,7 @@ impl RoomMessage {
             MessageType::Video(content) => "sent a video.".to_string(),
             _ => "Unknown sync item".to_string(),
         };
-        let mut text_desc = TextDesc {
-            body: fallback,
-            formatted_body: None,
-        };
+        let mut text_desc = TextDesc::new(fallback, None);
         let mut image_desc = None;
         let mut audio_desc = None;
         let mut video_desc = None;
@@ -1962,16 +1857,36 @@ impl RoomMessage {
             }
             MessageType::Emote(content) => {}
             MessageType::Image(content) => {
-                image_desc = content.info.map(|info| ImageDesc::new(content.body, *info));
+                image_desc = content.info.as_ref().map(|info| {
+                    ImageDesc::new(
+                        content.body.clone(),
+                        Some(content.source.clone()),
+                        *info.to_owned(),
+                    )
+                });
             }
             MessageType::Audio(content) => {
-                audio_desc = content.info.map(|info| AudioDesc::new(content.body, *info));
+                audio_desc = content.info.as_ref().map(|info| {
+                    AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone())
+                });
             }
             MessageType::Video(content) => {
-                video_desc = content.info.map(|info| VideoDesc::new(content.body, *info));
+                video_desc = content.info.as_ref().map(|info| {
+                    VideoDesc::new(
+                        content.body.clone(),
+                        content.source.clone(),
+                        *info.to_owned(),
+                    )
+                });
             }
             MessageType::File(content) => {
-                file_desc = content.info.map(|info| FileDesc::new(content.body, *info));
+                file_desc = content.info.as_ref().map(|info| {
+                    FileDesc::new(
+                        content.body.clone(),
+                        content.source.clone(),
+                        *info.to_owned(),
+                    )
+                });
             }
             _ => {}
         }
@@ -2022,10 +1937,7 @@ impl RoomMessage {
             MessageType::Video(content) => "sent a video.".to_string(),
             _ => "Unknown sync item".to_string(),
         };
-        let mut text_desc = TextDesc {
-            body: fallback,
-            formatted_body: None,
-        };
+        let mut text_desc = TextDesc::new(fallback, None);
         let mut image_desc = None;
         let mut audio_desc = None;
         let mut video_desc = None;
@@ -2040,16 +1952,40 @@ impl RoomMessage {
             }
             MessageType::Emote(content) => {}
             MessageType::Image(content) => {
-                image_desc = content.info.map(|info| ImageDesc::new(content.body, *info));
+                image_desc = content.info.as_ref().map(|info| {
+                    ImageDesc::new(
+                        content.body.clone(),
+                        Some(content.source.clone()),
+                        *info.to_owned(),
+                    )
+                });
             }
             MessageType::Audio(content) => {
-                audio_desc = content.info.map(|info| AudioDesc::new(content.body, *info));
+                audio_desc = content.info.as_ref().map(|info| {
+                    AudioDesc::new(
+                        content.body.clone(),
+                        content.source.clone(),
+                        *info.to_owned(),
+                    )
+                });
             }
             MessageType::Video(content) => {
-                video_desc = content.info.map(|info| VideoDesc::new(content.body, *info));
+                video_desc = content.info.as_ref().map(|info| {
+                    VideoDesc::new(
+                        content.body.clone(),
+                        content.source.clone(),
+                        *info.to_owned(),
+                    )
+                });
             }
             MessageType::File(content) => {
-                file_desc = content.info.map(|info| FileDesc::new(content.body, *info));
+                file_desc = content.info.as_ref().map(|info| {
+                    FileDesc::new(
+                        content.body.clone(),
+                        content.source.clone(),
+                        *info.to_owned(),
+                    )
+                });
             }
             _ => {}
         }
@@ -2076,13 +2012,11 @@ impl RoomMessage {
     }
 
     pub(crate) fn room_name_from_event(event: OriginalRoomNameEvent, room: &Room) -> Self {
-        let text_desc = TextDesc {
-            body: match event.content.name {
-                Some(name) => format!("changed name to {name}"),
-                None => "changed name".to_string(),
-            },
-            formatted_body: None,
+        let body = match event.content.name {
+            Some(name) => format!("changed name to {name}"),
+            None => "changed name".to_string(),
         };
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2106,13 +2040,11 @@ impl RoomMessage {
     }
 
     pub(crate) fn room_name_from_sync_event(event: OriginalSyncRoomNameEvent, room: &Room) -> Self {
-        let text_desc = TextDesc {
-            body: match event.content.name {
-                Some(name) => format!("changed name to {name}"),
-                None => "changed name".to_string(),
-            },
-            formatted_body: None,
+        let body = match event.content.name {
+            Some(name) => format!("changed name to {name}"),
+            None => "changed name".to_string(),
         };
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2139,10 +2071,10 @@ impl RoomMessage {
         event: OriginalRoomPinnedEventsEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!("pinned {} events", event.content.pinned.len()),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(
+            format!("pinned {} events", event.content.pinned.len()),
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2169,10 +2101,10 @@ impl RoomMessage {
         event: OriginalSyncRoomPinnedEventsEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!("pinned {} events", event.content.pinned.len()),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(
+            format!("pinned {} events", event.content.pinned.len()),
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2206,10 +2138,7 @@ impl RoomMessage {
             .map(|(user_id, value)| format!("power level of {user_id} to {value}"))
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc {
-            body: format!("changed {users}"),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("changed {users}"), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2243,10 +2172,7 @@ impl RoomMessage {
             .map(|(user_id, value)| format!("power level of {user_id} to {value}"))
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc {
-            body: format!("changed {users}"),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("changed {users}"), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2274,13 +2200,11 @@ impl RoomMessage {
         if let Some(ev) = event.as_original() {
             reason = ev.content.reason.clone();
         }
-        let text_desc = TextDesc {
-            body: match reason {
-                Some(reason) => format!("deleted this item because {reason}"),
-                None => "deleted this item".to_string(),
-            },
-            formatted_body: None,
+        let body = match reason {
+            Some(reason) => format!("deleted this item because {reason}"),
+            None => "deleted this item".to_string(),
         };
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2311,13 +2235,11 @@ impl RoomMessage {
         if let Some(ev) = event.as_original() {
             reason = ev.content.reason.clone();
         }
-        let text_desc = TextDesc {
-            body: match reason {
-                Some(reason) => format!("deleted this item because {reason}"),
-                None => "deleted this item".to_string(),
-            },
-            formatted_body: None,
+        let body = match reason {
+            Some(reason) => format!("deleted this item because {reason}"),
+            None => "deleted this item".to_string(),
         };
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2346,15 +2268,13 @@ impl RoomMessage {
     ) -> Self {
         let allow = event.content.allow.join(", ");
         let deny = event.content.deny.join(", ");
-        let text_desc = TextDesc {
-            body: match (allow.is_empty(), deny.is_empty()) {
-                (true, true) => format!("allowed {allow}, denied {deny}"),
-                (true, false) => format!("allowed {allow}"),
-                (false, true) => format!("denied {deny}"),
-                (false, false) => "".to_string(),
-            },
-            formatted_body: None,
+        let body = match (allow.is_empty(), deny.is_empty()) {
+            (true, true) => format!("allowed {allow}, denied {deny}"),
+            (true, false) => format!("allowed {allow}"),
+            (false, true) => format!("denied {deny}"),
+            (false, false) => "".to_string(),
         };
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2383,15 +2303,13 @@ impl RoomMessage {
     ) -> Self {
         let allow = event.content.allow.join(", ");
         let deny = event.content.deny.join(", ");
-        let text_desc = TextDesc {
-            body: match (allow.is_empty(), deny.is_empty()) {
-                (true, true) => format!("allowed {allow}, denied {deny}"),
-                (true, false) => format!("allowed {allow}"),
-                (false, true) => format!("denied {deny}"),
-                (false, false) => "".to_string(),
-            },
-            formatted_body: None,
+        let body = match (allow.is_empty(), deny.is_empty()) {
+            (true, true) => format!("allowed {allow}, denied {deny}"),
+            (true, false) => format!("allowed {allow}"),
+            (false, true) => format!("denied {deny}"),
+            (false, false) => "".to_string(),
         };
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2418,10 +2336,7 @@ impl RoomMessage {
         event: OriginalRoomThirdPartyInviteEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!("invited {}", event.content.display_name),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("invited {}", event.content.display_name), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2448,10 +2363,7 @@ impl RoomMessage {
         event: OriginalSyncRoomThirdPartyInviteEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!("invited {}", event.content.display_name),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("invited {}", event.content.display_name), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2478,10 +2390,7 @@ impl RoomMessage {
         event: OriginalRoomTombstoneEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: event.content.body,
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(event.content.body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2508,10 +2417,7 @@ impl RoomMessage {
         event: OriginalSyncRoomTombstoneEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: event.content.body,
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(event.content.body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2535,10 +2441,7 @@ impl RoomMessage {
     }
 
     pub(crate) fn room_topic_from_event(event: OriginalRoomTopicEvent, room: &Room) -> Self {
-        let text_desc = TextDesc {
-            body: format!("changed topic to {}", event.content.topic),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("changed topic to {}", event.content.topic), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2565,10 +2468,7 @@ impl RoomMessage {
         event: OriginalSyncRoomTopicEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: format!("changed topic to {}", event.content.topic),
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(format!("changed topic to {}", event.content.topic), None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2592,13 +2492,11 @@ impl RoomMessage {
     }
 
     pub(crate) fn space_child_from_event(event: OriginalSpaceChildEvent, room: &Room) -> Self {
-        let text_desc = TextDesc {
-            body: match event.content.order {
-                Some(order) => order,
-                None => "".to_string(),
-            },
-            formatted_body: None,
+        let body = match event.content.order {
+            Some(order) => order,
+            None => "".to_string(),
         };
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2625,13 +2523,11 @@ impl RoomMessage {
         event: OriginalSyncSpaceChildEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: match event.content.order {
-                Some(order) => order,
-                None => "".to_string(),
-            },
-            formatted_body: None,
+        let body = match event.content.order {
+            Some(order) => order,
+            None => "".to_string(),
         };
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2655,19 +2551,17 @@ impl RoomMessage {
     }
 
     pub(crate) fn space_parent_from_event(event: OriginalSpaceParentEvent, room: &Room) -> Self {
-        let text_desc = TextDesc {
-            body: match event.content.via {
-                Some(via) => format!(
-                    "changed parent to {}",
-                    via.iter()
-                        .map(|x| x.to_string())
-                        .collect::<Vec<String>>()
-                        .join(", "),
-                ),
-                None => "".to_string(),
-            },
-            formatted_body: None,
+        let body = match event.content.via {
+            Some(via) => format!(
+                "changed parent to {}",
+                via.iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<String>>()
+                    .join(", "),
+            ),
+            None => "".to_string(),
         };
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2694,19 +2588,17 @@ impl RoomMessage {
         event: OriginalSyncSpaceParentEvent,
         room: &Room,
     ) -> Self {
-        let text_desc = TextDesc {
-            body: match event.content.via {
-                Some(via) => format!(
-                    "changed parent to {}",
-                    via.iter()
-                        .map(|x| x.to_string())
-                        .collect::<Vec<String>>()
-                        .join(", "),
-                ),
-                None => "".to_string(),
-            },
-            formatted_body: None,
+        let body = match event.content.via {
+            Some(via) => format!(
+                "changed parent to {}",
+                via.iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<String>>()
+                    .join(", "),
+            ),
+            None => "".to_string(),
         };
+        let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2730,10 +2622,7 @@ impl RoomMessage {
     }
 
     pub(crate) fn sticker_from_event(event: OriginalStickerEvent, room: &Room) -> Self {
-        let text_desc = TextDesc {
-            body: event.content.body,
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(event.content.body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2757,10 +2646,7 @@ impl RoomMessage {
     }
 
     pub(crate) fn sticker_from_sync_event(event: OriginalSyncStickerEvent, room: &Room) -> Self {
-        let text_desc = TextDesc {
-            body: event.content.body,
-            formatted_body: None,
-        };
+        let text_desc = TextDesc::new(event.content.body, None);
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2818,10 +2704,7 @@ impl RoomMessage {
                     MessageType::Video(content) => "sent a video.".to_string(),
                     _ => "Unknown timeline item".to_string(),
                 };
-                let mut text_desc = TextDesc {
-                    body: fallback,
-                    formatted_body: None,
-                };
+                let mut text_desc = TextDesc::new(fallback, None);
                 let mut image_desc = None;
                 let mut audio_desc = None;
                 let mut video_desc = None;
@@ -2844,28 +2727,40 @@ impl RoomMessage {
                         }
                     }
                     MessageType::Image(content) => {
-                        image_desc = content
-                            .info
-                            .as_ref()
-                            .map(|info| ImageDesc::new(content.body.clone(), *info.clone()));
+                        image_desc = content.info.as_ref().map(|info| {
+                            ImageDesc::new(
+                                content.body.clone(),
+                                Some(content.source.clone()),
+                                *info.clone(),
+                            )
+                        });
                     }
                     MessageType::Audio(content) => {
-                        audio_desc = content
-                            .info
-                            .as_ref()
-                            .map(|info| AudioDesc::new(content.body.clone(), *info.clone()));
+                        audio_desc = content.info.as_ref().map(|info| {
+                            AudioDesc::new(
+                                content.body.clone(),
+                                content.source.clone(),
+                                *info.clone(),
+                            )
+                        });
                     }
                     MessageType::Video(content) => {
-                        video_desc = content
-                            .info
-                            .as_ref()
-                            .map(|info| VideoDesc::new(content.body.clone(), *info.clone()));
+                        video_desc = content.info.as_ref().map(|info| {
+                            VideoDesc::new(
+                                content.body.clone(),
+                                content.source.clone(),
+                                *info.clone(),
+                            )
+                        });
                     }
                     MessageType::File(content) => {
-                        file_desc = content
-                            .info
-                            .as_ref()
-                            .map(|info| FileDesc::new(content.body.clone(), *info.clone()));
+                        file_desc = content.info.as_ref().map(|info| {
+                            FileDesc::new(
+                                content.body.clone(),
+                                content.source.clone(),
+                                *info.clone(),
+                            )
+                        });
                     }
                     _ => {}
                 }
@@ -2909,7 +2804,11 @@ impl RoomMessage {
             }
             TimelineItemContent::Sticker(s) => {
                 let content = s.content();
-                let image_desc = ImageDesc::new(content.body.clone(), content.info.clone());
+                let image_desc = ImageDesc::new(
+                    content.body.clone(),
+                    Some(content.url.clone()).map(MatrixMediaSource::Plain),
+                    content.info.clone(),
+                );
                 RoomEventItem::new(
                     event_id,
                     sender,
@@ -3007,10 +2906,7 @@ impl RoomMessage {
                     ),
                     _ => (None, "unknown error".to_string()),
                 };
-                let text_desc = TextDesc {
-                    body: fallback,
-                    formatted_body: None,
-                };
+                let text_desc = TextDesc::new(fallback, None);
                 RoomEventItem::new(
                     event_id,
                     sender,
@@ -3029,38 +2925,23 @@ impl RoomMessage {
             }
             TimelineItemContent::ProfileChange(p) => {
                 info!("Edit event applies to a state event, discarding");
-                let (text_desc, image_desc) = if let Some(change) = p.displayname_change() {
-                    let text_desc = TextDesc {
-                        body: format!(
+                let text_desc = p.displayname_change().map(|change| {
+                    TextDesc::new(
+                        format!(
                             "changed display name from {:?} to {:?}",
                             change.old.clone(),
                             change.new.clone(),
                         ),
-                        formatted_body: None,
-                    };
-                    (Some(text_desc), None)
-                } else if let Some(change) = p.avatar_url_change() {
-                    let text_desc = TextDesc {
-                        body: format!(
-                            "changed avatar url from {:?} to {:?}",
-                            change.old.clone(),
-                            change.new.clone(),
-                        ),
-                        formatted_body: None,
-                    };
-                    let image_desc = ImageDesc {
-                        name: "new_picture".to_string(),
-                        mimetype: None,
-                        size: None,
-                        width: None,
-                        height: None,
-                        thumbnail_info: None,
-                        thumbnail_source: change.new.clone().map(MediaSource::Plain),
-                    };
-                    (Some(text_desc), Some(image_desc))
-                } else {
-                    (None, None)
-                };
+                        None,
+                    )
+                });
+                let image_desc = p.avatar_url_change().map(|change| {
+                    ImageDesc::new(
+                        "new_picture".to_string(),
+                        change.new.clone().map(MatrixMediaSource::Plain),
+                        ImageInfo::new(),
+                    )
+                });
                 RoomEventItem::new(
                     event_id,
                     sender,
@@ -3195,316 +3076,6 @@ impl RoomMessage {
 
     pub fn virtual_item(&self) -> Option<RoomVirtualItem> {
         self.virtual_item.clone()
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct TextDesc {
-    body: String,
-    formatted_body: Option<String>,
-}
-
-impl TextDesc {
-    pub fn body(&self) -> String {
-        self.body.clone()
-    }
-
-    pub(crate) fn set_body(&mut self, text: String) {
-        self.body = text;
-    }
-
-    pub fn formatted_body(&self) -> Option<String> {
-        self.formatted_body.clone()
-    }
-
-    pub(crate) fn set_formatted_body(&mut self, text: Option<String>) {
-        self.formatted_body = text;
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct ImageDesc {
-    name: String,
-    mimetype: Option<String>,
-    size: Option<u64>,
-    width: Option<u64>,
-    height: Option<u64>,
-    thumbnail_info: Option<ThumbnailInfo>,
-    thumbnail_source: Option<MediaSource>,
-}
-
-impl ImageDesc {
-    pub fn new(name: String, info: ImageInfo) -> Self {
-        ImageDesc {
-            name,
-            mimetype: info.mimetype,
-            size: info.size.map(u64::from),
-            width: info.width.map(u64::from),
-            height: info.height.map(u64::from),
-            thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-            thumbnail_source: info.thumbnail_source,
-        }
-    }
-
-    pub fn name(&self) -> String {
-        self.name.clone()
-    }
-
-    pub fn mimetype(&self) -> Option<String> {
-        self.mimetype.clone()
-    }
-
-    pub fn size(&self) -> Option<u64> {
-        self.size
-    }
-
-    pub fn width(&self) -> Option<u64> {
-        self.width
-    }
-
-    pub fn height(&self) -> Option<u64> {
-        self.height
-    }
-
-    pub fn thumbnail_mimetype(&self) -> Option<String> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.mimetype.clone(),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_size(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.size.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_width(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.width.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_height(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.height.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_source(&self) -> Option<MediaSource> {
-        self.thumbnail_source.clone()
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct AudioDesc {
-    name: String,
-    mimetype: Option<String>,
-    size: Option<u64>,
-    duration: Option<Duration>,
-}
-
-impl AudioDesc {
-    pub fn new(name: String, info: AudioInfo) -> Self {
-        AudioDesc {
-            name,
-            mimetype: info.mimetype.clone(),
-            size: info.size.map(u64::from),
-            duration: info.duration,
-        }
-    }
-
-    pub fn name(&self) -> String {
-        self.name.clone()
-    }
-
-    pub fn mimetype(&self) -> Option<String> {
-        self.mimetype.clone()
-    }
-
-    pub fn size(&self) -> Option<u64> {
-        self.size
-    }
-
-    pub fn duration(&self) -> Option<u64> {
-        self.duration.map(|x| x.as_secs())
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct VideoDesc {
-    name: String,
-    mimetype: Option<String>,
-    size: Option<u64>,
-    width: Option<u64>,
-    height: Option<u64>,
-    blurhash: Option<String>,
-    duration: Option<Duration>,
-    thumbnail_info: Option<ThumbnailInfo>,
-    thumbnail_source: Option<MediaSource>,
-}
-
-impl VideoDesc {
-    pub fn new(name: String, info: VideoInfo) -> Self {
-        VideoDesc {
-            name,
-            mimetype: info.mimetype.clone(),
-            size: info.size.map(u64::from),
-            width: info.width.map(u64::from),
-            height: info.height.map(u64::from),
-            blurhash: info.blurhash.clone(),
-            duration: info.duration,
-            thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-            thumbnail_source: info.thumbnail_source,
-        }
-    }
-
-    pub fn name(&self) -> String {
-        self.name.clone()
-    }
-
-    pub fn mimetype(&self) -> Option<String> {
-        self.mimetype.clone()
-    }
-
-    pub fn size(&self) -> Option<u64> {
-        self.size
-    }
-
-    pub fn width(&self) -> Option<u64> {
-        self.width
-    }
-
-    pub fn height(&self) -> Option<u64> {
-        self.height
-    }
-
-    pub fn blurhash(&self) -> Option<String> {
-        self.blurhash.clone()
-    }
-
-    pub fn duration(&self) -> Option<u64> {
-        self.duration.map(|x| x.as_secs())
-    }
-
-    pub fn thumbnail_mimetype(&self) -> Option<String> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.mimetype.clone(),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_size(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.size.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_width(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.width.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_height(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.height.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_source(&self) -> Option<MediaSource> {
-        self.thumbnail_source.clone()
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct FileDesc {
-    name: String,
-    mimetype: Option<String>,
-    size: Option<u64>,
-    thumbnail_info: Option<ThumbnailInfo>,
-    thumbnail_source: Option<MediaSource>,
-}
-
-impl FileDesc {
-    pub fn new(name: String, info: FileInfo) -> Self {
-        FileDesc {
-            name,
-            mimetype: info.mimetype.clone(),
-            size: info.size.map(u64::from),
-            thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-            thumbnail_source: info.thumbnail_source,
-        }
-    }
-
-    pub fn name(&self) -> String {
-        self.name.clone()
-    }
-
-    pub fn mimetype(&self) -> Option<String> {
-        self.mimetype.clone()
-    }
-
-    pub fn size(&self) -> Option<u64> {
-        self.size
-    }
-
-    pub fn thumbnail_mimetype(&self) -> Option<String> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.mimetype.clone(),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_size(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.size.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_width(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.width.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_height(&self) -> Option<u64> {
-        match &self.thumbnail_info {
-            Some(thumbnail_info) => thumbnail_info.height.map(u64::from),
-            None => None,
-        }
-    }
-
-    pub fn thumbnail_source(&self) -> Option<MediaSource> {
-        self.thumbnail_source.clone()
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct ReactionDesc {
-    count: u64,
-    senders: Vec<OwnedUserId>,
-}
-
-impl ReactionDesc {
-    pub(crate) fn new(count: u64, senders: Vec<OwnedUserId>) -> Self {
-        ReactionDesc { count, senders }
-    }
-
-    pub fn count(&self) -> u64 {
-        self.count
-    }
-
-    pub fn senders(&self) -> Vec<String> {
-        self.senders.iter().map(|x| x.to_string()).collect()
     }
 }
 

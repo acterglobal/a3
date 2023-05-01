@@ -43,7 +43,6 @@ pub use account::Account;
 pub use acter_core::{
     events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
     models::{Color as EfkColor, Tag, TextMessageContent},
-    ruma::events::room::MediaSource,
 };
 pub use auth::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token,
@@ -52,15 +51,15 @@ pub use auth::{
 pub use calendar_events::CalendarEvent;
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
-pub use common::duration_from_secs;
+pub use common::{
+    duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, ReactionDesc, TextDesc,
+    ThumbnailInfo, VideoDesc,
+};
 pub use conversation::{Conversation, CreateConversationSettingsBuilder};
 pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use invitation::Invitation;
-pub use message::{
-    AudioDesc, FileDesc, ImageDesc, ReactionDesc, RoomEventItem, RoomMessage, RoomVirtualItem,
-    TextDesc, VideoDesc,
-};
+pub use message::{RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
