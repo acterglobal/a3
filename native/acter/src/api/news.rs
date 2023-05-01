@@ -19,7 +19,7 @@ use std::collections::{hash_map::Entry, HashMap};
 use super::{
     api::FfiBuffer,
     client::Client,
-    message::{ImageDesc, TextDesc, VideoDesc},
+    common::{ImageDesc, TextDesc, VideoDesc},
     spaces::Space,
     RUNTIME,
 };
