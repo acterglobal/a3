@@ -11,7 +11,6 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
 use core::time::Duration;
-use lazy_static::__Deref;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Joined, Room},
@@ -32,18 +31,18 @@ impl Client {
         key: String,
         timeout: Option<Box<Duration>>,
     ) -> Result<NewsEntry> {
-        let AnyActerModel::NewsEntry(inner) = self.wait_for(key.clone(), timeout).await? else {
+        let AnyActerModel::NewsEntry(content) = self.wait_for(key.clone(), timeout).await? else {
             bail!("{key} is not a news");
         };
         let room = self
             .core
             .client()
-            .get_room(inner.room_id())
+            .get_room(content.room_id())
             .context("Room not found")?;
         Ok(NewsEntry {
             client: self.clone(),
             room,
-            inner,
+            content,
         })
     }
 
@@ -65,11 +64,11 @@ impl Client {
             .collect();
         all_news.reverse();
 
-        for inner in all_news {
+        for content in all_news {
             if count == 0 {
                 break; // we filled what we wanted
             }
-            let room_id = inner.room_id().to_owned();
+            let room_id = content.room_id().to_owned();
             let room = match rooms_map.entry(room_id) {
                 Entry::Occupied(t) => t.get().clone(),
                 Entry::Vacant(e) => {
@@ -85,7 +84,7 @@ impl Client {
             news.push(NewsEntry {
                 client: client.clone(),
                 room,
-                inner,
+                content,
             });
             count -= 1;
         }
@@ -112,14 +111,14 @@ impl Space {
             .collect();
         all_news.reverse();
 
-        for inner in all_news {
+        for content in all_news {
             if count == 0 {
                 break; // we filled what we wanted
             }
             news.push(NewsEntry {
                 client: self.client.clone(),
                 room: self.room.clone(),
-                inner,
+                content,
             });
             count -= 1;
         }
@@ -265,24 +264,24 @@ impl NewsSlide {
 pub struct NewsEntry {
     client: Client,
     room: Room,
-    inner: models::NewsEntry,
+    content: models::NewsEntry,
 }
 
 impl std::ops::Deref for NewsEntry {
     type Target = models::NewsEntry;
     fn deref(&self) -> &Self::Target {
-        &self.inner
+        &self.content
     }
 }
 
 /// Custom functions
 impl NewsEntry {
     pub fn slides_count(&self) -> u8 {
-        self.inner.slides().len() as u8
+        self.content.slides().len() as u8
     }
 
     pub fn get_slide(&self, pos: u8) -> Option<NewsSlide> {
-        self.inner
+        self.content
             .slides()
             .get(pos as usize)
             .map(|inner| NewsSlide {
@@ -293,19 +292,19 @@ impl NewsEntry {
     }
 
     pub async fn refresh(&self) -> Result<NewsEntry> {
-        let key = self.inner.event_id().to_string();
+        let key = self.content.event_id().to_string();
         let client = self.client.clone();
         let room = self.room.clone();
 
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::NewsEntry(inner) = client.store().get(&key).await? else {
+                let AnyActerModel::NewsEntry(content) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a news")
                 };
                 Ok(NewsEntry {
                     client,
                     room,
-                    inner,
+                    content,
                 })
             })
             .await?
@@ -318,19 +317,19 @@ impl NewsEntry {
         Ok(NewsEntryUpdateBuilder {
             client: self.client.clone(),
             room: joined.clone(),
-            inner: self.inner.updater(),
+            content: self.content.updater(),
         })
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.inner.event_id().to_string();
+        let key = self.content.event_id().to_string();
         self.client.executor().subscribe(key)
     }
 
     pub async fn comments(&self) -> Result<crate::CommentsManager> {
         let client = self.client.clone();
         let room = self.room.clone();
-        let event_id = self.inner.event_id().to_owned();
+        let event_id = self.content.event_id().to_owned();
 
         RUNTIME
             .spawn(async move {
@@ -360,7 +359,7 @@ pub struct NewsEntryDraft {
 
 impl NewsEntryDraft {
     pub fn slides(&mut self, slides: &mut [NewsSlide]) -> &mut Self {
-        let items = slides.iter().map(|x| x.deref().clone()).collect();
+        let items = slides.iter().map(|x| (*x.to_owned()).clone()).collect();
         self.content.slides(items);
         self
     }
@@ -396,44 +395,44 @@ impl NewsEntryDraft {
 pub struct NewsEntryUpdateBuilder {
     client: Client,
     room: Joined,
-    inner: news::NewsEntryUpdateBuilder,
+    content: news::NewsEntryUpdateBuilder,
 }
 
 impl NewsEntryUpdateBuilder {
     pub fn slides(&mut self, slides: &mut [NewsSlide]) -> &mut Self {
-        let items = slides.iter().map(|x| x.deref().clone()).collect();
-        self.inner.slides(Some(items));
+        let items = slides.iter().map(|x| (*x.to_owned()).clone()).collect();
+        self.content.slides(Some(items));
         self
     }
 
     pub fn unset_slides(&mut self) -> &mut Self {
-        self.inner.slides(Some(vec![]));
+        self.content.slides(Some(vec![]));
         self
     }
 
     pub fn unset_slides_update(&mut self) -> &mut Self {
-        self.inner.slides(None);
+        self.content.slides(None);
         self
     }
 
     pub fn colors(&mut self, colors: Box<Colorize>) -> &mut Self {
-        self.inner.colors(Some(Some(Box::into_inner(colors))));
+        self.content.colors(Some(Some(Box::into_inner(colors))));
         self
     }
 
     pub fn unset_colors(&mut self) -> &mut Self {
-        self.inner.colors(Some(None));
+        self.content.colors(Some(None));
         self
     }
 
     pub fn unset_colors_update(&mut self) -> &mut Self {
-        self.inner.colors(None::<Option<Colorize>>);
+        self.content.colors(None::<Option<Colorize>>);
         self
     }
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.inner.build()?;
+        let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(content, None).await?;
