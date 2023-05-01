@@ -52,8 +52,8 @@ pub use calendar_events::CalendarEvent;
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
-    duration_from_secs, FileDesc, ImageDesc, MediaSource, ReactionDesc, TextDesc, ThumbnailInfo,
-    VideoDesc,
+    duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, ReactionDesc, TextDesc,
+    ThumbnailInfo, VideoDesc,
 };
 pub use conversation::{Conversation, CreateConversationSettingsBuilder};
 pub use core::time::Duration as EfkDuration;

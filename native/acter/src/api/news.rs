@@ -1,7 +1,8 @@
 use acter_core::{
     events::{
         news::{self, NewsContent, NewsEntryBuilder},
-        Icon, ImageMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+        AudioMessageEventContent, FileMessageEventContent, Icon, ImageMessageEventContent,
+        TextMessageEventContent, VideoMessageEventContent,
     },
     models::{self, ActerModel, AnyActerModel, Color},
     ruma::{OwnedEventId, OwnedRoomId},
@@ -19,7 +20,7 @@ use std::collections::{hash_map::Entry, HashMap};
 use super::{
     api::FfiBuffer,
     client::Client,
-    common::{ImageDesc, TextDesc, VideoDesc},
+    common::{AudioDesc, FileDesc, ImageDesc, TextDesc, VideoDesc},
     spaces::Space,
     RUNTIME,
 };
@@ -144,19 +145,12 @@ impl NewsSlide {
         self.inner.content().type_str()
     }
 
-    pub fn image_desc(&self) -> Option<ImageDesc> {
-        self.inner.content().image().and_then(|img| {
-            let Some(info) = img.info else {
-                return None
-            };
-            Some(ImageDesc::new(img.body.clone(), Some(img.source), *info))
-        })
-    }
-
     pub fn text(&self) -> String {
         match self.inner.content() {
-            NewsContent::Image(ImageMessageEventContent { body, .. })
-            | NewsContent::Video(VideoMessageEventContent { body, .. }) => body.clone(),
+            NewsContent::Audio(AudioMessageEventContent { body, .. }) => body.clone(),
+            NewsContent::File(FileMessageEventContent { body, .. }) => body.clone(),
+            NewsContent::Image(ImageMessageEventContent { body, .. }) => body.clone(),
+            NewsContent::Video(VideoMessageEventContent { body, .. }) => body.clone(),
             NewsContent::Text(TextMessageEventContent {
                 formatted, body, ..
             }) => {
@@ -169,6 +163,14 @@ impl NewsSlide {
         }
     }
 
+    pub fn image_desc(&self) -> Option<ImageDesc> {
+        self.inner.content().image().and_then(|content| {
+            content
+                .info
+                .map(|info| ImageDesc::new(content.body, content.source, *info))
+        })
+    }
+
     pub async fn image_binary(&self) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         let Some(content) = self.inner.content().image() else {
@@ -176,14 +178,91 @@ impl NewsSlide {
         };
         let client = self.client.clone();
         let request = MediaRequest {
-            source: content.source.clone(),
+            source: content.source,
             format: MediaFormat::File,
         };
         RUNTIME
             .spawn(async move {
-                Ok(FfiBuffer::new(
-                    client.media().get_media_content(&request, false).await?,
-                ))
+                let buf = client.media().get_media_content(&request, false).await?;
+                Ok(FfiBuffer::new(buf))
+            })
+            .await?
+    }
+
+    pub fn audio_desc(&self) -> Option<AudioDesc> {
+        self.inner.content().audio().and_then(|content| {
+            content
+                .info
+                .map(|info| AudioDesc::new(content.body, content.source, *info))
+        })
+    }
+
+    pub async fn audio_binary(&self) -> Result<FfiBuffer<u8>> {
+        // any variable in self can't be called directly in spawn
+        let Some(content) = self.inner.content().audio() else {
+            bail!("Not an audio");
+        };
+        let client = self.client.clone();
+        let request = MediaRequest {
+            source: content.source,
+            format: MediaFormat::File,
+        };
+        RUNTIME
+            .spawn(async move {
+                let buf = client.media().get_media_content(&request, false).await?;
+                Ok(FfiBuffer::new(buf))
+            })
+            .await?
+    }
+
+    pub fn video_desc(&self) -> Option<VideoDesc> {
+        self.inner.content().video().and_then(|content| {
+            content
+                .info
+                .map(|info| VideoDesc::new(content.body, content.source, *info))
+        })
+    }
+
+    pub async fn video_binary(&self) -> Result<FfiBuffer<u8>> {
+        // any variable in self can't be called directly in spawn
+        let Some(content) = self.inner.content().video() else {
+            bail!("Not a video");
+        };
+        let client = self.client.clone();
+        let request = MediaRequest {
+            source: content.source,
+            format: MediaFormat::File,
+        };
+        RUNTIME
+            .spawn(async move {
+                let buf = client.media().get_media_content(&request, false).await?;
+                Ok(FfiBuffer::new(buf))
+            })
+            .await?
+    }
+
+    pub fn file_desc(&self) -> Option<FileDesc> {
+        self.inner.content().file().and_then(|content| {
+            content
+                .info
+                .map(|info| FileDesc::new(content.body, content.source, *info))
+        })
+    }
+
+    pub async fn file_binary(&self) -> Result<FfiBuffer<u8>> {
+        // any variable in self can't be called directly in spawn
+        let Some(content) = self.inner.content().file() else {
+            bail!("Not a file");
+        };
+        let client = self.client.clone();
+        let request = MediaRequest {
+            source: content.source,
+            format: MediaFormat::File,
+        };
+        RUNTIME
+            .spawn(async move {
+                let buf = client.media().get_media_content(&request, false).await?;
+                Ok(FfiBuffer::new(buf))
             })
             .await?
     }

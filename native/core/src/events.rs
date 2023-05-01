@@ -1,6 +1,7 @@
 pub use matrix_sdk::ruma::{
     events::room::message::{
-        ImageMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+        TextMessageEventContent, VideoMessageEventContent,
     },
     EventId,
 };

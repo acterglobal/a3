@@ -1323,6 +1323,144 @@ class Api {
     return tmp7;
   }
 
+  FfiBufferUint8? __newsSlideAudioBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsSlideAudioBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiBufferUint8? __newsSlideVideoBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsSlideVideoBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiBufferUint8? __newsSlideFileBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsSlideFileBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   EventId? __pinDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -6711,6 +6849,66 @@ class Api {
       int Function(
     int,
   )>();
+  late final _newsSlideAudioDescPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsSlideAudioDescReturn Function(
+    ffi.Int64,
+  )>>("__NewsSlide_audio_desc");
+
+  late final _newsSlideAudioDesc = _newsSlideAudioDescPtr.asFunction<
+      _NewsSlideAudioDescReturn Function(
+    int,
+  )>();
+  late final _newsSlideAudioBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__NewsSlide_audio_binary");
+
+  late final _newsSlideAudioBinary = _newsSlideAudioBinaryPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _newsSlideVideoDescPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsSlideVideoDescReturn Function(
+    ffi.Int64,
+  )>>("__NewsSlide_video_desc");
+
+  late final _newsSlideVideoDesc = _newsSlideVideoDescPtr.asFunction<
+      _NewsSlideVideoDescReturn Function(
+    int,
+  )>();
+  late final _newsSlideVideoBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__NewsSlide_video_binary");
+
+  late final _newsSlideVideoBinary = _newsSlideVideoBinaryPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _newsSlideFileDescPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsSlideFileDescReturn Function(
+    ffi.Int64,
+  )>>("__NewsSlide_file_desc");
+
+  late final _newsSlideFileDesc = _newsSlideFileDescPtr.asFunction<
+      _NewsSlideFileDescReturn Function(
+    int,
+  )>();
+  late final _newsSlideFileBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__NewsSlide_file_binary");
+
+  late final _newsSlideFileBinary = _newsSlideFileBinaryPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _newsEntrySlidesCountPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -7460,12 +7658,12 @@ class Api {
   )>();
   late final _imageDescSourcePtr = _lookup<
       ffi.NativeFunction<
-          _ImageDescSourceReturn Function(
+          ffi.Int64 Function(
     ffi.Int64,
   )>>("__ImageDesc_source");
 
   late final _imageDescSource = _imageDescSourcePtr.asFunction<
-      _ImageDescSourceReturn Function(
+      int Function(
     int,
   )>();
   late final _imageDescMimetypePtr = _lookup<
@@ -7527,6 +7725,56 @@ class Api {
   late final _imageDescThumbnailSource =
       _imageDescThumbnailSourcePtr.asFunction<
           _ImageDescThumbnailSourceReturn Function(
+    int,
+  )>();
+  late final _audioDescNamePtr = _lookup<
+      ffi.NativeFunction<
+          _AudioDescNameReturn Function(
+    ffi.Int64,
+  )>>("__AudioDesc_name");
+
+  late final _audioDescName = _audioDescNamePtr.asFunction<
+      _AudioDescNameReturn Function(
+    int,
+  )>();
+  late final _audioDescSourcePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__AudioDesc_source");
+
+  late final _audioDescSource = _audioDescSourcePtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _audioDescMimetypePtr = _lookup<
+      ffi.NativeFunction<
+          _AudioDescMimetypeReturn Function(
+    ffi.Int64,
+  )>>("__AudioDesc_mimetype");
+
+  late final _audioDescMimetype = _audioDescMimetypePtr.asFunction<
+      _AudioDescMimetypeReturn Function(
+    int,
+  )>();
+  late final _audioDescSizePtr = _lookup<
+      ffi.NativeFunction<
+          _AudioDescSizeReturn Function(
+    ffi.Int64,
+  )>>("__AudioDesc_size");
+
+  late final _audioDescSize = _audioDescSizePtr.asFunction<
+      _AudioDescSizeReturn Function(
+    int,
+  )>();
+  late final _audioDescDurationPtr = _lookup<
+      ffi.NativeFunction<
+          _AudioDescDurationReturn Function(
+    ffi.Int64,
+  )>>("__AudioDesc_duration");
+
+  late final _audioDescDuration = _audioDescDurationPtr.asFunction<
+      _AudioDescDurationReturn Function(
     int,
   )>();
   late final _videoDescNamePtr = _lookup<
@@ -11557,6 +11805,51 @@ class Api {
     int,
     int,
   )>();
+  late final _newsSlideAudioBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsSlideAudioBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__NewsSlide_audio_binary_future_poll");
+
+  late final _newsSlideAudioBinaryFuturePoll =
+      _newsSlideAudioBinaryFuturePollPtr.asFunction<
+          _NewsSlideAudioBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _newsSlideVideoBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsSlideVideoBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__NewsSlide_video_binary_future_poll");
+
+  late final _newsSlideVideoBinaryFuturePoll =
+      _newsSlideVideoBinaryFuturePollPtr.asFunction<
+          _NewsSlideVideoBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _newsSlideFileBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsSlideFileBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__NewsSlide_file_binary_future_poll");
+
+  late final _newsSlideFileBinaryFuturePoll =
+      _newsSlideFileBinaryFuturePollPtr.asFunction<
+          _NewsSlideFileBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _pinDraftSendFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _PinDraftSendFuturePollReturn Function(
@@ -14746,6 +15039,108 @@ class NewsSlide {
     return tmp2;
   }
 
+  /// if this is an audio, hand over the description
+  AudioDesc? audioDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSlideAudioDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_AudioDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = AudioDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is an audio, hand over the data
+  Future<FfiBufferUint8> audioBinary() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSlideAudioBinary(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsSlide_audio_binary_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsSlideAudioBinaryFuturePoll);
+    return tmp2;
+  }
+
+  /// if this is a video, hand over the description
+  VideoDesc? videoDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSlideVideoDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_VideoDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = VideoDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is a video, hand over the data
+  Future<FfiBufferUint8> videoBinary() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSlideVideoBinary(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsSlide_video_binary_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsSlideVideoBinaryFuturePoll);
+    return tmp2;
+  }
+
+  /// if this is a file, hand over the description
+  FileDesc? fileDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSlideFileDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FileDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = FileDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is a file, hand over the data
+  Future<FfiBufferUint8> fileBinary() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSlideFileBinary(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsSlide_file_binary_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsSlideFileBinaryFuturePoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -16269,21 +16664,17 @@ class ImageDesc {
   }
 
   /// image source
-  MediaSource? source() {
+  MediaSource source() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._imageDescSource(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MediaSource");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = MediaSource._(_api, tmp4_1);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MediaSource");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = MediaSource._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -16394,6 +16785,109 @@ class ImageDesc {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MediaSource");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = MediaSource._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class AudioDesc {
+  final Api _api;
+  final _Box _box;
+
+  AudioDesc._(this._api, this._box);
+
+  /// file name
+  String name() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._audioDescName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// audio source
+  MediaSource source() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._audioDescSource(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MediaSource");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = MediaSource._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// MIME
+  String? mimetype() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._audioDescMimetype(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// file size in bytes
+  int? size() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._audioDescSize(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// duration in seconds
+  int? duration() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._audioDescDuration(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -23764,6 +24258,27 @@ class _NewsSlideImageDescReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _NewsSlideAudioDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _NewsSlideVideoDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _NewsSlideFileDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _NewsEntryGetSlideReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -24132,13 +24647,6 @@ class _ImageDescNameReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ImageDescSourceReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
 class _ImageDescMimetypeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -24182,6 +24690,40 @@ class _ImageDescThumbnailSourceReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
+  external int arg1;
+}
+
+class _AudioDescNameReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _AudioDescMimetypeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _AudioDescSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _AudioDescDurationReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -25112,6 +25654,51 @@ class _RegisterWithTokenFuturePollReturn extends ffi.Struct {
 }
 
 class _NewsSlideImageBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _NewsSlideAudioBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _NewsSlideVideoBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _NewsSlideFileBinaryFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

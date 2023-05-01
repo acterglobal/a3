@@ -5,11 +5,11 @@ use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
 use super::{
-    Colorize, ImageMessageEventContent, ObjRef, TextMessageEventContent, Update,
-    VideoMessageEventContent,
+    AudioMessageEventContent, Colorize, FileMessageEventContent, ImageMessageEventContent, ObjRef,
+    TextMessageEventContent, Update, VideoMessageEventContent,
 };
 
-/// The content that is specific to
+// if you change the order of these enum variables, enum value will change and parsing of old content will fail
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum NewsContent {
@@ -19,36 +19,61 @@ pub enum NewsContent {
     Text(TextMessageEventContent),
     /// A video message.
     Video(VideoMessageEventContent),
+    /// A audio message.
+    Audio(AudioMessageEventContent),
+    /// A file message.
+    File(FileMessageEventContent),
 }
 
 impl NewsContent {
     pub fn type_str(&self) -> String {
         match self {
+            NewsContent::Audio(_) => "audio".to_owned(),
+            NewsContent::File(_) => "file".to_owned(),
             NewsContent::Image(_) => "image".to_owned(),
             NewsContent::Text(_) => "text".to_owned(),
             NewsContent::Video(_) => "video".to_owned(),
         }
     }
 
+    pub fn audio(&self) -> Option<AudioMessageEventContent> {
+        if let NewsContent::Audio(i) = self {
+            Some(i.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn file(&self) -> Option<FileMessageEventContent> {
+        if let NewsContent::File(i) = self {
+            Some(i.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn image(&self) -> Option<ImageMessageEventContent> {
-        let NewsContent::Image(i) = self else {
-            return None;
-        };
-        Some(i.clone())
+        if let NewsContent::Image(i) = self {
+            Some(i.clone())
+        } else {
+            None
+        }
     }
 
     pub fn text(&self) -> Option<TextMessageEventContent> {
-        let NewsContent::Text(i) = self else {
-            return None;
-        };
-        Some(i.clone())
+        if let NewsContent::Text(i) = self {
+            Some(i.clone())
+        } else {
+            None
+        }
     }
 
     pub fn video(&self) -> Option<VideoMessageEventContent> {
-        let NewsContent::Video(i) = self else {
-            return None;
-        };
-        Some(i.clone())
+        if let NewsContent::Video(i) = self {
+            Some(i.clone())
+        } else {
+            None
+        }
     }
 }
 

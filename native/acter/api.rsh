@@ -76,10 +76,26 @@ object NewsSlide {
     fn text() -> string;
     /// the references linked in this slide,
     fn references() -> Vec<ObjRef>;
+
     /// if this is an image, hand over the description
     fn image_desc() -> Option<ImageDesc>;
     /// if this is an image, hand over the data
     fn image_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is an audio, hand over the description
+    fn audio_desc() -> Option<AudioDesc>;
+    /// if this is an audio, hand over the data
+    fn audio_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is a video, hand over the description
+    fn video_desc() -> Option<VideoDesc>;
+    /// if this is a video, hand over the data
+    fn video_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is a file, hand over the description
+    fn file_desc() -> Option<FileDesc>;
+    /// if this is a file, hand over the data
+    fn file_binary() -> Future<Result<buffer<u8>>>;
 }
 
 /// A news entry
@@ -324,7 +340,7 @@ object ImageDesc {
     fn name() -> string;
 
     /// image source
-    fn source() -> Option<MediaSource>;
+    fn source() -> MediaSource;
 
     /// MIME
     fn mimetype() -> Option<string>;
@@ -343,6 +359,23 @@ object ImageDesc {
 
     /// thumbnail source
     fn thumbnail_source() -> Option<MediaSource>;
+}
+
+object AudioDesc {
+    /// file name
+    fn name() -> string;
+
+    /// audio source
+    fn source() -> MediaSource;
+
+    /// MIME
+    fn mimetype() -> Option<string>;
+
+    /// file size in bytes
+    fn size() -> Option<u64>;
+
+    /// duration in seconds
+    fn duration() -> Option<u64>;
 }
 
 object VideoDesc {
