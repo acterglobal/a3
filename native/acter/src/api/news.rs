@@ -19,7 +19,7 @@ use std::collections::{hash_map::Entry, HashMap};
 use super::{
     api::FfiBuffer,
     client::Client,
-    message::{ImageDesc, TextDesc, VideoDesc},
+    common::{ImageDesc, TextDesc, VideoDesc},
     spaces::Space,
     RUNTIME,
 };
@@ -149,7 +149,7 @@ impl NewsSlide {
             let Some(info) = img.info else {
                 return None
             };
-            Some(ImageDesc::new(img.body.clone(), *info))
+            Some(ImageDesc::new(img.body.clone(), Some(img.source), *info))
         })
     }
 

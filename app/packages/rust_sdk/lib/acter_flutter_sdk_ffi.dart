@@ -7138,6 +7138,56 @@ class Api {
           int Function(
     int,
   )>();
+  late final _mediaSourceUrlPtr = _lookup<
+      ffi.NativeFunction<
+          _MediaSourceUrlReturn Function(
+    ffi.Int64,
+  )>>("__MediaSource_url");
+
+  late final _mediaSourceUrl = _mediaSourceUrlPtr.asFunction<
+      _MediaSourceUrlReturn Function(
+    int,
+  )>();
+  late final _thumbnailInfoMimetypePtr = _lookup<
+      ffi.NativeFunction<
+          _ThumbnailInfoMimetypeReturn Function(
+    ffi.Int64,
+  )>>("__ThumbnailInfo_mimetype");
+
+  late final _thumbnailInfoMimetype = _thumbnailInfoMimetypePtr.asFunction<
+      _ThumbnailInfoMimetypeReturn Function(
+    int,
+  )>();
+  late final _thumbnailInfoSizePtr = _lookup<
+      ffi.NativeFunction<
+          _ThumbnailInfoSizeReturn Function(
+    ffi.Int64,
+  )>>("__ThumbnailInfo_size");
+
+  late final _thumbnailInfoSize = _thumbnailInfoSizePtr.asFunction<
+      _ThumbnailInfoSizeReturn Function(
+    int,
+  )>();
+  late final _thumbnailInfoWidthPtr = _lookup<
+      ffi.NativeFunction<
+          _ThumbnailInfoWidthReturn Function(
+    ffi.Int64,
+  )>>("__ThumbnailInfo_width");
+
+  late final _thumbnailInfoWidth = _thumbnailInfoWidthPtr.asFunction<
+      _ThumbnailInfoWidthReturn Function(
+    int,
+  )>();
+  late final _thumbnailInfoHeightPtr = _lookup<
+      ffi.NativeFunction<
+          _ThumbnailInfoHeightReturn Function(
+    ffi.Int64,
+  )>>("__ThumbnailInfo_height");
+
+  late final _thumbnailInfoHeight = _thumbnailInfoHeightPtr.asFunction<
+      _ThumbnailInfoHeightReturn Function(
+    int,
+  )>();
   late final _deviceIdToStringPtr = _lookup<
       ffi.NativeFunction<
           _DeviceIdToStringReturn Function(
@@ -7408,6 +7458,16 @@ class Api {
       _ImageDescNameReturn Function(
     int,
   )>();
+  late final _imageDescSourcePtr = _lookup<
+      ffi.NativeFunction<
+          _ImageDescSourceReturn Function(
+    ffi.Int64,
+  )>>("__ImageDesc_source");
+
+  late final _imageDescSource = _imageDescSourcePtr.asFunction<
+      _ImageDescSourceReturn Function(
+    int,
+  )>();
   late final _imageDescMimetypePtr = _lookup<
       ffi.NativeFunction<
           _ImageDescMimetypeReturn Function(
@@ -7448,46 +7508,14 @@ class Api {
       _ImageDescHeightReturn Function(
     int,
   )>();
-  late final _imageDescThumbnailMimetypePtr = _lookup<
+  late final _imageDescThumbnailInfoPtr = _lookup<
       ffi.NativeFunction<
-          _ImageDescThumbnailMimetypeReturn Function(
+          _ImageDescThumbnailInfoReturn Function(
     ffi.Int64,
-  )>>("__ImageDesc_thumbnail_mimetype");
+  )>>("__ImageDesc_thumbnail_info");
 
-  late final _imageDescThumbnailMimetype =
-      _imageDescThumbnailMimetypePtr.asFunction<
-          _ImageDescThumbnailMimetypeReturn Function(
-    int,
-  )>();
-  late final _imageDescThumbnailSizePtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescThumbnailSizeReturn Function(
-    ffi.Int64,
-  )>>("__ImageDesc_thumbnail_size");
-
-  late final _imageDescThumbnailSize = _imageDescThumbnailSizePtr.asFunction<
-      _ImageDescThumbnailSizeReturn Function(
-    int,
-  )>();
-  late final _imageDescThumbnailWidthPtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescThumbnailWidthReturn Function(
-    ffi.Int64,
-  )>>("__ImageDesc_thumbnail_width");
-
-  late final _imageDescThumbnailWidth = _imageDescThumbnailWidthPtr.asFunction<
-      _ImageDescThumbnailWidthReturn Function(
-    int,
-  )>();
-  late final _imageDescThumbnailHeightPtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescThumbnailHeightReturn Function(
-    ffi.Int64,
-  )>>("__ImageDesc_thumbnail_height");
-
-  late final _imageDescThumbnailHeight =
-      _imageDescThumbnailHeightPtr.asFunction<
-          _ImageDescThumbnailHeightReturn Function(
+  late final _imageDescThumbnailInfo = _imageDescThumbnailInfoPtr.asFunction<
+      _ImageDescThumbnailInfoReturn Function(
     int,
   )>();
   late final _imageDescThumbnailSourcePtr = _lookup<
@@ -7509,6 +7537,16 @@ class Api {
 
   late final _videoDescName = _videoDescNamePtr.asFunction<
       _VideoDescNameReturn Function(
+    int,
+  )>();
+  late final _videoDescSourcePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__VideoDesc_source");
+
+  late final _videoDescSource = _videoDescSourcePtr.asFunction<
+      int Function(
     int,
   )>();
   late final _videoDescMimetypePtr = _lookup<
@@ -7571,46 +7609,14 @@ class Api {
       _VideoDescDurationReturn Function(
     int,
   )>();
-  late final _videoDescThumbnailMimetypePtr = _lookup<
+  late final _videoDescThumbnailInfoPtr = _lookup<
       ffi.NativeFunction<
-          _VideoDescThumbnailMimetypeReturn Function(
+          _VideoDescThumbnailInfoReturn Function(
     ffi.Int64,
-  )>>("__VideoDesc_thumbnail_mimetype");
+  )>>("__VideoDesc_thumbnail_info");
 
-  late final _videoDescThumbnailMimetype =
-      _videoDescThumbnailMimetypePtr.asFunction<
-          _VideoDescThumbnailMimetypeReturn Function(
-    int,
-  )>();
-  late final _videoDescThumbnailSizePtr = _lookup<
-      ffi.NativeFunction<
-          _VideoDescThumbnailSizeReturn Function(
-    ffi.Int64,
-  )>>("__VideoDesc_thumbnail_size");
-
-  late final _videoDescThumbnailSize = _videoDescThumbnailSizePtr.asFunction<
-      _VideoDescThumbnailSizeReturn Function(
-    int,
-  )>();
-  late final _videoDescThumbnailWidthPtr = _lookup<
-      ffi.NativeFunction<
-          _VideoDescThumbnailWidthReturn Function(
-    ffi.Int64,
-  )>>("__VideoDesc_thumbnail_width");
-
-  late final _videoDescThumbnailWidth = _videoDescThumbnailWidthPtr.asFunction<
-      _VideoDescThumbnailWidthReturn Function(
-    int,
-  )>();
-  late final _videoDescThumbnailHeightPtr = _lookup<
-      ffi.NativeFunction<
-          _VideoDescThumbnailHeightReturn Function(
-    ffi.Int64,
-  )>>("__VideoDesc_thumbnail_height");
-
-  late final _videoDescThumbnailHeight =
-      _videoDescThumbnailHeightPtr.asFunction<
-          _VideoDescThumbnailHeightReturn Function(
+  late final _videoDescThumbnailInfo = _videoDescThumbnailInfoPtr.asFunction<
+      _VideoDescThumbnailInfoReturn Function(
     int,
   )>();
   late final _videoDescThumbnailSourcePtr = _lookup<
@@ -7634,6 +7640,16 @@ class Api {
       _FileDescNameReturn Function(
     int,
   )>();
+  late final _fileDescSourcePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__FileDesc_source");
+
+  late final _fileDescSource = _fileDescSourcePtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _fileDescMimetypePtr = _lookup<
       ffi.NativeFunction<
           _FileDescMimetypeReturn Function(
@@ -7654,45 +7670,14 @@ class Api {
       _FileDescSizeReturn Function(
     int,
   )>();
-  late final _fileDescThumbnailMimetypePtr = _lookup<
+  late final _fileDescThumbnailInfoPtr = _lookup<
       ffi.NativeFunction<
-          _FileDescThumbnailMimetypeReturn Function(
+          _FileDescThumbnailInfoReturn Function(
     ffi.Int64,
-  )>>("__FileDesc_thumbnail_mimetype");
+  )>>("__FileDesc_thumbnail_info");
 
-  late final _fileDescThumbnailMimetype =
-      _fileDescThumbnailMimetypePtr.asFunction<
-          _FileDescThumbnailMimetypeReturn Function(
-    int,
-  )>();
-  late final _fileDescThumbnailSizePtr = _lookup<
-      ffi.NativeFunction<
-          _FileDescThumbnailSizeReturn Function(
-    ffi.Int64,
-  )>>("__FileDesc_thumbnail_size");
-
-  late final _fileDescThumbnailSize = _fileDescThumbnailSizePtr.asFunction<
-      _FileDescThumbnailSizeReturn Function(
-    int,
-  )>();
-  late final _fileDescThumbnailWidthPtr = _lookup<
-      ffi.NativeFunction<
-          _FileDescThumbnailWidthReturn Function(
-    ffi.Int64,
-  )>>("__FileDesc_thumbnail_width");
-
-  late final _fileDescThumbnailWidth = _fileDescThumbnailWidthPtr.asFunction<
-      _FileDescThumbnailWidthReturn Function(
-    int,
-  )>();
-  late final _fileDescThumbnailHeightPtr = _lookup<
-      ffi.NativeFunction<
-          _FileDescThumbnailHeightReturn Function(
-    ffi.Int64,
-  )>>("__FileDesc_thumbnail_height");
-
-  late final _fileDescThumbnailHeight = _fileDescThumbnailHeightPtr.asFunction<
-      _FileDescThumbnailHeightReturn Function(
+  late final _fileDescThumbnailInfo = _fileDescThumbnailInfoPtr.asFunction<
+      _FileDescThumbnailInfoReturn Function(
     int,
   )>();
   late final _fileDescThumbnailSourcePtr = _lookup<
@@ -15549,6 +15534,109 @@ class MediaSource {
 
   MediaSource._(this._api, this._box);
 
+  String url() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._mediaSourceUrl(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class ThumbnailInfo {
+  final Api _api;
+  final _Box _box;
+
+  ThumbnailInfo._(this._api, this._box);
+
+  /// thumbnail mimetype
+  String? mimetype() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._thumbnailInfoMimetype(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// thumbnail size
+  int? size() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._thumbnailInfoSize(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// thumbnail width
+  int? width() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._thumbnailInfoWidth(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// thumbnail height
+  int? height() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._thumbnailInfoHeight(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -16180,6 +16268,25 @@ class ImageDesc {
     return tmp2;
   }
 
+  /// image source
+  MediaSource? source() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._imageDescSource(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MediaSource");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MediaSource._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// MIME
   String? mimetype() {
     var tmp0 = 0;
@@ -16252,35 +16359,11 @@ class ImageDesc {
     return tmp2;
   }
 
-  /// thumbnail mimetype
-  String? thumbnailMimetype() {
+  /// thumbnail info
+  ThumbnailInfo? thumbnailInfo() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescThumbnailMimetype(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// thumbnail file size
-  int? thumbnailSize() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescThumbnailSize(
+    final tmp1 = _api._imageDescThumbnailInfo(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -16288,39 +16371,10 @@ class ImageDesc {
     if (tmp3 == 0) {
       return null;
     }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// thumbnail image width
-  int? thumbnailWidth() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescThumbnailWidth(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// thumbnail image height
-  int? thumbnailHeight() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescThumbnailHeight(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ThumbnailInfo");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = ThumbnailInfo._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -16372,6 +16426,21 @@ class VideoDesc {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// video source
+  MediaSource source() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._videoDescSource(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MediaSource");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = MediaSource._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -16487,35 +16556,11 @@ class VideoDesc {
     return tmp2;
   }
 
-  /// thumbnail mimetype
-  String? thumbnailMimetype() {
+  /// thumbnail info
+  ThumbnailInfo? thumbnailInfo() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescThumbnailMimetype(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// thumbnail file size
-  int? thumbnailSize() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescThumbnailSize(
+    final tmp1 = _api._videoDescThumbnailInfo(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -16523,39 +16568,10 @@ class VideoDesc {
     if (tmp3 == 0) {
       return null;
     }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// thumbnail image width
-  int? thumbnailWidth() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescThumbnailWidth(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// thumbnail image height
-  int? thumbnailHeight() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescThumbnailHeight(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ThumbnailInfo");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = ThumbnailInfo._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -16610,6 +16626,21 @@ class FileDesc {
     return tmp2;
   }
 
+  /// file source
+  MediaSource source() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._fileDescSource(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MediaSource");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = MediaSource._(_api, tmp3_1);
+    return tmp2;
+  }
+
   /// MIME
   String? mimetype() {
     var tmp0 = 0;
@@ -16650,35 +16681,11 @@ class FileDesc {
     return tmp2;
   }
 
-  /// thumbnail mimetype
-  String? thumbnailMimetype() {
+  /// thumbnail info
+  ThumbnailInfo? thumbnailInfo() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescThumbnailMimetype(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// thumbnail file size
-  int? thumbnailSize() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescThumbnailSize(
+    final tmp1 = _api._fileDescThumbnailInfo(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -16686,39 +16693,10 @@ class FileDesc {
     if (tmp3 == 0) {
       return null;
     }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// thumbnail image width
-  int? thumbnailWidth() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescThumbnailWidth(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// thumbnail image height
-  int? thumbnailHeight() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescThumbnailHeight(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ThumbnailInfo");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = ThumbnailInfo._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -23912,6 +23890,47 @@ class _CalendarEventDescriptionReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _MediaSourceUrlReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _ThumbnailInfoMimetypeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _ThumbnailInfoSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _ThumbnailInfoWidthReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _ThumbnailInfoHeightReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
 class _DeviceIdToStringReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -24113,6 +24132,13 @@ class _ImageDescNameReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _ImageDescSourceReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _ImageDescMimetypeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -24145,35 +24171,10 @@ class _ImageDescHeightReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ImageDescThumbnailMimetypeReturn extends ffi.Struct {
+class _ImageDescThumbnailInfoReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _ImageDescThumbnailSizeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _ImageDescThumbnailWidthReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _ImageDescThumbnailHeightReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
   external int arg1;
 }
 
@@ -24243,35 +24244,10 @@ class _VideoDescDurationReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _VideoDescThumbnailMimetypeReturn extends ffi.Struct {
+class _VideoDescThumbnailInfoReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _VideoDescThumbnailSizeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _VideoDescThumbnailWidthReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _VideoDescThumbnailHeightReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
   external int arg1;
 }
 
@@ -24309,35 +24285,10 @@ class _FileDescSizeReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _FileDescThumbnailMimetypeReturn extends ffi.Struct {
+class _FileDescThumbnailInfoReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _FileDescThumbnailSizeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _FileDescThumbnailWidthReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _FileDescThumbnailHeightReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
   external int arg1;
 }
 
