@@ -21,7 +21,7 @@ use std::collections::{hash_map::Entry, HashMap};
 use super::{
     api::FfiBuffer,
     client::Client,
-    message::{AudioDesc, FileDesc, ImageDesc, TextDesc, VideoDesc},
+    common::{AudioDesc, FileDesc, ImageDesc, VideoDesc},
     spaces::Space,
     RUNTIME,
 };
@@ -165,10 +165,11 @@ impl NewsSlide {
     }
 
     pub fn image_desc(&self) -> Option<ImageDesc> {
-        self.inner
-            .content()
-            .image()
-            .and_then(|content| content.info.map(|info| ImageDesc::new(content.body, *info)))
+        self.inner.content().image().and_then(|content| {
+            content
+                .info
+                .map(|info| ImageDesc::new(content.body.clone(), Some(content.source), *info))
+        })
     }
 
     pub async fn image_binary(&self) -> Result<FfiBuffer<u8>> {
@@ -189,10 +190,9 @@ impl NewsSlide {
 
     pub fn audio_desc(&self) -> Option<AudioDesc> {
         self.inner.content().audio().and_then(|content| {
-            let Some(info) = content.info else {
-                return None
-            };
-            Some(AudioDesc::new(content.body.clone(), *info))
+            content
+                .info
+                .map(|info| AudioDesc::new(content.body.clone(), content.source.clone(), *info))
         })
     }
 
@@ -214,10 +214,9 @@ impl NewsSlide {
 
     pub fn video_desc(&self) -> Option<VideoDesc> {
         self.inner.content().video().and_then(|content| {
-            let Some(info) = content.info else {
-                return None
-            };
-            Some(VideoDesc::new(content.body.clone(), *info))
+            content
+                .info
+                .map(|info| VideoDesc::new(content.body.clone(), content.source.clone(), *info))
         })
     }
 
@@ -239,10 +238,9 @@ impl NewsSlide {
 
     pub fn file_desc(&self) -> Option<FileDesc> {
         self.inner.content().file().and_then(|content| {
-            let Some(info) = content.info else {
-                return None
-            };
-            Some(FileDesc::new(content.body.clone(), *info))
+            content
+                .info
+                .map(|info| FileDesc::new(content.body.clone(), content.source.clone(), *info))
         })
     }
 
