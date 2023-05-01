@@ -146,15 +146,6 @@ impl NewsSlide {
         self.inner.content().type_str()
     }
 
-    pub fn image_desc(&self) -> Option<ImageDesc> {
-        self.inner.content().image().and_then(|img| {
-            let Some(info) = img.info else {
-                return None
-            };
-            Some(ImageDesc::new(img.body.clone(), Some(img.source), *info))
-        })
-    }
-
     pub fn text(&self) -> String {
         match self.inner.content() {
             NewsContent::Image(ImageMessageEventContent { body, .. }) => body.clone(),
@@ -171,6 +162,14 @@ impl NewsSlide {
                 }
             }
         }
+    }
+
+    pub fn image_desc(&self) -> Option<ImageDesc> {
+        self.inner.content().image().and_then(|content| {
+            content
+                .info
+                .map(|info| ImageDesc::new(content.body.clone(), Some(content.source), *info))
+        })
     }
 
     pub async fn image_binary(&self) -> Result<FfiBuffer<u8>> {
@@ -191,14 +190,9 @@ impl NewsSlide {
 
     pub fn audio_desc(&self) -> Option<AudioDesc> {
         self.inner.content().audio().and_then(|content| {
-            let Some(info) = content.info else {
-                return None
-            };
-            Some(AudioDesc::new(
-                content.body.clone(),
-                content.source.clone(),
-                *info,
-            ))
+            content
+                .info
+                .map(|info| AudioDesc::new(content.body.clone(), content.source.clone(), *info))
         })
     }
 
@@ -220,14 +214,9 @@ impl NewsSlide {
 
     pub fn video_desc(&self) -> Option<VideoDesc> {
         self.inner.content().video().and_then(|content| {
-            let Some(info) = content.info else {
-                return None
-            };
-            Some(VideoDesc::new(
-                content.body.clone(),
-                content.source.clone(),
-                *info,
-            ))
+            content
+                .info
+                .map(|info| VideoDesc::new(content.body.clone(), content.source.clone(), *info))
         })
     }
 
@@ -249,14 +238,9 @@ impl NewsSlide {
 
     pub fn file_desc(&self) -> Option<FileDesc> {
         self.inner.content().file().and_then(|content| {
-            let Some(info) = content.info else {
-                return None
-            };
-            Some(FileDesc::new(
-                content.body.clone(),
-                content.source.clone(),
-                *info,
-            ))
+            content
+                .info
+                .map(|info| FileDesc::new(content.body.clone(), content.source.clone(), *info))
         })
     }
 
