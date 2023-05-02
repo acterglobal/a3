@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
@@ -14,6 +15,8 @@ class NewsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(clientProvider)!;
+    final bool isDesktop =
+        desktopPlatforms.contains(Theme.of(context).platform);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -54,12 +57,15 @@ class NewsPage extends ConsumerWidget {
             : const SizedBox.shrink(),
         centerTitle: true,
         actions: <Widget>[
-          IconButton(
-            onPressed: () => context.go('/updates/post'),
-            icon: Icon(
-              Atlas.plus_circle_thin,
-              color: Theme.of(context).colorScheme.neutral5,
-              size: 36,
+          Visibility(
+            visible: !isDesktop,
+            child: IconButton(
+              onPressed: () => context.go('/updates/post'),
+              icon: Icon(
+                Atlas.plus_circle_thin,
+                color: Theme.of(context).colorScheme.neutral5,
+                size: 36,
+              ),
             ),
           ),
         ],
