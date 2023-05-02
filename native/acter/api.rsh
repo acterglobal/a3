@@ -367,7 +367,7 @@ object ImageDesc {
     fn name() -> string;
 
     /// image source
-    fn source() -> Option<MediaSource>;
+    fn source() -> MediaSource;
 
     /// MIME
     fn mimetype() -> Option<string>;
@@ -391,6 +391,9 @@ object ImageDesc {
 object AudioDesc {
     /// file name
     fn name() -> string;
+
+    /// audio source
+    fn source() -> MediaSource;
 
     /// MIME
     fn mimetype() -> Option<string>;
