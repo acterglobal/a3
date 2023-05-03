@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:colorize_text_avatar/colorize_text_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:multiavatar/multiavatar.dart';
 import 'package:flutter/material.dart';
 
 class CustomAvatar extends StatefulWidget {
@@ -92,40 +93,15 @@ class _CustomAvatarState extends State<CustomAvatar> {
             child: const Icon(Atlas.team_group_thin),
           );
         } else {
+          String avatar = multiavatar(widget.stringName);
+          final svg = SvgPicture.string(avatar);
           return SizedBox(
             height: widget.radius * 2,
             width: widget.radius * 2,
-            child: _BuildTextAvatar(
-              widget.displayName,
-              stringName: widget.stringName,
-            ),
+            child: svg,
           );
         }
       },
-    );
-  }
-}
-
-class _BuildTextAvatar extends StatelessWidget {
-  const _BuildTextAvatar(this.displayName, {required this.stringName});
-  final String? displayName;
-  final String stringName;
-  @override
-  Widget build(BuildContext context) {
-    if (displayName != null) {
-      return TextAvatar(
-        numberLetters: 1,
-        shape: Shape.Circular,
-        upperCase: true,
-        text: displayName,
-      );
-    }
-    return TextAvatar(
-      fontSize: 12,
-      numberLetters: 1,
-      shape: Shape.Circular,
-      upperCase: true,
-      text: stringName,
     );
   }
 }

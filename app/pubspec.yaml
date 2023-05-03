@@ -33,6 +33,7 @@ dependencies:
   # UI
   flutter_adaptive_scaffold: ^0.1.0
   atlas_icons: ^0.0.12
+  multiavatar: ^0.1.5
   flutter_chat_ui:
     git:
       url: https://github.com/acterglobal/flyer-flutter_chat_ui.git
@@ -42,7 +43,6 @@ dependencies:
   google_fonts: ^2.3.1
   flutter_link_previewer: ^3.0.1
   bubble: ^1.2.1
-  colorize_text_avatar: ^1.0.2
   html_editor_enhanced: ^2.5.1
   implicitly_animated_reorderable_list_2: ^0.5.0
   overlay_support: ^2.1.0
