@@ -60,7 +60,7 @@ class NewsPage extends ConsumerWidget {
           Visibility(
             visible: !isDesktop,
             child: IconButton(
-              onPressed: () => context.go('/updates/post'),
+              onPressed: () => context.go('/updates/post_edit'),
               icon: Icon(
                 Atlas.plus_circle_thin,
                 color: Theme.of(context).colorScheme.neutral5,
