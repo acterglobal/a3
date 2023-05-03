@@ -200,14 +200,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.17.0"
-  colorize_text_avatar:
-    dependency: "direct main"
-    description:
-      name: colorize_text_avatar
-      sha256: "4948938a86eef2389ded457650d943b237aa643165dc88546a164ae9b09f726d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.2"
   connectivity_plus:
     dependency: "direct main"
     description:
@@ -918,6 +910,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.4.0"
+  multiavatar:
+    dependency: "direct main"
+    description:
+      name: multiavatar
+      sha256: "8fc089ea8421aef04361663af4319b487e2ffa47035cc617bd94cd10e36d5db6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   nested:
     dependency: transitive
     description:
