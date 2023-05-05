@@ -44,10 +44,13 @@ use super::{
 pub struct ClientState {
     #[builder(default)]
     pub is_guest: bool,
+
     #[builder(default)]
     pub has_first_synced: bool,
+
     #[builder(default)]
     pub is_syncing: bool,
+
     #[builder(default)]
     pub should_stop_syncing: bool,
 }

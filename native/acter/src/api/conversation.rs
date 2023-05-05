@@ -375,10 +375,13 @@ impl ConversationController {
 pub struct CreateConversationSettings {
     #[builder(setter(into, strip_option), default)]
     name: Option<String>,
+
     // #[builder(default = "Visibility::Private")]
     // visibility: Visibility,
+
     #[builder(default = "Vec::new()")]
     invites: Vec<OwnedUserId>,
+
     #[builder(setter(into, strip_option), default)]
     alias: Option<String>,
 }
