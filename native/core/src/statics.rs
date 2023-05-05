@@ -37,18 +37,17 @@ pub fn default_acter_space_states() -> Vec<Raw<AnyInitialStateEvent>> {
         .into_iter()
         .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))
         .collect::<Vec<Raw<AnyInitialStateEvent>>>();
+    let r = to_raw_value(&json!({
+        "type": PURPOSE_FIELD_DEV,
+        "state_key": PURPOSE_TEAM_VALUE,
+        "content": {
+            "m.enabled": true,
+            "m.importance_level": 50
+        }
+    }))
+    .expect("static parsing of subtype doesn't fail");
 
-    v.push(Raw::from_json(
-        to_raw_value(&json!({
-            "type": PURPOSE_FIELD_DEV,
-            "state_key": PURPOSE_TEAM_VALUE,
-            "content": {
-                "m.enabled": true,
-                "m.importance_level": 50
-            }
-        }))
-        .expect("static parsing of subtype doesn't fail"),
-    ));
+    v.push(Raw::from_json(r));
     v
 }
 
@@ -63,15 +62,15 @@ pub fn initial_state_for_alias(
     main_alias: &OwnedRoomAliasId,
     alt_aliases: &Vec<OwnedRoomAliasId>,
 ) -> Raw<AnyInitialStateEvent> {
-    Raw::from_json(
-        to_raw_value(&json!({
-            "type": "m.room.canonical_alias",
-            "state_key": "",
-            "content": {
-                "alias": Some(main_alias),
-                "alt_aliases": alt_aliases,
-            }
-        }))
-        .expect("static doesn't fail"),
-    )
+    let r = to_raw_value(&json!({
+        "type": "m.room.canonical_alias",
+        "state_key": "",
+        "content": {
+            "alias": Some(main_alias),
+            "alt_aliases": alt_aliases,
+        }
+    }))
+    .expect("static doesn't fail");
+
+    Raw::from_json(r)
 }
