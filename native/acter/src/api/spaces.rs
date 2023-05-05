@@ -275,11 +275,11 @@ impl Space {
         };
         for state in default_acter_space_states() {
             println!("{:?}", state);
-            let event_type = state.get_field("type")?.context("given")?;
+            let event_type = state.get_field("type")?.expect("given");
             let state_key = state.get_field("state_key")?.unwrap_or_default();
             let body = state
                 .get_field::<Raw<AnyStateEventContent>>("content")?
-                .context("body is given")?;
+                .expect("body is given");
 
             let request = send_state_event::v3::Request::new_raw(
                 joined.room_id().to_owned(),
