@@ -1,11 +1,12 @@
-use crate::config::{LoginConfig, ENV_ROOM};
 use acter_core::matrix_sdk::{
     room::{Messages, MessagesOptions},
     ruma::OwnedRoomId,
 };
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use clap::Parser;
 use futures::StreamExt;
+
+use crate::config::{LoginConfig, ENV_ROOM};
 
 #[derive(Parser, Debug)]
 pub struct HistoryOpts {
@@ -24,7 +25,7 @@ impl HistoryOpts {
         tracing::info!(" - Syncing -");
         let sync_state = client.start_sync();
 
-        let mut is_synced = sync_state.first_synced_rx().expect("note yet read");
+        let mut is_synced = sync_state.first_synced_rx().context("note yet read")?;
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         tracing::info!(" - First Sync finished - ");
 

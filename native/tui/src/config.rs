@@ -1,10 +1,9 @@
+use acter::{api::login_new_client, Client};
+use acter_core::matrix_sdk::ruma::OwnedUserId;
 use anyhow::Result;
 use clap::Parser;
 use dialoguer::{theme::ColorfulTheme, Password};
 use std::path::PathBuf;
-
-use acter::{api::login_new_client, Client};
-use acter_core::matrix_sdk::ruma::OwnedUserId;
 
 pub const ENV_USER: &str = "ACTER_USER";
 pub const ENV_PASSWORD: &str = "ACTER_PASSWORD";
@@ -19,6 +18,7 @@ pub struct LoginConfig {
         env = ENV_USER
     )]
     login_username: OwnedUserId,
+
     #[clap(
         short = 'p',
         long = "password",
@@ -34,21 +34,23 @@ impl LoginConfig {
         tracing::info!("Logging in as {}", username);
         let password = match self.login_password {
             Some(ref pw) => pw.clone(),
-            _ => Password::with_theme(&theme)
+            None => Password::with_theme(&theme)
                 .with_prompt(format!("Password for {username:} :"))
                 .interact()?,
         };
+        let default_homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("acter.global")
+            .to_string();
+        let default_homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("https://matrix.acter.global")
+            .to_string();
 
         let client = login_new_client(
             String::from(path.to_string_lossy()),
             username.to_string(),
             password,
-            option_env!("DEFAULT_HOMESERVER_NAME")
-                .unwrap_or("acter.global")
-                .to_string(),
-            option_env!("DEFAULT_HOMESERVER_URL")
-                .unwrap_or("https://matrix.acter.global")
-                .to_string(),
+            default_homeserver_name,
+            default_homeserver_url,
             Some("acter-tui".to_owned()),
         )
         .await?;

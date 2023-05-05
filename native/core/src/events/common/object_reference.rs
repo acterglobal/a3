@@ -1,7 +1,8 @@
-use super::Position;
 use derive_getters::Getters;
 use matrix_sdk::ruma::{OwnedEventId, OwnedRoomId};
 use serde::{Deserialize, Serialize};
+
+use super::Position;
 
 #[derive(Eq, PartialEq, Clone, strum::Display, Debug, Deserialize, Serialize, Default)]
 #[serde(rename_all = "kebab-case")]
@@ -105,12 +106,15 @@ impl RefDetails {
 pub struct ObjRef {
     /// the target event id
     event_id: OwnedEventId,
+
     /// if this links to an object not part of this room, but a different room
     #[serde(default, skip_serializing_if = "Option::is_none")]
     room_id: Option<OwnedRoomId>,
+
     /// an object reference might be overlayed on another items, if so
     /// this may contain the recommended position where to place it
     position: Option<Position>,
+
     #[serde(flatten)]
     reference: RefDetails,
 }
@@ -119,9 +123,11 @@ impl ObjRef {
     pub fn event_id_str(&self) -> String {
         self.event_id.to_string()
     }
+
     pub fn room_id_str(&self) -> Option<String> {
         self.room_id.as_ref().map(|p| p.to_string())
     }
+
     pub fn position_str(&self) -> Option<String> {
         self.position.as_ref().map(|p| p.to_string())
     }

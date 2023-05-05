@@ -271,7 +271,11 @@ impl DeviceController {
         }
     }
 
-    pub fn process_device_lists(&mut self, client: &MatrixClient, response: &SyncResponse) {
+    pub fn process_device_lists(
+        &mut self,
+        client: &MatrixClient,
+        response: &SyncResponse,
+    ) -> Result<()> {
         info!("process device lists: {:?}", response);
 
         // avoid device changed event in case that user joined room
@@ -280,7 +284,7 @@ impl DeviceController {
                 info!("device-changed user_id: {}", user_id);
                 let current_user_id = client
                     .user_id()
-                    .expect("guest user cannot handle the device changed event");
+                    .context("guest user cannot handle the device changed event")?;
                 if *user_id == *current_user_id {
                     let evt = DeviceChangedEvent::new(client);
                     if let Err(e) = self.changed_event_tx.try_send(evt) {
@@ -296,7 +300,7 @@ impl DeviceController {
                 info!("device-left user_id: {}", user_id);
                 let current_user_id = client
                     .user_id()
-                    .expect("guest user cannot handle the device left event");
+                    .context("guest user cannot handle the device left event")?;
                 if *user_id == *current_user_id {
                     let evt = DeviceLeftEvent::new(client);
                     if let Err(e) = self.left_event_tx.try_send(evt) {
@@ -305,6 +309,7 @@ impl DeviceController {
                 }
             }
         }
+        Ok(())
     }
 }
 

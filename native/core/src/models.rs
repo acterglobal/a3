@@ -9,14 +9,13 @@ mod tasks;
 #[cfg(test)]
 mod test;
 
-use crate::error::Error;
-
-pub use crate::store::Store;
+use async_recursion::async_recursion;
 pub use calendar::{CalendarEvent, CalendarEventUpdate};
 pub use color::Color;
 pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
 pub use common::*;
 pub use core::fmt::Debug;
+use enum_dispatch::enum_dispatch;
 use matrix_sdk::ruma::{
     events::{AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent},
     serde::Raw,
@@ -31,25 +30,27 @@ pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
 #[cfg(test)]
 pub use test::{TestModel, TestModelBuilder, TestModelBuilderError};
 
-use async_recursion::async_recursion;
-use enum_dispatch::enum_dispatch;
-
-use crate::events::{
-    calendar::{
-        OriginalCalendarEventEvent, OriginalCalendarEventUpdateEvent, SyncCalendarEventEvent,
-        SyncCalendarEventUpdateEvent,
-    },
-    comments::{
-        OriginalCommentEvent, OriginalCommentUpdateEvent, SyncCommentEvent, SyncCommentUpdateEvent,
-    },
-    news::{
-        OriginalNewsEntryEvent, OriginalNewsEntryUpdateEvent, SyncNewsEntryEvent,
-        SyncNewsEntryUpdateEvent,
-    },
-    pins::{OriginalPinEvent, OriginalPinUpdateEvent, SyncPinEvent, SyncPinUpdateEvent},
-    tasks::{
-        OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskUpdateEvent, SyncTaskEvent,
-        SyncTaskListEvent, SyncTaskUpdateEvent,
+pub use crate::store::Store;
+use crate::{
+    error::Error,
+    events::{
+        calendar::{
+            OriginalCalendarEventEvent, OriginalCalendarEventUpdateEvent, SyncCalendarEventEvent,
+            SyncCalendarEventUpdateEvent,
+        },
+        comments::{
+            OriginalCommentEvent, OriginalCommentUpdateEvent, SyncCommentEvent,
+            SyncCommentUpdateEvent,
+        },
+        news::{
+            OriginalNewsEntryEvent, OriginalNewsEntryUpdateEvent, SyncNewsEntryEvent,
+            SyncNewsEntryUpdateEvent,
+        },
+        pins::{OriginalPinEvent, OriginalPinUpdateEvent, SyncPinEvent, SyncPinUpdateEvent},
+        tasks::{
+            OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskUpdateEvent, SyncTaskEvent,
+            SyncTaskListEvent, SyncTaskUpdateEvent,
+        },
     },
 };
 
@@ -169,11 +170,11 @@ pub enum AnyActerModel {
 
 impl AnyActerModel {
     pub fn from_raw_tlevent(raw: &Raw<AnyTimelineEvent>) -> Result<Self, Error> {
-        let Ok(Some(m_type)) = raw.get_field("type") else {
+        let Ok(Some(model_type)) = raw.get_field("type") else {
             return Err(Error::UnknownModel(None));
         };
 
-        match m_type {
+        match model_type {
             // -- CALENDAR
             "global.acter.dev.calendar_event" => Ok(AnyActerModel::CalendarEvent(
                 raw.deserialize_as::<OriginalCalendarEventEvent>()
@@ -308,23 +309,24 @@ impl AnyActerModel {
             )),
 
             _ => {
-                if m_type.starts_with("global.acter.") {
-                    tracing::error!(?raw, "{m_type} not implemented");
+                if model_type.starts_with("global.acter.") {
+                    tracing::error!(?raw, "{model_type} not implemented");
                 }
 
-                Err(Error::UnknownModel(Some(m_type.to_owned())))
+                Err(Error::UnknownModel(Some(model_type.to_owned())))
             }
         }
     }
+
     pub fn from_raw_synctlevent(
         raw: &Raw<AnySyncTimelineEvent>,
         room_id: &RoomId,
     ) -> Result<Self, Error> {
-        let Ok(Some(m_type)) = raw.get_field("type") else {
+        let Ok(Some(model_type)) = raw.get_field("type") else {
             return Err(Error::UnknownModel(None));
         };
 
-        match m_type {
+        match model_type {
             // -- Calendar
             "global.acter.dev.calendar_event" => match raw
                 .deserialize_as::<SyncCalendarEventEvent>()
@@ -493,11 +495,11 @@ impl AnyActerModel {
 
             // unimplemented cases
             _ => {
-                if m_type.starts_with("global.acter.") {
-                    tracing::error!(?raw, "{m_type} not implemented");
+                if model_type.starts_with("global.acter.") {
+                    tracing::error!(?raw, "{model_type} not implemented");
                 }
 
-                Err(Error::UnknownModel(Some(m_type.to_owned())))
+                Err(Error::UnknownModel(Some(model_type.to_owned())))
             }
         }
     }

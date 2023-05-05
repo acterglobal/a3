@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -49,7 +49,7 @@ async fn template_creates_space() -> Result<()> {
         let client = fetcher_client.clone();
         async move {
             if client.pins().await?.is_empty() {
-                anyhow::bail!("no pins found");
+                bail!("no pins found");
             } else {
                 Ok(())
             }

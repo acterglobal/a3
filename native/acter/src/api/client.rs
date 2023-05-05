@@ -390,9 +390,9 @@ impl Client {
                                 continue;
                             }
                             let Some(full_room) = me.get_room(&room_id) else {
-                                    tracing::warn!("room not found. how can that be?");
-                                    continue;
-                                };
+                                tracing::warn!("room not found. how can that be?");
+                                continue;
+                            };
                             if is_acter_space(&full_room).await {
                                 new_spaces.push(full_room);
                             }
@@ -453,13 +453,14 @@ impl Client {
     pub async fn restore_token(&self) -> Result<String> {
         let session = self.session().context("Missing session")?.clone();
         let homeurl = self.homeserver().await;
+        let is_guest = match self.state.try_read() {
+            Ok(r) => r.is_guest,
+            Err(e) => false,
+        };
         let result = serde_json::to_string(&RestoreToken {
             session,
             homeurl,
-            is_guest: match self.state.try_read() {
-                Ok(r) => r.is_guest,
-                Err(e) => false,
-            },
+            is_guest,
         })?;
         Ok(result)
     }
@@ -496,11 +497,11 @@ impl Client {
 
     pub(crate) fn room(&self, room_name: String) -> Result<Room> {
         let room_id = RoomId::parse(room_name)?;
-        let l = self.core.client().clone();
-        match l.get_room(&room_id) {
-            Some(room) => Ok(Room { room }),
-            None => bail!("Room not found"),
-        }
+        self.core
+            .client()
+            .get_room(&room_id)
+            .map(|room| Room { room })
+            .context("Room not found")
     }
 
     pub fn subscribe(&self, key: String) -> impl Stream<Item = bool> {
@@ -526,10 +527,9 @@ impl Client {
     }
 
     pub fn account(&self) -> Result<Account> {
-        Ok(Account::new(
-            self.core.client().account(),
-            self.user_id()?.to_string(),
-        ))
+        let account = self.core.client().account();
+        let user_id = self.user_id()?.to_string();
+        Ok(Account::new(account, user_id))
     }
 
     pub fn device_id(&self) -> Result<OwnedDeviceId> {

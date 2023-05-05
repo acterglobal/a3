@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
 use super::{AnyActerModel, EventMeta};
-
 use crate::{
     events::pins::{PinEventContent, PinUpdateBuilder, PinUpdateEventContent},
     statics::KEYS,

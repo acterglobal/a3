@@ -1,11 +1,10 @@
 #![warn(clippy::all)]
 
-use anyhow::Result;
-use clap::Parser;
-
 mod action;
 mod config;
 
+use anyhow::Result;
+use clap::Parser;
 use config::ActerCliConfig;
 use env_logger::Builder;
 

@@ -17,7 +17,7 @@ use acter_core::{
     statics::default_acter_space_states,
     templates::Engine,
 };
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use log::warn;
 use matrix_sdk::{
@@ -275,11 +275,11 @@ impl Space {
         };
         for state in default_acter_space_states() {
             println!("{:?}", state);
-            let event_type = state.get_field("type")?.expect("given");
+            let event_type = state.get_field("type")?.context("given")?;
             let state_key = state.get_field("state_key")?.unwrap_or_default();
             let body = state
                 .get_field::<Raw<AnyStateEventContent>>("content")?
-                .expect("body is given");
+                .context("body is given")?;
 
             let request = send_state_event::v3::Request::new_raw(
                 joined.room_id().to_owned(),
@@ -386,7 +386,10 @@ impl Space {
         let c = self.client.core.clone();
         let room = self.room.clone();
         RUNTIME
-            .spawn(async move { Ok(c.space_relations(&room).await?) })
+            .spawn(async move {
+                let relations = c.space_relations(&room).await?;
+                Ok(relations)
+            })
             .await?
     }
 }
@@ -418,7 +421,10 @@ impl Client {
     ) -> Result<OwnedRoomId> {
         let c = self.core.clone();
         RUNTIME
-            .spawn(async move { Ok(c.create_acter_space(Box::into_inner(settings)).await?) })
+            .spawn(async move {
+                let room_id = c.create_acter_space(Box::into_inner(settings)).await?;
+                Ok(room_id)
+            })
             .await?
     }
 
@@ -426,7 +432,7 @@ impl Client {
         let c = self.clone();
         RUNTIME
             .spawn(async move {
-                let (spaces, _) = devide_spaces_from_convos(c).await;
+                let (spaces, convos) = devide_spaces_from_convos(c).await;
                 Ok(spaces)
             })
             .await?
@@ -434,10 +440,9 @@ impl Client {
 
     pub async fn get_space(&self, alias_or_id: String) -> Result<Space> {
         if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
-            match self.get_room(&room_id) {
-                Some(room) => Ok(Space::new(self.clone(), Room { room })),
-                None => bail!("Room not found"),
-            }
+            self.get_room(&room_id)
+                .map(|room| Space::new(self.clone(), Room { room }))
+                .context("Room not found")
         } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
             for space in self.spaces().await?.into_iter() {
                 if let Some(space_alias) = space.inner.room.canonical_alias() {
@@ -446,9 +451,9 @@ impl Client {
                     }
                 }
             }
-            bail!("Room with alias not found")
+            bail!("Room with alias not found");
         } else {
-            bail!("Neither roomId nor alias provided")
+            bail!("Neither roomId nor alias provided");
         }
     }
 }

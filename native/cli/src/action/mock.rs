@@ -7,7 +7,7 @@ use acter_core::{
     models::ActerModel,
     ruma::{api::client::room::Visibility, OwnedUserId},
 };
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sled::make_store_config;
@@ -22,6 +22,7 @@ pub struct MockOpts {
         default_value = "http://localhost:8118"
     )]
     pub homeserver: String,
+
     /// name of that homeserver
     #[clap(
         long = "homeserver-name",
@@ -194,24 +195,22 @@ impl Mock {
             .map(|a| a.expect("everyone here has an id"))
             .collect();
 
-        let ops_settings = Box::new(
-            CreateSpaceSettingsBuilder::default()
-                .name("Ops".to_owned())
-                .alias("ops".to_owned())
-                .invites(team_ids)
-                .build()?,
-        );
+        let ops_settings = CreateSpaceSettingsBuilder::default()
+            .name("Ops".to_owned())
+            .alias("ops".to_owned())
+            .invites(team_ids)
+            .build()?;
 
         let admin = self.client("admin".to_owned()).await.unwrap();
 
-        match admin.create_acter_space(ops_settings).await {
+        match admin.create_acter_space(Box::new(ops_settings)).await {
             Ok(ops_id) => {
                 tracing::info!("Ops Room Id: {:?}", ops_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
-                    .expect("already checked");
+                    .context("already checked")?;
                 tracing::warn!("Problem creating Ops Room: {:?}", inner);
             }
             Err(e) => {
@@ -219,23 +218,21 @@ impl Mock {
             }
         }
 
-        let promenade_settings = Box::new(
-            CreateSpaceSettingsBuilder::default()
-                .name("Promenade".to_owned())
-                .alias("promenade".to_owned())
-                .visibility(Visibility::Public)
-                .invites(civilians_ids)
-                .build()?,
-        );
+        let promenade_settings = CreateSpaceSettingsBuilder::default()
+            .name("Promenade".to_owned())
+            .alias("promenade".to_owned())
+            .visibility(Visibility::Public)
+            .invites(civilians_ids)
+            .build()?;
 
-        match admin.create_acter_space(promenade_settings).await {
+        match admin.create_acter_space(Box::new(promenade_settings)).await {
             Ok(promenade_room_id) => {
                 tracing::info!("Promenade Room Id: {:?}", promenade_room_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
-                    .expect("already checked");
+                    .context("already checked")?;
                 tracing::warn!("Problem creating Promenade Room: {:?}", inner);
             }
             Err(e) => {
@@ -243,23 +240,21 @@ impl Mock {
             }
         }
 
-        let quarks_settings = Box::new(
-            CreateSpaceSettingsBuilder::default()
-                .name("Quarks'".to_owned())
-                .alias("quarks".to_owned())
-                .visibility(Visibility::Public)
-                .invites(quark_customer_ids)
-                .build()?,
-        );
+        let quarks_settings = CreateSpaceSettingsBuilder::default()
+            .name("Quarks'".to_owned())
+            .alias("quarks".to_owned())
+            .visibility(Visibility::Public)
+            .invites(quark_customer_ids)
+            .build()?;
 
-        match admin.create_acter_space(quarks_settings).await {
+        match admin.create_acter_space(Box::new(quarks_settings)).await {
             Ok(quarks_id) => {
                 tracing::info!("Quarks Room Id: {:?}", quarks_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
-                    .expect("already checked");
+                    .context("already checked")?;
                 tracing::warn!("Problem creating Quarks Room: {:?}", inner);
             }
             Err(e) => {
@@ -339,15 +334,16 @@ impl Mock {
                     let cloned_odo = cloned_odo.clone();
                     let task_list_id = task_list_id.clone();
                     async move {
-                        Ok(cloned_odo
+                        let task_list = cloned_odo
                             .task_lists()
                             .await?
                             .into_iter()
-                            .find(|e| e.event_id() == task_list_id))
+                            .find(|e| e.event_id() == task_list_id);
+                        Ok(task_list)
                     }
                 })
                 .await?
-                .expect("Task list not found even after polling for 3 seconds")
+                .context("Task list not found even after polling for 3 seconds")?
             };
 
         task_list

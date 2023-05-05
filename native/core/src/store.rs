@@ -1,14 +1,12 @@
-use std::iter::FromIterator;
-use std::sync::Arc;
+use dashmap::{mapref::one::RefMut, DashMap};
+use futures::future::{join_all, try_join_all};
+use matrix_sdk::Client as MatrixClient;
+use std::{iter::FromIterator, sync::Arc};
 
 use crate::{
     models::{ActerModel, AnyActerModel},
     Error, Result,
 };
-use dashmap::mapref::one::RefMut;
-use dashmap::DashMap;
-use futures::future::{join_all, try_join_all};
-use matrix_sdk::Client as MatrixClient;
 
 #[derive(Clone, Debug)]
 pub struct Store {
@@ -54,6 +52,7 @@ impl Store {
             .await?;
         Ok(())
     }
+
     pub async fn new(client: MatrixClient) -> Result<Self> {
         if client
             .store()
@@ -93,7 +92,7 @@ impl Store {
 
         // current DB version, attempt to load models
 
-        let models_vec = if let Some(v) = client
+        let data = client
             .store()
             .get_custom_value(ALL_MODELS_KEY.as_bytes())
             .await?
@@ -107,14 +106,14 @@ impl Store {
             .transpose()
             .map_err(|e| {
                 crate::Error::Custom(format!("deserializing all models index failed: {e}"))
-            })? {
-            try_join_all(
-                v.iter()
-                    .map(|k| get_from_store::<AnyActerModel>(client.clone(), k)),
-            )
-            .await?
+            })?;
+        let models_vec = if let Some(v) = data {
+            let items = v
+                .iter()
+                .map(|k| get_from_store::<AnyActerModel>(client.clone(), k));
+            try_join_all(items).await?
         } else {
-            Vec::new()
+            vec![]
         };
 
         let indizes = Arc::new(DashMap::new());
@@ -148,21 +147,25 @@ impl Store {
             vec![]
         };
         let models = self.models.clone();
-        Ok(listing
+        let res = listing
             .into_iter()
-            .filter_map(move |name| models.get(&name).map(|v| v.value().clone())))
+            .filter_map(move |name| models.get(&name).map(|v| v.value().clone()));
+        Ok(res)
     }
 
     pub async fn get(&self, model_key: &str) -> Result<AnyActerModel> {
-        Ok(self
+        let m = self
             .models
             .get(model_key)
             .ok_or(Error::ModelNotFound)?
             .value()
-            .clone())
+            .clone();
+        Ok(m)
     }
+
     pub async fn get_many(&self, model_keys: Vec<String>) -> Vec<Option<AnyActerModel>> {
-        join_all(model_keys.iter().map(|k| async { self.get(k).await.ok() })).await
+        let models = model_keys.iter().map(|k| async { self.get(k).await.ok() });
+        join_all(models).await
     }
 
     #[tracing::instrument(skip(self))]

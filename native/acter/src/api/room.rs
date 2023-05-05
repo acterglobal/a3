@@ -374,23 +374,20 @@ impl Room {
             .spawn(async move {
                 let eid = EventId::parse(event_id.clone())?;
                 let evt = room.event(&eid).await?;
-                if let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize()
-                {
-                    if let MessageType::Image(content) = &m.content.msgtype {
-                        let request = MediaRequest {
-                            source: content.source.clone(),
-                            format: MediaFormat::File,
-                        };
-                        let data = client.media().get_media_content(&request, false).await?;
-                        Ok(FfiBuffer::new(data))
-                    } else {
-                        bail!("Invalid file format")
-                    }
-                } else {
-                    bail!("Invalid file format")
-                }
+                ))) = evt.event.deserialize() else {
+                    bail!("It is not message");
+                };
+                let MessageType::Image(content) = &m.content.msgtype else {
+                    bail!("Invalid file format");
+                };
+                let request = MediaRequest {
+                    source: content.source.clone(),
+                    format: MediaFormat::File,
+                };
+                let data = client.media().get_media_content(&request, false).await?;
+                Ok(FfiBuffer::new(data))
             })
             .await?
     }
@@ -435,38 +432,34 @@ impl Room {
             .spawn(async move {
                 let eid = EventId::parse(event_id.clone())?;
                 let evt = room.event(&eid).await?;
-                if let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize()
-                {
-                    if let MessageType::File(content) = m.content.msgtype {
-                        let request = MediaRequest {
-                            source: content.source.clone(),
-                            format: MediaFormat::File,
-                        };
-                        let name = content.body.clone();
-                        let mut path = PathBuf::from(dir_path.clone());
-                        path.push(name);
-                        let mut file = File::create(path.clone())?;
-                        let data = client.media().get_media_content(&request, false).await?;
-                        file.write_all(&data)?;
-                        let key =
-                            [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat();
-                        let path_text = path
-                            .to_str()
-                            .context("Path was generated from strings. Must be string")?;
-                        client
-                            .store()
-                            .set_custom_value(&key, path_text.as_bytes().to_vec())
-                            .await?
-                            .context("Saving the file path to storage was failed")?;
-                        Ok(path_text.to_string())
-                    } else {
-                        bail!("This message type is not file")
-                    }
-                } else {
-                    bail!("It is not message")
-                }
+                ))) = evt.event.deserialize() else {
+                    bail!("It is not message");
+                };
+                let MessageType::File(content) = m.content.msgtype else {
+                    bail!("This message type is not file");
+                };
+                let request = MediaRequest {
+                    source: content.source.clone(),
+                    format: MediaFormat::File,
+                };
+                let name = content.body.clone();
+                let mut path = PathBuf::from(dir_path.clone());
+                path.push(name);
+                let mut file = File::create(path.clone())?;
+                let data = client.media().get_media_content(&request, false).await?;
+                file.write_all(&data)?;
+                let key = [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat();
+                let path_text = path
+                    .to_str()
+                    .context("Path was generated from strings. Must be string")?;
+                client
+                    .store()
+                    .set_custom_value(&key, path_text.as_bytes().to_vec())
+                    .await?
+                    .context("Saving the file path to storage was failed")?;
+                Ok(path_text.to_string())
             })
             .await?
     }
@@ -482,29 +475,26 @@ impl Room {
             .spawn(async move {
                 let eid = EventId::parse(event_id.clone())?;
                 let evt = room.event(&eid).await?;
-                if let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize()
-                {
-                    if let MessageType::File(content) = m.content.msgtype {
-                        let key = [
-                            room.room_id().as_str().as_bytes(),
-                            event_id.as_str().as_bytes(),
-                        ]
-                        .concat();
-                        let path = client
-                            .store()
-                            .get_custom_value(&key)
-                            .await?
-                            .context("Couldn't get the path of saved file")?;
-                        let text = std::str::from_utf8(&path)?;
-                        Ok(text.to_string())
-                    } else {
-                        bail!("This message type is not file")
-                    }
-                } else {
-                    bail!("It is not message")
-                }
+                ))) = evt.event.deserialize() else {
+                    bail!("It is not message");
+                };
+                let MessageType::File(content) = m.content.msgtype else {
+                    bail!("Invalid file format");
+                };
+                let key = [
+                    room.room_id().as_str().as_bytes(),
+                    event_id.as_str().as_bytes(),
+                ]
+                .concat();
+                let path = client
+                    .store()
+                    .get_custom_value(&key)
+                    .await?
+                    .context("Couldn't get the path of saved file")?;
+                let text = std::str::from_utf8(&path)?;
+                Ok(text.to_string())
             })
             .await?
     }
@@ -663,7 +653,7 @@ impl Room {
                         Ok(msg)
                     }
                     Ok(AnyTimelineEvent::State(_)) => {
-                        bail!("Invalid AnyTimelineEvent::State: other")
+                        bail!("Invalid AnyTimelineEvent::State: other");
                     }
                     Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::CallAnswer(
                         MessageLikeEvent::Original(e),
@@ -761,11 +751,11 @@ impl Room {
                         Ok(msg)
                     }
                     Ok(AnyTimelineEvent::MessageLike(_)) => {
-                        bail!("Invalid AnyTimelineEvent::MessageLike: other")
+                        bail!("Invalid AnyTimelineEvent::MessageLike: other");
                     }
                     Err(e) => {
                         warn!("Error deserializing event {:?}", e);
-                        bail!("Invalid event deserialization error")
+                        bail!("Invalid event deserialization error");
                     }
                 }
             })

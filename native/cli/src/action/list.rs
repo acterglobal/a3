@@ -1,20 +1,23 @@
-use crate::config::LoginConfig;
-
 use acter_core::spaces::SpaceRelation;
-use anyhow::Result;
+use anyhow::{Context, Result};
 use clap::Parser;
 use futures::StreamExt;
+
+use crate::config::LoginConfig;
 
 /// Posting a news item to a given room
 #[derive(Parser, Debug)]
 pub struct List {
     #[clap(flatten)]
     pub login: LoginConfig,
+
     /// Whether to list chat, too
     #[clap(long)]
     pub list_chats: bool,
+
     #[clap(long)]
     pub details: bool,
+
     #[clap(long)]
     pub await_history_sync: bool,
 }
@@ -25,7 +28,7 @@ impl List {
         tracing::info!(" - Syncing -");
         let sync_state = client.start_sync();
 
-        let mut is_synced = sync_state.first_synced_rx().expect("note yet read");
+        let mut is_synced = sync_state.first_synced_rx().context("note yet read")?;
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         tracing::info!(" - First Sync finished - ");
 

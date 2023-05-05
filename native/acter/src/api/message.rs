@@ -2908,7 +2908,7 @@ impl RoomMessage {
                         Some("NotImplemented".to_string()),
                         "not implemented change".to_string(),
                     ),
-                    _ => (None, "unknown error".to_string()),
+                    None => (None, "unknown error".to_string()),
                 };
                 let text_desc = TextDesc::new(fallback, None);
                 RoomEventItem::new(

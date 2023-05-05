@@ -7,7 +7,6 @@ use super::{
     super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
     TASKS_KEY,
 };
-
 use crate::{
     events::tasks::{TaskListEventContent, TaskListUpdateBuilder, TaskListUpdateEventContent},
     statics::KEYS,
@@ -37,6 +36,7 @@ impl TaskList {
     pub fn room_id(&self) -> &RoomId {
         &self.meta.room_id
     }
+
     pub fn stats(&self) -> &TaskStats {
         &self.task_stats
     }
@@ -90,6 +90,7 @@ impl ActerModel for TaskList {
             KEYS::TASKS.to_owned(),
         ]
     }
+
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
     }

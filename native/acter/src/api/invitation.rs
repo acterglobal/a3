@@ -249,12 +249,12 @@ impl InvitationController {
         ev: SyncRoomMemberEvent,
         room: MatrixRoom,
         client: &MatrixClient,
-    ) {
+    ) -> Result<()> {
         if let Some(evt) = ev.as_original() {
             // filter only event for me
-            let user_id = client.user_id().expect("You seem to be not logged in");
+            let user_id = client.user_id().context("You seem to be not logged in")?;
             if evt.clone().state_key != *user_id {
-                return;
+                return Ok(());
             }
 
             if let Some(prev_content) = evt.clone().unsigned.prev_content {
@@ -278,6 +278,7 @@ impl InvitationController {
                 }
             }
         }
+        Ok(())
     }
 }
 
