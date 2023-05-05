@@ -34,7 +34,7 @@ class ReceiptUser {
 class ReceiptController extends GetxController {
   Client client;
   StreamSubscription<ReceiptEvent>? _subscription;
-  final Map<String, ReceiptRoom> _rooms = {};
+  final Map<RoomId, ReceiptRoom> _rooms = {};
 
   ReceiptController({required this.client}) : super();
 
@@ -44,7 +44,7 @@ class ReceiptController extends GetxController {
 
     _subscription = client.receiptEventRx()?.listen((event) {
       String myId = client.userId().toString();
-      String roomId = event.roomId();
+      RoomId roomId = event.roomId();
       bool changed = false;
       for (var record in event.receiptRecords()) {
         String seenBy = record.seenBy();
@@ -68,7 +68,7 @@ class ReceiptController extends GetxController {
     super.onClose();
   }
 
-  ReceiptRoom _getRoom(String roomId) {
+  ReceiptRoom _getRoom(RoomId roomId) {
     if (_rooms.containsKey(roomId)) {
       return _rooms[roomId]!;
     }
@@ -86,7 +86,7 @@ class ReceiptController extends GetxController {
   }
 
   // this will be called via update(['Chat'])
-  List<String> getSeenByList(String roomId, int ts) {
+  List<String> getSeenByList(RoomId roomId, int ts) {
     List<String> userIds = [];
     if (_rooms.containsKey(roomId)) {
       _rooms[roomId]!.users.forEach((userId, user) {

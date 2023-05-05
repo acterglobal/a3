@@ -84,7 +84,7 @@ use matrix_sdk::{
             AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
             SyncStateEvent,
         },
-        OwnedEventId, OwnedUserId,
+        OwnedEventId, OwnedRoomId, OwnedUserId,
     },
 };
 use std::{collections::HashMap, sync::Arc};
@@ -226,7 +226,7 @@ impl RoomVirtualItem {
 #[derive(Clone, Debug)]
 pub struct RoomMessage {
     item_type: String,
-    room_id: String,
+    room_id: OwnedRoomId,
     event_item: Option<RoomEventItem>,
     virtual_item: Option<RoomVirtualItem>,
 }
@@ -234,7 +234,7 @@ pub struct RoomMessage {
 impl RoomMessage {
     fn new(
         item_type: String,
-        room_id: String,
+        room_id: OwnedRoomId,
         event_item: Option<RoomEventItem>,
         virtual_item: Option<RoomVirtualItem>,
     ) -> Self {
@@ -250,7 +250,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(event.content.answer.sdp, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -277,7 +277,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(event.content.answer.sdp, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -311,7 +311,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("changed candidates to {candidates}"), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -345,7 +345,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("changed candidates to {candidates}"), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -372,7 +372,7 @@ impl RoomMessage {
             .map(|x| TextDesc::new(format!("hangup this call because {x}"), None));
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -402,7 +402,7 @@ impl RoomMessage {
             .map(|x| TextDesc::new(format!("hangup this call because {x}"), None));
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -426,7 +426,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(event.content.offer.sdp, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -453,7 +453,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(event.content.offer.sdp, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -488,7 +488,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -523,7 +523,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -553,7 +553,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -583,7 +583,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -610,7 +610,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("done verification".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -637,7 +637,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("done verification".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -664,7 +664,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("sent ephemeral public key for device".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -691,7 +691,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("sent ephemeral public key for device".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -718,7 +718,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("sent MAC of device's key".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -745,7 +745,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("sent MAC of device's key".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -785,7 +785,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("ready verification with {methods}"), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -825,7 +825,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("ready verification with {methods}"), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -857,7 +857,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("started verification with {method}"), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -889,7 +889,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("started verification with {method}"), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -920,7 +920,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -951,7 +951,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -978,7 +978,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("changed policy rule server".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1005,7 +1005,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("changed policy rule server".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1032,7 +1032,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("changed policy rule user".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1059,7 +1059,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("changed policy rule user".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1083,7 +1083,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("reacted by {}", event.content.relates_to.key), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1107,7 +1107,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("reacted by {}", event.content.relates_to.key), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1138,7 +1138,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("changed room aliases to {aliases}"), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1172,7 +1172,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("changed room aliases to {aliases}"), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1196,7 +1196,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("changed room avatar".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1223,7 +1223,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("changed room avatar".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1264,7 +1264,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1305,7 +1305,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1329,7 +1329,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("created this room".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1356,7 +1356,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new("created this room".to_string(), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1388,7 +1388,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("encrypted by {scheme}"), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1420,7 +1420,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("encrypted by {scheme}"), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1450,7 +1450,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1480,7 +1480,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1513,7 +1513,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1546,7 +1546,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1579,7 +1579,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1612,7 +1612,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1645,7 +1645,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1678,7 +1678,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1736,7 +1736,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(fallback, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1797,7 +1797,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(fallback, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1896,7 +1896,7 @@ impl RoomMessage {
         }
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -1995,7 +1995,7 @@ impl RoomMessage {
         }
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2023,7 +2023,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2051,7 +2051,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2081,7 +2081,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2111,7 +2111,7 @@ impl RoomMessage {
         );
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2145,7 +2145,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("changed {users}"), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2179,7 +2179,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("changed {users}"), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2211,7 +2211,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id().to_string(),
                 event.sender().to_string(),
@@ -2246,7 +2246,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id().to_string(),
                 event.sender().to_string(),
@@ -2281,7 +2281,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2316,7 +2316,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2343,7 +2343,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("invited {}", event.content.display_name), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2370,7 +2370,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("invited {}", event.content.display_name), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2397,7 +2397,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(event.content.body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2424,7 +2424,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(event.content.body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2448,7 +2448,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("changed topic to {}", event.content.topic), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2475,7 +2475,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(format!("changed topic to {}", event.content.topic), None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2503,7 +2503,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2534,7 +2534,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2568,7 +2568,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2605,7 +2605,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2629,7 +2629,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(event.content.body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2653,7 +2653,7 @@ impl RoomMessage {
         let text_desc = TextDesc::new(event.content.body, None);
         RoomMessage::new(
             "event".to_string(),
-            room.room_id().to_string(),
+            room.room_id().to_owned(),
             Some(RoomEventItem::new(
                 event.event_id.to_string(),
                 event.sender.to_string(),
@@ -2675,7 +2675,7 @@ impl RoomMessage {
 
     pub(crate) fn from_timeline_event_item(event: &EventTimelineItem, room: Room) -> Self {
         let event_id = event.unique_identifier();
-        let room_id = room.room_id().to_string();
+        let room_id = room.room_id().to_owned();
         let sender = event.sender().to_string();
         let origin_server_ts: u64 = event.timestamp().get().into();
         let mut reactions: HashMap<String, ReactionDesc> = HashMap::new();
@@ -3030,7 +3030,7 @@ impl RoomMessage {
     }
 
     pub(crate) fn from_timeline_virtual_item(event: &VirtualTimelineItem, room: Room) -> Self {
-        let room_id = room.room_id().to_string();
+        let room_id = room.room_id().to_owned();
         match event {
             VirtualTimelineItem::DayDivider(ts) => {
                 let desc = if let Some(st) = ts.to_system_time() {
@@ -3071,7 +3071,7 @@ impl RoomMessage {
         self.item_type.clone()
     }
 
-    pub fn room_id(&self) -> String {
+    pub fn room_id(&self) -> OwnedRoomId {
         self.room_id.clone()
     }
 
@@ -3090,9 +3090,6 @@ impl RoomMessage {
 
 pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option<RoomMessage> {
     info!("sync event to message: {:?}", ev);
-    let room_id = room.room_id().to_string();
-    let mut reactions: HashMap<String, ReactionDesc> = HashMap::new();
-
     match ev.event.deserialize() {
         Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::PolicyRuleRoom(
             SyncStateEvent::Original(e),

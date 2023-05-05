@@ -322,7 +322,7 @@ object RoomMessage {
     fn item_type() -> string;
 
     /// room ID of this event
-    fn room_id() -> string;
+    fn room_id() -> RoomId;
 
     /// valid only if item_type is "event"
     fn event_item() -> Option<RoomEventItem>;
@@ -491,7 +491,7 @@ object Conversation {
     fn latest_message() -> Option<RoomMessage>;
 
     /// the room id
-    fn get_room_id() -> string;
+    fn get_room_id() -> RoomId;
 
     /// Activate typing notice for this room
     /// The typing notice remains active for 4s. It can be deactivate at any
@@ -945,7 +945,7 @@ object Space {
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     /// the room id
-    fn get_room_id() -> string;
+    fn get_room_id() -> RoomId;
 
     // the members currently in the room
     fn get_member(user_id: string) -> Future<Result<Member>>;
@@ -1258,7 +1258,7 @@ object VerificationEmoji {
 /// Deliver receipt event from rust to flutter
 object ReceiptEvent {
     /// Get transaction id or flow id
-    fn room_id() -> string;
+    fn room_id() -> RoomId;
 
     /// Get records
     fn receipt_records() -> Vec<ReceiptRecord>;
@@ -1327,8 +1327,8 @@ object DeviceRecord {
 /// Deliver typing event from rust to flutter
 object TypingEvent {
     /// Get transaction id or flow id
-    fn room_id() -> string;
+    fn room_id() -> RoomId;
 
     /// Get list of user id
-    fn user_ids() -> Vec<string>;
+    fn user_ids() -> Vec<UserId>;
 }

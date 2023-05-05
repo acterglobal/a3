@@ -426,6 +426,7 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   Widget buildProfileAction() {
+    String roomId = widget.conversation.getRoomId().toString();
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -450,14 +451,14 @@ class _RoomPageState extends State<RoomPage> {
           child: FittedBox(
             fit: BoxFit.contain,
             child: CustomAvatar(
-              uniqueKey: widget.conversation.getRoomId(),
+              uniqueKey: roomId,
               avatar: widget.avatar,
               displayName: widget.name,
               radius: 20,
               cacheHeight: 120,
               cacheWidth: 120,
               isGroup: true,
-              stringName: simplifyRoomId(widget.conversation.getRoomId())!,
+              stringName: simplifyRoomId(roomId)!,
             ),
           ),
         ),

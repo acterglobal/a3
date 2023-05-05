@@ -25,12 +25,12 @@ impl TypingEvent {
         Self { room_id, user_ids }
     }
 
-    pub fn room_id(&self) -> String {
-        self.room_id.to_string()
+    pub fn room_id(&self) -> OwnedRoomId {
+        self.room_id.clone()
     }
 
-    pub fn user_ids(&self) -> Vec<String> {
-        self.user_ids.iter().map(|x| x.to_string()).collect()
+    pub fn user_ids(&self) -> Vec<OwnedUserId> {
+        self.user_ids.clone()
     }
 }
 

@@ -87,8 +87,8 @@ impl Conversation {
         self.latest_message.clone()
     }
 
-    pub fn get_room_id(&self) -> String {
-        self.room_id().to_string()
+    pub fn get_room_id(&self) -> OwnedRoomId {
+        self.room_id().to_owned()
     }
 
     pub async fn user_receipts(&self) -> Result<Vec<ReceiptRecord>> {

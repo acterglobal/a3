@@ -15,6 +15,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         ImageDesc,
         Member,
         RoomEventItem,
+        RoomId,
         RoomMessage,
         RoomVirtualItem,
         TextDesc,
@@ -374,7 +375,7 @@ class ChatRoomController extends GetxController {
     isLoading.value = false;
   }
 
-  String? currentRoomId() {
+  RoomId? currentRoomId() {
     return _currentRoom?.getRoomId();
   }
 

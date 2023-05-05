@@ -24,8 +24,8 @@ class _RequestsPageState extends State<RequestsPage> {
   void initState() {
     super.initState();
 
-    String roomId = widget.room.getRoomId();
-    widget.client.suggestedUsersToInvite(roomId).then((value) {
+    RoomId roomId = widget.room.getRoomId();
+    widget.client.suggestedUsersToInvite(roomId.toString()).then((value) {
       if (mounted) {
         setState(() => userProfiles = value.toList());
       }

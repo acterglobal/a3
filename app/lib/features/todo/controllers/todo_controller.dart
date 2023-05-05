@@ -62,7 +62,7 @@ class ToDoController extends GetxController {
         RoomProfile teamProfile = await team.getProfile();
         // Team avatars are yet to be implemented.
         Team item = Team(
-          id: team.getRoomId(),
+          id: team.getRoomId().toString(),
           name: teamProfile.getDisplayName(),
         );
         teams.add(item);
@@ -78,7 +78,7 @@ class ToDoController extends GetxController {
     for (var group in groups) {
       RoomProfile grpProfile = await group.getProfile();
       Team team = Team(
-        id: group.getRoomId(),
+        id: group.getRoomId().toString(),
         name: grpProfile.getDisplayName(),
       );
       List<TaskList> taskList =
@@ -175,7 +175,7 @@ class ToDoController extends GetxController {
     final Space space = await client.getSpace(teamId);
     final RoomProfile teamProfile = await space.getProfile();
     final Team team = Team(
-      id: space.getRoomId(),
+      id: space.getRoomId().toString(),
       name: teamProfile.getDisplayName(),
     );
     final TaskListDraft listDraft = space.taskListDraft();

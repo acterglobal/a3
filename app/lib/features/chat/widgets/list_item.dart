@@ -42,7 +42,7 @@ class _ChatListItemState extends State<ListItem> {
 
   @override
   Widget build(BuildContext context) {
-    String roomId = widget.room.conversation.getRoomId();
+    String roomId = widget.room.conversation.getRoomId().toString();
     // ToDo: UnreadCounter
     return Column(
       mainAxisSize: MainAxisSize.min,

@@ -7668,12 +7668,12 @@ class Api {
   )>();
   late final _roomMessageRoomIdPtr = _lookup<
       ffi.NativeFunction<
-          _RoomMessageRoomIdReturn Function(
+          ffi.Int64 Function(
     ffi.Int64,
   )>>("__RoomMessage_room_id");
 
   late final _roomMessageRoomId = _roomMessageRoomIdPtr.asFunction<
-      _RoomMessageRoomIdReturn Function(
+      int Function(
     int,
   )>();
   late final _roomMessageEventItemPtr = _lookup<
@@ -8202,12 +8202,12 @@ class Api {
   )>();
   late final _conversationGetRoomIdPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationGetRoomIdReturn Function(
+          ffi.Int64 Function(
     ffi.Int64,
   )>>("__Conversation_get_room_id");
 
   late final _conversationGetRoomId = _conversationGetRoomIdPtr.asFunction<
-      _ConversationGetRoomIdReturn Function(
+      int Function(
     int,
   )>();
   late final _conversationTypingNoticePtr = _lookup<
@@ -10489,12 +10489,12 @@ class Api {
   )>();
   late final _spaceGetRoomIdPtr = _lookup<
       ffi.NativeFunction<
-          _SpaceGetRoomIdReturn Function(
+          ffi.Int64 Function(
     ffi.Int64,
   )>>("__Space_get_room_id");
 
   late final _spaceGetRoomId = _spaceGetRoomIdPtr.asFunction<
-      _SpaceGetRoomIdReturn Function(
+      int Function(
     int,
   )>();
   late final _spaceGetMemberPtr = _lookup<
@@ -11574,12 +11574,12 @@ class Api {
   )>();
   late final _receiptEventRoomIdPtr = _lookup<
       ffi.NativeFunction<
-          _ReceiptEventRoomIdReturn Function(
+          ffi.Int64 Function(
     ffi.Int64,
   )>>("__ReceiptEvent_room_id");
 
   late final _receiptEventRoomId = _receiptEventRoomIdPtr.asFunction<
-      _ReceiptEventRoomIdReturn Function(
+      int Function(
     int,
   )>();
   late final _receiptEventReceiptRecordsPtr = _lookup<
@@ -11783,12 +11783,12 @@ class Api {
   )>();
   late final _typingEventRoomIdPtr = _lookup<
       ffi.NativeFunction<
-          _TypingEventRoomIdReturn Function(
+          ffi.Int64 Function(
     ffi.Int64,
   )>>("__TypingEvent_room_id");
 
   late final _typingEventRoomId = _typingEventRoomIdPtr.asFunction<
-      _TypingEventRoomIdReturn Function(
+      int Function(
     int,
   )>();
   late final _typingEventUserIdsPtr = _lookup<
@@ -16655,22 +16655,17 @@ class RoomMessage {
   }
 
   /// room ID of this event
-  String roomId() {
+  RoomId roomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomMessageRoomId(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RoomId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = RoomId._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -17748,22 +17743,17 @@ class Conversation {
   }
 
   /// the room id
-  String getRoomId() {
+  RoomId getRoomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._conversationGetRoomId(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RoomId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = RoomId._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -21620,22 +21610,17 @@ class Space {
   }
 
   /// the room id
-  String getRoomId() {
+  RoomId getRoomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._spaceGetRoomId(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RoomId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = RoomId._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -23681,22 +23666,17 @@ class ReceiptEvent {
   ReceiptEvent._(this._api, this._box);
 
   /// Get transaction id or flow id
-  String roomId() {
+  RoomId roomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._receiptEventRoomId(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RoomId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = RoomId._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -24113,27 +24093,22 @@ class TypingEvent {
   TypingEvent._(this._api, this._box);
 
   /// Get transaction id or flow id
-  String roomId() {
+  RoomId roomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._typingEventRoomId(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RoomId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = RoomId._(_api, tmp3_1);
     return tmp2;
   }
 
   /// Get list of user id
-  FfiListFfiString userIds() {
+  FfiListUserId userIds() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._typingEventUserIds(
@@ -24141,9 +24116,9 @@ class TypingEvent {
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListUserId");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp4 = FfiListUserId._(_api, tmp3_1);
     final tmp2 = tmp4;
     return tmp2;
   }
@@ -24741,15 +24716,6 @@ class _RoomMessageItemTypeReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomMessageRoomIdReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
 class _RoomMessageEventItemReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -25033,15 +24999,6 @@ class _ConversationLatestMessageReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
-}
-
-class _ConversationGetRoomIdReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
 }
 
 class _ConversationRoomTypeReturn extends ffi.Struct {
@@ -25390,15 +25347,6 @@ class _SpaceTopicReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _SpaceGetRoomIdReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
 class _SpaceTaskListDraftReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -25628,15 +25576,6 @@ class _VerificationEmojiDescriptionReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReceiptEventRoomIdReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
 class _ReceiptRecordEventIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -25689,15 +25628,6 @@ class _DeviceRecordLastSeenTsReturn extends ffi.Struct {
   external int arg0;
   @ffi.Uint64()
   external int arg1;
-}
-
-class _TypingEventRoomIdReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
 }
 
 class _LoginNewClientFuturePollReturn extends ffi.Struct {

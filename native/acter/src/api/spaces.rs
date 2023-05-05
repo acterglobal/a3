@@ -265,8 +265,8 @@ impl Space {
         );
     }
 
-    pub fn get_room_id(&self) -> String {
-        self.room_id().to_string()
+    pub fn get_room_id(&self) -> OwnedRoomId {
+        self.room_id().to_owned()
     }
 
     pub async fn set_acter_space_states(&self) -> Result<()> {
