@@ -16,7 +16,7 @@ git = "https://github.com/matrix-org/matrix-rust-sdk"
 rev = "794ab8bc9f90b27fda7fa38d73be58422da31982"
 default-features = false
 
-[workspace.dependencies.matrix-sdk-sled]
+[workspace.dependencies.matrix-sdk-sqlite]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 rev = "794ab8bc9f90b27fda7fa38d73be58422da31982"
 default-features = false
@@ -25,6 +25,12 @@ features = ["crypto-store", "state-store"]
 [workspace.dependencies.ruma]
 git = "https://github.com/ruma/ruma"
 rev = "54a4223caa1c1052464ecdba0f1e08f126e07bcd"
+
+[workspace.dependencies.rusqlite]
+version = "0.28.0"
+features = [
+  "bundled"  # ensure it is built into the binary
+]
 
 [workspace.dependencies]
 async-broadcast = "0.5"

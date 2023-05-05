@@ -2296,7 +2296,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListAccount? __conversationGetInviteesFuturePoll(
+  FfiListMember? __conversationGetInviteesFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2335,9 +2335,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListAccount");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListMember");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListAccount._(this, tmp13_1);
+    final tmp14 = FfiListMember._(this, tmp13_1);
     final tmp7 = tmp14;
     return tmp7;
   }
@@ -13609,55 +13609,6 @@ class Api {
     int,
     int,
   )>();
-  FfiListAccount createFfiListAccount() {
-    final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListAccountCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListAccount");
-    return FfiListAccount._(this, list_box);
-  }
-
-  late final _ffiListAccountCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-          "__FfiListAccountCreate");
-
-  late final _ffiListAccountCreate =
-      _ffiListAccountCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListAccountLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListAccountLen");
-
-  late final _ffiListAccountLen =
-      _ffiListAccountLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListAccountElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListAccountElementAt");
-
-  late final _ffiListAccountElementAt =
-      _ffiListAccountElementAtPtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListAccountRemovePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListAccountRemove");
-
-  late final _ffiListAccountRemove =
-      _ffiListAccountRemovePtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListAccountAddPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-          "__FfiListAccountAdd");
-
-  late final _ffiListAccountAdd =
-      _ffiListAccountAddPtr.asFunction<void Function(int, int)>();
-
-  late final _ffiListAccountInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListAccountInsert");
-
-  late final _ffiListAccountInsert =
-      _ffiListAccountInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListActerPin createFfiListActerPin() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListActerPinCreate());
@@ -17990,7 +17941,7 @@ class Conversation {
   }
 
   /// get the users that were invited to this room
-  Future<FfiListAccount> getInvitees() {
+  Future<FfiListMember> getInvitees() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._conversationGetInvitees(
@@ -27326,66 +27277,6 @@ class _ClientSubscribeStreamPollReturn extends ffi.Struct {
   external int arg0;
   @ffi.Uint8()
   external int arg1;
-}
-
-class FfiListAccount extends Iterable<Account>
-    implements CustomIterable<Account> {
-  final Api _api;
-  final _Box _box;
-
-  FfiListAccount._(this._api, this._box);
-
-  @override
-  Iterator<Account> get iterator => CustomIterator(this);
-
-  @override
-  int get length {
-    return _api._ffiListAccountLen(_box.borrow());
-  }
-
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
-  @override
-  Account elementAt(int index) {
-    final address = _api._ffiListAccountElementAt(_box.borrow(), index);
-    final reference = _Box(
-      _api,
-      ffi.Pointer.fromAddress(address),
-      "drop_box_Leak",
-      context: this,
-    );
-    return Account._(_api, reference);
-  }
-
-  Account operator [](int index) {
-    return elementAt(index);
-  }
-
-  /// Moves the element out of this list and returns it
-  Account remove(int index) {
-    final address = _api._ffiListAccountRemove(_box.borrow(), index);
-    final reference =
-        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Account");
-    reference._finalizer = _api._registerFinalizer(reference);
-    return Account._(_api, reference);
-  }
-
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
-  void add(Account element) {
-    _api._ffiListAccountAdd(_box.borrow(), element._box.borrow());
-    element._box.move();
-  }
-
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
-  void insert(int index, Account element) {
-    _api._ffiListAccountInsert(_box.borrow(), index, element._box.borrow());
-    element._box.move();
-  }
-
-  void drop() {
-    _box.drop();
-  }
 }
 
 class FfiListActerPin extends Iterable<ActerPin>

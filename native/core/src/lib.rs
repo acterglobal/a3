@@ -16,6 +16,8 @@ pub mod store;
 pub mod support;
 pub use error::{Error, Result};
 pub use support::RestoreToken;
+#[cfg(feature = "db")]
+pub mod db;
 pub mod spaces;
 #[cfg(feature = "templates")]
 pub mod templates;

@@ -36,6 +36,7 @@ log-panics = "2.0.0"
 mime = "0.3.16"
 parse-env-filter = "0.1.0"
 ruma = { workspace = true }
+rusqlite = { workspace = true }
 sanitize-filename-reader-friendly = "2.2.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
@@ -49,7 +50,7 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 
 [dependencies.acter-core]
 path = "../core"
-features = ["templates"]
+features = ["templates", "db"]
 
 [dependencies.matrix-sdk]
 workspace = true
@@ -60,7 +61,6 @@ features = [
     "markdown",
 #   "qrcode",
     "rustls-tls",
-    "sled",
 ]
 
 [dependencies.matrix-sdk-base]
@@ -73,7 +73,7 @@ wasm-bindgen-futures = "0.4.28"
 
 #   ----   non-WASM
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-matrix-sdk-sled = { workspace = true }
+matrix-sdk-sqlite = { workspace = true }
 
 #   ----   ANDROID
 [target.'cfg(target_os = "android")'.dependencies]

@@ -11,6 +11,7 @@ license-file = "../../LICENSE.txt"
 
 [features]
 templates = ["toml", "minijinja", "indexmap", "tokio-retry"]
+db = [ "matrix-sdk-base", "matrix-sdk-sqlite" ]
 
 [dependencies]
 async-broadcast = { workspace = true }
@@ -40,6 +41,17 @@ tokio-retry = { version = "0.3.0", optional = true }
 
 [dependencies.matrix-sdk]
 workspace = true
+default-features = false
+
+[dependencies.matrix-sdk-sqlite]
+workspace = true
+optional = true
+default-features = false
+features = ["state-store", "crypto-store"]
+
+[dependencies.matrix-sdk-base]
+workspace = true
+optional = true
 default-features = false
 
 [dev-dependencies]

@@ -1,9 +1,9 @@
+use acter_core::db::make_default_store_config;
 use anyhow::{bail, Result};
 use chrono::Local;
 use lazy_static::lazy_static;
 use log::{LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
-use matrix_sdk_sled::make_store_config;
 use parse_env_filter::eager::{filters, Filter};
 use ruma::api::client::backup;
 use std::{
@@ -30,7 +30,7 @@ pub async fn new_client_config(
     std::fs::create_dir_all(&data_path)?;
 
     let builder = Client::builder()
-        .store_config(make_store_config(&data_path, None).await?)
+        .store_config(make_default_store_config(&data_path, None).await?)
         .user_agent(format!("acter-testing/{:}", env!("CARGO_PKG_VERSION")));
     Ok(builder)
 }
