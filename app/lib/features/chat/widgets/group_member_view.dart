@@ -22,7 +22,7 @@ class GroupMember extends StatelessWidget {
     return Flex(
       direction: Axis.horizontal,
       children: [
-        CustomAvatar(
+        UserAvatar(
           uniqueKey: userId,
           radius: 16,
           isGroup: false,

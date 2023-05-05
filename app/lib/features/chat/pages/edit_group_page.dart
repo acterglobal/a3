@@ -69,7 +69,7 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
                     width: 100,
                     child: FittedBox(
                       fit: BoxFit.contain,
-                      child: CustomAvatar(
+                      child: UserAvatar(
                         uniqueKey: widget.room.getRoomId(),
                         avatar: avatar,
                         displayName: displayName,

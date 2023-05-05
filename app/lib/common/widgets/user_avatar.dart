@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:multiavatar/multiavatar.dart';
 import 'package:flutter/material.dart';
 
-class CustomAvatar extends StatefulWidget {
+class UserAvatar extends StatefulWidget {
   final String uniqueKey;
   final Future<FfiBufferUint8>? avatar;
   final int? cacheHeight;
@@ -16,7 +16,7 @@ class CustomAvatar extends StatefulWidget {
   final bool isGroup;
   final String stringName;
 
-  const CustomAvatar({
+  const UserAvatar({
     Key? key,
     required this.uniqueKey,
     this.avatar,
@@ -29,10 +29,10 @@ class CustomAvatar extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<CustomAvatar> createState() => _CustomAvatarState();
+  State<UserAvatar> createState() => _UserAvatarState();
 }
 
-class _CustomAvatarState extends State<CustomAvatar> {
+class _UserAvatarState extends State<UserAvatar> {
   late Future<Uint8List>? _avatar;
 
   // avoid re-run future when object state isn't changed.

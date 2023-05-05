@@ -266,7 +266,7 @@ class _TextInputWidget extends StatelessWidget {
                 leading: SizedBox(
                   width: 35,
                   height: 35,
-                  child: CustomAvatar(
+                  child: UserAvatar(
                     uniqueKey: roomMember['link'],
                     radius: 20,
                     avatar: roomMember['avatar'],

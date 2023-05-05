@@ -29,7 +29,7 @@ class MemberAvatar extends ConsumerWidget {
                 ),
                 shape: BoxShape.circle,
               ),
-              child: CustomAvatar(
+              child: UserAvatar(
                 uniqueKey: member.userId().toString(),
                 radius: 20,
                 isGroup: false,

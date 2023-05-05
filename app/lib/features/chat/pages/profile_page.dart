@@ -89,7 +89,7 @@ class ProfilePage extends StatelessWidget {
                     width: 100,
                     child: FittedBox(
                       fit: BoxFit.contain,
-                      child: CustomAvatar(
+                      child: UserAvatar(
                         uniqueKey: room.getRoomId(),
                         avatar: roomAvatar,
                         displayName: roomName,

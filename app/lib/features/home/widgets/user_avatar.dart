@@ -21,7 +21,7 @@ class UserAvatarWidget extends ConsumerWidget {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CustomAvatar(
+            UserAvatar(
               uniqueKey: client.userId().toString(),
               radius: 20,
               isGroup: false,

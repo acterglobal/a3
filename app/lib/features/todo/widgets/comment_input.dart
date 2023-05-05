@@ -53,7 +53,7 @@ class CommentInputState extends State<CommentInput> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
-                  child: CustomAvatar(
+                  child: UserAvatar(
                     uniqueKey: account.userId(),
                     radius: 18,
                     isGroup: false,

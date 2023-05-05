@@ -55,7 +55,7 @@ class _InviteInfoCardState extends State<InviteInfoCard> {
         children: <Widget>[
           ListTile(
             // leading: CircleAvatar(backgroundColor: avatarColor),
-            leading: CustomAvatar(
+            leading: UserAvatar(
               uniqueKey: myId,
               avatar: avatar,
               displayName: displayName,

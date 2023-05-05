@@ -694,7 +694,7 @@ class _DiscussionWidget extends StatelessWidget {
                               itemCount:
                                   comments.length > 5 ? 5 : comments.length,
                               itemBuilder: (context, index) => ListTile(
-                                leading: CustomAvatar(
+                                leading: UserAvatar(
                                   uniqueKey: comments[index].userId,
                                   radius: 18,
                                   isGroup: false,

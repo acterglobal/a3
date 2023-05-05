@@ -123,7 +123,7 @@ class _RoomPageState extends State<RoomPage> {
       child: SizedBox(
         height: 28,
         width: 28,
-        child: CustomAvatar(
+        child: UserAvatar(
           uniqueKey: userId,
           avatar: roomController.getUserAvatar(userId),
           displayName: roomController.getUserName(userId),
@@ -449,7 +449,7 @@ class _RoomPageState extends State<RoomPage> {
           width: 45,
           child: FittedBox(
             fit: BoxFit.contain,
-            child: CustomAvatar(
+            child: UserAvatar(
               uniqueKey: widget.conversation.getRoomId(),
               avatar: widget.avatar,
               displayName: widget.name,

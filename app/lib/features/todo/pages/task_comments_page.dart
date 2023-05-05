@@ -86,7 +86,7 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
                           shrinkWrap: true,
                           itemCount: snapshot.data!.length,
                           itemBuilder: (context, index) => ListTile(
-                            leading: CustomAvatar(
+                            leading: UserAvatar(
                               uniqueKey: snapshot.data![index].userId,
                               radius: 18,
                               isGroup: false,

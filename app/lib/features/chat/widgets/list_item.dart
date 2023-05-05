@@ -49,7 +49,7 @@ class _ChatListItemState extends State<ListItem> {
       children: <Widget>[
         ListTile(
           onTap: () => handleTap(context),
-          leading: CustomAvatar(
+          leading: UserAvatar(
             uniqueKey: roomId,
             avatar: widget.room.avatar,
             displayName: widget.room.displayName,

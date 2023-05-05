@@ -20,7 +20,7 @@ class PendingReqListView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ListTile(
-        leading: CustomAvatar(
+        leading: UserAvatar(
           uniqueKey: userId,
           avatar: avatar,
           displayName: displayName,

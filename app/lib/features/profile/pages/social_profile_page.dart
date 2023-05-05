@@ -85,7 +85,7 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
                               width: 5,
                             ),
                           ),
-                          child: CustomAvatar(
+                          child: UserAvatar(
                             uniqueKey: myId ?? UniqueKey().toString(),
                             avatar: avatar,
                             displayName: displayName,
