@@ -1,4 +1,4 @@
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 use clap::Parser;
 use futures::{pin_mut, StreamExt};
 use std::{collections::HashMap, path::PathBuf};
@@ -32,7 +32,7 @@ impl ExecuteOpts {
         let sync_state = user.start_sync();
 
         if !self.ignore_sync {
-            let mut is_synced = sync_state.first_synced_rx().context("not yet read")?;
+            let mut is_synced = sync_state.first_synced_rx().expect("not yet read");
             while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         }
 

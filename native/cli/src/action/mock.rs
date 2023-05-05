@@ -210,7 +210,7 @@ impl Mock {
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
-                    .context("already checked")?;
+                    .expect("already checked");
                 tracing::warn!("Problem creating Ops Room: {:?}", inner);
             }
             Err(e) => {
@@ -232,7 +232,7 @@ impl Mock {
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
-                    .context("already checked")?;
+                    .expect("already checked");
                 tracing::warn!("Problem creating Promenade Room: {:?}", inner);
             }
             Err(e) => {
@@ -254,7 +254,7 @@ impl Mock {
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
-                    .context("already checked")?;
+                    .expect("already checked");
                 tracing::warn!("Problem creating Quarks Room: {:?}", inner);
             }
             Err(e) => {
