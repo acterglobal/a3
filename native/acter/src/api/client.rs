@@ -10,9 +10,9 @@ use futures_signals::signal::{
     channel, Mutable, MutableSignalCloned, Receiver, SignalExt, SignalStream,
 };
 use log::info;
+use tokio::sync::{Mutex, RwLock};
 use matrix_sdk::{
     config::SyncSettings,
-    locks::{Mutex, RwLock},
     room::Room as MatrixRoom,
     ruma::{device_id, OwnedDeviceId, OwnedUserId, RoomId, UserId},
     Client as MatrixClient, LoopCtrl, RumaApiError,

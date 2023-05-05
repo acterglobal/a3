@@ -6,6 +6,7 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use log::{info, warn};
+use matrix_sdk_base::RoomMemberships;
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
@@ -104,7 +105,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let members = room
-                    .active_members()
+                    .members(RoomMemberships::ACTIVE)
                     .await
                     .context("No members")?
                     .into_iter()
@@ -124,7 +125,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let members = room
-                    .active_members_no_sync()
+                    .members(RoomMemberships::ACTIVE)
                     .await
                     .context("No members")?
                     .into_iter()
@@ -335,7 +336,7 @@ impl Room {
             .await?
     }
 
-    pub async fn get_invitees(&self) -> Result<Vec<Account>> {
+    pub async fn get_invitees(&self) -> Result<Vec<Member>> {
         let my_client = self.room.client();
         let room = if let MatrixRoom::Invited(r) = &self.room {
             r.clone()
@@ -345,19 +346,17 @@ impl Room {
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                let invited = my_client
-                    .store()
-                    .get_invited_user_ids(room.room_id())
-                    .await?;
-                let mut accounts: Vec<Account> = vec![];
-                for user_id in invited.iter() {
-                    let other_client = MatrixClient::builder()
-                        .server_name(user_id.server_name())
-                        .build()
-                        .await?;
-                    accounts.push(Account::new(other_client.account(), user_id.to_string()));
-                }
-                Ok(accounts)
+                let members = room
+                    .members(RoomMemberships::INVITE)
+                    .await
+                    .context("No members")?
+                    .into_iter()
+                    .map(|member| Member {
+                        client: my_client.clone(),
+                        member,
+                    })
+                    .collect();
+                Ok(members)
             })
             .await?
     }

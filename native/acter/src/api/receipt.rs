@@ -3,9 +3,9 @@ use futures::{
     StreamExt,
 };
 use log::{info, warn};
+use tokio::sync::Mutex;
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
-    locks::Mutex,
     room::Room as MatrixRoom,
     ruma::{
         events::receipt::{ReceiptType, SyncReceiptEvent},

@@ -4,10 +4,11 @@ use derive_builder::Builder;
 use futures::channel::mpsc::{channel, Receiver, Sender};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use log::{info, warn};
+use tokio::sync::Mutex;
+use matrix_sdk_base::RoomMemberships;
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
-    locks::Mutex,
     room::{MessagesOptions, Room as MatrixRoom},
     ruma::{
         api::client::room::{
@@ -96,7 +97,7 @@ impl Conversation {
         RUNTIME
             .spawn(async move {
                 let mut records: Vec<ReceiptRecord> = vec![];
-                for member in room.active_members().await? {
+                for member in room.members(RoomMemberships::ACTIVE).await? {
                     let user_id = member.user_id();
                     if let Some((event_id, receipt)) = room
                         .user_receipt(ReceiptType::Read, ReceiptThread::Main, user_id)

@@ -526,7 +526,7 @@ object Conversation {
     fn leave() -> Future<Result<bool>>;
 
     /// get the users that were invited to this room
-    fn get_invitees() -> Future<Result<Vec<Account>>>;
+    fn get_invitees() -> Future<Result<Vec<Member>>>;
 
     /// decrypted image file data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable

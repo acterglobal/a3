@@ -2679,8 +2679,8 @@ impl RoomMessage {
         let sender = event.sender().to_string();
         let origin_server_ts: u64 = event.timestamp().get().into();
         let mut reactions: HashMap<String, ReactionDesc> = HashMap::new();
-        if let Some(evt) = event.as_remote() {
-            for (key, value) in evt.reactions().iter() {
+        if !event.is_local_echo() {
+            for (key, value) in event.reactions().iter() {
                 let senders: Vec<OwnedUserId> = value.senders().map(|x| x.to_owned()).collect();
                 let description = ReactionDesc::new(senders.len() as u64, senders);
                 reactions.insert(key.clone(), description);

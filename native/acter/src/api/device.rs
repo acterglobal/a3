@@ -4,9 +4,9 @@ use futures::{
     StreamExt,
 };
 use log::{info, warn};
+use tokio::sync::Mutex;
 use matrix_sdk::{
     encryption::identities::Device,
-    locks::Mutex,
     ruma::{
         device_id, events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch,
         OwnedDeviceId, OwnedUserId,

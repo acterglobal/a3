@@ -4,11 +4,11 @@ use futures::{
     StreamExt,
 };
 use log::{info, warn};
+use tokio::sync::Mutex;
 use matrix_sdk::{
     config::SyncSettings,
     encryption::verification::{Verification, VerificationRequest},
     event_handler::{Ctx, EventHandlerHandle},
-    locks::Mutex,
     ruma::{
         events::{
             forwarded_room_key::ToDeviceForwardedRoomKeyEvent,

@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use log::{error, info};
+use matrix_sdk_base::RoomMemberships;
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::Room as MatrixRoom,
@@ -301,7 +302,7 @@ impl Client {
             .spawn(async move {
                 // get member list of target room
                 let mut room_members = vec![];
-                let members = room.members().await?;
+                let members = room.members(RoomMemberships::ACTIVE).await?;
                 for member in members {
                     room_members.push(member.user_id().to_string());
                 }
@@ -312,7 +313,7 @@ impl Client {
                     if convo.room_id() == room_id {
                         continue;
                     }
-                    let members = convo.members().await?;
+                    let members = convo.members(RoomMemberships::ACTIVE).await?;
                     for member in members {
                         let user_id = member.user_id().to_string();
                         // exclude user that belongs to target room
