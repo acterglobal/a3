@@ -28,7 +28,7 @@ impl List {
         tracing::info!(" - Syncing -");
         let sync_state = client.start_sync();
 
-        let mut is_synced = sync_state.first_synced_rx().context("note yet read")?;
+        let mut is_synced = sync_state.first_synced_rx().context("not yet read")?;
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         tracing::info!(" - First Sync finished - ");
 

@@ -24,7 +24,7 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     )
     .await?;
     let sisko_syncer = sisko.start_sync();
-    let mut first_synced = sisko_syncer.first_synced_rx().expect("note yet read");
+    let mut first_synced = sisko_syncer.first_synced_rx().expect("not yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let space = sisko
         .get_space(format!("#ops:{homeserver_name}"))
