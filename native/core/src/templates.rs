@@ -544,10 +544,12 @@ impl CoreClient {
 
 #[cfg(test)]
 mod tests {
+    use anyhow::Result;
+
     use super::*;
 
     #[test]
-    fn test_parsing_v1() -> anyhow::Result<()> {
+    fn test_parsing_v1() -> Result<()> {
         let tmpl = r#"
 version = "0.1.1"
 name = "Example Template"

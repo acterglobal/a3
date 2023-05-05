@@ -2,7 +2,7 @@ use acter_core::{
     client::CoreClient, executor::Executor, models::AnyActerModel, ruma::OwnedRoomId,
     spaces::is_acter_space, store::Store, templates::Engine, RestoreToken,
 };
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
 use futures::{future::join_all, pin_mut, stream, Stream, StreamExt};
