@@ -1173,13 +1173,13 @@ object Invitation {
     fn origin_server_ts() -> Option<u64>;
 
     /// get the room id of this invitation
-    fn room_id() -> string;
+    fn room_id() -> RoomId;
 
     /// get the room name of this invitation
-    fn room_name() -> string;
+    fn room_name() -> Future<Result<string>>;
 
     /// get the user id of this invitation sender
-    fn sender() -> string;
+    fn sender() -> UserId;
 
     /// get the user profile that contains avatar and display name
     fn get_sender_profile() -> Future<Result<UserProfile>>;

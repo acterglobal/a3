@@ -146,25 +146,43 @@ class _TitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      invitation.sender(),
-    );
+    return Text(invitation.sender().toString());
   }
 }
 
-class _SubtitleWidget extends StatelessWidget {
-  const _SubtitleWidget({required this.invitation});
-
+class _SubtitleWidget extends StatefulWidget {
   final Invitation invitation;
+
+  const _SubtitleWidget({
+    Key? key,
+    required this.invitation,
+  }) : super(key: key);
+
+  @override
+  State<_SubtitleWidget> createState() => _SubtitleWidgetState();
+}
+
+class _SubtitleWidgetState extends State<_SubtitleWidget> {
+  String? roomName;
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.invitation.roomName().then((value) {
+      if (mounted) {
+        setState(() => roomName = value);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return RichText(
       text: TextSpan(
         text: AppLocalizations.of(context)!.invitationText2,
         children: <TextSpan>[
-          TextSpan(
-            text: invitation.roomName(),
-          ),
+          TextSpan(text: roomName),
         ],
       ),
     );
