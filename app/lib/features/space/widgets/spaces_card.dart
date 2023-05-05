@@ -45,13 +45,11 @@ class SpacesCard extends ConsumerWidget {
             ...spaces.when(
               data: (spaces) => spaces.map(
                 (space) {
-                  final roomId = space.getRoomId();
+                  final roomId = space.getRoomId().toString();
                   final profile = ref.watch(spaceProfileDataProvider(space));
                   return profile.when(
                     data: (profile) => Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: 10,
-                      ),
+                      padding: const EdgeInsets.only(bottom: 10),
                       child: ListTile(
                         onTap: () => context.go('/$roomId'),
                         title: Text(

@@ -36,6 +36,7 @@ class ProfilePage extends StatelessWidget {
     final ChatRoomController roomController = Get.find<ChatRoomController>();
     String chatDesc =
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.';
+    String roomId = room.getRoomId().toString();
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -50,13 +51,9 @@ class ProfilePage extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
-                      Text(
-                        'Report',
-                      ),
+                      Text('Report'),
                       SizedBox(width: 50),
-                      Icon(
-                        Atlas.triangle_exclamation,
-                      )
+                      Icon(Atlas.triangle_exclamation)
                     ],
                   ),
                 ),
@@ -90,14 +87,14 @@ class ProfilePage extends StatelessWidget {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: CustomAvatar(
-                        uniqueKey: room.getRoomId(),
+                        uniqueKey: roomId,
                         avatar: roomAvatar,
                         displayName: roomName,
                         radius: 20,
                         cacheHeight: 120,
                         cacheWidth: 120,
                         isGroup: true,
-                        stringName: simplifyRoomId(room.getRoomId())!,
+                        stringName: simplifyRoomId(roomId)!,
                       ),
                     ),
                   ),
@@ -609,16 +606,15 @@ class ProfilePage extends StatelessWidget {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          String userId = roomController.activeMembers[index].userId();
+          String userId =
+              roomController.activeMembers[index].userId().toString();
           return Padding(
             padding: const EdgeInsets.all(12),
             child: GetBuilder<ChatRoomController>(
               id: 'user-profile-$userId',
               builder: (ChatRoomController controller) {
                 return (controller.getUserName(userId) == null)
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
+                    ? const Center(child: CircularProgressIndicator())
                     : GroupMember(
                         userId: userId,
                         name: controller.getUserName(userId),

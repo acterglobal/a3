@@ -1,10 +1,8 @@
-use std::path::PathBuf;
-
 use acter::api::{login_new_client, login_with_token, Client};
-use anyhow::Result;
+use anyhow::{Context, Result};
 use clap::{crate_version, Parser};
-use dialoguer::theme::ColorfulTheme;
-use dialoguer::Password;
+use dialoguer::{theme::ColorfulTheme, Password};
+use std::path::PathBuf;
 
 use crate::action::Action;
 
@@ -22,6 +20,7 @@ pub struct LoginConfig {
         default_value = "http://localhost:8118"
     )]
     pub homeserver: String,
+
     /// name of that homeserver
     #[clap(
         long = "homeserver-name",
@@ -29,6 +28,7 @@ pub struct LoginConfig {
         default_value = "localhost"
     )]
     pub server_name: String,
+
     /// Fully qualified @SOMETHING:server.tld username.
     #[clap(
         short = 'u',
@@ -37,14 +37,18 @@ pub struct LoginConfig {
         env = ENV_USER
     )]
     login_username: String,
+
     #[clap(long="password", env = ENV_PASSWORD)]
     login_password: Option<String>,
+
     /// Force a fresh login, drop all existing datastore
     #[clap(long)]
     force_login: bool,
+
     /// Do not store the access token on disk
     #[clap(long)]
     dont_store_token: bool,
+
     /// Use the path for reading (and optionall storing) the access token
     #[clap(long)]
     token_path: Option<PathBuf>,
@@ -72,13 +76,13 @@ impl LoginConfig {
                 token_path_string.display()
             );
             let token = std::fs::read_to_string(access_token_path)
-                .expect("reading access token file failed");
+                .context("reading access token file failed")?;
             return login_with_token(base_path, token).await;
         }
 
         let password = match self.login_password {
             Some(ref pw) => pw.clone(),
-            _ => Password::with_theme(&theme)
+            None => Password::with_theme(&theme)
                 .with_prompt(format!("Password for {username:} :"))
                 .interact()?,
         };

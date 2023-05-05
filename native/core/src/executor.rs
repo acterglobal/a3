@@ -32,9 +32,9 @@ impl Executor {
                 let sender = o.get();
                 if sender.is_closed() {
                     // replace the existing channel to reopen
-                    let (sender, recv) = broadcast(1);
+                    let (sender, receiver) = broadcast(1);
                     o.replace_entry(sender);
-                    recv
+                    receiver
                 } else {
                     sender.new_receiver()
                 }
@@ -99,22 +99,19 @@ impl Executor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::events::comments::CommentEventContent;
-    use crate::events::BelongsTo;
+    use crate::events::{comments::CommentEventContent, BelongsTo};
     use crate::models::{Comment, TestModelBuilder};
     use crate::ruma::{api::MatrixVersion, event_id};
     use env_logger;
-    use matrix_sdk::ruma::events::room::message::TextMessageEventContent;
-    use matrix_sdk::Client;
+    use matrix_sdk::{ruma::events::room::message::TextMessageEventContent, Client};
 
     async fn fresh_executor() -> crate::Result<Executor> {
+        let config = matrix_sdk_base::store::StoreConfig::default()
+            .state_store(matrix_sdk_base::store::MemoryStore::new());
         let client = Client::builder()
             .homeserver_url("http://localhost")
             .server_versions([MatrixVersion::V1_5])
-            .store_config(
-                matrix_sdk_base::store::StoreConfig::default()
-                    .state_store(matrix_sdk_base::store::MemoryStore::new()),
-            )
+            .store_config(config)
             .build()
             .await
             .unwrap();
@@ -246,7 +243,7 @@ mod tests {
         let new_model = waiter.await?;
 
         let AnyActerModel::TestModel(inner_model) = new_model else {
-            panic!("Not a test model")
+            panic!("Not a test model");
         };
 
         assert_eq!(inner_model, model);

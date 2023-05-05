@@ -8,7 +8,7 @@ import 'package:acter/features/chat/widgets/list_item.dart';
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/models/JoinedRoom.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Client, Invitation;
+    show Client, Invitation, RoomId;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -312,13 +312,13 @@ class _JoinedItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String roomId = item.conversation.getRoomId();
+    RoomId roomId = item.conversation.getRoomId();
     // we should be able to update only changed room items
     // so we use GetBuilder to render item
     return GetBuilder<ChatListController>(
       id: 'chatroom-$roomId',
       builder: (controller) => ListItem(
-        key: Key(roomId),
+        key: Key(roomId.toString()),
         client: client,
         room: item,
       ),

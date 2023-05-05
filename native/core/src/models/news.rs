@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
 use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store};
-
 use crate::{
     events::news::{NewsEntryEventContent, NewsEntryUpdateBuilder, NewsEntryUpdateEventContent},
     statics::KEYS,
@@ -16,6 +15,7 @@ pub struct NewsEntry {
     inner: NewsEntryEventContent,
     meta: EventMeta,
 }
+
 impl Deref for NewsEntry {
     type Target = NewsEntryEventContent;
     fn deref(&self) -> &Self::Target {
@@ -114,9 +114,8 @@ impl ActerModel for NewsEntryUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![NewsEntry::key_from_event(
-            &self.inner.news_entry.event_id,
-        )])
+        let event_ids = vec![NewsEntry::key_from_event(&self.inner.news_entry.event_id)];
+        Some(event_ids)
     }
 }
 

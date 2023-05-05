@@ -356,9 +356,9 @@ impl TaskList {
         let tasks_key = self.content.tasks_key();
         let client = self.client.clone();
         let room = self.room.clone();
-        Ok(RUNTIME
+        RUNTIME
             .spawn(async move {
-                client
+                let res = client
                     .store()
                     .get_list(&tasks_key)
                     .await
@@ -375,9 +375,10 @@ impl TaskList {
                             None
                         }
                     })
-                    .collect()
+                    .collect();
+                Ok(res)
             })
-            .await?)
+            .await?
     }
 
     pub async fn comments(&self) -> Result<crate::CommentsManager> {

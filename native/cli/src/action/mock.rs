@@ -7,7 +7,7 @@ use acter_core::{
     models::ActerModel,
     ruma::{api::client::room::Visibility, OwnedUserId},
 };
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sled::make_store_config;
@@ -22,6 +22,7 @@ pub struct MockOpts {
         default_value = "http://localhost:8118"
     )]
     pub homeserver: String,
+
     /// name of that homeserver
     #[clap(
         long = "homeserver-name",
@@ -168,19 +169,19 @@ impl Mock {
         let civilians = self.civilians().await;
         let quark_customers = self.quark_customers().await;
 
-        let team_ids: Vec<OwnedUserId> = team
+        let team_ids = team
             .iter()
             .map(|a| a.user_id())
             .map(|a| a.expect("everyone here has an id"))
             .collect();
 
-        let civilians_ids: Vec<OwnedUserId> = civilians
+        let civilians_ids = civilians
             .iter()
             .map(|a| a.user_id())
             .map(|a| a.expect("everyone here has an id"))
             .collect();
 
-        let quark_customer_ids: Vec<OwnedUserId> = quark_customers
+        let quark_customer_ids = quark_customers
             .iter()
             .map(|a| a.user_id())
             .map(|a| a.expect("everyone here has an id"))
@@ -188,23 +189,21 @@ impl Mock {
 
         let everyone = self.everyone().await;
 
-        let _everyones_ids: Vec<OwnedUserId> = everyone
+        let _everyones_ids = everyone
             .iter()
             .map(|a| a.user_id())
             .map(|a| a.expect("everyone here has an id"))
-            .collect();
+            .collect::<Vec<OwnedUserId>>();
 
-        let ops_settings = Box::new(
-            CreateSpaceSettingsBuilder::default()
-                .name("Ops".to_owned())
-                .alias("ops".to_owned())
-                .invites(team_ids)
-                .build()?,
-        );
+        let ops_settings = CreateSpaceSettingsBuilder::default()
+            .name("Ops".to_owned())
+            .alias("ops".to_owned())
+            .invites(team_ids)
+            .build()?;
 
         let admin = self.client("admin".to_owned()).await.unwrap();
 
-        match admin.create_acter_space(ops_settings).await {
+        match admin.create_acter_space(Box::new(ops_settings)).await {
             Ok(ops_id) => {
                 tracing::info!("Ops Room Id: {:?}", ops_id);
             }
@@ -219,16 +218,14 @@ impl Mock {
             }
         }
 
-        let promenade_settings = Box::new(
-            CreateSpaceSettingsBuilder::default()
-                .name("Promenade".to_owned())
-                .alias("promenade".to_owned())
-                .visibility(Visibility::Public)
-                .invites(civilians_ids)
-                .build()?,
-        );
+        let promenade_settings = CreateSpaceSettingsBuilder::default()
+            .name("Promenade".to_owned())
+            .alias("promenade".to_owned())
+            .visibility(Visibility::Public)
+            .invites(civilians_ids)
+            .build()?;
 
-        match admin.create_acter_space(promenade_settings).await {
+        match admin.create_acter_space(Box::new(promenade_settings)).await {
             Ok(promenade_room_id) => {
                 tracing::info!("Promenade Room Id: {:?}", promenade_room_id);
             }
@@ -243,16 +240,14 @@ impl Mock {
             }
         }
 
-        let quarks_settings = Box::new(
-            CreateSpaceSettingsBuilder::default()
-                .name("Quarks'".to_owned())
-                .alias("quarks".to_owned())
-                .visibility(Visibility::Public)
-                .invites(quark_customer_ids)
-                .build()?,
-        );
+        let quarks_settings = CreateSpaceSettingsBuilder::default()
+            .name("Quarks'".to_owned())
+            .alias("quarks".to_owned())
+            .visibility(Visibility::Public)
+            .invites(quark_customer_ids)
+            .build()?;
 
-        match admin.create_acter_space(quarks_settings).await {
+        match admin.create_acter_space(Box::new(quarks_settings)).await {
             Ok(quarks_id) => {
                 tracing::info!("Quarks Room Id: {:?}", quarks_id);
             }
@@ -339,15 +334,16 @@ impl Mock {
                     let cloned_odo = cloned_odo.clone();
                     let task_list_id = task_list_id.clone();
                     async move {
-                        Ok(cloned_odo
+                        let task_list = cloned_odo
                             .task_lists()
                             .await?
                             .into_iter()
-                            .find(|e| e.event_id() == task_list_id))
+                            .find(|e| e.event_id() == task_list_id);
+                        Ok(task_list)
                     }
                 })
                 .await?
-                .expect("Task list not found even after polling for 3 seconds")
+                .context("Task list not found even after polling for 3 seconds")?
             };
 
         task_list
@@ -383,7 +379,7 @@ impl Mock {
         std::fs::create_dir_all(".local")?;
 
         futures::future::try_join_all(self.users.values().map(|cl| async move {
-            let full_username = cl.user_id().unwrap();
+            let full_username = cl.user_id().expect("You seem to be not logged in");
             let user_export_file = sanitize(".local", &format!("mock_export_{full_username:}"));
 
             cl.sync_once(Default::default()).await?;

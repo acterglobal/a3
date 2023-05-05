@@ -28,7 +28,7 @@ class MySpacesSection extends ConsumerWidget {
                   .sublist(0, spaces.length > limit ? limit : spaces.length)
                   .map(
                 (space) {
-                  final roomId = space.getRoomId();
+                  final roomId = space.getRoomId().toString();
                   final profile = ref.watch(spaceProfileDataProvider(space));
                   return profile.when(
                     data: (profile) => Padding(

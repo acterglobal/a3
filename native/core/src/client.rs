@@ -16,6 +16,7 @@ impl CoreClient {
         let store = Store::new(client.clone()).await?;
         let executor = Executor::new(store.clone()).await?;
         client.add_event_handler_context(executor.clone());
+
         Ok(CoreClient {
             store,
             executor,

@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -71,7 +71,7 @@ async fn news_smoketest() -> Result<()> {
         let client = fetcher_client.clone();
         async move {
             if client.latest_news_entries(10).await?.len() != 3 {
-                anyhow::bail!("not all news found");
+                bail!("not all news found");
             } else {
                 Ok(())
             }

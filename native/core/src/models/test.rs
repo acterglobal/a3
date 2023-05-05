@@ -2,17 +2,19 @@ use derive_builder::Builder;
 use matrix_sdk::ruma::{event_id, room_id, user_id, OwnedEventId};
 use serde::{Deserialize, Serialize};
 
-use crate::models::ActerModel;
-
 use super::EventMeta;
+use crate::models::ActerModel;
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, Builder)]
 pub struct TestModel {
     event_id: OwnedEventId,
+
     #[builder(default)]
     indizes: Vec<String>,
+
     #[builder(default)]
     belongs_to: Vec<String>,
+
     #[builder(default)]
     transition: bool,
 }
@@ -36,12 +38,15 @@ impl ActerModel for TestModel {
     fn event_id(&self) -> &matrix_sdk::ruma::EventId {
         &self.event_id
     }
+
     fn capabilities(&self) -> &[super::Capability] {
         &[super::Capability::Commentable]
     }
+
     fn indizes(&self) -> Vec<String> {
         self.indizes.clone()
     }
+
     fn belongs_to(&self) -> Option<Vec<String>> {
         Some(self.belongs_to.clone())
     }
@@ -49,6 +54,7 @@ impl ActerModel for TestModel {
     fn transition(&mut self, _model: &super::AnyActerModel) -> crate::Result<bool> {
         Ok(true)
     }
+
     async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
         super::default_model_execute(store, self.into()).await
     }

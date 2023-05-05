@@ -48,7 +48,7 @@ async fn main() -> Result<()> {
     let sync_state = client.start_sync();
 
     tokio::spawn(async move {
-        let username = client.user_id().unwrap();
+        let username = client.user_id().expect("You seem to be not logged in");
         sender
             .send(AppUpdate::SetUsername(username.to_string()))
             .unwrap();

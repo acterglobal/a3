@@ -1,9 +1,10 @@
-use crate::utils::random_user_with_template;
-use anyhow::Result;
+use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
+
+use crate::utils::random_user_with_template;
 
 const TMPL: &str = r#"
 version = "0.1"
@@ -46,7 +47,7 @@ async fn calendar_smoketest() -> Result<()> {
         let client = fetcher_client.clone();
         async move {
             if client.calendar_events().await?.len() != 3 {
-                anyhow::bail!("not all calendar_events found");
+                bail!("not all calendar_events found");
             } else {
                 Ok(())
             }

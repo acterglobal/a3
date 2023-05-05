@@ -1,4 +1,3 @@
-use crate::util::deserialize_some;
 use derive_builder::Builder;
 use derive_getters::Getters;
 use matrix_sdk::ruma::events::macros::EventContent;
@@ -8,6 +7,7 @@ use super::{
     AudioMessageEventContent, Colorize, FileMessageEventContent, ImageMessageEventContent, ObjRef,
     TextMessageEventContent, Update, VideoMessageEventContent,
 };
+use crate::util::deserialize_some;
 
 // if you change the order of these enum variables, enum value will change and parsing of old content will fail
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -78,6 +78,7 @@ pub struct NewsSlide {
     /// A slide must contain some news-worthy content
     #[serde(flatten)]
     content: NewsContent,
+
     /// A slide may optionally contain references to other items
     #[builder(default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -92,6 +93,7 @@ pub struct NewsEntryEventContent {
     /// A news entry may have one or more slides of news
     /// which are scrolled through horizontally
     slides: Vec<NewsSlide>,
+
     /// You can define custom background and foreground colors
     #[builder(default)]
     #[serde(
@@ -110,6 +112,7 @@ pub struct NewsEntryUpdateEventContent {
     #[builder(setter(into))]
     #[serde(rename = "m.relates_to")]
     pub news_entry: Update,
+
     /// A news entry may have one or more slides of news
     /// which are scrolled through horizontally
     #[builder(default)]
@@ -119,6 +122,7 @@ pub struct NewsEntryUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub slides: Option<Vec<NewsSlide>>,
+
     /// You can define custom background and foreground colors
     #[builder(default)]
     #[serde(

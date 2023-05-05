@@ -13,12 +13,10 @@ pub async fn random_user_with_random_space(prefix: &str) -> Result<(acter::Clien
     )
     .await?;
 
-    let settings = Box::new(
-        CreateSpaceSettingsBuilder::default()
-            .name(format!("it-room-{prefix}-{uuid}"))
-            .build()?,
-    );
-    let room_id = user.create_acter_space(settings).await?;
+    let settings = CreateSpaceSettingsBuilder::default()
+        .name(format!("it-room-{prefix}-{uuid}"))
+        .build()?;
+    let room_id = user.create_acter_space(Box::new(settings)).await?;
     Ok((user, room_id))
 }
 

@@ -73,7 +73,7 @@ pub fn future(kwargs: Value) -> Result<Value, Error> {
             .checked_add(&Duration::seconds(seconds))
             .ok_or_else(|| Error::new(ErrorKind::InvalidOperation, "seconds couldn't be added"))?;
     }
-    Ok(Value::from_struct_object(UtcDateTimeValue::new(
-        date + duration,
-    )))
+
+    let val = Value::from_struct_object(UtcDateTimeValue::new(date + duration));
+    Ok(val)
 }

@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -44,7 +44,7 @@ async fn pins_smoketest() -> Result<()> {
         let client = fetcher_client.clone();
         async move {
             if client.pins().await?.len() != 3 {
-                anyhow::bail!("not all pins found");
+                bail!("not all pins found");
             } else {
                 Ok(())
             }

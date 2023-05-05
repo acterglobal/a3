@@ -15,6 +15,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         ImageDesc,
         Member,
         RoomEventItem,
+        RoomId,
         RoomMessage,
         RoomVirtualItem,
         TextDesc,
@@ -70,7 +71,7 @@ class ChatRoomController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    myId = client.account().userId();
+    myId = client.userId().toString();
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isEmojiVisible.value = false;
@@ -374,7 +375,7 @@ class ChatRoomController extends GetxController {
     isLoading.value = false;
   }
 
-  String? currentRoomId() {
+  RoomId? currentRoomId() {
     return _currentRoom?.getRoomId();
   }
 
@@ -384,7 +385,7 @@ class ChatRoomController extends GetxController {
     List<String> ids = [];
     List<Map<String, dynamic>> mentionRecords = [];
     for (int i = 0; i < activeMembers.length; i++) {
-      String userId = activeMembers[i].userId();
+      String userId = activeMembers[i].userId().toString();
       ids.add('user-profile-$userId');
       UserProfile profile = await activeMembers[i].getProfile();
       Map<String, dynamic> record = {};

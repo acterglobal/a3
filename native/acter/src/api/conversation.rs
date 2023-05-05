@@ -58,11 +58,11 @@ impl Conversation {
         let room = self.room.clone();
         let options = MessagesOptions::backward();
         if let Ok(messages) = room.messages(options).await {
-            let events: Vec<SyncTimelineEvent> = messages
+            let events = messages
                 .chunk
                 .into_iter()
                 .map(SyncTimelineEvent::from)
-                .collect();
+                .collect::<Vec<SyncTimelineEvent>>();
             for event in events {
                 // show only message event as latest message in chat room list
                 // skip the state event
@@ -87,8 +87,8 @@ impl Conversation {
         self.latest_message.clone()
     }
 
-    pub fn get_room_id(&self) -> String {
-        self.room_id().to_string()
+    pub fn get_room_id(&self) -> OwnedRoomId {
+        self.room_id().to_owned()
     }
 
     pub async fn user_receipts(&self) -> Result<Vec<ReceiptRecord>> {
@@ -375,10 +375,12 @@ impl ConversationController {
 pub struct CreateConversationSettings {
     #[builder(setter(into, strip_option), default)]
     name: Option<String>,
+
     // #[builder(default = "Visibility::Private")]
     // visibility: Visibility,
     #[builder(default = "Vec::new()")]
     invites: Vec<OwnedUserId>,
+
     #[builder(setter(into, strip_option), default)]
     alias: Option<String>,
 }
@@ -411,15 +413,13 @@ impl Client {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                if let Ok(room) = me.room(name_or_id) {
-                    if !room.is_acter_space().await {
-                        Ok(Conversation::new(room))
-                    } else {
-                        bail!("Not a regular conversation but an acter space!")
-                    }
-                } else {
-                    bail!("Neither roomId nor alias provided")
+                let Ok(room) = me.room(name_or_id) else {
+                    bail!("Neither roomId nor alias provided");
+                };
+                if room.is_acter_space().await {
+                    bail!("Not a regular conversation but an acter space!");
                 }
+                Ok(Conversation::new(room))
             })
             .await?
     }

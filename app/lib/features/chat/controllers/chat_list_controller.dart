@@ -10,6 +10,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         FfiListConversation,
         FfiListInvitation,
         Invitation,
+        RoomId,
         TypingEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -37,7 +38,7 @@ class ChatListController extends GetxController {
     _convosSubscription = client.conversationsRx().listen((event) {
       joinedRooms.clear();
       for (Conversation convo in event.toList()) {
-        String roomId = convo.getRoomId();
+        RoomId roomId = convo.getRoomId();
         int pos = joinedRooms.indexWhere((x) {
           return x.conversation.getRoomId() == roomId;
         });
@@ -91,7 +92,7 @@ class ChatListController extends GetxController {
     });
 
     _typingSubscription = client.typingEventRx()?.listen((event) {
-      String roomId = event.roomId();
+      RoomId roomId = event.roomId();
       int idx = joinedRooms.indexWhere((x) {
         return x.conversation.getRoomId() == roomId;
       });
@@ -100,11 +101,11 @@ class ChatListController extends GetxController {
       }
       List<types.User> typingUsers = [];
       for (var userId in event.userIds()) {
-        String uid = userId.toDartString();
-        if (uid == client.account().userId()) {
+        if (userId == client.userId()) {
           // filter out my typing
           continue;
         }
+        String uid = userId.toString();
         var user = types.User(
           id: uid,
           firstName: simplifyUserId(uid),
@@ -114,7 +115,7 @@ class ChatListController extends GetxController {
       // will not ignore empty list
       // because empty list means that peer stopped typing
       var roomController = Get.find<ChatRoomController>();
-      String? currentRoomId = roomController.currentRoomId();
+      RoomId? currentRoomId = roomController.currentRoomId();
       if (currentRoomId == null) {
         // we are in chat list page
         joinedRooms[idx].typingUsers = typingUsers;

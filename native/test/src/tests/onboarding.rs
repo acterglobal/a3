@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -30,11 +30,11 @@ async fn onboarding_is_created() -> Result<()> {
             let task_lists = client.task_lists().await?;
             if let Some(tk) = task_lists.first() {
                 if tk.tasks().await?.len() != 2 {
-                    anyhow::bail!("not all tasks found yet");
+                    bail!("not all tasks found yet");
                 }
                 Ok(())
             } else {
-                anyhow::bail!("task list not found");
+                bail!("task list not found");
             }
         }
     })
@@ -45,7 +45,7 @@ async fn onboarding_is_created() -> Result<()> {
         let client = pin_client.clone();
         async move {
             if client.pins().await?.len() != 3 {
-                anyhow::bail!("not all pins found");
+                bail!("not all pins found");
             } else {
                 Ok(())
             }
@@ -58,7 +58,7 @@ async fn onboarding_is_created() -> Result<()> {
         let client = calendar_client.clone();
         async move {
             if client.calendar_events().await?.len() != 1 {
-                anyhow::bail!("not all calendar_events found");
+                bail!("not all calendar_events found");
             } else {
                 Ok(())
             }
@@ -71,7 +71,7 @@ async fn onboarding_is_created() -> Result<()> {
         let client = news_client.clone();
         async move {
             if client.latest_news_entries(10).await?.len() != 1 {
-                anyhow::bail!("not all news found");
+                bail!("not all news found");
             } else {
                 Ok(())
             }

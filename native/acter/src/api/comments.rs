@@ -155,7 +155,7 @@ impl CommentsManager {
 
         RUNTIME
             .spawn(async move {
-                Ok(manager
+                let res = manager
                     .comments()
                     .await?
                     .into_iter()
@@ -164,7 +164,8 @@ impl CommentsManager {
                         room: room.clone(),
                         inner,
                     })
-                    .collect())
+                    .collect();
+                Ok(res)
             })
             .await?
     }

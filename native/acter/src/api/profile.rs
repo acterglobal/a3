@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use log::info;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest, MediaThumbnailSize},
@@ -60,7 +60,7 @@ impl UserProfile {
     pub async fn get_avatar(&self) -> Result<FfiBuffer<u8>> {
         let client = self.client.clone();
         let Some(avatar_url) = self.avatar_url.clone() else {
-            anyhow::bail!("No User Profile found");
+            bail!("No User Profile found");
         };
         RUNTIME
             .spawn(async move {
