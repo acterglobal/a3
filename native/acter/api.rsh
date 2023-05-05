@@ -39,20 +39,24 @@ object UtcDateTime {
 }
 
 object RefDetails {
-    /// gives either `task`, `task-list` or `calendar_client`
+    /// the target id
+    fn target_id_str() -> Option<string>;
+    /// if that is in a different room, specified here
+    fn room_id_str() -> Option<string>;
+    /// gives either `link`, `task`, `task-list` or `calendar_client`
     fn type_str() -> string;
     /// what type of embed action is requested_inputs
     fn embed_action_str() -> string;
     /// if this is a `task` type, what `task-list-id` does it belong to
     fn task_list_id_str() -> Option<string>;
+    /// if ref is `link`, its display title
+    fn title() -> Option<string>;
+    /// if ref is `link`, its uri
+    fn uri() -> Option<string>;
 }
 
 /// An acter internal link to a different object
 object ObjRef {
-    /// the event id
-    fn event_id_str() -> string;
-    /// if that is in a different room, specified here
-    fn room_id_str() -> Option<string>;
     /// where to position the element (if given)
     fn position_str() -> Option<string>;
     /// further details of the reference
