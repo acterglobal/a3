@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
@@ -15,12 +16,6 @@ import 'package:acter/features/news/pages/news_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-final desktopPlatforms = [
-  TargetPlatform.linux,
-  TargetPlatform.macOS,
-  TargetPlatform.windows
-];
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');

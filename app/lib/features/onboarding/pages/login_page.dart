@@ -23,11 +23,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
-  final desktopPlatforms = [
-    TargetPlatform.linux,
-    TargetPlatform.macOS,
-    TargetPlatform.windows
-  ];
+
   @override
   void dispose() {
     username.dispose();

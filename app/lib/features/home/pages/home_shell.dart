@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:acter/features/news/pages/news_page.dart';
@@ -32,11 +33,6 @@ class HomeShell extends ConsumerStatefulWidget {
 class _HomeShellState extends ConsumerState<HomeShell> {
   ScreenshotController screenshotController = ScreenshotController();
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
-  final desktopPlatforms = [
-    TargetPlatform.linux,
-    TargetPlatform.macOS,
-    TargetPlatform.windows
-  ];
   late ShakeDetector detector;
 
   final bottomBarNav = [

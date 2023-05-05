@@ -15,11 +15,8 @@ class PostPage extends ConsumerStatefulWidget {
 }
 
 class _PostPageState extends ConsumerState<PostPage> {
-  final TextEditingController titleController =
-      TextEditingController(text: 'Caption your update');
-  final TextEditingController descriptionController = TextEditingController(
-    text: 'Description',
-  );
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +61,11 @@ class _PostPageState extends ConsumerState<PostPage> {
                       .bodyMedium!
                       .copyWith(color: Theme.of(context).colorScheme.neutral5),
                   onChanged: (String val) {},
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
+                    hintText: 'Caption your update',
+                    hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Theme.of(context).colorScheme.neutral5,
+                        ),
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
                   ),
