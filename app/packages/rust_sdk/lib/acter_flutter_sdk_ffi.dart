@@ -6708,6 +6708,26 @@ class Api {
           int Function(
     int,
   )>();
+  late final _refDetailsTargetIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _RefDetailsTargetIdStrReturn Function(
+    ffi.Int64,
+  )>>("__RefDetails_target_id_str");
+
+  late final _refDetailsTargetIdStr = _refDetailsTargetIdStrPtr.asFunction<
+      _RefDetailsTargetIdStrReturn Function(
+    int,
+  )>();
+  late final _refDetailsRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _RefDetailsRoomIdStrReturn Function(
+    ffi.Int64,
+  )>>("__RefDetails_room_id_str");
+
+  late final _refDetailsRoomIdStr = _refDetailsRoomIdStrPtr.asFunction<
+      _RefDetailsRoomIdStrReturn Function(
+    int,
+  )>();
   late final _refDetailsTypeStrPtr = _lookup<
       ffi.NativeFunction<
           _RefDetailsTypeStrReturn Function(
@@ -6739,24 +6759,24 @@ class Api {
       _RefDetailsTaskListIdStrReturn Function(
     int,
   )>();
-  late final _objRefEventIdStrPtr = _lookup<
+  late final _refDetailsTitlePtr = _lookup<
       ffi.NativeFunction<
-          _ObjRefEventIdStrReturn Function(
+          _RefDetailsTitleReturn Function(
     ffi.Int64,
-  )>>("__ObjRef_event_id_str");
+  )>>("__RefDetails_title");
 
-  late final _objRefEventIdStr = _objRefEventIdStrPtr.asFunction<
-      _ObjRefEventIdStrReturn Function(
+  late final _refDetailsTitle = _refDetailsTitlePtr.asFunction<
+      _RefDetailsTitleReturn Function(
     int,
   )>();
-  late final _objRefRoomIdStrPtr = _lookup<
+  late final _refDetailsUriPtr = _lookup<
       ffi.NativeFunction<
-          _ObjRefRoomIdStrReturn Function(
+          _RefDetailsUriReturn Function(
     ffi.Int64,
-  )>>("__ObjRef_room_id_str");
+  )>>("__RefDetails_uri");
 
-  late final _objRefRoomIdStr = _objRefRoomIdStrPtr.asFunction<
-      _ObjRefRoomIdStrReturn Function(
+  late final _refDetailsUri = _refDetailsUriPtr.asFunction<
+      _RefDetailsUriReturn Function(
     int,
   )>();
   late final _objRefPositionStrPtr = _lookup<
@@ -14725,7 +14745,55 @@ class RefDetails {
 
   RefDetails._(this._api, this._box);
 
-  /// gives either `task`, `task-list` or `calendar_client`
+  /// the target id
+  String? targetIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._refDetailsTargetIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// if that is in a different room, specified here
+  String? roomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._refDetailsRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// gives either `link`, `task`, `task-list` or `calendar_client`
   String typeStr() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -14789,44 +14857,11 @@ class RefDetails {
     return tmp2;
   }
 
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
-/// An acter internal link to a different object
-class ObjRef {
-  final Api _api;
-  final _Box _box;
-
-  ObjRef._(this._api, this._box);
-
-  /// the event id
-  String eventIdStr() {
+  /// if ref is `link`, its display title
+  String? title() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._objRefEventIdStr(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// if that is in a different room, specified here
-  String? roomIdStr() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._objRefRoomIdStr(
+    final tmp1 = _api._refDetailsTitle(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -14845,6 +14880,43 @@ class ObjRef {
     }
     return tmp2;
   }
+
+  /// if ref is `link`, its uri
+  String? uri() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._refDetailsUri(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// An acter internal link to a different object
+class ObjRef {
+  final Api _api;
+  final _Box _box;
+
+  ObjRef._(this._api, this._box);
 
   /// where to position the element (if given)
   String? positionStr() {
@@ -24169,6 +24241,28 @@ class _UtcDateTimeToRfc3339Return extends ffi.Struct {
   external int arg2;
 }
 
+class _RefDetailsTargetIdStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _RefDetailsRoomIdStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
 class _RefDetailsTypeStrReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -24198,16 +24292,18 @@ class _RefDetailsTaskListIdStrReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ObjRefEventIdStrReturn extends ffi.Struct {
-  @ffi.Int64()
+class _RefDetailsTitleReturn extends ffi.Struct {
+  @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Int64()
   external int arg1;
   @ffi.Uint64()
   external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
-class _ObjRefRoomIdStrReturn extends ffi.Struct {
+class _RefDetailsUriReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
