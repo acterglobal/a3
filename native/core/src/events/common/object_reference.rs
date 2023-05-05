@@ -61,10 +61,13 @@ pub enum RefDetails {
         #[serde(alias = "event_id")]
         /// the target event id
         target_id: OwnedEventId,
+
         /// if this links to an object not part of this room, but a different room
         #[serde(default, skip_serializing_if = "Option::is_none")]
         room_id: Option<OwnedRoomId>,
+
         task_list: OwnedEventId,
+
         #[serde(default, skip_serializing_if = "TaskAction::is_default")]
         action: TaskAction,
     },
@@ -72,9 +75,11 @@ pub enum RefDetails {
         #[serde(alias = "event_id")]
         /// the target event id
         target_id: OwnedEventId,
+
         /// if this links to an object not part of this room, but a different room
         #[serde(default, skip_serializing_if = "Option::is_none")]
         room_id: Option<OwnedRoomId>,
+
         #[serde(default, skip_serializing_if = "TaskListAction::is_default")]
         action: TaskListAction,
     },
@@ -82,15 +87,18 @@ pub enum RefDetails {
         #[serde(alias = "event_id")]
         /// the target event id
         target_id: OwnedEventId,
+
         /// if this links to an object not part of this room, but a different room
         #[serde(default, skip_serializing_if = "Option::is_none")]
         room_id: Option<OwnedRoomId>,
+
         #[serde(default, skip_serializing_if = "CalendarEventAction::is_default")]
         action: CalendarEventAction,
     },
     Link {
         /// The title to show for this link
         title: String,
+
         /// The URI to open upon click
         uri: String,
     },
@@ -114,6 +122,7 @@ impl RefDetails {
             RefDetails::CalendarEvent { action, .. } => action.to_string(),
         }
     }
+
     pub fn target_id_str(&self) -> Option<String> {
         match self {
             RefDetails::Link { .. } => None,
@@ -122,6 +131,7 @@ impl RefDetails {
             | RefDetails::CalendarEvent { target_id, .. } => Some(target_id.to_string()),
         }
     }
+
     pub fn room_id_str(&self) -> Option<String> {
         match self {
             RefDetails::Link { .. } => None,
