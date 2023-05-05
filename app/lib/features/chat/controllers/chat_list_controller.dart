@@ -101,7 +101,7 @@ class ChatListController extends GetxController {
       List<types.User> typingUsers = [];
       for (var userId in event.userIds()) {
         String uid = userId.toDartString();
-        if (uid == client.account().userId()) {
+        if (uid == client.userId().toString()) {
           // filter out my typing
           continue;
         }

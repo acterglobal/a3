@@ -47,7 +47,7 @@ class _InviteInfoCardState extends State<InviteInfoCard> {
 
   @override
   Widget build(BuildContext context) {
-    String myId = widget.client.account().userId();
+    String myId = widget.client.userId().toString();
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 1),
       child: Column(

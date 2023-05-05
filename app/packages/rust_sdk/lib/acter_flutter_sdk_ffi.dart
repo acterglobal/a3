@@ -10577,12 +10577,12 @@ class Api {
   )>();
   late final _accountUserIdPtr = _lookup<
       ffi.NativeFunction<
-          _AccountUserIdReturn Function(
+          ffi.Int64 Function(
     ffi.Int64,
   )>>("__Account_user_id");
 
   late final _accountUserId = _accountUserIdPtr.asFunction<
-      _AccountUserIdReturn Function(
+      int Function(
     int,
   )>();
   late final _accountDisplayNamePtr = _lookup<
@@ -21847,22 +21847,17 @@ class Account {
   Account._(this._api, this._box);
 
   /// get user id of this account
-  String userId() {
+  UserId userId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._accountUserId(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -25399,15 +25394,6 @@ class _SpacePinDraftReturn extends ffi.Struct {
 }
 
 class _MemberUserIdReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _AccountUserIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()

@@ -75,7 +75,7 @@ class _ChatListItemState extends State<ListItem> {
             room: widget.room.conversation,
             latestMessage: widget.room.latestMessage,
             activeMembers: activeMembers,
-            userId: widget.client.account().userId(),
+            userId: widget.client.userId().toString(),
           ),
         ),
         const Padding(

@@ -988,7 +988,7 @@ object Member {
 
 object Account {
     /// get user id of this account
-    fn user_id() -> string;
+    fn user_id() -> UserId;
 
     /// The display_name of the account
     fn display_name() -> Future<Result<string>>;

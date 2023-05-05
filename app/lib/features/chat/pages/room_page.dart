@@ -523,7 +523,7 @@ class _RoomPageState extends State<RoomPage> {
                 customTypingIndicator: buildTypingIndicator(),
               ),
               onSendPressed: (types.PartialText partialText) {},
-              user: types.User(id: widget.client.account().userId()),
+              user: types.User(id: widget.client.userId().toString()),
               // disable image preview
               disableImageGallery: true,
               //custom avatar builder
@@ -672,7 +672,7 @@ class _RoomPageState extends State<RoomPage> {
       id: 'chat-bubble',
       builder: (context) {
         return BubbleBuilder(
-          userId: widget.client.account().userId(),
+          userId: widget.client.userId().toString(),
           child: child,
           message: message,
           nextMessageInGroup: nextMessageInGroup,

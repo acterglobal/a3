@@ -355,7 +355,7 @@ impl Room {
                         .server_name(user_id.server_name())
                         .build()
                         .await?;
-                    accounts.push(Account::new(other_client.account(), user_id.to_string()));
+                    accounts.push(Account::new(other_client.account(), user_id.clone()));
                 }
                 Ok(accounts)
             })

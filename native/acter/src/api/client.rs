@@ -528,7 +528,7 @@ impl Client {
 
     pub fn account(&self) -> Result<Account> {
         let account = self.core.client().account();
-        let user_id = self.user_id()?.to_string();
+        let user_id = self.user_id()?;
         Ok(Account::new(account, user_id))
     }
 
@@ -543,7 +543,7 @@ impl Client {
 
     pub async fn get_user_profile(&self) -> Result<UserProfile> {
         let client = self.core.client().clone();
-        let user_id = client.user_id().unwrap().to_owned();
+        let user_id = self.user_id()?;
         RUNTIME
             .spawn(async move {
                 let mut user_profile = UserProfile::new(client, user_id, None, None);
@@ -555,14 +555,12 @@ impl Client {
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
         let c = self.core.client().clone();
+        let user_id = self.user_id()?;
         RUNTIME
             .spawn(async move {
-                let user_id = c
-                    .user_id()
-                    .context("guest user cannot request verification")?;
                 let dev = c
                     .encryption()
-                    .get_device(user_id, device_id!(dev_id.as_str()))
+                    .get_device(&user_id, device_id!(dev_id.as_str()))
                     .await?
                     .context("client should get device")?;
                 Ok(dev.is_verified())

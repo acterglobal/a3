@@ -42,6 +42,7 @@ class CommentInputState extends State<CommentInput> {
 
   @override
   Widget build(BuildContext context) {
+    String userId = controller.client.userId().toString();
     Account account = controller.client.account();
     return Container(
       decoration: const BoxDecoration(),
@@ -54,11 +55,11 @@ class CommentInputState extends State<CommentInput> {
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: CustomAvatar(
-                    uniqueKey: account.userId(),
+                    uniqueKey: userId,
                     radius: 18,
                     isGroup: false,
                     avatar: account.avatar(),
-                    stringName: simplifyUserId(account.userId()) ?? '',
+                    stringName: simplifyUserId(userId) ?? '',
                     cacheHeight: 120,
                     cacheWidth: 120,
                   ),

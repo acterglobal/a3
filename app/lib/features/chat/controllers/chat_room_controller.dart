@@ -70,7 +70,7 @@ class ChatRoomController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    myId = client.account().userId();
+    myId = client.userId().toString();
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isEmojiVisible.value = false;
