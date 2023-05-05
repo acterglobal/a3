@@ -1,7 +1,9 @@
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/features/news/pages/news_builder_page.dart';
 import 'package:acter/features/news/pages/post_page.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/sign_up_page.dart';
@@ -14,12 +16,6 @@ import 'package:acter/features/news/pages/news_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-final desktopPlatforms = [
-  TargetPlatform.linux,
-  TargetPlatform.macOS,
-  TargetPlatform.windows
-];
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -79,12 +75,23 @@ final _routes = [
         routes: <RouteBase>[
           GoRoute(
             parentNavigatorKey: _shellNavigatorKey,
-            name: 'post-updates',
+            name: 'post-edit',
+            path: 'post_edit',
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const NewsBuilderPage(),
+              );
+            },
+          ),
+          GoRoute(
+            parentNavigatorKey: _shellNavigatorKey,
+            name: 'post',
             path: 'post',
             pageBuilder: (context, state) {
               return NoTransitionPage(
                 key: state.pageKey,
-                child: const PostPage(),
+                child: PostPage(imgUri: state.extra as String?),
               );
             },
           ),

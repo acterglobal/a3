@@ -1,5 +1,6 @@
 import 'package:acter/common/states/network_state.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/states/auth_state.dart';
@@ -26,11 +27,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   final TextEditingController token = TextEditingController();
   final TextEditingController confirmPassword = TextEditingController();
   final TextEditingController name = TextEditingController();
-  final desktopPlatforms = [
-    TargetPlatform.linux,
-    TargetPlatform.macOS,
-    TargetPlatform.windows
-  ];
 
   void _validateSignUp(BuildContext context) async {
     final bool isLoggedIn = ref.read(isLoggedInProvider);
