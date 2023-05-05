@@ -217,7 +217,7 @@ impl InvitationController {
         client: &MatrixClient,
     ) -> Result<()> {
         // filter only event for me
-        let user_id = client.user_id().context("You seem to be not logged in")?;
+        let user_id = client.user_id().expect("You seem to be not logged in");
         if ev.state_key != *user_id {
             return Ok(());
         }
@@ -256,12 +256,12 @@ impl InvitationController {
         ev: SyncRoomMemberEvent,
         room: MatrixRoom,
         client: &MatrixClient,
-    ) -> Result<()> {
+    ) {
         if let Some(evt) = ev.as_original() {
             // filter only event for me
-            let user_id = client.user_id().context("You seem to be not logged in")?;
+            let user_id = client.user_id().expect("You seem to be not logged in");
             if evt.clone().state_key != *user_id {
-                return Ok(());
+                return;
             }
 
             if let Some(prev_content) = evt.clone().unsigned.prev_content {
@@ -285,7 +285,6 @@ impl InvitationController {
                 }
             }
         }
-        Ok(())
     }
 }
 
@@ -308,11 +307,9 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 // get member list of target room
-                let mut room_members = vec![];
                 let members = room.members().await?;
-                for member in members {
-                    room_members.push(member.user_id().to_string());
-                }
+                let room_members: Vec<OwnedUserId> =
+                    members.iter().map(|x| x.user_id().to_owned()).collect();
                 // iterate my rooms to get user list
                 let mut profiles: Vec<UserProfile> = vec![];
                 let (spaces, convos) = devide_spaces_from_convos(client.clone()).await;
@@ -322,18 +319,18 @@ impl Client {
                     }
                     let members = convo.members().await?;
                     for member in members {
-                        let user_id = member.user_id().to_string();
+                        let user_id = member.user_id().to_owned();
                         // exclude user that belongs to target room
                         if room_members.contains(&user_id) {
                             continue;
                         }
                         // exclude user that already selected
-                        if profiles.iter().any(|x| x.user_id() == member.user_id()) {
+                        if profiles.iter().any(|x| x.user_id() == user_id) {
                             continue;
                         }
                         let user_profile = UserProfile::new(
                             client.core.client().clone(),
-                            member.user_id().to_owned(),
+                            user_id,
                             member.avatar_url().map(|x| (*x).to_owned()),
                             member.display_name().map(|x| x.to_string()),
                         );

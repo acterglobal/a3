@@ -27,7 +27,7 @@ use matrix_sdk::{
             AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent, StateEvent,
         },
         room::RoomType,
-        EventId, Int, TransactionId, UInt, UserId,
+        EventId, Int, OwnedUserId, TransactionId, UInt, UserId,
     },
     Client as MatrixClient, RoomState,
 };
@@ -71,8 +71,8 @@ impl Member {
             .await?
     }
 
-    pub fn user_id(&self) -> String {
-        self.member.user_id().to_string()
+    pub fn user_id(&self) -> OwnedUserId {
+        self.member.user_id().to_owned()
     }
 }
 

@@ -1,5 +1,5 @@
 use acter_core::statics::default_acter_conversation_states;
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 use derive_builder::Builder;
 use futures::channel::mpsc::{channel, Receiver, Sender};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
@@ -290,9 +290,9 @@ impl ConversationController {
         ev: OriginalSyncRoomMemberEvent,
         room: &MatrixRoom,
         client: &MatrixClient,
-    ) -> Result<()> {
+    ) {
         // filter only event for me
-        let user_id = client.user_id().context("You seem to be not logged in")?;
+        let user_id = client.user_id().expect("You seem to be not logged in");
         if ev.state_key != *user_id {
             if let MatrixRoom::Joined(joined) = room {
                 let mut convos = self.conversations.lock_mut();
@@ -312,7 +312,7 @@ impl ConversationController {
                     convos.insert(0, convo);
                 }
             }
-            return Ok(());
+            return;
         }
 
         let evt = ev.clone();
@@ -340,7 +340,6 @@ impl ConversationController {
                 _ => {}
             }
         }
-        Ok(())
     }
 
     // reorder room list on OriginalSyncRoomRedactionEvent

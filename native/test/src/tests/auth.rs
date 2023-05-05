@@ -95,11 +95,16 @@ async fn kyra_can_restore() -> Result<()> {
         )
         .await?;
         let token = client.restore_token().await?;
-        let user_id = client.user_id()?;
+        let user_id = client
+            .user_id()
+            .expect("Login by password seems to be not working");
         (token, user_id)
     };
 
     let client = login_with_token_under_config(token, config).await?;
-    assert_eq!(client.user_id()?, user_id);
+    let uid = client
+        .user_id()
+        .expect("Login by token seems to be not working");
+    assert_eq!(uid, user_id);
     Ok(())
 }

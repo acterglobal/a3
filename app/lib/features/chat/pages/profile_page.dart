@@ -609,16 +609,15 @@ class ProfilePage extends StatelessWidget {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          String userId = roomController.activeMembers[index].userId();
+          String userId =
+              roomController.activeMembers[index].userId().toString();
           return Padding(
             padding: const EdgeInsets.all(12),
             child: GetBuilder<ChatRoomController>(
               id: 'user-profile-$userId',
               builder: (ChatRoomController controller) {
                 return (controller.getUserName(userId) == null)
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
+                    ? const Center(child: CircularProgressIndicator())
                     : GroupMember(
                         userId: userId,
                         name: controller.getUserName(userId),

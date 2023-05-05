@@ -384,7 +384,7 @@ class ChatRoomController extends GetxController {
     List<String> ids = [];
     List<Map<String, dynamic>> mentionRecords = [];
     for (int i = 0; i < activeMembers.length; i++) {
-      String userId = activeMembers[i].userId();
+      String userId = activeMembers[i].userId().toString();
       ids.add('user-profile-$userId');
       UserProfile profile = await activeMembers[i].getProfile();
       Map<String, dynamic> record = {};

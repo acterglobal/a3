@@ -983,7 +983,7 @@ object Member {
     fn get_profile() -> Future<Result<UserProfile>>;
 
     /// Full user_id
-    fn user_id() -> string;
+    fn user_id() -> UserId;
 }
 
 object Account {
