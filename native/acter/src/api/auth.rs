@@ -216,24 +216,24 @@ pub async fn register_with_token(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            if let Err(err) = client.register(register::v3::Request::new()).await {
-                if let Some(response) = err.as_uiaa_response() {
-                    // FIXME: do actually check the registration types...
-                    let request = assign!(register::v3::Request::new(), {
-                        username: Some(username.clone()),
-                        password: Some(password),
-                        initial_device_display_name: device_name,
-                        auth: Some(uiaa::AuthData::RegistrationToken(
-                            uiaa::RegistrationToken::new(registration_token),
-                        )),
-                    });
-                    client.register(request).await?;
-                } else {
-                    bail!("Server did not indicate how to allow registration.");
-                }
-            } else {
+            let Err(err) = client.register(register::v3::Request::new()).await else {
                 bail!("Server is not set up to allow registration.");
-            }
+            };
+            let Some(response) = err.as_uiaa_response() else {
+                bail!("Server did not indicate how to allow registration.");
+            };
+
+            // FIXME: do actually check the registration types...
+            let request = assign!(register::v3::Request::new(), {
+                username: Some(username.clone()),
+                password: Some(password),
+                initial_device_display_name: device_name,
+                auth: Some(uiaa::AuthData::RegistrationToken(
+                    uiaa::RegistrationToken::new(registration_token),
+                )),
+            });
+            client.register(request).await?;
+
             let state = ClientStateBuilder::default().is_guest(false).build()?;
             let c = Client::new(client.clone(), state).await?;
             info!(

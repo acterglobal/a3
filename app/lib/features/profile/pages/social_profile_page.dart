@@ -21,7 +21,7 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
     super.initState();
 
     final client = ModalRoute.of(context)!.settings.arguments as Client;
-    setState(() => myId = client.account().userId());
+    setState(() => myId = client.userId().toString());
     client.getUserProfile().then((value) {
       if (mounted) {
         setState(() {

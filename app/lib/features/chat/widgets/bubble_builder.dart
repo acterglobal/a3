@@ -116,7 +116,7 @@ class _ChatBubble extends StatelessWidget {
       msgType = message.metadata?['eventType'];
     }
     bool isMemberEvent = msgType == 'm.room.member';
-    String myId = controller.client.account().userId();
+    String myId = controller.client.userId().toString();
     return GestureDetector(
       onLongPress: isMemberEvent
           ? null

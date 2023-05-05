@@ -33,11 +33,10 @@ pub async fn is_acter_space(room: &MatrixRoom) -> bool {
     {
         true
     } else {
-        matches!(
-            room.get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
-                .await,
-            Ok(Some(_))
-        )
+        let evt = room
+            .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
+            .await;
+        matches!(evt, Ok(Some(_)))
     }
 }
 
@@ -107,12 +106,15 @@ impl SpaceRelation {
     pub fn suggested(&self) -> bool {
         self.suggested
     }
+
     pub fn room_id(&self) -> OwnedRoomId {
         self.room_id.clone()
     }
+
     pub fn target_type(&self) -> RelationTargetType {
         self.target_type.clone()
     }
+
     pub fn via(&self) -> Vec<String> {
         self.via.clone()
     }
@@ -133,49 +135,45 @@ impl SpaceRelations {
     pub fn other_parents(&self) -> Vec<SpaceRelation> {
         self.other_parents.clone()
     }
+
     pub fn children(&self) -> Vec<SpaceRelation> {
         self.children.clone()
     }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(
-    type = "m.space.child",
-    kind = State,
-    state_key_type = OwnedRoomId
-)]
+#[ruma_event(type = "m.space.child", kind = State, state_key_type = OwnedRoomId)]
 struct SpaceChildStateEventContent {
     #[serde(default)]
     suggested: bool,
+
     #[serde(default, skip_serializing_if = "Option::is_none")]
     order: Option<String>,
+
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     via: Vec<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(
-    type = "m.space.parent",
-    kind = State,
-    state_key_type = OwnedRoomId
-)]
+#[ruma_event(type = "m.space.parent", kind = State, state_key_type = OwnedRoomId)]
 struct SpaceParentStateEventContent {
     #[serde(default)]
     canonical: bool,
+
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     via: Vec<String>,
 }
 
 impl CoreClient {
     pub async fn create_acter_space(&self, settings: CreateSpaceSettings) -> Result<OwnedRoomId> {
+        let content = &assign!(CreationContent::new(), {
+            room_type: Some(RoomType::Space),
+        });
         let initial_states = default_acter_space_states();
-
-        Ok(self
+        let room_id = self
             .client()
             .create_room(assign!(CreateRoomRequest::new(), {
-                creation_content: Some(Raw::new(&assign!(CreationContent::new(), {
-                    room_type: Some(RoomType::Space)
-                }))?),
+                creation_content: Some(Raw::new(content)?),
                 initial_state: initial_states,
                 is_direct: false,
                 invite: settings.invites,
@@ -185,7 +183,8 @@ impl CoreClient {
             }))
             .await?
             .room_id()
-            .to_owned())
+            .to_owned();
+        Ok(room_id)
     }
 
     // calculate the space relationships in accordance with:

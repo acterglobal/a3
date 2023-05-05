@@ -48,10 +48,9 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String roomId = widget.room.getRoomId().toString();
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-      ),
+      appBar: AppBar(elevation: 0.0),
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -70,12 +69,12 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: CustomAvatar(
-                        uniqueKey: widget.room.getRoomId(),
+                        uniqueKey: roomId,
                         avatar: avatar,
                         displayName: displayName,
                         radius: 20,
                         isGroup: true,
-                        stringName: simplifyRoomId(widget.room.getRoomId())!,
+                        stringName: simplifyRoomId(roomId)!,
                       ),
                     ),
                   ),

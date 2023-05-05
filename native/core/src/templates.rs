@@ -1,14 +1,3 @@
-use crate::{
-    client::CoreClient,
-    events::{
-        calendar::CalendarEventEventContent,
-        news::NewsEntryEventContent,
-        pins::PinEventContent,
-        tasks::{TaskEventContent, TaskListEventContent},
-    },
-    spaces::CreateSpaceSettings,
-};
-
 use async_stream::try_stream;
 use core::pin::Pin;
 use futures::{
@@ -32,6 +21,17 @@ pub mod functions;
 pub mod values;
 
 use values::{ObjRef, UserValue};
+
+use crate::{
+    client::CoreClient,
+    events::{
+        calendar::CalendarEventEventContent,
+        news::NewsEntryEventContent,
+        pins::PinEventContent,
+        tasks::{TaskEventContent, TaskListEventContent},
+    },
+    spaces::CreateSpaceSettings,
+};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -75,20 +75,25 @@ pub enum Input {
     Text {
         #[serde(default)]
         required: bool,
+
         description: Option<String>,
     },
     User {
         #[serde(default)]
         required: bool,
+
         #[serde(default, rename = "is-default")]
         is_default: bool,
+
         description: Option<String>,
     },
     Space {
         #[serde(default)]
         required: bool,
+
         #[serde(default, rename = "is-default")]
         is_default: bool,
+
         description: Option<String>,
     },
 }
@@ -125,6 +130,7 @@ pub enum ObjectInner {
     Space {
         #[serde(default, rename = "is-default")]
         is_default: bool,
+
         #[serde(flatten)]
         fields: CreateSpaceSettings,
     },
@@ -154,8 +160,10 @@ pub enum ObjectInner {
 pub struct Object {
     #[serde(alias = "in")]
     room: Option<String>,
+
     #[serde(alias = "as")]
     user: Option<String>,
+
     #[serde(flatten)]
     obj: ObjectInner,
 }
@@ -192,19 +200,19 @@ fn execute_value_template(
             let resp = env.render_str(&s, context)?;
             Ok(TomlValue::try_from(resp)?)
         }
-        TomlValue::Array(v) => Ok(TomlValue::Array(
-            v.into_iter()
+        TomlValue::Array(v) => {
+            let items = v
+                .into_iter()
                 .map(|v| execute_value_template(v, env, context))
-                .collect::<Result<Vec<TomlValue>, Error>>()?,
-        )),
+                .collect::<Result<Vec<TomlValue>, Error>>()?;
+            Ok(TomlValue::Array(items))
+        }
         TomlValue::Table(t) => {
             let mut new_table = toml::map::Map::with_capacity(t.len());
             for (key, value) in t.into_iter() {
-                new_table.insert(
-                    key.clone(),
-                    execute_value_template(value, env, context)
-                        .map_err(|e| Error::Remap(key, e.to_string()))?,
-                );
+                let val = execute_value_template(value, env, context)
+                    .map_err(|e| Error::Remap(key.clone(), e.to_string()))?;
+                new_table.insert(key, val);
             }
             Ok(TomlValue::Table(new_table))
         }
@@ -410,11 +418,9 @@ impl Engine {
                             .get_joined_room(&new_room_id)
                             .is_none() {
                                 Err(Error::Remap(
-                                    format!(
-                                        "created space '{key}' ({new_room_id}) could not be found"),
-                                        "Do you have a sync running?".to_owned()
-                                    )
-                                )
+                                    format!("created space '{key}' ({new_room_id}) could not be found"),
+                                    "Do you have a sync running?".to_owned()
+                                ))
                             } else {
                                 Ok(())
                             })
@@ -538,10 +544,12 @@ impl CoreClient {
 
 #[cfg(test)]
 mod tests {
+    use anyhow::Result;
+
     use super::*;
 
     #[test]
-    fn test_parsing_v1() -> anyhow::Result<()> {
+    fn test_parsing_v1() -> Result<()> {
         let tmpl = r#"
 version = "0.1.1"
 name = "Example Template"

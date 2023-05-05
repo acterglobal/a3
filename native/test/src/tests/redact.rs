@@ -1,5 +1,5 @@
 use acter::matrix_sdk::ruma::events::{AnyMessageLikeEvent, AnyTimelineEvent};
-use anyhow::Result;
+use anyhow::{bail, Result};
 use futures::stream::StreamExt;
 
 use crate::utils::random_user_with_random_space;
@@ -10,7 +10,7 @@ async fn message_redaction() -> Result<()> {
 
     let (mut user, room_id) = random_user_with_random_space("message_redaction").await?;
     let syncer = user.start_sync();
-    let mut synced = syncer.first_synced_rx().expect("note yet read");
+    let mut synced = syncer.first_synced_rx().expect("not yet read");
     while synced.next().await != Some(true) {} // let's wait for it to have synced
 
     let space = user
@@ -28,11 +28,11 @@ async fn message_redaction() -> Result<()> {
     println!("redact: {ev:?}");
 
     let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(r))) = ev.event.deserialize() else {
-        panic!("not the proper room event");
+        bail!("not the proper room event");
     };
 
     let Some(e) = r.as_original() else {
-        panic!("This should be m.room.redaction event");
+        bail!("This should be m.room.redaction event");
     };
 
     assert_eq!(e.redacts, event_id);

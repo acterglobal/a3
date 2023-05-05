@@ -50,7 +50,7 @@ impl Client {
         let mut news = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
-        let mut all_news: Vec<_> = self
+        let mut all_news = self
             .store()
             .get_list(KEYS::NEWS)
             .await?
@@ -61,7 +61,7 @@ impl Client {
                     None
                 }
             })
-            .collect();
+            .collect::<Vec<models::NewsEntry>>();
         all_news.reverse();
 
         for t in all_news {
@@ -96,7 +96,7 @@ impl Space {
     pub async fn latest_news(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
         let mut news = Vec::new();
         let room_id = self.room_id();
-        let mut all_news: Vec<_> = self
+        let mut all_news = self
             .client
             .store()
             .get_list(&format!("{room_id}::{}", KEYS::NEWS))
@@ -108,7 +108,7 @@ impl Space {
                     None
                 }
             })
-            .collect();
+            .collect::<Vec<models::NewsEntry>>();
         all_news.reverse();
 
         for t in all_news {

@@ -199,8 +199,7 @@ impl VerificationEvent {
         let sender = self.sender.clone();
         let event_id = self.event_id.clone();
         let txn_id = self.txn_id.clone();
-        let values: Vec<VerificationMethod> =
-            (*methods).iter().map(|e| e.as_str().into()).collect();
+        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
                 if let Some(event_id) = event_id {
@@ -274,12 +273,15 @@ impl VerificationEvent {
             .await?
     }
 
-    pub fn was_triggered_from_this_device(&self) -> Option<bool> {
+    pub fn was_triggered_from_this_device(&self) -> Result<bool> {
         let device_id = self
             .client
             .device_id()
-            .expect("guest user cannot get device id");
-        self.launcher.clone().map(|dev_id| dev_id == *device_id)
+            .context("guest user cannot get device id")?;
+        match self.launcher.clone() {
+            Some(dev_id) => Ok(dev_id == *device_id),
+            None => Ok(false),
+        }
     }
 
     pub async fn accept_sas_verification(&self) -> Result<bool> {

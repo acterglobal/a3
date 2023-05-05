@@ -307,7 +307,8 @@ async fn task_lists_comments_smoketests() -> Result<()> {
         let task_list_key = task_list_key.clone();
         async move {
             Ok(space.task_list(&task_list_key).await.ok())
-    }}).await? else {
+        }
+    }).await? else {
         bail!("freshly created Task List couldn't be found");
     };
 
@@ -381,7 +382,8 @@ async fn task_comment_smoketests() -> Result<()> {
         let task_list_key = task_list_key.clone();
         async move {
             Ok(space.task_list(&task_list_key).await.ok())
-    }}).await? else {
+        }
+    }).await? else {
         bail!("freshly created Task List couldn't be found");
     };
 

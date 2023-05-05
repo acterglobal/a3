@@ -64,8 +64,8 @@ impl ReceiptEvent {
         }
     }
 
-    pub fn room_id(&self) -> String {
-        self.room_id.to_string()
+    pub fn room_id(&self) -> OwnedRoomId {
+        self.room_id.clone()
     }
 
     pub fn is_empty(&self) -> bool {

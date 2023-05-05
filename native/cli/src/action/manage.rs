@@ -1,9 +1,10 @@
-use crate::config::LoginConfig;
 use acter_core::spaces::CreateSpaceSettingsBuilder;
-use anyhow::Result;
+use anyhow::{Context, Result};
 use clap::Parser;
 use futures::StreamExt;
 use matrix_sdk::ruma::OwnedRoomId;
+
+use crate::config::LoginConfig;
 
 #[derive(clap::Subcommand, Debug, Clone)]
 pub enum Action {
@@ -18,6 +19,7 @@ pub enum Action {
 pub struct Manage {
     #[clap(flatten)]
     pub login: LoginConfig,
+
     #[clap(subcommand)]
     pub action: Action,
 }
@@ -35,7 +37,7 @@ impl Manage {
         tracing::info!(" - Syncing -");
         let sync_state = client.start_sync();
 
-        let mut is_synced = sync_state.first_synced_rx().expect("note yet read");
+        let mut is_synced = sync_state.first_synced_rx().context("not yet read")?;
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         tracing::info!(" - First Sync finished - ");
 
@@ -59,18 +61,16 @@ impl Manage {
 
     async fn run_create_onboarding_space(&self) -> Result<()> {
         let mut client = self.login.client().await?;
-        let settings = Box::new(
-            CreateSpaceSettingsBuilder::default()
-                .name(format!("{}'s onboarding space", client.user_id()?))
-                .build()?,
-        );
+        let settings = CreateSpaceSettingsBuilder::default()
+            .name(format!("{}'s onboarding space", client.user_id()?))
+            .build()?;
 
-        let room_id = client.create_acter_space(settings).await?;
+        let room_id = client.create_acter_space(Box::new(settings)).await?;
 
         tracing::info!(" - Syncing -");
         let sync_state = client.start_sync();
 
-        let mut is_synced = sync_state.first_synced_rx().expect("note yet read");
+        let mut is_synced = sync_state.first_synced_rx().context("not yet read")?;
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         tracing::info!(" - First Sync finished - ");
 

@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use eyeball_im::VectorDiff;
 use futures::{Stream, StreamExt};
 use log::info;
@@ -272,11 +272,14 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let timeline_event = room.event(&event_id).await.expect("Couldn't find event.");
+                let timeline_event = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't find event.")?;
                 let event_content = timeline_event
                     .event
                     .deserialize_as::<RoomMessageEvent>()
-                    .expect("Couldn't deserialise event");
+                    .context("Couldn't deserialise event")?;
 
                 let mut sent_by_me = false;
                 if let Some(user_id) = client.user_id() {

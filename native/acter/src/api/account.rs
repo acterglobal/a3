@@ -1,12 +1,12 @@
 use anyhow::{Context, Result};
-use matrix_sdk::{media::MediaFormat, Account as MatrixAccount};
+use matrix_sdk::{media::MediaFormat, ruma::OwnedUserId, Account as MatrixAccount};
 
 use super::{api::FfiBuffer, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct Account {
     account: MatrixAccount,
-    user_id: String,
+    user_id: OwnedUserId,
 }
 
 impl std::ops::Deref for Account {
@@ -17,11 +17,11 @@ impl std::ops::Deref for Account {
 }
 
 impl Account {
-    pub fn new(account: MatrixAccount, user_id: String) -> Self {
+    pub fn new(account: MatrixAccount, user_id: OwnedUserId) -> Self {
         Account { account, user_id }
     }
 
-    pub fn user_id(&self) -> String {
+    pub fn user_id(&self) -> OwnedUserId {
         self.user_id.clone()
     }
 

@@ -32,6 +32,7 @@ impl CommentsManager {
         let r = parent.as_ref();
         format!("{r}::{COMMENTS_STATS_FIELD}")
     }
+
     pub async fn from_store_and_event_id(store: &Store, event_id: &EventId) -> CommentsManager {
         let store = store.clone();
         let stats = store
@@ -46,7 +47,7 @@ impl CommentsManager {
     }
 
     pub async fn comments(&self) -> crate::Result<Vec<Comment>> {
-        Ok(self
+        let comments = self
             .store
             .get_list(&Comment::index_for(&self.event_id))
             .await?
@@ -54,7 +55,8 @@ impl CommentsManager {
                 AnyActerModel::Comment(c) => Some(c),
                 _ => None,
             })
-            .collect())
+            .collect();
+        Ok(comments)
     }
 
     pub(crate) async fn add_comment(&mut self, _comment: &Comment) -> crate::Result<bool> {
@@ -109,6 +111,7 @@ impl Comment {
         let r = parent.as_ref();
         format!("{r}::{COMMENTS_FIELD}")
     }
+
     pub fn updater(&self) -> CommentUpdateBuilder {
         CommentUpdateBuilder::default()
             .comment(self.meta.event_id.to_owned())
@@ -226,12 +229,15 @@ impl super::ActerModel for CommentUpdate {
     fn indizes(&self) -> Vec<String> {
         vec![format!("{:}::history", self.inner.comment.event_id)]
     }
+
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
     }
+
     fn belongs_to(&self) -> Option<Vec<String>> {
         Some(vec![self.inner.comment.event_id.to_string()])
     }
+
     async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
         super::default_model_execute(store, self.into()).await
     }

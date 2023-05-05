@@ -322,7 +322,7 @@ object RoomMessage {
     fn item_type() -> string;
 
     /// room ID of this event
-    fn room_id() -> string;
+    fn room_id() -> RoomId;
 
     /// valid only if item_type is "event"
     fn event_item() -> Option<RoomEventItem>;
@@ -491,7 +491,7 @@ object Conversation {
     fn latest_message() -> Option<RoomMessage>;
 
     /// the room id
-    fn get_room_id() -> string;
+    fn get_room_id() -> RoomId;
 
     /// Activate typing notice for this room
     /// The typing notice remains active for 4s. It can be deactivate at any
@@ -945,7 +945,7 @@ object Space {
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     /// the room id
-    fn get_room_id() -> string;
+    fn get_room_id() -> RoomId;
 
     // the members currently in the room
     fn get_member(user_id: string) -> Future<Result<Member>>;
@@ -983,12 +983,12 @@ object Member {
     fn get_profile() -> Future<Result<UserProfile>>;
 
     /// Full user_id
-    fn user_id() -> string;
+    fn user_id() -> UserId;
 }
 
 object Account {
     /// get user id of this account
-    fn user_id() -> string;
+    fn user_id() -> UserId;
 
     /// The display_name of the account
     fn display_name() -> Future<Result<string>>;
@@ -1173,13 +1173,13 @@ object Invitation {
     fn origin_server_ts() -> Option<u64>;
 
     /// get the room id of this invitation
-    fn room_id() -> string;
+    fn room_id() -> RoomId;
 
     /// get the room name of this invitation
-    fn room_name() -> string;
+    fn room_name() -> Future<Result<string>>;
 
     /// get the user id of this invitation sender
-    fn sender() -> string;
+    fn sender() -> UserId;
 
     /// get the user profile that contains avatar and display name
     fn get_sender_profile() -> Future<Result<UserProfile>>;
@@ -1220,7 +1220,7 @@ object VerificationEvent {
     fn start_sas_verification() -> Future<Result<bool>>;
 
     /// Whether verification request was launched from this device
-    fn was_triggered_from_this_device() -> Option<bool>;
+    fn was_triggered_from_this_device() -> Result<bool>;
 
     /// Bob accepts the SAS verification
     fn accept_sas_verification() -> Future<Result<bool>>;
@@ -1258,7 +1258,7 @@ object VerificationEmoji {
 /// Deliver receipt event from rust to flutter
 object ReceiptEvent {
     /// Get transaction id or flow id
-    fn room_id() -> string;
+    fn room_id() -> RoomId;
 
     /// Get records
     fn receipt_records() -> Vec<ReceiptRecord>;
@@ -1327,8 +1327,8 @@ object DeviceRecord {
 /// Deliver typing event from rust to flutter
 object TypingEvent {
     /// Get transaction id or flow id
-    fn room_id() -> string;
+    fn room_id() -> RoomId;
 
     /// Get list of user id
-    fn user_ids() -> Vec<string>;
+    fn user_ids() -> Vec<UserId>;
 }
