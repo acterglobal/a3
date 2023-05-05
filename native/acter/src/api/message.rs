@@ -2681,7 +2681,10 @@ impl RoomMessage {
         let mut reactions: HashMap<String, ReactionDesc> = HashMap::new();
         if let Some(evt) = event.as_remote() {
             for (key, value) in evt.reactions().iter() {
-                let senders: Vec<OwnedUserId> = value.senders().map(|x| x.to_owned()).collect();
+                let senders = value
+                    .senders()
+                    .map(|x| x.to_owned())
+                    .collect::<Vec<OwnedUserId>>();
                 let description = ReactionDesc::new(senders.len() as u64, senders);
                 reactions.insert(key.clone(), description);
             }

@@ -109,8 +109,7 @@ impl DeviceChangedEvent {
         methods: &mut Vec<String>,
     ) -> Result<bool> {
         let client = self.client.clone();
-        let _methods: Vec<VerificationMethod> =
-            (*methods).iter().map(|e| e.as_str().into()).collect();
+        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
                 let user_id = client
@@ -121,7 +120,7 @@ impl DeviceChangedEvent {
                     .get_user_identity(user_id)
                     .await?
                     .context("alice should get user identity")?;
-                user.request_verification_with_methods(_methods).await?;
+                user.request_verification_with_methods(values).await?;
                 Ok(true)
             })
             .await?
@@ -133,8 +132,7 @@ impl DeviceChangedEvent {
         methods: &mut Vec<String>,
     ) -> Result<bool> {
         let client = self.client.clone();
-        let _methods: Vec<VerificationMethod> =
-            (*methods).iter().map(|e| e.as_str().into()).collect();
+        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
                 let user_id = client
@@ -146,7 +144,7 @@ impl DeviceChangedEvent {
                     .await
                     .context("alice should get device")?
                     .unwrap();
-                dev.request_verification_with_methods(_methods).await?;
+                dev.request_verification_with_methods(values).await?;
                 Ok(true)
             })
             .await?

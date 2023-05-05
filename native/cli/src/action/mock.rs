@@ -169,19 +169,19 @@ impl Mock {
         let civilians = self.civilians().await;
         let quark_customers = self.quark_customers().await;
 
-        let team_ids: Vec<OwnedUserId> = team
+        let team_ids = team
             .iter()
             .map(|a| a.user_id())
             .map(|a| a.expect("everyone here has an id"))
             .collect();
 
-        let civilians_ids: Vec<OwnedUserId> = civilians
+        let civilians_ids = civilians
             .iter()
             .map(|a| a.user_id())
             .map(|a| a.expect("everyone here has an id"))
             .collect();
 
-        let quark_customer_ids: Vec<OwnedUserId> = quark_customers
+        let quark_customer_ids = quark_customers
             .iter()
             .map(|a| a.user_id())
             .map(|a| a.expect("everyone here has an id"))
@@ -189,11 +189,11 @@ impl Mock {
 
         let everyone = self.everyone().await;
 
-        let _everyones_ids: Vec<OwnedUserId> = everyone
+        let _everyones_ids = everyone
             .iter()
             .map(|a| a.user_id())
             .map(|a| a.expect("everyone here has an id"))
-            .collect();
+            .collect::<Vec<OwnedUserId>>();
 
         let ops_settings = CreateSpaceSettingsBuilder::default()
             .name("Ops".to_owned())

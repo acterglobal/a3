@@ -308,8 +308,10 @@ impl Client {
             .spawn(async move {
                 // get member list of target room
                 let members = room.members().await?;
-                let room_members: Vec<OwnedUserId> =
-                    members.iter().map(|x| x.user_id().to_owned()).collect();
+                let room_members = members
+                    .iter()
+                    .map(|x| x.user_id().to_owned())
+                    .collect::<Vec<OwnedUserId>>();
                 // iterate my rooms to get user list
                 let mut profiles: Vec<UserProfile> = vec![];
                 let (spaces, convos) = devide_spaces_from_convos(client.clone()).await;

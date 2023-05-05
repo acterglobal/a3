@@ -199,8 +199,7 @@ impl VerificationEvent {
         let sender = self.sender.clone();
         let event_id = self.event_id.clone();
         let txn_id = self.txn_id.clone();
-        let values: Vec<VerificationMethod> =
-            (*methods).iter().map(|e| e.as_str().into()).collect();
+        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
                 if let Some(event_id) = event_id {

@@ -33,10 +33,10 @@ const ENCRYPTION: &str = r#"{
 
 /// Generate the default set ot initial states for acter teams
 pub fn default_acter_space_states() -> Vec<Raw<AnyInitialStateEvent>> {
-    let mut v: Vec<Raw<AnyInitialStateEvent>> = [HISTORY]
+    let mut v = [HISTORY]
         .into_iter()
         .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))
-        .collect();
+        .collect::<Vec<Raw<AnyInitialStateEvent>>>();
 
     v.push(Raw::from_json(
         to_raw_value(&json!({

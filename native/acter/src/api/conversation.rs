@@ -58,11 +58,11 @@ impl Conversation {
         let room = self.room.clone();
         let options = MessagesOptions::backward();
         if let Ok(messages) = room.messages(options).await {
-            let events: Vec<SyncTimelineEvent> = messages
+            let events = messages
                 .chunk
                 .into_iter()
                 .map(SyncTimelineEvent::from)
-                .collect();
+                .collect::<Vec<SyncTimelineEvent>>();
             for event in events {
                 // show only message event as latest message in chat room list
                 // skip the state event
