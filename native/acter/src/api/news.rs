@@ -1,11 +1,9 @@
 use acter_core::{
     events::{
-        news::{self, NewsContent, NewsEntryBuilder},
-        AudioMessageEventContent, Colorize, FileMessageEventContent, Icon,
-        ImageMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+        news::{self, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
+        Colorize, Icon,
     },
     models::{self, ActerModel, AnyActerModel},
-    ruma::{OwnedEventId, OwnedRoomId},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
@@ -14,6 +12,17 @@ use core::time::Duration;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Joined, Room},
+    ruma::{
+        events::room::{
+            message::{
+                AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+                ImageMessageEventContent, TextMessageEventContent, VideoInfo,
+                VideoMessageEventContent,
+            },
+            ImageInfo,
+        },
+        OwnedEventId, OwnedMxcUri, OwnedRoomId,
+    },
 };
 use std::collections::{hash_map::Entry, HashMap};
 

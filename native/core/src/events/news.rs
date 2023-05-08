@@ -1,12 +1,15 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use matrix_sdk::ruma::events::macros::EventContent;
+use matrix_sdk::ruma::events::{
+    macros::EventContent,
+    room::message::{
+        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+        TextMessageEventContent, VideoMessageEventContent,
+    },
+};
 use serde::{Deserialize, Serialize};
 
-use super::{
-    AudioMessageEventContent, Colorize, FileMessageEventContent, ImageMessageEventContent, ObjRef,
-    TextMessageEventContent, Update, VideoMessageEventContent,
-};
+use super::{Colorize, ObjRef, Update};
 use crate::util::deserialize_some;
 
 // if you change the order of these enum variables, enum value will change and parsing of old content will fail
@@ -85,7 +88,7 @@ pub struct NewsSlide {
     references: Vec<ObjRef>,
 }
 
-/// The payload for our news event.
+/// The payload for our news creation event.
 #[derive(Clone, Debug, Builder, Deserialize, Serialize, Getters, EventContent)]
 #[ruma_event(type = "global.acter.dev.news", kind = MessageLike)]
 #[builder(name = "NewsEntryBuilder", derive(Debug))]
@@ -104,7 +107,7 @@ pub struct NewsEntryEventContent {
     colors: Option<Colorize>,
 }
 
-/// The payload for our news event.
+/// The payload for our news update event.
 #[derive(Clone, Debug, Builder, Deserialize, Serialize, EventContent)]
 #[ruma_event(type = "global.acter.dev.news.update", kind = MessageLike)]
 #[builder(name = "NewsEntryUpdateBuilder", derive(Debug))]
