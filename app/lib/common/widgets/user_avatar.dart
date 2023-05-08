@@ -29,7 +29,7 @@ class UserAvatarWidget extends ConsumerWidget {
           stringName: data.getDisplayName() ?? '',
         );
       },
-      error: (error, _) => const Text('Couldn\'t load avatar'),
+      error: (error, stackTrace) => const Text("Couldn't load avatar"),
       loading: () => const Center(
         child: CircularProgressIndicator(),
       ),

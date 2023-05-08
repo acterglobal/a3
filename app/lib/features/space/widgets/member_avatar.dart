@@ -43,7 +43,7 @@ class MemberAvatar extends ConsumerWidget {
           ],
         );
       },
-      error: (error, _) => const Text('Couldn\'t load avatar'),
+      error: (error, stackTrace) => const Text("Couldn't load avatar"),
       loading: () => const Center(
         child: CircularProgressIndicator(),
       ),

@@ -103,7 +103,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
             child: HtmlEditor(
               controller: controller,
               htmlEditorOptions: const HtmlEditorOptions(
-                hint: 'What\'s the Pin about?',
+                hint: "What's the Pin about?",
                 shouldEnsureVisible: true,
               ),
               htmlToolbarOptions: HtmlToolbarOptions(
