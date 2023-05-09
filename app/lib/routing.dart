@@ -2,16 +2,16 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
+import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/news/pages/news_builder_page.dart';
+import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/news/pages/post_page.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/sign_up_page.dart';
 import 'package:acter/features/profile/pages/social_profile_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
-import 'package:acter/features/home/pages/dashboard.dart';
-import 'package:acter/features/news/pages/news_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,8 +75,8 @@ final _routes = [
         routes: <RouteBase>[
           GoRoute(
             parentNavigatorKey: _shellNavigatorKey,
-            name: 'post-edit',
-            path: 'post_edit',
+            name: 'edit',
+            path: 'edit',
             pageBuilder: (context, state) {
               return NoTransitionPage(
                 key: state.pageKey,
