@@ -407,6 +407,7 @@ impl NewsEntryDraft {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn new_image_slide(
         &self,
         body: String,
@@ -451,6 +452,7 @@ impl NewsEntryDraft {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn new_video_slide(
         &self,
         body: String,
