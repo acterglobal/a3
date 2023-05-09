@@ -24,15 +24,9 @@ jobs:
           toolchain: nightly-2023-05-06
           override: true
 
-      - name: Rust version
-        run: rustc --version
-
       - uses: actions/setup-python@v4
         with:
           python-version: 3.8
-
-      - name: Rust version
-        run: rustc --version
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
@@ -42,24 +36,12 @@ jobs:
           customConfig: |
             allow_guest_access: true
 
-      - name: Rust version
-        run: rustc --version
-
       - uses: rui314/setup-mold@v1
         name: "Setup mold linker"
 
-      - name: Rust version
-        run: rustc --version
-
       - uses: Swatinem/rust-cache@v1
 
-      - name: Rust version
-        run: rustc --version
-
       - uses: taiki-e/install-action@nextest
-
-      - name: Rust version
-        run: rustc --version
 
       - name: Initialize e2ee mock data
         run: cargo run -p acter-cli -- mock
@@ -131,7 +113,7 @@ jobs:
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
-        run: rustc --version; cargo run -p acter-cli -- mock
+        run: cargo run -p acter-cli -- mock
         env:
           DEFAULT_HOMESERVER_NAME: "localhost"
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
@@ -221,7 +203,7 @@ jobs:
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
-        run: rustc --version; cargo run -p acter-cli -- mock
+        run: cargo run -p acter-cli -- mock
         env:
           DEFAULT_HOMESERVER_NAME: "localhost"
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
@@ -310,7 +292,7 @@ jobs:
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
-        run: rustc --version; cargo run -p acter-cli -- mock
+        run: cargo run -p acter-cli -- mock
         env:
           DEFAULT_HOMESERVER_NAME: "localhost"
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
