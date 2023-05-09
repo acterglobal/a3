@@ -7205,6 +7205,8 @@ class Api {
     ffi.Uint64,
     ffi.Uint64,
     ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
     ffi.Uint8,
     ffi.Int64,
     ffi.Uint64,
@@ -7243,6 +7245,8 @@ class Api {
     int,
     int,
     int,
+    int,
+    int,
   )>();
   late final _newsEntryDraftNewAudioSlidePtr = _lookup<
       ffi.NativeFunction<
@@ -7252,6 +7256,8 @@ class Api {
     ffi.Uint64,
     ffi.Uint64,
     ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
     ffi.Uint8,
     ffi.Uint64,
     ffi.Uint8,
@@ -7278,6 +7284,8 @@ class Api {
     int,
     int,
     int,
+    int,
+    int,
   )>();
   late final _newsEntryDraftNewVideoSlidePtr = _lookup<
       ffi.NativeFunction<
@@ -7287,6 +7295,8 @@ class Api {
     ffi.Uint64,
     ffi.Uint64,
     ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
     ffi.Uint8,
     ffi.Uint64,
     ffi.Uint8,
@@ -7329,6 +7339,8 @@ class Api {
     int,
     int,
     int,
+    int,
+    int,
   )>();
   late final _newsEntryDraftNewFileSlidePtr = _lookup<
       ffi.NativeFunction<
@@ -7338,6 +7350,8 @@ class Api {
     ffi.Uint64,
     ffi.Uint64,
     ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
     ffi.Uint8,
     ffi.Int64,
     ffi.Uint64,
@@ -7349,6 +7363,8 @@ class Api {
   late final _newsEntryDraftNewFileSlide =
       _newsEntryDraftNewFileSlidePtr.asFunction<
           int Function(
+    int,
+    int,
     int,
     int,
     int,
@@ -15991,7 +16007,7 @@ class NewsEntryDraft {
   /// create news slide for image msg
   NewsSlide newImageSlide(
     String body,
-    MxcUri url,
+    String url,
     String? mimetype,
     int? size,
     int? width,
@@ -16000,20 +16016,21 @@ class NewsEntryDraft {
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp7 = mimetype;
-    final tmp13 = size;
-    final tmp17 = width;
-    final tmp21 = height;
-    final tmp25 = blurhash;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = width;
+    final tmp23 = height;
+    final tmp27 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
     var tmp6 = 0;
+    var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
-    var tmp11 = 0;
     var tmp12 = 0;
+    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
@@ -16022,8 +16039,9 @@ class NewsEntryDraft {
     var tmp24 = 0;
     var tmp26 = 0;
     var tmp28 = 0;
-    var tmp29 = 0;
     var tmp30 = 0;
+    var tmp31 = 0;
+    var tmp32 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -16032,18 +16050,248 @@ class NewsEntryDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    tmp6 = tmp5._box.move();
-    if (tmp7 == null) {
-      tmp8 = 0;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
     } else {
-      tmp8 = 1;
-      final tmp9 = tmp7;
-      final tmp9_0 = utf8.encode(tmp9);
-      tmp11 = tmp9_0.length;
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-      tmp10_1.setAll(0, tmp9_0);
-      tmp10 = tmp10_0.address;
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      tmp22 = tmp21;
+    }
+    if (tmp23 == null) {
+      tmp24 = 0;
+    } else {
+      tmp24 = 1;
+      final tmp25 = tmp23;
+      tmp26 = tmp25;
+    }
+    if (tmp27 == null) {
+      tmp28 = 0;
+    } else {
+      tmp28 = 1;
+      final tmp29 = tmp27;
+      final tmp29_0 = utf8.encode(tmp29);
+      tmp31 = tmp29_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp30_0 = _api.__allocate(tmp31 * 1, 1);
+      final Uint8List tmp30_1 = tmp30_0.asTypedList(tmp31);
+      tmp30_1.setAll(0, tmp29_0);
+      tmp30 = tmp30_0.address;
+      tmp32 = tmp31;
+    }
+    final tmp33 = _api._newsEntryDraftNewImageSlide(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp30,
+      tmp31,
+      tmp32,
+    );
+    final tmp35 = tmp33;
+    final ffi.Pointer<ffi.Void> tmp35_0 = ffi.Pointer.fromAddress(tmp35);
+    final tmp35_1 = _Box(_api, tmp35_0, "drop_box_NewsSlide");
+    tmp35_1._finalizer = _api._registerFinalizer(tmp35_1);
+    final tmp34 = NewsSlide._(_api, tmp35_1);
+    return tmp34;
+  }
+
+  /// create news slide for audio msg
+  NewsSlide newAudioSlide(
+    String body,
+    String url,
+    int? secs,
+    String? mimetype,
+    int? size,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = secs;
+    final tmp13 = mimetype;
+    final tmp19 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      tmp22 = tmp21;
+    }
+    final tmp23 = _api._newsEntryDraftNewAudioSlide(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+      tmp20,
+      tmp22,
+    );
+    final tmp25 = tmp23;
+    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
+    final tmp25_1 = _Box(_api, tmp25_0, "drop_box_NewsSlide");
+    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
+    final tmp24 = NewsSlide._(_api, tmp25_1);
+    return tmp24;
+  }
+
+  /// create news slide for video msg
+  NewsSlide newVideoSlide(
+    String body,
+    String url,
+    int? secs,
+    int? height,
+    int? width,
+    String? mimetype,
+    int? size,
+    String? blurhash,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = secs;
+    final tmp13 = height;
+    final tmp17 = width;
+    final tmp21 = mimetype;
+    final tmp27 = size;
+    final tmp31 = blurhash;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp25 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp34 = 0;
+    var tmp35 = 0;
+    var tmp36 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
       tmp12 = tmp11;
     }
     if (tmp13 == null) {
@@ -16065,30 +16313,43 @@ class NewsEntryDraft {
     } else {
       tmp22 = 1;
       final tmp23 = tmp21;
-      tmp24 = tmp23;
+      final tmp23_0 = utf8.encode(tmp23);
+      tmp25 = tmp23_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
+      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
+      tmp24_1.setAll(0, tmp23_0);
+      tmp24 = tmp24_0.address;
+      tmp26 = tmp25;
     }
-    if (tmp25 == null) {
-      tmp26 = 0;
+    if (tmp27 == null) {
+      tmp28 = 0;
     } else {
-      tmp26 = 1;
-      final tmp27 = tmp25;
-      final tmp27_0 = utf8.encode(tmp27);
-      tmp29 = tmp27_0.length;
-      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
-      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
-      tmp28_1.setAll(0, tmp27_0);
-      tmp28 = tmp28_0.address;
+      tmp28 = 1;
+      final tmp29 = tmp27;
       tmp30 = tmp29;
     }
-    final tmp31 = _api._newsEntryDraftNewImageSlide(
+    if (tmp31 == null) {
+      tmp32 = 0;
+    } else {
+      tmp32 = 1;
+      final tmp33 = tmp31;
+      final tmp33_0 = utf8.encode(tmp33);
+      tmp35 = tmp33_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
+      final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
+      tmp34_1.setAll(0, tmp33_0);
+      tmp34 = tmp34_0.address;
+      tmp36 = tmp35;
+    }
+    final tmp37 = _api._newsEntryDraftNewVideoSlide(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
       tmp6,
+      tmp7,
       tmp8,
       tmp10,
-      tmp11,
       tmp12,
       tmp14,
       tmp16,
@@ -16096,45 +16357,47 @@ class NewsEntryDraft {
       tmp20,
       tmp22,
       tmp24,
+      tmp25,
       tmp26,
       tmp28,
-      tmp29,
       tmp30,
+      tmp32,
+      tmp34,
+      tmp35,
+      tmp36,
     );
-    final tmp33 = tmp31;
-    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
-    final tmp33_1 = _Box(_api, tmp33_0, "drop_box_NewsSlide");
-    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
-    final tmp32 = NewsSlide._(_api, tmp33_1);
-    return tmp32;
+    final tmp39 = tmp37;
+    final ffi.Pointer<ffi.Void> tmp39_0 = ffi.Pointer.fromAddress(tmp39);
+    final tmp39_1 = _Box(_api, tmp39_0, "drop_box_NewsSlide");
+    tmp39_1._finalizer = _api._registerFinalizer(tmp39_1);
+    final tmp38 = NewsSlide._(_api, tmp39_1);
+    return tmp38;
   }
 
-  /// create news slide for audio msg
-  NewsSlide newAudioSlide(
+  /// create news slide for file msg
+  NewsSlide newFileSlide(
     String body,
-    MxcUri url,
-    int? secs,
+    String url,
     String? mimetype,
     int? size,
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp7 = secs;
-    final tmp11 = mimetype;
-    final tmp17 = size;
+    final tmp9 = mimetype;
+    final tmp15 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
     var tmp6 = 0;
+    var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
+    var tmp13 = 0;
     var tmp14 = 0;
-    var tmp15 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
-    var tmp20 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -16143,118 +16406,24 @@ class NewsEntryDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    tmp6 = tmp5._box.move();
-    if (tmp7 == null) {
-      tmp8 = 0;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
     } else {
-      tmp8 = 1;
-      final tmp9 = tmp7;
-      tmp10 = tmp9;
-    }
-    if (tmp11 == null) {
-      tmp12 = 0;
-    } else {
-      tmp12 = 1;
-      final tmp13 = tmp11;
-      final tmp13_0 = utf8.encode(tmp13);
-      tmp15 = tmp13_0.length;
-      final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
-      final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
-      tmp14_1.setAll(0, tmp13_0);
-      tmp14 = tmp14_0.address;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    final tmp21 = _api._newsEntryDraftNewAudioSlide(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp8,
-      tmp10,
-      tmp12,
-      tmp14,
-      tmp15,
-      tmp16,
-      tmp18,
-      tmp20,
-    );
-    final tmp23 = tmp21;
-    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
-    final tmp23_1 = _Box(_api, tmp23_0, "drop_box_NewsSlide");
-    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
-    final tmp22 = NewsSlide._(_api, tmp23_1);
-    return tmp22;
-  }
-
-  /// create news slide for video msg
-  NewsSlide newVideoSlide(
-    String body,
-    MxcUri url,
-    int? secs,
-    int? height,
-    int? width,
-    String? mimetype,
-    int? size,
-    String? blurhash,
-  ) {
-    final tmp1 = body;
-    final tmp5 = url;
-    final tmp7 = secs;
-    final tmp11 = height;
-    final tmp15 = width;
-    final tmp19 = mimetype;
-    final tmp25 = size;
-    final tmp29 = blurhash;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp20 = 0;
-    var tmp22 = 0;
-    var tmp23 = 0;
-    var tmp24 = 0;
-    var tmp26 = 0;
-    var tmp28 = 0;
-    var tmp30 = 0;
-    var tmp32 = 0;
-    var tmp33 = 0;
-    var tmp34 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    tmp6 = tmp5._box.move();
-    if (tmp7 == null) {
-      tmp8 = 0;
-    } else {
-      tmp8 = 1;
-      final tmp9 = tmp7;
-      tmp10 = tmp9;
-    }
-    if (tmp11 == null) {
-      tmp12 = 0;
-    } else {
-      tmp12 = 1;
-      final tmp13 = tmp11;
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
       tmp14 = tmp13;
     }
     if (tmp15 == null) {
@@ -16264,140 +16433,27 @@ class NewsEntryDraft {
       final tmp17 = tmp15;
       tmp18 = tmp17;
     }
-    if (tmp19 == null) {
-      tmp20 = 0;
-    } else {
-      tmp20 = 1;
-      final tmp21 = tmp19;
-      final tmp21_0 = utf8.encode(tmp21);
-      tmp23 = tmp21_0.length;
-      final ffi.Pointer<ffi.Uint8> tmp22_0 = _api.__allocate(tmp23 * 1, 1);
-      final Uint8List tmp22_1 = tmp22_0.asTypedList(tmp23);
-      tmp22_1.setAll(0, tmp21_0);
-      tmp22 = tmp22_0.address;
-      tmp24 = tmp23;
-    }
-    if (tmp25 == null) {
-      tmp26 = 0;
-    } else {
-      tmp26 = 1;
-      final tmp27 = tmp25;
-      tmp28 = tmp27;
-    }
-    if (tmp29 == null) {
-      tmp30 = 0;
-    } else {
-      tmp30 = 1;
-      final tmp31 = tmp29;
-      final tmp31_0 = utf8.encode(tmp31);
-      tmp33 = tmp31_0.length;
-      final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
-      final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
-      tmp32_1.setAll(0, tmp31_0);
-      tmp32 = tmp32_0.address;
-      tmp34 = tmp33;
-    }
-    final tmp35 = _api._newsEntryDraftNewVideoSlide(
+    final tmp19 = _api._newsEntryDraftNewFileSlide(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
       tmp6,
+      tmp7,
       tmp8,
       tmp10,
       tmp12,
+      tmp13,
       tmp14,
       tmp16,
       tmp18,
-      tmp20,
-      tmp22,
-      tmp23,
-      tmp24,
-      tmp26,
-      tmp28,
-      tmp30,
-      tmp32,
-      tmp33,
-      tmp34,
     );
-    final tmp37 = tmp35;
-    final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
-    final tmp37_1 = _Box(_api, tmp37_0, "drop_box_NewsSlide");
-    tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
-    final tmp36 = NewsSlide._(_api, tmp37_1);
-    return tmp36;
-  }
-
-  /// create news slide for file msg
-  NewsSlide newFileSlide(
-    String body,
-    MxcUri url,
-    String? mimetype,
-    int? size,
-  ) {
-    final tmp1 = body;
-    final tmp5 = url;
-    final tmp7 = mimetype;
-    final tmp13 = size;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    tmp6 = tmp5._box.move();
-    if (tmp7 == null) {
-      tmp8 = 0;
-    } else {
-      tmp8 = 1;
-      final tmp9 = tmp7;
-      final tmp9_0 = utf8.encode(tmp9);
-      tmp11 = tmp9_0.length;
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-      tmp10_1.setAll(0, tmp9_0);
-      tmp10 = tmp10_0.address;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    final tmp17 = _api._newsEntryDraftNewFileSlide(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp8,
-      tmp10,
-      tmp11,
-      tmp12,
-      tmp14,
-      tmp16,
-    );
-    final tmp19 = tmp17;
-    final ffi.Pointer<ffi.Void> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
-    final tmp19_1 = _Box(_api, tmp19_0, "drop_box_NewsSlide");
-    tmp19_1._finalizer = _api._registerFinalizer(tmp19_1);
-    final tmp18 = NewsSlide._(_api, tmp19_1);
-    return tmp18;
+    final tmp21 = tmp19;
+    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
+    final tmp21_1 = _Box(_api, tmp21_0, "drop_box_NewsSlide");
+    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
+    final tmp20 = NewsSlide._(_api, tmp21_1);
+    return tmp20;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.

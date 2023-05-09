@@ -21,7 +21,7 @@ use matrix_sdk::{
             },
             ImageInfo,
         },
-        OwnedEventId, OwnedMxcUri, OwnedRoomId, UInt,
+        MxcUri, OwnedEventId, OwnedMxcUri, OwnedRoomId, UInt,
     },
 };
 use std::collections::{hash_map::Entry, HashMap};
@@ -411,7 +411,7 @@ impl NewsEntryDraft {
     pub fn new_image_slide(
         &self,
         body: String,
-        url: Box<OwnedMxcUri>,
+        url: String,
         mimetype: Option<String>,
         size: Option<u64>,
         width: Option<u64>,
@@ -424,18 +424,19 @@ impl NewsEntryDraft {
         info.mimetype = mimetype;
         info.size = size.and_then(UInt::new);
         info.blurhash = blurhash;
+        let url = Box::<MxcUri>::from(url.as_str());
 
         NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_image(body, *url, Some(Box::new(info))),
+            inner: news::NewsSlide::new_image(body, (*url).to_owned(), Some(Box::new(info))),
         }
     }
 
     pub fn new_audio_slide(
         &self,
         body: String,
-        url: Box<OwnedMxcUri>,
+        url: String,
         secs: Option<u64>,
         mimetype: Option<String>,
         size: Option<u64>,
@@ -444,11 +445,12 @@ impl NewsEntryDraft {
         info.duration = secs.map(|x| Duration::new(x, 0));
         info.mimetype = mimetype;
         info.size = size.and_then(UInt::new);
+        let url = Box::<MxcUri>::from(url.as_str());
 
         NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_audio(body, *url, Some(Box::new(info))),
+            inner: news::NewsSlide::new_audio(body, (*url).to_owned(), Some(Box::new(info))),
         }
     }
 
@@ -456,7 +458,7 @@ impl NewsEntryDraft {
     pub fn new_video_slide(
         &self,
         body: String,
-        url: Box<OwnedMxcUri>,
+        url: String,
         secs: Option<u64>,
         height: Option<u64>,
         width: Option<u64>,
@@ -471,29 +473,31 @@ impl NewsEntryDraft {
         info.mimetype = mimetype;
         info.size = size.and_then(UInt::new);
         info.blurhash = blurhash;
+        let url = Box::<MxcUri>::from(url.as_str());
 
         NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_video(body, *url, Some(Box::new(info))),
+            inner: news::NewsSlide::new_video(body, (*url).to_owned(), Some(Box::new(info))),
         }
     }
 
     pub fn new_file_slide(
         &self,
         body: String,
-        url: Box<OwnedMxcUri>,
+        url: String,
         mimetype: Option<String>,
         size: Option<u64>,
     ) -> NewsSlide {
         let mut info = FileInfo::new();
         info.mimetype = mimetype;
         info.size = size.and_then(UInt::new);
+        let url = Box::<MxcUri>::from(url.as_str());
 
         NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_file(body, *url, Some(Box::new(info))),
+            inner: news::NewsSlide::new_file(body, (*url).to_owned(), Some(Box::new(info))),
         }
     }
 }
