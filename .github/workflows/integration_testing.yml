@@ -22,6 +22,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly-2023-05-06
+          override: true
 
       - name: Rust version
         run: rustc --version
@@ -105,6 +106,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly-2023-05-06
+          override: true
 
       - uses: Swatinem/rust-cache@v1
 
@@ -191,6 +193,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly-2023-05-06
+          override: true
 
       - uses: Swatinem/rust-cache@v1
 
@@ -279,6 +282,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly-2023-05-06
+          override: true
 
       - uses: Swatinem/rust-cache@v1
 
