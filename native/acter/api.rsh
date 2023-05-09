@@ -127,6 +127,8 @@ object NewsEntryDraft {
 
     /// create this news entry
     fn send() -> Future<Result<EventId>>;
+
+    fn new_text_slide(body: string) -> NewsSlide;
 }
 
 object NewsEntryUpdateBuilder {

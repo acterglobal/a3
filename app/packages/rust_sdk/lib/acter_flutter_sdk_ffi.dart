@@ -7180,6 +7180,23 @@ class Api {
       int Function(
     int,
   )>();
+  late final _newsEntryDraftNewTextSlidePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__NewsEntryDraft_new_text_slide");
+
+  late final _newsEntryDraftNewTextSlide =
+      _newsEntryDraftNewTextSlidePtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _newsEntryUpdateBuilderSlidesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -15774,6 +15791,36 @@ class NewsEntryDraft {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryDraftSendFuturePoll);
     return tmp2;
+  }
+
+  NewsSlide newTextSlide(
+    String body,
+  ) {
+    final tmp1 = body;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._newsEntryDraftNewTextSlide(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_NewsSlide");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = NewsSlide._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.

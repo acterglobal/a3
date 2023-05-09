@@ -88,6 +88,15 @@ pub struct NewsSlide {
     references: Vec<ObjRef>,
 }
 
+impl NewsSlide {
+    pub fn new_text(body: String) -> Self {
+        NewsSlide {
+            content: NewsContent::Text(TextMessageEventContent::plain(body)),
+            references: vec![],
+        }
+    }
+}
+
 /// The payload for our news creation event.
 #[derive(Clone, Debug, Builder, Deserialize, Serialize, Getters, EventContent)]
 #[ruma_event(type = "global.acter.dev.news", kind = MessageLike)]

@@ -373,6 +373,14 @@ impl NewsEntryDraft {
         self
     }
 
+    pub fn new_text_slide(&self, body: String) -> NewsSlide {
+        NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_text(body),
+        }
+    }
+
     pub fn unset_slides(&mut self) -> &mut Self {
         self.content.slides(vec![]);
         self
