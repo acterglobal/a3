@@ -194,46 +194,50 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                         },
                       )
                     : null,
-                bottomNavigation: isDesktop
-                    ? SlotLayout(
-                        config: <Breakpoint, SlotLayoutConfig>{
-                          //In desktop, we have ability to adjust windows res,
-                          // adjust to navbar as primary to smaller views.
-                          Breakpoints.small: SlotLayout.from(
-                            key: const Key('Bottom Navigation Small'),
-                            inAnimation: AdaptiveScaffold.bottomToTop,
-                            outAnimation: AdaptiveScaffold.topToBottom,
-                            builder: (BuildContext ctx) => BottomNavigationBar(
-                              showSelectedLabels: false,
-                              showUnselectedLabels: false,
-                              currentIndex: _selectedBottombarIndex,
-                              onTap: (index) =>
-                                  _onBottombarItemTapped(context, index),
-                              items: bottomBarNav,
-                              type: BottomNavigationBarType.fixed,
-                            ),
+                bottomNavigation: hideNavLocations.contains(location)
+                    ? null
+                    : isDesktop
+                        ? SlotLayout(
+                            config: <Breakpoint, SlotLayoutConfig>{
+                              //In desktop, we have ability to adjust windows res,
+                              // adjust to navbar as primary to smaller views.
+                              Breakpoints.small: SlotLayout.from(
+                                key: const Key('Bottom Navigation Small'),
+                                inAnimation: AdaptiveScaffold.bottomToTop,
+                                outAnimation: AdaptiveScaffold.topToBottom,
+                                builder: (BuildContext ctx) =>
+                                    BottomNavigationBar(
+                                  showSelectedLabels: false,
+                                  showUnselectedLabels: false,
+                                  currentIndex: _selectedBottombarIndex,
+                                  onTap: (index) =>
+                                      _onBottombarItemTapped(context, index),
+                                  items: bottomBarNav,
+                                  type: BottomNavigationBarType.fixed,
+                                ),
+                              ),
+                            },
+                          )
+                        : SlotLayout(
+                            config: <Breakpoint, SlotLayoutConfig>{
+                              // Navbar should be shown regardless of mobile screen sizes.
+                              Breakpoints.smallAndUp: SlotLayout.from(
+                                key: const Key('Bottom Navigation Small'),
+                                inAnimation: AdaptiveScaffold.bottomToTop,
+                                outAnimation: AdaptiveScaffold.topToBottom,
+                                builder: (BuildContext ctx) =>
+                                    BottomNavigationBar(
+                                  showSelectedLabels: false,
+                                  showUnselectedLabels: false,
+                                  currentIndex: _selectedBottombarIndex,
+                                  onTap: (index) =>
+                                      _onBottombarItemTapped(context, index),
+                                  items: bottomBarNav,
+                                  type: BottomNavigationBarType.fixed,
+                                ),
+                              ),
+                            },
                           ),
-                        },
-                      )
-                    : SlotLayout(
-                        config: <Breakpoint, SlotLayoutConfig>{
-                          // Navbar should be shown regardless of mobile screen sizes.
-                          Breakpoints.smallAndUp: SlotLayout.from(
-                            key: const Key('Bottom Navigation Small'),
-                            inAnimation: AdaptiveScaffold.bottomToTop,
-                            outAnimation: AdaptiveScaffold.topToBottom,
-                            builder: (BuildContext ctx) => BottomNavigationBar(
-                              showSelectedLabels: false,
-                              showUnselectedLabels: false,
-                              currentIndex: _selectedBottombarIndex,
-                              onTap: (index) =>
-                                  _onBottombarItemTapped(context, index),
-                              items: bottomBarNav,
-                              type: BottomNavigationBarType.fixed,
-                            ),
-                          ),
-                        },
-                      ),
               ),
             ),
           )
