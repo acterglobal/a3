@@ -1,9 +1,10 @@
-import 'package:acter/features/home/states/client_state.dart';
+import 'dart:core';
+
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:core';
 
 Future<ProfileData> getProfileData(Space space) async {
   // FIXME: how to get informed about updates!?!
@@ -27,6 +28,29 @@ final spacesProvider = FutureProvider<List<Space>>((ref) async {
   // FIXME: how to get informed about updates!?!
   final spaces = await client.spaces();
   return spaces.toList();
+});
+
+class SpaceItem {
+  String roomId;
+  String? displayName;
+
+  SpaceItem({required this.roomId, this.displayName});
+}
+
+final spaceItemsProvider = FutureProvider<List<SpaceItem>>((ref) async {
+  final client = ref.watch(clientProvider)!;
+  // FIXME: how to get informed about updates!?!
+  final spaces = await client.spaces();
+  List<SpaceItem> items = [];
+  spaces.toList().forEach((element) async {
+    RoomProfile profile = await element.getProfile();
+    var item = SpaceItem(
+      roomId: element.getRoomId().toString(),
+      displayName: profile.getDisplayName(),
+    );
+    items.add(item);
+  });
+  return items;
 });
 
 final spaceProvider =

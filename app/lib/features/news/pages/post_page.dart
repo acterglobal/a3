@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -24,6 +25,7 @@ class _PostPageState extends ConsumerState<PostPage> {
 
   @override
   Widget build(BuildContext context) {
+    final spaceItems = ref.watch(spaceItemsProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -113,27 +115,41 @@ class _PostPageState extends ConsumerState<PostPage> {
                       backgroundColor: Theme.of(context).colorScheme.neutral5,
                       radius: 18,
                     ),
-                    DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        items: const [],
-                        onChanged: (String? val) => {},
-                        icon: Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
+                    spaceItems.when(
+                      data: (data) => DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          isExpanded: true,
+                          items: data.map((e) {
+                            return DropdownMenuItem(
+                              value: e.roomId,
+                              child: Text(e.roomId),
+                            );
+                          }).toList(),
+                          onChanged: (String? val) => {},
+                          icon: Row(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                child: Text(
+                                  'Select Space',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
                               ),
-                              child: Text(
-                                'Select Space',
-                                style: Theme.of(context).textTheme.bodySmall,
+                              Icon(
+                                Icons.keyboard_arrow_down_outlined,
+                                color: Theme.of(context).colorScheme.neutral6,
                               ),
-                            ),
-                            Icon(
-                              Icons.keyboard_arrow_down_outlined,
-                              color: Theme.of(context).colorScheme.neutral6,
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
+                      ),
+                      error: (err, stackTrace) => Center(
+                        child: Text(err.toString()),
+                      ),
+                      loading: () => const Center(
+                        child: CircularProgressIndicator(),
                       ),
                     ),
                   ],
