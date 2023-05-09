@@ -75,8 +75,8 @@ final _routes = [
         routes: <RouteBase>[
           GoRoute(
             parentNavigatorKey: _shellNavigatorKey,
-            name: 'post-edit',
-            path: 'post_edit',
+            name: 'edit',
+            path: 'edit',
             pageBuilder: (context, state) {
               return NoTransitionPage(
                 key: state.pageKey,

@@ -38,3 +38,6 @@ const List<TargetPlatform> desktopPlatforms = [
   TargetPlatform.linux,
   TargetPlatform.windows
 ];
+
+// hide bottom nav at locations.
+const List<String> hideNavLocations = ['/updates/post', '/updates/edit'];
