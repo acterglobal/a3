@@ -34,7 +34,7 @@ class _PostPageState extends ConsumerState<PostPage> {
         ),
         centerTitle: true,
       ),
-      body: Column(
+      body: Stack(
         children: <Widget>[
           ListView(
             shrinkWrap: true,
@@ -208,53 +208,59 @@ class _PostPageState extends ConsumerState<PostPage> {
                   ),
                 ),
               ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.2),
             ],
           ),
-          const Spacer(),
-          Visibility(
-            visible: true,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text(
-                      'Save to Draft',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<BeveledRectangleBorder>(
-                        const BeveledRectangleBorder(),
+          Positioned(
+            bottom: 0,
+            child: Visibility(
+              visible: true,
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: Text(
+                        'Save to Draft',
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      fixedSize: MaterialStateProperty.all<Size>(
-                        Size(MediaQuery.of(context).size.width * 0.45, 45),
-                      ),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text(
-                      'Post',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                        Theme.of(context).colorScheme.tertiary,
-                      ),
-                      shape: MaterialStateProperty.all<BeveledRectangleBorder>(
-                        const BeveledRectangleBorder(),
-                      ),
-                      fixedSize: MaterialStateProperty.all<Size>(
-                        Size(MediaQuery.of(context).size.width * 0.4, 45),
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<BeveledRectangleBorder>(
+                          const BeveledRectangleBorder(),
+                        ),
+                        fixedSize: MaterialStateProperty.all<Size>(
+                          Size(MediaQuery.of(context).size.width * 0.45, 45),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: Text(
+                        'Post',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                          Theme.of(context).colorScheme.tertiary,
+                        ),
+                        shape:
+                            MaterialStateProperty.all<BeveledRectangleBorder>(
+                          const BeveledRectangleBorder(),
+                        ),
+                        fixedSize: MaterialStateProperty.all<Size>(
+                          Size(MediaQuery.of(context).size.width * 0.4, 45),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
