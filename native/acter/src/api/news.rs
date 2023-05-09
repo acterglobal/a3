@@ -21,7 +21,7 @@ use matrix_sdk::{
             },
             ImageInfo,
         },
-        OwnedEventId, OwnedMxcUri, OwnedRoomId,
+        OwnedEventId, OwnedMxcUri, OwnedRoomId, UInt,
     },
 };
 use std::collections::{hash_map::Entry, HashMap};
@@ -373,14 +373,6 @@ impl NewsEntryDraft {
         self
     }
 
-    pub fn new_text_slide(&self, body: String) -> NewsSlide {
-        NewsSlide {
-            client: self.client.clone(),
-            room: self.room.clone().into(),
-            inner: news::NewsSlide::new_text(body),
-        }
-    }
-
     pub fn unset_slides(&mut self) -> &mut Self {
         self.content.slides(vec![]);
         self
@@ -405,6 +397,102 @@ impl NewsEntryDraft {
                 Ok(resp.event_id)
             })
             .await?
+    }
+
+    pub fn new_text_slide(&self, body: String) -> NewsSlide {
+        NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_text(body),
+        }
+    }
+
+    pub fn new_image_slide(
+        &self,
+        body: String,
+        url: Box<OwnedMxcUri>,
+        mimetype: Option<String>,
+        size: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
+        blurhash: Option<String>,
+    ) -> NewsSlide {
+        let mut info = ImageInfo::new();
+        info.height = height.and_then(UInt::new);
+        info.width = width.and_then(UInt::new);
+        info.mimetype = mimetype;
+        info.size = size.and_then(UInt::new);
+        info.blurhash = blurhash;
+
+        NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_image(body, *url, Some(Box::new(info))),
+        }
+    }
+
+    pub fn new_audio_slide(
+        &self,
+        body: String,
+        url: Box<OwnedMxcUri>,
+        secs: Option<u64>,
+        mimetype: Option<String>,
+        size: Option<u64>,
+    ) -> NewsSlide {
+        let mut info = AudioInfo::new();
+        info.duration = secs.map(|x| Duration::new(x, 0));
+        info.mimetype = mimetype;
+        info.size = size.and_then(UInt::new);
+
+        NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_audio(body, *url, Some(Box::new(info))),
+        }
+    }
+
+    pub fn new_video_slide(
+        &self,
+        body: String,
+        url: Box<OwnedMxcUri>,
+        secs: Option<u64>,
+        height: Option<u64>,
+        width: Option<u64>,
+        mimetype: Option<String>,
+        size: Option<u64>,
+        blurhash: Option<String>,
+    ) -> NewsSlide {
+        let mut info = VideoInfo::new();
+        info.duration = secs.map(|x| Duration::new(x, 0));
+        info.height = height.and_then(UInt::new);
+        info.width = width.and_then(UInt::new);
+        info.mimetype = mimetype;
+        info.size = size.and_then(UInt::new);
+        info.blurhash = blurhash;
+
+        NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_video(body, *url, Some(Box::new(info))),
+        }
+    }
+
+    pub fn new_file_slide(
+        &self,
+        body: String,
+        url: Box<OwnedMxcUri>,
+        mimetype: Option<String>,
+        size: Option<u64>,
+    ) -> NewsSlide {
+        let mut info = FileInfo::new();
+        info.mimetype = mimetype;
+        info.size = size.and_then(UInt::new);
+
+        NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_file(body, *url, Some(Box::new(info))),
+        }
     }
 }
 
