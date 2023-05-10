@@ -106,7 +106,6 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
-          override: true
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
       - name: "Build FFI interface"
