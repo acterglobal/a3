@@ -33,7 +33,7 @@ jobs:
           toolchain: nightly
           override: true
 
-      #                  ---- Install extra tools
+      #       ---- Install extra tools
 
       - name: Install Dartdocs
         run: flutter pub global activate dartdoc
