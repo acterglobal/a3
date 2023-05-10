@@ -27,7 +27,6 @@ jobs:
       - uses: actions-rs/cargo@v1
         name: Rust Format
         with:
-          toolchain: nightly-2023-05-06
           command: fmt
           args: --all --check
 
