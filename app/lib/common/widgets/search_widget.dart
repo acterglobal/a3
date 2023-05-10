@@ -18,7 +18,7 @@ class SearchWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: SearchBarAnimation(
-        textEditingController: searchController,
+        textEditingController: searchController, 
         isOriginalAnimation: false,
         enableKeyboardFocus: true,
         buttonWidget: const Icon(

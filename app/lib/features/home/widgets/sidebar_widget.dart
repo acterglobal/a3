@@ -44,12 +44,14 @@ final spaceItemsProvider =
       spaces.sort((a, b) {
         // FIXME probably not the way we want to sort
         /// but at least this gives us a predictable order
-        return a.getRoomId().compareTo(b.getRoomId());
+        String aId = a.getRoomId().toString();
+        String bId = b.getRoomId().toString();
+        return aId.compareTo(bId);
       });
 
       return spaces.map((space) {
         final profileData = ref.watch(spaceProfileDataProvider(space));
-        final roomId = space.getRoomId();
+        final roomId = space.getRoomId().toString();
         return profileData.when(
           loading: () => SidebarNavigationItem(
             icon: const Icon(Atlas.arrows_dots_rotate_thin),

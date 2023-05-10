@@ -90,7 +90,6 @@ final _routes = [
           return NoTransitionPage(key: state.pageKey, child: const ChatPage());
         },
       ),
-
       GoRoute(
         name: 'dashboard',
         path: '/dashboard',
