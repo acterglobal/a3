@@ -68,7 +68,7 @@ jobs:
           ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         with:
           assignees: gnunicorn
-          filename: .github/failure-report-template.md
+          filename: .github/templates/failure-report-template.md
           update_existing: true
 
   flutter-desktop:
@@ -160,7 +160,7 @@ jobs:
           ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         with:
           assignees: gnunicorn
-          filename: .github/failure-report-template.md
+          filename: .github/templates/failure-report-template.md
           update_existing: true
 
   flutter-ios:
@@ -249,7 +249,7 @@ jobs:
           ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         with:
           assignees: gnunicorn
-          filename: .github/failure-report-template.md
+          filename: .github/templates/failure-report-template.md
           update_existing: true
 
   flutter-android:
@@ -344,5 +344,5 @@ jobs:
           ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         with:
           assignees: gnunicorn
-          filename: .github/failure-report-template.md
+          filename: .github/templates/failure-report-template.md
           update_existing: true
