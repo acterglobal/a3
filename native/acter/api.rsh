@@ -128,7 +128,20 @@ object NewsEntryDraft {
     /// create this news entry
     fn send() -> Future<Result<EventId>>;
 
+    /// create news slide for text msg
     fn new_text_slide(body: string) -> NewsSlide;
+
+    /// create news slide for image msg
+    fn new_image_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> NewsSlide;
+
+    /// create news slide for audio msg
+    fn new_audio_slide(body: string, url: string, secs: Option<u64>, mimetype: Option<string>, size: Option<u64>) -> NewsSlide;
+
+    /// create news slide for video msg
+    fn new_video_slide(body: string, url: string, secs: Option<u64>, height: Option<u64>, width: Option<u64>, mimetype: Option<string>, size: Option<u64>, blurhash: Option<string>) -> NewsSlide;
+
+    /// create news slide for file msg
+    fn new_file_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>) -> NewsSlide;
 }
 
 object NewsEntryUpdateBuilder {

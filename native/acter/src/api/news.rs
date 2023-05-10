@@ -21,7 +21,7 @@ use matrix_sdk::{
             },
             ImageInfo,
         },
-        OwnedEventId, OwnedMxcUri, OwnedRoomId,
+        MxcUri, OwnedEventId, OwnedMxcUri, OwnedRoomId, UInt,
     },
 };
 use std::collections::{hash_map::Entry, HashMap};
@@ -373,14 +373,6 @@ impl NewsEntryDraft {
         self
     }
 
-    pub fn new_text_slide(&self, body: String) -> NewsSlide {
-        NewsSlide {
-            client: self.client.clone(),
-            room: self.room.clone().into(),
-            inner: news::NewsSlide::new_text(body),
-        }
-    }
-
     pub fn unset_slides(&mut self) -> &mut Self {
         self.content.slides(vec![]);
         self
@@ -405,6 +397,108 @@ impl NewsEntryDraft {
                 Ok(resp.event_id)
             })
             .await?
+    }
+
+    pub fn new_text_slide(&self, body: String) -> NewsSlide {
+        NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_text(body),
+        }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn new_image_slide(
+        &self,
+        body: String,
+        url: String,
+        mimetype: Option<String>,
+        size: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
+        blurhash: Option<String>,
+    ) -> NewsSlide {
+        let mut info = ImageInfo::new();
+        info.height = height.and_then(UInt::new);
+        info.width = width.and_then(UInt::new);
+        info.mimetype = mimetype;
+        info.size = size.and_then(UInt::new);
+        info.blurhash = blurhash;
+        let url = Box::<MxcUri>::from(url.as_str());
+
+        NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_image(body, (*url).to_owned(), Some(Box::new(info))),
+        }
+    }
+
+    pub fn new_audio_slide(
+        &self,
+        body: String,
+        url: String,
+        secs: Option<u64>,
+        mimetype: Option<String>,
+        size: Option<u64>,
+    ) -> NewsSlide {
+        let mut info = AudioInfo::new();
+        info.duration = secs.map(|x| Duration::new(x, 0));
+        info.mimetype = mimetype;
+        info.size = size.and_then(UInt::new);
+        let url = Box::<MxcUri>::from(url.as_str());
+
+        NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_audio(body, (*url).to_owned(), Some(Box::new(info))),
+        }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn new_video_slide(
+        &self,
+        body: String,
+        url: String,
+        secs: Option<u64>,
+        height: Option<u64>,
+        width: Option<u64>,
+        mimetype: Option<String>,
+        size: Option<u64>,
+        blurhash: Option<String>,
+    ) -> NewsSlide {
+        let mut info = VideoInfo::new();
+        info.duration = secs.map(|x| Duration::new(x, 0));
+        info.height = height.and_then(UInt::new);
+        info.width = width.and_then(UInt::new);
+        info.mimetype = mimetype;
+        info.size = size.and_then(UInt::new);
+        info.blurhash = blurhash;
+        let url = Box::<MxcUri>::from(url.as_str());
+
+        NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_video(body, (*url).to_owned(), Some(Box::new(info))),
+        }
+    }
+
+    pub fn new_file_slide(
+        &self,
+        body: String,
+        url: String,
+        mimetype: Option<String>,
+        size: Option<u64>,
+    ) -> NewsSlide {
+        let mut info = FileInfo::new();
+        info.mimetype = mimetype;
+        info.size = size.and_then(UInt::new);
+        let url = Box::<MxcUri>::from(url.as_str());
+
+        NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_file(body, (*url).to_owned(), Some(Box::new(info))),
+        }
     }
 }
 
