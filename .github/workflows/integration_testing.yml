@@ -21,7 +21,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-05-06
+          toolchain: nightly
           override: true
 
       - uses: actions/setup-python@v4
@@ -87,7 +87,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-05-06
+          toolchain: nightly
           override: true
 
       - uses: Swatinem/rust-cache@v1
@@ -174,7 +174,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-05-06
+          toolchain: nightly
           override: true
 
       - uses: Swatinem/rust-cache@v1
@@ -263,7 +263,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-05-06
+          toolchain: nightly
           override: true
 
       - uses: Swatinem/rust-cache@v1
