@@ -3,13 +3,13 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final newsListProvider =
-    StateNotifierProvider<NewsListNotifier, AsyncValue<List<NewsEntry>>>(
-  (ref) => NewsListNotifier(ref),
+    StateNotifierProvider<NewsListStateNotifier, AsyncValue<List<NewsEntry>>>(
+  (ref) => NewsListStateNotifier(ref),
 );
 
-class NewsListNotifier extends StateNotifier<AsyncValue<List<NewsEntry>>> {
+class NewsListStateNotifier extends StateNotifier<AsyncValue<List<NewsEntry>>> {
   final Ref ref;
-  NewsListNotifier(this.ref) : super(const AsyncData([])) {
+  NewsListStateNotifier(this.ref) : super(const AsyncData([])) {
     _fetchNews();
   }
 

@@ -1,6 +1,6 @@
 import 'package:acter/common/animations/like_animation.dart';
 import 'package:acter/features/home/states/client_state.dart';
-import 'package:acter/features/news/controllers/news_controller.dart';
+import 'package:acter/features/news/notifiers/news_list_notifier.dart';
 import 'package:acter/features/news/widgets/news_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
