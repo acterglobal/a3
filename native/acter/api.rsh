@@ -114,6 +114,9 @@ object NewsEntry {
     fn comments_count() -> u32;
     /// how many likes on this news entry
     fn likes_count() -> u32;
+
+    /// get room id
+    fn room_id() -> RoomId;
 }
 
 object NewsEntryDraft {

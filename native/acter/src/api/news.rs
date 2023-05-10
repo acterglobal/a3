@@ -357,6 +357,10 @@ impl NewsEntry {
     pub fn likes_count(&self) -> u32 {
         19
     }
+
+    pub fn room_id(&self) -> OwnedRoomId {
+        self.room.room_id().to_owned()
+    }
 }
 
 #[derive(Clone)]

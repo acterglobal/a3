@@ -7124,6 +7124,16 @@ class Api {
       int Function(
     int,
   )>();
+  late final _newsEntryRoomIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__NewsEntry_room_id");
+
+  late final _newsEntryRoomId = _newsEntryRoomIdPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _newsEntryDraftSlidesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -15893,6 +15903,21 @@ class NewsEntry {
     );
     final tmp3 = tmp1;
     final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// get room id
+  RoomId roomId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryRoomId(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RoomId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = RoomId._(_api, tmp3_1);
     return tmp2;
   }
 
