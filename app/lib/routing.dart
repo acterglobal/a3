@@ -7,6 +7,7 @@ import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/news/pages/news_builder_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/news/pages/post_page.dart';
+import 'package:acter/features/news/pages/search_space_page.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/sign_up_page.dart';
 import 'package:acter/features/profile/pages/social_profile_page.dart';
@@ -94,6 +95,16 @@ final _routes = [
                 child: PostPage(imgUri: state.extra as String?),
               );
             },
+            routes: <RouteBase>[
+              GoRoute(
+                name: 'search-space',
+                path: 'search_space',
+                pageBuilder: (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const SearchSpacePage(),
+                ),
+              )
+            ],
           ),
         ],
       ),

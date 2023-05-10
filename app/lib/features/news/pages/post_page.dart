@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/widgets/custom_app_bar.dart';
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, NewsEntryDraft, Space;
@@ -25,21 +25,12 @@ class _PostPageState extends ConsumerState<PostPage> {
 
   @override
   Widget build(BuildContext context) {
-    final spaceItems = ref.watch(spaceItemsProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => MediaQuery.of(context).size.width > 600
-              ? context.go('/dashboard')
-              : context.go('/updates/edit'),
-          icon: const Icon(Atlas.arrow_left),
-        ),
-        title: Text(
-          'Post',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        key: UniqueKey(),
+        title: const Text('Post'),
+        context: context,
       ),
       body: Stack(
         children: <Widget>[
@@ -85,7 +76,8 @@ class _PostPageState extends ConsumerState<PostPage> {
               ),
               const Divider(indent: 10, endIndent: 10),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: TextFormField(
                   keyboardType: TextInputType.multiline,
                   controller: descriptionController,
@@ -107,52 +99,28 @@ class _PostPageState extends ConsumerState<PostPage> {
                 ),
               ),
               const Divider(indent: 10, endIndent: 10),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: <Widget>[
-                    CircleAvatar(
-                      backgroundColor: Theme.of(context).colorScheme.neutral5,
-                      radius: 18,
-                    ),
-                    spaceItems.when(
-                      data: (data) => DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          isExpanded: true,
-                          items: data.map((e) {
-                            return DropdownMenuItem(
-                              value: e.roomId,
-                              child: Text(e.roomId),
-                            );
-                          }).toList(),
-                          onChanged: (String? val) => {},
-                          icon: Row(
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                ),
-                                child: Text(
-                                  'Select Space',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ),
-                              Icon(
-                                Icons.keyboard_arrow_down_outlined,
-                                color: Theme.of(context).colorScheme.neutral6,
-                              ),
-                            ],
-                          ),
+              GestureDetector(
+                onTap: () => context.push('/updates/post/search_space'),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Wrap(
+                    spacing: 10,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: CircleAvatar(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.neutral5,
+                          radius: 18,
                         ),
                       ),
-                      error: (err, stackTrace) => Center(
-                        child: Text(err.toString()),
+                      Text(
+                        'Select Space',
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
-                      loading: () => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               const Divider(indent: 10, endIndent: 10),

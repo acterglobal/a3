@@ -77,7 +77,9 @@ class NewsPage extends ConsumerWidget {
           Visibility(
             visible: !isDesktop,
             child: IconButton(
-              onPressed: () => context.go('/updates/edit'),
+              /// [GoRouter] use context.push() for preserving states
+              /// of previous route and context.go() for vice versa.
+              onPressed: () => context.push('/updates/edit'),
               icon: Icon(
                 Atlas.plus_circle_thin,
                 color: Theme.of(context).colorScheme.neutral5,
