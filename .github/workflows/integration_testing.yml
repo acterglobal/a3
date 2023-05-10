@@ -143,7 +143,7 @@ jobs:
           node .
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: linux-cucumber-report
@@ -232,7 +232,7 @@ jobs:
           node .
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: ios-cucumber-report
@@ -327,7 +327,7 @@ jobs:
           node .
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: android-cucumber-report
