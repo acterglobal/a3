@@ -118,9 +118,9 @@ class TaskAssignPage extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: const [
                         Icon(Icons.group),
                         SizedBox(width: 8),
                         Text('Invite Members'),

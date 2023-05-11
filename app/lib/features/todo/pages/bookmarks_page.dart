@@ -46,20 +46,20 @@ class _BookmarksPageState extends State<BookmarksPage> {
         padding: const EdgeInsets.all(12),
         child: ListView.builder(
           itemBuilder: (context, index) {
-            return const Card(
+            return Card(
               child: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Oct 19 at 3:36am'),
-                    Text('Web application on design'),
-                    SizedBox(height: 16),
+                    const Text('Oct 19 at 3:36am'),
+                    const Text('Web application on design'),
+                    const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
-                          children: [
+                          children: const [
                             Text('View message'),
                             SizedBox(width: 8),
                             Icon(Atlas.arrow_right_circle, size: 18),
@@ -92,19 +92,13 @@ class _BookmarksPageState extends State<BookmarksPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'About this Bookmark',
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
+                  const Text('About this Bookmark'),
+                  const SizedBox(height: 16),
                   const Text(
                     'These bookmarks are only available in ToDo feature alone. They are available to your account only',
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(
-                    height: 16,
-                  ),
+                  const SizedBox(height: 16),
                   InkWell(
                     onTap: () {
                       Navigator.pop(context);
@@ -117,9 +111,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
                       decoration: const BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(100.0)),
                       ),
-                      child: const Text(
-                        'Okay',
-                      ),
+                      child: const Text('Okay'),
                     ),
                   )
                 ],

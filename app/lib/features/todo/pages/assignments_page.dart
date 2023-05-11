@@ -47,20 +47,18 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
                       'Web application on design',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    const Row(
+                    const SizedBox(height: 16),
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
-                          children: [
+                          children: const [
                             Text('Owner: '),
                             Text('David Chunli'),
                           ],
                         ),
                         Row(
-                          children: [
+                          children: const [
                             Text('View Assigned'),
                             SizedBox(width: 8),
                             Icon(Atlas.arrow_right_circle, size: 18),
