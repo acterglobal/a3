@@ -79,35 +79,35 @@ class _NewsSideBarState extends State<NewsSideBar> {
       builder: (context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setSheetState) {
-            return const SizedBox(
+            return SizedBox(
               width: double.infinity,
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                      children: const [
                         Text('Spam', style: TextStyle(color: Colors.white)),
                         Icon(Icons.keyboard_arrow_right, color: Colors.white)
                       ],
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                      children: const [
                         Text('Violence', style: TextStyle(color: Colors.white)),
                         Icon(Icons.keyboard_arrow_right, color: Colors.white)
                       ],
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                      children: const [
                         Text(
                           'Fake Account',
                           style: TextStyle(color: Colors.white),
@@ -117,10 +117,10 @@ class _NewsSideBarState extends State<NewsSideBar> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                      children: const [
                         Text(
                           'Copyrights',
                           style: TextStyle(color: Colors.white),
@@ -130,10 +130,10 @@ class _NewsSideBarState extends State<NewsSideBar> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                      children: const [
                         Text(
                           'Spam',
                           style: TextStyle(color: Colors.white),

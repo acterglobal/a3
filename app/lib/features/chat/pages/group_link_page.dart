@@ -93,14 +93,14 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                 ),
                 child: Column(
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
                         vertical: 12,
                         horizontal: 16,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
+                        children: const [
                           Icon(Atlas.share, color: Colors.white),
                           Padding(
                             padding: EdgeInsets.only(left: 8),
@@ -127,14 +127,14 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                         ),
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
                         vertical: 12,
                         horizontal: 16,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
+                        children: const [
                           Icon(Atlas.qr_code_thin, color: Colors.white),
                           Padding(
                             padding: EdgeInsets.only(left: 8),
@@ -161,14 +161,14 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                         ),
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
                         vertical: 12,
                         horizontal: 16,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
+                        children: const [
                           Icon(Atlas.round_arrows, color: Colors.white),
                           Padding(
                             padding: EdgeInsets.only(left: 8),

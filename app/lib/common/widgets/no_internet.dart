@@ -3,9 +3,9 @@ import 'package:overlay_support/overlay_support.dart';
 
 OverlaySupportEntry showNoInternetNotification() {
   return showSimpleNotification(
-    const Row(
+    Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
+      children: const [
         Icon(Icons.wifi_off),
         SizedBox(width: 12),
         Text('Network connectivity limited or unavailable'),

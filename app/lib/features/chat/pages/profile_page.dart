@@ -46,11 +46,11 @@ class ProfilePage extends StatelessWidget {
             child: PopupMenuButton<int>(
               onSelected: (item) => handleItemClick(item, context),
               itemBuilder: (context) => [
-                const PopupMenuItem<int>(
+                PopupMenuItem<int>(
                   value: 0,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+                    children: const [
                       Text('Report'),
                       SizedBox(width: 50),
                       Icon(Atlas.triangle_exclamation)
@@ -247,10 +247,10 @@ class ProfilePage extends StatelessWidget {
       },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Column(
-            children: [
+            children: const [
               Padding(
                 padding: EdgeInsets.all(8),
                 child: Icon(Atlas.bell_reminder, color: Colors.white),
@@ -272,10 +272,10 @@ class ProfilePage extends StatelessWidget {
       },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Column(
-            children: [
+            children: const [
               Padding(
                 padding: EdgeInsets.all(8),
                 child: Icon(Atlas.magnifying_glass, color: Colors.white),
@@ -297,10 +297,10 @@ class ProfilePage extends StatelessWidget {
       },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Column(
-            children: [
+            children: const [
               Padding(
                 padding: EdgeInsets.all(8),
                 child: Icon(Atlas.image_gallery, color: Colors.white),
@@ -326,8 +326,8 @@ class ProfilePage extends StatelessWidget {
           ),
         );
       },
-      child: const Row(
-        children: [
+      child: Row(
+        children: const [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Icon(Atlas.user_plus, color: Colors.white),
@@ -354,8 +354,8 @@ class ProfilePage extends StatelessWidget {
           MaterialPageRoute(builder: (context) => const GroupLinkView()),
         );
       },
-      child: const Row(
-        children: [
+      child: Row(
+        children: const [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Icon(Atlas.link, color: Colors.white),
@@ -508,12 +508,12 @@ class ProfilePage extends StatelessWidget {
   Widget buildGroupLabel() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
         child: Column(
           children: [
             Row(
-              children: [
+              children: const [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Icon(Atlas.group_team, color: Colors.white),
@@ -529,12 +529,12 @@ class ProfilePage extends StatelessWidget {
                 ),
               ],
             ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
               child: Divider(height: 2),
             ),
             Row(
-              children: [
+              children: const [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Icon(Atlas.link, color: Colors.white),
@@ -559,17 +559,14 @@ class ProfilePage extends StatelessWidget {
   Widget buildBlockButton() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: const Padding(
-        padding: EdgeInsets.all(12),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
         child: Row(
-          children: [
+          children: const [
             Icon(Atlas.danger),
             Padding(
               padding: EdgeInsets.only(left: 8),
-              child: Text(
-                'Block this user',
-                style: TextStyle(fontSize: 16),
-              ),
+              child: Text('Block this user', style: TextStyle(fontSize: 16)),
             )
           ],
         ),
