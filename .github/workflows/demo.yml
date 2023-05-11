@@ -16,9 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Check legibility
     outputs:
-      should_run: ${{steps.pr.outputs.pr_found == "true" && contains(steps.PR.outputs.pr_labels, "build-demo")}}
+      should_run: ${{steps.PR.outputs.pr_found == "true" && contains(steps.PR.outputs.pr_labels, "build-demo")}}
     steps:
-    
       - uses: 8BitJonny/gh-get-current-pr@2.2.0
         id: pr
         with:
@@ -26,6 +25,7 @@ jobs:
           filterOutClosed: true
           # Only return if PR is not in draft state. (By default it returns PRs in any state.)
           filterOutDraft: true
+
   build:
     strategy:
       matrix:
