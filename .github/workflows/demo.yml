@@ -35,16 +35,16 @@ jobs:
           #   cargo_make_setup: setup-android
           #   cargo_make_args: android-arm
           #   with_ndk_version: r23c
-          #   flutter_build_args: "build apk --target-platform android-arm64"
+          #   flutter_build_args: 'build apk --target-platform android-arm64'
           #   artifact_prefix: acter-demo-android-arm64
           #   artifact_path:  app/build/app/outputs/apk/release/
-          #   artifact_files: "app-release.apk"
+          #   artifact_files: 'app-release.apk'
           - name: Linux x64
             os: ubuntu-latest
             apt_install: ninja-build libgtk-3-dev
             cargo_make_args: desktop
-            flutter_config: "--enable-linux-desktop"
-            flutter_build_args: "build linux --debug"
+            flutter_config: '--enable-linux-desktop'
+            flutter_build_args: 'build linux --debug'
             artifact_prefix: acter-demo-linux-x64
             artifact_path: app/build/linux/x64/debug/bundle/
             artifact_files: lib/ data/ acter
@@ -52,26 +52,26 @@ jobs:
           #   os: macos-latest
           #   cargo_make_setup: setup-ios
           #   cargo_make_args: ios
-          #   flutter_build_args: "build ipa --no-codesign"
+          #   flutter_build_args: 'build ipa --no-codesign'
           #   artifact_prefix: acter-demo-ios
           #   artifact_path:  app/build/ios/archive/
           #   artifact_files: Runner.xcarchive
           - name: Mac OSx 
             os: macos-12
             cargo_make_args: desktop
-            flutter_config: "--enable-macos-desktop"
-            flutter_build_args: "build macos --debug"
+            flutter_config: '--enable-macos-desktop'
+            flutter_build_args: 'build macos --debug'
             artifact_prefix: acter-demo-macosx
             artifact_path: app/build/macos/Build/Products/Debug/
-            artifact_files: "Acter.app"
+            artifact_files: 'Acter.app'
           # - name: Windows
           #   os: windows-latest
           #   cargo_make_args: desktop
-          #   flutter_config: "--enable-windows-desktop"
-          #   flutter_build_args: "build windows"
+          #   flutter_config: '--enable-windows-desktop'
+          #   flutter_build_args: 'build windows'
           #   artifact_prefix: acter-demo-windows
           #   artifact_path: app/build/windows/runner/
-          #   artifact_files: "Release"
+          #   artifact_files: 'Release'
 
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -87,7 +87,7 @@ jobs:
         uses: tj-actions/branch-names@v6
 
       - id: tag
-        name: "Create Tag"
+        name: Create Tag
         run: echo "tag=${{ steps.branch-name.outputs.current_branch }}-`date +%FT%H%M`" >> $GITHUB_OUTPUT
         shell: bash
 
@@ -133,8 +133,9 @@ jobs:
         run: cargo make ${{ matrix.cargo_make_setup }}
 
       - uses: subosito/flutter-action@v2
-        name: "Set up flutter"
+        name: 'Set up flutter'
         with:
+          flutter-version: '3.7.12'
           channel: 'stable'
 
       - name: Flutter info

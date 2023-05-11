@@ -30,8 +30,9 @@ jobs:
         uses: davidB/rust-cargo-make@v1
       - run: cargo make setup-android
       - uses: subosito/flutter-action@v2
-        name: "Set up flutter"
+        name: 'Set up flutter'
         with:
+          flutter-version: '3.7.12'
           channel: 'stable'
       # - uses: actions-rs/cargo@v1
       #   name: Clippy
@@ -77,8 +78,9 @@ jobs:
       - uses: Swatinem/rust-cache@v1
       - run: cargo make setup-ios
       - uses: subosito/flutter-action@v2
-        name: "Set up flutter"
+        name: 'Set up flutter'
         with:
+          flutter-version: '3.7.12'
           channel: 'stable'
       # - uses: actions-rs/cargo@v1
       #   name: Clippy
