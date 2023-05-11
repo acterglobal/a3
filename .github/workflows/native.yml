@@ -111,5 +111,5 @@ jobs:
         uses: davidB/rust-cargo-make@v1
       - name: "Build FFI interface"
         run: cargo make ffigen
-      - name: "Check file is no different"
-        run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+      # - name: "Check file is no different"
+      #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart

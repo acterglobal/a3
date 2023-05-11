@@ -45,17 +45,13 @@ class _RecentActivityPageState extends State<RecentActivityPage> {
                   nodeItemOverlap: true,
                 ),
                 builder: TimelineTileBuilder.fromStyle(
-                  contentsBuilder: (context, index) => Padding(
-                    padding: const EdgeInsets.all(24.0),
+                  contentsBuilder: (context, index) => const Padding(
+                    padding: EdgeInsets.all(24.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'Oct 19, 06:30',
-                        ),
-                        Text(
-                          'David Chunli posted this ToDo',
-                        ),
+                      children: [
+                        Text('Oct 19, 06:30'),
+                        Text('David Chunli posted this ToDo'),
                       ],
                     ),
                   ),

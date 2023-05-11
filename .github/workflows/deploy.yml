@@ -46,7 +46,7 @@ jobs:
       - name: Build Android FFI
         run: cargo make --profile release android
       - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+        run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
       #   working-directory: ./acter_flutter_sdk
@@ -93,7 +93,7 @@ jobs:
       - name: Build iOS FFI
         run: cargo make --profile release  ios
       - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+        run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
       #   working-directory: ./acter_flutter_sdk

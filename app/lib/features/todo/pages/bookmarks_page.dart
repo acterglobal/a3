@@ -46,36 +46,23 @@ class _BookmarksPageState extends State<BookmarksPage> {
         padding: const EdgeInsets.all(12),
         child: ListView.builder(
           itemBuilder: (context, index) {
-            return Card(
+            return const Card(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Oct 19 at 3:36am',
-                    ),
-                    const Text(
-                      'Web application on design',
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
+                    Text('Oct 19 at 3:36am'),
+                    Text('Web application on design'),
+                    SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
-                          children: const [
-                            Text(
-                              'View message',
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Icon(
-                              Atlas.arrow_right_circle,
-                              size: 18,
-                            ),
+                          children: [
+                            Text('View message'),
+                            SizedBox(width: 8),
+                            Icon(Atlas.arrow_right_circle, size: 18),
                           ],
                         )
                       ],

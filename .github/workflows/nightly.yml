@@ -164,7 +164,7 @@ jobs:
         run: cargo make --profile release ${{ matrix.cargo_make_args}}
 
       - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+        run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
 
       # Install the Apple certificate and provisioning profile
       - name: Install the Apple certificate and provisioning profile
