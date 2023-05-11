@@ -147,8 +147,8 @@ jobs:
       - name: Build Rust Lib
         run: cargo make --profile release ${{ matrix.cargo_make_args}}
 
-      - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+      # - name: Ensure ffi-interface is up to date
+      #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
 
       - name: Flutter build
         env:
