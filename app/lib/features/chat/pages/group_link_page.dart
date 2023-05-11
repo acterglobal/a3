@@ -93,18 +93,15 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                 ),
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
                         vertical: 12,
                         horizontal: 16,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: const [
-                          Icon(
-                            Atlas.share,
-                            color: Colors.white,
-                          ),
+                        children: [
+                          Icon(Atlas.share, color: Colors.white),
                           Padding(
                             padding: EdgeInsets.only(left: 8),
                             child: Text(
@@ -125,27 +122,20 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                         child: Container(
                           width: double.infinity,
                           decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
-                            ),
+                            border: Border(bottom: BorderSide(width: 1)),
                           ),
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
                         vertical: 12,
                         horizontal: 16,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: const [
-                          Icon(
-                            Atlas.qr_code_thin,
-                            color: Colors.white,
-                          ),
+                        children: [
+                          Icon(Atlas.qr_code_thin, color: Colors.white),
                           Padding(
                             padding: EdgeInsets.only(left: 8),
                             child: Text(
@@ -166,27 +156,20 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                         child: Container(
                           width: double.infinity,
                           decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
-                            ),
+                            border: Border(bottom: BorderSide(width: 1)),
                           ),
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
                         vertical: 12,
                         horizontal: 16,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: const [
-                          Icon(
-                            Atlas.round_arrows,
-                            color: Colors.white,
-                          ),
+                        children: [
+                          Icon(Atlas.round_arrows, color: Colors.white),
                           Padding(
                             padding: EdgeInsets.only(left: 8),
                             child: Text(

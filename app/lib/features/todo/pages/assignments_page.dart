@@ -50,31 +50,20 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
                     const SizedBox(
                       height: 16,
                     ),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
-                          children: const [
-                            Text(
-                              'Owner: ',
-                            ),
-                            Text(
-                              'David Chunli',
-                            ),
+                          children: [
+                            Text('Owner: '),
+                            Text('David Chunli'),
                           ],
                         ),
                         Row(
-                          children: const [
-                            Text(
-                              'View Assigned',
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Icon(
-                              Atlas.arrow_right_circle,
-                              size: 18,
-                            ),
+                          children: [
+                            Text('View Assigned'),
+                            SizedBox(width: 8),
+                            Icon(Atlas.arrow_right_circle, size: 18),
                           ],
                         )
                       ],
