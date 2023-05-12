@@ -2685,7 +2685,7 @@ impl RoomMessage {
                     .senders()
                     .map(|x| x.to_owned())
                     .collect::<Vec<OwnedUserId>>();
-                let description = ReactionDesc::new(senders.len() as u64, senders);
+                let description = ReactionDesc::new(senders.len() as u32, senders);
                 reactions.insert(key.clone(), description);
             }
         }
