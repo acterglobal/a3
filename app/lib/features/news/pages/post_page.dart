@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_app_bar.dart';
+import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:acter/features/home/states/client_state.dart';
+import 'package:acter/features/news/notifiers/search_space_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, NewsEntryDraft, Space;
 import 'package:atlas_icons/atlas_icons.dart';
@@ -25,10 +27,11 @@ class _PostPageState extends ConsumerState<PostPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(searchSpaceProvider);
+    final selectedSpace = ref.watch(selectedSpaceProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
-        key: UniqueKey(),
         title: const Text('Post'),
         context: context,
       ),
@@ -109,14 +112,28 @@ class _PostPageState extends ConsumerState<PostPage> {
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: CircleAvatar(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.neutral5,
-                          radius: 18,
-                        ),
+                        child: selectedSpace != null
+                            ? CustomAvatar(
+                                uniqueKey: UniqueKey().toString(),
+                                radius: 20,
+                                isGroup: false,
+                                cacheHeight: 120,
+                                cacheWidth: 120,
+                                stringName: selectedSpace.avatar != null
+                                    ? ''
+                                    : 'fallback',
+                                avatar: selectedSpace.avatar,
+                              )
+                            : CircleAvatar(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.neutral5,
+                                radius: 18,
+                              ),
                       ),
                       Text(
-                        'Select Space',
+                        selectedSpace != null
+                            ? selectedSpace.displayName!
+                            : 'Select Space',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],

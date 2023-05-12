@@ -4,12 +4,12 @@ import 'package:go_router/go_router.dart';
 
 class CustomAppBar extends AppBar {
   CustomAppBar({
-    required Key key,
-    required Widget title,
+    Key? key,
+    Widget? title,
     required BuildContext context,
   }) : super(
           key: key,
-          title: title,
+          title: title ?? const SizedBox.shrink(),
           leading: IconButton(
             onPressed: () => context.pop(),
             icon: const Icon(Atlas.arrow_left),

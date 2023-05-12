@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter/material.dart';
 
@@ -116,6 +117,16 @@ String? getIssueId(String url) {
   RegExpMatch? match = re.firstMatch(url);
   if (match != null) {
     return match.group(3);
+  }
+  return null;
+}
+
+///helper function to convert list ffiString object to DartString.
+List<String>? asDartStringList(List<FfiString> list) {
+  if (list.isNotEmpty) {
+    final List<String> stringList =
+        list.map((ffiString) => ffiString.toDartString()).toList();
+    return stringList;
   }
   return null;
 }
