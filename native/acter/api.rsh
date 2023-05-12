@@ -243,11 +243,11 @@ object ThumbnailInfo {
     /// thumbnail mimetype
     fn mimetype() -> Option<string>;
     /// thumbnail size
-    fn size() -> Option<u64>;
+    fn size() -> Option<u32>;
     /// thumbnail width
-    fn width() -> Option<u64>;
+    fn width() -> Option<u32>;
     /// thumbnail height
-    fn height() -> Option<u64>;
+    fn height() -> Option<u32>;
 }
 
 object DeviceId {
@@ -350,13 +350,13 @@ object ImageDesc {
     fn mimetype() -> Option<string>;
 
     /// file size in bytes
-    fn size() -> Option<u64>;
+    fn size() -> Option<u32>;
 
     /// image width
-    fn width() -> Option<u64>;
+    fn width() -> Option<u32>;
 
     /// image height
-    fn height() -> Option<u64>;
+    fn height() -> Option<u32>;
 
     /// thumbnail info
     fn thumbnail_info() -> Option<ThumbnailInfo>;
@@ -376,10 +376,10 @@ object AudioDesc {
     fn mimetype() -> Option<string>;
 
     /// file size in bytes
-    fn size() -> Option<u64>;
+    fn size() -> Option<u32>;
 
     /// duration in seconds
-    fn duration() -> Option<u64>;
+    fn duration() -> Option<u32>;
 }
 
 object VideoDesc {
@@ -393,19 +393,19 @@ object VideoDesc {
     fn mimetype() -> Option<string>;
 
     /// file size in bytes
-    fn size() -> Option<u64>;
+    fn size() -> Option<u32>;
 
     /// image width
-    fn width() -> Option<u64>;
+    fn width() -> Option<u32>;
 
     /// image height
-    fn height() -> Option<u64>;
+    fn height() -> Option<u32>;
 
     /// blurhash
     fn blurhash() -> Option<string>;
 
     /// duration in seconds
-    fn duration() -> Option<u64>;
+    fn duration() -> Option<u32>;
 
     /// thumbnail info
     fn thumbnail_info() -> Option<ThumbnailInfo>;
@@ -425,7 +425,7 @@ object FileDesc {
     fn mimetype() -> Option<string>;
 
     /// file size in bytes
-    fn size() -> Option<u64>;
+    fn size() -> Option<u32>;
 
     /// thumbnail info
     fn thumbnail_info() -> Option<ThumbnailInfo>;
@@ -436,7 +436,7 @@ object FileDesc {
 
 object ReactionDesc {
     /// how many times this key was clicked
-    fn count() -> u64;
+    fn count() -> u32;
 
     /// which users selected this key
     fn senders() -> Vec<string>;
@@ -1148,7 +1148,7 @@ object UserProfile {
     fn get_avatar() -> Future<Result<buffer<u8>>>;
 
     /// get the binary data of thumbnail
-    fn get_thumbnail(width: u64, height: u64) -> Future<Result<buffer<u8>>>;
+    fn get_thumbnail(width: u32, height: u32) -> Future<Result<buffer<u8>>>;
 
     /// get the display name
     fn get_display_name() -> Option<string>;
@@ -1162,7 +1162,7 @@ object RoomProfile {
     fn get_avatar() -> Future<Result<buffer<u8>>>;
 
     /// get the binary data of thumbnail
-    fn get_thumbnail(width: u64, height: u64) -> Future<Result<buffer<u8>>>;
+    fn get_thumbnail(width: u32, height: u32) -> Future<Result<buffer<u8>>>;
 
     /// get the display name
     fn get_display_name() -> Option<string>;
