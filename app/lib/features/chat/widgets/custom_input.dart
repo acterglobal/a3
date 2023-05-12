@@ -388,7 +388,7 @@ class AttachmentWidget extends StatelessWidget {
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
+                          children: const [
                             Icon(Atlas.camera),
                             SizedBox(height: 6),
                             Text(
@@ -404,7 +404,7 @@ class AttachmentWidget extends StatelessWidget {
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
+                          children: const [
                             Icon(Atlas.folder),
                             SizedBox(height: 6),
                             Text('File', style: TextStyle(color: Colors.white)),
@@ -415,7 +415,7 @@ class AttachmentWidget extends StatelessWidget {
                         onTap: () {},
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
+                          children: const [
                             Icon(Atlas.location),
                             SizedBox(height: 6),
                             Text(

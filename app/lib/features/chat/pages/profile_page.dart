@@ -339,10 +339,7 @@ class ProfilePage extends StatelessWidget {
           Spacer(),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Text(
-              '3',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: Text('3', style: TextStyle(color: Colors.white)),
           )
         ],
       ),
@@ -549,9 +546,7 @@ class ProfilePage extends StatelessWidget {
                 Spacer(),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
-                  child: Text(
-                    '@marthacraig',
-                  ),
+                  child: Text('@marthacraig'),
                 ),
               ],
             ),
@@ -571,12 +566,7 @@ class ProfilePage extends StatelessWidget {
             Icon(Atlas.danger),
             Padding(
               padding: EdgeInsets.only(left: 8),
-              child: Text(
-                'Block this user',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
+              child: Text('Block this user', style: TextStyle(fontSize: 16)),
             )
           ],
         ),

@@ -121,15 +121,9 @@ class TaskAssignPage extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
-                        Icon(
-                          Icons.group,
-                        ),
-                        SizedBox(
-                          width: 8.0,
-                        ),
-                        Text(
-                          'Invite Members',
-                        ),
+                        Icon(Icons.group),
+                        SizedBox(width: 8),
+                        Text('Invite Members'),
                       ],
                     ),
                   ),

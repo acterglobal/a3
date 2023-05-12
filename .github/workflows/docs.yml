@@ -25,7 +25,8 @@ jobs:
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: "stable"
+          flutter-version: '3.7.12'
+          channel: 'stable'
 
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
@@ -60,7 +61,7 @@ jobs:
         run: flutter pub global run dartdoc --output ../docs/static/api/main/app/
         working-directory: app
 
-      - name: "Checking for bindings"
+      - name: Checking for bindings
         run: ls -ltas app/packages/rust_sdk/lib/
 
       - name: Build Dart SDK
