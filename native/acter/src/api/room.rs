@@ -5,9 +5,12 @@ use acter_core::{
     spaces::is_acter_space,
 };
 use anyhow::{bail, Context, Result};
+use core::time::Duration;
 use log::{info, warn};
 use matrix_sdk::{
-    attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
+    attachment::{
+        AttachmentConfig, AttachmentInfo, BaseAudioInfo, BaseFileInfo, BaseImageInfo, BaseVideoInfo,
+    },
     media::{MediaFormat, MediaRequest},
     room::{Room as MatrixRoom, RoomMember},
     ruma::{
@@ -18,9 +21,10 @@ use matrix_sdk::{
             relation::Annotation,
             room::{
                 message::{
-                    FileInfo, FileMessageEventContent, ForwardThread, ImageMessageEventContent,
-                    MessageType, RoomMessageEvent, RoomMessageEventContent,
-                    TextMessageEventContent,
+                    AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+                    ForwardThread, ImageMessageEventContent, MessageType, RoomMessageEvent,
+                    RoomMessageEventContent, TextMessageEventContent, VideoInfo,
+                    VideoMessageEventContent,
                 },
                 ImageInfo,
             },
@@ -172,7 +176,9 @@ impl Room {
         };
         RUNTIME
             .spawn(async move {
-                room.typing_notice(typing).await?;
+                room.typing_notice(typing)
+                    .await
+                    .context("Couldn't send typing notice")?;
                 Ok(true)
             })
             .await?
@@ -184,15 +190,17 @@ impl Room {
         } else {
             bail!("Can't send read_receipt to a room we are not in")
         };
+        let event_id =
+            EventId::parse(event_id).context("Couldn't parse event id to read receipt")?;
         RUNTIME
             .spawn(async move {
-                let event_id = EventId::parse(event_id)?;
                 room.send_single_receipt(
                     CreateReceiptType::Read,
                     ReceiptThread::Unthreaded,
                     event_id,
                 )
-                .await?;
+                .await
+                .context("Couldn't send single receipt")?;
                 Ok(true)
             })
             .await?
@@ -208,7 +216,10 @@ impl Room {
             .spawn(async move {
                 let content = RoomMessageEventContent::text_plain(message);
                 let txn_id = TransactionId::new();
-                let response = room.send(content, Some(&txn_id)).await?;
+                let response = room
+                    .send(content, Some(&txn_id))
+                    .await
+                    .context("Couldn't send plain text message")?;
                 Ok(response.event_id)
             })
             .await?
@@ -224,7 +235,10 @@ impl Room {
             .spawn(async move {
                 let content = RoomMessageEventContent::text_markdown(markdown);
                 let txn_id = TransactionId::new();
-                let response = room.send(content, Some(&txn_id)).await?;
+                let response = room
+                    .send(content, Some(&txn_id))
+                    .await
+                    .context("Couldn't send formatted text message")?;
                 Ok(response.event_id)
             })
             .await?
@@ -236,13 +250,17 @@ impl Room {
         } else {
             bail!("Can't send message to a room we are not in")
         };
+        let event_id =
+            EventId::parse(event_id).context("Couldn't parse event id to send reaction")?;
         RUNTIME
             .spawn(async move {
-                let event_id = EventId::parse(event_id)?;
                 let relates_to = Annotation::new(event_id, key);
                 let content = ReactionEventContent::new(relates_to);
                 let txn_id = TransactionId::new();
-                let response = room.send(content, Some(&txn_id)).await?;
+                let response = room
+                    .send(content, Some(&txn_id))
+                    .await
+                    .context("Couldn't send reaction")?;
                 Ok(response.event_id)
             })
             .await?
@@ -262,21 +280,271 @@ impl Room {
         } else {
             bail!("Can't send message as image to a room we are not in")
         };
+        let path = PathBuf::from(uri);
+        let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
+            height: height.map(UInt::from),
+            width: width.map(UInt::from),
+            size: size.map(UInt::from),
+            blurhash: None,
+        }));
+        let mime_type = mimetype.parse::<mime::Mime>()?;
         RUNTIME
             .spawn(async move {
-                let path = PathBuf::from(uri);
-                let mut image_buf = std::fs::read(path)?;
-                let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
-                    size: size.map(UInt::from),
-                    blurhash: None,
-                }));
-                let mime_type: mime::Mime = mimetype.parse()?;
+                let image_buf = std::fs::read(path).context("Couldn't read image data to send")?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, image_buf, config)
-                    .await?;
+                    .await
+                    .context("Couldn't send image attachment")?;
                 Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn image_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't read message from a room we are not in")
+        };
+        let event_id =
+            EventId::parse(event_id).context("Couldn't parse event id to get image binary")?;
+        let client = self.room.client();
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let evt = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't get room message")?;
+                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                    MessageLikeEvent::Original(m),
+                ))) = evt.event.deserialize() else {
+                    bail!("It is not message");
+                };
+                let MessageType::Image(content) = &m.content.msgtype else {
+                    bail!("Invalid file format");
+                };
+                let request = MediaRequest {
+                    source: content.source.clone(),
+                    format: MediaFormat::File,
+                };
+                let data = client
+                    .media()
+                    .get_media_content(&request, false)
+                    .await
+                    .context("Coudln't get media content")?;
+                Ok(FfiBuffer::new(data))
+            })
+            .await?
+    }
+
+    pub async fn send_audio_message(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        secs: Option<u32>,
+        size: Option<u32>,
+    ) -> Result<OwnedEventId> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message as audio to a room we are not in")
+        };
+        let path = PathBuf::from(uri);
+        let config = AttachmentConfig::new().info(AttachmentInfo::Audio(BaseAudioInfo {
+            duration: secs.map(|x| Duration::from_secs(x as u64)),
+            size: size.map(UInt::from),
+        }));
+        let mime_type = mimetype.parse::<mime::Mime>()?;
+        RUNTIME
+            .spawn(async move {
+                let audio_buf = std::fs::read(path).context("Couldn't read audio data to send")?;
+                let response = room
+                    .send_attachment(name.as_str(), &mime_type, audio_buf, config)
+                    .await
+                    .context("Couldn't send attachment")?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn audio_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't read message from a room we are not in")
+        };
+        let event_id =
+            EventId::parse(event_id).context("Couldn't parse event id to get audio binary")?;
+        let client = self.room.client();
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let evt = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't get room message")?;
+                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                    MessageLikeEvent::Original(m),
+                ))) = evt.event.deserialize() else {
+                    bail!("It is not message");
+                };
+                let MessageType::Audio(content) = &m.content.msgtype else {
+                    bail!("Invalid file format");
+                };
+                let request = MediaRequest {
+                    source: content.source.clone(),
+                    format: MediaFormat::File,
+                };
+                let data = client
+                    .media()
+                    .get_media_content(&request, false)
+                    .await
+                    .context("Coudln't get media content")?;
+                Ok(FfiBuffer::new(data))
+            })
+            .await?
+    }
+
+    pub async fn send_video_message(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        secs: Option<u32>,
+        height: Option<u32>,
+        width: Option<u32>,
+        size: Option<u32>,
+        blurhash: Option<String>,
+    ) -> Result<OwnedEventId> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message as video to a room we are not in")
+        };
+        let path = PathBuf::from(uri);
+        let config = AttachmentConfig::new().info(AttachmentInfo::Video(BaseVideoInfo {
+            duration: secs.map(|x| Duration::from_secs(x as u64)),
+            height: height.map(UInt::from),
+            width: width.map(UInt::from),
+            size: size.map(UInt::from),
+            blurhash,
+        }));
+        let mime_type = mimetype.parse::<mime::Mime>()?;
+        RUNTIME
+            .spawn(async move {
+                let video_buf = std::fs::read(path).context("Couldn't read video data to send")?;
+                let response = room
+                    .send_attachment(name.as_str(), &mime_type, video_buf, config)
+                    .await
+                    .context("Couldn't send attachment")?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn video_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't read message from a room we are not in")
+        };
+        let client = self.room.client();
+        let event_id =
+            EventId::parse(event_id).context("Couldn't parse event id to get video binary")?;
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let evt = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't get room message")?;
+                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                    MessageLikeEvent::Original(m),
+                ))) = evt.event.deserialize() else {
+                    bail!("It is not message");
+                };
+                let MessageType::Video(content) = &m.content.msgtype else {
+                    bail!("Invalid file format");
+                };
+                let request = MediaRequest {
+                    source: content.source.clone(),
+                    format: MediaFormat::File,
+                };
+                let data = client
+                    .media()
+                    .get_media_content(&request, false)
+                    .await
+                    .context("Coudln't get media content")?;
+                Ok(FfiBuffer::new(data))
+            })
+            .await?
+    }
+
+    pub async fn send_file_message(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        size: u32,
+    ) -> Result<OwnedEventId> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message as file to a room we are not in")
+        };
+        let path = PathBuf::from(uri);
+        let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
+            size: Some(UInt::from(size)),
+        }));
+        let mime_type = mimetype.parse::<mime::Mime>()?;
+        RUNTIME
+            .spawn(async move {
+                let file_buf = std::fs::read(path).context("Couldn't read file data to send")?;
+                let response = room
+                    .send_attachment(name.as_str(), &mime_type, file_buf, config)
+                    .await
+                    .context("Couldn't send attachment")?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn file_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't read message from a room we are not in")
+        };
+        let event_id =
+            EventId::parse(event_id).context("Couldn't parse event id to get file binary")?;
+        let client = self.room.client();
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let evt = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't get room message")?;
+                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                    MessageLikeEvent::Original(m),
+                ))) = evt.event.deserialize() else {
+                    bail!("It is not message");
+                };
+                let MessageType::File(content) = &m.content.msgtype else {
+                    bail!("Invalid file format");
+                };
+                let request = MediaRequest {
+                    source: content.source.clone(),
+                    format: MediaFormat::File,
+                };
+                let data = client
+                    .media()
+                    .get_media_content(&request, false)
+                    .await
+                    .context("Coudln't get media content")?;
+                Ok(FfiBuffer::new(data))
             })
             .await?
     }
@@ -295,11 +563,14 @@ impl Room {
         } else {
             bail!("Can't send message to a room we are not in")
         };
+        let user_id =
+            UserId::parse(user_id.as_str()).context("Couldn't parse user id to invite")?;
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                let uid = UserId::parse(user_id.as_str())?;
-                room.invite_user_by_id(&uid).await?;
+                room.invite_user_by_id(&user_id)
+                    .await
+                    .context("Couldn't invite user by id")?;
                 Ok(true)
             })
             .await?
@@ -314,7 +585,7 @@ impl Room {
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                room.join().await?;
+                room.join().await.context("Join failed")?;
                 Ok(true)
             })
             .await?
@@ -329,7 +600,7 @@ impl Room {
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                room.leave().await?;
+                room.leave().await.context("Leave failed")?;
                 Ok(true)
             })
             .await?
@@ -348,74 +619,18 @@ impl Room {
                 let invited = my_client
                     .store()
                     .get_invited_user_ids(room.room_id())
-                    .await?;
+                    .await
+                    .context("Couldn't get invited user ids from store")?;
                 let mut accounts: Vec<Account> = vec![];
                 for user_id in invited.iter() {
                     let other_client = MatrixClient::builder()
                         .server_name(user_id.server_name())
                         .build()
-                        .await?;
+                        .await
+                        .context("Couldn't build matrix client")?;
                     accounts.push(Account::new(other_client.account(), user_id.clone()));
                 }
                 Ok(accounts)
-            })
-            .await?
-    }
-
-    pub async fn image_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't read message from a room we are not in")
-        };
-        let client = self.room.client();
-        // any variable in self can't be called directly in spawn
-        RUNTIME
-            .spawn(async move {
-                let eid = EventId::parse(event_id.clone())?;
-                let evt = room.event(&eid).await?;
-                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                    MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize() else {
-                    bail!("It is not message");
-                };
-                let MessageType::Image(content) = &m.content.msgtype else {
-                    bail!("Invalid file format");
-                };
-                let request = MediaRequest {
-                    source: content.source.clone(),
-                    format: MediaFormat::File,
-                };
-                let data = client.media().get_media_content(&request, false).await?;
-                Ok(FfiBuffer::new(data))
-            })
-            .await?
-    }
-
-    pub async fn send_file_message(
-        &self,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: u32,
-    ) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send message as file to a room we are not in")
-        };
-        RUNTIME
-            .spawn(async move {
-                let path = PathBuf::from(uri);
-                let mut image_buf = std::fs::read(path)?;
-                let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
-                    size: Some(UInt::from(size)),
-                }));
-                let mime_type: mime::Mime = mimetype.parse()?;
-                let response = room
-                    .send_attachment(name.as_str(), &mime_type, image_buf, config)
-                    .await?;
-                Ok(response.event_id)
             })
             .await?
     }
@@ -426,12 +641,16 @@ impl Room {
         } else {
             bail!("Can't read message from a room we are not in")
         };
+        let event_id =
+            EventId::parse(event_id).context("Couldn't parse event id to download file")?;
         let client = self.room.client();
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                let eid = EventId::parse(event_id.clone())?;
-                let evt = room.event(&eid).await?;
+                let evt = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't get room message")?;
                 let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
                 ))) = evt.event.deserialize() else {
@@ -447,9 +666,15 @@ impl Room {
                 let name = content.body.clone();
                 let mut path = PathBuf::from(dir_path.clone());
                 path.push(name);
-                let mut file = File::create(path.clone())?;
-                let data = client.media().get_media_content(&request, false).await?;
-                file.write_all(&data)?;
+                let mut file = File::create(path.clone())
+                    .context("Couldn't create file to write the fetched data")?;
+                let data = client
+                    .media()
+                    .get_media_content(&request, false)
+                    .await
+                    .context("Couldn't get media content")?;
+                file.write_all(&data)
+                    .context("Couldn't write data to file")?;
                 let key = [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat();
                 let path_text = path
                     .to_str()
@@ -470,11 +695,15 @@ impl Room {
         } else {
             bail!("Can't read message from a room we are not in")
         };
+        let event_id = EventId::parse(event_id)
+            .context("Couldn't parse event id to get downloaded file path")?;
         let client = self.room.client();
         RUNTIME
             .spawn(async move {
-                let eid = EventId::parse(event_id.clone())?;
-                let evt = room.event(&eid).await?;
+                let evt = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't get room message")?;
                 let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
                 ))) = evt.event.deserialize() else {
@@ -492,8 +721,8 @@ impl Room {
                     .store()
                     .get_custom_value(&key)
                     .await?
-                    .context("Couldn't get the path of saved file")?;
-                let text = std::str::from_utf8(&path)?;
+                    .context("Couldn't get the path of downloaded file")?;
+                let text = std::str::from_utf8(&path).context("Couldn't get string from utf8")?;
                 Ok(text.to_string())
             })
             .await?
@@ -507,7 +736,10 @@ impl Room {
         };
         RUNTIME
             .spawn(async move {
-                let encrypted = room.is_encrypted().await?;
+                let encrypted = room
+                    .is_encrypted()
+                    .await
+                    .context("Couldn't check if room is encrypted")?;
                 Ok(encrypted)
             })
             .await?
@@ -519,12 +751,16 @@ impl Room {
         } else {
             bail!("Can't read message from a room we are not in")
         };
+        let event_id =
+            EventId::parse(event_id).context("Couldn't parse event id to get message")?;
         let r = self.room.clone();
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                let eid = EventId::parse(event_id.clone())?;
-                let evt = room.event(&eid).await?;
+                let evt = room
+                    .event(&event_id)
+                    .await
+                    .context("Coudln't get room message")?;
                 match evt.event.deserialize() {
                     Ok(AnyTimelineEvent::State(AnyStateEvent::PolicyRuleRoom(
                         StateEvent::Original(e),
@@ -773,11 +1009,11 @@ impl Room {
         } else {
             bail!("Can't send reply as text to a room we are not in")
         };
+        let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
 
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                let event_id = EventId::parse(event_id)?;
                 let timeline_event = room
                     .event(&event_id)
                     .await
@@ -798,7 +1034,8 @@ impl Room {
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
-                    .await?;
+                    .await
+                    .context("Couldn't send text reply")?;
                 Ok(response.event_id)
             })
             .await?
@@ -823,14 +1060,22 @@ impl Room {
         };
         let client = self.room.client();
         let r = self.room.clone();
+        let path = PathBuf::from(uri);
+        let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
+        let content_type = mimetype.parse::<mime::Mime>()?;
+        let info = assign!(ImageInfo::new(), {
+            height: height.map(UInt::from),
+            width: width.map(UInt::from),
+            mimetype: Some(mimetype),
+            size: size.map(UInt::from),
+        });
 
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                let path = PathBuf::from(uri);
-                let mut image_buf = std::fs::read(path)?;
+                let image_buf =
+                    std::fs::read(path).context("Couldn't read image buffer to reply")?;
 
-                let event_id = EventId::parse(event_id)?;
                 let timeline_event = room
                     .event(&event_id)
                     .await
@@ -845,15 +1090,12 @@ impl Room {
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
 
-                let content_type: mime::Mime = mimetype.parse()?;
-                let response = client.media().upload(&content_type, image_buf).await?;
+                let response = client
+                    .media()
+                    .upload(&content_type, image_buf)
+                    .await
+                    .context("Couldn't upload image to reply")?;
 
-                let info = assign!(ImageInfo::new(), {
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
-                    mimetype: Some(mimetype),
-                    size: size.map(UInt::from),
-                });
                 let image_content = ImageMessageEventContent::plain(
                     name,
                     response.content_uri,
@@ -864,7 +1106,153 @@ impl Room {
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
-                    .await?;
+                    .await
+                    .context("Couldn't send image reply")?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn send_audio_reply(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        secs: Option<u32>,
+        size: Option<u32>,
+        event_id: String,
+        txn_id: Option<String>,
+    ) -> Result<OwnedEventId> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send reply as audio to a room we are not in")
+        };
+        let client = self.room.client();
+        let r = self.room.clone();
+        let path = PathBuf::from(uri);
+        let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
+        let content_type = mimetype.parse::<mime::Mime>()?;
+        let info = assign!(AudioInfo::new(), {
+            mimetype: Some(mimetype),
+            duration: secs.map(|x| Duration::from_secs(x as u64)),
+            size: size.map(UInt::from),
+        });
+
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let image_buf =
+                    std::fs::read(path).context("Couldn't read audio buffer to reply")?;
+
+                let timeline_event = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't find event.")?;
+
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let original_message = event_content
+                    .as_original()
+                    .context("Couldn't retrieve original message.")?;
+
+                let response = client
+                    .media()
+                    .upload(&content_type, image_buf)
+                    .await
+                    .context("Couldn't upload audio to reply")?;
+
+                let audio_content = AudioMessageEventContent::plain(
+                    name,
+                    response.content_uri,
+                    Some(Box::new(info)),
+                );
+                let content = RoomMessageEventContent::new(MessageType::Audio(audio_content))
+                    .make_reply_to(original_message, ForwardThread::Yes);
+
+                let response = room
+                    .send(content, txn_id.as_deref().map(Into::into))
+                    .await
+                    .context("Couldn't send audio reply")?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub async fn send_video_reply(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        secs: Option<u32>,
+        width: Option<u32>,
+        height: Option<u32>,
+        size: Option<u32>,
+        blurhash: Option<String>,
+        event_id: String,
+        txn_id: Option<String>,
+    ) -> Result<OwnedEventId> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send reply as video to a room we are not in")
+        };
+        let client = self.room.client();
+        let r = self.room.clone();
+        let path = PathBuf::from(uri);
+        let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
+        let content_type = mimetype.parse::<mime::Mime>()?;
+        let info = assign!(VideoInfo::new(), {
+            duration: secs.map(|x| Duration::from_secs(x as u64)),
+            height: height.map(UInt::from),
+            width: width.map(UInt::from),
+            mimetype: Some(mimetype),
+            size: size.map(UInt::from),
+            blurhash,
+        });
+
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let video_buf =
+                    std::fs::read(path).context("Couldn't read video buffer to reply")?;
+
+                let timeline_event = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't find event.")?;
+
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let original_message = event_content
+                    .as_original()
+                    .context("Couldn't retrieve original message.")?;
+
+                let response = client
+                    .media()
+                    .upload(&content_type, video_buf)
+                    .await
+                    .context("Couldn't upload video to reply")?;
+
+                let video_content = VideoMessageEventContent::plain(
+                    name,
+                    response.content_uri,
+                    Some(Box::new(info)),
+                );
+                let content = RoomMessageEventContent::new(MessageType::Video(video_content))
+                    .make_reply_to(original_message, ForwardThread::Yes);
+
+                let response = room
+                    .send(content, txn_id.as_deref().map(Into::into))
+                    .await
+                    .context("Couldn't send video reply")?;
                 Ok(response.event_id)
             })
             .await?
@@ -885,14 +1273,19 @@ impl Room {
             bail!("Can't send reply as file to a room we are not in")
         };
         let client = self.room.client();
+        let path = PathBuf::from(uri);
+        let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
+        let content_type = mimetype.parse::<mime::Mime>()?;
+        let info = assign!(FileInfo::new(), {
+            mimetype: Some(mimetype),
+            size: size.map(UInt::from),
+        });
 
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                let path = PathBuf::from(uri);
-                let mut file_buf = std::fs::read(path)?;
+                let file_buf = std::fs::read(path).context("Couldn't read file buffer to reply")?;
 
-                let event_id = EventId::parse(event_id)?;
                 let timeline_event = room
                     .event(&event_id)
                     .await
@@ -907,13 +1300,12 @@ impl Room {
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
 
-                let content_type: mime::Mime = mimetype.parse()?;
-                let response = client.media().upload(&content_type, file_buf).await?;
+                let response = client
+                    .media()
+                    .upload(&content_type, file_buf)
+                    .await
+                    .context("Couldn't upload file to reply")?;
 
-                let info = assign!(FileInfo::new(), {
-                    mimetype: Some(mimetype),
-                    size: size.map(UInt::from),
-                });
                 let file_content = FileMessageEventContent::plain(
                     name,
                     response.content_uri,
@@ -924,7 +1316,8 @@ impl Room {
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
-                    .await?;
+                    .await
+                    .context("Couldn't send file reply")?;
                 Ok(response.event_id)
             })
             .await?
@@ -941,14 +1334,15 @@ impl Room {
         } else {
             bail!("Can't redact any message from a room we are not in")
         };
+        let event_id = EventId::parse(event_id).context("Couldn't parse event id to redact")?;
 
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                let event_id = EventId::parse(event_id)?;
                 let response = room
                     .redact(&event_id, reason.as_deref(), txn_id.map(Into::into))
-                    .await?;
+                    .await
+                    .context("Couldn't redact message")?;
                 Ok(response.event_id)
             })
             .await?
@@ -960,12 +1354,14 @@ impl Room {
         } else {
             bail!("Can't update power level in a room we are not in")
         };
-        let user_id = UserId::parse(user_id)?;
+        let user_id =
+            UserId::parse(user_id).context("Couldn't parse user id to change power level")?;
         RUNTIME
             .spawn(async move {
                 let resp = room
                     .update_power_levels(vec![(&user_id, Int::from(level))])
-                    .await?;
+                    .await
+                    .context("Couldn't change power level")?;
                 Ok(resp.event_id)
             })
             .await?
