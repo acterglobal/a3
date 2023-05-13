@@ -62,6 +62,7 @@ impl Member {
     pub async fn get_profile(&self) -> Result<UserProfile> {
         let client = self.client.clone();
         let member = self.member.clone();
+
         RUNTIME
             .spawn(async move {
                 let user_profile = UserProfile::new(
@@ -93,6 +94,7 @@ impl Room {
     pub async fn get_profile(&self) -> Result<RoomProfile> {
         let client = self.room.client();
         let room_id = self.room_id().to_owned();
+
         RUNTIME
             .spawn(async move {
                 let mut room_profile = RoomProfile::new(client, room_id);
@@ -105,6 +107,7 @@ impl Room {
     pub async fn active_members(&self) -> Result<Vec<Member>> {
         let client = self.room.client();
         let room = self.room.clone();
+
         RUNTIME
             .spawn(async move {
                 let members = room
@@ -125,6 +128,7 @@ impl Room {
     pub async fn active_members_no_sync(&self) -> Result<Vec<Member>> {
         let client = self.room.client();
         let room = self.room.clone();
+
         RUNTIME
             .spawn(async move {
                 let members = room
@@ -145,7 +149,9 @@ impl Room {
     pub async fn get_member(&self, user_id: String) -> Result<Member> {
         let client = self.room.client();
         let room = self.room.clone();
-        let uid = UserId::parse(user_id)?;
+
+        let uid = UserId::parse(user_id).context("Couldn't parse user id to get member")?;
+
         RUNTIME
             .spawn(async move {
                 let member = room.get_member(&uid).await?.context("User not found")?;
@@ -159,6 +165,7 @@ impl Room {
 
     pub async fn timeline_stream(&self) -> Result<TimelineStream> {
         let room = self.room.clone();
+
         RUNTIME
             .spawn(async move {
                 let timeline = Arc::new(room.timeline().await);
@@ -174,6 +181,7 @@ impl Room {
         } else {
             bail!("Can't send typing notice to a room we are not in")
         };
+
         RUNTIME
             .spawn(async move {
                 room.typing_notice(typing)
@@ -190,8 +198,10 @@ impl Room {
         } else {
             bail!("Can't send read_receipt to a room we are not in")
         };
+
         let event_id =
             EventId::parse(event_id).context("Couldn't parse event id to read receipt")?;
+
         RUNTIME
             .spawn(async move {
                 room.send_single_receipt(
@@ -212,6 +222,7 @@ impl Room {
         } else {
             bail!("Can't send message to a room we are not in")
         };
+
         RUNTIME
             .spawn(async move {
                 let content = RoomMessageEventContent::text_plain(message);
@@ -231,6 +242,7 @@ impl Room {
         } else {
             bail!("Can't send message to a room we are not in")
         };
+
         RUNTIME
             .spawn(async move {
                 let content = RoomMessageEventContent::text_markdown(markdown);
@@ -250,8 +262,10 @@ impl Room {
         } else {
             bail!("Can't send message to a room we are not in")
         };
+
         let event_id =
             EventId::parse(event_id).context("Couldn't parse event id to send reaction")?;
+
         RUNTIME
             .spawn(async move {
                 let relates_to = Annotation::new(event_id, key);
@@ -280,6 +294,7 @@ impl Room {
         } else {
             bail!("Can't send message as image to a room we are not in")
         };
+
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
             height: height.map(UInt::from),
@@ -288,6 +303,7 @@ impl Room {
             blurhash: None,
         }));
         let mime_type = mimetype.parse::<mime::Mime>()?;
+
         RUNTIME
             .spawn(async move {
                 let image_buf = std::fs::read(path).context("Couldn't read image data to send")?;
@@ -306,10 +322,11 @@ impl Room {
         } else {
             bail!("Can't read message from a room we are not in")
         };
+        let client = self.room.client();
+
         let event_id =
             EventId::parse(event_id).context("Couldn't parse event id to get image binary")?;
-        let client = self.room.client();
-        // any variable in self can't be called directly in spawn
+
         RUNTIME
             .spawn(async move {
                 let evt = room
@@ -351,12 +368,14 @@ impl Room {
         } else {
             bail!("Can't send message as audio to a room we are not in")
         };
+
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::Audio(BaseAudioInfo {
             duration: secs.map(|x| Duration::from_secs(x as u64)),
             size: size.map(UInt::from),
         }));
         let mime_type = mimetype.parse::<mime::Mime>()?;
+
         RUNTIME
             .spawn(async move {
                 let audio_buf = std::fs::read(path).context("Couldn't read audio data to send")?;
@@ -375,10 +394,11 @@ impl Room {
         } else {
             bail!("Can't read message from a room we are not in")
         };
+        let client = self.room.client();
+
         let event_id =
             EventId::parse(event_id).context("Couldn't parse event id to get audio binary")?;
-        let client = self.room.client();
-        // any variable in self can't be called directly in spawn
+
         RUNTIME
             .spawn(async move {
                 let evt = room
@@ -407,6 +427,7 @@ impl Room {
             .await?
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn send_video_message(
         &self,
         uri: String,
@@ -423,6 +444,7 @@ impl Room {
         } else {
             bail!("Can't send message as video to a room we are not in")
         };
+
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::Video(BaseVideoInfo {
             duration: secs.map(|x| Duration::from_secs(x as u64)),
@@ -432,6 +454,7 @@ impl Room {
             blurhash,
         }));
         let mime_type = mimetype.parse::<mime::Mime>()?;
+
         RUNTIME
             .spawn(async move {
                 let video_buf = std::fs::read(path).context("Couldn't read video data to send")?;
@@ -451,9 +474,10 @@ impl Room {
             bail!("Can't read message from a room we are not in")
         };
         let client = self.room.client();
+
         let event_id =
             EventId::parse(event_id).context("Couldn't parse event id to get video binary")?;
-        // any variable in self can't be called directly in spawn
+
         RUNTIME
             .spawn(async move {
                 let evt = room
@@ -494,11 +518,13 @@ impl Room {
         } else {
             bail!("Can't send message as file to a room we are not in")
         };
+
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
             size: Some(UInt::from(size)),
         }));
         let mime_type = mimetype.parse::<mime::Mime>()?;
+
         RUNTIME
             .spawn(async move {
                 let file_buf = std::fs::read(path).context("Couldn't read file data to send")?;
@@ -517,10 +543,11 @@ impl Room {
         } else {
             bail!("Can't read message from a room we are not in")
         };
+        let client = self.room.client();
+
         let event_id =
             EventId::parse(event_id).context("Couldn't parse event id to get file binary")?;
-        let client = self.room.client();
-        // any variable in self can't be called directly in spawn
+
         RUNTIME
             .spawn(async move {
                 let evt = room
@@ -563,9 +590,10 @@ impl Room {
         } else {
             bail!("Can't send message to a room we are not in")
         };
+
         let user_id =
             UserId::parse(user_id.as_str()).context("Couldn't parse user id to invite")?;
-        // any variable in self can't be called directly in spawn
+
         RUNTIME
             .spawn(async move {
                 room.invite_user_by_id(&user_id)
@@ -582,7 +610,7 @@ impl Room {
         } else {
             bail!("Can't join a room we are not left")
         };
-        // any variable in self can't be called directly in spawn
+
         RUNTIME
             .spawn(async move {
                 room.join().await.context("Join failed")?;
@@ -597,7 +625,7 @@ impl Room {
         } else {
             bail!("Can't leave a room we are not joined")
         };
-        // any variable in self can't be called directly in spawn
+
         RUNTIME
             .spawn(async move {
                 room.leave().await.context("Leave failed")?;
@@ -613,7 +641,7 @@ impl Room {
         } else {
             bail!("Can't get a room we are not invited")
         };
-        // any variable in self can't be called directly in spawn
+
         RUNTIME
             .spawn(async move {
                 let invited = my_client
@@ -641,10 +669,11 @@ impl Room {
         } else {
             bail!("Can't read message from a room we are not in")
         };
+        let client = self.room.client();
+
         let event_id =
             EventId::parse(event_id).context("Couldn't parse event id to download file")?;
-        let client = self.room.client();
-        // any variable in self can't be called directly in spawn
+
         RUNTIME
             .spawn(async move {
                 let evt = room
@@ -695,9 +724,11 @@ impl Room {
         } else {
             bail!("Can't read message from a room we are not in")
         };
+        let client = self.room.client();
+
         let event_id = EventId::parse(event_id)
             .context("Couldn't parse event id to get downloaded file path")?;
-        let client = self.room.client();
+
         RUNTIME
             .spawn(async move {
                 let evt = room
@@ -734,6 +765,7 @@ impl Room {
         } else {
             bail!("Can't know if a room we are not in is encrypted")
         };
+
         RUNTIME
             .spawn(async move {
                 let encrypted = room
@@ -751,10 +783,11 @@ impl Room {
         } else {
             bail!("Can't read message from a room we are not in")
         };
+        let r = self.room.clone();
+
         let event_id =
             EventId::parse(event_id).context("Couldn't parse event id to get message")?;
-        let r = self.room.clone();
-        // any variable in self can't be called directly in spawn
+
         RUNTIME
             .spawn(async move {
                 let evt = room
@@ -1009,9 +1042,9 @@ impl Room {
         } else {
             bail!("Can't send reply as text to a room we are not in")
         };
+
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
 
-        // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let timeline_event = room
@@ -1060,6 +1093,7 @@ impl Room {
         };
         let client = self.room.client();
         let r = self.room.clone();
+
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
         let content_type = mimetype.parse::<mime::Mime>()?;
@@ -1070,7 +1104,6 @@ impl Room {
             size: size.map(UInt::from),
         });
 
-        // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let image_buf =
@@ -1113,6 +1146,7 @@ impl Room {
             .await?
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn send_audio_reply(
         &self,
         uri: String,
@@ -1130,6 +1164,7 @@ impl Room {
         };
         let client = self.room.client();
         let r = self.room.clone();
+
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
         let content_type = mimetype.parse::<mime::Mime>()?;
@@ -1139,7 +1174,6 @@ impl Room {
             size: size.map(UInt::from),
         });
 
-        // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let image_buf =
@@ -1203,6 +1237,7 @@ impl Room {
         };
         let client = self.room.client();
         let r = self.room.clone();
+
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
         let content_type = mimetype.parse::<mime::Mime>()?;
@@ -1215,7 +1250,6 @@ impl Room {
             blurhash,
         });
 
-        // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let video_buf =
@@ -1273,6 +1307,7 @@ impl Room {
             bail!("Can't send reply as file to a room we are not in")
         };
         let client = self.room.client();
+
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
         let content_type = mimetype.parse::<mime::Mime>()?;
@@ -1281,7 +1316,6 @@ impl Room {
             size: size.map(UInt::from),
         });
 
-        // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let file_buf = std::fs::read(path).context("Couldn't read file buffer to reply")?;
@@ -1334,9 +1368,9 @@ impl Room {
         } else {
             bail!("Can't redact any message from a room we are not in")
         };
+
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to redact")?;
 
-        // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let response = room
@@ -1354,8 +1388,10 @@ impl Room {
         } else {
             bail!("Can't update power level in a room we are not in")
         };
+
         let user_id =
             UserId::parse(user_id).context("Couldn't parse user id to change power level")?;
+
         RUNTIME
             .spawn(async move {
                 let resp = room
