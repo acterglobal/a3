@@ -79,15 +79,15 @@ impl UserProfile {
             .await?
     }
 
-    pub async fn get_thumbnail(&self, width: u64, height: u64) -> Result<FfiBuffer<u8>> {
+    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<FfiBuffer<u8>> {
         let client = self.client.clone();
         let avatar_url = self.avatar_url.clone().unwrap();
         RUNTIME
             .spawn(async move {
                 let size = MediaThumbnailSize {
                     method: Method::Scale,
-                    width: UInt::new(width).unwrap(),
-                    height: UInt::new(height).unwrap(),
+                    width: UInt::from(width),
+                    height: UInt::from(height),
                 };
                 let request = MediaRequest {
                     source: MediaSource::Plain(avatar_url),
@@ -162,15 +162,15 @@ impl RoomProfile {
             .await?
     }
 
-    pub async fn get_thumbnail(&self, width: u64, height: u64) -> Result<FfiBuffer<u8>> {
+    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<FfiBuffer<u8>> {
         let client = self.client.clone();
         let avatar_url = self.avatar_url.clone().unwrap();
         RUNTIME
             .spawn(async move {
                 let size = MediaThumbnailSize {
                     method: Method::Scale,
-                    width: UInt::new(width).unwrap(),
-                    height: UInt::new(height).unwrap(),
+                    width: UInt::from(width),
+                    height: UInt::from(height),
                 };
                 let request = MediaRequest {
                     source: MediaSource::Plain(avatar_url),
