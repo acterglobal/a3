@@ -186,7 +186,7 @@ impl TaskListDraft {
         self
     }
 
-    pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
+    pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
         self.content.keywords(keywords.to_vec());
         self
     }
@@ -196,7 +196,7 @@ impl TaskListDraft {
         self
     }
 
-    pub fn categories(&mut self, categories: &mut Vec<String>) -> &mut Self {
+    pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
         self.content.categories(categories.to_vec());
         self
     }
@@ -206,7 +206,7 @@ impl TaskListDraft {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
+    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
         self.content.subscribers(subscribers.to_vec());
         self
     }
@@ -629,7 +629,7 @@ impl TaskDraft {
         self
     }
 
-    pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
+    pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
         self.content.keywords(keywords.to_vec());
         self
     }
@@ -639,7 +639,7 @@ impl TaskDraft {
         self
     }
 
-    pub fn categories(&mut self, categories: &mut Vec<String>) -> &mut Self {
+    pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
         self.content.categories(categories.to_vec());
         self
     }
@@ -649,7 +649,7 @@ impl TaskDraft {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
+    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
         self.content.subscribers(subscribers.to_vec());
         self
     }
@@ -659,7 +659,7 @@ impl TaskDraft {
         self
     }
 
-    pub fn assignees(&mut self, assignees: &mut Vec<OwnedUserId>) -> &mut Self {
+    pub fn assignees(&mut self, assignees: &mut [OwnedUserId]) -> &mut Self {
         self.content.assignees(assignees.to_vec());
         self
     }
@@ -741,7 +741,7 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
+    pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
         self.content.keywords(Some(keywords.to_vec()));
         self
     }
@@ -756,7 +756,7 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn categories(&mut self, categories: &mut Vec<String>) -> &mut Self {
+    pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
         self.content.categories(Some(categories.to_vec()));
         self
     }
@@ -771,7 +771,7 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
+    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
         self.content.subscribers(Some(subscribers.to_vec()));
         self
     }
@@ -786,7 +786,7 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn assignees(&mut self, assignees: &mut Vec<OwnedUserId>) -> &mut Self {
+    pub fn assignees(&mut self, assignees: &mut [OwnedUserId]) -> &mut Self {
         self.content.assignees(Some(assignees.to_vec()));
         self
     }
@@ -953,7 +953,7 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
+    pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
         self.content.keywords(Some(keywords.to_vec()));
         self
     }
@@ -968,7 +968,7 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    pub fn categories(&mut self, categories: &mut Vec<String>) -> &mut Self {
+    pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
         self.content.categories(Some(categories.to_vec()));
         self
     }
@@ -983,7 +983,7 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
+    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
         self.content.subscribers(Some(subscribers.to_vec()));
         self
     }
