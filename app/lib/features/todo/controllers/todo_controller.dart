@@ -11,7 +11,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         CommentDraft,
         CommentsManager,
         CreateSpaceSettings,
-        FfiString,
         Space,
         RoomProfile,
         Task,
