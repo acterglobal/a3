@@ -282,7 +282,7 @@ class _PostPageState extends ConsumerState<PostPage> {
     return const Center(child: Icon(Atlas.user_file));
   }
 
-  Future<void> handlePost() async {
+  Future<EventId> handlePost() async {
     Client client = ref.read(clientProvider)!;
     Space space = await client.getSpace('#news:acter.global');
     NewsEntryDraft draft = space.newsDraft();
@@ -376,5 +376,6 @@ class _PostPageState extends ConsumerState<PostPage> {
     List<NewsSlide> slides = [];
     slides.add(slide);
     draft.slides(slides as FfiListNewsSlide);
+    return await draft.send();
   }
 }
