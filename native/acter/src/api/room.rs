@@ -280,6 +280,7 @@ impl Room {
             .await?
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn send_image_message(
         &self,
         uri: String,
