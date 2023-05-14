@@ -371,7 +371,7 @@ pub struct NewsEntryDraft {
 }
 
 impl NewsEntryDraft {
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn slides(&mut self, slides: &mut Vec<NewsSlide>) -> &mut Self {
         let items = slides.iter().map(|x| (*x.to_owned()).clone()).collect();
         self.content.slides(items);
@@ -515,7 +515,7 @@ pub struct NewsEntryUpdateBuilder {
 }
 
 impl NewsEntryUpdateBuilder {
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn slides(&mut self, slides: &mut Vec<NewsSlide>) -> &mut Self {
         let items = slides.iter().map(|x| (*x.to_owned()).clone()).collect();
         self.content.slides(Some(items));

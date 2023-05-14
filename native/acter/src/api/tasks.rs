@@ -186,7 +186,7 @@ impl TaskListDraft {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
         self.content.keywords(keywords.to_vec());
         self
@@ -197,7 +197,7 @@ impl TaskListDraft {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn categories(&mut self, categories: &mut Vec<String>) -> &mut Self {
         self.content.categories(categories.to_vec());
         self
@@ -208,7 +208,7 @@ impl TaskListDraft {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
         self.content.subscribers(subscribers.to_vec());
         self
@@ -632,7 +632,7 @@ impl TaskDraft {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
         self.content.keywords(keywords.to_vec());
         self
@@ -643,7 +643,7 @@ impl TaskDraft {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn categories(&mut self, categories: &mut Vec<String>) -> &mut Self {
         self.content.categories(categories.to_vec());
         self
@@ -654,7 +654,7 @@ impl TaskDraft {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
         self.content.subscribers(subscribers.to_vec());
         self
@@ -665,7 +665,7 @@ impl TaskDraft {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn assignees(&mut self, assignees: &mut Vec<OwnedUserId>) -> &mut Self {
         self.content.assignees(assignees.to_vec());
         self
@@ -748,7 +748,7 @@ impl TaskUpdateBuilder {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
         self.content.keywords(Some(keywords.to_vec()));
         self
@@ -764,7 +764,7 @@ impl TaskUpdateBuilder {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn categories(&mut self, categories: &mut Vec<String>) -> &mut Self {
         self.content.categories(Some(categories.to_vec()));
         self
@@ -780,7 +780,7 @@ impl TaskUpdateBuilder {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
         self.content.subscribers(Some(subscribers.to_vec()));
         self
@@ -796,7 +796,7 @@ impl TaskUpdateBuilder {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn assignees(&mut self, assignees: &mut Vec<OwnedUserId>) -> &mut Self {
         self.content.assignees(Some(assignees.to_vec()));
         self
@@ -964,7 +964,7 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
         self.content.keywords(Some(keywords.to_vec()));
         self
@@ -980,7 +980,7 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn categories(&mut self, categories: &mut Vec<String>) -> &mut Self {
         self.content.categories(Some(categories.to_vec()));
         self
@@ -996,7 +996,7 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    #[deny(clippy::ptr_arg)]
+    #[allow(clippy::ptr_arg)]
     pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
         self.content.subscribers(Some(subscribers.to_vec()));
         self
