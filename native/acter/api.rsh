@@ -517,6 +517,35 @@ object Conversation {
     /// send the image message to this room
     fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<EventId>>;
 
+    /// decrypted image buffer data
+    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+    fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// send the audio message to this room
+    fn send_audio_message(uri: string, name: string, mimetype: string, secs: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
+
+    /// decrypted audio buffer data
+    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+    fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// send the video message to this room
+    fn send_video_message(uri: string, name: string, mimetype: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, size: Option<u32>, blurhash: Option<string>) -> Future<Result<EventId>>;
+
+    /// decrypted video buffer data
+    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+    fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// send the file message to this room
+    fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<EventId>>;
+
+    /// decrypted file buffer data
+    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+    fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
     /// get the user status on this room
     fn room_type() -> string;
 
@@ -531,14 +560,6 @@ object Conversation {
 
     /// get the users that were invited to this room
     fn get_invitees() -> Future<Result<Vec<Account>>>;
-
-    /// decrypted image file data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// send the file message to this room
-    fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<EventId>>;
 
     /// save file in specified path
     fn save_file(event_id: string, dir_path: string) -> Future<Result<string>>;
@@ -560,6 +581,12 @@ object Conversation {
 
     /// send reply as image
     fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+
+    /// send reply as audio
+    fn send_audio_reply(uri: string, name: string, mimetype: string, secs: Option<u32>, size: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+
+    /// send reply as video
+    fn send_video_reply(uri: string, name: string, mimetype: string, secs: Option<u32>, width: Option<u32>, height: Option<u32>, size: Option<u32>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as file
     fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
