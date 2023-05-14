@@ -5,9 +5,12 @@ use acter_core::{
     spaces::is_acter_space,
 };
 use anyhow::{bail, Context, Result};
+use core::time::Duration;
 use log::{info, warn};
 use matrix_sdk::{
-    attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
+    attachment::{
+        AttachmentConfig, AttachmentInfo, BaseAudioInfo, BaseFileInfo, BaseImageInfo, BaseVideoInfo,
+    },
     media::{MediaFormat, MediaRequest},
     room::{Room as MatrixRoom, RoomMember},
     ruma::{
@@ -253,9 +256,10 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        size: Option<u32>,
-        width: Option<u32>,
-        height: Option<u32>,
+        size: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
+        blurhash: Option<String>,
     ) -> Result<OwnedEventId> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
@@ -267,14 +271,138 @@ impl Room {
                 let path = PathBuf::from(uri);
                 let mut image_buf = std::fs::read(path)?;
                 let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
-                    size: size.map(UInt::from),
-                    blurhash: None,
+                    height: height.and_then(UInt::new),
+                    width: width.and_then(UInt::new),
+                    size: size.and_then(UInt::new),
+                    blurhash,
                 }));
                 let mime_type: mime::Mime = mimetype.parse()?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, image_buf, config)
+                    .await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn image_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't read message from a room we are not in")
+        };
+        let client = self.room.client();
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let eid = EventId::parse(event_id.clone())?;
+                let evt = room.event(&eid).await?;
+                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                    MessageLikeEvent::Original(m),
+                ))) = evt.event.deserialize() else {
+                    bail!("It is not message");
+                };
+                let MessageType::Image(content) = &m.content.msgtype else {
+                    bail!("Invalid file format");
+                };
+                let request = MediaRequest {
+                    source: content.source.clone(),
+                    format: MediaFormat::File,
+                };
+                let data = client.media().get_media_content(&request, false).await?;
+                Ok(FfiBuffer::new(data))
+            })
+            .await?
+    }
+
+    pub async fn send_audio_message(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        secs: Option<u64>,
+        size: Option<u64>,
+    ) -> Result<OwnedEventId> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message as audio to a room we are not in")
+        };
+        RUNTIME
+            .spawn(async move {
+                let path = PathBuf::from(uri);
+                let mut audio_buf = std::fs::read(path)?;
+                let config = AttachmentConfig::new().info(AttachmentInfo::Audio(BaseAudioInfo {
+                    duration: secs.map(Duration::from_secs),
+                    size: size.and_then(UInt::new),
+                }));
+                let mime_type: mime::Mime = mimetype.parse()?;
+                let response = room
+                    .send_attachment(name.as_str(), &mime_type, audio_buf, config)
+                    .await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn send_video_message(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        secs: Option<u64>,
+        height: Option<u64>,
+        width: Option<u64>,
+        size: Option<u64>,
+        blurhash: Option<String>,
+    ) -> Result<OwnedEventId> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message as audio to a room we are not in")
+        };
+        RUNTIME
+            .spawn(async move {
+                let path = PathBuf::from(uri);
+                let mut video_buf = std::fs::read(path)?;
+                let config = AttachmentConfig::new().info(AttachmentInfo::Video(BaseVideoInfo {
+                    duration: secs.map(Duration::from_secs),
+                    height: height.and_then(UInt::new),
+                    width: width.and_then(UInt::new),
+                    size: size.and_then(UInt::new),
+                    blurhash,
+                }));
+                let mime_type: mime::Mime = mimetype.parse()?;
+                let response = room
+                    .send_attachment(name.as_str(), &mime_type, video_buf, config)
+                    .await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn send_file_message(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        size: u64,
+    ) -> Result<OwnedEventId> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message as file to a room we are not in")
+        };
+        RUNTIME
+            .spawn(async move {
+                let path = PathBuf::from(uri);
+                let mut file_buf = std::fs::read(path)?;
+                let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
+                    size: UInt::new(size),
+                }));
+                let mime_type: mime::Mime = mimetype.parse()?;
+                let response = room
+                    .send_attachment(name.as_str(), &mime_type, file_buf, config)
                     .await?;
                 Ok(response.event_id)
             })
@@ -358,64 +486,6 @@ impl Room {
                     accounts.push(Account::new(other_client.account(), user_id.clone()));
                 }
                 Ok(accounts)
-            })
-            .await?
-    }
-
-    pub async fn image_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't read message from a room we are not in")
-        };
-        let client = self.room.client();
-        // any variable in self can't be called directly in spawn
-        RUNTIME
-            .spawn(async move {
-                let eid = EventId::parse(event_id.clone())?;
-                let evt = room.event(&eid).await?;
-                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                    MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize() else {
-                    bail!("It is not message");
-                };
-                let MessageType::Image(content) = &m.content.msgtype else {
-                    bail!("Invalid file format");
-                };
-                let request = MediaRequest {
-                    source: content.source.clone(),
-                    format: MediaFormat::File,
-                };
-                let data = client.media().get_media_content(&request, false).await?;
-                Ok(FfiBuffer::new(data))
-            })
-            .await?
-    }
-
-    pub async fn send_file_message(
-        &self,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: u32,
-    ) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send message as file to a room we are not in")
-        };
-        RUNTIME
-            .spawn(async move {
-                let path = PathBuf::from(uri);
-                let mut image_buf = std::fs::read(path)?;
-                let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
-                    size: Some(UInt::from(size)),
-                }));
-                let mime_type: mime::Mime = mimetype.parse()?;
-                let response = room
-                    .send_attachment(name.as_str(), &mime_type, image_buf, config)
-                    .await?;
-                Ok(response.event_id)
             })
             .await?
     }
@@ -810,9 +880,9 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        size: Option<u32>,
-        width: Option<u32>,
-        height: Option<u32>,
+        size: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -849,10 +919,10 @@ impl Room {
                 let response = client.media().upload(&content_type, image_buf).await?;
 
                 let info = assign!(ImageInfo::new(), {
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
+                    height: height.and_then(UInt::new),
+                    width: width.and_then(UInt::new),
                     mimetype: Some(mimetype),
-                    size: size.map(UInt::from),
+                    size: size.and_then(UInt::new),
                 });
                 let image_content = ImageMessageEventContent::plain(
                     name,
@@ -875,7 +945,7 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        size: Option<u32>,
+        size: Option<u64>,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -912,7 +982,7 @@ impl Room {
 
                 let info = assign!(FileInfo::new(), {
                     mimetype: Some(mimetype),
-                    size: size.map(UInt::from),
+                    size: size.and_then(UInt::new),
                 });
                 let file_content = FileMessageEventContent::plain(
                     name,

@@ -1,19 +1,22 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_app_bar.dart';
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Client, NewsEntryDraft, Space;
+    show Client, EventId, NewsEntryDraft, NewsSlide, Space;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mime/mime.dart';
 
 class PostPage extends ConsumerStatefulWidget {
-  final String? imgUri;
+  final String? attachmentUri;
 
-  const PostPage({required this.imgUri, super.key});
+  const PostPage({required this.attachmentUri, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _PostPageState();
@@ -44,12 +47,7 @@ class _PostPageState extends ConsumerState<PostPage> {
                     color: Theme.of(context).colorScheme.neutral5,
                     width: 100,
                     height: 100,
-                    child: widget.imgUri != null
-                        ? Image.file(
-                            File(widget.imgUri!),
-                            fit: BoxFit.fitHeight,
-                          )
-                        : const Center(child: Icon(Atlas.image_gallery)),
+                    child: buildAttachment(),
                   ),
                   Expanded(
                     child: TextFormField(
@@ -76,8 +74,10 @@ class _PostPageState extends ConsumerState<PostPage> {
               ),
               const Divider(indent: 10, endIndent: 10),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 child: TextFormField(
                   keyboardType: TextInputType.multiline,
                   controller: descriptionController,
@@ -102,7 +102,7 @@ class _PostPageState extends ConsumerState<PostPage> {
               GestureDetector(
                 onTap: () => context.push('/updates/post/search_space'),
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8),
                   child: Wrap(
                     spacing: 10,
                     crossAxisAlignment: WrapCrossAlignment.center,
@@ -125,7 +125,7 @@ class _PostPageState extends ConsumerState<PostPage> {
               ),
               const Divider(indent: 10, endIndent: 10),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: TextButton(
                   onPressed: () {},
                   child: Row(
@@ -145,7 +145,7 @@ class _PostPageState extends ConsumerState<PostPage> {
               ),
               const Divider(indent: 10, endIndent: 10),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: TextButton(
                   onPressed: () {},
                   child: Row(
@@ -165,7 +165,7 @@ class _PostPageState extends ConsumerState<PostPage> {
               ),
               const Divider(indent: 10, endIndent: 10),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: TextButton(
                   onPressed: () {},
                   child: Row(
@@ -245,10 +245,119 @@ class _PostPageState extends ConsumerState<PostPage> {
     );
   }
 
+  Widget buildAttachment() {
+    if (widget.attachmentUri == null) {
+      return const Center(child: Icon(Atlas.text));
+    }
+    String? mimeType = lookupMimeType(widget.attachmentUri!);
+    if (mimeType != null) {
+      if (mimeType.startsWith('image/')) {
+        return Image.file(
+          File(widget.attachmentUri!),
+          fit: BoxFit.fitHeight,
+        );
+      } else if (mimeType.startsWith('audio/')) {
+        return const Center(child: Icon(Atlas.file_audio));
+      } else if (mimeType.startsWith('video/')) {
+        return const Center(child: Icon(Atlas.file_video));
+      }
+    }
+    return const Center(child: Icon(Atlas.user_file));
+  }
+
   Future<void> handlePost() async {
     Client client = ref.read(clientProvider)!;
     Space space = await client.getSpace('#news:acter.global');
     NewsEntryDraft draft = space.newsDraft();
-    draft.newTextSlide('123');
+    NewsSlide? slide;
+    if (widget.attachmentUri == null) {
+      slide = draft.newTextSlide(descriptionController.text);
+    } else {
+      String? mimeType = lookupMimeType(widget.attachmentUri!);
+      if (mimeType != null) {
+        if (mimeType.startsWith('image/')) {
+          File image = File(widget.attachmentUri!);
+          Uint8List bytes = image.readAsBytesSync();
+          var decodedImage = await decodeImageFromList(bytes);
+          EventId eventId = await space.sendImageMessage(
+            widget.attachmentUri!,
+            'Untitled Image',
+            mimeType,
+            bytes.length,
+            decodedImage.width,
+            decodedImage.height,
+            null,
+          );
+          slide = draft.newImageSlide(
+            descriptionController.text,
+            eventId.toString(),
+            mimeType,
+            bytes.length,
+            decodedImage.width,
+            decodedImage.height,
+            null,
+          );
+        } else if (mimeType.startsWith('audio/')) {
+          File audio = File(widget.attachmentUri!);
+          Uint8List bytes = audio.readAsBytesSync();
+          EventId eventId = await space.sendAudioMessage(
+            widget.attachmentUri!,
+            'Untitled Audio',
+            mimeType,
+            null,
+            bytes.length,
+          );
+          slide = draft.newAudioSlide(
+            descriptionController.text,
+            eventId.toString(),
+            null,
+            mimeType,
+            bytes.length,
+          );
+        } else if (mimeType.startsWith('video/')) {
+          File video = File(widget.attachmentUri!);
+          Uint8List bytes = video.readAsBytesSync();
+          EventId eventId = await space.sendVideoMessage(
+            widget.attachmentUri!,
+            'Untitled Video',
+            mimeType,
+            null,
+            null,
+            null,
+            bytes.length,
+            null,
+          );
+          slide = draft.newVideoSlide(
+            descriptionController.text,
+            eventId.toString(),
+            null,
+            null,
+            null,
+            mimeType,
+            bytes.length,
+            null,
+          );
+        }
+      }
+      if (slide == null) {
+        File file = File(widget.attachmentUri!);
+        Uint8List bytes = file.readAsBytesSync();
+        EventId eventId = await space.sendFileMessage(
+          widget.attachmentUri!,
+          'Untitled File',
+          mimeType ?? 'application/octet',
+          bytes.length,
+        );
+        slide = draft.newFileSlide(
+          descriptionController.text,
+          eventId.toString(),
+          mimeType ?? 'application/octet',
+          bytes.length,
+        );
+      }
+    }
+    List<NewsSlide> slides = [];
+    slides.add(slide);
+    draft.slides(slides as FfiListNewsSlide);
   }
 }

@@ -92,7 +92,7 @@ final _routes = [
             pageBuilder: (context, state) {
               return NoTransitionPage(
                 key: state.pageKey,
-                child: PostPage(imgUri: state.extra as String?),
+                child: PostPage(attachmentUri: state.extra as String?),
               );
             },
             routes: <RouteBase>[

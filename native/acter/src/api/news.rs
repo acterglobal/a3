@@ -371,7 +371,7 @@ pub struct NewsEntryDraft {
 }
 
 impl NewsEntryDraft {
-    pub fn slides(&mut self, slides: &mut [NewsSlide]) -> &mut Self {
+    pub fn slides(&mut self, slides: &mut Vec<NewsSlide>) -> &mut Self {
         let items = slides.iter().map(|x| (*x.to_owned()).clone()).collect();
         self.content.slides(items);
         self
@@ -514,7 +514,7 @@ pub struct NewsEntryUpdateBuilder {
 }
 
 impl NewsEntryUpdateBuilder {
-    pub fn slides(&mut self, slides: &mut [NewsSlide]) -> &mut Self {
+    pub fn slides(&mut self, slides: &mut Vec<NewsSlide>) -> &mut Self {
         let items = slides.iter().map(|x| (*x.to_owned()).clone()).collect();
         self.content.slides(Some(items));
         self
