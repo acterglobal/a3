@@ -7,8 +7,7 @@ import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/features/news/notifiers/search_space_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Client, EventId, NewsEntryDraft, NewsSlide, Space;
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+    show Client, EventId, FfiListNewsSlide, NewsEntryDraft, NewsSlide, Space;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
