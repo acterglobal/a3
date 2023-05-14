@@ -33,8 +33,15 @@ final spacesProvider = FutureProvider<List<Space>>((ref) async {
 class SpaceItem {
   String roomId;
   String? displayName;
+  List<Member> activeMembers;
+  Future<FfiBufferUint8>? avatar;
 
-  SpaceItem({required this.roomId, this.displayName});
+  SpaceItem({
+    required this.roomId,
+    required this.activeMembers,
+    this.displayName,
+    this.avatar,
+  });
 }
 
 final spaceItemsProvider = FutureProvider<List<SpaceItem>>((ref) async {
@@ -44,9 +51,13 @@ final spaceItemsProvider = FutureProvider<List<SpaceItem>>((ref) async {
   List<SpaceItem> items = [];
   spaces.toList().forEach((element) async {
     RoomProfile profile = await element.getProfile();
+    List<Member> members =
+        await element.activeMembers().then((ffiList) => ffiList.toList());
     var item = SpaceItem(
       roomId: element.getRoomId().toString(),
       displayName: profile.getDisplayName(),
+      activeMembers: members,
+      avatar: profile.hasAvatar() ? profile.getThumbnail(120, 120) : null,
     );
     items.add(item);
   });

@@ -6,15 +6,9 @@ OverlaySupportEntry showNoInternetNotification() {
     Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: const [
-        Icon(
-          Icons.wifi_off,
-        ),
-        SizedBox(
-          width: 12,
-        ),
-        Text(
-          'Network connectivity limited or unavailable',
-        ),
+        Icon(Icons.wifi_off),
+        SizedBox(width: 12),
+        Text('Network connectivity limited or unavailable'),
       ],
     ),
     slideDismissDirection: DismissDirection.up,

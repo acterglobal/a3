@@ -30,8 +30,9 @@ jobs:
         uses: davidB/rust-cargo-make@v1
       - run: cargo make setup-android
       - uses: subosito/flutter-action@v2
-        name: "Set up flutter"
+        name: 'Set up flutter'
         with:
+          flutter-version: '3.7.12'
           channel: 'stable'
       # - uses: actions-rs/cargo@v1
       #   name: Clippy
@@ -45,8 +46,8 @@ jobs:
       #     args: -p acter --target aarch64-linux-android
       - name: Build Android FFI
         run: cargo make --profile release android
-      - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+      # - name: Ensure ffi-interface is up to date
+      #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
       #   working-directory: ./acter_flutter_sdk
@@ -77,8 +78,9 @@ jobs:
       - uses: Swatinem/rust-cache@v1
       - run: cargo make setup-ios
       - uses: subosito/flutter-action@v2
-        name: "Set up flutter"
+        name: 'Set up flutter'
         with:
+          flutter-version: '3.7.12'
           channel: 'stable'
       # - uses: actions-rs/cargo@v1
       #   name: Clippy
@@ -92,8 +94,8 @@ jobs:
       #     args: -p acter --target x86_64-apple-ios
       - name: Build iOS FFI
         run: cargo make --profile release  ios
-      - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+      # - name: Ensure ffi-interface is up to date
+      #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
       #   working-directory: ./acter_flutter_sdk

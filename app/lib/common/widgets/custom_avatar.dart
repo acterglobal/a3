@@ -35,13 +35,21 @@ class CustomAvatar extends StatefulWidget {
 class _CustomAvatarState extends State<CustomAvatar> {
   late Future<Uint8List>? _avatar;
 
+  @override
+  void initState() {
+    super.initState();
+    _avatar = getAvatar();
+  }
+
   // avoid re-run future when object state isn't changed.
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    setState(() {
-      _avatar = getAvatar();
-    });
+  void didUpdateWidget(CustomAvatar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.avatar != oldWidget.avatar) {
+      setState(() {
+        _avatar = getAvatar();
+      });
+    }
   }
 
   Future<Uint8List>? getAvatar() async {

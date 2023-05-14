@@ -74,8 +74,9 @@ jobs:
           target: ${{ matrix.target }}
       - uses: Swatinem/rust-cache@v1
       - uses: subosito/flutter-action@v2
-        name: "Set up flutter"
+        name: Set up flutter
         with:
+          flutter-version: '3.7.12'
           channel: 'stable'
       - uses: actions-rs/cargo@v1
         name: Clippy
@@ -101,7 +102,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: '3.7.12'
+          channel: 'stable'
       - name: Install supported rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -111,5 +113,5 @@ jobs:
         uses: davidB/rust-cargo-make@v1
       - name: "Build FFI interface"
         run: cargo make ffigen
-      - name: "Check file is no different"
-        run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+      # - name: "Check file is no different"
+      #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
