@@ -663,7 +663,7 @@ impl Room {
             .await?
     }
 
-    pub async fn save_file(&self, event_id: String, dir_path: String) -> Result<String> {
+    pub async fn download_media(&self, event_id: String, dir_path: String) -> Result<String> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -671,13 +671,13 @@ impl Room {
         };
         let client = self.room.client();
 
-        let event_id =
-            EventId::parse(event_id).context("Couldn't parse event id to download file")?;
+        let eid =
+            EventId::parse(event_id.clone()).context("Couldn't parse event id to download file")?;
 
         RUNTIME
             .spawn(async move {
                 let evt = room
-                    .event(&event_id)
+                    .event(&eid)
                     .await
                     .context("Couldn't get room message")?;
                 let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
@@ -685,14 +685,41 @@ impl Room {
                 ))) = evt.event.deserialize() else {
                     bail!("It is not message");
                 };
-                let MessageType::File(content) = m.content.msgtype else {
-                    bail!("This message type is not file");
+                let (request, name) = match m.content.msgtype {
+                    MessageType::Image(content) => {
+                        let request = MediaRequest {
+                            source: content.source.clone(),
+                            format: MediaFormat::File,
+                        };
+                        let name = content.body.clone();
+                        (request, name)
+                    }
+                    MessageType::Audio(content) => {
+                        let request = MediaRequest {
+                            source: content.source.clone(),
+                            format: MediaFormat::File,
+                        };
+                        let name = content.body.clone();
+                        (request, name)
+                    }
+                    MessageType::Video(content) => {
+                        let request = MediaRequest {
+                            source: content.source.clone(),
+                            format: MediaFormat::File,
+                        };
+                        let name = content.body.clone();
+                        (request, name)
+                    }
+                    MessageType::File(content) => {
+                        let request = MediaRequest {
+                            source: content.source.clone(),
+                            format: MediaFormat::File,
+                        };
+                        let name = content.body.clone();
+                        (request, name)
+                    }
+                    _ => bail!("This message type is not downloadable"),
                 };
-                let request = MediaRequest {
-                    source: content.source.clone(),
-                    format: MediaFormat::File,
-                };
-                let name = content.body.clone();
                 let mut path = PathBuf::from(dir_path.clone());
                 path.push(name);
                 let mut file = File::create(path.clone())
@@ -704,7 +731,11 @@ impl Room {
                     .context("Couldn't get media content")?;
                 file.write_all(&data)
                     .context("Couldn't write data to file")?;
-                let key = [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat();
+                let key = [
+                    room.room_id().as_str().as_bytes(),
+                    event_id.as_str().as_bytes(),
+                ]
+                .concat();
                 let path_text = path
                     .to_str()
                     .context("Path was generated from strings. Must be string")?;
@@ -718,7 +749,7 @@ impl Room {
             .await?
     }
 
-    pub async fn file_path(&self, event_id: String) -> Result<String> {
+    pub async fn media_path(&self, event_id: String) -> Result<String> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -726,13 +757,13 @@ impl Room {
         };
         let client = self.room.client();
 
-        let event_id = EventId::parse(event_id)
-            .context("Couldn't parse event id to get downloaded file path")?;
+        let eid = EventId::parse(event_id.clone())
+            .context("Couldn't parse event id to get downloaded media path")?;
 
         RUNTIME
             .spawn(async move {
                 let evt = room
-                    .event(&event_id)
+                    .event(&eid)
                     .await
                     .context("Couldn't get room message")?;
                 let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
@@ -740,9 +771,13 @@ impl Room {
                 ))) = evt.event.deserialize() else {
                     bail!("It is not message");
                 };
-                let MessageType::File(content) = m.content.msgtype else {
-                    bail!("Invalid file format");
-                };
+                match m.content.msgtype {
+                    MessageType::Image(content) => {}
+                    MessageType::Audio(content) => {}
+                    MessageType::Video(content) => {}
+                    MessageType::File(content) => {}
+                    _ => bail!("This message type is not downloadable"),
+                }
                 let key = [
                     room.room_id().as_str().as_bytes(),
                     event_id.as_str().as_bytes(),
@@ -752,7 +787,7 @@ impl Room {
                     .store()
                     .get_custom_value(&key)
                     .await?
-                    .context("Couldn't get the path of downloaded file")?;
+                    .context("Couldn't get the path of downloaded media")?;
                 let text = std::str::from_utf8(&path).context("Couldn't get string from utf8")?;
                 Ok(text.to_string())
             })

@@ -561,11 +561,11 @@ object Conversation {
     /// get the users that were invited to this room
     fn get_invitees() -> Future<Result<Vec<Account>>>;
 
-    /// save file in specified path
-    fn save_file(event_id: string, dir_path: string) -> Future<Result<string>>;
+    /// download media (image/audio/video/file) to specified path
+    fn download_media(event_id: string, dir_path: string) -> Future<Result<string>>;
 
-    /// get the path that file was saved
-    fn file_path(event_id: string) -> Future<Result<string>>;
+    /// get the path that media (image/audio/video/file) was saved
+    fn media_path(event_id: string) -> Future<Result<string>>;
 
     /// initially called to get receipt status of room members
     fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;

@@ -610,8 +610,8 @@ class ChatRoomController extends GetxController {
     types.Message message,
   ) async {
     if (message is types.FileMessage) {
-      String filePath = await _currentRoom!.filePath(message.id);
-      if (filePath.isEmpty) {
+      String mediaPath = await _currentRoom!.mediaPath(message.id);
+      if (mediaPath.isEmpty) {
         Directory? rootPath = await getTemporaryDirectory();
         String? dirPath = await FilesystemPicker.open(
           title: 'Save to folder',
@@ -625,10 +625,10 @@ class ChatRoomController extends GetxController {
               : null,
         );
         if (dirPath != null) {
-          await _currentRoom!.saveFile(message.id, dirPath);
+          await _currentRoom!.downloadMedia(message.id, dirPath);
         }
       } else {
-        final result = await OpenAppFile.open(filePath);
+        final result = await OpenAppFile.open(mediaPath);
         if (result.message.isNotEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
