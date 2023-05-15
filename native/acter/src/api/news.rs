@@ -13,6 +13,7 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Joined, Room},
     ruma::{
+        assign,
         events::room::{
             message::{
                 AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
@@ -423,12 +424,13 @@ impl NewsEntryDraft {
         height: Option<u64>,
         blurhash: Option<String>,
     ) -> NewsSlide {
-        let mut info = ImageInfo::new();
-        info.height = height.and_then(UInt::new);
-        info.width = width.and_then(UInt::new);
-        info.mimetype = mimetype;
-        info.size = size.and_then(UInt::new);
-        info.blurhash = blurhash;
+        let info = assign!(ImageInfo::new(), {
+            height: height.and_then(UInt::new),
+            width: width.and_then(UInt::new),
+            mimetype,
+            size: size.and_then(UInt::new),
+            blurhash,
+        });
         let url = Box::<MxcUri>::from(url.as_str());
 
         NewsSlide {
@@ -446,10 +448,11 @@ impl NewsEntryDraft {
         mimetype: Option<String>,
         size: Option<u64>,
     ) -> NewsSlide {
-        let mut info = AudioInfo::new();
-        info.duration = secs.map(|x| Duration::new(x, 0));
-        info.mimetype = mimetype;
-        info.size = size.and_then(UInt::new);
+        let info = assign!(AudioInfo::new(), {
+            duration: secs.map(|x| Duration::new(x, 0)),
+            mimetype,
+            size: size.and_then(UInt::new),
+        });
         let url = Box::<MxcUri>::from(url.as_str());
 
         NewsSlide {
@@ -471,13 +474,14 @@ impl NewsEntryDraft {
         size: Option<u64>,
         blurhash: Option<String>,
     ) -> NewsSlide {
-        let mut info = VideoInfo::new();
-        info.duration = secs.map(|x| Duration::new(x, 0));
-        info.height = height.and_then(UInt::new);
-        info.width = width.and_then(UInt::new);
-        info.mimetype = mimetype;
-        info.size = size.and_then(UInt::new);
-        info.blurhash = blurhash;
+        let info = assign!(VideoInfo::new(), {
+            duration: secs.map(|x| Duration::new(x, 0)),
+            height: height.and_then(UInt::new),
+            width: width.and_then(UInt::new),
+            mimetype,
+            size: size.and_then(UInt::new),
+            blurhash,
+        });
         let url = Box::<MxcUri>::from(url.as_str());
 
         NewsSlide {
@@ -494,9 +498,10 @@ impl NewsEntryDraft {
         mimetype: Option<String>,
         size: Option<u64>,
     ) -> NewsSlide {
-        let mut info = FileInfo::new();
-        info.mimetype = mimetype;
-        info.size = size.and_then(UInt::new);
+        let info = assign!(FileInfo::new(), {
+            mimetype,
+            size: size.and_then(UInt::new),
+        });
         let url = Box::<MxcUri>::from(url.as_str());
 
         NewsSlide {
