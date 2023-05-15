@@ -691,32 +691,28 @@ impl Room {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        let name = content.body;
-                        (request, name)
+                        (request, content.body)
                     }
                     MessageType::Audio(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        let name = content.body;
-                        (request, name)
+                        (request, content.body)
                     }
                     MessageType::Video(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        let name = content.body;
-                        (request, name)
+                        (request, content.body)
                     }
                     MessageType::File(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        let name = content.body;
-                        (request, name)
+                        (request, content.body)
                     }
                     _ => bail!("This message type is not downloadable"),
                 };
