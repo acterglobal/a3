@@ -446,20 +446,13 @@ class _RoomPageState extends State<RoomPage> {
       },
       child: Padding(
         padding: const EdgeInsets.only(right: 10),
-        child: SizedBox(
-          height: 45,
-          width: 45,
-          child: FittedBox(
-            fit: BoxFit.contain,
-            child: ActerAvatar(
-              mode: DisplayMode.User,
-              uniqueId: roomId,
-              avatarProviderFuture:
-                  widget.avatar != null ? remapForAvatar(widget.avatar!) : null,
-              displayName: widget.name,
-              size: 20,
-            ),
-          ),
+        child: ActerAvatar(
+          mode: DisplayMode.User,
+          uniqueId: roomId,
+          avatarProviderFuture:
+              widget.avatar != null ? remapForAvatar(widget.avatar!) : null,
+          displayName: widget.name,
+          size: 45,
         ),
       ),
     );

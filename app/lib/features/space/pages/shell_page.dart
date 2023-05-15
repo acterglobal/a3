@@ -1,8 +1,8 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class SpaceShell extends ConsumerStatefulWidget {
@@ -61,19 +61,13 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                           Positioned(
                             left: 30,
                             top: 110,
-                            child: profile.hasAvatar()
-                                ? CircleAvatar(
-                                    foregroundImage: profile.getAvatarImage(),
-                                    radius: 80,
-                                  )
-                                : CircleAvatar(
-                                    radius: 80,
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.secondary,
-                                    child: SvgPicture.asset(
-                                      'assets/icon/acter.svg',
-                                    ),
-                                  ),
+                            child: ActerAvatar(
+                              mode: DisplayMode.Space,
+                              displayName: profile.displayName,
+                              uniqueId: space.getRoomId().toString(),
+                              avatar: profile.getAvatarImage(),
+                              size: 160,
+                            ),
                           ),
                           ...canonicalParent.when(
                             data: (parentProfile) {
@@ -82,8 +76,8 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                               }
                               return [
                                 Positioned(
-                                  left: 145,
-                                  top: 230,
+                                  left: 150,
+                                  top: 250,
                                   child: Tooltip(
                                     message: parentProfile.profile.displayName,
                                     child: InkWell(
@@ -92,22 +86,17 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                                             parentProfile.space.getRoomId();
                                         context.go('/$roomId');
                                       },
-                                      child: parentProfile.profile.hasAvatar()
-                                          ? CircleAvatar(
-                                              foregroundImage: parentProfile
-                                                  .profile
-                                                  .getAvatarImage(),
-                                              radius: 20,
-                                            )
-                                          : CircleAvatar(
-                                              radius: 20,
-                                              backgroundColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary,
-                                              child: SvgPicture.asset(
-                                                'assets/icon/acter.svg',
-                                              ),
-                                            ),
+                                      child: ActerAvatar(
+                                        mode: DisplayMode.Space,
+                                        displayName:
+                                            parentProfile.profile.displayName,
+                                        uniqueId: parentProfile.space
+                                            .getRoomId()
+                                            .toString(),
+                                        avatar: parentProfile.profile
+                                            .getAvatarImage(),
+                                        size: 40,
+                                      ),
                                     ),
                                   ),
                                 ),

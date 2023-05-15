@@ -1,8 +1,8 @@
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:core';
 
 class MySpacesSection extends ConsumerWidget {
@@ -41,24 +41,13 @@ class MySpacesSection extends ConsumerWidget {
                           profile.displayName,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
-                        leading: profile.hasAvatar()
-                            ? CircleAvatar(
-                                foregroundImage: profile.getAvatarImage(),
-                                radius: 24,
-                              )
-                            : Container(
-                                height: 36,
-                                width: 36,
-                                margin: const EdgeInsets.only(left: 8),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(36),
-                                ),
-                                child: SvgPicture.asset(
-                                  'assets/icon/acter.svg',
-                                  height: 24,
-                                  width: 24,
-                                ),
-                              ),
+                        leading: ActerAvatar(
+                          mode: DisplayMode.Space,
+                          displayName: profile.displayName,
+                          uniqueId: roomId,
+                          avatar: profile.getAvatarImage(),
+                          size: 48,
+                        ),
                       ),
                     ),
                     error: (error, stack) => ListTile(

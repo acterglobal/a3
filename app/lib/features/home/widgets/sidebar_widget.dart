@@ -5,6 +5,7 @@ import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/routing.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
@@ -72,16 +73,13 @@ final spaceItemsProvider =
             location: '/$roomId',
           ),
           data: (info) => SidebarNavigationItem(
-            icon: info.hasAvatar()
-                ? CircleAvatar(
-                    foregroundImage: info.getAvatarImage()!,
-                    radius: 24,
-                  )
-                : SvgPicture.asset(
-                    'assets/icon/acter.svg',
-                    height: 24,
-                    width: 24,
-                  ),
+            icon: ActerAvatar(
+              mode: DisplayMode.Space,
+              displayName: info.displayName,
+              uniqueId: roomId,
+              avatar: info.getAvatarImage(),
+              size: 48,
+            ),
             label: Text(
               info.displayName,
               style: Theme.of(context).textTheme.labelSmall,

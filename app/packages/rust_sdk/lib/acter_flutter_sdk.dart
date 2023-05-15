@@ -67,8 +67,13 @@ Color convertColor(ffi.EfkColor? primary, Color fallback) {
 Future<ImageProvider<Object>?> remapForAvatar(
   Future<ffi.FfiBufferUint8?> fut,
 ) async {
-  final buffered = (await fut)!.asTypedList();
-  return MemoryImage(buffered);
+  try {
+    final buffered = (await fut)!.asTypedList();
+    return MemoryImage(buffered);
+  } catch (e) {
+    debugPrint('Error fetching avatar: $e');
+    return null;
+  }
 }
 
 DateTime toDartDatetime(ffi.UtcDateTime dt) {
