@@ -609,10 +609,13 @@ class ChatRoomController extends GetxController {
     BuildContext context,
     types.Message message,
   ) async {
-    if (message is types.FileMessage) {
+    if (message is types.ImageMessage ||
+        message is types.AudioMessage ||
+        message is types.VideoMessage ||
+        message is types.FileMessage) {
       String mediaPath = await _currentRoom!.mediaPath(message.id);
       if (mediaPath.isEmpty) {
-        Directory? rootPath = await getTemporaryDirectory();
+        Directory? rootPath = await getApplicationSupportDirectory();
         String? dirPath = await FilesystemPicker.open(
           title: 'Save to folder',
           context: context,
