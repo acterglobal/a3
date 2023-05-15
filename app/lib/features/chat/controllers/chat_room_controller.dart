@@ -8,6 +8,7 @@ import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/chat/pages/image_selection_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
+        AudioDesc,
         Client,
         Conversation,
         FfiBufferUint8,
@@ -21,7 +22,8 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         TextDesc,
         TimelineDiff,
         TimelineStream,
-        UserProfile;
+        UserProfile,
+        VideoDesc;
 import 'package:file_picker/file_picker.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
@@ -108,8 +110,16 @@ class ChatRoomController extends GetxController {
           if (isLoading.isFalse) {
             update(['Chat']);
           }
-          if (eventItem.subType() == 'm.image') {
-            _fetchMessageContent(m.id);
+          switch (eventItem.subType()) {
+            case 'm.image':
+              _fetchImageContent(m.id);
+              break;
+            case 'm.audio':
+              _fetchAudioContent(m.id);
+              break;
+            case 'm.video':
+              _fetchVideoContent(m.id);
+              break;
           }
         }
         if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
@@ -175,8 +185,16 @@ class ChatRoomController extends GetxController {
               if (isLoading.isFalse) {
                 update(['Chat']);
               }
-              if (eventItem.subType() == 'm.image') {
-                _fetchMessageContent(m.id);
+              switch (eventItem.subType()) {
+                case 'm.image':
+                  _fetchImageContent(m.id);
+                  break;
+                case 'm.audio':
+                  _fetchAudioContent(m.id);
+                  break;
+                case 'm.video':
+                  _fetchVideoContent(m.id);
+                  break;
               }
             }
           }
@@ -204,8 +222,16 @@ class ChatRoomController extends GetxController {
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (eventItem.subType() == 'm.image') {
-              _fetchMessageContent(m.id);
+            switch (eventItem.subType()) {
+              case 'm.image':
+                _fetchImageContent(m.id);
+                break;
+              case 'm.audio':
+                _fetchAudioContent(m.id);
+                break;
+              case 'm.video':
+                _fetchVideoContent(m.id);
+                break;
             }
           }
           break;
@@ -232,8 +258,16 @@ class ChatRoomController extends GetxController {
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (eventItem.subType() == 'm.image') {
-              _fetchMessageContent(m.id);
+            switch (eventItem.subType()) {
+              case 'm.image':
+                _fetchImageContent(m.id);
+                break;
+              case 'm.audio':
+                _fetchAudioContent(m.id);
+                break;
+              case 'm.video':
+                _fetchVideoContent(m.id);
+                break;
             }
           }
           break;
@@ -265,8 +299,16 @@ class ChatRoomController extends GetxController {
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (eventItem.subType() == 'm.image') {
-              _fetchMessageContent(m.id);
+            switch (eventItem.subType()) {
+              case 'm.image':
+                _fetchImageContent(m.id);
+                break;
+              case 'm.audio':
+                _fetchAudioContent(m.id);
+                break;
+              case 'm.video':
+                _fetchVideoContent(m.id);
+                break;
             }
           }
           break;
@@ -287,8 +329,16 @@ class ChatRoomController extends GetxController {
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (eventItem.subType() == 'm.image') {
-              _fetchMessageContent(m.id);
+            switch (eventItem.subType()) {
+              case 'm.image':
+                _fetchImageContent(m.id);
+                break;
+              case 'm.audio':
+                _fetchAudioContent(m.id);
+                break;
+              case 'm.video':
+                _fetchVideoContent(m.id);
+                break;
             }
           }
           break;
@@ -343,8 +393,16 @@ class ChatRoomController extends GetxController {
               if (isLoading.isFalse) {
                 update(['Chat']);
               }
-              if (eventItem.subType() == 'm.image') {
-                _fetchMessageContent(m.id);
+              switch (eventItem.subType()) {
+                case 'm.image':
+                  _fetchImageContent(m.id);
+                  break;
+                case 'm.audio':
+                  _fetchAudioContent(m.id);
+                  break;
+                case 'm.video':
+                  _fetchVideoContent(m.id);
+                  break;
               }
             }
           }
@@ -812,6 +870,27 @@ class ChatRoomController extends GetxController {
         String? subType = eventItem.subType();
         switch (subType) {
           case 'm.audio':
+            AudioDesc? description = eventItem.audioDesc();
+            if (description != null) {
+              Map<String, dynamic> metadata = {'base64': ''};
+              if (inReplyTo != null) {
+                metadata['repliedTo'] = inReplyTo;
+              }
+              if (reactions.isNotEmpty) {
+                metadata['reactions'] = reactions;
+              }
+              return types.AudioMessage(
+                author: author,
+                createdAt: createdAt,
+                duration: Duration(seconds: description.duration() ?? 0),
+                id: eventId,
+                metadata: metadata,
+                mimeType: description.mimetype(),
+                name: description.name(),
+                size: description.size() ?? 0,
+                uri: description.source().url(),
+              );
+            }
             break;
           case 'm.emote':
             break;
@@ -830,23 +909,23 @@ class ChatRoomController extends GetxController {
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
+                mimeType: description.mimetype(),
                 name: description.name(),
                 size: description.size() ?? 0,
-                uri: '',
+                uri: description.source().url(),
               );
             }
             break;
           case 'm.image':
             ImageDesc? description = eventItem.imageDesc();
             if (description != null) {
-              Map<String, dynamic> metadata = {};
+              Map<String, dynamic> metadata = {'base64': ''};
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
-              metadata['base64'] = '';
               return types.ImageMessage(
                 author: author,
                 createdAt: createdAt,
@@ -855,7 +934,7 @@ class ChatRoomController extends GetxController {
                 metadata: metadata,
                 name: description.name(),
                 size: description.size() ?? 0,
-                uri: '',
+                uri: description.source().url(),
                 width: description.width()?.toDouble(),
               );
             }
@@ -926,6 +1005,25 @@ class ChatRoomController extends GetxController {
             }
             break;
           case 'm.video':
+            VideoDesc? description = eventItem.videoDesc();
+            if (description != null) {
+              Map<String, dynamic> metadata = {'base64': ''};
+              if (inReplyTo != null) {
+                metadata['repliedTo'] = inReplyTo;
+              }
+              if (reactions.isNotEmpty) {
+                metadata['reactions'] = reactions;
+              }
+              return types.VideoMessage(
+                author: author,
+                createdAt: createdAt,
+                id: eventId,
+                metadata: metadata,
+                name: description.name(),
+                size: description.size() ?? 0,
+                uri: description.source().url(),
+              );
+            }
             break;
           case 'm.key.verification.request':
             break;
@@ -949,7 +1047,6 @@ class ChatRoomController extends GetxController {
           if (reactions.isNotEmpty) {
             metadata['reactions'] = reactions;
           }
-          metadata['base64'] = '';
           return types.CustomMessage(
             author: author,
             createdAt: createdAt,
@@ -983,8 +1080,36 @@ class ChatRoomController extends GetxController {
     return msgs;
   }
 
-  void _fetchMessageContent(String eventId) {
+  void _fetchImageContent(String eventId) {
     _currentRoom!.imageBinary(eventId).then((data) {
+      int index = _messages.indexWhere((x) => x.id == eventId);
+      if (index != -1) {
+        final metadata = _messages[index].metadata ?? {};
+        metadata['base64'] = base64Encode(data.asTypedList());
+        _messages[index] = _messages[index].copyWith(metadata: metadata);
+        if (isLoading.isFalse) {
+          update(['Chat']);
+        }
+      }
+    });
+  }
+
+  void _fetchAudioContent(String eventId) {
+    _currentRoom!.audioBinary(eventId).then((data) {
+      int index = _messages.indexWhere((x) => x.id == eventId);
+      if (index != -1) {
+        final metadata = _messages[index].metadata ?? {};
+        metadata['base64'] = base64Encode(data.asTypedList());
+        _messages[index] = _messages[index].copyWith(metadata: metadata);
+        if (isLoading.isFalse) {
+          update(['Chat']);
+        }
+      }
+    });
+  }
+
+  void _fetchVideoContent(String eventId) {
+    _currentRoom!.videoBinary(eventId).then((data) {
       int index = _messages.indexWhere((x) => x.id == eventId);
       if (index != -1) {
         final metadata = _messages[index].metadata ?? {};
@@ -1007,48 +1132,91 @@ class ChatRoomController extends GetxController {
       Map<String, dynamic> repliedToContent = {};
       types.Message? repliedTo;
       if (orgMsgType == 'm.text') {
-        repliedToContent = {
-          'content': orgEventItem.textDesc()!.body(),
-          'messageLength': orgEventItem.textDesc()!.body().length,
-        };
-        repliedTo = types.TextMessage(
-          author: types.User(id: orgEventItem.sender()),
-          id: originalId,
-          createdAt: orgEventItem.originServerTs(),
-          text: orgEventItem.textDesc()!.body(),
-          metadata: repliedToContent,
-        );
+        TextDesc? description = orgEventItem.textDesc();
+        if (description != null) {
+          String body = description.body();
+          repliedToContent = {
+            'content': body,
+            'messageLength': body.length,
+          };
+          repliedTo = types.TextMessage(
+            author: types.User(id: orgEventItem.sender()),
+            id: originalId,
+            createdAt: orgEventItem.originServerTs(),
+            text: body,
+            metadata: repliedToContent,
+          );
+        }
       } else if (orgMsgType == 'm.image') {
-        _currentRoom!.imageBinary(originalId).then((data) {
-          repliedToContent['content'] = base64Encode(data.asTypedList());
-        });
-        repliedTo = types.ImageMessage(
-          author: types.User(id: orgEventItem.sender()),
-          id: originalId,
-          createdAt: orgEventItem.originServerTs(),
-          name: orgEventItem.imageDesc()!.name(),
-          size: orgEventItem.imageDesc()!.size()!,
-          uri: '',
-          metadata: repliedToContent,
-        );
+        ImageDesc? description = orgEventItem.imageDesc();
+        if (description != null) {
+          _currentRoom!.imageBinary(originalId).then((data) {
+            repliedToContent['content'] = base64Encode(data.asTypedList());
+          });
+          repliedTo = types.ImageMessage(
+            author: types.User(id: orgEventItem.sender()),
+            id: originalId,
+            createdAt: orgEventItem.originServerTs(),
+            name: description.name(),
+            size: description.size() ?? 0,
+            uri: description.source().url(),
+            metadata: repliedToContent,
+          );
+        }
+      } else if (orgMsgType == 'm.audio') {
+        AudioDesc? description = orgEventItem.audioDesc();
+        if (description != null) {
+          _currentRoom!.audioBinary(originalId).then((data) {
+            repliedToContent['content'] = base64Encode(data.asTypedList());
+          });
+          repliedTo = types.AudioMessage(
+            author: types.User(id: orgEventItem.sender()),
+            id: originalId,
+            createdAt: orgEventItem.originServerTs(),
+            name: description.name(),
+            duration: Duration(seconds: description.duration() ?? 0),
+            size: description.size() ?? 0,
+            uri: description.source().url(),
+            metadata: repliedToContent,
+          );
+        }
+      } else if (orgMsgType == 'm.video') {
+        VideoDesc? description = orgEventItem.videoDesc();
+        if (description != null) {
+          _currentRoom!.videoBinary(originalId).then((data) {
+            repliedToContent['content'] = base64Encode(data.asTypedList());
+          });
+          repliedTo = types.VideoMessage(
+            author: types.User(id: orgEventItem.sender()),
+            id: originalId,
+            createdAt: orgEventItem.originServerTs(),
+            name: description.name(),
+            size: description.size() ?? 0,
+            uri: description.source().url(),
+            metadata: repliedToContent,
+          );
+        }
       } else if (orgMsgType == 'm.file') {
-        repliedToContent = {
-          'content': orgEventItem.fileDesc()!.name(),
-        };
-        repliedTo = types.FileMessage(
-          author: types.User(id: orgEventItem.sender()),
-          id: originalId,
-          createdAt: orgEventItem.originServerTs(),
-          name: orgEventItem.fileDesc()!.name(),
-          size: orgEventItem.fileDesc()!.size()!,
-          uri: '',
-          metadata: repliedToContent,
-        );
+        FileDesc? description = orgEventItem.fileDesc();
+        if (description != null) {
+          repliedToContent = {
+            'content': description.name(),
+          };
+          repliedTo = types.FileMessage(
+            author: types.User(id: orgEventItem.sender()),
+            id: originalId,
+            createdAt: orgEventItem.originServerTs(),
+            name: description.name(),
+            size: description.size() ?? 0,
+            uri: description.source().url(),
+            metadata: repliedToContent,
+          );
+        }
       } else if (orgMsgType == 'm.sticker') {
         // user can't do any action about sticker message
       }
       int index = _messages.indexWhere((x) => x.id == replyId);
-      if (index != -1) {
+      if (index != -1 && repliedTo != null) {
         _messages[index] = _messages[index].copyWith(repliedMessage: repliedTo);
       }
       if (isLoading.isFalse) {
