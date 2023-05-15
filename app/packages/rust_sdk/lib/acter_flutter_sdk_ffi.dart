@@ -2661,7 +2661,7 @@ class Api {
     return tmp7;
   }
 
-  String? __conversationSaveFileFuturePoll(
+  String? __conversationDownloadMediaFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2675,7 +2675,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSaveFileFuturePoll(
+    final tmp6 = _conversationDownloadMediaFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2711,7 +2711,7 @@ class Api {
     return tmp7;
   }
 
-  String? __conversationFilePathFuturePoll(
+  String? __conversationMediaPathFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2725,7 +2725,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationFilePathFuturePoll(
+    final tmp6 = _conversationMediaPathFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -7885,6 +7885,16 @@ class Api {
       _RoomEventItemImageDescReturn Function(
     int,
   )>();
+  late final _roomEventItemAudioDescPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemAudioDescReturn Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_audio_desc");
+
+  late final _roomEventItemAudioDesc = _roomEventItemAudioDescPtr.asFunction<
+      _RoomEventItemAudioDescReturn Function(
+    int,
+  )>();
   late final _roomEventItemVideoDescPtr = _lookup<
       ffi.NativeFunction<
           _RoomEventItemVideoDescReturn Function(
@@ -8896,7 +8906,7 @@ class Api {
       int Function(
     int,
   )>();
-  late final _conversationSaveFilePtr = _lookup<
+  late final _conversationDownloadMediaPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -8906,10 +8916,11 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_save_file");
+  )>>("__Conversation_download_media");
 
-  late final _conversationSaveFile = _conversationSaveFilePtr.asFunction<
-      int Function(
+  late final _conversationDownloadMedia =
+      _conversationDownloadMediaPtr.asFunction<
+          int Function(
     int,
     int,
     int,
@@ -8918,16 +8929,16 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationFilePathPtr = _lookup<
+  late final _conversationMediaPathPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_file_path");
+  )>>("__Conversation_media_path");
 
-  late final _conversationFilePath = _conversationFilePathPtr.asFunction<
+  late final _conversationMediaPath = _conversationMediaPathPtr.asFunction<
       int Function(
     int,
     int,
@@ -12898,32 +12909,32 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationSaveFileFuturePollPtr = _lookup<
+  late final _conversationDownloadMediaFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSaveFileFuturePollReturn Function(
+          _ConversationDownloadMediaFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_save_file_future_poll");
+  )>>("__Conversation_download_media_future_poll");
 
-  late final _conversationSaveFileFuturePoll =
-      _conversationSaveFileFuturePollPtr.asFunction<
-          _ConversationSaveFileFuturePollReturn Function(
+  late final _conversationDownloadMediaFuturePoll =
+      _conversationDownloadMediaFuturePollPtr.asFunction<
+          _ConversationDownloadMediaFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationFilePathFuturePollPtr = _lookup<
+  late final _conversationMediaPathFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationFilePathFuturePollReturn Function(
+          _ConversationMediaPathFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_file_path_future_poll");
+  )>>("__Conversation_media_path_future_poll");
 
-  late final _conversationFilePathFuturePoll =
-      _conversationFilePathFuturePollPtr.asFunction<
-          _ConversationFilePathFuturePollReturn Function(
+  late final _conversationMediaPathFuturePoll =
+      _conversationMediaPathFuturePollPtr.asFunction<
+          _ConversationMediaPathFuturePollReturn Function(
     int,
     int,
     int,
@@ -17057,7 +17068,7 @@ class RoomEventItem {
     return tmp2;
   }
 
-  /// the type of massage, like audio, text, image, file, etc
+  /// the type of massage, like text, image, audio, video, file etc
   String? subType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -17119,7 +17130,26 @@ class RoomEventItem {
     return tmp2;
   }
 
-  /// contains source data, name, mimetype, size, width and height
+  /// contains source data, name, mimetype, duration and size
+  AudioDesc? audioDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemAudioDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_AudioDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = AudioDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// contains source data, name, mimetype, duration, size, width, height and blurhash
   VideoDesc? videoDesc() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -19245,8 +19275,8 @@ class Conversation {
     return tmp2;
   }
 
-  /// save file in specified path
-  Future<String> saveFile(
+  /// download media (image/audio/video/file) to specified path
+  Future<String> downloadMedia(
     String eventId,
     String dirPath,
   ) {
@@ -19274,7 +19304,7 @@ class Conversation {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._conversationSaveFile(
+    final tmp9 = _api._conversationDownloadMedia(
       tmp0,
       tmp2,
       tmp3,
@@ -19285,14 +19315,16 @@ class Conversation {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "__Conversation_save_file_future_drop");
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Conversation_download_media_future_drop");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = _nativeFuture(tmp11_1, _api.__conversationSaveFileFuturePoll);
+    final tmp10 =
+        _nativeFuture(tmp11_1, _api.__conversationDownloadMediaFuturePoll);
     return tmp10;
   }
 
-  /// get the path that file was saved
-  Future<String> filePath(
+  /// get the path that media (image/audio/video/file) was saved
+  Future<String> mediaPath(
     String eventId,
   ) {
     final tmp1 = eventId;
@@ -19308,7 +19340,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationFilePath(
+    final tmp5 = _api._conversationMediaPath(
       tmp0,
       tmp2,
       tmp3,
@@ -19316,9 +19348,9 @@ class Conversation {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Conversation_file_path_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Conversation_media_path_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__conversationFilePathFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__conversationMediaPathFuturePoll);
     return tmp6;
   }
 
@@ -25967,6 +25999,13 @@ class _RoomEventItemImageDescReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _RoomEventItemAudioDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _RoomEventItemVideoDescReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -27467,7 +27506,7 @@ class _ConversationGetInviteesFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSaveFileFuturePollReturn extends ffi.Struct {
+class _ConversationDownloadMediaFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -27486,7 +27525,7 @@ class _ConversationSaveFileFuturePollReturn extends ffi.Struct {
   external int arg7;
 }
 
-class _ConversationFilePathFuturePollReturn extends ffi.Struct {
+class _ConversationMediaPathFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
