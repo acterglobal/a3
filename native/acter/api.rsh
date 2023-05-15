@@ -280,7 +280,7 @@ object RoomEventItem {
     /// one of Message/Redaction/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
     fn event_type() -> string;
 
-    /// the type of massage, like audio, text, image, file, etc
+    /// the type of massage, like text, image, audio, video, file etc
     fn sub_type() -> Option<string>;
 
     /// contains text fallback and formatted text
@@ -289,7 +289,10 @@ object RoomEventItem {
     /// contains source data, name, mimetype, size, width and height
     fn image_desc() -> Option<ImageDesc>;
 
-    /// contains source data, name, mimetype, size, width and height
+    /// contains source data, name, mimetype, duration and size
+    fn audio_desc() -> Option<AudioDesc>;
+
+    /// contains source data, name, mimetype, duration, size, width, height and blurhash
     fn video_desc() -> Option<VideoDesc>;
 
     /// contains source data, name, mimetype and size

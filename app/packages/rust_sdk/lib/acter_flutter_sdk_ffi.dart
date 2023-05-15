@@ -7885,6 +7885,16 @@ class Api {
       _RoomEventItemImageDescReturn Function(
     int,
   )>();
+  late final _roomEventItemAudioDescPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemAudioDescReturn Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_audio_desc");
+
+  late final _roomEventItemAudioDesc = _roomEventItemAudioDescPtr.asFunction<
+      _RoomEventItemAudioDescReturn Function(
+    int,
+  )>();
   late final _roomEventItemVideoDescPtr = _lookup<
       ffi.NativeFunction<
           _RoomEventItemVideoDescReturn Function(
@@ -17058,7 +17068,7 @@ class RoomEventItem {
     return tmp2;
   }
 
-  /// the type of massage, like audio, text, image, file, etc
+  /// the type of massage, like text, image, audio, video, file etc
   String? subType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -17120,7 +17130,26 @@ class RoomEventItem {
     return tmp2;
   }
 
-  /// contains source data, name, mimetype, size, width and height
+  /// contains source data, name, mimetype, duration and size
+  AudioDesc? audioDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemAudioDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_AudioDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = AudioDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// contains source data, name, mimetype, duration, size, width, height and blurhash
   VideoDesc? videoDesc() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -25964,6 +25993,13 @@ class _RoomEventItemTextDescReturn extends ffi.Struct {
 }
 
 class _RoomEventItemImageDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomEventItemAudioDescReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
