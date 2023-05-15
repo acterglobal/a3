@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
@@ -20,13 +21,12 @@ class PendingReqListView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ListTile(
-        leading: CustomAvatar(
-          uniqueKey: userId,
-          avatar: avatar,
+        leading: ActerAvatar(
+          mode: DisplayMode.User,
+          uniqueId: userId,
+          avatarProviderFuture: avatar != null ? remapForAvatar(avatar!) : null,
           displayName: displayName,
-          radius: 25,
-          isGroup: true,
-          stringName: simplifyUserId(userId)!,
+          size: 25,
         ),
         title: Text(
           displayName ?? 'Unknown',

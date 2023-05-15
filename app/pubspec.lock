@@ -9,6 +9,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "57.0.0"
+  acter_avatar:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: de3e4379024f72b4b4c2dd40b51022a9ccff7f75
+      url: "https://github.com/acterglobal/acter-avatar"
+    source: git
+    version: "1.0.4"
   acter_flutter_sdk:
     dependency: "direct main"
     description:

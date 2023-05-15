@@ -64,6 +64,13 @@ Color convertColor(ffi.EfkColor? primary, Color fallback) {
   );
 }
 
+Future<ImageProvider<Object>?> remapForAvatar(
+  Future<ffi.FfiBufferUint8?> fut,
+) async {
+  final buffered = (await fut)!.asTypedList();
+  return MemoryImage(buffered);
+}
+
 DateTime toDartDatetime(ffi.UtcDateTime dt) {
   return DateTime.fromMillisecondsSinceEpoch(dt.timestampMillis(), isUtc: true);
 }

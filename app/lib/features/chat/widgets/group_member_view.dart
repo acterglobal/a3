@@ -1,7 +1,8 @@
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show remapForAvatar;
 
 class GroupMember extends StatelessWidget {
   final String userId;
@@ -22,15 +23,12 @@ class GroupMember extends StatelessWidget {
     return Flex(
       direction: Axis.horizontal,
       children: [
-        CustomAvatar(
-          uniqueKey: userId,
-          radius: 16,
-          isGroup: false,
-          stringName: name ?? ' ',
-          avatar: avatar,
+        ActerAvatar(
+          mode: DisplayMode.User,
+          uniqueId: userId,
+          size: 16,
+          avatarProviderFuture: avatar != null ? remapForAvatar(avatar!) : null,
           displayName: name,
-          cacheHeight: 150,
-          cacheWidth: 150,
         ),
         Expanded(
           // fit: FlexFit.loose,
