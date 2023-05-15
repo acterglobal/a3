@@ -691,7 +691,7 @@ impl Room {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        let name = content.body.clone();
+                        let name = content.body;
                         (request, name)
                     }
                     MessageType::Audio(content) => {
@@ -699,7 +699,7 @@ impl Room {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        let name = content.body.clone();
+                        let name = content.body;
                         (request, name)
                     }
                     MessageType::Video(content) => {
@@ -707,7 +707,7 @@ impl Room {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        let name = content.body.clone();
+                        let name = content.body;
                         (request, name)
                     }
                     MessageType::File(content) => {
@@ -715,7 +715,7 @@ impl Room {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        let name = content.body.clone();
+                        let name = content.body;
                         (request, name)
                     }
                     _ => bail!("This message type is not downloadable"),
