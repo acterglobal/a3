@@ -14,10 +14,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: de3e4379024f72b4b4c2dd40b51022a9ccff7f75
+      resolved-ref: "11b6642a66ff2b436ce69ea70bb7496dbd481294"
       url: "https://github.com/acterglobal/acter-avatar"
     source: git
-    version: "1.0.4"
+    version: "0.0.5"
   acter_flutter_sdk:
     dependency: "direct main"
     description:

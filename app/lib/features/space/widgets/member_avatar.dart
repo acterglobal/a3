@@ -34,7 +34,10 @@ class MemberAvatar extends ConsumerWidget {
                 mode: DisplayMode.User,
                 uniqueId: member.userId().toString(),
                 size: 20,
-                avatarProviderFuture: remapForAvatar(data.getAvatar()),
+                avatarProviderFuture: remapToImage(
+                  data.getAvatar(),
+                  cacheHeight: 54,
+                ),
                 displayName: data.getDisplayName(),
               ),
             ),

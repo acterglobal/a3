@@ -54,7 +54,10 @@ class _ChatListItemState extends State<ListItem> {
             mode: DisplayMode.GroupChat, // FIXME: checking for DM somehow?
             uniqueId: roomId,
             avatarProviderFuture: widget.room.avatar != null
-                ? remapForAvatar(widget.room.avatar!)
+                ? remapToImage(
+                    widget.room.avatar!,
+                    cacheHeight: 54,
+                  )
                 : null,
             displayName: widget.room.displayName,
             size: 25,

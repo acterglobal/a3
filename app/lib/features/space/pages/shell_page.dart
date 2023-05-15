@@ -64,6 +64,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                             child: ActerAvatar(
                               mode: DisplayMode.Space,
                               displayName: profile.displayName,
+                              tooltip: TooltipStyle.None,
                               uniqueId: space.getRoomId().toString(),
                               avatar: profile.getAvatarImage(),
                               size: 160,

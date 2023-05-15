@@ -89,8 +89,12 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
                           child: ActerAvatar(
                             mode: DisplayMode.User,
                             uniqueId: myId ?? UniqueKey().toString(),
-                            avatarProviderFuture:
-                                avatar != null ? remapForAvatar(avatar!) : null,
+                            avatarProviderFuture: avatar != null
+                                ? remapToImage(
+                                    avatar!,
+                                    cacheHeight: 200,
+                                  )
+                                : null,
                             displayName: displayName,
                             size: 60,
                           ),

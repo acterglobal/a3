@@ -26,7 +26,10 @@ class UserAvatarWidget extends ConsumerWidget {
               mode: DisplayMode.User,
               uniqueId: client.userId().toString(),
               size: 20,
-              avatarProviderFuture: remapForAvatar(data.getAvatar()),
+              avatarProviderFuture: remapToImage(
+                data.getAvatar(),
+                cacheHeight: 54,
+              ),
               displayName: data.getDisplayName(),
             ),
           ],

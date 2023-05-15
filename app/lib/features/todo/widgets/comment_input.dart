@@ -59,7 +59,10 @@ class CommentInputState extends State<CommentInput> {
                     mode: DisplayMode.User,
                     uniqueId: userId,
                     size: 18,
-                    avatarProviderFuture: remapForAvatar(account.avatar()),
+                    avatarProviderFuture: remapToImage(
+                      account.avatar(),
+                      cacheHeight: 32,
+                    ),
                     displayName: simplifyUserId(userId) ?? '',
                   ),
                 ),

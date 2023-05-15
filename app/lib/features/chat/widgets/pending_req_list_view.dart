@@ -23,7 +23,12 @@ class PendingReqListView extends StatelessWidget {
         leading: ActerAvatar(
           mode: DisplayMode.User,
           uniqueId: userId,
-          avatarProviderFuture: avatar != null ? remapForAvatar(avatar!) : null,
+          avatarProviderFuture: avatar != null
+              ? remapToImage(
+                  avatar!,
+                  cacheSize: 54,
+                )
+              : null,
           displayName: displayName,
           size: 25,
         ),
