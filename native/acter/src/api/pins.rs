@@ -36,7 +36,7 @@ impl Client {
         let mut pins = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
-        for mdl in self.store().get_list(KEYS::PINS).await? {
+        for mdl in self.store().get_list(KEYS::PINS).await.context("Couldn't get pin list from store")? {
             if let AnyActerModel::Pin(t) = mdl {
                 let room_id = t.room_id().to_owned();
                 let room = match rooms_map.entry(room_id) {
@@ -67,7 +67,7 @@ impl Client {
         let mut pins = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
-        for mdl in self.store().get_list(KEYS::PINS).await? {
+        for mdl in self.store().get_list(KEYS::PINS).await.context("Couldn't get pin list from store")? {
             if let AnyActerModel::Pin(pin) = mdl {
                 if !pin.is_link() {
                     continue;
@@ -128,7 +128,8 @@ impl Space {
             .client
             .store()
             .get_list(&format!("{room_id}::{}", KEYS::PINS))
-            .await?
+            .await
+            .context("Couldn't get pin list from store")?
         {
             if let AnyActerModel::Pin(pin) = mdl {
                 if pin.is_link() {
@@ -199,7 +200,7 @@ impl Pin {
 
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Pin(content) = client.store().get(&key).await? else {
+                let AnyActerModel::Pin(content) = client.store().get(&key).await.context("Couldn't get pin model from store")? else {
                     bail!("Refreshing failed. {key} not a pin")
                 };
                 Ok(Pin {
@@ -282,7 +283,7 @@ impl PinDraft {
         let content = self.content.build().context("building failed in event content of pin")?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await?;
+                let resp = room.send(content, None).await.context("Couldn't send pin")?;
                 Ok(resp.event_id)
             })
             .await?
@@ -344,7 +345,7 @@ impl PinUpdateBuilder {
         let content = self.content.build().context("building failed in event content of pin update")?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await?;
+                let resp = room.send(content, None).await.context("Couldn't send pin update")?;
                 Ok(resp.event_id)
             })
             .await?

@@ -297,7 +297,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.accept().await?;
+                        sas.accept().await.context("Couldn't accept sas")?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -306,7 +306,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.accept().await?;
+                        sas.accept().await.context("Couldn't accept sas")?;
                         return Ok(true);
                     }
                 }
@@ -330,7 +330,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.cancel().await?;
+                        sas.cancel().await.context("Couldn't cancel sas")?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -339,7 +339,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.cancel().await?;
+                        sas.cancel().await.context("Couldn't cancel sas")?;
                         return Ok(true);
                     }
                 }
@@ -355,7 +355,7 @@ impl VerificationEvent {
         let sender = self.sender.clone();
         RUNTIME
             .spawn(async move {
-                client.sync_once(SyncSettings::default()).await?; // send_outgoing_requests is called there
+                client.sync_once(SyncSettings::default()).await.context("Couldn't sync once")?; // send_outgoing_requests is called there
                 Ok(true)
             })
             .await?
@@ -374,7 +374,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.cancel().await?;
+                        sas.cancel().await.context("Couldn't cancel sas")?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -383,7 +383,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.cancel().await?;
+                        sas.cancel().await.context("Couldn't cancel sas")?;
                         return Ok(true);
                     }
                 }
@@ -460,7 +460,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.confirm().await?;
+                        sas.confirm().await.context("Couldn't confirm sas")?;
                         return Ok(sas.is_done());
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -469,7 +469,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.confirm().await?;
+                        sas.confirm().await.context("Couldn't confirm sas")?;
                         return Ok(sas.is_done());
                     }
                 }
@@ -493,7 +493,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.mismatch().await?;
+                        sas.mismatch().await.context("Couldn't mismatch sas")?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -502,7 +502,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.mismatch().await?;
+                        sas.mismatch().await.context("Couldn't mismatch sas")?;
                         return Ok(true);
                     }
                 }

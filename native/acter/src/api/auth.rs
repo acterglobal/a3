@@ -32,7 +32,8 @@ pub async fn make_client_config(
     // fully qualified username, good to go
     if let Ok(user_id) = OwnedUserId::try_from(formatted_username.as_str()) {
         let builder = platform::new_client_config(base_path, user_id.to_string(), true)
-            .await?
+            .await
+            .context("building failed in client")?
             .server_name(user_id.server_name());
         return Ok((builder, user_id));
     }
@@ -40,7 +41,8 @@ pub async fn make_client_config(
     // we need to fallback to the testing/default scenario
     let user_id = OwnedUserId::try_from(format!("{formatted_username}:{default_homeserver_name}"))?;
     let builder = platform::new_client_config(base_path, user_id.to_string(), true)
-        .await?
+        .await
+        .context("building failed in client")?
         .homeserver_url(default_homeserver_url);
     Ok((builder, user_id))
 }
@@ -52,15 +54,16 @@ pub async fn guest_client(
     device_name: Option<String>,
 ) -> Result<Client> {
     let config = platform::new_client_config(base_path, default_homeserver_name, true)
-        .await?
+        .await
+        .context("building failed in client")?
         .homeserver_url(default_homeserver_url);
     RUNTIME
         .spawn(async move {
-            let client = config.build().await?;
+            let client = config.build().await.context("Couldn't set display name")?;
             let mut request = register::v3::Request::new();
             request.kind = register::RegistrationKind::Guest;
             request.initial_device_display_name = device_name;
-            let response = client.register(request).await?;
+            let response = client.register(request).await.context("Couldn't register client")?;
             let device_id = response
                 .device_id
                 .clone()
@@ -71,9 +74,9 @@ pub async fn guest_client(
                 refresh_token: response.refresh_token.clone(),
                 device_id,
             };
-            client.restore_session(session).await?;
+            client.restore_session(session).await.context("Couldn't restore session")?;
             let state = ClientStateBuilder::default().is_guest(true).build().context("building failed in client state")?;
-            let c = Client::new(client, state).await?;
+            let c = Client::new(client, state).await.context("Couldn't create client")?;
             info!("Successfully created guest login: {:?}", response.user_id);
             Ok(c)
         })
@@ -107,7 +110,7 @@ pub async fn login_with_token_under_config(
                 .is_guest(is_guest)
                 .build()
                 .context("building client state builder failed")?;
-            let c = Client::new(client.clone(), state).await?;
+            let c = Client::new(client.clone(), state).await.context("Couldn't create client")?;
             info!(
                 "Successfully logged in user {:?}, device {:?} with token.",
                 user_id,
@@ -140,16 +143,16 @@ pub async fn login_new_client_under_config(
 ) -> Result<Client> {
     RUNTIME
         .spawn(async move {
-            let client = config.build().await?;
+            let client = config.build().await.context("buidling failed in client")?;
             let mut login_builder = client.login_username(&user_id, &password);
             let name; // to capture the inner string for login-builder lifetime
             if let Some(s) = device_name {
                 name = s;
                 login_builder = login_builder.initial_device_display_name(name.as_str())
             };
-            login_builder.send().await?;
+            login_builder.send().await.context("Couldn't send login request")?;
             let state = ClientStateBuilder::default().is_guest(false).build().context("building failed in client state")?;
-            let c = Client::new(client.clone(), state).await?;
+            let c = Client::new(client.clone(), state).await.context("Couldn't create client")?;
             info!(
                 "Successfully logged in user {:?}, device {:?}",
                 user_id,
@@ -174,7 +177,8 @@ pub async fn smart_login(
         &default_homeserver_name,
         &default_homeserver_url,
     )
-    .await?;
+    .await
+    .context("Couldn't make client config")?;
     login_new_client_under_config(config, user_id, password, device_name).await
 }
 
@@ -192,7 +196,8 @@ pub async fn login_new_client(
         &default_homeserver_name,
         &default_homeserver_url,
     )
-    .await?;
+    .await
+    .context("Couldn't make client config")?;
     login_new_client_under_config(config, user_id, password, device_name).await
 }
 
@@ -215,7 +220,7 @@ pub async fn register_with_token(
     // First we need to log in.
     RUNTIME
         .spawn(async move {
-            let client = config.build().await?;
+            let client = config.build().await.context("building failed in client")?;
             let Err(err) = client.register(register::v3::Request::new()).await else {
                 bail!("Server is not set up to allow registration.");
             };
@@ -232,10 +237,10 @@ pub async fn register_with_token(
                     uiaa::RegistrationToken::new(registration_token),
                 )),
             });
-            client.register(request).await?;
+            client.register(request).await.context("Couldn't register client")?;
 
             let state = ClientStateBuilder::default().is_guest(false).build().context("building failed in client state")?;
-            let c = Client::new(client.clone(), state).await?;
+            let c = Client::new(client.clone(), state).await.context("Couldn't create client")?;
             info!(
                 "Successfully registered user {:?}, device {:?}",
                 username,

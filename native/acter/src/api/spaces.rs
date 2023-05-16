@@ -60,7 +60,8 @@ impl Space {
         let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
         engine
             .add_user("main".to_owned(), self.client.core.clone())
-            .await?;
+            .await
+            .context("Couldn't add user to engine")?;
         engine.add_ref(
             "space".to_owned(),
             "space".to_owned(),
@@ -287,7 +288,7 @@ impl Space {
                 state_key,
                 body,
             );
-            joined.client().send(request, None).await?;
+            joined.client().send(request, None).await.context("Couldn't send state event")?;
         }
         Ok(())
     }
@@ -298,7 +299,7 @@ impl Space {
         let room_id = room.room_id();
         tracing::trace!(name, ?room_id, "refreshing history");
         let client = room.room.client();
-        // room.sync_members().await?;
+        // room.sync_members().await.context("Couldn't sync members of room")?;
 
         let custom_storage_key = format!("{room_id}::history");
 
@@ -324,7 +325,7 @@ impl Space {
             tracing::trace!(name, ?msg_options, "fetching messages");
             let Messages {
                 end, chunk, state, ..
-            } = room.messages(msg_options).await?;
+            } = room.messages(msg_options).await.context("Couldn't get messages of room")?;
             tracing::trace!(name, ?chunk, end, "messages received");
 
             let has_chunks = !chunk.is_empty();
@@ -366,7 +367,8 @@ impl Space {
                         custom_storage_key.as_bytes(),
                         serde_json::to_vec(&HistoryState { seen })?,
                     )
-                    .await?;
+                    .await
+                    .context("Couldn't set custom value to store")?;
             } else {
                 // how do we want to understand this case?
                 tracing::trace!(room_id = ?room.room_id(), "Done loading");
@@ -387,7 +389,7 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let relations = c.space_relations(&room).await?;
+                let relations = c.space_relations(&room).await.context("Couldn't get space relations of client")?;
                 Ok(relations)
             })
             .await?
@@ -422,7 +424,7 @@ impl Client {
         let c = self.core.clone();
         RUNTIME
             .spawn(async move {
-                let room_id = c.create_acter_space(Box::into_inner(settings)).await?;
+                let room_id = c.create_acter_space(Box::into_inner(settings)).await.context("Couldn't create acter space")?;
                 Ok(room_id)
             })
             .await?
@@ -444,7 +446,7 @@ impl Client {
                 .map(|room| Space::new(self.clone(), Room { room }))
                 .context("Room not found")
         } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
-            for space in self.spaces().await?.into_iter() {
+            for space in self.spaces().await.context("Couldn't get space list from client")?.into_iter() {
                 if let Some(space_alias) = space.inner.room.canonical_alias() {
                     if space_alias == alias_id {
                         return Ok(space);

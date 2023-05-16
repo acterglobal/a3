@@ -47,7 +47,7 @@ impl Account {
                 } else {
                     Some(new_name.as_str())
                 };
-                account.set_display_name(name).await?;
+                account.set_display_name(name).await.context("Couldn't set display name")?;
                 Ok(true)
             })
             .await?
@@ -70,7 +70,7 @@ impl Account {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let new_url = account.upload_avatar(&c_type.parse()?, data).await?;
+                let new_url = account.upload_avatar(&c_type.parse()?, data).await.context("Couldn't upload avatar")?;
                 Ok(true)
             })
             .await?
