@@ -15,7 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:window_size/window_size.dart';
 
-import 'package:acter/routing.dart';
+import 'package:acter/main/routing/routing.dart';
 
 void main() async {
   await startApp();

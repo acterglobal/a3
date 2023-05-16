@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/features/news/widgets/news_widget.dart';
-import 'package:acter/routing.dart';
+import 'package:acter/main/routing/routing.dart';
 import 'package:date_format/date_format.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';

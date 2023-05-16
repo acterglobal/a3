@@ -11,7 +11,8 @@ import 'package:acter/features/onboarding/pages/sign_up_page.dart';
 import 'package:acter/features/profile/pages/social_profile_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
-import 'package:acter/common/widgets/dialog_page.dart';
+import 'package:acter/common/dialogs/dialog_page.dart';
+import 'package:acter/common/dialogs/error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -211,6 +212,7 @@ final routerNotifierProvider =
 final goRouterProvider = Provider.autoDispose<GoRouter>((ref) {
   final notifier = ref.watch(routerNotifierProvider.notifier);
   return GoRouter(
+    errorBuilder: (context, state) => ErrorPage(routerState: state),
     navigatorKey: _rootNavigatorKey,
     refreshListenable: notifier,
     initialLocation: '/',

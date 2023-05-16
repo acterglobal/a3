@@ -16,18 +16,42 @@ extension CustomColorScheme on ColorScheme {
 }
 
 const brandColorScheme = ColorScheme.dark(
-  primary: Color(0xff10273D),
-  primaryContainer: Colors.black,
-  surface: Color(0xff122D46),
-  background: Color(0xff122D46),
-  secondary: Color(0xFF5C9AD6),
-  tertiary: Color(0xffFF8E00),
-  error: Color(0xffD03838),
+  brightness: Brightness.dark,
+  primary: Color(0xFF9CCAFF),
+  onPrimary: Color(0xFF003257),
+  primaryContainer: Color(0xFF00497B),
+  onPrimaryContainer: Color(0xFFD0E4FF),
+  secondary: Color(0xFF9ACBFF),
+  onSecondary: Color(0xFF003355),
+  secondaryContainer: Color(0xFF004A79),
+  onSecondaryContainer: Color(0xFFD0E4FF),
+  tertiary: Color(0xFFFFB77B),
+  onTertiary: Color(0xFF4D2700),
+  tertiaryContainer: Color(0xFF6D3A00),
+  onTertiaryContainer: Color(0xFFFFDCC2),
+  error: Color(0xFFFFB4AB),
+  errorContainer: Color(0xFF93000A),
+  onError: Color(0xFF690005),
+  onErrorContainer: Color(0xFFFFDAD6),
+  background: Color(0xFF001B3D),
+  onBackground: Color(0xFFD6E3FF),
+  surface: Color(0xFF001B3D),
+  onSurface: Color(0xFFD6E3FF),
+  surfaceVariant: Color(0xFF42474E),
+  onSurfaceVariant: Color(0xFFC2C7CF),
+  outline: Color(0xFF8C9199),
+  onInverseSurface: Color(0xFF001B3D),
+  inverseSurface: Color(0xFFD6E3FF),
+  inversePrimary: Color(0xFF0062A1),
+  shadow: Color(0xFF000000),
+  surfaceTint: Color(0xFF9CCAFF),
+  outlineVariant: Color(0xFF42474E),
+  scrim: Color(0xFF000000),
 );
 
 class AppTheme {
   static ThemeData get theme {
-    return ThemeData(
+    return ThemeData.from(
       textTheme: GoogleFonts.interTextTheme(
         const TextTheme(
           headlineLarge: TextStyle(
@@ -95,22 +119,23 @@ class AppTheme {
         ),
       ),
       colorScheme: brandColorScheme,
+      useMaterial3: true,
+    ).copyWith(
       scaffoldBackgroundColor: const Color(0x122334FF),
       splashColor: Colors.transparent,
-      useMaterial3: true,
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: Color(0xffFF8E00),
         circularTrackColor: Colors.transparent,
       ),
       dividerColor: const Color(0xFFDDEDFC),
       cardTheme: CardTheme(color: brandColorScheme.background, elevation: 0),
-      dialogTheme: const DialogTheme(
-        backgroundColor: Color(0xFF5C9AD6),
+      dialogTheme: DialogTheme(
+        backgroundColor: brandColorScheme.secondary,
         elevation: 0,
       ),
-      buttonTheme: const ButtonThemeData(
+      buttonTheme: ButtonThemeData(
         splashColor: Colors.transparent,
-        buttonColor: Color(0xFF5C9AD6),
+        buttonColor: brandColorScheme.secondary,
         disabledColor: Color(0xFF2F2F2F),
       ),
       dividerTheme: const DividerThemeData(

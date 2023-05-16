@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
-import 'package:acter/routing.dart';
+import 'package:acter/main/routing/routing.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
