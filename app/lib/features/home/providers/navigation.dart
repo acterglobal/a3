@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-const fallbackSidebarIdx = 0;
-const fallbackBottombarIdx = 2;
+const fallbackSidebarIdx = 1;
+const fallbackBottombarIdx = 0;
 
 final spaceItemsProvider =
     FutureProvider.family<List<SidebarNavigationItem>, BuildContext>(
@@ -97,11 +97,16 @@ final sidebarItemsProvider =
 
   final features = [
     SidebarNavigationItem(
-      icon: SvgPicture.asset(
-        'assets/icon/acter.svg',
-        height: 24,
-        width: 24,
+      icon: const Icon(Atlas.magnifying_glass_thin),
+      label: Text(
+        'Search',
+        style: Theme.of(context).textTheme.labelSmall,
+        softWrap: false,
       ),
+      location: '/quick_search',
+    ),
+    SidebarNavigationItem(
+      icon: const Icon(Atlas.home_thin),
       label: Text(
         'Overview',
         style: Theme.of(context).textTheme.labelSmall,
@@ -157,36 +162,20 @@ final currentSelectedSidebarIndexProvider =
 
 final bottomBarNav = [
   const BottombarNavigationItem(
+    icon: Icon(Atlas.home_thin),
+    activeIcon: CustomSelectedIcon(
+      icon: Icon(Atlas.home_bold),
+    ),
+    label: 'Dashboard',
+    initialLocation: '/dashboard',
+  ),
+  const BottombarNavigationItem(
     icon: Icon(Atlas.bullhorn_thin),
     activeIcon: CustomSelectedIcon(
       icon: Icon(Atlas.bullhorn_thin),
     ),
     label: 'Updates',
     initialLocation: '/updates',
-  ),
-  const BottombarNavigationItem(
-    icon: Icon(Atlas.heart_rate_clipboard_thin),
-    activeIcon: CustomSelectedIcon(
-      icon: Icon(Atlas.heart_rate_clipboard_thin),
-    ),
-    label: 'Activities',
-    initialLocation: '/activities',
-  ),
-  BottombarNavigationItem(
-    icon: SvgPicture.asset(
-      'assets/icon/acter.svg',
-      height: 28,
-      width: 28,
-    ),
-    activeIcon: CustomSelectedIcon(
-      icon: SvgPicture.asset(
-        'assets/icon/acter.svg',
-        height: 28,
-        width: 28,
-      ),
-    ),
-    label: 'Overview',
-    initialLocation: '/dashboard',
   ),
   const BottombarNavigationItem(
     icon: Icon(Atlas.chats_thin),
@@ -196,20 +185,26 @@ final bottomBarNav = [
     label: 'Chat',
     initialLocation: '/chat',
   ),
-  // const BottombarNavigationItem(
-  //   icon: Icon(
-  //     Atlas.magnifying_glass_thin,
-  //     size: 10.0,
-  //   ),
-  //   activeIcon: CustomSelectedIcon(
-  //     icon: Icon(
-  //       Atlas.magnifying_glass_thin,
-  //       size: 10.0,
-  //     ),
-  //   ),
-  //   label: 'Search',
-  //   initialLocation: '/search',
-  // )
+  const BottombarNavigationItem(
+    icon: Icon(Atlas.heart_rate_clipboard_thin),
+    activeIcon: CustomSelectedIcon(
+      icon: Icon(Atlas.heart_rate_clipboard_thin),
+    ),
+    label: 'Activities',
+    initialLocation: '/activities',
+  ),
+  const BottombarNavigationItem(
+    icon: Icon(
+      Atlas.magnifying_glass_thin,
+    ),
+    activeIcon: CustomSelectedIcon(
+      icon: Icon(
+        Atlas.magnifying_glass_thin,
+      ),
+    ),
+    label: 'Search',
+    initialLocation: '/search',
+  )
 ];
 
 final currentSelectedBottombarIndexProvider =
