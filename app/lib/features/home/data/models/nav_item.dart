@@ -13,8 +13,10 @@ class BottombarNavigationItem extends BottomNavigationBarItem {
 
 class SidebarNavigationItem extends NavigationRailDestination {
   final String? location;
+  final bool pushToNavigate;
   const SidebarNavigationItem({
     this.location,
+    this.pushToNavigate = false,
     required Widget icon,
     required Widget label,
   }) : super(icon: icon, label: label);

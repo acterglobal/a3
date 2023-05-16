@@ -11,10 +11,8 @@ import 'package:acter/features/home/providers/navigation.dart';
 
 class SidebarWidget extends ConsumerWidget {
   final NavigationRailLabelType labelType;
-  final void Function() handleBugReport;
   const SidebarWidget({
     super.key,
-    required this.handleBugReport,
     required this.labelType,
   });
   @override
@@ -31,8 +29,13 @@ class SidebarWidget extends ConsumerWidget {
       onDestinationSelected: (tabIndex) {
         if (tabIndex != selectedSidebarIndex &&
             sidebarNavItems[tabIndex].location != null) {
+          final item = sidebarNavItems[tabIndex];
           // go to the initial location of the selected tab (by index)
-          context.go(sidebarNavItems[tabIndex].location!);
+          if (item.pushToNavigate) {
+            context.push(item.location!);
+          } else {
+            context.go(item.location!);
+          }
         }
       },
 
@@ -74,7 +77,7 @@ class SidebarWidget extends ConsumerWidget {
               endIndent: 18,
             ),
             InkWell(
-              onTap: () => handleBugReport(),
+              onTap: () => context.push('/bug_report'),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 8,

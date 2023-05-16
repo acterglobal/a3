@@ -2,6 +2,8 @@ import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
+import 'package:acter/features/search/pages/quickjump.dart';
+import 'package:acter/features/search/pages/search.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
@@ -50,10 +52,19 @@ final _routes = [
     builder: (context, state) => const GalleryPage(),
   ),
   GoRoute(
+    parentNavigatorKey: _rootNavigatorKey,
     name: 'bug-report',
     path: '/bug_report',
     pageBuilder: (context, state) => DialogPage(
       builder: (_) => BugReportPage(imagePath: state.queryParams['screenshot']),
+    ),
+  ),
+  GoRoute(
+    parentNavigatorKey: _rootNavigatorKey,
+    name: 'quick-jump',
+    path: '/quickjump',
+    pageBuilder: (context, state) => DialogPage(
+      builder: (_) => const QuickjumpDialog(),
     ),
   ),
 
@@ -75,6 +86,18 @@ final _routes = [
           return NoTransitionPage(
             key: state.pageKey,
             child: const NewsPage(),
+          );
+        },
+      ),
+
+      /// The first screen to display in the bottom navigation bar.
+      GoRoute(
+        name: 'search',
+        path: '/search',
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: const SearchPage(),
           );
         },
       ),

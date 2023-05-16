@@ -6,7 +6,6 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 const fallbackSidebarIdx = 1;
 const fallbackBottombarIdx = 0;
@@ -103,7 +102,8 @@ final sidebarItemsProvider =
         style: Theme.of(context).textTheme.labelSmall,
         softWrap: false,
       ),
-      location: '/quick_search',
+      location: '/quickjump',
+      pushToNavigate: true,
     ),
     SidebarNavigationItem(
       icon: const Icon(Atlas.home_thin),

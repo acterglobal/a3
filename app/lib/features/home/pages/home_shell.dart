@@ -82,7 +82,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     return CallbackShortcuts(
       bindings: <LogicalKeySet, VoidCallback>{
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK): () {
-          context.go('/quick_jump');
+          context.push('/quickjump');
         }
       },
       child: Scaffold(
@@ -98,18 +98,16 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                       Breakpoints.medium: SlotLayout.from(
                         key: const Key('primaryNavigation'),
                         builder: (BuildContext ctx) {
-                          return SidebarWidget(
+                          return const SidebarWidget(
                             labelType: NavigationRailLabelType.none,
-                            handleBugReport: handleBugReport,
                           );
                         },
                       ),
                       Breakpoints.large: SlotLayout.from(
                         key: const Key('Large primaryNavigation'),
                         builder: (BuildContext ctx) {
-                          return SidebarWidget(
+                          return const SidebarWidget(
                             labelType: NavigationRailLabelType.all,
-                            handleBugReport: handleBugReport,
                           );
                         },
                       )
@@ -186,7 +184,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                           showUnselectedLabels: false,
                           currentIndex: bottomBarIdx,
                           onTap: (index) =>
-                              context.go(bottomBarNav[index].initialLocation),
+                              context.push(bottomBarNav[index].initialLocation),
                           items: bottomBarNav,
                           type: BottomNavigationBarType.fixed,
                         ),
@@ -205,7 +203,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                           showUnselectedLabels: false,
                           currentIndex: bottomBarIdx,
                           onTap: (index) =>
-                              context.go(bottomBarNav[index].initialLocation),
+                              context.push(bottomBarNav[index].initialLocation),
                           items: bottomBarNav,
                           type: BottomNavigationBarType.fixed,
                         ),
