@@ -279,7 +279,7 @@ impl PinDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build()?;
+        let content = self.content.build().context("building failed in event content of pin")?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(content, None).await?;
@@ -341,7 +341,7 @@ impl PinUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build()?;
+        let content = self.content.build().context("building failed in event content of pin update")?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(content, None).await?;

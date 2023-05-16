@@ -218,7 +218,7 @@ impl TaskListDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build()?;
+        let content = self.content.build().context("building failed in event content of task list")?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(content, None).await?;
@@ -671,7 +671,7 @@ impl TaskDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build()?;
+        let content = self.content.build().context("building failed in event content of task")?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(content, None).await?;
@@ -888,7 +888,7 @@ impl TaskUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build()?;
+        let content = self.content.build().context("building failed in event content of task update")?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(content, None).await?;
@@ -1000,7 +1000,7 @@ impl TaskListUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build()?;
+        let content = self.content.build().context("building failed in event content of task list update")?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(content, None).await?;

@@ -114,7 +114,7 @@ impl CommentDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self.inner.build()?;
+        let inner = self.inner.build().context("building failed in event content of comment")?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(inner, None).await?;

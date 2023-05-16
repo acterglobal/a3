@@ -24,7 +24,6 @@ use matrix_sdk::{event_handler::Ctx, room::Joined, room::Room, Client as MatrixC
 use std::{
     collections::{hash_map::Entry, HashMap},
     convert::{TryFrom, TryInto},
-    ops::{Deref, DerefMut},
 };
 
 use super::{client::Client, spaces::Space, RUNTIME};
@@ -224,7 +223,7 @@ impl CalendarEventDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self.inner.build()?;
+        let inner = self.inner.build().context("building failed in event content of calendar event")?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(inner, None).await?;
@@ -271,7 +270,7 @@ impl CalendarEventUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self.inner.build()?;
+        let inner = self.inner.build().context("building failed in event content of calendar event update")?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(inner, None).await?;

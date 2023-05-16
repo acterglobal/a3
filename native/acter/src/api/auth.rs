@@ -72,7 +72,7 @@ pub async fn guest_client(
                 device_id,
             };
             client.restore_session(session).await?;
-            let state = ClientStateBuilder::default().is_guest(true).build()?;
+            let state = ClientStateBuilder::default().is_guest(true).build().context("building failed in client state")?;
             let c = Client::new(client, state).await?;
             info!("Successfully created guest login: {:?}", response.user_id);
             Ok(c)
@@ -148,7 +148,7 @@ pub async fn login_new_client_under_config(
                 login_builder = login_builder.initial_device_display_name(name.as_str())
             };
             login_builder.send().await?;
-            let state = ClientStateBuilder::default().is_guest(false).build()?;
+            let state = ClientStateBuilder::default().is_guest(false).build().context("building failed in client state")?;
             let c = Client::new(client.clone(), state).await?;
             info!(
                 "Successfully logged in user {:?}, device {:?}",
@@ -234,7 +234,7 @@ pub async fn register_with_token(
             });
             client.register(request).await?;
 
-            let state = ClientStateBuilder::default().is_guest(false).build()?;
+            let state = ClientStateBuilder::default().is_guest(false).build().context("building failed in client state")?;
             let c = Client::new(client.clone(), state).await?;
             info!(
                 "Successfully registered user {:?}, device {:?}",

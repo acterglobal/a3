@@ -368,7 +368,7 @@ pub struct NewsEntryDraft {
 impl NewsEntryDraft {
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build()?;
+        let content = self.content.build().context("building failed in event content of news entry")?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(content, None).await?;
@@ -388,7 +388,7 @@ pub struct NewsEntryUpdateBuilder {
 impl NewsEntryUpdateBuilder {
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build()?;
+        let content = self.content.build().context("building failed in event content of news event update")?;
         RUNTIME
             .spawn(async move {
                 let resp = room.send(content, None).await?;
