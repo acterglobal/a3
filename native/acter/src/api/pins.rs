@@ -279,10 +279,10 @@ impl PinDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self.content.build()?;
+        let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner, None).await?;
+                let resp = room.send(content, None).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -341,10 +341,10 @@ impl PinUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self.content.build()?;
+        let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner, None).await?;
+                let resp = room.send(content, None).await?;
                 Ok(resp.event_id)
             })
             .await?
