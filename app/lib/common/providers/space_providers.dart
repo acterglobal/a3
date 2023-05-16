@@ -34,13 +34,13 @@ class SpaceItem {
   String roomId;
   String? displayName;
   List<Member> activeMembers;
-  Future<FfiBufferUint8>? avatar;
+  Future<FfiBufferUint8?> avatar;
 
   SpaceItem({
     required this.roomId,
     required this.activeMembers,
     this.displayName,
-    this.avatar,
+    required this.avatar,
   });
 }
 
@@ -57,7 +57,9 @@ final spaceItemsProvider = FutureProvider<List<SpaceItem>>((ref) async {
       roomId: element.getRoomId().toString(),
       displayName: profile.getDisplayName(),
       activeMembers: members,
-      avatar: profile.hasAvatar() ? profile.getThumbnail(120, 120) : null,
+      avatar: profile.hasAvatar()
+          ? profile.getThumbnail(120, 120)
+          : Future.value(null),
     );
     items.add(item);
   });

@@ -2,7 +2,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoComment.dart';
 import 'package:acter/features/todo/widgets/comment_input.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -86,11 +86,11 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
                           shrinkWrap: true,
                           itemCount: snapshot.data!.length,
                           itemBuilder: (context, index) => ListTile(
-                            leading: CustomAvatar(
-                              uniqueKey: snapshot.data![index].userId,
-                              radius: 18,
-                              isGroup: false,
-                              stringName: simplifyUserId(
+                            leading: ActerAvatar(
+                              mode: DisplayMode.User,
+                              uniqueId: snapshot.data![index].userId,
+                              size: 18,
+                              displayName: simplifyUserId(
                                 snapshot.data![index].userId,
                               )!,
                             ),

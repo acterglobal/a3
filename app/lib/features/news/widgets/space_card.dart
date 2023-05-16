@@ -1,23 +1,28 @@
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter/features/home/states/client_state.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show remapToImage;
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show FfiBufferUint8, Member;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SpaceCard extends StatelessWidget {
+class SpaceCard extends ConsumerWidget {
   final String? title;
   final List<Member> members;
-  final Future<FfiBufferUint8>? avatar;
+  final Future<FfiBufferUint8?> avatar;
   final Function()? callback;
+
   const SpaceCard({
     super.key,
     this.title,
     required this.members,
-    this.avatar,
+    required this.avatar,
     this.callback,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final client = ref.watch(clientProvider)!;
     return InkWell(
       onTap: callback,
       child: Container(
@@ -31,14 +36,15 @@ class SpaceCard extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(5.0),
-                child: CustomAvatar(
-                  uniqueKey: UniqueKey().toString(),
-                  radius: 20,
-                  cacheHeight: 120,
-                  cacheWidth: 120,
-                  isGroup: false,
-                  avatar: avatar,
-                  stringName: avatar != null ? '' : 'fallback',
+                child: ActerAvatar(
+                  mode: DisplayMode.Space,
+                  uniqueId: client.userId().toString(),
+                  avatarProviderFuture: remapToImage(
+                    avatar,
+                    cacheHeight: 120,
+                    cacheWidth: 120,
+                  ),
+                  size: 20,
                 ),
               ),
               Container(

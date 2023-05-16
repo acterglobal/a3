@@ -228,13 +228,13 @@ impl TimelineStream {
                             }
                             VectorDiff::PushBack { value } => {
                                 info!("stream forward timeline push_back");
-                                let inner = timeline_item_to_message(value, room.clone());
-                                return Ok(inner);
+                                let msg = timeline_item_to_message(value, room.clone());
+                                return Ok(msg);
                             }
                             VectorDiff::PushFront { value } => {
                                 info!("stream forward timeline push_front");
-                                let inner = timeline_item_to_message(value, room.clone());
-                                return Ok(inner);
+                                let msg = timeline_item_to_message(value, room.clone());
+                                return Ok(msg);
                             }
                             VectorDiff::PopBack => {
                                 info!("stream forward timeline pop_back");

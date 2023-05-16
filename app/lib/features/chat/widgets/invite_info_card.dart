@@ -1,8 +1,8 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, FfiBufferUint8, Invitation;
 import 'package:flutter/material.dart';
@@ -54,14 +54,17 @@ class _InviteInfoCardState extends State<InviteInfoCard> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ListTile(
-            // leading: CircleAvatar(backgroundColor: avatarColor),
-            leading: CustomAvatar(
-              uniqueKey: myId,
-              avatar: avatar,
+            leading: ActerAvatar(
+              mode: DisplayMode.User,
+              uniqueId: myId,
+              avatarProviderFuture: avatar != null
+                  ? remapToImage(
+                      avatar!,
+                      cacheHeight: 54,
+                    )
+                  : null,
               displayName: displayName,
-              radius: 20,
-              isGroup: true,
-              stringName: simplifyUserId(myId)!,
+              size: 20,
             ),
             title: _TitleWidget(invitation: widget.invitation),
             subtitle: _SubtitleWidget(invitation: widget.invitation),

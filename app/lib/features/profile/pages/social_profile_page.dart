@@ -1,5 +1,6 @@
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/common/widgets/nav_bar_title.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -85,13 +86,17 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
                               width: 5,
                             ),
                           ),
-                          child: CustomAvatar(
-                            uniqueKey: myId ?? UniqueKey().toString(),
-                            avatar: avatar,
+                          child: ActerAvatar(
+                            mode: DisplayMode.User,
+                            uniqueId: myId ?? UniqueKey().toString(),
+                            avatarProviderFuture: avatar != null
+                                ? remapToImage(
+                                    avatar!,
+                                    cacheHeight: 200,
+                                  )
+                                : null,
                             displayName: displayName,
-                            isGroup: false,
-                            stringName: ' ',
-                            radius: 60,
+                            size: 60,
                           ),
                         ),
                         const Text(

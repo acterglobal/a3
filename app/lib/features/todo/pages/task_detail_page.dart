@@ -7,7 +7,7 @@ import 'package:acter/models/ToDoTask.dart';
 import 'package:acter/features/todo/pages/task_assign_page.dart';
 import 'package:acter/features/todo/pages/task_comments_page.dart';
 import 'package:acter/features/todo/widgets/comment_input.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -694,11 +694,11 @@ class _DiscussionWidget extends StatelessWidget {
                               itemCount:
                                   comments.length > 5 ? 5 : comments.length,
                               itemBuilder: (context, index) => ListTile(
-                                leading: CustomAvatar(
-                                  uniqueKey: comments[index].userId,
-                                  radius: 18,
-                                  isGroup: false,
-                                  stringName: simplifyUserId(
+                                leading: ActerAvatar(
+                                  mode: DisplayMode.User,
+                                  uniqueId: comments[index].userId,
+                                  size: 18,
+                                  displayName: simplifyUserId(
                                     comments[index].userId,
                                   )!,
                                 ),

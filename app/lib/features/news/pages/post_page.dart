@@ -5,9 +5,10 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_app_bar.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/features/news/notifiers/search_space_notifier.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show remapToImage;
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, EventId, FfiListNewsSlide, NewsEntryDraft, NewsSlide, Space;
 import 'package:atlas_icons/atlas_icons.dart';
@@ -31,8 +32,12 @@ class _PostPageState extends ConsumerState<PostPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(searchSpaceProvider);
+    final client = ref.watch(clientProvider)!;
     final selectedSpace = ref.watch(selectedSpaceProvider);
+
+    // pre-fetch spaces prior to selection
+    ref.watch(searchSpaceProvider);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
@@ -114,16 +119,15 @@ class _PostPageState extends ConsumerState<PostPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: selectedSpace != null
-                            ? CustomAvatar(
-                                uniqueKey: UniqueKey().toString(),
-                                radius: 20,
-                                isGroup: false,
-                                cacheHeight: 120,
-                                cacheWidth: 120,
-                                stringName: selectedSpace.avatar != null
-                                    ? ''
-                                    : 'fallback',
-                                avatar: selectedSpace.avatar,
+                            ? ActerAvatar(
+                                mode: DisplayMode.Space,
+                                uniqueId: client.userId().toString(),
+                                avatarProviderFuture: remapToImage(
+                                  client.account().avatar(),
+                                  cacheHeight: 120,
+                                  cacheWidth: 120,
+                                ),
+                                size: 20,
                               )
                             : CircleAvatar(
                                 backgroundColor:
