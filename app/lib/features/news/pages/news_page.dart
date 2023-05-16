@@ -1,8 +1,9 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,14 +38,15 @@ class NewsPage extends ConsumerWidget {
                       horizontal: 8,
                       vertical: 10,
                     ),
-                    child: CustomAvatar(
-                      uniqueKey: client.userId().toString(),
-                      radius: 36,
-                      isGroup: false,
-                      stringName: UniqueKey().toString(),
-                      avatar: client.account().avatar(),
-                      cacheHeight: 120,
-                      cacheWidth: 120,
+                    child: ActerAvatar(
+                      uniqueId: client.userId().toString(),
+                      mode: DisplayMode.User,
+                      size: 36,
+                      uniqueName: UniqueKey().toString(),
+                      avatarProviderFuture: remapToImage(
+                        client.account().avatar(),
+                        cacheHeight: 200,
+                      ),
                     ),
                   )
                 : GestureDetector(
@@ -62,12 +64,11 @@ class NewsPage extends ConsumerWidget {
                         ),
                         shape: BoxShape.circle,
                       ),
-                      child: CustomAvatar(
-                        uniqueKey: client.userId().toString(),
-                        radius: 36,
-                        isGroup: false,
+                      child: ActerAvatar(
+                        uniqueId: client.userId().toString(),
+                        size: 36,
+                        mode: DisplayMode.User,
                         displayName: '',
-                        stringName: UniqueKey().toString(),
                       ),
                     ),
                   )

@@ -1,4 +1,5 @@
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show FfiBufferUint8, Member;
 import 'package:flutter/material.dart';
@@ -31,14 +32,13 @@ class SpaceCard extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(5.0),
-                child: CustomAvatar(
-                  uniqueKey: UniqueKey().toString(),
-                  radius: 20,
-                  cacheHeight: 120,
-                  cacheWidth: 120,
-                  isGroup: false,
-                  avatar: avatar,
-                  stringName: avatar != null ? '' : 'fallback',
+                child: ActerAvatar(
+                  uniqueId: UniqueKey().toString(),
+                  size: 20,
+                  mode: DisplayMode.User,
+                  avatarProviderFuture: avatar != null
+                      ? remapToImage(avatar!, cacheSize: 200)
+                      : null,
                 ),
               ),
               Container(

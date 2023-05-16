@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoTask.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Account;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
@@ -54,14 +55,15 @@ class CommentInputState extends State<CommentInput> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
-                  child: CustomAvatar(
-                    uniqueKey: userId,
-                    radius: 18,
-                    isGroup: false,
-                    avatar: account.avatar(),
-                    stringName: simplifyUserId(userId) ?? '',
-                    cacheHeight: 120,
-                    cacheWidth: 120,
+                  child: ActerAvatar(
+                    mode: DisplayMode.User,
+                    uniqueId: userId,
+                    size: 18,
+                    avatarProviderFuture: remapToImage(
+                      account.avatar(),
+                      cacheHeight: 32,
+                    ),
+                    displayName: simplifyUserId(userId) ?? '',
                   ),
                 ),
                 GetBuilder<ToDoController>(

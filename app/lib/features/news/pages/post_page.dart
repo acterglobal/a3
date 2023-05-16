@@ -4,9 +4,10 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_app_bar.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:acter/features/news/notifiers/post_update_notifier.dart';
 import 'package:acter/features/news/notifiers/search_space_notifier.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -111,21 +112,26 @@ class _PostPageState extends ConsumerState<PostPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: selectedSpace != null
-                            ? CustomAvatar(
-                                uniqueKey: UniqueKey().toString(),
-                                radius: 20,
-                                isGroup: false,
-                                cacheHeight: 120,
-                                cacheWidth: 120,
-                                stringName: selectedSpace.avatar != null
+                            ? ActerAvatar(
+                                uniqueId: UniqueKey().toString(),
+                                size: 20,
+                                mode: DisplayMode.Space,
+                                uniqueName: selectedSpace.avatar != null
                                     ? ''
                                     : 'fallback',
-                                avatar: selectedSpace.avatar,
+                                avatarProviderFuture: remapToImage(
+                                  selectedSpace.avatar!,
+                                  cacheHeight: 200,
+                                ),
                               )
-                            : CircleAvatar(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.neutral5,
-                                radius: 18,
+                            : Container(
+                                height: 36,
+                                width: 36,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  color: Theme.of(context).colorScheme.neutral5,
+                                  shape: BoxShape.rectangle,
+                                ),
                               ),
                       ),
                       Text(

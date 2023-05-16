@@ -64,6 +64,35 @@ Color convertColor(ffi.EfkColor? primary, Color fallback) {
   );
 }
 
+/// Convert an future of a FfiBufferUint8 (which you commonly get for images) to
+/// a flutter ImageProvider.
+///
+/// `cacheHeight` and `cacheWidth` are passed to `ResizeImage` if given, allowing
+/// you to control the memory used up. With the handy `cacheSize` you can overwrite
+/// both values at once - this takes precedence.
+Future<ImageProvider<Object>?> remapToImage(
+  Future<ffi.FfiBufferUint8?> fut, {
+  int? cacheSize,
+  int? cacheWidth,
+  int? cacheHeight,
+}) async {
+  if (cacheSize != null) {
+    cacheHeight = cacheSize;
+    cacheWidth = cacheSize;
+  }
+  try {
+    final buffered = (await fut)!.asTypedList();
+    final image = MemoryImage(buffered);
+    if (cacheHeight != null || cacheWidth != null) {
+      return ResizeImage(image, width: cacheWidth, height: cacheHeight);
+    }
+    return image;
+  } catch (e) {
+    debugPrint('Error fetching avatar: $e');
+    return null;
+  }
+}
+
 DateTime toDartDatetime(ffi.UtcDateTime dt) {
   return DateTime.fromMillisecondsSinceEpoch(dt.timestampMillis(), isUtc: true);
 }

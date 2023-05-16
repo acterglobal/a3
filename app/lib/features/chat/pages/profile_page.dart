@@ -1,10 +1,10 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show remapToImage;
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/pages/link_settings_page.dart';
 import 'package:acter/features/chat/pages/edit_group_page.dart';
 import 'package:acter/features/chat/pages/group_link_page.dart';
 import 'package:acter/features/chat/pages/requests_page.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/features/chat/widgets/group_member_view.dart';
 import 'package:acter/features/chat/widgets/invite_list_view.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -86,15 +86,17 @@ class ProfilePage extends StatelessWidget {
                     width: 100,
                     child: FittedBox(
                       fit: BoxFit.contain,
-                      child: CustomAvatar(
-                        uniqueKey: roomId,
-                        avatar: roomAvatar,
+                      child: ActerAvatar(
+                        mode: DisplayMode.User,
+                        uniqueId: roomId,
+                        avatarProviderFuture: roomAvatar != null
+                            ? remapToImage(
+                                roomAvatar!,
+                                cacheHeight: 200,
+                              )
+                            : null,
                         displayName: roomName,
-                        radius: 20,
-                        cacheHeight: 120,
-                        cacheWidth: 120,
-                        isGroup: true,
-                        stringName: simplifyRoomId(roomId)!,
+                        size: 20,
                       ),
                     ),
                   ),
