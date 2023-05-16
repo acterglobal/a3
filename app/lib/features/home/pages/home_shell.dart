@@ -1,10 +1,7 @@
 import 'dart:io';
 
-import 'package:acter/features/home/data/models/nav_item.dart';
-import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:acter/routing.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:date_format/date_format.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
@@ -14,7 +11,7 @@ import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:acter/features/home/providers/navigation.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -38,59 +35,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     TargetPlatform.windows
   ];
   late ShakeDetector detector;
-
-  final bottomBarNav = [
-    const BottombarNavigationItem(
-      icon: Icon(Atlas.bullhorn_thin),
-      activeIcon: CustomSelectedIcon(
-        icon: Icon(Atlas.bullhorn_thin),
-      ),
-      label: 'Updates',
-      initialLocation: '/updates',
-    ),
-    BottombarNavigationItem(
-      icon: SvgPicture.asset(
-        'assets/icon/acter.svg',
-        height: 28,
-        width: 28,
-      ),
-      activeIcon: CustomSelectedIcon(
-        icon: SvgPicture.asset(
-          'assets/icon/acter.svg',
-          height: 28,
-          width: 28,
-        ),
-      ),
-      label: 'Overview',
-      initialLocation: '/dashboard',
-    ),
-    const BottombarNavigationItem(
-      icon: Icon(Atlas.chats_thin),
-      activeIcon: CustomSelectedIcon(
-        icon: Icon(Atlas.chats_thin),
-      ),
-      label: 'Chat',
-      initialLocation: '/chat',
-    )
-  ];
-
-  int get _selectedBottombarIndex =>
-      _locationToBottombarIndex(GoRouter.of(context).location);
-
-  int _locationToBottombarIndex(String location) {
-    final index =
-        bottomBarNav.indexWhere((t) => location.startsWith(t.initialLocation));
-    // if index not found (-1), return 0
-    return index < 0 ? 1 : index;
-  }
-
-  // callback used to navigate to the desired tab
-  void _onBottombarItemTapped(BuildContext context, int tabIndex) {
-    if (tabIndex != _selectedBottombarIndex) {
-      // go to the initial location of the selected tab (by index)
-      context.go(bottomBarNav[tabIndex].initialLocation);
-    }
-  }
 
   @override
   void initState() {
@@ -121,6 +65,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         desktopPlatforms.contains(Theme.of(context).platform);
     final location =
         ref.watch(goRouterProvider.select((value) => value.location));
+
+    final bottomBarIdx =
+        ref.watch(currentSelectedBottombarIndexProvider(context));
 
     final showInSidebar = isDesktop && location == '/dashboard';
     final bodyRatio = showInSidebar ? 0.3 : 0.0;
@@ -224,9 +171,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                             builder: (BuildContext ctx) => BottomNavigationBar(
                               showSelectedLabels: false,
                               showUnselectedLabels: false,
-                              currentIndex: _selectedBottombarIndex,
-                              onTap: (index) =>
-                                  _onBottombarItemTapped(context, index),
+                              currentIndex: bottomBarIdx,
+                              onTap: (index) => context
+                                  .go(bottomBarNav[index].initialLocation),
                               items: bottomBarNav,
                               type: BottomNavigationBarType.fixed,
                             ),
@@ -243,9 +190,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                             builder: (BuildContext ctx) => BottomNavigationBar(
                               showSelectedLabels: false,
                               showUnselectedLabels: false,
-                              currentIndex: _selectedBottombarIndex,
-                              onTap: (index) =>
-                                  _onBottombarItemTapped(context, index),
+                              currentIndex: bottomBarIdx,
+                              onTap: (index) => context
+                                  .go(bottomBarNav[index].initialLocation),
                               items: bottomBarNav,
                               type: BottomNavigationBarType.fixed,
                             ),

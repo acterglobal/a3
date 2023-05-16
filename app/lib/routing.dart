@@ -12,6 +12,8 @@ import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+// ignore: implementation_imports
+import 'package:go_router/src/information_provider.dart';
 
 final desktopPlatforms = [
   TargetPlatform.linux,
@@ -141,14 +143,63 @@ final _routes = [
   ),
 ];
 
-// GoRouter configuration
-final router = GoRouter(
-  navigatorKey: _rootNavigatorKey,
-  initialLocation: '/',
-  debugLogDiagnostics: true,
-  routes: _routes,
-);
+class RouterNotifier extends AutoDisposeAsyncNotifier<void>
+    implements Listenable {
+  VoidCallback? routerListener;
 
-final goRouterProvider = Provider<GoRouter>(
-  (ref) => router,
-);
+  final routes = _routes;
+
+  @override
+  Future<void> build() async {
+    ref.listenSelf((_, __) {
+      // One could write more conditional logic for when to call redirection
+      routerListener?.call();
+    });
+  }
+
+  /// Adds [GoRouter]'s listener as specified by its [Listenable].
+  /// [GoRouteInformationProvider] uses this method on creation to handle its
+  /// internal [ChangeNotifier].
+  /// Check out the internal implementation of [GoRouter] and
+  /// [GoRouteInformationProvider] to see this in action.
+  @override
+  void addListener(VoidCallback listener) {
+    routerListener = listener;
+  }
+
+  /// Removes [GoRouter]'s listener as specified by its [Listenable].
+  /// [GoRouteInformationProvider] uses this method when disposing,
+  /// so that it removes its callback when destroyed.
+  /// Check out the internal implementation of [GoRouter] and
+  /// [GoRouteInformationProvider] to see this in action.
+  @override
+  void removeListener(VoidCallback listener) {
+    routerListener = null;
+  }
+}
+
+final routerNotifierProvider =
+    AutoDisposeAsyncNotifierProvider<RouterNotifier, void>(() {
+  return RouterNotifier();
+});
+
+final goRouterProvider = Provider.autoDispose<GoRouter>((ref) {
+  final notifier = ref.watch(routerNotifierProvider.notifier);
+  return GoRouter(
+    navigatorKey: _rootNavigatorKey,
+    refreshListenable: notifier,
+    initialLocation: '/',
+    debugLogDiagnostics: true,
+    routes: notifier.routes,
+  );
+});
+
+final routeInformationProvider =
+    ChangeNotifierProvider.autoDispose<GoRouteInformationProvider>((ref) {
+  final router = ref.watch(goRouterProvider);
+  return router.routeInformationProvider;
+});
+
+final currentRoutingLocation = Provider.autoDispose<String>((ref) {
+  return ref.watch(routeInformationProvider).value.location ?? '/';
+});
