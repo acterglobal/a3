@@ -85,4 +85,4 @@ Many packages (incl. `intl`) are not ready for `3.10`, so we can't use `flutter 
 We continue to use `flutter 3.7.12` unless they are not ready.
 
 Please run `flutter --version` and if current version is greater than `3.7`, reinstall `3.7.12`.
-Flutter doesn't support downgrade, so you have to delete `3.10` and install `3.7` newly.
+Try running `flutter downgrade 3.7.12`. That, however, seems to not be supported for all platforms. So, if it fails, you have to delete `3.10` and install `3.7` newly.
