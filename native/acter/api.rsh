@@ -322,7 +322,7 @@ object RoomEventItem {
     /// one of Message/Redaction/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
     fn event_type() -> string;
 
-    /// the type of massage, like audio, text, image, file, etc
+    /// the type of massage, like text, image, audio, video, file etc
     fn sub_type() -> Option<string>;
 
     /// contains text fallback and formatted text
@@ -331,10 +331,10 @@ object RoomEventItem {
     /// contains source data, name, mimetype, size, width and height
     fn image_desc() -> Option<ImageDesc>;
 
-    /// contains source data, name, mimetype, size, width and height
+    /// contains source data, name, mimetype, duration and size
     fn audio_desc() -> Option<AudioDesc>;
 
-    /// contains source data, name, mimetype, size, width and height
+    /// contains source data, name, mimetype, duration, size, width, height and blurhash
     fn video_desc() -> Option<VideoDesc>;
 
     /// contains source data, name, mimetype and size
@@ -606,11 +606,11 @@ object Conversation {
     /// get the users that were invited to this room
     fn get_invitees() -> Future<Result<Vec<Account>>>;
 
-    /// save file in specified path
-    fn save_file(event_id: string, dir_path: string) -> Future<Result<string>>;
+    /// download media (image/audio/video/file) to specified path
+    fn download_media(event_id: string, dir_path: string) -> Future<Result<string>>;
 
-    /// get the path that file was saved
-    fn file_path(event_id: string) -> Future<Result<string>>;
+    /// get the path that media (image/audio/video/file) was saved
+    fn media_path(event_id: string) -> Future<Result<string>>;
 
     /// initially called to get receipt status of room members
     fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;

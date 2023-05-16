@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_app_bar.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
@@ -200,60 +202,62 @@ class _PostPageState extends ConsumerState<PostPage> {
               SizedBox(height: MediaQuery.of(context).size.height * 0.2),
             ],
           ),
-          Positioned(
-            bottom: 0,
-            child: Visibility(
-              visible: true,
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
+          buildBottomBar(selectedSpace),
+        ],
+      ),
+    );
+  }
+
+  Widget buildBottomBar(SpaceItem? selectedSpace) {
+    return Positioned(
+      bottom: 0,
+      child: Visibility(
+        visible: true,
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () {},
+                child: Text(
+                  'Save to Draft',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Save to Draft',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<BeveledRectangleBorder>(
-                          const BeveledRectangleBorder(),
-                        ),
-                        fixedSize: MaterialStateProperty.all<Size>(
-                          Size(MediaQuery.of(context).size.width * 0.45, 45),
-                        ),
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => handlePost(context, mounted),
-                      child: Text(
-                        'Post',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                          Theme.of(context).colorScheme.tertiary,
-                        ),
-                        shape:
-                            MaterialStateProperty.all<BeveledRectangleBorder>(
-                          const BeveledRectangleBorder(),
-                        ),
-                        fixedSize: MaterialStateProperty.all<Size>(
-                          Size(MediaQuery.of(context).size.width * 0.4, 45),
-                        ),
-                      ),
-                    ),
-                  ],
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<BeveledRectangleBorder>(
+                    const BeveledRectangleBorder(),
+                  ),
+                  fixedSize: MaterialStateProperty.all<Size>(
+                    Size(MediaQuery.of(context).size.width * 0.45, 45),
+                  ),
                 ),
               ),
-            ),
+              ElevatedButton(
+                onPressed: () => handlePost(context, mounted),
+                child: Text(
+                  'Post',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                    Theme.of(context).colorScheme.tertiary,
+                  ),
+                  shape: MaterialStateProperty.all<BeveledRectangleBorder>(
+                    const BeveledRectangleBorder(),
+                  ),
+                  fixedSize: MaterialStateProperty.all<Size>(
+                    Size(MediaQuery.of(context).size.width * 0.4, 45),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -311,5 +315,12 @@ class _PostPageState extends ConsumerState<PostPage> {
     // We use "mounted" variable to get rid of the "Do not use BuildContexts across async gaps" warning
     if (!mounted) return;
     context.pop();
+  }
+
+  void handleDraft(SpaceItem? selectedSpace) {
+    showNotYetImplementedMsg(
+      context,
+      'Draft is not implemented yet',
+    );
   }
 }
