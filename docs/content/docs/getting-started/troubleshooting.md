@@ -65,7 +65,8 @@ Release build: 223MB
 When using release build of `libacter.a`, the error `Invalid argument @ io_fread` disappeared.
 The compile command of release build is the following:
 `cargo make --profile release ios`
-## Resolving package `intl 0.18` fails
+
+## Resolving flutter package `intl 0.18` fails
 
 If you see
 ```
