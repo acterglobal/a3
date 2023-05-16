@@ -32,6 +32,13 @@ The current system has a problem with the latest android native development kit 
 6. Launch android emulator.
 7. Change to `app` directory and run `flutter run`.
 
+### Flutter package `file_picker` error in android 6.0
+
+`FilePickerDelegate` occurs error in `getSlotFromBufferLocked()` under android 6.0.
+This issue was fixed android 7.0.
+Please read [this comment](https://ubidots.com/community/t/solved-android-send-call-data-to-ubidots-etslotfrombufferlocked-unknown-buffer/334/2).
+Now minimum version of android is 7.0.
+
 ## iOS Build
 
 The iOS build doesn't work right now, see [#10](https://github.com/acterglobal/a3/issues/10). Please install the Android SDK and use the aformentioned emulator for development and testing.
@@ -47,13 +54,6 @@ Unlike android, ios needs small space of 2~3 GB.
 6. Uncomment `# platform :ios, '9.0'` in Podfile of `app/ios` directory.
 7. Run `flutter run`.
 
-## Flutter package `file_picker` error in android 6.0
-
-`FilePickerDelegate` occurs error in `getSlotFromBufferLocked()` under android 6.0.
-This issue was fixed android 7.0.
-Please read [this comment](https://ubidots.com/community/t/solved-android-send-call-data-to-ubidots-etslotfrombufferlocked-unknown-buffer/334/2).
-Now minimum version of android is 7.0.
-
 ### CocoaPods issue in iOS build
 
 You may get the error message `Invalid argument @ io_fread` during compilation of rust library.
@@ -65,3 +65,13 @@ Release build: 223MB
 When using release build of `libacter.a`, the error `Invalid argument @ io_fread` disappeared.
 The compile command of release build is the following:
 `cargo make --profile release ios`
+
+## Flutter 3.10 issue
+
+`Github` is using the latest version of flutter (`3.10` as of 5/11/2023).
+Many packages (incl. `intl`) are not ready for `3.10`, so we can't use `flutter 3.10`.
+(Our project is using `flutter_localizations` and it is using `intl`.)
+We continue to use `flutter 3.7.12` unless they are not ready.
+
+Please run `flutter --version` and if current version is greater than `3.7`, reinstall `3.7.12`.
+Flutter doesn't support downgrade, so you have to delete `3.10` and install `3.7` newly.
