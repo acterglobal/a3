@@ -11,6 +11,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:acter/main/routing/routes.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
@@ -67,7 +68,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
             SliverAppBar(
               leading: isDesktop
                   ? InkWell(
-                      onTap: () => context.go('/'),
+                      onTap: () => context.goNamed(Routes.main.name),
                       child: const Icon(Atlas.arrow_left_circle),
                     )
                   : null,
@@ -187,7 +188,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           '${AppLocalizations.of(context)!.haveAccount}  ',
                         ),
                         InkWell(
-                          onTap: () => context.go('/login'),
+                          onTap: () => context.goNamed(Routes.authLogin.name),
                           child: Text(
                             AppLocalizations.of(context)!.login,
                             style: TextStyle(

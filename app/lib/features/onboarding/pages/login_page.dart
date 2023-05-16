@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:acter/common/utils/constants.dart' show LoginPageKeys;
 import 'package:go_router/go_router.dart';
+import 'package:acter/main/routing/routes.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -146,7 +147,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   const SizedBox(width: 2),
                   InkWell(
                     key: LoginPageKeys.signUpBtn,
-                    onTap: () => context.go('/signup'),
+                    onTap: () => context.goNamed(Routes.authRegister.name),
                     child: Text(
                       AppLocalizations.of(context)!.signUp,
                       style: TextStyle(

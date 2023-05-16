@@ -19,6 +19,8 @@ import 'package:go_router/go_router.dart';
 // ignore: implementation_imports
 import 'package:go_router/src/information_provider.dart';
 
+import 'package:acter/main/routing/routes.dart';
+
 final desktopPlatforms = [
   TargetPlatform.linux,
   TargetPlatform.macOS,
@@ -34,18 +36,18 @@ final GlobalKey<NavigatorState> _spaceNavigatorKey =
 
 final _routes = [
   GoRoute(
-    name: 'login',
-    path: '/login',
+    name: Routes.authLogin.name,
+    path: Routes.authLogin.route,
     builder: (context, state) => const LoginPage(),
   ),
   GoRoute(
-    name: 'my-profile',
-    path: '/profile',
+    name: Routes.myProfile.name,
+    path: Routes.myProfile.route,
     builder: (context, state) => const SocialProfilePage(),
   ),
   GoRoute(
-    name: 'signup',
-    path: '/signup',
+    name: Routes.authRegister.name,
+    path: Routes.authRegister.route,
     builder: (context, state) => const SignupPage(),
   ),
   GoRoute(
@@ -54,16 +56,16 @@ final _routes = [
   ),
   GoRoute(
     parentNavigatorKey: _rootNavigatorKey,
-    name: 'bug-report',
-    path: '/bug_report',
+    name: Routes.bugReport.name,
+    path: Routes.bugReport.route,
     pageBuilder: (context, state) => DialogPage(
       builder: (_) => BugReportPage(imagePath: state.queryParams['screenshot']),
     ),
   ),
   GoRoute(
     parentNavigatorKey: _rootNavigatorKey,
-    name: 'quick-jump',
-    path: '/quickjump',
+    name: Routes.quickJump.name,
+    path: Routes.quickJump.route,
     pageBuilder: (context, state) => DialogPage(
       builder: (_) => const QuickjumpDialog(),
     ),
@@ -81,8 +83,8 @@ final _routes = [
     routes: <RouteBase>[
       /// The first screen to display in the bottom navigation bar.
       GoRoute(
-        name: 'updates',
-        path: '/updates',
+        name: Routes.updates.name,
+        path: Routes.updates.route,
         pageBuilder: (context, state) {
           return NoTransitionPage(
             key: state.pageKey,
@@ -93,8 +95,8 @@ final _routes = [
 
       /// The first screen to display in the bottom navigation bar.
       GoRoute(
-        name: 'search',
-        path: '/search',
+        name: Routes.search.name,
+        path: Routes.search.route,
         pageBuilder: (context, state) {
           return NoTransitionPage(
             key: state.pageKey,
@@ -103,24 +105,24 @@ final _routes = [
         },
       ),
       GoRoute(
-        name: 'chatroom',
-        path: '/chat/:spaceId([!#][^/]+)', // !roomId, #roomName
+        name: Routes.chatroom.name,
+        path: Routes.chatroom.route,
         pageBuilder: (context, state) {
           return NoTransitionPage(key: state.pageKey, child: const ChatPage());
         },
       ),
 
       GoRoute(
-        name: 'chat',
-        path: '/chat',
+        name: Routes.chat.name,
+        path: Routes.chat.route,
         pageBuilder: (context, state) {
           return NoTransitionPage(key: state.pageKey, child: const ChatPage());
         },
       ),
 
       GoRoute(
-        name: 'dashboard',
-        path: '/dashboard',
+        name: Routes.dashboard.name,
+        path: Routes.dashboard.route,
         pageBuilder: (context, state) {
           return NoTransitionPage(key: state.pageKey, child: const Dashboard());
         },
@@ -140,8 +142,8 @@ final _routes = [
         },
         routes: <RouteBase>[
           GoRoute(
-            name: 'space',
-            path: '/:spaceId([!#][^/]+)', // !spaceId, #spaceName
+            name: Routes.space.name,
+            path: Routes.space.route,
             pageBuilder: (context, state) {
               return NoTransitionPage(
                 key: state.pageKey,
@@ -153,15 +155,15 @@ final _routes = [
       ),
 
       GoRoute(
-        path: '/',
-        name: 'main',
+        name: Routes.main.name,
+        path: Routes.main.route,
         redirect: (BuildContext context, GoRouterState state) {
           final bool isDesktop =
               desktopPlatforms.contains(Theme.of(context).platform);
           if (isDesktop) {
-            return '/dashboard';
+            return Routes.dashboard.route;
           } else {
-            return '/updates';
+            return Routes.updates.route;
           }
         },
       ),

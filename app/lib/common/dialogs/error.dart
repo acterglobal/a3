@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:acter/main/routing/routing.dart';
+import 'package:acter/main/routing/routes.dart';
 
 class ErrorPage extends ConsumerWidget {
   final GoRouterState routerState;
@@ -35,14 +36,14 @@ class ErrorPage extends ConsumerWidget {
                     Atlas.home_thin,
                   ),
                   label: const Text('Go to home'),
-                  onPressed: () => context.goNamed('main'),
+                  onPressed: () => context.goNamed(Routes.main.name),
                 ),
                 OutlinedButton.icon(
                   icon: const Icon(
                     Atlas.bug_clipboard_thin,
                   ),
                   label: const Text('Report bug'),
-                  onPressed: () => context.goNamed('bug-report'),
+                  onPressed: () => context.goNamed(Routes.bugReport.name),
                 ),
               ],
             ),

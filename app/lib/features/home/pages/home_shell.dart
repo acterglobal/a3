@@ -18,6 +18,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
 import 'package:go_router/go_router.dart';
+import 'package:acter/main/routing/routes.dart';
 
 class HomeShell extends ConsumerStatefulWidget {
   final Widget child;
@@ -82,7 +83,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     return CallbackShortcuts(
       bindings: <LogicalKeySet, VoidCallback>{
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK): () {
-          context.push('/quickjump');
+          context.pushNamed(Routes.quickJump.name);
         }
       },
       child: Scaffold(
@@ -228,14 +229,14 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       fileName: 'screenshot_$timestamp.png',
     );
     if (imagePath != null) {
-      context.push(
-        '/bug_report',
+      context.pushNamed(
+        Routes.bugReport.name,
         extra: {
           'screenshot': imagePath,
         },
       );
     } else {
-      context.push('/bug_report');
+      context.push(Routes.bugReport.name);
     }
   }
 }

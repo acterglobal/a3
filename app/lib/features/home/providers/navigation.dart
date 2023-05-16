@@ -6,6 +6,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter/main/routing/routes.dart';
 
 const fallbackSidebarIdx = 1;
 const fallbackBottombarIdx = 0;
@@ -102,7 +103,7 @@ final sidebarItemsProvider =
         style: Theme.of(context).textTheme.labelSmall,
         softWrap: false,
       ),
-      location: '/quickjump',
+      location: Routes.quickJump.route,
       pushToNavigate: true,
     ),
     SidebarNavigationItem(
@@ -112,7 +113,7 @@ final sidebarItemsProvider =
         style: Theme.of(context).textTheme.labelSmall,
         softWrap: false,
       ),
-      location: '/dashboard',
+      location: Routes.dashboard.route,
     ),
     SidebarNavigationItem(
       // icon: const Badge(child: Icon(Atlas.chats_thin)), // TODO: Badge example
@@ -131,7 +132,7 @@ final sidebarItemsProvider =
           )
         ],
       ),
-      location: '/chat',
+      location: Routes.chat.route,
     ),
   ];
 
@@ -161,49 +162,49 @@ final currentSelectedSidebarIndexProvider =
 });
 
 final bottomBarNav = [
-  const BottombarNavigationItem(
-    icon: Icon(Atlas.home_thin),
-    activeIcon: CustomSelectedIcon(
+  BottombarNavigationItem(
+    icon: const Icon(Atlas.home_thin),
+    activeIcon: const CustomSelectedIcon(
       icon: Icon(Atlas.home_bold),
     ),
     label: 'Dashboard',
-    initialLocation: '/dashboard',
+    initialLocation: Routes.dashboard.route,
   ),
-  const BottombarNavigationItem(
-    icon: Icon(Atlas.bullhorn_thin),
-    activeIcon: CustomSelectedIcon(
+  BottombarNavigationItem(
+    icon: const Icon(Atlas.bullhorn_thin),
+    activeIcon: const CustomSelectedIcon(
       icon: Icon(Atlas.bullhorn_thin),
     ),
     label: 'Updates',
-    initialLocation: '/updates',
+    initialLocation: Routes.updates.route,
   ),
-  const BottombarNavigationItem(
-    icon: Icon(Atlas.chats_thin),
-    activeIcon: CustomSelectedIcon(
+  BottombarNavigationItem(
+    icon: const Icon(Atlas.chats_thin),
+    activeIcon: const CustomSelectedIcon(
       icon: Icon(Atlas.chats_thin),
     ),
     label: 'Chat',
-    initialLocation: '/chat',
+    initialLocation: Routes.chat.route,
   ),
-  const BottombarNavigationItem(
-    icon: Icon(Atlas.heart_rate_clipboard_thin),
-    activeIcon: CustomSelectedIcon(
+  BottombarNavigationItem(
+    icon: const Icon(Atlas.heart_rate_clipboard_thin),
+    activeIcon: const CustomSelectedIcon(
       icon: Icon(Atlas.heart_rate_clipboard_thin),
     ),
     label: 'Activities',
-    initialLocation: '/activities',
+    initialLocation: Routes.activities.route,
   ),
-  const BottombarNavigationItem(
-    icon: Icon(
+  BottombarNavigationItem(
+    icon: const Icon(
       Atlas.magnifying_glass_thin,
     ),
-    activeIcon: CustomSelectedIcon(
+    activeIcon: const CustomSelectedIcon(
       icon: Icon(
         Atlas.magnifying_glass_thin,
       ),
     ),
     label: 'Search',
-    initialLocation: '/search',
+    initialLocation: Routes.search.route,
   )
 ];
 

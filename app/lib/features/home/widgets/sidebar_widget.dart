@@ -8,6 +8,7 @@ import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:acter/features/home/providers/navigation.dart';
+import 'package:acter/main/routing/routes.dart';
 
 class SidebarWidget extends ConsumerWidget {
   final NavigationRailLabelType labelType;
@@ -77,7 +78,7 @@ class SidebarWidget extends ConsumerWidget {
               endIndent: 18,
             ),
             InkWell(
-              onTap: () => context.push('/bug_report'),
+              onTap: () => context.pushNamed(Routes.bugReport.name),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 8,
@@ -134,7 +135,7 @@ class SidebarWidget extends ConsumerWidget {
               visible: isGuest,
               child: InkWell(
                 key: Keys.loginBtn,
-                onTap: () => context.pushNamed('login'),
+                onTap: () => context.pushNamed(Routes.authLogin.name),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     vertical: 5,
