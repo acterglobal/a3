@@ -230,14 +230,14 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       fileName: 'screenshot_$timestamp.png',
     );
     if (imagePath != null) {
-      context.go(
+      context.push(
         '/bug_report',
         extra: {
           'screenshot': imagePath,
         },
       );
     } else {
-      context.go('/bug_report');
+      context.push('/bug_report');
     }
   }
 }
