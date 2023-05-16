@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_app_bar.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
@@ -203,59 +205,7 @@ class _PostPageState extends ConsumerState<PostPage> {
               SizedBox(height: MediaQuery.of(context).size.height * 0.2),
             ],
           ),
-          Positioned(
-            bottom: 0,
-            child: Visibility(
-              visible: true,
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Save to Draft',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<BeveledRectangleBorder>(
-                          const BeveledRectangleBorder(),
-                        ),
-                        fixedSize: MaterialStateProperty.all<Size>(
-                          Size(MediaQuery.of(context).size.width * 0.45, 45),
-                        ),
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: handlePost,
-                      child: Text(
-                        'Post',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                          Theme.of(context).colorScheme.tertiary,
-                        ),
-                        shape:
-                            MaterialStateProperty.all<BeveledRectangleBorder>(
-                          const BeveledRectangleBorder(),
-                        ),
-                        fixedSize: MaterialStateProperty.all<Size>(
-                          Size(MediaQuery.of(context).size.width * 0.4, 45),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          buildBottomBar(selectedSpace),
         ],
       ),
     );
@@ -281,9 +231,66 @@ class _PostPageState extends ConsumerState<PostPage> {
     return const Center(child: Icon(Atlas.user_file));
   }
 
-  Future<EventId> handlePost() async {
+  Widget buildBottomBar(SpaceItem? selectedSpace) {
+    return Positioned(
+      bottom: 0,
+      child: Visibility(
+        visible: true,
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () {},
+                child: Text(
+                  'Save to Draft',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<BeveledRectangleBorder>(
+                    const BeveledRectangleBorder(),
+                  ),
+                  fixedSize: MaterialStateProperty.all<Size>(
+                    Size(MediaQuery.of(context).size.width * 0.45, 45),
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () => handlePost(selectedSpace),
+                child: Text(
+                  'Post',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                    Theme.of(context).colorScheme.tertiary,
+                  ),
+                  shape: MaterialStateProperty.all<BeveledRectangleBorder>(
+                    const BeveledRectangleBorder(),
+                  ),
+                  fixedSize: MaterialStateProperty.all<Size>(
+                    Size(MediaQuery.of(context).size.width * 0.4, 45),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<EventId?> handlePost(SpaceItem? selectedSpace) async {
+    if (selectedSpace == null) {
+      return null;
+    }
     Client client = ref.read(clientProvider)!;
-    Space space = await client.getSpace('#news:acter.global');
+    Space space = await client.getSpace(selectedSpace.roomId);
     NewsEntryDraft draft = space.newsDraft();
     NewsSlide? slide;
     if (widget.attachmentUri == null) {
@@ -376,5 +383,12 @@ class _PostPageState extends ConsumerState<PostPage> {
     slides.add(slide);
     draft.slides(slides as FfiListNewsSlide);
     return await draft.send();
+  }
+
+  void handleDraft(SpaceItem? selectedSpace) {
+    showNotYetImplementedMsg(
+      context,
+      'Draft is not implemented yet',
+    );
   }
 }
