@@ -96,7 +96,11 @@ impl Conversation {
         RUNTIME
             .spawn(async move {
                 let mut records: Vec<ReceiptRecord> = vec![];
-                for member in room.active_members().await.context("Couldn't get active members from room")? {
+                for member in room
+                    .active_members()
+                    .await
+                    .context("Couldn't get active members from room")?
+                {
                     let user_id = member.user_id();
                     if let Some((event_id, receipt)) = room
                         .user_receipt(ReceiptType::Read, ReceiptThread::Main, user_id)
@@ -404,7 +408,10 @@ impl Client {
                     name: settings.name,
                     visibility: Visibility::Private,
                 });
-                let response = client.create_room(request).await.context("Couldn't create room")?;
+                let response = client
+                    .create_room(request)
+                    .await
+                    .context("Couldn't create room")?;
                 Ok(response.room_id().to_owned())
             })
             .await?

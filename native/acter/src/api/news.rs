@@ -185,7 +185,11 @@ impl NewsSlide {
         };
         RUNTIME
             .spawn(async move {
-                let buf = client.media().get_media_content(&request, false).await.context("Couldn't get media content")?;
+                let buf = client
+                    .media()
+                    .get_media_content(&request, false)
+                    .await
+                    .context("Couldn't get media content")?;
                 Ok(FfiBuffer::new(buf))
             })
             .await?
@@ -211,7 +215,11 @@ impl NewsSlide {
         };
         RUNTIME
             .spawn(async move {
-                let buf = client.media().get_media_content(&request, false).await.context("Couldn't get media content")?;
+                let buf = client
+                    .media()
+                    .get_media_content(&request, false)
+                    .await
+                    .context("Couldn't get media content")?;
                 Ok(FfiBuffer::new(buf))
             })
             .await?
@@ -237,7 +245,11 @@ impl NewsSlide {
         };
         RUNTIME
             .spawn(async move {
-                let buf = client.media().get_media_content(&request, false).await.context("Couldn't get media content")?;
+                let buf = client
+                    .media()
+                    .get_media_content(&request, false)
+                    .await
+                    .context("Couldn't get media content")?;
                 Ok(FfiBuffer::new(buf))
             })
             .await?
@@ -263,7 +275,11 @@ impl NewsSlide {
         };
         RUNTIME
             .spawn(async move {
-                let buf = client.media().get_media_content(&request, false).await.context("Couldn't get media content")?;
+                let buf = client
+                    .media()
+                    .get_media_content(&request, false)
+                    .await
+                    .context("Couldn't get media content")?;
                 Ok(FfiBuffer::new(buf))
             })
             .await?
@@ -370,10 +386,16 @@ pub struct NewsEntryDraft {
 impl NewsEntryDraft {
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build().context("building failed in event content of news entry")?;
+        let content = self
+            .content
+            .build()
+            .context("building failed in event content of news entry")?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await.context("Couldn't send news entry")?;
+                let resp = room
+                    .send(content, None)
+                    .await
+                    .context("Couldn't send news entry")?;
                 Ok(resp.event_id)
             })
             .await?
@@ -390,10 +412,16 @@ pub struct NewsEntryUpdateBuilder {
 impl NewsEntryUpdateBuilder {
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build().context("building failed in event content of news event update")?;
+        let content = self
+            .content
+            .build()
+            .context("building failed in event content of news event update")?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await.context("Couldn't send news entry update")?;
+                let resp = room
+                    .send(content, None)
+                    .await
+                    .context("Couldn't send news entry update")?;
                 Ok(resp.event_id)
             })
             .await?

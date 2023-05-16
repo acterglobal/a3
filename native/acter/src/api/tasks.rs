@@ -57,7 +57,12 @@ impl Client {
         let mut task_lists = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
-        for mdl in self.store().get_list(KEYS::TASKS).await.context("Couldn't get task lists from store")? {
+        for mdl in self
+            .store()
+            .get_list(KEYS::TASKS)
+            .await
+            .context("Couldn't get task lists from store")?
+        {
             #[allow(irrefutable_let_patterns)]
             if let AnyActerModel::TaskList(t) = mdl {
                 let room_id = t.room_id().to_owned();
@@ -87,7 +92,11 @@ impl Client {
 
     pub async fn task_list(&self, key: &str) -> Result<TaskList> {
         let client = self.clone();
-        let mdl = self.store().get(key).await.context("Couldn't get task list from store")?;
+        let mdl = self
+            .store()
+            .get(key)
+            .await
+            .context("Couldn't get task list from store")?;
 
         let AnyActerModel::TaskList(task_list) = mdl else  {
             bail!("Not a Tasklist model: {key}")
@@ -130,7 +139,12 @@ impl Space {
     }
 
     pub async fn task_list(&self, key: &str) -> Result<TaskList> {
-        let mdl = self.client.store().get(key).await.context("Couldn't get task list from store")?;
+        let mdl = self
+            .client
+            .store()
+            .get(key)
+            .await
+            .context("Couldn't get task list from store")?;
 
         let AnyActerModel::TaskList(task_list) = mdl else  {
             bail!("Not a Tasklist model: {key}")
@@ -219,10 +233,16 @@ impl TaskListDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build().context("building failed in event content of task list")?;
+        let content = self
+            .content
+            .build()
+            .context("building failed in event content of task list")?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await.context("Couldn't send task list")?;
+                let resp = room
+                    .send(content, None)
+                    .await
+                    .context("Couldn't send task list")?;
                 Ok(resp.event_id)
             })
             .await?
@@ -672,10 +692,16 @@ impl TaskDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build().context("building failed in event content of task")?;
+        let content = self
+            .content
+            .build()
+            .context("building failed in event content of task")?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await.context("Couldn't send task")?;
+                let resp = room
+                    .send(content, None)
+                    .await
+                    .context("Couldn't send task")?;
                 Ok(resp.event_id)
             })
             .await?
@@ -889,10 +915,16 @@ impl TaskUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build().context("building failed in event content of task update")?;
+        let content = self
+            .content
+            .build()
+            .context("building failed in event content of task update")?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await.context("Couldn't send task update")?;
+                let resp = room
+                    .send(content, None)
+                    .await
+                    .context("Couldn't send task update")?;
                 Ok(resp.event_id)
             })
             .await?
@@ -1001,10 +1033,16 @@ impl TaskListUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self.content.build().context("building failed in event content of task list update")?;
+        let content = self
+            .content
+            .build()
+            .context("building failed in event content of task list update")?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await.context("Couldn't send task list update")?;
+                let resp = room
+                    .send(content, None)
+                    .await
+                    .context("Couldn't send task list update")?;
                 Ok(resp.event_id)
             })
             .await?

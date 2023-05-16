@@ -201,8 +201,11 @@ impl Drop for SyncState {
 
 impl Client {
     pub async fn new(client: MatrixClient, state: ClientState) -> Result<Self> {
+        let core = CoreClient::new(client)
+            .await
+            .context("Couldn't create core client")?;
         let cl = Client {
-            core: CoreClient::new(client).await.context("Couldn't create core client")?,
+            core,
             state: Arc::new(RwLock::new(state)),
             invitation_controller: InvitationController::new(),
             verification_controller: VerificationController::new(),
@@ -223,14 +226,22 @@ impl Client {
     }
 
     pub async fn template_engine(&self, template: &str) -> Result<Engine> {
-        Ok(self.core.template_engine(template).await.context("Couldn't set up template engine")?)
+        let engine = self
+            .core
+            .template_engine(template)
+            .await
+            .context("Couldn't set up template engine")?;
+        Ok(engine)
     }
 
     fn refresh_history_on_start(&self, history: Mutable<HistoryLoadState>) {
         let me = self.clone();
         RUNTIME.spawn(async move {
             tracing::trace!(user_id=?me.user_id_ref(), "refreshing history");
-            let spaces = me.spaces().await.context("Couldn't get spaces from client")?;
+            let spaces = me
+                .spaces()
+                .await
+                .context("Couldn't get spaces from client")?;
             let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
             history.lock_mut().start(space_ids);
 

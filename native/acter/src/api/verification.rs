@@ -355,7 +355,10 @@ impl VerificationEvent {
         let sender = self.sender.clone();
         RUNTIME
             .spawn(async move {
-                client.sync_once(SyncSettings::default()).await.context("Couldn't sync once")?; // send_outgoing_requests is called there
+                client
+                    .sync_once(SyncSettings::default())
+                    .await
+                    .context("Couldn't sync once")?; // send_outgoing_requests is called there
                 Ok(true)
             })
             .await?

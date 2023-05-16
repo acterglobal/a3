@@ -63,7 +63,10 @@ pub async fn guest_client(
             let mut request = register::v3::Request::new();
             request.kind = register::RegistrationKind::Guest;
             request.initial_device_display_name = device_name;
-            let response = client.register(request).await.context("Couldn't register client")?;
+            let response = client
+                .register(request)
+                .await
+                .context("Couldn't register client")?;
             let device_id = response
                 .device_id
                 .clone()
@@ -74,9 +77,17 @@ pub async fn guest_client(
                 refresh_token: response.refresh_token.clone(),
                 device_id,
             };
-            client.restore_session(session).await.context("Couldn't restore session")?;
-            let state = ClientStateBuilder::default().is_guest(true).build().context("building failed in client state")?;
-            let c = Client::new(client, state).await.context("Couldn't create client")?;
+            client
+                .restore_session(session)
+                .await
+                .context("Couldn't restore session")?;
+            let state = ClientStateBuilder::default()
+                .is_guest(true)
+                .build()
+                .context("building failed in client state")?;
+            let c = Client::new(client, state)
+                .await
+                .context("Couldn't create client")?;
             info!("Successfully created guest login: {:?}", response.user_id);
             Ok(c)
         })
@@ -110,7 +121,9 @@ pub async fn login_with_token_under_config(
                 .is_guest(is_guest)
                 .build()
                 .context("building client state builder failed")?;
-            let c = Client::new(client.clone(), state).await.context("Couldn't create client")?;
+            let c = Client::new(client.clone(), state)
+                .await
+                .context("Couldn't create client")?;
             info!(
                 "Successfully logged in user {:?}, device {:?} with token.",
                 user_id,
@@ -150,9 +163,17 @@ pub async fn login_new_client_under_config(
                 name = s;
                 login_builder = login_builder.initial_device_display_name(name.as_str())
             };
-            login_builder.send().await.context("Couldn't send login request")?;
-            let state = ClientStateBuilder::default().is_guest(false).build().context("building failed in client state")?;
-            let c = Client::new(client.clone(), state).await.context("Couldn't create client")?;
+            login_builder
+                .send()
+                .await
+                .context("Couldn't send login request")?;
+            let state = ClientStateBuilder::default()
+                .is_guest(false)
+                .build()
+                .context("building failed in client state")?;
+            let c = Client::new(client.clone(), state)
+                .await
+                .context("Couldn't create client")?;
             info!(
                 "Successfully logged in user {:?}, device {:?}",
                 user_id,
@@ -237,10 +258,18 @@ pub async fn register_with_token(
                     uiaa::RegistrationToken::new(registration_token),
                 )),
             });
-            client.register(request).await.context("Couldn't register client")?;
+            client
+                .register(request)
+                .await
+                .context("Couldn't register client")?;
 
-            let state = ClientStateBuilder::default().is_guest(false).build().context("building failed in client state")?;
-            let c = Client::new(client.clone(), state).await.context("Couldn't create client")?;
+            let state = ClientStateBuilder::default()
+                .is_guest(false)
+                .build()
+                .context("building failed in client state")?;
+            let c = Client::new(client.clone(), state)
+                .await
+                .context("Couldn't create client")?;
             info!(
                 "Successfully registered user {:?}, device {:?}",
                 username,

@@ -288,7 +288,11 @@ impl Space {
                 state_key,
                 body,
             );
-            joined.client().send(request, None).await.context("Couldn't send state event")?;
+            joined
+                .client()
+                .send(request, None)
+                .await
+                .context("Couldn't send state event")?;
         }
         Ok(())
     }
@@ -325,7 +329,10 @@ impl Space {
             tracing::trace!(name, ?msg_options, "fetching messages");
             let Messages {
                 end, chunk, state, ..
-            } = room.messages(msg_options).await.context("Couldn't get messages of room")?;
+            } = room
+                .messages(msg_options)
+                .await
+                .context("Couldn't get messages of room")?;
             tracing::trace!(name, ?chunk, end, "messages received");
 
             let has_chunks = !chunk.is_empty();
@@ -389,7 +396,10 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let relations = c.space_relations(&room).await.context("Couldn't get space relations of client")?;
+                let relations = c
+                    .space_relations(&room)
+                    .await
+                    .context("Couldn't get space relations of client")?;
                 Ok(relations)
             })
             .await?
@@ -424,7 +434,10 @@ impl Client {
         let c = self.core.clone();
         RUNTIME
             .spawn(async move {
-                let room_id = c.create_acter_space(Box::into_inner(settings)).await.context("Couldn't create acter space")?;
+                let room_id = c
+                    .create_acter_space(Box::into_inner(settings))
+                    .await
+                    .context("Couldn't create acter space")?;
                 Ok(room_id)
             })
             .await?
@@ -446,7 +459,12 @@ impl Client {
                 .map(|room| Space::new(self.clone(), Room { room }))
                 .context("Room not found")
         } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
-            for space in self.spaces().await.context("Couldn't get space list from client")?.into_iter() {
+            for space in self
+                .spaces()
+                .await
+                .context("Couldn't get space list from client")?
+                .into_iter()
+            {
                 if let Some(space_alias) = space.inner.room.canonical_alias() {
                     if space_alias == alias_id {
                         return Ok(space);

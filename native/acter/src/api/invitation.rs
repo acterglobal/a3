@@ -44,7 +44,10 @@ impl Invitation {
             .context("Can't accept a room we are not invited")?;
         RUNTIME
             .spawn(async move {
-                let name = room.display_name().await.context("Couldn't get display name of room")?;
+                let name = room
+                    .display_name()
+                    .await
+                    .context("Couldn't get display name of room")?;
                 Ok(name.to_string())
             })
             .await?
@@ -195,7 +198,10 @@ impl InvitationController {
     pub async fn load_invitations(&self, client: &MatrixClient) -> Result<()> {
         let mut invitations: Vec<Invitation> = vec![];
         for room in client.invited_rooms().iter() {
-            let details = room.invite_details().await.context("Couldn't get invitation details of room")?;
+            let details = room
+                .invite_details()
+                .await
+                .context("Couldn't get invitation details of room")?;
             if let Some(inviter) = details.inviter {
                 let invitation = Invitation {
                     client: client.clone(),
@@ -307,7 +313,10 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 // get member list of target room
-                let members = room.members().await.context("Couldn't get members of room")?;
+                let members = room
+                    .members()
+                    .await
+                    .context("Couldn't get members of room")?;
                 let room_members = members
                     .iter()
                     .map(|x| x.user_id().to_owned())
@@ -319,7 +328,10 @@ impl Client {
                     if convo.room_id() == room_id {
                         continue;
                     }
-                    let members = convo.members().await.context("Couldn't get members of conversation")?;
+                    let members = convo
+                        .members()
+                        .await
+                        .context("Couldn't get members of conversation")?;
                     for member in members {
                         let user_id = member.user_id().to_owned();
                         // exclude user that belongs to target room

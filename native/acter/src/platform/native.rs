@@ -29,8 +29,11 @@ pub async fn new_client_config(
 
     std::fs::create_dir_all(&data_path)?;
 
+    let config = make_store_config(&data_path, None)
+        .await
+        .context("Couldn't make store config")?;
     let builder = Client::builder()
-        .store_config(make_store_config(&data_path, None).await.context("Couldn't make store config")?)
+        .store_config(config)
         .user_agent(format!("acter-testing/{:}", env!("CARGO_PKG_VERSION")));
     Ok(builder)
 }
