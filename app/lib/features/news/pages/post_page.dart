@@ -1,16 +1,14 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_app_bar.dart';
 import 'package:acter/features/home/states/client_state.dart';
+import 'package:acter/features/news/notifiers/post_update_notifier.dart';
 import 'package:acter/features/news/notifiers/search_space_notifier.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show remapToImage;
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Client, EventId, FfiListNewsSlide, NewsEntryDraft, NewsSlide, Space;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -129,10 +127,14 @@ class _PostPageState extends ConsumerState<PostPage> {
                                 ),
                                 size: 20,
                               )
-                            : CircleAvatar(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.neutral5,
-                                radius: 18,
+                            : Container(
+                                height: 36,
+                                width: 36,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  color: Theme.of(context).colorScheme.neutral5,
+                                  shape: BoxShape.rectangle,
+                                ),
                               ),
                       ),
                       Text(
@@ -215,26 +217,6 @@ class _PostPageState extends ConsumerState<PostPage> {
     );
   }
 
-  Widget buildAttachment() {
-    if (widget.attachmentUri == null) {
-      return const Center(child: Icon(Atlas.text));
-    }
-    String? mimeType = lookupMimeType(widget.attachmentUri!);
-    if (mimeType != null) {
-      if (mimeType.startsWith('image/')) {
-        return Image.file(
-          File(widget.attachmentUri!),
-          fit: BoxFit.fitHeight,
-        );
-      } else if (mimeType.startsWith('audio/')) {
-        return const Center(child: Icon(Atlas.file_audio));
-      } else if (mimeType.startsWith('video/')) {
-        return const Center(child: Icon(Atlas.file_video));
-      }
-    }
-    return const Center(child: Icon(Atlas.user_file));
-  }
-
   Widget buildBottomBar(SpaceItem? selectedSpace) {
     return Positioned(
       bottom: 0,
@@ -265,7 +247,7 @@ class _PostPageState extends ConsumerState<PostPage> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () => handlePost(selectedSpace),
+                onPressed: () => handlePost(context, mounted),
                 child: Text(
                   'Post',
                   style: Theme.of(context).textTheme.bodyMedium,
@@ -289,104 +271,59 @@ class _PostPageState extends ConsumerState<PostPage> {
     );
   }
 
-  Future<EventId?> handlePost(SpaceItem? selectedSpace) async {
-    if (selectedSpace == null) {
-      return null;
-    }
-    Client client = ref.read(clientProvider)!;
-    Space space = await client.getSpace(selectedSpace.roomId);
-    NewsEntryDraft draft = space.newsDraft();
-    NewsSlide? slide;
+  Widget buildAttachment() {
     if (widget.attachmentUri == null) {
-      slide = draft.newTextSlide(descriptionController.text);
-    } else {
-      String? mimeType = lookupMimeType(widget.attachmentUri!);
-      if (mimeType != null) {
-        if (mimeType.startsWith('image/')) {
-          File image = File(widget.attachmentUri!);
-          Uint8List bytes = image.readAsBytesSync();
-          var decodedImage = await decodeImageFromList(bytes);
-          EventId eventId = await space.sendImageMessage(
-            widget.attachmentUri!,
-            'Untitled Image',
-            mimeType,
-            bytes.length,
-            decodedImage.width,
-            decodedImage.height,
-            null,
-          );
-          slide = draft.newImageSlide(
-            descriptionController.text,
-            eventId.toString(),
-            mimeType,
-            bytes.length,
-            decodedImage.width,
-            decodedImage.height,
-            null,
-          );
-        } else if (mimeType.startsWith('audio/')) {
-          File audio = File(widget.attachmentUri!);
-          Uint8List bytes = audio.readAsBytesSync();
-          EventId eventId = await space.sendAudioMessage(
-            widget.attachmentUri!,
-            'Untitled Audio',
-            mimeType,
-            null,
-            bytes.length,
-          );
-          slide = draft.newAudioSlide(
-            descriptionController.text,
-            eventId.toString(),
-            null,
-            mimeType,
-            bytes.length,
-          );
-        } else if (mimeType.startsWith('video/')) {
-          File video = File(widget.attachmentUri!);
-          Uint8List bytes = video.readAsBytesSync();
-          EventId eventId = await space.sendVideoMessage(
-            widget.attachmentUri!,
-            'Untitled Video',
-            mimeType,
-            null,
-            null,
-            null,
-            bytes.length,
-            null,
-          );
-          slide = draft.newVideoSlide(
-            descriptionController.text,
-            eventId.toString(),
-            null,
-            null,
-            null,
-            mimeType,
-            bytes.length,
-            null,
-          );
-        }
-      }
-      if (slide == null) {
-        File file = File(widget.attachmentUri!);
-        Uint8List bytes = file.readAsBytesSync();
-        EventId eventId = await space.sendFileMessage(
-          widget.attachmentUri!,
-          'Untitled File',
-          mimeType ?? 'application/octet',
-          bytes.length,
+      return const Center(child: Icon(Atlas.text));
+    }
+    String? mimeType = lookupMimeType(widget.attachmentUri!);
+    if (mimeType != null) {
+      if (mimeType.startsWith('image/')) {
+        return Image.file(
+          File(widget.attachmentUri!),
+          fit: BoxFit.fitHeight,
         );
-        slide = draft.newFileSlide(
-          descriptionController.text,
-          eventId.toString(),
-          mimeType ?? 'application/octet',
-          bytes.length,
-        );
+      } else if (mimeType.startsWith('audio/')) {
+        return const Center(child: Icon(Atlas.file_audio));
+      } else if (mimeType.startsWith('video/')) {
+        return const Center(child: Icon(Atlas.file_video));
       }
     }
-    List<NewsSlide> slides = [];
-    slides.add(slide);
-    draft.slides(slides as FfiListNewsSlide);
-    return await draft.send();
+    return const Center(child: Icon(Atlas.user_file));
+  }
+
+  void handlePost(BuildContext context, [bool mounted = true]) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (_) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                // The loading indicator
+                CircularProgressIndicator(),
+                SizedBox(
+                  height: 15,
+                ),
+                // Some text
+                Text('Posting Update...')
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    // do async operation
+    ref
+        .read(postUpdateProvider.notifier)
+        .postUpdate(widget.attachmentUri, descriptionController.text);
+
+    // Close the dialog programmatically
+    // We use "mounted" variable to get rid of the "Do not use BuildContexts across async gaps" warning
+    if (!mounted) return;
+    context.pop();
   }
 
   void handleDraft(SpaceItem? selectedSpace) {
