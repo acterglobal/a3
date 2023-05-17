@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/main/routing/routes.dart';
 
 const fallbackSidebarIdx = 1;
-const fallbackBottombarIdx = 0;
+const fallbackBottomBarIdx = 0;
 
 final spaceItemsProvider =
     FutureProvider.family<List<SidebarNavigationItem>, BuildContext>(
@@ -126,7 +126,7 @@ final sidebarItemsProvider =
       location: Routes.chat.route,
     ),
     SidebarNavigationItem(
-      icon: const Icon(Atlas.heart_rate_clipboard_thin),
+      icon: const Icon(Atlas.audio_wave_thin),
       label: Column(
         children: [
           Text(
@@ -171,7 +171,7 @@ final currentSelectedSidebarIndexProvider =
 });
 
 final bottomBarNav = [
-  BottombarNavigationItem(
+  BottomBarNavigationItem(
     icon: const Icon(Atlas.home_thin),
     activeIcon: const CustomSelectedIcon(
       icon: Icon(Atlas.home_bold),
@@ -179,15 +179,15 @@ final bottomBarNav = [
     label: 'Dashboard',
     initialLocation: Routes.dashboard.route,
   ),
-  BottombarNavigationItem(
-    icon: const Icon(Atlas.bullhorn_thin),
+  BottomBarNavigationItem(
+    icon: const Icon(Atlas.megaphone_thin),
     activeIcon: const CustomSelectedIcon(
-      icon: Icon(Atlas.bullhorn_thin),
+      icon: Icon(Atlas.megaphone_thin),
     ),
     label: 'Updates',
     initialLocation: Routes.updates.route,
   ),
-  BottombarNavigationItem(
+  BottomBarNavigationItem(
     icon: const Icon(Atlas.chats_thin),
     activeIcon: const CustomSelectedIcon(
       icon: Icon(Atlas.chats_thin),
@@ -195,15 +195,15 @@ final bottomBarNav = [
     label: 'Chat',
     initialLocation: Routes.chat.route,
   ),
-  BottombarNavigationItem(
-    icon: const Icon(Atlas.heart_rate_clipboard_thin),
+  BottomBarNavigationItem(
+    icon: const Icon(Atlas.audio_wave_thin),
     activeIcon: const CustomSelectedIcon(
-      icon: Icon(Atlas.heart_rate_clipboard_thin),
+      icon: Icon(Atlas.audio_wave_thin),
     ),
     label: 'Activities',
     initialLocation: Routes.activities.route,
   ),
-  BottombarNavigationItem(
+  BottomBarNavigationItem(
     icon: const Icon(
       Atlas.magnifying_glass_thin,
     ),
@@ -217,7 +217,7 @@ final bottomBarNav = [
   )
 ];
 
-final currentSelectedBottombarIndexProvider =
+final currentSelectedBottomBarIndexProvider =
     Provider.autoDispose.family<int, BuildContext>((ref, context) {
   final location = ref.watch(currentRoutingLocation);
   debugPrint('bottom location: $location');
@@ -225,5 +225,5 @@ final currentSelectedBottombarIndexProvider =
       bottomBarNav.indexWhere((t) => location.startsWith(t.initialLocation));
   debugPrint('bottom index: $index');
 
-  return index < 0 ? fallbackBottombarIdx : index;
+  return index < 0 ? fallbackBottomBarIdx : index;
 });

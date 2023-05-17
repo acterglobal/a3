@@ -76,7 +76,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       );
     }
     final bottomBarIdx =
-        ref.watch(currentSelectedBottombarIndexProvider(context));
+        ref.watch(currentSelectedBottomBarIndexProvider(context));
 
     final showInSidebar = isDesktop && location == '/dashboard';
     final bodyRatio = showInSidebar ? 0.3 : 0.0;
@@ -185,7 +185,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                           showUnselectedLabels: false,
                           currentIndex: bottomBarIdx,
                           onTap: (index) =>
-                              context.push(bottomBarNav[index].initialLocation),
+                              context.go(bottomBarNav[index].initialLocation),
                           items: bottomBarNav,
                           type: BottomNavigationBarType.fixed,
                         ),
@@ -204,7 +204,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                           showUnselectedLabels: false,
                           currentIndex: bottomBarIdx,
                           onTap: (index) =>
-                              context.push(bottomBarNav[index].initialLocation),
+                              context.go(bottomBarNav[index].initialLocation),
                           items: bottomBarNav,
                           type: BottomNavigationBarType.fixed,
                         ),

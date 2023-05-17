@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class BottombarNavigationItem extends BottomNavigationBarItem {
+class BottomBarNavigationItem extends BottomNavigationBarItem {
   final String initialLocation;
 
-  const BottombarNavigationItem({
+  const BottomBarNavigationItem({
     required this.initialLocation,
     required Widget icon,
     String? label,
