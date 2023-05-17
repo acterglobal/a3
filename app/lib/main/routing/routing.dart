@@ -8,7 +8,7 @@ import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/sign_up_page.dart';
-import 'package:acter/features/profile/pages/social_profile_page.dart';
+import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/common/dialogs/dialog_page.dart';
@@ -39,11 +39,6 @@ final _routes = [
     name: Routes.authLogin.name,
     path: Routes.authLogin.route,
     builder: (context, state) => const LoginPage(),
-  ),
-  GoRoute(
-    name: Routes.myProfile.name,
-    path: Routes.myProfile.route,
-    builder: (context, state) => const SocialProfilePage(),
   ),
   GoRoute(
     name: Routes.authRegister.name,
@@ -81,6 +76,17 @@ final _routes = [
       );
     },
     routes: <RouteBase>[
+      GoRoute(
+        name: Routes.myProfile.name,
+        path: Routes.myProfile.route,
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: const MyProfile(),
+          );
+        },
+      ),
+
       /// The first screen to display in the bottom navigation bar.
       GoRoute(
         name: Routes.updates.name,

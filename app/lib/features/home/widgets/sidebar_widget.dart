@@ -60,7 +60,10 @@ class SidebarWidget extends ConsumerWidget {
             child: Container(
               key: Keys.avatar,
               margin: const EdgeInsets.only(top: 8),
-              child: const UserAvatarWidget(),
+              child: InkWell(
+                onTap: () => context.pushNamed(Routes.myProfile.name),
+                child: const UserAvatarWidget(),
+              ),
             ),
           ),
           const Divider(
