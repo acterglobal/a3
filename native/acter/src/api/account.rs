@@ -1,5 +1,9 @@
 use anyhow::{Context, Result};
-use matrix_sdk::{media::MediaFormat, ruma::OwnedUserId, Account as MatrixAccount};
+use matrix_sdk::{
+    media::MediaFormat,
+    ruma::{OwnedMxcUri, OwnedUserId},
+    Account as MatrixAccount,
+};
 
 use super::{api::FfiBuffer, RUNTIME};
 
@@ -69,15 +73,16 @@ impl Account {
             .await?
     }
 
-    pub async fn set_avatar(&self, c_type: String, data: Vec<u8>) -> Result<bool> {
+    pub async fn set_avatar(&self, content_type: String, data: Vec<u8>) -> Result<OwnedMxcUri> {
         let account = self.account.clone();
+        let content_type = content_type.parse::<mime::Mime>()?;
         RUNTIME
             .spawn(async move {
                 let new_url = account
-                    .upload_avatar(&c_type.parse()?, data)
+                    .upload_avatar(&content_type, data)
                     .await
                     .context("Couldn't upload avatar")?;
-                Ok(true)
+                Ok(new_url)
             })
             .await?
     }

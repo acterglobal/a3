@@ -1,13 +1,28 @@
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/features/home/states/client_state.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show UserProfile;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final userProfileProvider = FutureProvider<UserProfile>((ref) async {
+class UserItem {
+  Future<FfiBufferUint8> avatar;
+  String? displayName;
+
+  UserItem({
+    required this.avatar,
+    required this.displayName,
+  });
+}
+
+final userProfileProvider = FutureProvider<UserItem>((ref) async {
   final client = ref.watch(clientProvider);
-  return await client!.getUserProfile();
+  var profile = client!.getUserProfile();
+  return UserItem(
+    avatar: profile.getAvatar(),
+    displayName: await profile.getDisplayName(),
+  );
 });
 
 class UserAvatarWidget extends ConsumerWidget {
@@ -27,15 +42,15 @@ class UserAvatarWidget extends ConsumerWidget {
               uniqueId: client.userId().toString(),
               size: 20,
               avatarProviderFuture: remapToImage(
-                data.getAvatar(),
+                data.avatar,
                 cacheHeight: 54,
               ),
-              displayName: data.getDisplayName(),
+              displayName: data.displayName,
             ),
           ],
         );
       },
-      error: (error, _) => const Text('Couldn\'t load avatar'),
+      error: (error, _) => const Text("Couldn't load avatar"),
       loading: () => const Center(
         child: CircularProgressIndicator(),
       ),

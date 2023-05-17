@@ -5,9 +5,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 
+class MemberProfile {
+  Future<FfiBufferUint8> avatar;
+  String? displayName;
+
+  MemberProfile({
+    required this.avatar,
+    required this.displayName,
+  });
+}
+
 final membersProfileProvider =
-    FutureProvider.family<UserProfile, Member>((ref, member) async {
-  return await member.getProfile();
+    FutureProvider.family<MemberProfile, Member>((ref, member) async {
+  UserProfile profile = member.getProfile();
+  return MemberProfile(
+    avatar: profile.getAvatar(),
+    displayName: await profile.getDisplayName(),
+  );
 });
 
 class MemberAvatar extends ConsumerWidget {
@@ -35,10 +49,10 @@ class MemberAvatar extends ConsumerWidget {
                 uniqueId: member.userId().toString(),
                 size: 20,
                 avatarProviderFuture: remapToImage(
-                  data.getAvatar(),
+                  data.avatar,
                   cacheHeight: 54,
                 ),
-                displayName: data.getDisplayName(),
+                displayName: data.displayName,
               ),
             ),
           ],

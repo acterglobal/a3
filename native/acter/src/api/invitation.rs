@@ -57,16 +57,10 @@ impl Invitation {
         self.sender.clone()
     }
 
-    pub async fn get_sender_profile(&self) -> Result<UserProfile> {
+    pub fn get_sender_profile(&self) -> UserProfile {
         let client = self.client.clone();
         let user_id = self.sender.clone();
-        RUNTIME
-            .spawn(async move {
-                let mut user_profile = UserProfile::new(client, user_id, None, None);
-                user_profile.fetch().await;
-                Ok(user_profile)
-            })
-            .await?
+        UserProfile::new(client, user_id)
     }
 
     pub async fn accept(&self) -> Result<bool> {
@@ -342,12 +336,7 @@ impl Client {
                         if profiles.iter().any(|x| x.user_id() == user_id) {
                             continue;
                         }
-                        let user_profile = UserProfile::new(
-                            client.core.client().clone(),
-                            user_id,
-                            member.avatar_url().map(|x| (*x).to_owned()),
-                            member.display_name().map(|x| x.to_string()),
-                        );
+                        let user_profile = UserProfile::new(client.core.client().clone(), user_id);
                         profiles.push(user_profile);
                     }
                 }

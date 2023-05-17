@@ -1,15 +1,8 @@
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result};
 use log::info;
 use matrix_sdk::{
-    media::{MediaFormat, MediaRequest, MediaThumbnailSize},
-    ruma::{
-        api::client::{
-            media::get_content_thumbnail::v3::Method,
-            profile::get_profile::v3::Request as GetProfileRequest,
-        },
-        events::room::MediaSource,
-        OwnedMxcUri, OwnedRoomId, OwnedUserId, UInt,
-    },
+    media::{MediaFormat, MediaThumbnailSize},
+    ruma::{api::client::media::get_content_thumbnail::v3::Method, OwnedRoomId, OwnedUserId, UInt},
     Client,
 };
 
@@ -19,68 +12,48 @@ use super::{api::FfiBuffer, RUNTIME};
 pub struct UserProfile {
     client: Client,
     user_id: OwnedUserId,
-    avatar_url: Option<OwnedMxcUri>,
-    display_name: Option<String>,
 }
 
 impl UserProfile {
-    pub(crate) fn new(
-        client: Client,
-        user_id: OwnedUserId,
-        avatar_url: Option<OwnedMxcUri>,
-        display_name: Option<String>,
-    ) -> Self {
-        UserProfile {
-            client,
-            user_id,
-            avatar_url,
-            display_name,
-        }
-    }
-
-    pub(crate) async fn fetch(&mut self) -> Result<()> {
-        // use low-level api request so that non-member can see member in room
-        let client = self.client.clone();
-        let user_id = self.user_id.clone();
-        let request = GetProfileRequest::new(user_id);
-        let response = client.send(request, None).await?;
-        self.avatar_url = response.avatar_url;
-        self.display_name = response.displayname;
-        Ok(())
+    pub(crate) fn new(client: Client, user_id: OwnedUserId) -> Self {
+        UserProfile { client, user_id }
     }
 
     pub fn user_id(&self) -> OwnedUserId {
         self.user_id.clone()
     }
 
-    pub fn has_avatar(&self) -> bool {
-        self.avatar_url.is_some()
+    pub async fn has_avatar(&self) -> Result<bool> {
+        let account = self.client.account();
+        RUNTIME
+            .spawn(async move {
+                let url = account
+                    .get_avatar_url()
+                    .await
+                    .context("Couldn't get avatar url")?;
+                Ok(url.is_some())
+            })
+            .await?
     }
 
     pub async fn get_avatar(&self) -> Result<FfiBuffer<u8>> {
-        let client = self.client.clone();
-        let Some(avatar_url) = self.avatar_url.clone() else {
-            bail!("No User Profile found");
-        };
+        let account = self.client.account();
         RUNTIME
             .spawn(async move {
-                let request = MediaRequest {
-                    source: MediaSource::Plain(avatar_url),
-                    format: MediaFormat::File,
-                };
-                let result = client
-                    .media()
-                    .get_media_content(&request, true)
+                let result = account
+                    .get_avatar(MediaFormat::File)
                     .await
-                    .context("Couldn't get media content from user profile")?;
-                Ok(FfiBuffer::new(result))
+                    .context("Couldn't get avatar from account")?;
+                match result {
+                    Some(result) => Ok(FfiBuffer::new(result)),
+                    None => Ok(FfiBuffer::new(vec![])),
+                }
             })
             .await?
     }
 
     pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<FfiBuffer<u8>> {
-        let client = self.client.clone();
-        let avatar_url = self.avatar_url.clone().unwrap();
+        let account = self.client.account();
         RUNTIME
             .spawn(async move {
                 let size = MediaThumbnailSize {
@@ -88,22 +61,32 @@ impl UserProfile {
                     width: UInt::from(width),
                     height: UInt::from(height),
                 };
-                let request = MediaRequest {
-                    source: MediaSource::Plain(avatar_url),
-                    format: MediaFormat::Thumbnail(size),
-                };
-                let result = client
-                    .media()
-                    .get_media_content(&request, true)
+                let result = account
+                    .get_avatar(MediaFormat::Thumbnail(size))
                     .await
-                    .context("Couldn't get media content from user profile")?;
-                Ok(FfiBuffer::new(result))
+                    .context("Couldn't get avatar from account")?;
+                match result {
+                    Some(result) => Ok(FfiBuffer::new(result)),
+                    None => Ok(FfiBuffer::new(vec![])),
+                }
             })
             .await?
     }
 
-    pub fn get_display_name(&self) -> Option<String> {
-        self.display_name.clone()
+    pub async fn get_display_name(&self) -> Result<String> {
+        let account = self.client.account();
+        RUNTIME
+            .spawn(async move {
+                let result = account
+                    .get_display_name()
+                    .await
+                    .context("Couldn't get display name from account")?;
+                match result {
+                    Some(result) => Ok(result),
+                    None => Ok("".to_string()),
+                }
+            })
+            .await?
     }
 }
 
@@ -111,61 +94,45 @@ impl UserProfile {
 pub struct RoomProfile {
     client: Client,
     room_id: OwnedRoomId,
-    avatar_url: Option<OwnedMxcUri>,
-    display_name: Option<String>,
 }
 
 impl RoomProfile {
     pub(crate) fn new(client: Client, room_id: OwnedRoomId) -> Self {
-        RoomProfile {
-            client,
-            room_id,
-            avatar_url: None,
-            display_name: None,
-        }
+        RoomProfile { client, room_id }
     }
 
-    pub(crate) async fn fetch(&mut self) -> Result<()> {
-        let client = self.client.clone();
-        let room_id = self.room_id.clone();
-        let room = client.get_room(&room_id).unwrap();
-        if let Some(url) = room.avatar_url() {
-            self.avatar_url = Some(url);
-        }
-        let display_name = room
-            .display_name()
-            .await
-            .context("Couldn't get display name from room")?;
-        self.display_name = Some(display_name.to_string());
-        Ok(())
-    }
-
-    pub fn has_avatar(&self) -> bool {
-        self.avatar_url.is_some()
+    pub fn has_avatar(&self) -> Result<bool> {
+        let room = self
+            .client
+            .get_room(&self.room_id)
+            .context("couldn't get room from client")?;
+        Ok(room.avatar_url().is_some())
     }
 
     pub async fn get_avatar(&self) -> Result<FfiBuffer<u8>> {
-        let client = self.client.clone();
-        let avatar_url = self.avatar_url.clone().unwrap();
+        let room = self
+            .client
+            .get_room(&self.room_id)
+            .context("couldn't get room from client")?;
         RUNTIME
             .spawn(async move {
-                let request = MediaRequest {
-                    source: MediaSource::Plain(avatar_url),
-                    format: MediaFormat::File,
-                };
-                let result = client
-                    .media()
-                    .get_media_content(&request, true)
+                let result = room
+                    .avatar(MediaFormat::File)
                     .await
-                    .context("Couldn't get media content from room profile")?;
-                Ok(FfiBuffer::new(result))
+                    .context("Couldn't get avatar from room")?;
+                match result {
+                    Some(result) => Ok(FfiBuffer::new(result)),
+                    None => Ok(FfiBuffer::new(vec![])),
+                }
             })
             .await?
     }
 
     pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<FfiBuffer<u8>> {
-        let client = self.client.clone();
-        let avatar_url = self.avatar_url.clone().unwrap();
+        let room = self
+            .client
+            .get_room(&self.room_id)
+            .context("couldn't get room from client")?;
         RUNTIME
             .spawn(async move {
                 let size = MediaThumbnailSize {
@@ -173,21 +140,31 @@ impl RoomProfile {
                     width: UInt::from(width),
                     height: UInt::from(height),
                 };
-                let request = MediaRequest {
-                    source: MediaSource::Plain(avatar_url),
-                    format: MediaFormat::Thumbnail(size),
-                };
-                let result = client
-                    .media()
-                    .get_media_content(&request, true)
+                let result = room
+                    .avatar(MediaFormat::Thumbnail(size))
                     .await
-                    .context("Couldn't get media content from room profile")?;
-                Ok(FfiBuffer::new(result))
+                    .context("Couldn't get avatar from room")?;
+                match result {
+                    Some(result) => Ok(FfiBuffer::new(result)),
+                    None => Ok(FfiBuffer::new(vec![])),
+                }
             })
             .await?
     }
 
-    pub fn get_display_name(&self) -> Option<String> {
-        self.display_name.clone()
+    pub async fn get_display_name(&self) -> Result<String> {
+        let room = self
+            .client
+            .get_room(&self.room_id)
+            .context("couldn't get room from client")?;
+        RUNTIME
+            .spawn(async move {
+                let result = room
+                    .display_name()
+                    .await
+                    .context("Couldn't get display name from room")?;
+                Ok(result.to_string())
+            })
+            .await?
     }
 }

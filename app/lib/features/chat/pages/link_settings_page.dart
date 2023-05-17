@@ -45,8 +45,11 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
   void initState() {
     super.initState();
 
-    widget.room.getProfile().then((value) {
-      setState(() => displayName = value.getDisplayName());
+    final profile = widget.room.getProfile();
+    profile.getDisplayName().then((value) {
+      if (mounted && value != '') {
+        setState(() => displayName = value);
+      }
     });
   }
 

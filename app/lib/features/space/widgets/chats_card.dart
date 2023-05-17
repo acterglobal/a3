@@ -1,12 +1,13 @@
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter/features/home/states/client_state.dart';
-import 'package:flutter/material.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/providers/chat_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:core';
+
+import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/home/states/client_state.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 final relatedChatsProvider =
     FutureProvider.family<List<Conversation>, String>((ref, spaceId) async {

@@ -445,16 +445,16 @@ class ChatRoomController extends GetxController {
     for (int i = 0; i < activeMembers.length; i++) {
       String userId = activeMembers[i].userId().toString();
       ids.add('user-profile-$userId');
-      UserProfile profile = await activeMembers[i].getProfile();
+      UserProfile profile = activeMembers[i].getProfile();
       Map<String, dynamic> record = {};
-      if (profile.hasAvatar()) {
+      if (await profile.hasAvatar()) {
         avatars[userId] = profile.getThumbnail(62, 60);
         record['avatar'] = avatars[userId];
       }
-      String? name = profile.getDisplayName();
+      String name = await profile.getDisplayName();
       record['display'] = name;
       record['link'] = userId;
-      if (name != null) {
+      if (name != '') {
         names[userId] = name;
       }
       mentionRecords.add(record);

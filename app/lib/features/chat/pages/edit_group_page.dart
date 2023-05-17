@@ -33,14 +33,13 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
 
     nameController.text = widget.name;
     descController.text = widget.description;
-    widget.room.getProfile().then((value) {
-      if (mounted) {
-        setState(() {
-          if (value.hasAvatar()) {
-            avatar = value.getAvatar();
-          }
-          displayName = value.getDisplayName();
-        });
+    final profile = widget.room.getProfile();
+    if (profile.hasAvatar()) {
+      avatar = profile.getAvatar();
+    }
+    profile.getDisplayName().then((value) {
+      if (mounted && value != '') {
+        setState(() => displayName = value);
       }
     });
   }

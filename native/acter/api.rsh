@@ -235,6 +235,10 @@ object CalendarEvent {
     // fn locations() -> Vec<Location>;
 }
 
+object MxcUri {
+    fn to_string() -> string;
+}
+
 object MediaSource {
     fn url() -> string;
 }
@@ -476,7 +480,7 @@ object TimelineStream {
 
 object Conversation {
     /// get the room profile that contains avatar and display name
-    fn get_profile() -> Future<Result<RoomProfile>>;
+    fn get_profile() -> RoomProfile;
 
     /// what is the description / topic
     fn topic() -> Option<string>;
@@ -960,7 +964,7 @@ object SpaceRelations {
 
 object Space {
     /// get the room profile that contains avatar and display name
-    fn get_profile() -> Future<Result<RoomProfile>>;
+    fn get_profile() -> RoomProfile;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
@@ -1010,7 +1014,7 @@ object Space {
 
 object Member {
     /// get the user profile that contains avatar and display name
-    fn get_profile() -> Future<Result<UserProfile>>;
+    fn get_profile() -> UserProfile;
 
     /// Full user_id
     fn user_id() -> UserId;
@@ -1031,7 +1035,7 @@ object Account {
 
     /// Change the avatar of the account
     /// provide the c_type as MIME, e.g. `image/jpeg`
-    fn set_avatar(c_type: string, data: Vec<u8>) -> Future<Result<bool>>;
+    fn set_avatar(c_type: string, data: Vec<u8>) -> Future<Result<MxcUri>>;
 }
 
 object SyncState {
@@ -1091,7 +1095,7 @@ object Client {
     fn conversation(room_or_id: string) -> Future<Result<Conversation>>;
 
     /// get the user profile that contains avatar and display name
-    fn get_user_profile() -> Future<Result<UserProfile>>;
+    fn get_user_profile() -> Result<UserProfile>;
 
     /// The conversations the user is involved in
     fn conversations() -> Future<Result<Vec<Conversation>>>;
@@ -1172,7 +1176,7 @@ object UserProfile {
     fn user_id() -> UserId;
 
     /// whether to have avatar
-    fn has_avatar() -> bool;
+    fn has_avatar() -> Future<Result<bool>>;
 
     /// get the binary data of avatar
     fn get_avatar() -> Future<Result<buffer<u8>>>;
@@ -1181,12 +1185,12 @@ object UserProfile {
     fn get_thumbnail(width: u32, height: u32) -> Future<Result<buffer<u8>>>;
 
     /// get the display name
-    fn get_display_name() -> Option<string>;
+    fn get_display_name() -> Future<Result<string>>;
 }
 
 object RoomProfile {
     /// whether to have avatar
-    fn has_avatar() -> bool;
+    fn has_avatar() -> Result<bool>;
 
     /// get the binary data of avatar
     fn get_avatar() -> Future<Result<buffer<u8>>>;
@@ -1195,7 +1199,7 @@ object RoomProfile {
     fn get_thumbnail(width: u32, height: u32) -> Future<Result<buffer<u8>>>;
 
     /// get the display name
-    fn get_display_name() -> Option<string>;
+    fn get_display_name() -> Future<Result<string>>;
 }
 
 object Invitation {
@@ -1212,7 +1216,7 @@ object Invitation {
     fn sender() -> UserId;
 
     /// get the user profile that contains avatar and display name
-    fn get_sender_profile() -> Future<Result<UserProfile>>;
+    fn get_sender_profile() -> UserProfile;
 
     /// accept invitation about me to this room
     fn accept() -> Future<Result<bool>>;

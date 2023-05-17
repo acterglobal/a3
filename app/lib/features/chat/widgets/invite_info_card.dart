@@ -32,17 +32,18 @@ class _InviteInfoCardState extends State<InviteInfoCard> {
   @override
   void initState() {
     super.initState();
+    loadProfile();
+  }
 
-    widget.invitation.getSenderProfile().then((value) {
-      if (mounted) {
-        setState(() {
-          if (value.hasAvatar()) {
-            avatar = value.getAvatar();
-          }
-          displayName = value.getDisplayName();
-        });
-      }
-    });
+  void loadProfile() async {
+    var profile = widget.invitation.getSenderProfile();
+    if (await profile.hasAvatar() && mounted) {
+      setState(() => avatar = profile.getAvatar());
+    }
+    var name = await profile.getDisplayName();
+    if (mounted) {
+      setState(() => displayName = name);
+    }
   }
 
   @override

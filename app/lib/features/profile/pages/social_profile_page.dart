@@ -22,15 +22,16 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
     super.initState();
 
     final client = ModalRoute.of(context)!.settings.arguments as Client;
-    setState(() => myId = client.userId().toString());
-    client.getUserProfile().then((value) {
+    myId = client.userId().toString();
+    var profile = client.getUserProfile();
+    profile.hasAvatar().then((value) {
+      if (mounted && value) {
+        setState(() => avatar = profile.getAvatar());
+      }
+    });
+    profile.getDisplayName().then((value) {
       if (mounted) {
-        setState(() {
-          if (value.hasAvatar()) {
-            avatar = value.getAvatar();
-          }
-          displayName = value.getDisplayName();
-        });
+        setState(() => displayName = value);
       }
     });
   }
@@ -99,12 +100,8 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
                             size: 60,
                           ),
                         ),
-                        const Text(
-                          'Harjeet kAUR',
-                        ),
-                        const Text(
-                          'Harjeet@gmail.com',
-                        )
+                        const Text('Harjeet kAUR'),
+                        const Text('Harjeet@gmail.com')
                       ],
                     ),
                   ),
@@ -120,19 +117,13 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
                   const TabBar(
                     tabs: [
                       Tab(
-                        child: Text(
-                          'News',
-                        ),
+                        child: Text('News'),
                       ),
                       Tab(
-                        child: Text(
-                          'Feed',
-                        ),
+                        child: Text('Feed'),
                       ),
                       Tab(
-                        child: Text(
-                          'More details',
-                        ),
+                        child: Text('More details'),
                       ),
                     ],
                   ),
