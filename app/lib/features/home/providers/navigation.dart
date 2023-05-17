@@ -118,10 +118,19 @@ final sidebarItemsProvider =
     SidebarNavigationItem(
       // icon: const Badge(child: Icon(Atlas.chats_thin)), // TODO: Badge example
       icon: const Icon(Atlas.chats_thin),
+      label: Text(
+        'Chat',
+        style: Theme.of(context).textTheme.labelSmall,
+        softWrap: false,
+      ),
+      location: Routes.chat.route,
+    ),
+    SidebarNavigationItem(
+      icon: const Icon(Atlas.heart_rate_clipboard_thin),
       label: Column(
         children: [
           Text(
-            'Chat',
+            'Activities',
             style: Theme.of(context).textTheme.labelSmall,
             softWrap: false,
           ),
@@ -132,7 +141,7 @@ final sidebarItemsProvider =
           )
         ],
       ),
-      location: Routes.chat.route,
+      location: Routes.activities.route,
     ),
   ];
 

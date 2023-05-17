@@ -4,6 +4,7 @@ import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/search/pages/quickjump.dart';
 import 'package:acter/features/search/pages/search.dart';
+import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
@@ -83,6 +84,17 @@ final _routes = [
           return NoTransitionPage(
             key: state.pageKey,
             child: const MyProfile(),
+          );
+        },
+      ),
+
+      GoRoute(
+        name: Routes.activities.name,
+        path: Routes.activities.route,
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: const ActivitiesPage(),
           );
         },
       ),
