@@ -134,7 +134,11 @@ impl RoomProfile {
         if let Some(url) = room.avatar_url() {
             self.avatar_url = Some(url);
         }
-        self.display_name = Some(room.display_name().await?.to_string());
+        let display_name = room
+            .display_name()
+            .await
+            .context("Couldn't get display name from room")?;
+        self.display_name = Some(display_name.to_string());
         Ok(())
     }
 

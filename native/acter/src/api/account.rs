@@ -51,7 +51,10 @@ impl Account {
                 } else {
                     Some(new_name.as_str())
                 };
-                account.set_display_name(name).await?;
+                account
+                    .set_display_name(name)
+                    .await
+                    .context("Couldn't set display name")?;
                 Ok(true)
             })
             .await?
@@ -72,9 +75,13 @@ impl Account {
 
     pub async fn set_avatar(&self, content_type: String, data: Vec<u8>) -> Result<OwnedMxcUri> {
         let account = self.account.clone();
+        let content_type = content_type.parse::<mime::Mime>()?;
         RUNTIME
             .spawn(async move {
-                let new_url = account.upload_avatar(&content_type.parse()?, data).await?;
+                let new_url = account
+                    .upload_avatar(&content_type, data)
+                    .await
+                    .context("Couldn't upload avatar")?;
                 Ok(new_url)
             })
             .await?

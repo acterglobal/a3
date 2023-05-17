@@ -95,12 +95,13 @@ impl LoginConfig {
             self.homeserver.clone(),
             Some(format!("acter-cli/{}", crate_version!())),
         )
-        .await?;
+        .await
+        .context("Couldn't login new client")?;
 
         if !self.dont_store_token {
             match client.restore_token().await {
                 Ok(token) => {
-                    std::fs::write(access_token_path, token)?;
+                    std::fs::write(access_token_path, token).context("Couldn't write token")?;
                 }
                 Err(e) => tracing::error!(error = ?e, "No access token found on client."),
             }
