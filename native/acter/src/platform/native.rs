@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use chrono::Local;
 use lazy_static::lazy_static;
 use log::{LevelFilter, Log, Metadata, Record};
@@ -29,8 +29,11 @@ pub async fn new_client_config(
 
     std::fs::create_dir_all(&data_path)?;
 
+    let config = make_store_config(&data_path, None)
+        .await
+        .context("Couldn't make store config")?;
     let builder = Client::builder()
-        .store_config(make_store_config(&data_path, None).await?)
+        .store_config(config)
         .user_agent(format!("acter-testing/{:}", env!("CARGO_PKG_VERSION")));
     Ok(builder)
 }
