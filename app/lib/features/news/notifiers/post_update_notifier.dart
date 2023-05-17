@@ -113,9 +113,9 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
         );
       }
     }
-    List<NewsSlide> slides = [];
+    FfiListNewsSlide slides = draft.getSlides();
     slides.add(slide);
-    draft.slides(slides as FfiListNewsSlide);
+    draft.slides(slides);
     var eventId = await draft.send();
     return eventId;
   }

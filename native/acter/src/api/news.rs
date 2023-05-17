@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
-        news::{self, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
-        Colorize, Icon,
+        news::{self, NewsContent, NewsEntryBuilder},
+        Colorize,
     },
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
@@ -22,7 +22,7 @@ use matrix_sdk::{
             },
             ImageInfo,
         },
-        MxcUri, OwnedEventId, OwnedMxcUri, OwnedRoomId, UInt,
+        MxcUri, OwnedEventId, OwnedRoomId, UInt,
     },
 };
 use std::collections::{hash_map::Entry, HashMap};
@@ -427,6 +427,24 @@ impl NewsEntryDraft {
                 Ok(resp.event_id)
             })
             .await?
+    }
+
+    pub fn get_slides(&self) -> Result<Vec<NewsSlide>> {
+        let inners = self
+            .content
+            .build()
+            .context("building failed in news entry")?
+            .slides()
+            .clone();
+        let outers = inners
+            .iter()
+            .map(|x| NewsSlide {
+                client: self.client.clone(),
+                room: self.room.clone().into(),
+                inner: x.clone(),
+            })
+            .collect();
+        Ok(outers)
     }
 
     pub fn new_text_slide(&self, body: String) -> NewsSlide {

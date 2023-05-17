@@ -322,14 +322,12 @@ class _PostPageState extends ConsumerState<PostPage> {
 
     // Close the dialog programmatically
     // We use "mounted" variable to get rid of the "Do not use BuildContexts across async gaps" warning
-    if (!mounted) return;
-    context.pop();
+    if (mounted) {
+      context.pop();
+    }
   }
 
   void handleDraft(SpaceItem? selectedSpace) {
-    showNotYetImplementedMsg(
-      context,
-      'Draft is not implemented yet',
-    );
+    showNotYetImplementedMsg(context, "'Save to Draft' is not implemented yet");
   }
 }
