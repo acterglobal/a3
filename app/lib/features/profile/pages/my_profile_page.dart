@@ -17,7 +17,7 @@ class MyProfile extends ConsumerWidget {
           title: const Text('My profile'),
           actions: [
             IconButton(
-              icon: const Icon(Atlas.pencil_edit),
+              icon: const Icon(Atlas.pencil_edit_thin),
               onPressed: () {
                 showNotYetImplementedMsg(
                   context,
@@ -26,7 +26,7 @@ class MyProfile extends ConsumerWidget {
               },
             ),
             IconButton(
-              icon: const Icon(Atlas.cogwheel_settings_account_thin),
+              icon: const Icon(Atlas.construction_tools_thin),
               onPressed: () {
                 showNotYetImplementedMsg(
                   context,

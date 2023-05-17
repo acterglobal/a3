@@ -1,3 +1,4 @@
+import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
 import 'package:acter/features/home/widgets/my_tasks.dart';
@@ -28,11 +29,21 @@ class Dashboard extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Atlas.settings_monitor_thin),
-            onPressed: () {},
+            onPressed: () {
+              showNotYetImplementedMsg(
+                context,
+                'Configuration Page for Dashboard not yet implemented',
+              );
+            },
           ),
           IconButton(
-            icon: const Icon(Atlas.cogwheel_settings_account_thin),
-            onPressed: () {},
+            icon: const Icon(Atlas.construction_tools_thin),
+            onPressed: () {
+              showNotYetImplementedMsg(
+                context,
+                'User Settings page not yet implemented',
+              );
+            },
           ),
           Visibility(
             // FIXME: Only show mobile / when bottom bar shown...
