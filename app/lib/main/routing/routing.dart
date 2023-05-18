@@ -2,7 +2,7 @@ import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
-import 'package:acter/features/search/pages/quickjump.dart';
+import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/search/pages/search.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
@@ -12,7 +12,9 @@ import 'package:acter/features/onboarding/pages/sign_up_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
+import 'package:acter/features/todo/pages/create_task_sidesheet.dart';
 import 'package:acter/common/dialogs/dialog_page.dart';
+import 'package:acter/common/dialogs/side_sheet_page.dart';
 import 'package:acter/common/dialogs/error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -65,6 +67,28 @@ final _routes = [
     pageBuilder: (context, state) => DialogPage(
       builder: (_) => const QuickjumpDialog(),
     ),
+  ),
+  GoRoute(
+    parentNavigatorKey: _rootNavigatorKey,
+    name: Routes.actionAddTask.name,
+    path: Routes.actionAddTask.route,
+    pageBuilder: (context, state) {
+      return SideSheetPage(
+        key: state.pageKey,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return SlideTransition(
+            position: Tween(
+              begin: const Offset(1, 0),
+              end: const Offset(0, 0),
+            ).animate(
+              animation,
+            ),
+            child: child,
+          );
+        },
+        child: const AddTaskActionSideSheet(),
+      );
+    },
   ),
 
   /// Application shell

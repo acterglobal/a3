@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:acter/main/routing/routes.dart';
 
 final searchValueProvider = StateProvider<String>((ref) => '');
 
 class QuickJump extends ConsumerWidget {
-  final void Function(BuildContext, String) navigateTo;
+  final void Function({Routes? route, bool push, String? target}) navigateTo;
   final bool expand;
   const QuickJump({
     super.key,
@@ -27,7 +28,9 @@ class QuickJump extends ConsumerWidget {
                     Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
               ),
             ),
-            onPressed: () => navigateTo(context, '/tasks'),
+            onPressed: () => {
+              //navigateTo(route: Routes.tasks);
+            },
             icon: SvgPicture.asset(
               'assets/images/tasks.svg',
               semanticsLabel: 'tasks',
@@ -138,7 +141,7 @@ class QuickJump extends ConsumerWidget {
             ),
           ),
           onPressed: () {
-            navigateTo(context, 'SidesheetAction.taskAdd');
+            navigateTo(route: Routes.actionAddTask, push: true);
             debugPrint('Add Task');
           },
           icon: const Icon(
