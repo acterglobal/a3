@@ -6,7 +6,6 @@ import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/features/bug_report/data/bug_report.dart';
 import 'package:acter/features/bug_report/states/bug_report_state.dart';
 import 'package:acter/features/bug_report/widgets/select_tag.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

@@ -45,14 +45,14 @@ class PageHeaderWidget extends StatelessWidget {
                           stops: const [
                             0.0,
                             1.0
-                          ])),
+                          ],),),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 40),
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Padding(
                           padding: const EdgeInsets.all(16.0),
-                          child: expandedContent!),
+                          child: expandedContent!,),
                     ),
                   ),
                 ),

@@ -136,7 +136,7 @@ class AppTheme {
       buttonTheme: ButtonThemeData(
         splashColor: Colors.transparent,
         buttonColor: brandColorScheme.secondary,
-        disabledColor: Color(0xFF2F2F2F),
+        disabledColor: const Color(0xFF2F2F2F),
       ),
       dividerTheme: const DividerThemeData(
         indent: 75,

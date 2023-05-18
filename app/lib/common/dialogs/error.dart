@@ -27,7 +27,7 @@ class ErrorPage extends ConsumerWidget {
               child: SvgPicture.asset('assets/images/genericError.svg'),
             ),
             Text(
-                'How did you get here? There is nothing to see at `$currentLocation`...'),
+                'How did you get here? There is nothing to see at `$currentLocation`...',),
             ButtonBar(
               alignment: MainAxisAlignment.center,
               children: [
