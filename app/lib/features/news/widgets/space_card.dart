@@ -44,7 +44,7 @@ class SpaceCard extends ConsumerWidget {
                     cacheHeight: 120,
                     cacheWidth: 120,
                   ),
-                  size: 20,
+                  size: 36,
                 ),
               ),
               Container(

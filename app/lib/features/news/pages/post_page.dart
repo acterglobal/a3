@@ -121,11 +121,11 @@ class _PostPageState extends ConsumerState<PostPage> {
                                 mode: DisplayMode.Space,
                                 uniqueId: client.userId().toString(),
                                 avatarProviderFuture: remapToImage(
-                                  client.account().avatar(),
+                                  ref.watch(selectedSpaceProvider)!.avatar,
                                   cacheHeight: 120,
                                   cacheWidth: 120,
                                 ),
-                                size: 20,
+                                size: 36,
                               )
                             : Container(
                                 height: 36,
