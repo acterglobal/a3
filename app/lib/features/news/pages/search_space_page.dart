@@ -19,9 +19,9 @@ class _SearchSpacePageState extends ConsumerState<SearchSpacePage> {
 
   void selectionUpdate(int index) {
     ref.read(selectedSpaceProvider.notifier).update(
-          (state) => ref.read(searchSpaceProvider)[index],
+          (state) => ref.watch(searchSpaceProvider)[index],
         );
-    ref.read(isSearchingProvider.notifier).update((state) => !state);
+    ref.read(isSearchingProvider.notifier).update((state) => false);
     context.pop();
   }
 
