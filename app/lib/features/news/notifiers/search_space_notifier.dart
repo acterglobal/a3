@@ -25,17 +25,18 @@ class SearchSpaceNotifier extends StateNotifier<List<SpaceItem>> {
   }
 
   void filterSpace(String value) {
-    ref.read(isSearchingProvider.notifier).update((state) => !state);
     state = [];
     String data = value.trim().toLowerCase();
     if (value.isNotEmpty) {
       for (var item in items) {
         if (item.displayName!.toLowerCase().startsWith(data)) {
           state = [...state, item];
+          ref.read(isSearchingProvider.notifier).update((state) => true);
         }
       }
     } else {
       state = items;
+      ref.read(isSearchingProvider.notifier).update((state) => false);
     }
   }
 }
