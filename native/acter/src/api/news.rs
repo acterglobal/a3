@@ -9,6 +9,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
 use core::time::Duration;
+use log::info;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Joined, Room},
@@ -392,8 +393,11 @@ pub struct NewsEntryDraft {
 impl NewsEntryDraft {
     #[allow(clippy::ptr_arg)]
     pub fn slides(&mut self, slides: &mut Vec<NewsSlide>) -> &mut Self {
+        info!("slides - {}", slides.len());
         let items = slides.iter().map(|x| (*x.to_owned()).clone()).collect();
+        info!("slides - {}", slides.len());
         self.content.slides(items);
+        info!("slides - {}", slides.len());
         self
     }
 
@@ -427,24 +431,6 @@ impl NewsEntryDraft {
                 Ok(resp.event_id)
             })
             .await?
-    }
-
-    pub fn get_slides(&self) -> Result<Vec<NewsSlide>> {
-        let inners = self
-            .content
-            .build()
-            .context("building failed in news entry")?
-            .slides()
-            .clone();
-        let outers = inners
-            .iter()
-            .map(|x| NewsSlide {
-                client: self.client.clone(),
-                room: self.room.clone().into(),
-                inner: x.clone(),
-            })
-            .collect();
-        Ok(outers)
     }
 
     pub fn new_text_slide(&self, body: String) -> NewsSlide {

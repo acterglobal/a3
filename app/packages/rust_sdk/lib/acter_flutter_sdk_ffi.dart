@@ -7872,16 +7872,6 @@ class Api {
       int Function(
     int,
   )>();
-  late final _newsEntryDraftGetSlidesPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryDraftGetSlidesReturn Function(
-    ffi.Int64,
-  )>>("__NewsEntryDraft_get_slides");
-
-  late final _newsEntryDraftGetSlides = _newsEntryDraftGetSlidesPtr.asFunction<
-      _NewsEntryDraftGetSlidesReturn Function(
-    int,
-  )>();
   late final _newsEntryDraftNewTextSlidePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -17407,35 +17397,6 @@ class NewsEntryDraft {
     final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntryDraft_send_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryDraftSendFuturePoll);
-    return tmp2;
-  }
-
-  FfiListNewsSlide getSlides() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsEntryDraftGetSlides(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    final tmp7 = tmp1.arg4;
-    if (tmp3 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
-      if (tmp5 > 0) {
-        final ffi.Pointer<ffi.Void> tmp4_0;
-        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-        _api.__deallocate(tmp4_0, tmp6, 1);
-      }
-      throw tmp3_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_FfiListNewsSlide");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp8 = FfiListNewsSlide._(_api, tmp7_1);
-    final tmp2 = tmp8;
     return tmp2;
   }
 
@@ -28274,19 +28235,6 @@ class _NewsEntryColorsReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
-}
-
-class _NewsEntryDraftGetSlidesReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
 }
 
 class _TagTitleReturn extends ffi.Struct {

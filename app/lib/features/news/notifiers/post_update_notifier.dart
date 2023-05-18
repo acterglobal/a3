@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:acter/features/home/data/repositories/sdk_repository.dart';
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/features/news/notifiers/search_space_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -23,8 +24,8 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
 
   Future<EventId> postUpdate(String? attachmentUri, String description) async {
     Client client = ref.read(clientProvider)!;
-    Space space = await client
-        .getSpace(ref.read(selectedSpaceProvider.notifier).state!.roomId);
+    String spaceId = ref.read(selectedSpaceProvider.notifier).state!.roomId;
+    Space space = await client.getSpace(spaceId);
     NewsEntryDraft draft = space.newsDraft();
     NewsSlide? slide;
     if (attachmentUri == null) {
@@ -113,7 +114,8 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
         );
       }
     }
-    FfiListNewsSlide slides = draft.getSlides();
+    final sdk = ref.read(sdkRepositoryProvider);
+    FfiListNewsSlide slides = sdk.createNewsSlideList();
     slides.add(slide);
     draft.slides(slides);
     var eventId = await draft.send();
