@@ -388,12 +388,12 @@ pub struct NewsEntryDraft {
     client: Client,
     room: Joined,
     content: NewsEntryBuilder,
-    new_slides: Vec<NewsSlide>,
+    slides: Vec<NewsSlide>,
 }
 
 impl NewsEntryDraft {
     pub fn add_text_slide(&mut self, body: String) -> &mut Self {
-        self.new_slides.push(NewsSlide {
+        self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
             inner: news::NewsSlide::new_text(body),
@@ -421,7 +421,7 @@ impl NewsEntryDraft {
         });
         let url = Box::<MxcUri>::from(url.as_str());
 
-        self.new_slides.push(NewsSlide {
+        self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
             inner: news::NewsSlide::new_image(body, (*url).to_owned(), Some(Box::new(info))),
@@ -444,7 +444,7 @@ impl NewsEntryDraft {
         });
         let url = Box::<MxcUri>::from(url.as_str());
 
-        self.new_slides.push(NewsSlide {
+        self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
             inner: news::NewsSlide::new_audio(body, (*url).to_owned(), Some(Box::new(info))),
@@ -474,7 +474,7 @@ impl NewsEntryDraft {
         });
         let url = Box::<MxcUri>::from(url.as_str());
 
-        self.new_slides.push(NewsSlide {
+        self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
             inner: news::NewsSlide::new_video(body, (*url).to_owned(), Some(Box::new(info))),
@@ -495,7 +495,7 @@ impl NewsEntryDraft {
         });
         let url = Box::<MxcUri>::from(url.as_str());
 
-        self.new_slides.push(NewsSlide {
+        self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
             inner: news::NewsSlide::new_file(body, (*url).to_owned(), Some(Box::new(info))),
@@ -504,7 +504,7 @@ impl NewsEntryDraft {
     }
 
     pub fn unset_slides(&mut self) -> &mut Self {
-        self.new_slides.clear();
+        self.slides.clear();
         self
     }
 
@@ -519,8 +519,12 @@ impl NewsEntryDraft {
     }
 
     pub async fn send(&mut self) -> Result<OwnedEventId> {
-        let items = self.new_slides.iter().map(|x| (*x.to_owned()).clone()).collect();
-        self.content.slides(items);
+        let slides = self
+            .slides
+            .iter()
+            .map(|x| (*x.to_owned()).clone())
+            .collect();
+        self.content.slides(slides);
 
         let room = self.room.clone();
         let content = self
@@ -607,7 +611,7 @@ impl Space {
             client: self.client.clone(),
             room: joined.clone(),
             content: Default::default(),
-            new_slides: vec![],
+            slides: vec![],
         })
     }
 
@@ -619,7 +623,7 @@ impl Space {
             client: self.client.clone(),
             room: joined.clone(),
             content,
-            new_slides: vec![],
+            slides: vec![],
         })
     }
 }
