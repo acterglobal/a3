@@ -7816,15 +7816,200 @@ class Api {
       int Function(
     int,
   )>();
-  late final _newsEntryDraftSlidesPtr = _lookup<
+  late final _newsEntryDraftAddTextSlidePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
     ffi.Int64,
     ffi.Int64,
-  )>>("__NewsEntryDraft_slides");
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__NewsEntryDraft_add_text_slide");
 
-  late final _newsEntryDraftSlides = _newsEntryDraftSlidesPtr.asFunction<
-      void Function(
+  late final _newsEntryDraftAddTextSlide =
+      _newsEntryDraftAddTextSlidePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _newsEntryDraftAddImageSlidePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__NewsEntryDraft_add_image_slide");
+
+  late final _newsEntryDraftAddImageSlide =
+      _newsEntryDraftAddImageSlidePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _newsEntryDraftAddAudioSlidePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+  )>>("__NewsEntryDraft_add_audio_slide");
+
+  late final _newsEntryDraftAddAudioSlide =
+      _newsEntryDraftAddAudioSlidePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _newsEntryDraftAddVideoSlidePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__NewsEntryDraft_add_video_slide");
+
+  late final _newsEntryDraftAddVideoSlide =
+      _newsEntryDraftAddVideoSlidePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _newsEntryDraftAddFileSlidePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+  )>>("__NewsEntryDraft_add_file_slide");
+
+  late final _newsEntryDraftAddFileSlide =
+      _newsEntryDraftAddFileSlidePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
     int,
     int,
   )>();
@@ -7870,203 +8055,6 @@ class Api {
 
   late final _newsEntryDraftSend = _newsEntryDraftSendPtr.asFunction<
       int Function(
-    int,
-  )>();
-  late final _newsEntryDraftNewTextSlidePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__NewsEntryDraft_new_text_slide");
-
-  late final _newsEntryDraftNewTextSlide =
-      _newsEntryDraftNewTextSlidePtr.asFunction<
-          int Function(
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _newsEntryDraftNewImageSlidePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__NewsEntryDraft_new_image_slide");
-
-  late final _newsEntryDraftNewImageSlide =
-      _newsEntryDraftNewImageSlidePtr.asFunction<
-          int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _newsEntryDraftNewAudioSlidePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
-  )>>("__NewsEntryDraft_new_audio_slide");
-
-  late final _newsEntryDraftNewAudioSlide =
-      _newsEntryDraftNewAudioSlidePtr.asFunction<
-          int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _newsEntryDraftNewVideoSlidePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__NewsEntryDraft_new_video_slide");
-
-  late final _newsEntryDraftNewVideoSlide =
-      _newsEntryDraftNewVideoSlidePtr.asFunction<
-          int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _newsEntryDraftNewFileSlidePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
-  )>>("__NewsEntryDraft_new_file_slide");
-
-  late final _newsEntryDraftNewFileSlide =
-      _newsEntryDraftNewFileSlidePtr.asFunction<
-          int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
     int,
   )>();
   late final _newsEntryUpdateBuilderSlidesPtr = _lookup<
@@ -17335,73 +17323,8 @@ class NewsEntryDraft {
 
   NewsEntryDraft._(this._api, this._box);
 
-  /// set the slides for this news entry
-  void slides(
-    FfiListNewsSlide slides,
-  ) {
-    final tmp1 = slides;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    _api._newsEntryDraftSlides(
-      tmp0,
-      tmp2,
-    );
-    return;
-  }
-
-  void unsetSlides() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._newsEntryDraftUnsetSlides(
-      tmp0,
-    );
-    return;
-  }
-
-  /// set the color for this news entry
-  void colors(
-    Colorize colors,
-  ) {
-    final tmp1 = colors;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    _api._newsEntryDraftColors(
-      tmp0,
-      tmp2,
-    );
-    return;
-  }
-
-  void unsetColors() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._newsEntryDraftUnsetColors(
-      tmp0,
-    );
-    return;
-  }
-
-  /// create this news entry
-  Future<EventId> send() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsEntryDraftSend(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntryDraft_send_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryDraftSendFuturePoll);
-    return tmp2;
-  }
-
   /// create news slide for text msg
-  NewsSlide newTextSlide(
+  void addTextSlide(
     String body,
   ) {
     final tmp1 = body;
@@ -17417,22 +17340,17 @@ class NewsEntryDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._newsEntryDraftNewTextSlide(
+    _api._newsEntryDraftAddTextSlide(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
     );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_NewsSlide");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = NewsSlide._(_api, tmp7_1);
-    return tmp6;
+    return;
   }
 
   /// create news slide for image msg
-  NewsSlide newImageSlide(
+  void addImageSlide(
     String body,
     String url,
     String? mimetype,
@@ -17531,7 +17449,7 @@ class NewsEntryDraft {
       tmp30 = tmp30_0.address;
       tmp32 = tmp31;
     }
-    final tmp33 = _api._newsEntryDraftNewImageSlide(
+    _api._newsEntryDraftAddImageSlide(
       tmp0,
       tmp2,
       tmp3,
@@ -17554,16 +17472,11 @@ class NewsEntryDraft {
       tmp31,
       tmp32,
     );
-    final tmp35 = tmp33;
-    final ffi.Pointer<ffi.Void> tmp35_0 = ffi.Pointer.fromAddress(tmp35);
-    final tmp35_1 = _Box(_api, tmp35_0, "drop_box_NewsSlide");
-    tmp35_1._finalizer = _api._registerFinalizer(tmp35_1);
-    final tmp34 = NewsSlide._(_api, tmp35_1);
-    return tmp34;
+    return;
   }
 
   /// create news slide for audio msg
-  NewsSlide newAudioSlide(
+  void addAudioSlide(
     String body,
     String url,
     int? secs,
@@ -17632,7 +17545,7 @@ class NewsEntryDraft {
       final tmp21 = tmp19;
       tmp22 = tmp21;
     }
-    final tmp23 = _api._newsEntryDraftNewAudioSlide(
+    _api._newsEntryDraftAddAudioSlide(
       tmp0,
       tmp2,
       tmp3,
@@ -17649,16 +17562,11 @@ class NewsEntryDraft {
       tmp20,
       tmp22,
     );
-    final tmp25 = tmp23;
-    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
-    final tmp25_1 = _Box(_api, tmp25_0, "drop_box_NewsSlide");
-    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
-    final tmp24 = NewsSlide._(_api, tmp25_1);
-    return tmp24;
+    return;
   }
 
   /// create news slide for video msg
-  NewsSlide newVideoSlide(
+  void addVideoSlide(
     String body,
     String url,
     int? secs,
@@ -17768,7 +17676,7 @@ class NewsEntryDraft {
       tmp34 = tmp34_0.address;
       tmp36 = tmp35;
     }
-    final tmp37 = _api._newsEntryDraftNewVideoSlide(
+    _api._newsEntryDraftAddVideoSlide(
       tmp0,
       tmp2,
       tmp3,
@@ -17793,16 +17701,11 @@ class NewsEntryDraft {
       tmp35,
       tmp36,
     );
-    final tmp39 = tmp37;
-    final ffi.Pointer<ffi.Void> tmp39_0 = ffi.Pointer.fromAddress(tmp39);
-    final tmp39_1 = _Box(_api, tmp39_0, "drop_box_NewsSlide");
-    tmp39_1._finalizer = _api._registerFinalizer(tmp39_1);
-    final tmp38 = NewsSlide._(_api, tmp39_1);
-    return tmp38;
+    return;
   }
 
   /// create news slide for file msg
-  NewsSlide newFileSlide(
+  void addFileSlide(
     String body,
     String url,
     String? mimetype,
@@ -17860,7 +17763,7 @@ class NewsEntryDraft {
       final tmp17 = tmp15;
       tmp18 = tmp17;
     }
-    final tmp19 = _api._newsEntryDraftNewFileSlide(
+    _api._newsEntryDraftAddFileSlide(
       tmp0,
       tmp2,
       tmp3,
@@ -17875,12 +17778,57 @@ class NewsEntryDraft {
       tmp16,
       tmp18,
     );
-    final tmp21 = tmp19;
-    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
-    final tmp21_1 = _Box(_api, tmp21_0, "drop_box_NewsSlide");
-    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
-    final tmp20 = NewsSlide._(_api, tmp21_1);
-    return tmp20;
+    return;
+  }
+
+  /// clear slides
+  void unsetSlides() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._newsEntryDraftUnsetSlides(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the color for this news entry
+  void colors(
+    Colorize colors,
+  ) {
+    final tmp1 = colors;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._newsEntryDraftColors(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetColors() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._newsEntryDraftUnsetColors(
+      tmp0,
+    );
+    return;
+  }
+
+  /// create this news entry
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryDraftSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntryDraft_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryDraftSendFuturePoll);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.

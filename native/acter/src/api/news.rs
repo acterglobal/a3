@@ -388,21 +388,123 @@ pub struct NewsEntryDraft {
     client: Client,
     room: Joined,
     content: NewsEntryBuilder,
+    new_slides: Vec<NewsSlide>,
 }
 
 impl NewsEntryDraft {
-    #[allow(clippy::ptr_arg)]
-    pub fn slides(&mut self, slides: &mut Vec<NewsSlide>) -> &mut Self {
-        info!("slides - {}", slides.len());
-        let items = slides.iter().map(|x| (*x.to_owned()).clone()).collect();
-        info!("slides - {}", slides.len());
-        self.content.slides(items);
-        info!("slides - {}", slides.len());
+    pub fn add_text_slide(&mut self, body: String) -> &mut Self {
+        self.new_slides.push(NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_text(body),
+        });
+        self
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn add_image_slide(
+        &mut self,
+        body: String,
+        url: String,
+        mimetype: Option<String>,
+        size: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
+        blurhash: Option<String>,
+    ) -> &mut Self {
+        let info = assign!(ImageInfo::new(), {
+            height: height.and_then(UInt::new),
+            width: width.and_then(UInt::new),
+            mimetype,
+            size: size.and_then(UInt::new),
+            blurhash,
+        });
+        let url = Box::<MxcUri>::from(url.as_str());
+
+        self.new_slides.push(NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_image(body, (*url).to_owned(), Some(Box::new(info))),
+        });
+        self
+    }
+
+    pub fn add_audio_slide(
+        &mut self,
+        body: String,
+        url: String,
+        secs: Option<u64>,
+        mimetype: Option<String>,
+        size: Option<u64>,
+    ) -> &mut Self {
+        let info = assign!(AudioInfo::new(), {
+            duration: secs.map(|x| Duration::new(x, 0)),
+            mimetype,
+            size: size.and_then(UInt::new),
+        });
+        let url = Box::<MxcUri>::from(url.as_str());
+
+        self.new_slides.push(NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_audio(body, (*url).to_owned(), Some(Box::new(info))),
+        });
+        self
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn add_video_slide(
+        &mut self,
+        body: String,
+        url: String,
+        secs: Option<u64>,
+        height: Option<u64>,
+        width: Option<u64>,
+        mimetype: Option<String>,
+        size: Option<u64>,
+        blurhash: Option<String>,
+    ) -> &mut Self {
+        let info = assign!(VideoInfo::new(), {
+            duration: secs.map(|x| Duration::new(x, 0)),
+            height: height.and_then(UInt::new),
+            width: width.and_then(UInt::new),
+            mimetype,
+            size: size.and_then(UInt::new),
+            blurhash,
+        });
+        let url = Box::<MxcUri>::from(url.as_str());
+
+        self.new_slides.push(NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_video(body, (*url).to_owned(), Some(Box::new(info))),
+        });
+        self
+    }
+
+    pub fn add_file_slide(
+        &mut self,
+        body: String,
+        url: String,
+        mimetype: Option<String>,
+        size: Option<u64>,
+    ) -> &mut Self {
+        let info = assign!(FileInfo::new(), {
+            mimetype,
+            size: size.and_then(UInt::new),
+        });
+        let url = Box::<MxcUri>::from(url.as_str());
+
+        self.new_slides.push(NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone().into(),
+            inner: news::NewsSlide::new_file(body, (*url).to_owned(), Some(Box::new(info))),
+        });
         self
     }
 
     pub fn unset_slides(&mut self) -> &mut Self {
-        self.content.slides(vec![]);
+        self.new_slides.clear();
         self
     }
 
@@ -416,12 +518,16 @@ impl NewsEntryDraft {
         self
     }
 
-    pub async fn send(&self) -> Result<OwnedEventId> {
+    pub async fn send(&mut self) -> Result<OwnedEventId> {
+        let items = self.new_slides.iter().map(|x| (*x.to_owned()).clone()).collect();
+        self.content.slides(items);
+
         let room = self.room.clone();
         let content = self
             .content
             .build()
             .context("building failed in event content of news entry")?;
+
         RUNTIME
             .spawn(async move {
                 let resp = room
@@ -431,112 +537,6 @@ impl NewsEntryDraft {
                 Ok(resp.event_id)
             })
             .await?
-    }
-
-    pub fn new_text_slide(&self, body: String) -> NewsSlide {
-        NewsSlide {
-            client: self.client.clone(),
-            room: self.room.clone().into(),
-            inner: news::NewsSlide::new_text(body),
-        }
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub fn new_image_slide(
-        &self,
-        body: String,
-        url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
-        blurhash: Option<String>,
-    ) -> NewsSlide {
-        let info = assign!(ImageInfo::new(), {
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            mimetype,
-            size: size.and_then(UInt::new),
-            blurhash,
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
-
-        NewsSlide {
-            client: self.client.clone(),
-            room: self.room.clone().into(),
-            inner: news::NewsSlide::new_image(body, (*url).to_owned(), Some(Box::new(info))),
-        }
-    }
-
-    pub fn new_audio_slide(
-        &self,
-        body: String,
-        url: String,
-        secs: Option<u64>,
-        mimetype: Option<String>,
-        size: Option<u64>,
-    ) -> NewsSlide {
-        let info = assign!(AudioInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            mimetype,
-            size: size.and_then(UInt::new),
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
-
-        NewsSlide {
-            client: self.client.clone(),
-            room: self.room.clone().into(),
-            inner: news::NewsSlide::new_audio(body, (*url).to_owned(), Some(Box::new(info))),
-        }
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub fn new_video_slide(
-        &self,
-        body: String,
-        url: String,
-        secs: Option<u64>,
-        height: Option<u64>,
-        width: Option<u64>,
-        mimetype: Option<String>,
-        size: Option<u64>,
-        blurhash: Option<String>,
-    ) -> NewsSlide {
-        let info = assign!(VideoInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            mimetype,
-            size: size.and_then(UInt::new),
-            blurhash,
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
-
-        NewsSlide {
-            client: self.client.clone(),
-            room: self.room.clone().into(),
-            inner: news::NewsSlide::new_video(body, (*url).to_owned(), Some(Box::new(info))),
-        }
-    }
-
-    pub fn new_file_slide(
-        &self,
-        body: String,
-        url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
-    ) -> NewsSlide {
-        let info = assign!(FileInfo::new(), {
-            mimetype,
-            size: size.and_then(UInt::new),
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
-
-        NewsSlide {
-            client: self.client.clone(),
-            room: self.room.clone().into(),
-            inner: news::NewsSlide::new_file(body, (*url).to_owned(), Some(Box::new(info))),
-        }
     }
 }
 
@@ -607,6 +607,7 @@ impl Space {
             client: self.client.clone(),
             room: joined.clone(),
             content: Default::default(),
+            new_slides: vec![],
         })
     }
 
@@ -618,6 +619,7 @@ impl Space {
             client: self.client.clone(),
             room: joined.clone(),
             content,
+            new_slides: vec![],
         })
     }
 }

@@ -88,11 +88,9 @@ async fn news_smoketest() -> Result<()> {
     assert_eq!(main_space.latest_news_entries(10).await?.len(), 3);
 
     let mut draft = main_space.news_draft()?;
-    let mut slides = vec![];
-    let slide = draft.new_text_slide("This is text slide".to_string());
-    slides.push(slide);
-    draft.slides(&mut slides);
-    let _event_id = draft.send().await?;
+    draft.add_text_slide("This is text slide".to_string());
+    let event_id = draft.send().await?;
+    print!("draft sent event id: {}", event_id.to_string());
 
     Ok(())
 }

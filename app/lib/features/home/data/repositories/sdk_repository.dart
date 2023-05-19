@@ -1,7 +1,5 @@
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show ActerSdk, Client;
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show FfiListNewsSlide;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final sdkRepositoryProvider = Provider<SdkRepository>((ref) {
@@ -50,14 +48,6 @@ class SdkRepository {
   void setSpaceSettings(String name) async {
     try {
       sdk.newSpaceSettings(name);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  FfiListNewsSlide createNewsSlideList() {
-    try {
-      return sdk.createNewsSlideList();
     } catch (e) {
       rethrow;
     }

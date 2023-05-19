@@ -120,8 +120,22 @@ object NewsEntry {
 }
 
 object NewsEntryDraft {
-    /// set the slides for this news entry
-    fn slides(slides: Vec<NewsSlide>);
+    /// create news slide for text msg
+    fn add_text_slide(body: string);
+
+    /// create news slide for image msg
+    fn add_image_slide(body: string, url: string, mimetype: Option<string>, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>);
+
+    /// create news slide for audio msg
+    fn add_audio_slide(body: string, url: string, secs: Option<u32>, mimetype: Option<string>, size: Option<u32>);
+
+    /// create news slide for video msg
+    fn add_video_slide(body: string, url: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, mimetype: Option<string>, size: Option<u32>, blurhash: Option<string>);
+
+    /// create news slide for file msg
+    fn add_file_slide(body: string, url: string, mimetype: Option<string>, size: Option<u32>);
+
+    /// clear slides
     fn unset_slides();
 
     /// set the color for this news entry
@@ -130,21 +144,6 @@ object NewsEntryDraft {
 
     /// create this news entry
     fn send() -> Future<Result<EventId>>;
-
-    /// create news slide for text msg
-    fn new_text_slide(body: string) -> NewsSlide;
-
-    /// create news slide for image msg
-    fn new_image_slide(body: string, url: string, mimetype: Option<string>, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> NewsSlide;
-
-    /// create news slide for audio msg
-    fn new_audio_slide(body: string, url: string, secs: Option<u32>, mimetype: Option<string>, size: Option<u32>) -> NewsSlide;
-
-    /// create news slide for video msg
-    fn new_video_slide(body: string, url: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, mimetype: Option<string>, size: Option<u32>, blurhash: Option<string>) -> NewsSlide;
-
-    /// create news slide for file msg
-    fn new_file_slide(body: string, url: string, mimetype: Option<string>, size: Option<u32>) -> NewsSlide;
 }
 
 object NewsEntryUpdateBuilder {

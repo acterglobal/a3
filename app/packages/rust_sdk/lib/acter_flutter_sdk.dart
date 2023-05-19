@@ -325,8 +325,4 @@ class ActerSdk {
   void writeLog(String text, String level) {
     _api.writeLog(text, level);
   }
-
-  ffi.FfiListNewsSlide createNewsSlideList() {
-    return _api.createFfiListNewsSlide();
-  }
 }

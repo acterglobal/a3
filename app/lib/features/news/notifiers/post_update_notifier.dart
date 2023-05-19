@@ -2,11 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:acter/features/home/data/repositories/sdk_repository.dart';
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/features/news/notifiers/search_space_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Client, EventId, FfiListNewsSlide, NewsEntryDraft, NewsSlide, Space;
+    show Client, EventId, NewsEntryDraft, Space;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mime/mime.dart';
@@ -27,11 +26,11 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
     String spaceId = ref.read(selectedSpaceProvider.notifier).state!.roomId;
     Space space = await client.getSpace(spaceId);
     NewsEntryDraft draft = space.newsDraft();
-    NewsSlide? slide;
     if (attachmentUri == null) {
-      slide = draft.newTextSlide(description);
+      draft.addTextSlide(description);
     } else {
       String? mimeType = lookupMimeType(attachmentUri);
+      bool unknownType = true;
       if (mimeType != null) {
         if (mimeType.startsWith('image/')) {
           File image = File(attachmentUri);
@@ -46,7 +45,7 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
             decodedImage.height,
             null,
           );
-          slide = draft.newImageSlide(
+          draft.addImageSlide(
             description,
             eventId.toString(),
             mimeType,
@@ -55,6 +54,7 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
             decodedImage.height,
             null,
           );
+          unknownType = false;
         } else if (mimeType.startsWith('audio/')) {
           File audio = File(attachmentUri);
           Uint8List bytes = audio.readAsBytesSync();
@@ -65,13 +65,14 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
             null,
             bytes.length,
           );
-          slide = draft.newAudioSlide(
+          draft.addAudioSlide(
             description,
             eventId.toString(),
             null,
             mimeType,
             bytes.length,
           );
+          unknownType = false;
         } else if (mimeType.startsWith('video/')) {
           File video = File(attachmentUri);
           Uint8List bytes = video.readAsBytesSync();
@@ -85,7 +86,7 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
             bytes.length,
             null,
           );
-          slide = draft.newVideoSlide(
+          draft.addVideoSlide(
             description,
             eventId.toString(),
             null,
@@ -95,9 +96,10 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
             bytes.length,
             null,
           );
+          unknownType = false;
         }
       }
-      if (slide == null) {
+      if (unknownType) {
         File file = File(attachmentUri);
         Uint8List bytes = file.readAsBytesSync();
         EventId eventId = await space.sendFileMessage(
@@ -106,7 +108,7 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
           mimeType ?? 'application/octet',
           bytes.length,
         );
-        slide = draft.newFileSlide(
+        draft.addFileSlide(
           description,
           eventId.toString(),
           mimeType ?? 'application/octet',
@@ -114,10 +116,6 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
         );
       }
     }
-    final sdk = ref.read(sdkRepositoryProvider);
-    FfiListNewsSlide slides = sdk.createNewsSlideList();
-    slides.add(slide);
-    draft.slides(slides);
     var eventId = await draft.send();
     return eventId;
   }
