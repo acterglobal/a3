@@ -32,3 +32,9 @@ const inCI = bool.fromEnvironment(
   'CI',
   defaultValue: false,
 );
+
+final desktopPlatforms = [
+  TargetPlatform.linux,
+  TargetPlatform.macOS,
+  TargetPlatform.windows
+];

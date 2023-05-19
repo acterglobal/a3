@@ -1,5 +1,6 @@
 import 'package:acter/common/states/network_state.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/states/auth_state.dart';
@@ -27,11 +28,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   final TextEditingController token = TextEditingController();
   final TextEditingController confirmPassword = TextEditingController();
   final TextEditingController name = TextEditingController();
-  final desktopPlatforms = [
-    TargetPlatform.linux,
-    TargetPlatform.macOS,
-    TargetPlatform.windows
-  ];
 
   void _validateSignUp(BuildContext context) async {
     final bool isLoggedIn = ref.read(isLoggedInProvider);
@@ -56,7 +52,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
+    final desktop = isDesktop(context);
     final authState = ref.watch(authStateProvider);
     var network = ref.watch(networkAwareProvider);
 
@@ -66,7 +62,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
-              leading: isDesktop
+              leading: desktop
                   ? InkWell(
                       onTap: () => context.goNamed(Routes.main.name),
                       child: const Icon(Atlas.arrow_left_circle),

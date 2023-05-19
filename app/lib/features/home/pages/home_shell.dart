@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:acter/main/routing/routing.dart';
 import 'package:date_format/date_format.dart';
@@ -31,11 +32,6 @@ class HomeShell extends ConsumerStatefulWidget {
 class _HomeShellState extends ConsumerState<HomeShell> {
   ScreenshotController screenshotController = ScreenshotController();
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
-  final desktopPlatforms = [
-    TargetPlatform.linux,
-    TargetPlatform.macOS,
-    TargetPlatform.windows
-  ];
   late ShakeDetector detector;
 
   @override
@@ -63,8 +59,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   @override
   Widget build(BuildContext context) {
     // get platform of context.
-    final bool isDesktop =
-        desktopPlatforms.contains(Theme.of(context).platform);
+    final bool desktop = isDesktop(context);
     final location =
         ref.watch(goRouterProvider.select((value) => value.location));
     final client = ref.watch(clientProvider);
@@ -78,7 +73,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     final bottomBarIdx =
         ref.watch(currentSelectedBottomBarIndexProvider(context));
 
-    final showInSidebar = isDesktop && location == '/dashboard';
+    final showInSidebar = desktop && location == '/dashboard';
     final bodyRatio = showInSidebar ? 0.3 : 0.0;
     return CallbackShortcuts(
       bindings: <LogicalKeySet, VoidCallback>{
@@ -92,7 +87,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           child: AdaptiveLayout(
             key: _key,
             bodyRatio: bodyRatio,
-            primaryNavigation: isDesktop
+            primaryNavigation: desktop
                 ? SlotLayout(
                     config: <Breakpoint, SlotLayoutConfig?>{
                       // adapt layout according to platform.
@@ -136,7 +131,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                       ),
                       // show dashboard view on desktop only.
                       Breakpoints.mediumAndUp:
-                          // isDesktop
+                          // desktop
                           //     ? SlotLayout.from(
                           //         key: const Key('Body Medium'),
                           //         builder: (BuildContext ctx) => Scaffold(
@@ -171,7 +166,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                     },
                   )
                 : null,
-            bottomNavigation: isDesktop
+            bottomNavigation: desktop
                 ? SlotLayout(
                     config: <Breakpoint, SlotLayoutConfig>{
                       //In desktop, we have ability to adjust windows res,

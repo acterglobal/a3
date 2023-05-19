@@ -16,6 +16,7 @@ import 'package:acter/features/todo/pages/create_task_sidesheet.dart';
 import 'package:acter/common/dialogs/dialog_page.dart';
 import 'package:acter/common/dialogs/side_sheet_page.dart';
 import 'package:acter/common/dialogs/error.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -23,12 +24,6 @@ import 'package:go_router/go_router.dart';
 import 'package:go_router/src/information_provider.dart';
 
 import 'package:acter/main/routing/routes.dart';
-
-final desktopPlatforms = [
-  TargetPlatform.linux,
-  TargetPlatform.macOS,
-  TargetPlatform.windows
-];
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -200,9 +195,7 @@ final _routes = [
         name: Routes.main.name,
         path: Routes.main.route,
         redirect: (BuildContext context, GoRouterState state) {
-          final bool isDesktop =
-              desktopPlatforms.contains(Theme.of(context).platform);
-          if (isDesktop) {
+          if (isDesktop(context)) {
             return Routes.dashboard.route;
           } else {
             return Routes.updates.route;
