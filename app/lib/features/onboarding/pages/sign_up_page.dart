@@ -1,10 +1,11 @@
 import 'package:acter/common/states/network_state.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/states/auth_state.dart';
 import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
+import 'package:acter/main/routing/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
+    final desktop = isDesktop(context);
     final authState = ref.watch(authStateProvider);
     var network = ref.watch(networkAwareProvider);
 
@@ -61,9 +62,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
-              leading: isDesktop
+              leading: desktop
                   ? InkWell(
-                      onTap: () => context.go('/'),
+                      onTap: () => context.goNamed(Routes.main.name),
                       child: const Icon(Atlas.arrow_left_circle),
                     )
                   : null,
@@ -183,7 +184,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           '${AppLocalizations.of(context)!.haveAccount}  ',
                         ),
                         InkWell(
-                          onTap: () => context.go('/login'),
+                          onTap: () => context.goNamed(Routes.authLogin.name),
                           child: Text(
                             AppLocalizations.of(context)!.login,
                             style: TextStyle(
