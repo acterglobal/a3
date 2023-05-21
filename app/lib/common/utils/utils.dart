@@ -1,7 +1,11 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:acter/common/utils/constants.dart';
 import 'package:flutter/material.dart';
+
+bool isDesktop(BuildContext context) =>
+    desktopPlatforms.contains(Theme.of(context).platform);
 
 String randomString() {
   final random = Random.secure();
