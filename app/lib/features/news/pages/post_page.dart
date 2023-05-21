@@ -226,7 +226,9 @@ class _PostPageState extends ConsumerState<PostPage> {
           width: MediaQuery.of(context).size.width,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
+            color: ref.read(selectedSpaceProvider) != null
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.neutral5,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -238,6 +240,11 @@ class _PostPageState extends ConsumerState<PostPage> {
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 style: ButtonStyle(
+                  backgroundColor: ref.read(selectedSpaceProvider) != null
+                      ? null
+                      : MaterialStateProperty.all<Color>(
+                          Theme.of(context).colorScheme.neutral5,
+                        ),
                   shape: MaterialStateProperty.all<BeveledRectangleBorder>(
                     const BeveledRectangleBorder(),
                   ),
@@ -247,15 +254,21 @@ class _PostPageState extends ConsumerState<PostPage> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () => handlePost(context, mounted),
+                onPressed: () => ref.read(selectedSpaceProvider) != null
+                    ? handlePost(context, mounted)
+                    : null,
                 child: Text(
                   'Post',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                    Theme.of(context).colorScheme.tertiary,
-                  ),
+                  backgroundColor: ref.read(selectedSpaceProvider) != null
+                      ? MaterialStateProperty.all<Color>(
+                          Theme.of(context).colorScheme.tertiary,
+                        )
+                      : MaterialStateProperty.all<Color>(
+                          Theme.of(context).colorScheme.neutral5,
+                        ),
                   shape: MaterialStateProperty.all<BeveledRectangleBorder>(
                     const BeveledRectangleBorder(),
                   ),
@@ -291,7 +304,7 @@ class _PostPageState extends ConsumerState<PostPage> {
     return const Center(child: Icon(Atlas.user_file));
   }
 
-  void handlePost(BuildContext context, [bool mounted = true]) {
+  void handlePost(BuildContext context, [bool mounted = true]) async {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -316,14 +329,27 @@ class _PostPageState extends ConsumerState<PostPage> {
       },
     );
     // do async operation
-    ref
+    await ref
         .read(postUpdateProvider.notifier)
         .postUpdate(widget.attachmentUri, descriptionController.text);
-
     // Close the dialog programmatically
     // We use "mounted" variable to get rid of the "Do not use BuildContexts across async gaps" warning
     if (mounted) {
       context.pop();
+      context.go('/updates');
+      // FIXME: Will this refresh the updates??
+      // ignore: unused_local_variable
+      var syncState = ref.read(clientProvider)!.startSync();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.success,
+          content: Text(
+            'Update posted successfully to ${ref.read(selectedSpaceProvider)!.roomId}',
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+          duration: const Duration(seconds: 4),
+        ),
+      );
     }
   }
 
