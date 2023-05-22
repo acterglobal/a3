@@ -15,6 +15,7 @@ import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/search/pages/search.dart';
 import 'package:acter/features/settings/pages/index_page.dart';
+import 'package:acter/features/settings/pages/info_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
@@ -166,6 +167,16 @@ final _routes = [
 
       // ---- SETTINGS
 
+      GoRoute(
+        name: Routes.info.name,
+        path: Routes.info.route,
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: const SettingsInfoPage(),
+          );
+        },
+      ),
       GoRoute(
         name: Routes.licenses.name,
         path: Routes.licenses.route,

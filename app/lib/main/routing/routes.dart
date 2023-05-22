@@ -25,6 +25,7 @@ enum Routes {
 
   // -- settigns
   settings('/settings'),
+  settingsLabs('/settings/labs'),
   info('/info'),
   licenses('/info/licenses'),
 
