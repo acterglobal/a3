@@ -23,6 +23,11 @@ enum Routes {
   // -- spaces
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
 
+  // -- settigns
+  settings('/settings'),
+  info('/info'),
+  licenses('/info/licenses'),
+
   // -- utils
   bugReport('/bug-report'),
   quickJump('/quick-jump');

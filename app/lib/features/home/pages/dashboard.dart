@@ -37,10 +37,7 @@ class Dashboard extends ConsumerWidget {
           IconButton(
             icon: const Icon(Atlas.construction_tools_thin),
             onPressed: () {
-              showNotYetImplementedMsg(
-                context,
-                'User Settings page not yet implemented',
-              );
+              context.go('/settings');
             },
           ),
           Visibility(
