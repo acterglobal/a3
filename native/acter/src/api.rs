@@ -78,6 +78,7 @@ pub use verification::{VerificationEmoji, VerificationEvent};
 
 pub type DeviceId = acter_core::ruma::OwnedDeviceId;
 pub type EventId = acter_core::ruma::OwnedEventId;
+pub type MxcUri = acter_core::ruma::OwnedMxcUri;
 pub type RoomId = acter_core::ruma::OwnedRoomId;
 pub type UserId = acter_core::ruma::OwnedUserId;
 

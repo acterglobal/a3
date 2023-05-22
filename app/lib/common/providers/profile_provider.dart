@@ -1,8 +1,9 @@
-import 'package:acter/features/home/states/client_state.dart';
+import 'dart:core';
+
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:core';
 
 class AccountProfile {
   final Account account;

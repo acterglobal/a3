@@ -14,6 +14,7 @@ class SideSheet extends StatelessWidget {
 
   final void Function()? confirmActionOnPressed;
   final void Function()? cancelActionOnPressed;
+
   const SideSheet({
     super.key,
     required this.header,
@@ -52,9 +53,7 @@ class SideSheet extends StatelessWidget {
         child: Column(
           children: [
             _buildHeader(textTheme, context),
-            Expanded(
-              child: body,
-            ),
+            Expanded(child: body),
             Visibility(
               visible: addActions,
               child: _buildFooter(context),
@@ -65,10 +64,7 @@ class SideSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(
-    TextTheme textTheme,
-    BuildContext context,
-  ) {
+  Widget _buildHeader(TextTheme textTheme, BuildContext context) {
     return Padding(
       padding: EdgeInsets.fromLTRB(addBackIconButton ? 16 : 24, 16, 16, 16),
       child: Row(
@@ -116,10 +112,7 @@ class SideSheet extends StatelessWidget {
       children: [
         Visibility(
           visible: addDivider,
-          child: const Divider(
-            indent: 24,
-            endIndent: 24,
-          ),
+          child: const Divider(indent: 24, endIndent: 24),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(24.0, 16, 24, 24),

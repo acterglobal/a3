@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/models/Team.dart';
 import 'package:acter/models/ToDoComment.dart';
 import 'package:acter/models/ToDoList.dart';
@@ -10,9 +11,8 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         CommentDraft,
         CommentsManager,
         CreateSpaceSettings,
-        FfiString,
-        Space,
         RoomProfile,
+        Space,
         Task,
         TaskList,
         TaskListDraft;
@@ -389,15 +389,5 @@ class ToDoController extends GetxController {
       update(['discussion']);
     });
     return eventId;
-  }
-
-  ///helper function to convert list ffiString object to DartString.
-  List<String>? asDartStringList(List<FfiString> list) {
-    if (list.isNotEmpty) {
-      final List<String> stringList =
-          list.map((ffiString) => ffiString.toDartString()).toList();
-      return stringList;
-    }
-    return null;
   }
 }

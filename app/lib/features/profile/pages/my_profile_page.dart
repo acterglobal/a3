@@ -1,6 +1,6 @@
+import 'package:acter/common/providers/profile_provider.dart';
 import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter/common/providers/profile_provider.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,9 +67,7 @@ class MyProfile extends ConsumerWidget {
                             margin: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(60),
-                              border: Border.all(
-                                width: 5,
-                              ),
+                              border: Border.all(width: 5),
                             ),
                             child: ActerAvatar(
                               mode: DisplayMode.User,
@@ -96,19 +94,13 @@ class MyProfile extends ConsumerWidget {
                     const TabBar(
                       tabs: [
                         Tab(
-                          child: Text(
-                            'News',
-                          ),
+                          child: Text('News'),
                         ),
                         Tab(
-                          child: Text(
-                            'Feed',
-                          ),
+                          child: Text('Feed'),
                         ),
                         Tab(
-                          child: Text(
-                            'More details',
-                          ),
+                          child: Text('More details'),
                         ),
                       ],
                     ),

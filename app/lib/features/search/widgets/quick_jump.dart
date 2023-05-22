@@ -1,15 +1,15 @@
+import 'package:acter/main/routing/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:acter/main/routing/routes.dart';
 
 final searchValueProvider = StateProvider<String>((ref) => '');
 
 class QuickJump extends ConsumerWidget {
   final void Function({Routes? route, bool push, String? target}) navigateTo;
   final bool expand;
+
   const QuickJump({
     super.key,
     this.expand = false,
@@ -47,10 +47,7 @@ class QuickJump extends ConsumerWidget {
               ),
             ),
             onPressed: () {},
-            icon: const Icon(
-              Atlas.back_vr_thin,
-              size: 48,
-            ),
+            icon: const Icon(Atlas.back_vr_thin, size: 48),
           ),
           IconButton(
             style: IconButton.styleFrom(
@@ -60,10 +57,7 @@ class QuickJump extends ConsumerWidget {
               ),
             ),
             onPressed: () {},
-            icon: const Icon(
-              Atlas.cabin_thin,
-              size: 48,
-            ),
+            icon: const Icon(Atlas.cabin_thin, size: 48),
           ),
           IconButton(
             style: IconButton.styleFrom(
@@ -73,10 +67,7 @@ class QuickJump extends ConsumerWidget {
               ),
             ),
             onPressed: () {},
-            icon: const Icon(
-              Atlas.dart_thin,
-              size: 48,
-            ),
+            icon: const Icon(Atlas.dart_thin, size: 48),
           )
         ],
       ),
@@ -135,66 +126,46 @@ class QuickJump extends ConsumerWidget {
         OutlinedButton.icon(
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.amber,
-            side: const BorderSide(
-              width: 2,
-              color: Colors.amber,
-            ),
+            side: const BorderSide(width: 2, color: Colors.amber),
           ),
           onPressed: () {
             navigateTo(route: Routes.actionAddTask, push: true);
             debugPrint('Add Task');
           },
-          icon: const Icon(
-            Atlas.plus_circle_thin,
-          ),
+          icon: const Icon(Atlas.plus_circle_thin),
           label: const Text('Task'),
         ),
         OutlinedButton.icon(
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.purple,
-            side: const BorderSide(
-              width: 2,
-              color: Colors.purple,
-            ),
+            side: const BorderSide(width: 2, color: Colors.purple),
           ),
           onPressed: () {
             debugPrint('Add Event');
           },
-          icon: const Icon(
-            Atlas.plus_circle_thin,
-          ),
+          icon: const Icon(Atlas.plus_circle_thin),
           label: const Text('Event'),
         ),
         OutlinedButton.icon(
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.green.shade900,
-            side: BorderSide(
-              width: 2,
-              color: Colors.green.shade900,
-            ),
+            side: BorderSide(width: 2, color: Colors.green.shade900),
           ),
           onPressed: () {
             debugPrint('poll');
           },
-          icon: const Icon(
-            Atlas.plus_circle_thin,
-          ),
+          icon: const Icon(Atlas.plus_circle_thin),
           label: const Text('Poll'),
         ),
         OutlinedButton.icon(
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.white,
-            side: const BorderSide(
-              width: 2,
-              color: Colors.white,
-            ),
+            side: const BorderSide(width: 2, color: Colors.white),
           ),
           onPressed: () {
             debugPrint('Discussion');
           },
-          icon: const Icon(
-            Atlas.plus_circle_thin,
-          ),
+          icon: const Icon(Atlas.plus_circle_thin),
           label: const Text('Discussion'),
         ),
       ],
@@ -212,20 +183,14 @@ class QuickJump extends ConsumerWidget {
       body.add(const SizedBox(height: 250));
     } else {
       body.add(
-        const Divider(
-          indent: 24,
-          endIndent: 24,
-        ),
+        const Divider(indent: 24, endIndent: 24),
       );
       body.addAll(primaryButtons(context, ref));
       if (expand) {
         body.add(const Spacer());
       } else {
         body.add(
-          const Divider(
-            indent: 24,
-            endIndent: 24,
-          ),
+          const Divider(indent: 24, endIndent: 24),
         );
       }
       body.add(quickActions(context, ref));

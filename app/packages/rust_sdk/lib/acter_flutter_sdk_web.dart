@@ -32,7 +32,7 @@ class ActerFlutterSdkWeb {
         throw PlatformException(
           code: 'Unimplemented',
           details:
-              'acter_flutter_sdk for web doesn\'t implement \'${call.method}\'',
+              "acter_flutter_sdk for web doesn't implement '${call.method}'",
         );
     }
   }

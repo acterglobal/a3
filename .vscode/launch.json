@@ -50,7 +50,9 @@
             "flutterMode": "debug",
             "toolArgs": [
                 "--dart-define",
-                "RAGESHAKE_URL=http://localhost/api/submit"
+                "RAGESHAKE_URL=http://localhost/api/submit",
+                "--dart-define",
+                "GIPHY_KEY=C4dMA7Q19nqEGdpfj82T8ssbOeZIylD4"
             ]
         },
         {
@@ -61,7 +63,9 @@
             "flutterMode": "release",
             "toolArgs": [
                 "--dart-define",
-                "RAGESHAKE_URL=http://localhost/api/submit"
+                "RAGESHAKE_URL=http://localhost/api/submit",
+                "--dart-define",
+                "GIPHY_KEY=C4dMA7Q19nqEGdpfj82T8ssbOeZIylD4"
             ]
         },
         {
@@ -72,7 +76,9 @@
             "flutterMode": "profile",
             "toolArgs": [
                 "--dart-define",
-                "RAGESHAKE_URL=http://localhost/api/submit"
+                "RAGESHAKE_URL=http://localhost/api/submit",
+                "--dart-define",
+                "GIPHY_KEY=C4dMA7Q19nqEGdpfj82T8ssbOeZIylD4"
             ]
         },
         {

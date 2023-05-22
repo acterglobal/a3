@@ -1,16 +1,17 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_button.dart';
+import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/Team.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:get/get.dart';
 
 class CreateTodoSideSheet extends StatefulWidget {
+  final ToDoController controller;
+
   const CreateTodoSideSheet({Key? key, required this.controller})
       : super(key: key);
-  final ToDoController controller;
 
   @override
   State<CreateTodoSideSheet> createState() => _CreateTodoSideSheetState();
@@ -70,20 +71,18 @@ class _CreateTodoSideSheetState extends State<CreateTodoSideSheet> {
     if (!check) {
       return null;
     }
-    return const Icon(
-      Icons.done_outlined,
-      size: 10,
-    );
+    return const Icon(Icons.done_outlined, size: 10);
   }
 }
 
 class _SelectTeamWidget extends StatefulWidget {
+  final ToDoController controller;
+  final TextEditingController nameController;
+
   const _SelectTeamWidget({
     required this.controller,
     required this.nameController,
   });
-  final ToDoController controller;
-  final TextEditingController nameController;
 
   @override
   State<_SelectTeamWidget> createState() => _SelectTeamWidgetState();
@@ -96,8 +95,9 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
   Offset? tapXY;
   bool disableBtn = false;
 
-  RelativeRect get relRectSize =>
-      RelativeRect.fromSize(tapXY! & const Size(40, 40), overlay!.size);
+  RelativeRect get relRectSize {
+    return RelativeRect.fromSize(tapXY! & const Size(40, 40), overlay!.size);
+  }
 
   void getPosition(TapDownDetails detail) {
     tapXY = detail.globalPosition;
@@ -107,12 +107,12 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
   Widget build(BuildContext context) {
     overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: <Widget>[
           GetBuilder<ToDoController>(
             id: 'teams',
-            builder: (_) {
+            builder: (ToDoController controller) {
               return InkWell(
                 onTap: () => widget.nameController.text.trim().isNotEmpty
                     ? _showPopupMenu(context)
@@ -124,11 +124,11 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
                   height: MediaQuery.of(context).size.height * 0.06,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    widget.controller.selectedTeam != null
-                        ? widget.controller.selectedTeam!.name!
+                    controller.selectedTeam != null
+                        ? controller.selectedTeam!.name!
                         : 'Select Team',
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
@@ -137,10 +137,8 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
             },
           ),
           const Padding(
-            padding: EdgeInsets.only(left: 12.0),
-            child: Icon(
-              Atlas.group_team_collective,
-            ),
+            padding: EdgeInsets.only(left: 12),
+            child: Icon(Atlas.group_team_collective),
           )
         ],
       ),
@@ -203,9 +201,7 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
-                  child: const Text(
-                    'Cancel',
-                  ),
+                  child: const Text('Cancel'),
                 ),
                 TextButton(
                   onPressed: (!disableBtn && teamInputController.text.isEmpty)
@@ -285,151 +281,166 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
 }
 
 class _CreateBtnWidget extends StatelessWidget {
+  final ToDoController controller;
+  final TextEditingController nameController;
+  final TextEditingController descriptionController;
+
   const _CreateBtnWidget({
     required this.controller,
     required this.nameController,
     required this.descriptionController,
   });
-  final ToDoController controller;
-  final TextEditingController nameController;
-  final TextEditingController descriptionController;
 
   @override
-  Widget build(BuildContext context) => Obx(
-        () => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: controller.isLoading.isTrue
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : CustomButton(
-                  onPressed: (controller.taskNameCount < 30 &&
-                          nameController.text.trim().isNotEmpty)
-                      ? () async {
-                          controller.isLoading.value = true;
-                          await controller
-                              .createToDoList(
-                                controller.selectedTeam!.id,
-                                nameController.text.trim(),
-                                descriptionController.text.trim(),
-                              )
-                              .then((res) => debugPrint('ToDo CREATED: $res'));
-                          controller.isLoading.value = false;
-                          Navigator.pop(context);
-                        }
-                      : null,
-                  title: 'Create',
-                ),
-        ),
-      );
+  Widget build(BuildContext context) {
+    return Obx(
+      () => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: controller.isLoading.isTrue
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : CustomButton(
+                onPressed: (controller.taskNameCount < 30 &&
+                        nameController.text.trim().isNotEmpty)
+                    ? () async {
+                        controller.isLoading.value = true;
+                        await controller
+                            .createToDoList(
+                              controller.selectedTeam!.id,
+                              nameController.text.trim(),
+                              descriptionController.text.trim(),
+                            )
+                            .then((res) => debugPrint('ToDo CREATED: $res'));
+                        controller.isLoading.value = false;
+                        Navigator.pop(context);
+                      }
+                    : null,
+                title: 'Create',
+              ),
+      ),
+    );
+  }
 }
 
 class _DescriptionInputWidget extends StatelessWidget {
+  final TextEditingController descriptionController;
+
   const _DescriptionInputWidget({
     required this.descriptionController,
   });
 
-  final TextEditingController descriptionController;
-
   @override
-  Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
+      ),
+      child: TextFormField(
+        controller: descriptionController,
+        keyboardType: TextInputType.text,
+        decoration: const InputDecoration(
+          hintText: 'List Description',
+          // pass the hint text parameter here
         ),
-        child: TextFormField(
-          controller: descriptionController,
-          keyboardType: TextInputType.text,
-          decoration: const InputDecoration(
-            hintText: 'List Description',
-            // pass the hint text parameter here
-          ),
-          style: Theme.of(context).textTheme.bodyMedium,
-          cursorColor: Theme.of(context).colorScheme.tertiary,
-          maxLines: 5,
-        ),
-      );
+        style: Theme.of(context).textTheme.bodyMedium,
+        cursorColor: Theme.of(context).colorScheme.tertiary,
+        maxLines: 5,
+      ),
+    );
+  }
 }
 
 class _WordCountWidget extends StatelessWidget {
+  final ToDoController controller;
+
   const _WordCountWidget({
     required this.controller,
   });
 
-  final ToDoController controller;
   @override
-  Widget build(BuildContext context) => Obx(
-        () => Padding(
-          padding: const EdgeInsets.fromLTRB(20, 10, 16, 0),
-          child: Text(
-            'Word Count: ${controller.taskNameCount.value}',
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
+  Widget build(BuildContext context) {
+    return Obx(
+      () => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 10, 16, 0),
+        child: Text(
+          'Word Count: ${controller.taskNameCount.value}',
+          style: Theme.of(context).textTheme.labelMedium,
         ),
-      );
+      ),
+    );
+  }
 }
 
 class _NameInputWidget extends StatelessWidget {
+  final TextEditingController nameController;
+  final ToDoController controller;
+
   const _NameInputWidget({
     required this.nameController,
     required this.controller,
   });
 
-  final TextEditingController nameController;
-  final ToDoController controller;
   @override
-  Widget build(BuildContext context) => Obx(
-        () => Container(
-          margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-          height: 60,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
-          ),
-          child: TextFormField(
-            controller: nameController,
-            keyboardType: TextInputType.text,
-            decoration: const InputDecoration(
-              hintText: 'List Title',
-              // hide default counter helper
-              counterText: '',
-              // pass the hint text parameter here
-            ),
-            maxLength: controller.maxLength.value,
-            style: Theme.of(context).textTheme.bodyMedium,
-            cursorColor: Colors.white,
-            validator: (val) {
-              if (val == null || val.trim().isEmpty) {
-                return 'Cannot be empty';
-              }
-              return null;
-            },
-            onChanged: (value) => controller.updateWordCount(value),
-          ),
+  Widget build(BuildContext context) {
+    return Obx(
+      () => Container(
+        margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+        height: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
         ),
-      );
+        child: TextFormField(
+          controller: nameController,
+          keyboardType: TextInputType.text,
+          decoration: const InputDecoration(
+            hintText: 'List Title',
+            // hide default counter helper
+            counterText: '',
+            // pass the hint text parameter here
+          ),
+          maxLength: controller.maxLength.value,
+          style: Theme.of(context).textTheme.bodyMedium,
+          cursorColor: Colors.white,
+          validator: (val) {
+            if (val == null || val.trim().isEmpty) {
+              return 'Cannot be empty';
+            }
+            return null;
+          },
+          onChanged: (value) => controller.updateWordCount(value),
+        ),
+      ),
+    );
+  }
 }
 
 class _TitleWidget extends StatelessWidget {
   const _TitleWidget();
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(left: 16.0),
-        child: Text(
-          'Create Todo List',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-      );
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16),
+      child: Text(
+        'Create Todo List',
+        style: Theme.of(context).textTheme.titleLarge,
+      ),
+    );
+  }
 }
 
 class _Divider extends StatelessWidget {
   const _Divider();
 
   @override
-  Widget build(BuildContext context) => const Divider(
-        endIndent: 14,
-        indent: 14,
-      );
+  Widget build(BuildContext context) {
+    return const Divider(
+      endIndent: 14,
+      indent: 14,
+    );
+  }
 }
