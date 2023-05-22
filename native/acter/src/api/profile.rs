@@ -3,10 +3,20 @@ use log::info;
 use matrix_sdk::{
     media::{MediaFormat, MediaThumbnailSize},
     ruma::{api::client::media::get_content_thumbnail::v3::Method, OwnedRoomId, OwnedUserId, UInt},
-    Client,
+    Client, DisplayName,
 };
 
 use super::{api::FfiBuffer, RUNTIME};
+
+pub struct DispName {
+    text: Option<String>,
+}
+
+impl DispName {
+    pub fn text(&self) -> Option<String> {
+        self.text.clone()
+    }
+}
 
 #[derive(Clone)]
 pub struct UserProfile {
@@ -73,18 +83,15 @@ impl UserProfile {
             .await?
     }
 
-    pub async fn get_display_name(&self) -> Result<String> {
+    pub async fn get_display_name(&self) -> Result<DispName> {
         let account = self.client.account();
         RUNTIME
             .spawn(async move {
-                let result = account
+                let text = account
                     .get_display_name()
                     .await
                     .context("Couldn't get display name from account")?;
-                match result {
-                    Some(result) => Ok(result),
-                    None => Ok("".to_string()),
-                }
+                Ok(DispName { text })
             })
             .await?
     }
@@ -152,7 +159,7 @@ impl RoomProfile {
             .await?
     }
 
-    pub async fn get_display_name(&self) -> Result<String> {
+    pub async fn get_display_name(&self) -> Result<DispName> {
         let room = self
             .client
             .get_room(&self.room_id)
@@ -163,7 +170,13 @@ impl RoomProfile {
                     .display_name()
                     .await
                     .context("Couldn't get display name from room")?;
-                Ok(result.to_string())
+                match result {
+                    DisplayName::Named(name) => Ok(DispName { text: Some(name) }),
+                    DisplayName::Aliased(name) => Ok(DispName { text: Some(name) }),
+                    DisplayName::Calculated(name) => Ok(DispName { text: Some(name) }),
+                    DisplayName::EmptyWas(name) => Ok(DispName { text: Some(name) }),
+                    DisplayName::Empty => Ok(DispName { text: None }),
+                }
             })
             .await?
     }

@@ -1256,6 +1256,11 @@ object Client {
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
 }
 
+object DispName {
+    /// get text
+    fn text() -> Option<string>;
+}
+
 object UserProfile {
     /// get user id
     fn user_id() -> UserId;
@@ -1270,7 +1275,7 @@ object UserProfile {
     fn get_thumbnail(width: u32, height: u32) -> Future<Result<buffer<u8>>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<string>>;
+    fn get_display_name() -> Future<Result<DispName>>;
 }
 
 object RoomProfile {
@@ -1284,7 +1289,7 @@ object RoomProfile {
     fn get_thumbnail(width: u32, height: u32) -> Future<Result<buffer<u8>>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<string>>;
+    fn get_display_name() -> Future<Result<DispName>>;
 }
 
 object Invitation {

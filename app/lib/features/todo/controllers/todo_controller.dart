@@ -10,6 +10,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         Comment,
         CommentDraft,
         CommentsManager,
+        DispName,
         CreateSpaceSettings,
         RoomProfile,
         Space,
@@ -60,10 +61,11 @@ class ToDoController extends GetxController {
     if (listTeams.isNotEmpty) {
       for (var team in listTeams) {
         RoomProfile profile = team.getProfile();
+        DispName dispName = await profile.getDisplayName();
         // Team avatars are yet to be implemented.
         Team item = Team(
           id: team.getRoomId().toString(),
-          name: await profile.getDisplayName(),
+          name: dispName.text(),
         );
         teams.add(item);
       }
@@ -77,9 +79,10 @@ class ToDoController extends GetxController {
         await client.spaces().then((groups) => groups.toList());
     for (var group in groups) {
       RoomProfile profile = group.getProfile();
+      DispName dispName = await profile.getDisplayName();
       Team team = Team(
         id: group.getRoomId().toString(),
-        name: await profile.getDisplayName(),
+        name: dispName.text(),
       );
       List<TaskList> taskList =
           await group.taskLists().then((ffiList) => ffiList.toList());
@@ -174,9 +177,10 @@ class ToDoController extends GetxController {
   ) async {
     final Space space = await client.getSpace(teamId);
     final RoomProfile profile = space.getProfile();
+    final DispName dispName = await profile.getDisplayName();
     final Team team = Team(
       id: space.getRoomId().toString(),
-      name: await profile.getDisplayName(),
+      name: dispName.text(),
     );
     final TaskListDraft listDraft = space.taskListDraft();
     listDraft.name(name);

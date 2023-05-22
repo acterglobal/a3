@@ -5595,7 +5595,7 @@ class Api {
     return tmp7;
   }
 
-  String? __userProfileGetDisplayNameFuturePoll(
+  DispName? __userProfileGetDisplayNameFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -5620,8 +5620,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -5635,13 +5633,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_DispName");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = DispName._(this, tmp13_1);
     return tmp7;
   }
 
@@ -5737,7 +5732,7 @@ class Api {
     return tmp7;
   }
 
-  String? __roomProfileGetDisplayNameFuturePoll(
+  DispName? __roomProfileGetDisplayNameFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -5762,8 +5757,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -5777,13 +5770,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_DispName");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = DispName._(this, tmp13_1);
     return tmp7;
   }
 
@@ -12718,6 +12708,16 @@ class Api {
 
   late final _clientCalendarEvents = _clientCalendarEventsPtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _dispNameTextPtr = _lookup<
+      ffi.NativeFunction<
+          _DispNameTextReturn Function(
+    ffi.Int64,
+  )>>("__DispName_text");
+
+  late final _dispNameText = _dispNameTextPtr.asFunction<
+      _DispNameTextReturn Function(
     int,
   )>();
   late final _userProfileUserIdPtr = _lookup<
@@ -26609,6 +26609,42 @@ class Client {
   }
 }
 
+class DispName {
+  final Api _api;
+  final _Box _box;
+
+  DispName._(this._api, this._box);
+
+  /// get text
+  String? text() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._dispNameText(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class UserProfile {
   final Api _api;
   final _Box _box;
@@ -26689,7 +26725,7 @@ class UserProfile {
   }
 
   /// get the display name
-  Future<String> getDisplayName() {
+  Future<DispName> getDisplayName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._userProfileGetDisplayName(
@@ -26787,7 +26823,7 @@ class RoomProfile {
   }
 
   /// get the display name
-  Future<String> getDisplayName() {
+  Future<DispName> getDisplayName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomProfileGetDisplayName(
@@ -29152,6 +29188,17 @@ class _ClientIncomingMessageRxReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _DispNameTextReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
 class _RoomProfileHasAvatarReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -30820,10 +30867,6 @@ class _UserProfileGetDisplayNameFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _RoomProfileGetAvatarFuturePollReturn extends ffi.Struct {
@@ -30869,10 +30912,6 @@ class _RoomProfileGetDisplayNameFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _InvitationRoomNameFuturePollReturn extends ffi.Struct {

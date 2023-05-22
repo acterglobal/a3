@@ -89,9 +89,11 @@ class _TabBarWidgetState extends State<_TabBarWidget> {
   void loadProfiles() async {
     List<UserItem> items = [];
     for (var profile in widget.userProfiles) {
+      String userId = profile.userId().toString();
+      DispName dispName = await profile.getDisplayName();
       var item = UserItem(
-        userId: profile.userId().toString(),
-        displayName: await profile.getDisplayName(),
+        userId: userId,
+        displayName: dispName.text() ?? userId,
         avatar: profile.getAvatar(),
       );
       items.add(item);

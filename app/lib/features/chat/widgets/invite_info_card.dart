@@ -4,7 +4,7 @@ import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Client, FfiBufferUint8, Invitation;
+    show Client, DispName, FfiBufferUint8, Invitation;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
@@ -40,9 +40,9 @@ class _InviteInfoCardState extends State<InviteInfoCard> {
     if (await profile.hasAvatar() && mounted) {
       setState(() => avatar = profile.getAvatar());
     }
-    var name = await profile.getDisplayName();
+    DispName name = await profile.getDisplayName();
     if (mounted) {
-      setState(() => displayName = name);
+      setState(() => displayName = name.text());
     }
   }
 

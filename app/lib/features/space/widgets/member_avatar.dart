@@ -18,9 +18,10 @@ class MemberProfile {
 final membersProfileProvider =
     FutureProvider.family<MemberProfile, Member>((ref, member) async {
   UserProfile profile = member.getProfile();
+  DispName dispName = await profile.getDisplayName();
   return MemberProfile(
     avatar: profile.getAvatar(),
-    displayName: await profile.getDisplayName(),
+    displayName: dispName.text(),
   );
 });
 

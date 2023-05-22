@@ -9,8 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 Future<ProfileData> getProfileData(Space space) async {
   // FIXME: how to get informed about updates!?!
   final profile = space.getProfile();
-  final name = await profile.getDisplayName();
-  final displayName = name != '' ? name : space.getRoomId().toString();
+  DispName name = await profile.getDisplayName();
+  final displayName = name.text() ?? space.getRoomId().toString();
   if (!profile.hasAvatar()) {
     return ProfileData(displayName, null);
   }
@@ -53,9 +53,10 @@ final spaceItemsProvider = FutureProvider<List<SpaceItem>>((ref) async {
     RoomProfile profile = element.getProfile();
     List<Member> members =
         await element.activeMembers().then((ffiList) => ffiList.toList());
+    DispName name = await profile.getDisplayName();
     var item = SpaceItem(
       roomId: element.getRoomId().toString(),
-      displayName: await profile.getDisplayName(),
+      displayName: name.text(),
       activeMembers: members,
       avatar: profile.hasAvatar()
           ? profile.getThumbnail(120, 120)

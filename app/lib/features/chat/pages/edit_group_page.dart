@@ -38,8 +38,11 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
       avatar = profile.getAvatar();
     }
     profile.getDisplayName().then((value) {
-      if (mounted && value != '') {
-        setState(() => displayName = value);
+      if (mounted) {
+        String? name = value.text();
+        if (name != null) {
+          setState(() => displayName = name);
+        }
       }
     });
   }

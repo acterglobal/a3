@@ -7,6 +7,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
         Client,
         Conversation,
+        DispName,
         FfiListConversation,
         FfiListInvitation,
         Invitation,
@@ -148,7 +149,8 @@ class ChatListController extends GetxController {
     if (profile.hasAvatar()) {
       item.avatar = profile.getThumbnail(62, 60);
     }
-    item.displayName = await profile.getDisplayName();
+    DispName name = await profile.getDisplayName();
+    item.displayName = name.text();
   }
 
   void searchedData(String data, List<JoinedRoom> listOfRooms) {

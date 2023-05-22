@@ -2,7 +2,7 @@ import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show FfiBufferUint8;
+    show DispName, FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,9 +19,10 @@ class UserItem {
 final userProfileProvider = FutureProvider<UserItem>((ref) async {
   final client = ref.watch(clientProvider);
   var profile = client!.getUserProfile();
+  DispName name = await profile.getDisplayName();
   return UserItem(
     avatar: profile.getAvatar(),
-    displayName: await profile.getDisplayName(),
+    displayName: name.text(),
   );
 });
 
