@@ -262,6 +262,7 @@ impl Room {
             .await?
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn send_image_message(
         &self,
         uri: String,
@@ -270,6 +271,7 @@ impl Room {
         size: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
+        blurhash: Option<String>,
     ) -> Result<OwnedEventId> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()

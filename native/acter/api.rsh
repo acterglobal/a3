@@ -78,7 +78,7 @@ object NewsSlide {
     fn type_str() -> string;
     /// the textual content of this slide
     fn text() -> string;
-    /// the references linked in this slide,
+    /// the references linked in this slide
     fn references() -> Vec<ObjRef>;
 
     /// if this is an image, hand over the description
@@ -114,14 +114,51 @@ object NewsEntry {
     fn comments_count() -> u32;
     /// how many likes on this news entry
     fn likes_count() -> u32;
+
+    /// get room id
+    fn room_id() -> RoomId;
 }
 
 object NewsEntryDraft {
+    /// create news slide for text msg
+    fn add_text_slide(body: string);
 
+    /// create news slide for image msg
+    fn add_image_slide(body: string, url: string, mimetype: Option<string>, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>);
+
+    /// create news slide for audio msg
+    fn add_audio_slide(body: string, url: string, secs: Option<u32>, mimetype: Option<string>, size: Option<u32>);
+
+    /// create news slide for video msg
+    fn add_video_slide(body: string, url: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, mimetype: Option<string>, size: Option<u32>, blurhash: Option<string>);
+
+    /// create news slide for file msg
+    fn add_file_slide(body: string, url: string, mimetype: Option<string>, size: Option<u32>);
+
+    /// clear slides
+    fn unset_slides();
+
+    /// set the color for this news entry
+    fn colors(colors: Colorize);
+    fn unset_colors();
+
+    /// create this news entry
+    fn send() -> Future<Result<EventId>>;
 }
 
 object NewsEntryUpdateBuilder {
+    /// set the slides for this news entry
+    fn slides(slides: Vec<NewsSlide>);
+    fn unset_slides();
+    fn unset_slides_update();
 
+    /// set the color for this news entry
+    fn colors(colors: Colorize);
+    fn unset_colors();
+    fn unset_colors_update();
+
+    /// update this news entry
+    fn send() -> Future<Result<EventId>>;
 }
 
 object Tag {
@@ -235,10 +272,6 @@ object CalendarEvent {
     // fn locations() -> Vec<Location>;
 }
 
-object MxcUri {
-    fn to_string() -> string;
-}
-
 object MediaSource {
     fn url() -> string;
 }
@@ -259,6 +292,10 @@ object DeviceId {
 }
 
 object EventId {
+    fn to_string() -> string;
+}
+
+object MxcUri {
     fn to_string() -> string;
 }
 
@@ -522,9 +559,9 @@ object Conversation {
     fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;
 
     /// send the image message to this room
-    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<EventId>>;
+    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> Future<Result<EventId>>;
 
-    /// decrypted image buffer data
+    /// decrypted image file data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
@@ -729,20 +766,20 @@ object TaskUpdateBuilder {
     fn unset_color_update();
 
     /// set the utc_due for this task list in rfc3339 format
-    fn utc_due_from_rfc3339(utc_due: string) -> Result<bool>;
+    fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
     /// set the utc_due for this task list in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string)-> Result<bool>;
+    fn utc_due_from_rfc2822(utc_due: string)-> Result<()>;
     /// set the utc_due for this task list in custom format
-    fn utc_due_from_format(utc_due: string, format: string)-> Result<bool>;
+    fn utc_due_from_format(utc_due: string, format: string)-> Result<()>;
     fn unset_utc_due();
     fn unset_utc_due_update();
 
     /// set the utc_start for this task list in rfc3339 format
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<bool>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this task list in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string)-> Result<bool>;
+    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
     /// set the utc_start for this task list in custom format
-    fn utc_start_from_format(utc_start: string, format: string)-> Result<bool>;
+    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
     fn unset_utc_start();
     fn unset_utc_start_update();
 
@@ -778,7 +815,7 @@ object TaskUpdateBuilder {
     /// mark as not done
     fn mark_undone();
 
-    /// send this task update
+    /// update this task
     fn send() -> Future<Result<EventId>>;
 }
 
@@ -786,50 +823,52 @@ object TaskDraft {
     /// set the title for this task
     fn title(title: string);
 
-    /// set the description for this task list
+    /// set the description for this task
     fn description_text(text: string);
     fn unset_description();
 
-    /// set the sort order for this task list
+    /// set the sort order for this task
     fn sort_order(sort_order: u32);
 
-    /// set the color for this task list
+    /// set the color for this task
     fn color(color: EfkColor);
     fn unset_color();
 
-    /// set the utc_due for this task list in rfc3339 format
-    fn utc_due_from_rfc3339(utc_due: string) -> Result<bool>;
-    /// set the utc_due for this task list in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string)-> Result<bool>;
-    /// set the utc_due for this task list in custom format
-    fn utc_due_from_format(utc_due: string, format: string)-> Result<bool>;
+    /// set the utc_due for this task in rfc3339 format
+    fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
+    /// set the utc_due for this task in rfc2822 format
+    fn utc_due_from_rfc2822(utc_due: string)-> Result<()>;
+    /// set the utc_due for this task in custom format
+    fn utc_due_from_format(utc_due: string, format: string)-> Result<()>;
     fn unset_utc_due();
 
-    /// set the utc_start for this task list in rfc3339 format
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<bool>;
-    /// set the utc_start for this task list in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string)-> Result<bool>;
-    /// set the utc_start for this task list in custom format
-    fn utc_start_from_format(utc_start: string, format: string)-> Result<bool>;
+    /// set the utc_start for this task in rfc3339 format
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
+    /// set the utc_start for this task in rfc2822 format
+    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
+    /// set the utc_start for this task in custom format
+    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
     fn unset_utc_start();
 
-    /// set the sort order for this task list
+    /// set the sort order for this task
     fn progress_percent(progress_percent: u8);
     fn unset_progress_percent();
 
-    /// set the keywords for this task list
+    /// set the keywords for this task
     fn keywords(keywords: Vec<string>);
     fn unset_keywords();
-    /// set the categories for this task list
+
+    /// set the categories for this task
     fn categories(categories: Vec<string>);
     fn unset_categories();
-    /// set the assignees for this task list
+
+    /// set the assignees for this task
     fn assignees(assignees: Vec<UserId>);
     fn unset_assignees();
-    /// set the subscribers for this task list
+
+    /// set the subscribers for this task
     fn subscribers(subscribers: Vec<UserId>);
     fn unset_subscribers();
-    /// send this task list draft
 
     /// create this task
     fn send() -> Future<Result<EventId>>;
@@ -885,53 +924,67 @@ object TaskList {
 object TaskListDraft {
     /// set the name for this task list
     fn name(name: string);
+
     /// set the description for this task list
     fn description_text(text: string);
     fn unset_description();
+
     /// set the sort order for this task list
     fn sort_order(sort_order: u32);
+
     /// set the color for this task list
     fn color(color: EfkColor);
     fn unset_color();
+
     /// set the keywords for this task list
     fn keywords(keywords: Vec<string>);
     fn unset_keywords();
+
     /// set the categories for this task list
     fn categories(categories: Vec<string>);
     fn unset_categories();
+
     /// set the subscribers for this task list
     fn subscribers(subscribers: Vec<UserId>);
     fn unset_subscribers();
-    /// send this task list draft
+
+    /// create this task list
     fn send() -> Future<Result<EventId>>;
 }
 
 object TaskListUpdateBuilder {
     /// set the name for this task list
     fn name(name: string);
+
     /// set the description for this task list
     fn description_text(text: string);
     fn unset_description();
     fn unset_description_update();
+
     /// set the sort order for this task list
     fn sort_order(sort_order: u32);
+
     /// set the color for this task list
     fn color(color: EfkColor);
     fn unset_color();
     fn unset_color_update();
+
     /// set the keywords for this task list
     fn keywords(keywords: Vec<string>);
     fn unset_keywords();
     fn unset_keywords_update();
+
     /// set the categories for this task list
     fn categories(categories: Vec<string>);
     fn unset_categories();
     fn unset_categories_update();
+
     /// set the subscribers for this task list
     fn subscribers(subscribers: Vec<UserId>);
     fn unset_subscribers();
     fn unset_subscribers_update();
-    /// send this task update
+
+    /// update this task
     fn send() -> Future<Result<EventId>>;
 }
 
@@ -994,12 +1047,12 @@ object Space {
     fn task_list_draft() -> Result<TaskListDraft>;
 
     /// get latest news
-    fn latest_news(count: u32) -> Future<Result<Vec<NewsEntry>>>;
+    fn latest_news_entries(count: u32) -> Future<Result<Vec<NewsEntry>>>;
 
     /// get all calendar events
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
 
-    /// news draft builder
+    /// create news draft
     fn news_draft() -> Result<NewsEntryDraft>;
 
     /// the pins of this Space
@@ -1010,6 +1063,38 @@ object Space {
 
     /// pin draft builder
     fn pin_draft() -> Result<PinDraft>;
+
+    /// send the image message to this room
+    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> Future<Result<EventId>>;
+
+    /// decrypted image buffer data
+    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+    fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// send the audio message to this room
+    fn send_audio_message(uri: string, name: string, mimetype: string, secs: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
+
+    /// decrypted audio buffer data
+    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+    fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// send the video message to this room
+    fn send_video_message(uri: string, name: string, mimetype: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, size: Option<u32>, blurhash: Option<string>) -> Future<Result<EventId>>;
+
+    /// decrypted video buffer data
+    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+    fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// send the file message to this room
+    fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<EventId>>;
+
+    /// decrypted file buffer data
+    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+    fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 }
 
 object Member {
@@ -1111,7 +1196,7 @@ object Client {
     fn get_space(id_or_alias: string) -> Future<Result<Space>>;
 
     /// Get the latest News for the client
-    fn latest_news(count: u32) -> Future<Result<Vec<NewsEntry>>>;
+    fn latest_news_entries(count: u32) -> Future<Result<Vec<NewsEntry>>>;
 
     /// Get the Pins for the client
     fn pins() -> Future<Result<Vec<ActerPin>>>;

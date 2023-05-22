@@ -1,9 +1,10 @@
-import 'package:acter/features/home/states/client_state.dart';
+import 'dart:core';
+
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:core';
 
 Future<ProfileData> getProfileData(Space space) async {
   // FIXME: how to get informed about updates!?!
@@ -27,6 +28,42 @@ final spacesProvider = FutureProvider<List<Space>>((ref) async {
   // FIXME: how to get informed about updates!?!
   final spaces = await client.spaces();
   return spaces.toList();
+});
+
+class SpaceItem {
+  String roomId;
+  String? displayName;
+  List<Member> activeMembers;
+  Future<FfiBufferUint8?> avatar;
+
+  SpaceItem({
+    required this.roomId,
+    required this.activeMembers,
+    this.displayName,
+    required this.avatar,
+  });
+}
+
+final spaceItemsProvider = FutureProvider<List<SpaceItem>>((ref) async {
+  final client = ref.watch(clientProvider)!;
+  // FIXME: how to get informed about updates!?!
+  final spaces = await client.spaces();
+  List<SpaceItem> items = [];
+  spaces.toList().forEach((element) async {
+    RoomProfile profile = element.getProfile();
+    List<Member> members =
+        await element.activeMembers().then((ffiList) => ffiList.toList());
+    var item = SpaceItem(
+      roomId: element.getRoomId().toString(),
+      displayName: await profile.getDisplayName(),
+      activeMembers: members,
+      avatar: profile.hasAvatar()
+          ? profile.getThumbnail(120, 120)
+          : Future.value(null),
+    );
+    items.add(item);
+  });
+  return items;
 });
 
 final spaceProvider =

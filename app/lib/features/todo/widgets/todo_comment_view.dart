@@ -1,9 +1,7 @@
-import 'package:acter/features/news/controllers/news_comment_controller.dart';
 import 'package:acter/models/CommentModel.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:get/get.dart';
 
 class ToDoCommentView extends StatefulWidget {
   final CommentModel commentModel;
@@ -21,14 +19,11 @@ class ToDoCommentView extends StatefulWidget {
 
 class ToDoCommentViewState extends State<ToDoCommentView> {
   bool replyView = false;
-  final newsCommentController = Get.put(NewsCommentController());
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onDoubleTap: () {
-        newsCommentController.handleCommentLikeClick(widget.postition);
-      },
+      onDoubleTap: () {},
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -90,10 +85,7 @@ class ToDoCommentViewState extends State<ToDoCommentView> {
                 Column(
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        newsCommentController
-                            .handleCommentLikeClick(widget.postition);
-                      },
+                      onTap: () {},
                       child: widget.commentModel.liked
                           ? const Icon(Icons.favorite, color: Colors.red)
                           : const Icon(Atlas.heart, color: Colors.red),

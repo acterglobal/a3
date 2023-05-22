@@ -5,11 +5,11 @@ import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/states/auth_state.dart';
 import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
+import 'package:acter/main/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:acter/common/utils/constants.dart' show LoginPageKeys;
 import 'package:go_router/go_router.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -23,11 +23,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
-  final desktopPlatforms = [
-    TargetPlatform.linux,
-    TargetPlatform.macOS,
-    TargetPlatform.windows
-  ];
+
   @override
   void dispose() {
     username.dispose();
@@ -74,18 +70,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               SizedBox(
                 height: 50,
                 width: 50,
-                child: SvgPicture.asset(
-                  'assets/icon/acter.svg',
-                ),
+                child: SvgPicture.asset('assets/icon/acter.svg'),
               ),
               const SizedBox(height: 20),
-              Text(
-                AppLocalizations.of(context)!.welcomeBack,
-              ),
+              Text(AppLocalizations.of(context)!.welcomeBack),
               const SizedBox(height: 20),
-              Text(
-                AppLocalizations.of(context)!.signInContinue,
-              ),
+              Text(AppLocalizations.of(context)!.signInContinue),
               const SizedBox(height: 40),
               SignInTextField(
                 key: LoginPageKeys.usernameField,
@@ -110,9 +100,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 alignment: Alignment.bottomRight,
                 child: TextButton(
                   onPressed: () {},
-                  child: Text(
-                    AppLocalizations.of(context)!.forgotPassword,
-                  ),
+                  child: Text(AppLocalizations.of(context)!.forgotPassword),
                 ),
               ),
               const SizedBox(height: 40),
@@ -140,13 +128,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    AppLocalizations.of(context)!.noAccount,
-                  ),
+                  Text(AppLocalizations.of(context)!.noAccount),
                   const SizedBox(width: 2),
                   InkWell(
                     key: LoginPageKeys.signUpBtn,
-                    onTap: () => context.go('/signup'),
+                    onTap: () => context.goNamed(Routes.authRegister.name),
                     child: Text(
                       AppLocalizations.of(context)!.signUp,
                       style: TextStyle(

@@ -61,8 +61,8 @@ use matrix_sdk::{
                 join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
                 member::{MembershipState, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
                 message::{
-                    MessageFormat, MessageType, OriginalRoomMessageEvent,
-                    OriginalSyncRoomMessageEvent,
+                    AudioInfo, FileInfo, MessageFormat, MessageType, OriginalRoomMessageEvent,
+                    OriginalSyncRoomMessageEvent, VideoInfo,
                 },
                 name::{OriginalRoomNameEvent, OriginalSyncRoomNameEvent},
                 pinned_events::{OriginalRoomPinnedEventsEvent, OriginalSyncRoomPinnedEventsEvent},
@@ -1874,6 +1874,11 @@ impl RoomMessage {
                     )
                 });
             }
+            MessageType::Audio(content) => {
+                audio_desc = content.info.as_ref().map(|info| {
+                    AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone())
+                });
+            }
             MessageType::Video(content) => {
                 video_desc = content.info.as_ref().map(|info| {
                     VideoDesc::new(
@@ -1958,6 +1963,15 @@ impl RoomMessage {
             MessageType::Image(content) => {
                 image_desc = content.info.as_ref().map(|info| {
                     ImageDesc::new(
+                        content.body.clone(),
+                        content.source.clone(),
+                        *info.to_owned(),
+                    )
+                });
+            }
+            MessageType::Audio(content) => {
+                audio_desc = content.info.as_ref().map(|info| {
+                    AudioDesc::new(
                         content.body.clone(),
                         content.source.clone(),
                         *info.to_owned(),
@@ -2736,6 +2750,15 @@ impl RoomMessage {
                     MessageType::Image(content) => {
                         image_desc = content.info.as_ref().map(|info| {
                             ImageDesc::new(
+                                content.body.clone(),
+                                content.source.clone(),
+                                *info.clone(),
+                            )
+                        });
+                    }
+                    MessageType::Audio(content) => {
+                        audio_desc = content.info.as_ref().map(|info| {
+                            AudioDesc::new(
                                 content.body.clone(),
                                 content.source.clone(),
                                 *info.clone(),

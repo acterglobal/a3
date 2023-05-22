@@ -579,6 +579,7 @@ class ChatRoomController extends GetxController {
         bytes.length,
         image.width,
         image.height,
+        null,
       );
     }
   }
@@ -622,6 +623,7 @@ class ChatRoomController extends GetxController {
         bytes.length,
         image.width,
         image.height,
+        null,
       );
     }
   }

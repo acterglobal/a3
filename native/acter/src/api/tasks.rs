@@ -64,8 +64,8 @@ impl Client {
             .context("Couldn't get task lists from store")?
         {
             #[allow(irrefutable_let_patterns)]
-            if let AnyActerModel::TaskList(t) = mdl {
-                let room_id = t.room_id().to_owned();
+            if let AnyActerModel::TaskList(content) = mdl {
+                let room_id = content.room_id().to_owned();
                 let room = match rooms_map.entry(room_id) {
                     Entry::Occupied(t) => t.get().clone(),
                     Entry::Vacant(e) => {
@@ -81,7 +81,7 @@ impl Client {
                 task_lists.push(TaskList {
                     client: client.clone(),
                     room,
-                    content: t,
+                    content,
                 })
             } else {
                 tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
@@ -98,17 +98,17 @@ impl Client {
             .await
             .context("Couldn't get task list from store")?;
 
-        let AnyActerModel::TaskList(task_list) = mdl else  {
+        let AnyActerModel::TaskList(content) = mdl else  {
             bail!("Not a Tasklist model: {key}")
         };
-        let Some(room) = client.get_room(task_list.room_id()) else {
+        let Some(room) = client.get_room(content.room_id()) else {
             bail!("Room not found for task_list item");
         };
 
         Ok(TaskList {
             client: client.clone(),
             room,
-            content: task_list,
+            content,
         })
     }
 }
@@ -125,12 +125,12 @@ impl Space {
             .context("Couldn't get task list from store")?
         {
             #[allow(irrefutable_let_patterns)]
-            if let AnyActerModel::TaskList(t) = mdl {
+            if let AnyActerModel::TaskList(content) = mdl {
                 task_lists.push(TaskList {
                     client: self.client.clone(),
                     room: self.room.clone(),
-                    content: t,
-                })
+                    content,
+                });
             } else {
                 tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
             }
@@ -146,18 +146,18 @@ impl Space {
             .await
             .context("Couldn't get task list from store")?;
 
-        let AnyActerModel::TaskList(task_list) = mdl else  {
+        let AnyActerModel::TaskList(content) = mdl else  {
             bail!("Not a Tasklist model: {key}")
         };
         assert!(
-            self.room_id() == task_list.room_id(),
+            self.room_id() == content.room_id(),
             "This task doesn't belong to this room"
         );
 
         Ok(TaskList {
             client: self.client.clone(),
             room: self.room.clone(),
-            content: task_list,
+            content,
         })
     }
 }
@@ -176,8 +176,8 @@ impl TaskListDraft {
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
-        self.content
-            .description(Some(TextMessageEventContent::plain(body)));
+        let desc = TextMessageEventContent::plain(body);
+        self.content.description(Some(desc));
         self
     }
 
@@ -201,7 +201,8 @@ impl TaskListDraft {
         self
     }
 
-    pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
         self.content.keywords(keywords.to_vec());
         self
     }
@@ -211,7 +212,8 @@ impl TaskListDraft {
         self
     }
 
-    pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn categories(&mut self, categories: &mut Vec<String>) -> &mut Self {
         self.content.categories(categories.to_vec());
         self
     }
@@ -221,7 +223,8 @@ impl TaskListDraft {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
         self.content.subscribers(subscribers.to_vec());
         self
     }
@@ -565,8 +568,8 @@ impl TaskDraft {
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
-        self.content
-            .description(Some(TextMessageEventContent::plain(body)));
+        let desc = TextMessageEventContent::plain(body);
+        self.content.description(Some(desc));
         self
     }
 
@@ -590,22 +593,22 @@ impl TaskDraft {
         self
     }
 
-    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<bool> {
-        self.content
-            .utc_due(Some(DateTime::parse_from_rfc3339(&utc_due)?.into()));
-        Ok(true)
+    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc3339(&utc_due)?.into();
+        self.content.utc_due(Some(dt));
+        Ok(())
     }
 
-    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<bool> {
-        self.content
-            .utc_due(Some(DateTime::parse_from_rfc2822(&utc_due)?.into()));
-        Ok(true)
+    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc2822(&utc_due)?.into();
+        self.content.utc_due(Some(dt));
+        Ok(())
     }
 
-    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<bool> {
-        self.content
-            .utc_due(Some(DateTime::parse_from_str(&utc_due, &format)?.into()));
-        Ok(true)
+    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<()> {
+        let dt = DateTime::parse_from_str(&utc_due, &format)?.into();
+        self.content.utc_due(Some(dt));
+        Ok(())
     }
 
     pub fn unset_utc_due(&mut self) -> &mut Self {
@@ -613,22 +616,22 @@ impl TaskDraft {
         self
     }
 
-    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<bool> {
-        self.content
-            .utc_start(Some(DateTime::parse_from_rfc3339(&utc_start)?.into()));
-        Ok(true)
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc3339(&utc_start)?.into();
+        self.content.utc_start(Some(dt));
+        Ok(())
     }
 
-    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<bool> {
-        self.content
-            .utc_start(Some(DateTime::parse_from_rfc2822(&utc_start)?.into()));
-        Ok(true)
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc2822(&utc_start)?.into();
+        self.content.utc_start(Some(dt));
+        Ok(())
     }
 
-    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<bool> {
-        self.content
-            .utc_start(Some(DateTime::parse_from_str(&utc_start, &format)?.into()));
-        Ok(true)
+    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<()> {
+        let dt = DateTime::parse_from_str(&utc_start, &format)?.into();
+        self.content.utc_start(Some(dt));
+        Ok(())
     }
 
     pub fn unset_utc_start(&mut self) -> &mut Self {
@@ -650,7 +653,8 @@ impl TaskDraft {
         self
     }
 
-    pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
         self.content.keywords(keywords.to_vec());
         self
     }
@@ -660,7 +664,8 @@ impl TaskDraft {
         self
     }
 
-    pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn categories(&mut self, categories: &mut Vec<String>) -> &mut Self {
         self.content.categories(categories.to_vec());
         self
     }
@@ -670,7 +675,8 @@ impl TaskDraft {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
         self.content.subscribers(subscribers.to_vec());
         self
     }
@@ -680,7 +686,8 @@ impl TaskDraft {
         self
     }
 
-    pub fn assignees(&mut self, assignees: &mut [OwnedUserId]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn assignees(&mut self, assignees: &mut Vec<OwnedUserId>) -> &mut Self {
         self.content.assignees(assignees.to_vec());
         self
     }
@@ -727,8 +734,8 @@ impl TaskUpdateBuilder {
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
-        self.content
-            .description(Some(Some(TextMessageEventContent::plain(body))));
+        let desc = TextMessageEventContent::plain(body);
+        self.content.description(Some(Some(desc)));
         self
     }
 
@@ -768,7 +775,8 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
         self.content.keywords(Some(keywords.to_vec()));
         self
     }
@@ -783,7 +791,8 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn categories(&mut self, categories: &mut Vec<String>) -> &mut Self {
         self.content.categories(Some(categories.to_vec()));
         self
     }
@@ -798,7 +807,8 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
         self.content.subscribers(Some(subscribers.to_vec()));
         self
     }
@@ -813,7 +823,8 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn assignees(&mut self, assignees: &mut [OwnedUserId]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn assignees(&mut self, assignees: &mut Vec<OwnedUserId>) -> &mut Self {
         self.content.assignees(Some(assignees.to_vec()));
         self
     }
@@ -838,24 +849,24 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<bool> {
-        self.content
-            .utc_due(Some(Some(DateTime::parse_from_rfc3339(&utc_due)?.into())));
-        Ok(true)
+    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc3339(&utc_due)?.into();
+        self.content.utc_due(Some(Some(dt)));
+        Ok(())
     }
 
-    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<bool> {
-        self.content
-            .utc_due(Some(Some(DateTime::parse_from_rfc2822(&utc_due)?.into())));
-        Ok(true)
+    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc2822(&utc_due)?.into();
+        self.content.utc_due(Some(Some(dt)));
+        Ok(())
     }
 
-    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<bool> {
-        self.content.utc_due(Some(Some(
-            DateTime::parse_from_str(&utc_due, &format)?.into(),
-        )));
-        Ok(true)
+    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<()> {
+        let dt = DateTime::parse_from_str(&utc_due, &format)?.into();
+        self.content.utc_due(Some(Some(dt)));
+        Ok(())
     }
+
     pub fn unset_utc_due(&mut self) -> &mut Self {
         self.content.utc_due(Some(None));
         self
@@ -866,29 +877,29 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<bool> {
-        self.content
-            .utc_start(Some(Some(DateTime::parse_from_rfc3339(&utc_start)?.into())));
-        Ok(true)
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc3339(&utc_start)?.into();
+        self.content.utc_start(Some(Some(dt)));
+        Ok(())
     }
 
-    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<bool> {
-        self.content
-            .utc_start(Some(Some(DateTime::parse_from_rfc2822(&utc_start)?.into())));
-        Ok(true)
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc2822(&utc_start)?.into();
+        self.content.utc_start(Some(Some(dt)));
+        Ok(())
     }
 
-    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<bool> {
-        self.content.utc_start(Some(Some(
-            DateTime::parse_from_str(&utc_start, &format)?.into(),
-        )));
-        Ok(true)
+    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<()> {
+        let dt = DateTime::parse_from_str(&utc_start, &format)?.into();
+        self.content.utc_start(Some(Some(dt)));
+        Ok(())
     }
 
     pub fn unset_utc_start(&mut self) -> &mut Self {
         self.content.utc_start(Some(None));
         self
     }
+
     pub fn unset_utc_start_update(&mut self) -> &mut Self {
         self.content.utc_start(None);
         self
@@ -950,8 +961,8 @@ impl TaskListUpdateBuilder {
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
-        self.content
-            .description(Some(TextMessageEventContent::plain(body)));
+        let desc = TextMessageEventContent::plain(body);
+        self.content.description(Some(desc));
         self
     }
 
@@ -986,7 +997,8 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
         self.content.keywords(Some(keywords.to_vec()));
         self
     }
@@ -1001,7 +1013,8 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn categories(&mut self, categories: &mut Vec<String>) -> &mut Self {
         self.content.categories(Some(categories.to_vec()));
         self
     }
@@ -1016,7 +1029,8 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
+    #[allow(clippy::ptr_arg)]
+    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
         self.content.subscribers(Some(subscribers.to_vec()));
         self
     }

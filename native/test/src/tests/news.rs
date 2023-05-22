@@ -70,7 +70,7 @@ async fn news_smoketest() -> Result<()> {
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
-            if client.latest_news(10).await?.len() != 3 {
+            if client.latest_news_entries(10).await?.len() != 3 {
                 bail!("not all news found");
             } else {
                 Ok(())
@@ -79,12 +79,18 @@ async fn news_smoketest() -> Result<()> {
     })
     .await?;
 
-    assert_eq!(user.latest_news(10).await?.len(), 3);
+    assert_eq!(user.latest_news_entries(10).await?.len(), 3);
 
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
 
     let main_space = spaces.first().unwrap();
-    assert_eq!(main_space.latest_news(10).await?.len(), 3);
+    assert_eq!(main_space.latest_news_entries(10).await?.len(), 3);
+
+    let mut draft = main_space.news_draft()?;
+    draft.add_text_slide("This is text slide".to_string());
+    let event_id = draft.send().await?;
+    print!("draft sent event id: {}", event_id.to_string());
+
     Ok(())
 }
