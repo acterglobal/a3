@@ -1,8 +1,9 @@
-use crate::config::LoginConfig;
-use anyhow::Result;
+use anyhow::{bail, Result};
 use clap::Parser;
 use futures::{pin_mut, StreamExt};
 use std::{collections::HashMap, path::PathBuf};
+
+use crate::config::LoginConfig;
 
 #[derive(Parser, Debug)]
 pub struct ExecuteOpts {
@@ -31,7 +32,7 @@ impl ExecuteOpts {
         let sync_state = user.start_sync();
 
         if !self.ignore_sync {
-            let mut is_synced = sync_state.first_synced_rx().expect("note yet read");
+            let mut is_synced = sync_state.first_synced_rx().expect("not yet read");
             while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         }
 
@@ -48,21 +49,15 @@ impl ExecuteOpts {
             };
             for (key, (is_required, is_space)) in input_values {
                 if let Some(res) = mapped_inputs.get(key.as_str()) {
-                    if is_space {
-                        tmpl_engine.add_ref(
-                            key.to_string(),
-                            "space".to_owned(),
-                            res.to_string(),
-                        )?;
-                    } else {
-                        anyhow::bail!("{key} : non-space input values not yet supported")
+                    if !is_space {
+                        bail!("{key} : non-space input values not yet supported");
                     }
+                    tmpl_engine.add_ref(key.to_string(), "space".to_owned(), res.to_string())?;
                 } else if is_required {
-                    if key == "main" {
-                        tracing::info!("Main user has been provided, ignoring.")
-                    } else {
-                        anyhow::bail!("Missing required input value {key} for {tmpl_path:?}");
+                    if key != "main" {
+                        bail!("Missing required input value {key} for {tmpl_path:?}");
                     }
+                    tracing::info!("Main user has been provided, ignoring.")
                 } else {
                     tracing::info!("No value provided for {key} for for {tmpl_path:?}");
                 }

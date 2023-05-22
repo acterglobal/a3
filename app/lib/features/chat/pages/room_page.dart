@@ -6,18 +6,18 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter/common/themes/chat_theme.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/pages/profile_page.dart';
 import 'package:acter/features/chat/widgets/bubble_builder.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:acter/features/chat/widgets/empty_history_placeholder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/chat/widgets/type_indicator.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8;
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show remapToImage;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -118,18 +118,24 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   Widget avatarBuilder(String userId) {
+    var avtr = roomController.getUserAvatar(userId);
+
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: SizedBox(
         height: 28,
         width: 28,
-        child: CustomAvatar(
-          uniqueKey: userId,
-          avatar: roomController.getUserAvatar(userId),
+        child: ActerAvatar(
+          mode: DisplayMode.User,
+          uniqueId: userId,
+          avatarProviderFuture: avtr != null
+              ? remapToImage(
+                  avtr,
+                  cacheHeight: 54,
+                )
+              : null,
           displayName: roomController.getUserName(userId),
-          radius: 50,
-          isGroup: false,
-          stringName: simplifyUserId(userId)!,
+          size: 50,
         ),
       ),
     );
@@ -426,6 +432,7 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   Widget buildProfileAction() {
+    String roomId = widget.conversation.getRoomId().toString();
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -444,22 +451,17 @@ class _RoomPageState extends State<RoomPage> {
       },
       child: Padding(
         padding: const EdgeInsets.only(right: 10),
-        child: SizedBox(
-          height: 45,
-          width: 45,
-          child: FittedBox(
-            fit: BoxFit.contain,
-            child: CustomAvatar(
-              uniqueKey: widget.conversation.getRoomId(),
-              avatar: widget.avatar,
-              displayName: widget.name,
-              radius: 20,
-              cacheHeight: 120,
-              cacheWidth: 120,
-              isGroup: true,
-              stringName: simplifyRoomId(widget.conversation.getRoomId())!,
-            ),
-          ),
+        child: ActerAvatar(
+          mode: DisplayMode.User,
+          uniqueId: roomId,
+          avatarProviderFuture: widget.avatar != null
+              ? remapToImage(
+                  widget.avatar!,
+                  cacheHeight: 90,
+                )
+              : null,
+          displayName: widget.name,
+          size: 45,
         ),
       ),
     );
@@ -523,7 +525,7 @@ class _RoomPageState extends State<RoomPage> {
                 customTypingIndicator: buildTypingIndicator(),
               ),
               onSendPressed: (types.PartialText partialText) {},
-              user: types.User(id: widget.client.account().userId()),
+              user: types.User(id: widget.client.userId().toString()),
               // disable image preview
               disableImageGallery: true,
               //custom avatar builder
@@ -672,7 +674,7 @@ class _RoomPageState extends State<RoomPage> {
       id: 'chat-bubble',
       builder: (context) {
         return BubbleBuilder(
-          userId: widget.client.account().userId(),
+          userId: widget.client.userId().toString(),
           child: child,
           message: message,
           nextMessageInGroup: nextMessageInGroup,

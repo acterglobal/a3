@@ -199,8 +199,7 @@ impl VerificationEvent {
         let sender = self.sender.clone();
         let event_id = self.event_id.clone();
         let txn_id = self.txn_id.clone();
-        let values: Vec<VerificationMethod> =
-            (*methods).iter().map(|e| e.as_str().into()).collect();
+        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
                 if let Some(event_id) = event_id {
@@ -274,12 +273,15 @@ impl VerificationEvent {
             .await?
     }
 
-    pub fn was_triggered_from_this_device(&self) -> Option<bool> {
+    pub fn was_triggered_from_this_device(&self) -> Result<bool> {
         let device_id = self
             .client
             .device_id()
-            .expect("guest user cannot get device id");
-        self.launcher.clone().map(|dev_id| dev_id == *device_id)
+            .context("guest user cannot get device id")?;
+        match self.launcher.clone() {
+            Some(dev_id) => Ok(dev_id == *device_id),
+            None => Ok(false),
+        }
     }
 
     pub async fn accept_sas_verification(&self) -> Result<bool> {
@@ -295,7 +297,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.accept().await?;
+                        sas.accept().await.context("Couldn't accept sas")?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -304,7 +306,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.accept().await?;
+                        sas.accept().await.context("Couldn't accept sas")?;
                         return Ok(true);
                     }
                 }
@@ -328,7 +330,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.cancel().await?;
+                        sas.cancel().await.context("Couldn't cancel sas")?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -337,7 +339,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.cancel().await?;
+                        sas.cancel().await.context("Couldn't cancel sas")?;
                         return Ok(true);
                     }
                 }
@@ -353,7 +355,10 @@ impl VerificationEvent {
         let sender = self.sender.clone();
         RUNTIME
             .spawn(async move {
-                client.sync_once(SyncSettings::default()).await?; // send_outgoing_requests is called there
+                client
+                    .sync_once(SyncSettings::default())
+                    .await
+                    .context("Couldn't sync once")?; // send_outgoing_requests is called there
                 Ok(true)
             })
             .await?
@@ -372,7 +377,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.cancel().await?;
+                        sas.cancel().await.context("Couldn't cancel sas")?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -381,7 +386,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.cancel().await?;
+                        sas.cancel().await.context("Couldn't cancel sas")?;
                         return Ok(true);
                     }
                 }
@@ -458,7 +463,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.confirm().await?;
+                        sas.confirm().await.context("Couldn't confirm sas")?;
                         return Ok(sas.is_done());
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -467,7 +472,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.confirm().await?;
+                        sas.confirm().await.context("Couldn't confirm sas")?;
                         return Ok(sas.is_done());
                     }
                 }
@@ -491,7 +496,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.mismatch().await?;
+                        sas.mismatch().await.context("Couldn't mismatch sas")?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -500,7 +505,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.mismatch().await?;
+                        sas.mismatch().await.context("Couldn't mismatch sas")?;
                         return Ok(true);
                     }
                 }

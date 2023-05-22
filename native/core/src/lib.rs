@@ -11,12 +11,14 @@ pub mod error;
 pub mod events;
 pub mod executor;
 pub mod models;
+pub mod spaces;
 pub mod statics;
 pub mod store;
 pub mod support;
+
 pub use error::{Error, Result};
 pub use support::RestoreToken;
-pub mod spaces;
+
 #[cfg(feature = "templates")]
 pub mod templates;
 pub mod util;

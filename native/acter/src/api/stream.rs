@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use eyeball_im::VectorDiff;
 use futures::{Stream, StreamExt};
 use log::info;
@@ -170,7 +170,8 @@ impl TimelineStream {
                 let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
                 timeline
                     .paginate_backwards(PaginationOptions::single_request(count))
-                    .await?;
+                    .await
+                    .context("Couldn't paginate backwards from timeline")?;
 
                 let mut is_loading_indicator = false;
                 if let Some(VectorDiff::Insert { index: 0, value }) = timeline_stream.next().await {
@@ -228,13 +229,13 @@ impl TimelineStream {
                             }
                             VectorDiff::PushBack { value } => {
                                 info!("stream forward timeline push_back");
-                                let inner = timeline_item_to_message(value, room.clone());
-                                return Ok(inner);
+                                let msg = timeline_item_to_message(value, room.clone());
+                                return Ok(msg);
                             }
                             VectorDiff::PushFront { value } => {
                                 info!("stream forward timeline push_front");
-                                let inner = timeline_item_to_message(value, room.clone());
-                                return Ok(inner);
+                                let msg = timeline_item_to_message(value, room.clone());
+                                return Ok(msg);
                             }
                             VectorDiff::PopBack => {
                                 info!("stream forward timeline pop_back");
@@ -272,11 +273,14 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let timeline_event = room.event(&event_id).await.expect("Couldn't find event.");
+                let timeline_event = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't find event.")?;
                 let event_content = timeline_event
                     .event
                     .deserialize_as::<RoomMessageEvent>()
-                    .expect("Couldn't deserialise event");
+                    .context("Couldn't deserialise event")?;
 
                 let mut sent_by_me = false;
                 if let Some(user_id) = client.user_id() {

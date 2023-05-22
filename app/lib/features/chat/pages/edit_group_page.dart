@@ -1,6 +1,5 @@
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -48,10 +47,9 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String roomId = widget.room.getRoomId().toString();
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-      ),
+      appBar: AppBar(elevation: 0.0),
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -69,13 +67,11 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
                     width: 100,
                     child: FittedBox(
                       fit: BoxFit.contain,
-                      child: CustomAvatar(
-                        uniqueKey: widget.room.getRoomId(),
-                        avatar: avatar,
+                      child: ActerAvatar(
+                        mode: DisplayMode.GroupChat,
+                        uniqueId: roomId,
                         displayName: displayName,
-                        radius: 20,
-                        isGroup: true,
-                        stringName: simplifyRoomId(widget.room.getRoomId())!,
+                        size: 20,
                       ),
                     ),
                   ),

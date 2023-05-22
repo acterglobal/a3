@@ -1,8 +1,8 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, FfiBufferUint8, Invitation;
 import 'package:flutter/material.dart';
@@ -47,21 +47,24 @@ class _InviteInfoCardState extends State<InviteInfoCard> {
 
   @override
   Widget build(BuildContext context) {
-    String myId = widget.client.account().userId();
+    String myId = widget.client.userId().toString();
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 1),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ListTile(
-            // leading: CircleAvatar(backgroundColor: avatarColor),
-            leading: CustomAvatar(
-              uniqueKey: myId,
-              avatar: avatar,
+            leading: ActerAvatar(
+              mode: DisplayMode.User,
+              uniqueId: myId,
+              avatarProviderFuture: avatar != null
+                  ? remapToImage(
+                      avatar!,
+                      cacheHeight: 54,
+                    )
+                  : null,
               displayName: displayName,
-              radius: 20,
-              isGroup: true,
-              stringName: simplifyUserId(myId)!,
+              size: 20,
             ),
             title: _TitleWidget(invitation: widget.invitation),
             subtitle: _SubtitleWidget(invitation: widget.invitation),
@@ -146,25 +149,43 @@ class _TitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      invitation.sender(),
-    );
+    return Text(invitation.sender().toString());
   }
 }
 
-class _SubtitleWidget extends StatelessWidget {
-  const _SubtitleWidget({required this.invitation});
-
+class _SubtitleWidget extends StatefulWidget {
   final Invitation invitation;
+
+  const _SubtitleWidget({
+    Key? key,
+    required this.invitation,
+  }) : super(key: key);
+
+  @override
+  State<_SubtitleWidget> createState() => _SubtitleWidgetState();
+}
+
+class _SubtitleWidgetState extends State<_SubtitleWidget> {
+  String? roomName;
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.invitation.roomName().then((value) {
+      if (mounted) {
+        setState(() => roomName = value);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return RichText(
       text: TextSpan(
         text: AppLocalizations.of(context)!.invitationText2,
         children: <TextSpan>[
-          TextSpan(
-            text: invitation.roomName(),
-          ),
+          TextSpan(text: roomName),
         ],
       ),
     );

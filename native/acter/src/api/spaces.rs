@@ -17,7 +17,7 @@ use acter_core::{
     statics::default_acter_space_states,
     templates::Engine,
 };
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use log::warn;
 use matrix_sdk::{
@@ -60,7 +60,8 @@ impl Space {
         let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
         engine
             .add_user("main".to_owned(), self.client.core.clone())
-            .await?;
+            .await
+            .context("Couldn't add user to engine")?;
         engine.add_ref(
             "space".to_owned(),
             "space".to_owned(),
@@ -265,8 +266,8 @@ impl Space {
         );
     }
 
-    pub fn get_room_id(&self) -> String {
-        self.room_id().to_string()
+    pub fn get_room_id(&self) -> OwnedRoomId {
+        self.room_id().to_owned()
     }
 
     pub async fn set_acter_space_states(&self) -> Result<()> {
@@ -287,7 +288,11 @@ impl Space {
                 state_key,
                 body,
             );
-            joined.client().send(request, None).await?;
+            joined
+                .client()
+                .send(request, None)
+                .await
+                .context("Couldn't send state event")?;
         }
         Ok(())
     }
@@ -298,7 +303,7 @@ impl Space {
         let room_id = room.room_id();
         tracing::trace!(name, ?room_id, "refreshing history");
         let client = room.room.client();
-        // room.sync_members().await?;
+        // room.sync_members().await.context("Couldn't sync members of room")?;
 
         let custom_storage_key = format!("{room_id}::history");
 
@@ -324,7 +329,10 @@ impl Space {
             tracing::trace!(name, ?msg_options, "fetching messages");
             let Messages {
                 end, chunk, state, ..
-            } = room.messages(msg_options).await?;
+            } = room
+                .messages(msg_options)
+                .await
+                .context("Couldn't get messages of room")?;
             tracing::trace!(name, ?chunk, end, "messages received");
 
             let has_chunks = !chunk.is_empty();
@@ -366,7 +374,8 @@ impl Space {
                         custom_storage_key.as_bytes(),
                         serde_json::to_vec(&HistoryState { seen })?,
                     )
-                    .await?;
+                    .await
+                    .context("Couldn't set custom value to store")?;
             } else {
                 // how do we want to understand this case?
                 tracing::trace!(room_id = ?room.room_id(), "Done loading");
@@ -386,7 +395,13 @@ impl Space {
         let c = self.client.core.clone();
         let room = self.room.clone();
         RUNTIME
-            .spawn(async move { Ok(c.space_relations(&room).await?) })
+            .spawn(async move {
+                let relations = c
+                    .space_relations(&room)
+                    .await
+                    .context("Couldn't get space relations of client")?;
+                Ok(relations)
+            })
             .await?
     }
 }
@@ -418,7 +433,13 @@ impl Client {
     ) -> Result<OwnedRoomId> {
         let c = self.core.clone();
         RUNTIME
-            .spawn(async move { Ok(c.create_acter_space(Box::into_inner(settings)).await?) })
+            .spawn(async move {
+                let room_id = c
+                    .create_acter_space(Box::into_inner(settings))
+                    .await
+                    .context("Couldn't create acter space")?;
+                Ok(room_id)
+            })
             .await?
     }
 
@@ -426,7 +447,7 @@ impl Client {
         let c = self.clone();
         RUNTIME
             .spawn(async move {
-                let (spaces, _) = devide_spaces_from_convos(c).await;
+                let (spaces, convos) = devide_spaces_from_convos(c).await;
                 Ok(spaces)
             })
             .await?
@@ -434,21 +455,25 @@ impl Client {
 
     pub async fn get_space(&self, alias_or_id: String) -> Result<Space> {
         if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
-            match self.get_room(&room_id) {
-                Some(room) => Ok(Space::new(self.clone(), Room { room })),
-                None => bail!("Room not found"),
-            }
+            self.get_room(&room_id)
+                .map(|room| Space::new(self.clone(), Room { room }))
+                .context("Room not found")
         } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
-            for space in self.spaces().await?.into_iter() {
+            for space in self
+                .spaces()
+                .await
+                .context("Couldn't get space list from client")?
+                .into_iter()
+            {
                 if let Some(space_alias) = space.inner.room.canonical_alias() {
                     if space_alias == alias_id {
                         return Ok(space);
                     }
                 }
             }
-            bail!("Room with alias not found")
+            bail!("Room with alias not found");
         } else {
-            bail!("Neither roomId nor alias provided")
+            bail!("Neither roomId nor alias provided");
         }
     }
 }

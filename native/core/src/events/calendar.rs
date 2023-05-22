@@ -1,9 +1,10 @@
-use super::TextMessageEventContent;
-use crate::util::deserialize_some;
 use derive_builder::Builder;
 use derive_getters::Getters;
 use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
+
+use super::TextMessageEventContent;
+use crate::util::deserialize_some;
 
 /// Calendar Events
 /// modeled after [JMAP Calendar Events](https://jmap.io/spec-calendars.html#calendar-events), extensions to
@@ -28,15 +29,19 @@ pub enum EventLocation {
         /// Optional name of this location
         #[serde(default, skip_serializing_if = "Option::is_none")]
         name: Option<String>,
+
         /// further description to this location
         #[serde(default, skip_serializing_if = "Option::is_none")]
         description: Option<TextMessageEventContent>,
+
         /// Alternative Icon to show with this location
         #[serde(default, skip_serializing_if = "Option::is_none")]
         icon: Option<Icon>,
+
         /// A `geo:` URI [RFC5870] for the location.
         #[serde(default, skip_serializing_if = "Option::is_none")]
         coordinates: Option<String>,
+
         /// further Link
         #[serde(default, skip_serializing_if = "Option::is_none")]
         uri: Option<String>,
@@ -44,12 +49,15 @@ pub enum EventLocation {
     Virtual {
         /// URI to this virtual location
         uri: String,
+
         /// Optional name of this virtual location
         #[serde(default, skip_serializing_if = "Option::is_none")]
         name: Option<String>,
+
         /// further description for virtual location
         #[serde(default, skip_serializing_if = "Option::is_none")]
         description: Option<TextMessageEventContent>,
+
         /// Alternative Icon to show with this location
         #[serde(default, skip_serializing_if = "Option::is_none")]
         icon: Option<Icon>,
@@ -67,36 +75,45 @@ pub enum EventLocation {
 pub struct CalendarEventEventContent {
     /// The title of the CalendarEvent
     pub title: String,
+
     /// an Icon to show with with this event
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon: Option<Icon>,
+
     /// colorizing this event
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<Color>,
+
     /// Further information describing the calendar_event
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<TextMessageEventContent>,
+
     /// When will this events start?
     #[builder(setter(into))]
     pub utc_start: UtcDateTime,
+
     /// When will this events end
     #[builder(setter(into))]
     pub utc_end: UtcDateTime,
+
     /// Should this event been shown without the time?
     #[builder(default)]
     #[serde(default)]
     pub show_without_time: bool,
+
     /// Where is this event happening?
     #[builder(default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub locations: Vec<EventLocation>,
+
     // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub keywords: Vec<String>,
+
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub categories: Vec<String>,
@@ -110,6 +127,7 @@ pub struct CalendarEventUpdateEventContent {
     #[builder(setter(into))]
     #[serde(rename = "m.relates_to")]
     pub calendar_event: Update,
+
     /// The title of the CalendarEvent
     #[builder(default)]
     #[serde(
@@ -118,6 +136,7 @@ pub struct CalendarEventUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub title: Option<String>,
+
     /// Every calendar_events belongs to a calendar_eventlist
     /// Further information describing the calendar_event
     #[builder(default)]
@@ -127,6 +146,7 @@ pub struct CalendarEventUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub description: Option<Option<TextMessageEventContent>>,
+
     /// When was this calendar_event started?
     #[builder(default)]
     #[serde(
@@ -135,6 +155,7 @@ pub struct CalendarEventUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub utc_start: Option<UtcDateTime>,
+
     /// When was this calendar_event started?
     #[builder(default)]
     #[serde(
@@ -143,6 +164,7 @@ pub struct CalendarEventUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub utc_end: Option<UtcDateTime>,
+
     /// Color this calendar_event
     #[builder(default)]
     #[serde(
@@ -151,6 +173,7 @@ pub struct CalendarEventUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub color: Option<Option<Color>>,
+
     /// Icon this calendar_event
     #[builder(default)]
     #[serde(
@@ -159,6 +182,7 @@ pub struct CalendarEventUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub icon: Option<Option<Icon>>,
+
     /// Should this event been shown without the time?
     #[builder(default)]
     #[serde(
@@ -167,6 +191,7 @@ pub struct CalendarEventUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub show_without_time: Option<bool>,
+
     /// Where is this event happening?
     #[builder(default)]
     #[serde(
@@ -175,6 +200,7 @@ pub struct CalendarEventUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub locations: Option<Vec<EventLocation>>,
+
     // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
     #[builder(default)]
     #[serde(
@@ -183,6 +209,7 @@ pub struct CalendarEventUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub keywords: Option<Vec<String>>,
+
     #[builder(default)]
     #[serde(
         default,
@@ -259,6 +286,7 @@ pub struct RsvpEventContent {
     #[builder(setter(into))]
     #[serde(rename = "m.relates_to")]
     pub calendar_event: BelongsTo,
+
     /// The the response by this user
     pub rsvp: RsvpState,
 }

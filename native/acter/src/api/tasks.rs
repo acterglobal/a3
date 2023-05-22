@@ -57,7 +57,12 @@ impl Client {
         let mut task_lists = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
-        for mdl in self.store().get_list(KEYS::TASKS).await? {
+        for mdl in self
+            .store()
+            .get_list(KEYS::TASKS)
+            .await
+            .context("Couldn't get task lists from store")?
+        {
             #[allow(irrefutable_let_patterns)]
             if let AnyActerModel::TaskList(t) = mdl {
                 let room_id = t.room_id().to_owned();
@@ -87,7 +92,11 @@ impl Client {
 
     pub async fn task_list(&self, key: &str) -> Result<TaskList> {
         let client = self.clone();
-        let mdl = self.store().get(key).await?;
+        let mdl = self
+            .store()
+            .get(key)
+            .await
+            .context("Couldn't get task list from store")?;
 
         let AnyActerModel::TaskList(task_list) = mdl else  {
             bail!("Not a Tasklist model: {key}")
@@ -112,7 +121,8 @@ impl Space {
             .client
             .store()
             .get_list(&format!("{room_id}::{}", KEYS::TASKS))
-            .await?
+            .await
+            .context("Couldn't get task list from store")?
         {
             #[allow(irrefutable_let_patterns)]
             if let AnyActerModel::TaskList(t) = mdl {
@@ -129,7 +139,12 @@ impl Space {
     }
 
     pub async fn task_list(&self, key: &str) -> Result<TaskList> {
-        let mdl = self.client.store().get(key).await?;
+        let mdl = self
+            .client
+            .store()
+            .get(key)
+            .await
+            .context("Couldn't get task list from store")?;
 
         let AnyActerModel::TaskList(task_list) = mdl else  {
             bail!("Not a Tasklist model: {key}")
@@ -218,10 +233,16 @@ impl TaskListDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self.content.build()?;
+        let content = self
+            .content
+            .build()
+            .context("building failed in event content of task list")?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner, None).await?;
+                let resp = room
+                    .send(content, None)
+                    .await
+                    .context("Couldn't send task list")?;
                 Ok(resp.event_id)
             })
             .await?
@@ -304,7 +325,7 @@ impl TaskList {
 
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::TaskList(content) = client.store().get(&key).await? else {
+                let AnyActerModel::TaskList(content) = client.store().get(&key).await.context("Couldn't get task list from store")? else {
                     bail!("Refreshing failed. {key} not a task")
                 };
                 Ok(TaskList {
@@ -356,9 +377,9 @@ impl TaskList {
         let tasks_key = self.content.tasks_key();
         let client = self.client.clone();
         let room = self.room.clone();
-        Ok(RUNTIME
+        RUNTIME
             .spawn(async move {
-                client
+                let res = client
                     .store()
                     .get_list(&tasks_key)
                     .await
@@ -375,9 +396,10 @@ impl TaskList {
                             None
                         }
                     })
-                    .collect()
+                    .collect();
+                Ok(res)
             })
-            .await?)
+            .await?
     }
 
     pub async fn comments(&self) -> Result<crate::CommentsManager> {
@@ -485,7 +507,7 @@ impl Task {
 
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Task(content) = client.store().get(&key).await? else {
+                let AnyActerModel::Task(content) = client.store().get(&key).await.context("Couldn't get task from store")? else {
                     bail!("Refreshing failed. {key} not a task")
                 };
                 Ok(Task {
@@ -670,10 +692,16 @@ impl TaskDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self.content.build()?;
+        let content = self
+            .content
+            .build()
+            .context("building failed in event content of task")?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner, None).await?;
+                let resp = room
+                    .send(content, None)
+                    .await
+                    .context("Couldn't send task")?;
                 Ok(resp.event_id)
             })
             .await?
@@ -887,10 +915,16 @@ impl TaskUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self.content.build()?;
+        let content = self
+            .content
+            .build()
+            .context("building failed in event content of task update")?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner, None).await?;
+                let resp = room
+                    .send(content, None)
+                    .await
+                    .context("Couldn't send task update")?;
                 Ok(resp.event_id)
             })
             .await?
@@ -999,10 +1033,16 @@ impl TaskListUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self.content.build()?;
+        let content = self
+            .content
+            .build()
+            .context("building failed in event content of task list update")?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner, None).await?;
+                let resp = room
+                    .send(content, None)
+                    .await
+                    .context("Couldn't send task list update")?;
                 Ok(resp.event_id)
             })
             .await?

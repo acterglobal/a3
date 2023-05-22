@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:acter/main/routing/routes.dart';
 
 final authStateProvider = StateNotifierProvider<AuthStateNotifier, bool>(
   (ref) => AuthStateNotifier(ref),
@@ -35,7 +36,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
       Get.replace(ChatRoomController(client: client));
       Get.replace(ReceiptController(client: client));
       state = false;
-      context.go('/');
+      context.go(Routes.main.name);
     } catch (e) {
       debugPrint('$e');
       state = false;
@@ -57,7 +58,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
       state = false;
-      context.go('/');
+      context.go(Routes.main.name);
     } catch (e) {
       state = false;
     }
@@ -72,6 +73,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
     Get.delete<ChatListController>();
     Get.delete<ChatRoomController>();
     Get.delete<ReceiptController>();
-    context.go('/');
+    context.go(Routes.main.name);
   }
 }

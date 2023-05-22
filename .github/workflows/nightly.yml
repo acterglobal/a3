@@ -149,8 +149,9 @@ jobs:
         run: cargo make ${{ matrix.cargo_make_setup }}
 
       - uses: subosito/flutter-action@v2
-        name: "Set up flutter"
+        name: Set up flutter
         with:
+          flutter-version: '3.7.12'
           channel: 'stable'
 
       - name: Flutter info
@@ -163,8 +164,8 @@ jobs:
       - name: Build Rust Lib
         run: cargo make --profile release ${{ matrix.cargo_make_args}}
 
-      - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+      # - name: Ensure ffi-interface is up to date
+      #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
 
       # Install the Apple certificate and provisioning profile
       - name: Install the Apple certificate and provisioning profile

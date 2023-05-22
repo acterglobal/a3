@@ -6,7 +6,6 @@ import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/features/bug_report/data/bug_report.dart';
 import 'package:acter/features/bug_report/states/bug_report_state.dart';
 import 'package:acter/features/bug_report/widgets/select_tag.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -45,100 +44,96 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   Widget build(BuildContext context) {
     final bugReport = ref.watch(bugReportNotifierProvider);
     final isLoading = ref.watch(loadingProvider);
-    return Scaffold(
-      appBar: AppBar(
-        leading: InkWell(
-          onTap: () => context.go('/'),
-          child: const Icon(
-            Atlas.arrow_left_circle,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 10),
-            const Text(
-              'Issue description',
-            ),
-            const SizedBox(height: 10),
-            TextFormField(
-              style: const TextStyle(color: Colors.white),
-              onChanged: (value) => ref
-                  .read(bugReportNotifierProvider.notifier)
-                  .setDescription(value),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Issue tag(s)',
-            ),
-            const SizedBox(height: 10),
-            SelectTag(),
-            const SizedBox(height: 10),
-            CheckboxListTile(
-              title: const Text(
-                'Including log file',
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 350.0),
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Report a problem')),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
+              const Text(
+                'Issue description',
               ),
-              value: bugReport.withLog,
-              onChanged: (bool? value) =>
-                  ref.read(bugReportNotifierProvider.notifier).toggleWithLog(),
-              controlAffinity: ListTileControlAffinity.leading,
-            ),
-            const SizedBox(height: 10),
-            CheckboxListTile(
-              title: const Text(
-                'Including screenshot',
+              const SizedBox(height: 10),
+              TextFormField(
+                style: const TextStyle(color: Colors.white),
+                onChanged: (value) => ref
+                    .read(bugReportNotifierProvider.notifier)
+                    .setDescription(value),
               ),
-              value: bugReport.withScreenshot,
-              onChanged: (bool? value) => ref
-                  .read(bugReportNotifierProvider.notifier)
-                  .toggleWithScreenshot(),
-              controlAffinity: ListTileControlAffinity.leading,
-              enabled: widget.imagePath != null,
-            ),
-            const SizedBox(height: 10),
-            if (bugReport.withScreenshot)
-              Image.file(
-                File(widget.imagePath!),
-                width: MediaQuery.of(context).size.width * 0.8,
-                errorBuilder: (
-                  BuildContext ctx,
-                  Object error,
-                  StackTrace? stackTrace,
-                ) {
-                  return Text('Could not load image due to $error');
-                },
+              const SizedBox(height: 10),
+              const Text(
+                'Issue tag(s)',
               ),
-            if (bugReport.withScreenshot) const SizedBox(height: 10),
-            const Divider(
-              endIndent: 10,
-              indent: 10,
-            ),
-            const SizedBox(height: 10),
-            isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : CustomButton(
-                    onPressed: () async {
-                      bool res;
-                      if (bugReport.description.isEmpty) {
-                        _descriptionDialog();
-                        return;
-                      }
-                      if (bugReport.tags.isEmpty) {
-                        res = await _tagsDialog();
-                        if (!res) {
+              const SizedBox(height: 10),
+              SelectTag(),
+              const SizedBox(height: 10),
+              CheckboxListTile(
+                title: const Text(
+                  'Including log file',
+                ),
+                value: bugReport.withLog,
+                onChanged: (bool? value) => ref
+                    .read(bugReportNotifierProvider.notifier)
+                    .toggleWithLog(),
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
+              const SizedBox(height: 10),
+              CheckboxListTile(
+                title: const Text(
+                  'Including screenshot',
+                ),
+                value: bugReport.withScreenshot,
+                onChanged: (bool? value) => ref
+                    .read(bugReportNotifierProvider.notifier)
+                    .toggleWithScreenshot(),
+                controlAffinity: ListTileControlAffinity.leading,
+                enabled: widget.imagePath != null,
+              ),
+              const SizedBox(height: 10),
+              if (bugReport.withScreenshot)
+                Image.file(
+                  File(widget.imagePath!),
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  errorBuilder: (
+                    BuildContext ctx,
+                    Object error,
+                    StackTrace? stackTrace,
+                  ) {
+                    return Text('Could not load image due to $error');
+                  },
+                ),
+              if (bugReport.withScreenshot) const SizedBox(height: 10),
+              const Divider(
+                endIndent: 10,
+                indent: 10,
+              ),
+              const SizedBox(height: 10),
+              isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : CustomButton(
+                      onPressed: () async {
+                        bool res;
+                        if (bugReport.description.isEmpty) {
+                          _descriptionDialog();
                           return;
                         }
-                      }
-                      reportBug(bugReport);
-                    },
-                    title: 'Submit',
-                  ),
-          ],
+                        if (bugReport.tags.isEmpty) {
+                          res = await _tagsDialog();
+                          if (!res) {
+                            return;
+                          }
+                        }
+                        reportBug(bugReport);
+                      },
+                      title: 'Submit',
+                    ),
+            ],
+          ),
         ),
       ),
     );

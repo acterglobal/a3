@@ -6,7 +6,7 @@ use matrix_sdk::{
     room::Room as MatrixRoom,
     ruma::{
         events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
-        RoomId, UserId,
+        OwnedRoomId, OwnedUserId, RoomId,
     },
     Client as MatrixClient,
 };
@@ -19,13 +19,12 @@ use super::{
     RUNTIME,
 };
 
-#[derive(Default, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub struct Invitation {
-    client: Option<MatrixClient>,
+    client: MatrixClient,
     origin_server_ts: Option<u64>,
-    room_id: String,
-    room_name: String,
-    sender: String,
+    room_id: OwnedRoomId,
+    sender: OwnedUserId,
 }
 
 impl Invitation {
@@ -33,21 +32,34 @@ impl Invitation {
         self.origin_server_ts
     }
 
-    pub fn room_id(&self) -> String {
+    pub fn room_id(&self) -> OwnedRoomId {
         self.room_id.clone()
     }
 
-    pub fn room_name(&self) -> String {
-        self.room_name.clone()
+    pub async fn room_name(&self) -> Result<String> {
+        let client = self.client.clone();
+        let room_id = self.room_id.clone();
+        let room = client
+            .get_invited_room(&room_id)
+            .context("Can't accept a room we are not invited")?;
+        RUNTIME
+            .spawn(async move {
+                let name = room
+                    .display_name()
+                    .await
+                    .context("Couldn't get display name of room")?;
+                Ok(name.to_string())
+            })
+            .await?
     }
 
-    pub fn sender(&self) -> String {
+    pub fn sender(&self) -> OwnedUserId {
         self.sender.clone()
     }
 
     pub async fn get_sender_profile(&self) -> Result<UserProfile> {
-        let client = self.client.clone().unwrap();
-        let user_id = UserId::parse(self.sender.clone())?;
+        let client = self.client.clone();
+        let user_id = self.sender.clone();
         RUNTIME
             .spawn(async move {
                 let mut user_profile = UserProfile::new(client, user_id, None, None);
@@ -58,8 +70,8 @@ impl Invitation {
     }
 
     pub async fn accept(&self) -> Result<bool> {
-        let client = self.client.clone().unwrap();
-        let room_id = RoomId::parse(self.room_id.clone())?;
+        let client = self.client.clone();
+        let room_id = self.room_id.clone();
         let room = client
             .get_invited_room(&room_id)
             .context("Can't accept a room we are not invited")?;
@@ -93,8 +105,8 @@ impl Invitation {
     }
 
     pub async fn reject(&self) -> Result<bool> {
-        let client = self.client.clone().unwrap();
-        let room_id = RoomId::parse(self.room_id.clone())?;
+        let client = self.client.clone();
+        let room_id = self.room_id.clone();
         let room = client
             .get_invited_room(&room_id)
             .context("Can't accept a room we are not invited")?;
@@ -154,7 +166,7 @@ impl InvitationController {
              c: MatrixClient,
              Ctx(me): Ctx<InvitationController>| async move {
                 // user got invitation
-                me.clone().process_stripped_event(ev, room, &c).await;
+                me.clone().process_stripped_event(ev, room, &c);
             },
         );
         self.stripped_event_handle = Some(handle);
@@ -186,14 +198,16 @@ impl InvitationController {
     pub async fn load_invitations(&self, client: &MatrixClient) -> Result<()> {
         let mut invitations: Vec<Invitation> = vec![];
         for room in client.invited_rooms().iter() {
-            let details = room.invite_details().await?;
+            let details = room
+                .invite_details()
+                .await
+                .context("Couldn't get invitation details of room")?;
             if let Some(inviter) = details.inviter {
                 let invitation = Invitation {
-                    client: Some(client.clone()),
+                    client: client.clone(),
                     origin_server_ts: None,
-                    room_id: room.room_id().to_string(),
-                    room_name: room.display_name().await?.to_string(),
-                    sender: inviter.user_id().to_string(),
+                    room_id: room.room_id().to_owned(),
+                    sender: inviter.user_id().to_owned(),
                 };
                 invitations.push(invitation);
             }
@@ -202,14 +216,14 @@ impl InvitationController {
         Ok(())
     }
 
-    async fn process_stripped_event(
+    fn process_stripped_event(
         &mut self,
         ev: StrippedRoomMemberEvent,
         room: MatrixRoom,
         client: &MatrixClient,
     ) -> Result<()> {
         // filter only event for me
-        let user_id = client.user_id().context("You seem to be not logged in")?;
+        let user_id = client.user_id().expect("You seem to be not logged in");
         if ev.state_key != *user_id {
             return Ok(());
         }
@@ -227,11 +241,10 @@ impl InvitationController {
             let room_id = room.room_id();
             let sender = ev.sender;
             let invitation = Invitation {
-                client: Some(client.clone()),
+                client: client.clone(),
                 origin_server_ts: Some(since_the_epoch.as_millis() as u64),
-                room_id: room_id.to_string(),
-                room_name: room.display_name().await?.to_string(),
-                sender: sender.to_string(),
+                room_id: room_id.to_owned(),
+                sender: sender.to_owned(),
             };
             let mut invitations = self.invitations.lock_mut();
             if !invitations
@@ -300,11 +313,14 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 // get member list of target room
-                let mut room_members = vec![];
-                let members = room.members().await?;
-                for member in members {
-                    room_members.push(member.user_id().to_string());
-                }
+                let members = room
+                    .members()
+                    .await
+                    .context("Couldn't get members of room")?;
+                let room_members = members
+                    .iter()
+                    .map(|x| x.user_id().to_owned())
+                    .collect::<Vec<OwnedUserId>>();
                 // iterate my rooms to get user list
                 let mut profiles: Vec<UserProfile> = vec![];
                 let (spaces, convos) = devide_spaces_from_convos(client.clone()).await;
@@ -312,20 +328,23 @@ impl Client {
                     if convo.room_id() == room_id {
                         continue;
                     }
-                    let members = convo.members().await?;
+                    let members = convo
+                        .members()
+                        .await
+                        .context("Couldn't get members of conversation")?;
                     for member in members {
-                        let user_id = member.user_id().to_string();
+                        let user_id = member.user_id().to_owned();
                         // exclude user that belongs to target room
                         if room_members.contains(&user_id) {
                             continue;
                         }
                         // exclude user that already selected
-                        if profiles.iter().any(|x| x.user_id() == member.user_id()) {
+                        if profiles.iter().any(|x| x.user_id() == user_id) {
                             continue;
                         }
                         let user_profile = UserProfile::new(
                             client.core.client().clone(),
-                            member.user_id().to_owned(),
+                            user_id,
                             member.avatar_url().map(|x| (*x).to_owned()),
                             member.display_name().map(|x| x.to_string()),
                         );

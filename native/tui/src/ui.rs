@@ -84,6 +84,7 @@ pub fn prev(list_state: &mut ListState) {
         list_state.select(Some(current - 1))
     }
 }
+
 impl TasksState {
     fn fresh(task_lists: Vec<TaskList>) -> Self {
         TasksState {
@@ -126,6 +127,7 @@ impl TasksState {
             next(&mut self.task_lists_list_state, self.task_lists.len());
         }
     }
+
     async fn select(&mut self) {
         if self.selected.is_some() {
             if let Some(idx) = self.tasks_list_state.selected() {
@@ -303,7 +305,7 @@ impl Tool {
                 Some(s) => {
                     format!("Chat ({}/{})", s.unread, s.total)
                 }
-                _ => "Chat".to_owned(),
+                None => "Chat".to_owned(),
             },
         }
     }

@@ -50,12 +50,8 @@ class _RecentActivityPageState extends State<RecentActivityPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
-                        Text(
-                          'Oct 19, 06:30',
-                        ),
-                        Text(
-                          'David Chunli posted this ToDo',
-                        ),
+                        Text('Oct 19, 06:30'),
+                        Text('David Chunli posted this ToDo'),
                       ],
                     ),
                   ),

@@ -6,7 +6,6 @@ use super::{
     super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
     TaskList, TASKS_KEY,
 };
-
 use crate::events::tasks::{TaskEventContent, TaskUpdateBuilder, TaskUpdateEventContent};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -14,6 +13,7 @@ pub struct Task {
     inner: TaskEventContent,
     meta: EventMeta,
 }
+
 impl Deref for Task {
     type Target = TaskEventContent;
     fn deref(&self) -> &Self::Target {

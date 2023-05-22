@@ -2,7 +2,7 @@ use acter_core::{
     client::CoreClient, executor::Executor, models::AnyActerModel, ruma::OwnedRoomId,
     spaces::is_acter_space, store::Store, templates::Engine, RestoreToken,
 };
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
 use futures::{future::join_all, pin_mut, stream, Stream, StreamExt};
@@ -44,10 +44,13 @@ use super::{
 pub struct ClientState {
     #[builder(default)]
     pub is_guest: bool,
+
     #[builder(default)]
     pub has_first_synced: bool,
+
     #[builder(default)]
     pub is_syncing: bool,
+
     #[builder(default)]
     pub should_stop_syncing: bool,
 }
@@ -198,8 +201,11 @@ impl Drop for SyncState {
 
 impl Client {
     pub async fn new(client: MatrixClient, state: ClientState) -> Result<Self> {
+        let core = CoreClient::new(client)
+            .await
+            .context("Couldn't create core client")?;
         let cl = Client {
-            core: CoreClient::new(client).await?,
+            core,
             state: Arc::new(RwLock::new(state)),
             invitation_controller: InvitationController::new(),
             verification_controller: VerificationController::new(),
@@ -220,14 +226,22 @@ impl Client {
     }
 
     pub async fn template_engine(&self, template: &str) -> Result<Engine> {
-        Ok(self.core.template_engine(template).await?)
+        let engine = self
+            .core
+            .template_engine(template)
+            .await
+            .context("Couldn't set up template engine")?;
+        Ok(engine)
     }
 
     fn refresh_history_on_start(&self, history: Mutable<HistoryLoadState>) {
         let me = self.clone();
         RUNTIME.spawn(async move {
             tracing::trace!(user_id=?me.user_id_ref(), "refreshing history");
-            let spaces = me.spaces().await?;
+            let spaces = me
+                .spaces()
+                .await
+                .context("Couldn't get spaces from client")?;
             let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
             history.lock_mut().start(space_ids);
 
@@ -390,9 +404,9 @@ impl Client {
                                 continue;
                             }
                             let Some(full_room) = me.get_room(&room_id) else {
-                                    tracing::warn!("room not found. how can that be?");
-                                    continue;
-                                };
+                                tracing::warn!("room not found. how can that be?");
+                                continue;
+                            };
                             if is_acter_space(&full_room).await {
                                 new_spaces.push(full_room);
                             }
@@ -453,13 +467,14 @@ impl Client {
     pub async fn restore_token(&self) -> Result<String> {
         let session = self.session().context("Missing session")?.clone();
         let homeurl = self.homeserver().await;
+        let is_guest = match self.state.try_read() {
+            Ok(r) => r.is_guest,
+            Err(e) => false,
+        };
         let result = serde_json::to_string(&RestoreToken {
             session,
             homeurl,
-            is_guest: match self.state.try_read() {
-                Ok(r) => r.is_guest,
-                Err(e) => false,
-            },
+            is_guest,
         })?;
         Ok(result)
     }
@@ -496,11 +511,11 @@ impl Client {
 
     pub(crate) fn room(&self, room_name: String) -> Result<Room> {
         let room_id = RoomId::parse(room_name)?;
-        let l = self.core.client().clone();
-        match l.get_room(&room_id) {
-            Some(room) => Ok(Room { room }),
-            None => bail!("Room not found"),
-        }
+        self.core
+            .client()
+            .get_room(&room_id)
+            .map(|room| Room { room })
+            .context("Room not found")
     }
 
     pub fn subscribe(&self, key: String) -> impl Stream<Item = bool> {
@@ -526,10 +541,9 @@ impl Client {
     }
 
     pub fn account(&self) -> Result<Account> {
-        Ok(Account::new(
-            self.core.client().account(),
-            self.user_id()?.to_string(),
-        ))
+        let account = self.core.client().account();
+        let user_id = self.user_id()?;
+        Ok(Account::new(account, user_id))
     }
 
     pub fn device_id(&self) -> Result<OwnedDeviceId> {
@@ -543,7 +557,7 @@ impl Client {
 
     pub async fn get_user_profile(&self) -> Result<UserProfile> {
         let client = self.core.client().clone();
-        let user_id = client.user_id().unwrap().to_owned();
+        let user_id = self.user_id()?;
         RUNTIME
             .spawn(async move {
                 let mut user_profile = UserProfile::new(client, user_id, None, None);
@@ -555,14 +569,12 @@ impl Client {
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
         let c = self.core.client().clone();
+        let user_id = self.user_id()?;
         RUNTIME
             .spawn(async move {
-                let user_id = c
-                    .user_id()
-                    .context("guest user cannot request verification")?;
                 let dev = c
                     .encryption()
-                    .get_device(user_id, device_id!(dev_id.as_str()))
+                    .get_device(&user_id, device_id!(dev_id.as_str()))
                     .await?
                     .context("client should get device")?;
                 Ok(dev.is_verified())

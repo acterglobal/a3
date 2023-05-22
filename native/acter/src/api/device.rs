@@ -36,13 +36,17 @@ impl DeviceChangedEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .context("guest user cannot get the verified devices")?;
+                    .expect("guest user cannot get the verified devices");
                 let mut records: Vec<DeviceRecord> = vec![];
-                let response = client.devices().await?;
+                let response = client
+                    .devices()
+                    .await
+                    .context("Couldn't get device list from client")?;
                 for device in client
                     .encryption()
                     .get_user_devices(user_id)
-                    .await?
+                    .await
+                    .context("Couldn't get user device list from client encryption")?
                     .devices()
                 {
                     if device.is_verified() == verified {
@@ -72,13 +76,15 @@ impl DeviceChangedEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .context("guest user cannot request verification")?;
+                    .expect("guest user cannot request verification");
                 let user = client
                     .encryption()
                     .get_user_identity(user_id)
                     .await?
                     .context("alice should get user identity")?;
-                user.request_verification().await?;
+                user.request_verification()
+                    .await
+                    .context("Couldn't request verification")?;
                 Ok(true)
             })
             .await?
@@ -90,7 +96,7 @@ impl DeviceChangedEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .context("guest user cannot request verification")?;
+                    .expect("guest user cannot request verification");
                 let dev = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
@@ -98,7 +104,8 @@ impl DeviceChangedEvent {
                     .context("alice should get device")?
                     .unwrap();
                 dev.request_verification_with_methods(vec![VerificationMethod::SasV1])
-                    .await?;
+                    .await
+                    .context("Couldn't request verification with methods")?;
                 Ok(true)
             })
             .await?
@@ -109,19 +116,20 @@ impl DeviceChangedEvent {
         methods: &mut Vec<String>,
     ) -> Result<bool> {
         let client = self.client.clone();
-        let _methods: Vec<VerificationMethod> =
-            (*methods).iter().map(|e| e.as_str().into()).collect();
+        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .context("guest user cannot request verification")?;
+                    .expect("guest user cannot request verification");
                 let user = client
                     .encryption()
                     .get_user_identity(user_id)
                     .await?
                     .context("alice should get user identity")?;
-                user.request_verification_with_methods(_methods).await?;
+                user.request_verification_with_methods(values)
+                    .await
+                    .context("Couldn't request verification with methods")?;
                 Ok(true)
             })
             .await?
@@ -133,20 +141,21 @@ impl DeviceChangedEvent {
         methods: &mut Vec<String>,
     ) -> Result<bool> {
         let client = self.client.clone();
-        let _methods: Vec<VerificationMethod> =
-            (*methods).iter().map(|e| e.as_str().into()).collect();
+        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .context("guest user cannot request verification")?;
+                    .expect("guest user cannot request verification");
                 let dev = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
                     .await
                     .context("alice should get device")?
                     .unwrap();
-                dev.request_verification_with_methods(_methods).await?;
+                dev.request_verification_with_methods(values)
+                    .await
+                    .context("Couldn't request verification with methods")?;
                 Ok(true)
             })
             .await?
@@ -171,13 +180,17 @@ impl DeviceLeftEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .context("guest user cannot get the deleted devices")?;
+                    .expect("guest user cannot get the deleted devices");
                 let mut records: Vec<DeviceRecord> = vec![];
-                let response = client.devices().await?;
+                let response = client
+                    .devices()
+                    .await
+                    .context("Couldn't get device list from client")?;
                 for device in client
                     .encryption()
                     .get_user_devices(user_id)
-                    .await?
+                    .await
+                    .context("Couldn't get user devices from client encryption")?
                     .devices()
                 {
                     if device.is_deleted() == deleted {
@@ -276,11 +289,11 @@ impl DeviceController {
 
         // avoid device changed event in case that user joined room
         if response.rooms.join.is_empty() {
+            let current_user_id = client
+                .user_id()
+                .expect("guest user cannot handle the device changed event");
             for user_id in response.device_lists.changed.clone().into_iter() {
                 info!("device-changed user_id: {}", user_id);
-                let current_user_id = client
-                    .user_id()
-                    .expect("guest user cannot handle the device changed event");
                 if *user_id == *current_user_id {
                     let evt = DeviceChangedEvent::new(client);
                     if let Err(e) = self.changed_event_tx.try_send(evt) {
@@ -292,11 +305,11 @@ impl DeviceController {
 
         // avoid device left event in case that user left room
         if response.rooms.leave.is_empty() {
+            let current_user_id = client
+                .user_id()
+                .expect("guest user cannot handle the device left event");
             for user_id in response.device_lists.left.clone().into_iter() {
                 info!("device-left user_id: {}", user_id);
-                let current_user_id = client
-                    .user_id()
-                    .expect("guest user cannot handle the device left event");
                 if *user_id == *current_user_id {
                     let evt = DeviceLeftEvent::new(client);
                     if let Err(e) = self.left_event_tx.try_send(evt) {

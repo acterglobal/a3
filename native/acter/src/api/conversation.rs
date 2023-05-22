@@ -1,5 +1,5 @@
 use acter_core::statics::default_acter_conversation_states;
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::channel::mpsc::{channel, Receiver, Sender};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
@@ -58,11 +58,11 @@ impl Conversation {
         let room = self.room.clone();
         let options = MessagesOptions::backward();
         if let Ok(messages) = room.messages(options).await {
-            let events: Vec<SyncTimelineEvent> = messages
+            let events = messages
                 .chunk
                 .into_iter()
                 .map(SyncTimelineEvent::from)
-                .collect();
+                .collect::<Vec<SyncTimelineEvent>>();
             for event in events {
                 // show only message event as latest message in chat room list
                 // skip the state event
@@ -87,8 +87,8 @@ impl Conversation {
         self.latest_message.clone()
     }
 
-    pub fn get_room_id(&self) -> String {
-        self.room_id().to_string()
+    pub fn get_room_id(&self) -> OwnedRoomId {
+        self.room_id().to_owned()
     }
 
     pub async fn user_receipts(&self) -> Result<Vec<ReceiptRecord>> {
@@ -96,11 +96,16 @@ impl Conversation {
         RUNTIME
             .spawn(async move {
                 let mut records: Vec<ReceiptRecord> = vec![];
-                for member in room.active_members().await? {
+                for member in room
+                    .active_members()
+                    .await
+                    .context("Couldn't get active members from room")?
+                {
                     let user_id = member.user_id();
                     if let Some((event_id, receipt)) = room
                         .user_receipt(ReceiptType::Read, ReceiptThread::Main, user_id)
-                        .await?
+                        .await
+                        .context("Couldn't set up user receipt")?
                     {
                         let record = ReceiptRecord::new(event_id, user_id.to_owned(), receipt.ts);
                         records.push(record);
@@ -375,10 +380,12 @@ impl ConversationController {
 pub struct CreateConversationSettings {
     #[builder(setter(into, strip_option), default)]
     name: Option<String>,
+
     // #[builder(default = "Visibility::Private")]
     // visibility: Visibility,
     #[builder(default = "Vec::new()")]
     invites: Vec<OwnedUserId>,
+
     #[builder(setter(into, strip_option), default)]
     alias: Option<String>,
 }
@@ -401,7 +408,10 @@ impl Client {
                     name: settings.name,
                     visibility: Visibility::Private,
                 });
-                let response = client.create_room(request).await?;
+                let response = client
+                    .create_room(request)
+                    .await
+                    .context("Couldn't create room")?;
                 Ok(response.room_id().to_owned())
             })
             .await?
@@ -411,15 +421,13 @@ impl Client {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                if let Ok(room) = me.room(name_or_id) {
-                    if !room.is_acter_space().await {
-                        Ok(Conversation::new(room))
-                    } else {
-                        bail!("Not a regular conversation but an acter space!")
-                    }
-                } else {
-                    bail!("Neither roomId nor alias provided")
+                let Ok(room) = me.room(name_or_id) else {
+                    bail!("Neither roomId nor alias provided");
+                };
+                if room.is_acter_space().await {
+                    bail!("Not a regular conversation but an acter space!");
                 }
+                Ok(Conversation::new(room))
             })
             .await?
     }

@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{bail, Context, Result};
 use log::info;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest, MediaThumbnailSize},
@@ -60,7 +60,7 @@ impl UserProfile {
     pub async fn get_avatar(&self) -> Result<FfiBuffer<u8>> {
         let client = self.client.clone();
         let Some(avatar_url) = self.avatar_url.clone() else {
-            anyhow::bail!("No User Profile found");
+            bail!("No User Profile found");
         };
         RUNTIME
             .spawn(async move {
@@ -68,36 +68,36 @@ impl UserProfile {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::File,
                 };
-                if let Ok(result) = client.media().get_media_content(&request, true).await {
-                    return Ok(FfiBuffer::new(result));
-                }
-                // sometimes fetching failed, i don't know that reason
-                log::warn!("Could not get media content from user profile");
-                Ok(FfiBuffer::new(vec![]))
+                let result = client
+                    .media()
+                    .get_media_content(&request, true)
+                    .await
+                    .context("Couldn't get media content from user profile")?;
+                Ok(FfiBuffer::new(result))
             })
             .await?
     }
 
-    pub async fn get_thumbnail(&self, width: u64, height: u64) -> Result<FfiBuffer<u8>> {
+    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<FfiBuffer<u8>> {
         let client = self.client.clone();
         let avatar_url = self.avatar_url.clone().unwrap();
         RUNTIME
             .spawn(async move {
                 let size = MediaThumbnailSize {
                     method: Method::Scale,
-                    width: UInt::new(width).unwrap(),
-                    height: UInt::new(height).unwrap(),
+                    width: UInt::from(width),
+                    height: UInt::from(height),
                 };
                 let request = MediaRequest {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::Thumbnail(size),
                 };
-                if let Ok(result) = client.media().get_media_content(&request, true).await {
-                    return Ok(FfiBuffer::new(result));
-                }
-                // sometimes fetching failed, i don't know that reason
-                info!("Could not get media content from user profile");
-                Ok(FfiBuffer::new(vec![]))
+                let result = client
+                    .media()
+                    .get_media_content(&request, true)
+                    .await
+                    .context("Couldn't get media content from user profile")?;
+                Ok(FfiBuffer::new(result))
             })
             .await?
     }
@@ -132,7 +132,11 @@ impl RoomProfile {
         if let Some(url) = room.avatar_url() {
             self.avatar_url = Some(url);
         }
-        self.display_name = Some(room.display_name().await?.to_string());
+        let display_name = room
+            .display_name()
+            .await
+            .context("Couldn't get display name from room")?;
+        self.display_name = Some(display_name.to_string());
         Ok(())
     }
 
@@ -149,36 +153,36 @@ impl RoomProfile {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::File,
                 };
-                if let Ok(result) = client.media().get_media_content(&request, true).await {
-                    return Ok(FfiBuffer::new(result));
-                }
-                // sometimes fetching failed, i don't know that reason
-                info!("Could not get media content from room profile");
-                Ok(FfiBuffer::new(vec![]))
+                let result = client
+                    .media()
+                    .get_media_content(&request, true)
+                    .await
+                    .context("Couldn't get media content from room profile")?;
+                Ok(FfiBuffer::new(result))
             })
             .await?
     }
 
-    pub async fn get_thumbnail(&self, width: u64, height: u64) -> Result<FfiBuffer<u8>> {
+    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<FfiBuffer<u8>> {
         let client = self.client.clone();
         let avatar_url = self.avatar_url.clone().unwrap();
         RUNTIME
             .spawn(async move {
                 let size = MediaThumbnailSize {
                     method: Method::Scale,
-                    width: UInt::new(width).unwrap(),
-                    height: UInt::new(height).unwrap(),
+                    width: UInt::from(width),
+                    height: UInt::from(height),
                 };
                 let request = MediaRequest {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::Thumbnail(size),
                 };
-                if let Ok(result) = client.media().get_media_content(&request, true).await {
-                    return Ok(FfiBuffer::new(result));
-                }
-                // sometimes fetching failed, i don't know that reason
-                info!("Could not get media content from room profile");
-                Ok(FfiBuffer::new(vec![]))
+                let result = client
+                    .media()
+                    .get_media_content(&request, true)
+                    .await
+                    .context("Couldn't get media content from room profile")?;
+                Ok(FfiBuffer::new(result))
             })
             .await?
     }

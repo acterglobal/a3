@@ -13,10 +13,12 @@ pub struct PinDisplayInfo {
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<Color>,
+
     /// Show this icon
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon: Option<Icon>,
+
     /// show it in particular sections only
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -34,6 +36,7 @@ pub struct PinDisplayInfoUpdate {
         deserialize_with = "deserialize_some"
     )]
     color: Option<Option<Color>>,
+
     /// Show this icon
     #[builder(setter(into), default)]
     #[serde(
@@ -42,6 +45,7 @@ pub struct PinDisplayInfoUpdate {
         deserialize_with = "deserialize_some"
     )]
     icon: Option<Option<Icon>>,
+
     /// show it in particular sections only
     #[builder(setter(into), default)]
     #[serde(
@@ -116,6 +120,7 @@ pub struct PinUpdateEventContent {
     #[builder(setter(into))]
     #[serde(rename = "m.relates_to")]
     pub pin: Update,
+
     /// If you want to update the pin title
     #[builder(setter(into), default)]
     #[serde(

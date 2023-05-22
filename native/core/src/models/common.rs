@@ -8,6 +8,7 @@ impl TextMessageContent {
     pub fn body(&self) -> String {
         self.inner.body.clone()
     }
+
     pub fn formatted(&self) -> Option<String> {
         self.inner.formatted.as_ref().map(|f| f.body.clone())
     }

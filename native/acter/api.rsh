@@ -243,11 +243,11 @@ object ThumbnailInfo {
     /// thumbnail mimetype
     fn mimetype() -> Option<string>;
     /// thumbnail size
-    fn size() -> Option<u64>;
+    fn size() -> Option<u32>;
     /// thumbnail width
-    fn width() -> Option<u64>;
+    fn width() -> Option<u32>;
     /// thumbnail height
-    fn height() -> Option<u64>;
+    fn height() -> Option<u32>;
 }
 
 object DeviceId {
@@ -280,7 +280,7 @@ object RoomEventItem {
     /// one of Message/Redaction/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
     fn event_type() -> string;
 
-    /// the type of massage, like audio, text, image, file, etc
+    /// the type of massage, like text, image, audio, video, file etc
     fn sub_type() -> Option<string>;
 
     /// contains text fallback and formatted text
@@ -289,7 +289,10 @@ object RoomEventItem {
     /// contains source data, name, mimetype, size, width and height
     fn image_desc() -> Option<ImageDesc>;
 
-    /// contains source data, name, mimetype, size, width and height
+    /// contains source data, name, mimetype, duration and size
+    fn audio_desc() -> Option<AudioDesc>;
+
+    /// contains source data, name, mimetype, duration, size, width, height and blurhash
     fn video_desc() -> Option<VideoDesc>;
 
     /// contains source data, name, mimetype and size
@@ -322,7 +325,7 @@ object RoomMessage {
     fn item_type() -> string;
 
     /// room ID of this event
-    fn room_id() -> string;
+    fn room_id() -> RoomId;
 
     /// valid only if item_type is "event"
     fn event_item() -> Option<RoomEventItem>;
@@ -350,13 +353,13 @@ object ImageDesc {
     fn mimetype() -> Option<string>;
 
     /// file size in bytes
-    fn size() -> Option<u64>;
+    fn size() -> Option<u32>;
 
     /// image width
-    fn width() -> Option<u64>;
+    fn width() -> Option<u32>;
 
     /// image height
-    fn height() -> Option<u64>;
+    fn height() -> Option<u32>;
 
     /// thumbnail info
     fn thumbnail_info() -> Option<ThumbnailInfo>;
@@ -376,10 +379,10 @@ object AudioDesc {
     fn mimetype() -> Option<string>;
 
     /// file size in bytes
-    fn size() -> Option<u64>;
+    fn size() -> Option<u32>;
 
     /// duration in seconds
-    fn duration() -> Option<u64>;
+    fn duration() -> Option<u32>;
 }
 
 object VideoDesc {
@@ -393,19 +396,19 @@ object VideoDesc {
     fn mimetype() -> Option<string>;
 
     /// file size in bytes
-    fn size() -> Option<u64>;
+    fn size() -> Option<u32>;
 
     /// image width
-    fn width() -> Option<u64>;
+    fn width() -> Option<u32>;
 
     /// image height
-    fn height() -> Option<u64>;
+    fn height() -> Option<u32>;
 
     /// blurhash
     fn blurhash() -> Option<string>;
 
     /// duration in seconds
-    fn duration() -> Option<u64>;
+    fn duration() -> Option<u32>;
 
     /// thumbnail info
     fn thumbnail_info() -> Option<ThumbnailInfo>;
@@ -425,7 +428,7 @@ object FileDesc {
     fn mimetype() -> Option<string>;
 
     /// file size in bytes
-    fn size() -> Option<u64>;
+    fn size() -> Option<u32>;
 
     /// thumbnail info
     fn thumbnail_info() -> Option<ThumbnailInfo>;
@@ -436,7 +439,7 @@ object FileDesc {
 
 object ReactionDesc {
     /// how many times this key was clicked
-    fn count() -> u64;
+    fn count() -> u32;
 
     /// which users selected this key
     fn senders() -> Vec<string>;
@@ -491,7 +494,7 @@ object Conversation {
     fn latest_message() -> Option<RoomMessage>;
 
     /// the room id
-    fn get_room_id() -> string;
+    fn get_room_id() -> RoomId;
 
     /// Activate typing notice for this room
     /// The typing notice remains active for 4s. It can be deactivate at any
@@ -517,6 +520,35 @@ object Conversation {
     /// send the image message to this room
     fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<EventId>>;
 
+    /// decrypted image buffer data
+    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+    fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// send the audio message to this room
+    fn send_audio_message(uri: string, name: string, mimetype: string, secs: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
+
+    /// decrypted audio buffer data
+    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+    fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// send the video message to this room
+    fn send_video_message(uri: string, name: string, mimetype: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, size: Option<u32>, blurhash: Option<string>) -> Future<Result<EventId>>;
+
+    /// decrypted video buffer data
+    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+    fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// send the file message to this room
+    fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<EventId>>;
+
+    /// decrypted file buffer data
+    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+    fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
     /// get the user status on this room
     fn room_type() -> string;
 
@@ -532,19 +564,11 @@ object Conversation {
     /// get the users that were invited to this room
     fn get_invitees() -> Future<Result<Vec<Account>>>;
 
-    /// decrypted image file data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+    /// download media (image/audio/video/file) to specified path
+    fn download_media(event_id: string, dir_path: string) -> Future<Result<string>>;
 
-    /// send the file message to this room
-    fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<EventId>>;
-
-    /// save file in specified path
-    fn save_file(event_id: string, dir_path: string) -> Future<Result<string>>;
-
-    /// get the path that file was saved
-    fn file_path(event_id: string) -> Future<Result<string>>;
+    /// get the path that media (image/audio/video/file) was saved
+    fn media_path(event_id: string) -> Future<Result<string>>;
 
     /// initially called to get receipt status of room members
     fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;
@@ -560,6 +584,12 @@ object Conversation {
 
     /// send reply as image
     fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+
+    /// send reply as audio
+    fn send_audio_reply(uri: string, name: string, mimetype: string, secs: Option<u32>, size: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+
+    /// send reply as video
+    fn send_video_reply(uri: string, name: string, mimetype: string, secs: Option<u32>, width: Option<u32>, height: Option<u32>, size: Option<u32>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as file
     fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
@@ -945,7 +975,7 @@ object Space {
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     /// the room id
-    fn get_room_id() -> string;
+    fn get_room_id() -> RoomId;
 
     // the members currently in the room
     fn get_member(user_id: string) -> Future<Result<Member>>;
@@ -983,12 +1013,12 @@ object Member {
     fn get_profile() -> Future<Result<UserProfile>>;
 
     /// Full user_id
-    fn user_id() -> string;
+    fn user_id() -> UserId;
 }
 
 object Account {
     /// get user id of this account
-    fn user_id() -> string;
+    fn user_id() -> UserId;
 
     /// The display_name of the account
     fn display_name() -> Future<Result<string>>;
@@ -1148,7 +1178,7 @@ object UserProfile {
     fn get_avatar() -> Future<Result<buffer<u8>>>;
 
     /// get the binary data of thumbnail
-    fn get_thumbnail(width: u64, height: u64) -> Future<Result<buffer<u8>>>;
+    fn get_thumbnail(width: u32, height: u32) -> Future<Result<buffer<u8>>>;
 
     /// get the display name
     fn get_display_name() -> Option<string>;
@@ -1162,7 +1192,7 @@ object RoomProfile {
     fn get_avatar() -> Future<Result<buffer<u8>>>;
 
     /// get the binary data of thumbnail
-    fn get_thumbnail(width: u64, height: u64) -> Future<Result<buffer<u8>>>;
+    fn get_thumbnail(width: u32, height: u32) -> Future<Result<buffer<u8>>>;
 
     /// get the display name
     fn get_display_name() -> Option<string>;
@@ -1173,13 +1203,13 @@ object Invitation {
     fn origin_server_ts() -> Option<u64>;
 
     /// get the room id of this invitation
-    fn room_id() -> string;
+    fn room_id() -> RoomId;
 
     /// get the room name of this invitation
-    fn room_name() -> string;
+    fn room_name() -> Future<Result<string>>;
 
     /// get the user id of this invitation sender
-    fn sender() -> string;
+    fn sender() -> UserId;
 
     /// get the user profile that contains avatar and display name
     fn get_sender_profile() -> Future<Result<UserProfile>>;
@@ -1220,7 +1250,7 @@ object VerificationEvent {
     fn start_sas_verification() -> Future<Result<bool>>;
 
     /// Whether verification request was launched from this device
-    fn was_triggered_from_this_device() -> Option<bool>;
+    fn was_triggered_from_this_device() -> Result<bool>;
 
     /// Bob accepts the SAS verification
     fn accept_sas_verification() -> Future<Result<bool>>;
@@ -1258,7 +1288,7 @@ object VerificationEmoji {
 /// Deliver receipt event from rust to flutter
 object ReceiptEvent {
     /// Get transaction id or flow id
-    fn room_id() -> string;
+    fn room_id() -> RoomId;
 
     /// Get records
     fn receipt_records() -> Vec<ReceiptRecord>;
@@ -1327,8 +1357,8 @@ object DeviceRecord {
 /// Deliver typing event from rust to flutter
 object TypingEvent {
     /// Get transaction id or flow id
-    fn room_id() -> string;
+    fn room_id() -> RoomId;
 
     /// Get list of user id
-    fn user_ids() -> Vec<string>;
+    fn user_ids() -> Vec<UserId>;
 }

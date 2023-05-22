@@ -34,16 +34,34 @@ impl ThumbnailInfo {
         self.inner.mimetype.clone()
     }
 
-    pub fn size(&self) -> Option<u64> {
-        self.inner.size.map(u64::from)
+    pub fn size(&self) -> Option<u32> {
+        self.inner.size.map(|x| {
+            let size = u64::from(x);
+            if size > u32::MAX as u64 {
+                panic!("thumbnail size overflowed");
+            }
+            size as u32
+        })
     }
 
-    pub fn width(&self) -> Option<u64> {
-        self.inner.width.map(u64::from)
+    pub fn width(&self) -> Option<u32> {
+        self.inner.width.map(|x| {
+            let width = u64::from(x);
+            if width > u32::MAX as u64 {
+                panic!("thumbnail width overflowed");
+            }
+            width as u32
+        })
     }
 
-    pub fn height(&self) -> Option<u64> {
-        self.inner.height.map(u64::from)
+    pub fn height(&self) -> Option<u32> {
+        self.inner.height.map(|x| {
+            let height = u64::from(x);
+            if height > u32::MAX as u64 {
+                panic!("thumbnail height overflowed");
+            }
+            height as u32
+        })
     }
 }
 
@@ -104,16 +122,34 @@ impl ImageDesc {
         self.info.mimetype.clone()
     }
 
-    pub fn size(&self) -> Option<u64> {
-        self.info.size.map(u64::from)
+    pub fn size(&self) -> Option<u32> {
+        self.info.size.map(|x| {
+            let size = u64::from(x);
+            if size > u32::MAX as u64 {
+                panic!("image size overflowed");
+            }
+            size as u32
+        })
     }
 
-    pub fn width(&self) -> Option<u64> {
-        self.info.width.map(u64::from)
+    pub fn width(&self) -> Option<u32> {
+        self.info.width.map(|x| {
+            let width = u64::from(x);
+            if width > u32::MAX as u64 {
+                panic!("image width overflowed");
+            }
+            width as u32
+        })
     }
 
-    pub fn height(&self) -> Option<u64> {
-        self.info.height.map(u64::from)
+    pub fn height(&self) -> Option<u32> {
+        self.info.height.map(|x| {
+            let height = u64::from(x);
+            if height > u32::MAX as u64 {
+                panic!("image height overflowed");
+            }
+            height as u32
+        })
     }
 
     pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
@@ -153,16 +189,28 @@ impl AudioDesc {
         }
     }
 
-    pub fn duration(&self) -> Option<u64> {
-        self.info.duration.map(|x| x.as_secs())
+    pub fn duration(&self) -> Option<u32> {
+        self.info.duration.map(|x| {
+            let secs = x.as_secs();
+            if secs > u32::MAX as u64 {
+                panic!("audio duration overflowed");
+            }
+            secs as u32
+        })
     }
 
     pub fn mimetype(&self) -> Option<String> {
         self.info.mimetype.clone()
     }
 
-    pub fn size(&self) -> Option<u64> {
-        self.info.size.map(u64::from)
+    pub fn size(&self) -> Option<u32> {
+        self.info.size.map(|x| {
+            let size = u64::from(x);
+            if size > u32::MAX as u64 {
+                panic!("audio size overflowed");
+            }
+            size as u32
+        })
     }
 }
 
@@ -192,24 +240,48 @@ impl VideoDesc {
         self.info.blurhash.clone()
     }
 
-    pub fn duration(&self) -> Option<u64> {
-        self.info.duration.map(|x| x.as_secs())
+    pub fn duration(&self) -> Option<u32> {
+        self.info.duration.map(|x| {
+            let secs = x.as_secs();
+            if secs > u32::MAX as u64 {
+                panic!("video duration overflowed");
+            }
+            secs as u32
+        })
     }
 
     pub fn mimetype(&self) -> Option<String> {
         self.info.mimetype.clone()
     }
 
-    pub fn size(&self) -> Option<u64> {
-        self.info.size.map(u64::from)
+    pub fn size(&self) -> Option<u32> {
+        self.info.size.map(|x| {
+            let size = u64::from(x);
+            if size > u32::MAX as u64 {
+                panic!("video size overflowed");
+            }
+            size as u32
+        })
     }
 
-    pub fn width(&self) -> Option<u64> {
-        self.info.width.map(u64::from)
+    pub fn width(&self) -> Option<u32> {
+        self.info.width.map(|x| {
+            let width = u64::from(x);
+            if width > u32::MAX as u64 {
+                panic!("video width overflowed");
+            }
+            width as u32
+        })
     }
 
-    pub fn height(&self) -> Option<u64> {
-        self.info.height.map(u64::from)
+    pub fn height(&self) -> Option<u32> {
+        self.info.height.map(|x| {
+            let height = u64::from(x);
+            if height > u32::MAX as u64 {
+                panic!("video height overflowed");
+            }
+            height as u32
+        })
     }
 
     pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
@@ -253,8 +325,14 @@ impl FileDesc {
         self.info.mimetype.clone()
     }
 
-    pub fn size(&self) -> Option<u64> {
-        self.info.size.map(u64::from)
+    pub fn size(&self) -> Option<u32> {
+        self.info.size.map(|x| {
+            let size = u64::from(x);
+            if size > u32::MAX as u64 {
+                panic!("file size overflowed");
+            }
+            size as u32
+        })
     }
 
     pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
@@ -274,16 +352,16 @@ impl FileDesc {
 
 #[derive(Clone, Debug)]
 pub struct ReactionDesc {
-    count: u64,
+    count: u32,
     senders: Vec<OwnedUserId>,
 }
 
 impl ReactionDesc {
-    pub(crate) fn new(count: u64, senders: Vec<OwnedUserId>) -> Self {
+    pub(crate) fn new(count: u32, senders: Vec<OwnedUserId>) -> Self {
         ReactionDesc { count, senders }
     }
 
-    pub fn count(&self) -> u64 {
+    pub fn count(&self) -> u32 {
         self.count
     }
 

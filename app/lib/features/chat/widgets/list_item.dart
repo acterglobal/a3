@@ -3,7 +3,8 @@ import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/models/JoinedRoom.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -42,22 +43,24 @@ class _ChatListItemState extends State<ListItem> {
 
   @override
   Widget build(BuildContext context) {
-    String roomId = widget.room.conversation.getRoomId();
+    String roomId = widget.room.conversation.getRoomId().toString();
     // ToDo: UnreadCounter
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         ListTile(
           onTap: () => handleTap(context),
-          leading: CustomAvatar(
-            uniqueKey: roomId,
-            avatar: widget.room.avatar,
+          leading: ActerAvatar(
+            mode: DisplayMode.GroupChat, // FIXME: checking for DM somehow?
+            uniqueId: roomId,
+            avatarProviderFuture: widget.room.avatar != null
+                ? remapToImage(
+                    widget.room.avatar!,
+                    cacheHeight: 54,
+                  )
+                : null,
             displayName: widget.room.displayName,
-            radius: 25,
-            cacheHeight: 62,
-            cacheWidth: 60,
-            isGroup: true,
-            stringName: simplifyRoomId(roomId)!,
+            size: 25,
           ),
           title: _TitleWidget(
             displayName: widget.room.displayName,
@@ -75,7 +78,7 @@ class _ChatListItemState extends State<ListItem> {
             room: widget.room.conversation,
             latestMessage: widget.room.latestMessage,
             activeMembers: activeMembers,
-            userId: widget.client.account().userId(),
+            userId: widget.client.userId().toString(),
           ),
         ),
         const Padding(

@@ -114,10 +114,16 @@ impl CommentDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self.inner.build()?;
+        let inner = self
+            .inner
+            .build()
+            .context("building failed in event content of comment")?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner, None).await?;
+                let resp = room
+                    .send(inner, None)
+                    .await
+                    .context("Couldn't send comment")?;
                 Ok(resp.event_id)
             })
             .await?
@@ -155,16 +161,18 @@ impl CommentsManager {
 
         RUNTIME
             .spawn(async move {
-                Ok(manager
+                let res = manager
                     .comments()
-                    .await?
+                    .await
+                    .context("Couldn't get comments from manager")?
                     .into_iter()
                     .map(|inner| Comment {
                         client: client.clone(),
                         room: room.clone(),
                         inner,
                     })
-                    .collect())
+                    .collect();
+                Ok(res)
             })
             .await?
     }

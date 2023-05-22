@@ -27,7 +27,7 @@ async fn sisko_replies_message() -> Result<()> {
     )
     .await?;
     let syncer = sisko.start_sync();
-    let mut synced = syncer.first_synced_rx().expect("note yet read");
+    let mut synced = syncer.first_synced_rx().expect("not yet read");
     while synced.next().await != Some(true) {} // let's wait for it to have synced
 
     let space = sisko

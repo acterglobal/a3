@@ -52,7 +52,7 @@ class ChatsCard extends ConsumerWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: chats.length,
                   itemBuilder: ((context, index) {
-                    final roomId = chats[index].getRoomId();
+                    final roomId = chats[index].getRoomId().toString();
                     final profile =
                         ref.watch(chatProfileDataProvider(chats[index]));
                     return profile.when(

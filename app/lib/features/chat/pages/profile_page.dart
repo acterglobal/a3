@@ -1,10 +1,10 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show remapToImage;
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/pages/link_settings_page.dart';
 import 'package:acter/features/chat/pages/edit_group_page.dart';
 import 'package:acter/features/chat/pages/group_link_page.dart';
 import 'package:acter/features/chat/pages/requests_page.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/features/chat/widgets/group_member_view.dart';
 import 'package:acter/features/chat/widgets/invite_list_view.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -36,6 +36,7 @@ class ProfilePage extends StatelessWidget {
     final ChatRoomController roomController = Get.find<ChatRoomController>();
     String chatDesc =
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.';
+    String roomId = room.getRoomId().toString();
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -50,13 +51,9 @@ class ProfilePage extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
-                      Text(
-                        'Report',
-                      ),
+                      Text('Report'),
                       SizedBox(width: 50),
-                      Icon(
-                        Atlas.triangle_exclamation,
-                      )
+                      Icon(Atlas.triangle_exclamation)
                     ],
                   ),
                 ),
@@ -89,15 +86,17 @@ class ProfilePage extends StatelessWidget {
                     width: 100,
                     child: FittedBox(
                       fit: BoxFit.contain,
-                      child: CustomAvatar(
-                        uniqueKey: room.getRoomId(),
-                        avatar: roomAvatar,
+                      child: ActerAvatar(
+                        mode: DisplayMode.User,
+                        uniqueId: roomId,
+                        avatarProviderFuture: roomAvatar != null
+                            ? remapToImage(
+                                roomAvatar!,
+                                cacheHeight: 200,
+                              )
+                            : null,
                         displayName: roomName,
-                        radius: 20,
-                        cacheHeight: 120,
-                        cacheWidth: 120,
-                        isGroup: true,
-                        stringName: simplifyRoomId(room.getRoomId())!,
+                        size: 20,
                       ),
                     ),
                   ),
@@ -342,10 +341,7 @@ class ProfilePage extends StatelessWidget {
           Spacer(),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Text(
-              '3',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: Text('3', style: TextStyle(color: Colors.white)),
           )
         ],
       ),
@@ -552,9 +548,7 @@ class ProfilePage extends StatelessWidget {
                 Spacer(),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
-                  child: Text(
-                    '@marthacraig',
-                  ),
+                  child: Text('@marthacraig'),
                 ),
               ],
             ),
@@ -574,12 +568,7 @@ class ProfilePage extends StatelessWidget {
             Icon(Atlas.danger),
             Padding(
               padding: EdgeInsets.only(left: 8),
-              child: Text(
-                'Block this user',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
+              child: Text('Block this user', style: TextStyle(fontSize: 16)),
             )
           ],
         ),
@@ -609,16 +598,15 @@ class ProfilePage extends StatelessWidget {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          String userId = roomController.activeMembers[index].userId();
+          String userId =
+              roomController.activeMembers[index].userId().toString();
           return Padding(
             padding: const EdgeInsets.all(12),
             child: GetBuilder<ChatRoomController>(
               id: 'user-profile-$userId',
               builder: (ChatRoomController controller) {
                 return (controller.getUserName(userId) == null)
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
+                    ? const Center(child: CircularProgressIndicator())
                     : GroupMember(
                         userId: userId,
                         name: controller.getUserName(userId),

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
-import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -266,12 +266,12 @@ class _TextInputWidget extends StatelessWidget {
                 leading: SizedBox(
                   width: 35,
                   height: 35,
-                  child: CustomAvatar(
-                    uniqueKey: roomMember['link'],
-                    radius: 20,
+                  child: ActerAvatar(
+                    mode: DisplayMode.User,
+                    uniqueId: roomMember['link'],
+                    size: 20,
                     avatar: roomMember['avatar'],
-                    isGroup: false,
-                    stringName: roomMember['display'],
+                    displayName: roomMember['display'],
                   ),
                 ),
                 title: Text(
@@ -388,7 +388,7 @@ class AttachmentWidget extends StatelessWidget {
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
+                          children: const [
                             Icon(Atlas.camera),
                             SizedBox(height: 6),
                             Text(
@@ -404,7 +404,7 @@ class AttachmentWidget extends StatelessWidget {
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
+                          children: const [
                             Icon(Atlas.folder),
                             SizedBox(height: 6),
                             Text('File', style: TextStyle(color: Colors.white)),
@@ -415,7 +415,7 @@ class AttachmentWidget extends StatelessWidget {
                         onTap: () {},
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
+                          children: const [
                             Icon(Atlas.location),
                             SizedBox(height: 6),
                             Text(
