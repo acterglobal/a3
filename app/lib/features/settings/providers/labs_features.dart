@@ -12,6 +12,7 @@ enum LabsFeature {
   pins,
   cobudget,
   polls,
+  discussions,
 
   // searchOptions
   searchSpaces,

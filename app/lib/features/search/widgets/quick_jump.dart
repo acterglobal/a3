@@ -1,3 +1,4 @@
+import 'package:acter/features/settings/providers/labs_features.dart';
 import 'package:acter/main/routing/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -17,59 +18,67 @@ class QuickJump extends ConsumerWidget {
   });
 
   List<Widget> primaryButtons(BuildContext context, WidgetRef ref) {
+    final provider = ref.watch(featuresProvider);
+    bool isActive(f) => provider.isActive(f);
     return [
       ButtonBar(
         alignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          IconButton(
-            style: IconButton.styleFrom(
-              side: BorderSide(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+        children: List.from(
+          [
+            isActive(LabsFeature.tasks)
+                ? IconButton(
+                    style: IconButton.styleFrom(
+                      side: BorderSide(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.12),
+                      ),
+                    ),
+                    onPressed: () => {
+                      //navigateTo(route: Routes.tasks);
+                    },
+                    icon: SvgPicture.asset(
+                      'assets/images/tasks.svg',
+                      semanticsLabel: 'tasks',
+                      width: 48,
+                      height: 48,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  )
+                : null,
+            IconButton(
+              style: IconButton.styleFrom(
+                side: BorderSide(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                ),
               ),
+              onPressed: () {},
+              icon: const Icon(Atlas.back_vr_thin, size: 48),
             ),
-            onPressed: () => {
-              //navigateTo(route: Routes.tasks);
-            },
-            icon: SvgPicture.asset(
-              'assets/images/tasks.svg',
-              semanticsLabel: 'tasks',
-              width: 48,
-              height: 48,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
-          IconButton(
-            style: IconButton.styleFrom(
-              side: BorderSide(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+            IconButton(
+              style: IconButton.styleFrom(
+                side: BorderSide(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                ),
               ),
+              onPressed: () {},
+              icon: const Icon(Atlas.cabin_thin, size: 48),
             ),
-            onPressed: () {},
-            icon: const Icon(Atlas.back_vr_thin, size: 48),
-          ),
-          IconButton(
-            style: IconButton.styleFrom(
-              side: BorderSide(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+            IconButton(
+              style: IconButton.styleFrom(
+                side: BorderSide(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                ),
               ),
-            ),
-            onPressed: () {},
-            icon: const Icon(Atlas.cabin_thin, size: 48),
-          ),
-          IconButton(
-            style: IconButton.styleFrom(
-              side: BorderSide(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-              ),
-            ),
-            onPressed: () {},
-            icon: const Icon(Atlas.dart_thin, size: 48),
-          )
-        ],
+              onPressed: () {},
+              icon: const Icon(Atlas.dart_thin, size: 48),
+            )
+          ].where((element) => element != null),
+        ),
       ),
       ButtonBar(
         alignment: MainAxisAlignment.spaceEvenly,
@@ -120,55 +129,67 @@ class QuickJump extends ConsumerWidget {
   }
 
   Widget quickActions(BuildContext context, WidgetRef ref) {
+    final provider = ref.watch(featuresProvider);
+    bool isActive(f) => provider.isActive(f);
     return ButtonBar(
       alignment: MainAxisAlignment.center,
-      children: [
-        OutlinedButton.icon(
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.amber,
-            side: const BorderSide(width: 2, color: Colors.amber),
-          ),
-          onPressed: () {
-            navigateTo(route: Routes.actionAddTask, push: true);
-            debugPrint('Add Task');
-          },
-          icon: const Icon(Atlas.plus_circle_thin),
-          label: const Text('Task'),
-        ),
-        OutlinedButton.icon(
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.purple,
-            side: const BorderSide(width: 2, color: Colors.purple),
-          ),
-          onPressed: () {
-            debugPrint('Add Event');
-          },
-          icon: const Icon(Atlas.plus_circle_thin),
-          label: const Text('Event'),
-        ),
-        OutlinedButton.icon(
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.green.shade900,
-            side: BorderSide(width: 2, color: Colors.green.shade900),
-          ),
-          onPressed: () {
-            debugPrint('poll');
-          },
-          icon: const Icon(Atlas.plus_circle_thin),
-          label: const Text('Poll'),
-        ),
-        OutlinedButton.icon(
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.white,
-            side: const BorderSide(width: 2, color: Colors.white),
-          ),
-          onPressed: () {
-            debugPrint('Discussion');
-          },
-          icon: const Icon(Atlas.plus_circle_thin),
-          label: const Text('Discussion'),
-        ),
-      ],
+      children: List.from(
+        [
+          isActive(LabsFeature.tasks)
+              ? OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.amber,
+                    side: const BorderSide(width: 2, color: Colors.amber),
+                  ),
+                  onPressed: () {
+                    navigateTo(route: Routes.actionAddTask, push: true);
+                    debugPrint('Add Task');
+                  },
+                  icon: const Icon(Atlas.plus_circle_thin),
+                  label: const Text('Task'),
+                )
+              : null,
+          isActive(LabsFeature.events)
+              ? OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.purple,
+                    side: const BorderSide(width: 2, color: Colors.purple),
+                  ),
+                  onPressed: () {
+                    debugPrint('Add Event');
+                  },
+                  icon: const Icon(Atlas.plus_circle_thin),
+                  label: const Text('Event'),
+                )
+              : null,
+          isActive(LabsFeature.polls)
+              ? OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.green.shade900,
+                    side: BorderSide(width: 2, color: Colors.green.shade900),
+                  ),
+                  onPressed: () {
+                    debugPrint('poll');
+                  },
+                  icon: const Icon(Atlas.plus_circle_thin),
+                  label: const Text('Poll'),
+                )
+              : null,
+          isActive(LabsFeature.discussions)
+              ? OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(width: 2, color: Colors.white),
+                  ),
+                  onPressed: () {
+                    debugPrint('Discussion');
+                  },
+                  icon: const Icon(Atlas.plus_circle_thin),
+                  label: const Text('Discussion'),
+                )
+              : null,
+        ].where((element) => element != null),
+      ),
     );
   }
 
