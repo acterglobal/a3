@@ -77,7 +77,7 @@ class MyProfile extends ConsumerWidget {
                               size: 60,
                             ),
                           ),
-                          Text(account.profile.displayName),
+                          Text(account.profile.displayName ?? ''),
                           Text(account.account.userId().toString()),
                         ],
                       ),

@@ -10,7 +10,7 @@ final chatProfileDataProvider =
   // FIXME: how to get informed about updates!?!
   final profile = chat.getProfile();
   DispName name = await profile.getDisplayName();
-  final displayName = name.text() ?? chat.getRoomId().toString();
+  final displayName = name.text();
   if (!profile.hasAvatar()) {
     return ProfileData(displayName, null);
   }

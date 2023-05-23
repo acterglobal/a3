@@ -67,7 +67,7 @@ class _TabBarWidget extends StatefulWidget {
 
 class UserItem {
   String userId;
-  String displayName;
+  String? displayName;
   Future<FfiBufferUint8> avatar;
 
   UserItem({
@@ -93,7 +93,7 @@ class _TabBarWidgetState extends State<_TabBarWidget> {
       DispName dispName = await profile.getDisplayName();
       var item = UserItem(
         userId: userId,
-        displayName: dispName.text() ?? userId,
+        displayName: dispName.text(),
         avatar: profile.getAvatar(),
       );
       items.add(item);

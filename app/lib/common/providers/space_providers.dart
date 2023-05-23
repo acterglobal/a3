@@ -10,7 +10,7 @@ Future<ProfileData> getProfileData(Space space) async {
   // FIXME: how to get informed about updates!?!
   final profile = space.getProfile();
   DispName name = await profile.getDisplayName();
-  final displayName = name.text() ?? space.getRoomId().toString();
+  final displayName = name.text();
   if (!profile.hasAvatar()) {
     return ProfileData(displayName, null);
   }

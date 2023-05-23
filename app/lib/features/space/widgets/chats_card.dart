@@ -26,6 +26,7 @@ final relatedChatsProvider =
 
 class ChatsCard extends ConsumerWidget {
   final String spaceId;
+
   const ChatsCard({super.key, required this.spaceId});
 
   @override
@@ -54,8 +55,8 @@ class ChatsCard extends ConsumerWidget {
                   itemCount: chats.length,
                   itemBuilder: ((context, index) {
                     final roomId = chats[index].getRoomId().toString();
-                    final profile =
-                        ref.watch(chatProfileDataProvider(chats[index]));
+                    final provider = chatProfileDataProvider(chats[index]);
+                    final profile = ref.watch(provider);
                     return profile.when(
                       data: (profile) => ListTile(
                         onTap: () => context.go('/chat/$roomId'),
@@ -79,7 +80,7 @@ class ChatsCard extends ConsumerWidget {
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 8),
                                   child: Text(
-                                    profile.displayName,
+                                    profile.displayName ?? roomId,
                                     style:
                                         Theme.of(context).textTheme.titleSmall,
                                   ),
