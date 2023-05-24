@@ -452,9 +452,9 @@ class ChatRoomController extends GetxController {
         record['avatar'] = avatars[userId];
       }
       String? name = profile.getDisplayName();
-      record['display'] = name;
       record['link'] = userId;
       if (name != null) {
+        record['display'] = name;
         names[userId] = name;
       }
       mentionRecords.add(record);

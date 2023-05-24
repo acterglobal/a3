@@ -63,7 +63,7 @@ class CommentInputState extends State<CommentInput> {
                       account.avatar(),
                       cacheHeight: 32,
                     ),
-                    displayName: simplifyUserId(userId) ?? '',
+                    displayName: simplifyUserId(userId),
                   ),
                 ),
                 GetBuilder<ToDoController>(

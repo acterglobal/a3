@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SpaceCard extends ConsumerWidget {
   final String? title;
   final List<Member> members;
-  final Future<FfiBufferUint8?> avatar;
+  final Future<FfiBufferUint8>? avatar;
   final Function()? callback;
 
   const SpaceCard({
@@ -39,11 +39,13 @@ class SpaceCard extends ConsumerWidget {
                 child: ActerAvatar(
                   mode: DisplayMode.Space,
                   uniqueId: client.userId().toString(),
-                  avatarProviderFuture: remapToImage(
-                    avatar,
-                    cacheHeight: 120,
-                    cacheWidth: 120,
-                  ),
+                  avatarProviderFuture: avatar != null
+                      ? remapToImage(
+                          avatar!,
+                          cacheHeight: 120,
+                          cacheWidth: 120,
+                        )
+                      : null,
                   size: 36,
                 ),
               ),
@@ -53,7 +55,7 @@ class SpaceCard extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(title!, style: const TextStyle(fontSize: 15)),
+                    Text(title ?? '', style: const TextStyle(fontSize: 15)),
                     RichText(
                       text: TextSpan(
                         children: [

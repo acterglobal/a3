@@ -14,6 +14,7 @@ final isSearchingProvider = StateProvider.autoDispose<bool>((ref) => false);
 class SearchSpaceNotifier extends StateNotifier<List<SpaceItem>> {
   final Ref ref;
   List<SpaceItem> items;
+
   SearchSpaceNotifier(this.ref, this.items) : super([]) {
     _init();
   }

@@ -9,6 +9,7 @@ final newsListProvider =
 
 class NewsListStateNotifier extends StateNotifier<AsyncValue<List<NewsEntry>>> {
   final Ref ref;
+
   NewsListStateNotifier(this.ref) : super(const AsyncData([])) {
     _fetchNews();
   }

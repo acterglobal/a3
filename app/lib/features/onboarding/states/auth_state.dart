@@ -17,6 +17,7 @@ final isLoggedInProvider = StateProvider<bool>((ref) => false);
 
 class AuthStateNotifier extends StateNotifier<bool> {
   final Ref ref;
+
   AuthStateNotifier(this.ref) : super(false);
 
   Future<void> login(
@@ -53,8 +54,12 @@ class AuthStateNotifier extends StateNotifier<bool> {
     state = true;
     final sdk = ref.read(sdkRepositoryProvider);
     try {
-      final client =
-          await sdk.signUpClient(username, password, displayName, token);
+      final client = await sdk.signUpClient(
+        username,
+        password,
+        displayName,
+        token,
+      );
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
       state = false;

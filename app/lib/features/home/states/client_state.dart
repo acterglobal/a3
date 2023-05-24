@@ -15,6 +15,7 @@ class ClientNotifier extends StateNotifier<Client?> {
   final Ref ref;
   late ActerSdk sdk;
   late SyncState syncState;
+
   ClientNotifier(this.ref) : super(null) {
     _loadUp();
   }
