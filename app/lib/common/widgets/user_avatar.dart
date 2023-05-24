@@ -1,14 +1,9 @@
+import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show UserProfile;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final userProfileProvider = FutureProvider<UserProfile>((ref) async {
-  final client = ref.watch(clientProvider);
-  return await client!.getUserProfile();
-});
 
 class UserAvatarWidget extends ConsumerWidget {
   const UserAvatarWidget({super.key});

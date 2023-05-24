@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/l10n/l10n.dart';
+import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +15,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:window_size/window_size.dart';
-
-import 'package:acter/main/routing/routing.dart';
 
 void main() async {
   await startApp();

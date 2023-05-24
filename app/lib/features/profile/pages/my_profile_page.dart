@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/profile_provider.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
