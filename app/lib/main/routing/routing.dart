@@ -11,6 +11,7 @@ import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/sign_up_page.dart';
+import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/search/pages/search.dart';
@@ -53,8 +54,8 @@ Future<String?> authGuardRedirect(
 
   // ignore: deprecated_member_use
   return state.namedLocation(
-    Routes.authLogin.name,
-    queryParams: {next: next},
+    Routes.start.name,
+    queryParams: {'next': next},
   );
 }
 
@@ -66,6 +67,11 @@ final GlobalKey<NavigatorState> _spaceNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'space');
 
 final _routes = [
+  GoRoute(
+    name: Routes.start.name,
+    path: Routes.start.route,
+    builder: (context, state) => const StartPage(),
+  ),
   GoRoute(
     name: Routes.authLogin.name,
     path: Routes.authLogin.route,
