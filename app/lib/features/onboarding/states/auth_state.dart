@@ -69,7 +69,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     await sdk.logoutClient();
     ref.read(isLoggedInProvider.notifier).update((state) => !state);
     // return to guest client.
-    ref.read(clientProvider.notifier).state = sdk.getClient();
+    ref.read(clientProvider.notifier).state = sdk.currentClient;
     Get.delete<ChatListController>();
     Get.delete<ChatRoomController>();
     Get.delete<ReceiptController>();

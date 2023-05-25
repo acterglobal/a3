@@ -12,11 +12,22 @@ class SdkRepository {
 
   SdkRepository(this.sdk);
 
-  Client getClient() => sdk.currentClient;
+  Client? get currentClient => sdk.currentClient;
+
+  bool get hasClients => sdk.hasClients;
 
   Future<Client> loginClient(String username, String password) async {
     try {
       final client = await sdk.login(username, password);
+      return client;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Client> loginNewGuest() async {
+    try {
+      final client = await sdk.newGuestClient();
       return client;
     } catch (e) {
       rethrow;

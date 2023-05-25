@@ -101,7 +101,7 @@ class ActerSdk {
   static ActerSdk? _instance;
   late final ffi.Api _api;
   static String _sessionKey = defaultSessionKey;
-  final int _index = 0;
+  int _index = 0;
   static final List<ffi.Client> _clients = [];
   static const platform = MethodChannel('acter_flutter_sdk');
 
@@ -115,6 +115,7 @@ class ActerSdk {
     }
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(_sessionKey, sessions);
+    await prefs.setInt('$_sessionKey::currentClientIdx', _index);
   }
 
   static Future<void> resetSessionsAndClients(String sessionKey) async {
@@ -128,6 +129,7 @@ class ActerSdk {
   Future<void> _restore() async {
     Directory appDocDir = await getApplicationSupportDirectory();
     String appDocPath = appDocDir.path;
+    debugPrint('loading configuration from $appDocPath');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
     bool loggedIn = false;
@@ -136,23 +138,36 @@ class ActerSdk {
       _clients.add(client);
       loggedIn = client.loggedIn();
     }
-
-    if (_clients.isEmpty) {
-      ffi.Client client = await _api.guestClient(
-        appDocPath,
-        defaultServerName,
-        defaultServerUrl,
-        userAgent,
-      );
-      _clients.add(client);
-      loggedIn = client.loggedIn();
-      await _persistSessions();
-    }
+    _index = prefs.getInt('$_sessionKey::currentClientIdx') ?? 0;
     debugPrint('Restored $_clients: $loggedIn');
   }
 
-  ffi.Client get currentClient {
-    return _clients[_index];
+  ffi.Client? get currentClient {
+    if (_index >= 0 && _index < _clients.length) {
+      return _clients.elementAt(_index);
+    }
+    return null;
+  }
+
+  Future<ffi.Client> newGuestClient({
+    String? serverName,
+    String? serverUrl,
+    bool setAsCurrent = false,
+  }) async {
+    Directory appDocDir = await getApplicationSupportDirectory();
+    String appDocPath = appDocDir.path;
+    ffi.Client client = await _api.guestClient(
+      appDocPath,
+      serverName ?? defaultServerName,
+      serverUrl ?? defaultServerUrl,
+      userAgent,
+    );
+    _clients.add(client);
+    await _persistSessions();
+    if (setAsCurrent) {
+      _index = _clients.length - 1;
+    }
+    return client;
   }
 
   bool get hasClients {
@@ -257,7 +272,8 @@ class ActerSdk {
 
   Future<void> logout() async {
     // remove current client from list
-    var client = _clients.removeAt(0);
+    var client = _clients.removeAt(_index);
+    _index = _index > 0 ? _index - 1 : 0;
     await _persistSessions();
     unawaited(
       client.logout().catchError((e) {
@@ -269,10 +285,6 @@ class ActerSdk {
         return e is int;
       }),
     ); // Explicitly-ignored fire-and-forget.
-    if (_clients.isEmpty) {
-      // login as guest
-      await _restore();
-    }
   }
 
   Future<ffi.Client> signUp(
