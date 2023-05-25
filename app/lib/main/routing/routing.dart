@@ -27,6 +27,36 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 // ignore: implementation_imports
 import 'package:go_router/src/information_provider.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter/common/utils/constants.dart';
+
+Future<String?> authGuardRedirect(
+  BuildContext context,
+  GoRouterState state,
+) async {
+  final acterSdk = await ActerSdk.instance;
+  if (acterSdk.hasClients) {
+    // we are all fine, we have a client, do go on.
+    return null;
+  }
+
+  if (autoGuestLogin) {
+    // if compiled with auto-guest-login, create an account
+    await acterSdk.newGuestClient(setAsCurrent: true);
+    return null;
+  }
+
+  // no client found yet, send user to fresh login
+
+  // next param calculation
+  final next = Uri.encodeComponent(state.location);
+
+  // ignore: deprecated_member_use
+  return state.namedLocation(
+    Routes.authLogin.name,
+    queryParams: {next: next},
+  );
+}
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -45,10 +75,6 @@ final _routes = [
     name: Routes.authRegister.name,
     path: Routes.authRegister.route,
     builder: (context, state) => const SignupPage(),
-  ),
-  GoRoute(
-    path: '/gallery',
-    builder: (context, state) => const GalleryPage(),
   ),
   GoRoute(
     parentNavigatorKey: _rootNavigatorKey,
@@ -92,6 +118,12 @@ final _routes = [
   /// Application shell
   ShellRoute(
     navigatorKey: _shellNavigatorKey,
+    // FIXME: unfortunately ShellRoute doesn't support redirects yet,
+    // thus we have to put it onto every route. Once that is fixed,
+    // remove that param from the sub-routes and use only here instead
+    // ref: https://github.com/flutter/flutter/issues/114559
+    // redirect: authGuardRedirect,
+
     pageBuilder: (context, state, child) {
       return NoTransitionPage(
         key: state.pageKey,
@@ -100,8 +132,13 @@ final _routes = [
     },
     routes: <RouteBase>[
       GoRoute(
+        path: '/gallery',
+        builder: (context, state) => const GalleryPage(),
+      ),
+      GoRoute(
         name: Routes.myProfile.name,
         path: Routes.myProfile.route,
+        redirect: authGuardRedirect,
         pageBuilder: (context, state) {
           return NoTransitionPage(
             key: state.pageKey,
@@ -113,6 +150,7 @@ final _routes = [
       GoRoute(
         name: Routes.activities.name,
         path: Routes.activities.route,
+        redirect: authGuardRedirect,
         pageBuilder: (context, state) {
           return NoTransitionPage(
             key: state.pageKey,
@@ -124,6 +162,7 @@ final _routes = [
       GoRoute(
         name: Routes.updates.name,
         path: Routes.updates.route,
+        redirect: authGuardRedirect,
         pageBuilder: (context, state) {
           return NoTransitionPage(
             key: state.pageKey,
@@ -135,6 +174,7 @@ final _routes = [
       GoRoute(
         name: Routes.search.name,
         path: Routes.search.route,
+        redirect: authGuardRedirect,
         pageBuilder: (context, state) {
           return NoTransitionPage(
             key: state.pageKey,
@@ -145,6 +185,7 @@ final _routes = [
       GoRoute(
         name: Routes.chatroom.name,
         path: Routes.chatroom.route,
+        redirect: authGuardRedirect,
         pageBuilder: (context, state) {
           return NoTransitionPage(key: state.pageKey, child: const ChatPage());
         },
@@ -153,6 +194,7 @@ final _routes = [
       GoRoute(
         name: Routes.chat.name,
         path: Routes.chat.route,
+        redirect: authGuardRedirect,
         pageBuilder: (context, state) {
           return NoTransitionPage(key: state.pageKey, child: const ChatPage());
         },
@@ -161,6 +203,7 @@ final _routes = [
       GoRoute(
         name: Routes.dashboard.name,
         path: Routes.dashboard.route,
+        redirect: authGuardRedirect,
         pageBuilder: (context, state) {
           return NoTransitionPage(key: state.pageKey, child: const Dashboard());
         },
@@ -171,6 +214,7 @@ final _routes = [
       GoRoute(
         name: Routes.info.name,
         path: Routes.info.route,
+        redirect: authGuardRedirect,
         pageBuilder: (context, state) {
           return NoTransitionPage(
             key: state.pageKey,
@@ -181,6 +225,7 @@ final _routes = [
       GoRoute(
         name: Routes.licenses.name,
         path: Routes.licenses.route,
+        redirect: authGuardRedirect,
         pageBuilder: (context, state) {
           return NoTransitionPage(
             key: state.pageKey,
@@ -192,6 +237,7 @@ final _routes = [
       GoRoute(
         name: Routes.settings.name,
         path: Routes.settings.route,
+        redirect: authGuardRedirect,
         pageBuilder: (context, state) {
           return NoTransitionPage(
             key: state.pageKey,
@@ -203,6 +249,7 @@ final _routes = [
       GoRoute(
         name: Routes.settingsLabs.name,
         path: Routes.settingsLabs.route,
+        redirect: authGuardRedirect,
         pageBuilder: (context, state) {
           return NoTransitionPage(
             key: state.pageKey,
@@ -227,6 +274,7 @@ final _routes = [
           GoRoute(
             name: Routes.space.name,
             path: Routes.space.route,
+            redirect: authGuardRedirect,
             pageBuilder: (context, state) {
               return NoTransitionPage(
                 key: state.pageKey,
@@ -240,7 +288,12 @@ final _routes = [
       GoRoute(
         name: Routes.main.name,
         path: Routes.main.route,
-        redirect: (BuildContext context, GoRouterState state) {
+        redirect: (BuildContext context, GoRouterState state) async {
+          // we first check if there is a client available for us to use
+          final authGuarded = await authGuardRedirect(context, state);
+          if (authGuarded != null) {
+            return authGuarded;
+          }
           if (isDesktop(context)) {
             return Routes.dashboard.route;
           } else {
