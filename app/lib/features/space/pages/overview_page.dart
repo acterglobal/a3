@@ -30,7 +30,7 @@ class SpaceOverview extends ConsumerWidget {
           EventsCard(spaceId: spaceIdOrAlias),
           LinksCard(spaceId: spaceIdOrAlias),
           ChatsCard(spaceId: spaceIdOrAlias),
-          SpacesCard(spaceId: spaceIdOrAlias),
+          // SpacesCard(spaceId: spaceIdOrAlias),
         ],
       ),
     );

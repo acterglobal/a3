@@ -71,8 +71,8 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                             ),
                           ),
                           ...canonicalParent.when(
-                            data: (parentProfile) {
-                              if (parentProfile == null) {
+                            data: (parent) {
+                              if (parent == null) {
                                 return [];
                               }
                               return [
@@ -80,22 +80,18 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                                   left: 150,
                                   top: 250,
                                   child: Tooltip(
-                                    message: parentProfile.profile.displayName,
+                                    message: parent.profile.displayName,
                                     child: InkWell(
                                       onTap: () {
-                                        final roomId =
-                                            parentProfile.space.getRoomId();
+                                        final roomId = parent.space.getRoomId();
                                         context.go('/$roomId');
                                       },
                                       child: ActerAvatar(
                                         mode: DisplayMode.Space,
-                                        displayName:
-                                            parentProfile.profile.displayName,
-                                        uniqueId: parentProfile.space
-                                            .getRoomId()
-                                            .toString(),
-                                        avatar: parentProfile.profile
-                                            .getAvatarImage(),
+                                        displayName: parent.profile.displayName,
+                                        uniqueId:
+                                            parent.space.getRoomId().toString(),
+                                        avatar: parent.profile.getAvatarImage(),
                                         size: 40,
                                       ),
                                     ),
