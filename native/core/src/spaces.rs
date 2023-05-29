@@ -276,10 +276,10 @@ impl CoreClient {
             };
 
             let target = ev.state_key();
-            let target_type = if let Some(parent) = self.client().get_room(target) {
-                if !parent.is_space() {
+            let target_type = if let Some(child) = self.client().get_room(target) {
+                if !child.is_space() {
                     RelationTargetType::ChatRoom
-                } else if is_acter_space(&parent).await {
+                } else if is_acter_space(&child).await {
                     RelationTargetType::ActerSpace
                 } else {
                     RelationTargetType::Space
