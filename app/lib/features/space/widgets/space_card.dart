@@ -6,12 +6,12 @@ import 'package:acter/common/widgets/square_avatar.dart';
 
 class SpaceCard extends StatelessWidget {
 
-   String? displayImage;
-   String? title;
-   String? subtitle;
+  final String? displayImage;
+  final String? title;
+  final String? subtitle;
 
 
-   SpaceCard({
+   const SpaceCard({
     super.key, this.displayImage,  this.title,  this.subtitle,
   });
 
@@ -41,7 +41,7 @@ class SpaceCard extends StatelessWidget {
                 ),
                  Text(
                   subtitle!,
-                  style: TextStyle(color: Color(0xff79747E)),
+                  style: const TextStyle(color: Color(0xff79747E)),
                 ),
                 const SizedBox(
                   height: 10,
@@ -74,7 +74,7 @@ class SpaceCard extends StatelessWidget {
                     children: [
                       Container(
                           margin: const EdgeInsets.only(right: 10),
-                          child: const Icon(Atlas.padlock)),
+                          child: const Icon(Atlas.padlock),),
                       const Text('Encryption Settings')
                     ],
                   ),
@@ -167,7 +167,7 @@ class SpaceCard extends StatelessWidget {
                     children: [
                       Container(
                           margin: const EdgeInsets.only(right: 10),
-                          child: const Icon(Atlas.padlock)),
+                          child: const Icon(Atlas.padlock),),
                       const Text('Encryption Settings')
                     ],
                   ),

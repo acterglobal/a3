@@ -24,7 +24,7 @@ class Search extends StatelessWidget {
                 hintText: 'Search',
                 hintStyle: TextStyle(
                     fontSize: 16,
-                    color: Theme.of(context).colorScheme.neutral4),
+                    color: Theme.of(context).colorScheme.neutral4,),
                 prefixIcon: const Icon(Atlas.magnifying_glass),
                 border: InputBorder.none,
                 focusedBorder: InputBorder.none,

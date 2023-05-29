@@ -18,9 +18,10 @@ class SpaceCardIcons extends StatelessWidget {
           height: 60,
           width: 60,
           margin: const EdgeInsets.all(5),
+          // ignore: require_trailing_commas
           decoration: BoxDecoration(
               color: const Color(0xff4A4458),
-              borderRadius: BorderRadius.circular(20)),
+              borderRadius: BorderRadius.circular(20),),
           child: Icon(icon),
         ),
         Text(

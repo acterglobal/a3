@@ -106,7 +106,6 @@ final _routes = [
           );
         },
       ),
-
       GoRoute(
         name: Routes.activities.name,
         path: Routes.activities.route,
