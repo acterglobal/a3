@@ -131,6 +131,8 @@ final _routes = [
         },
       ),
 
+      
+
       GoRoute(
         name: Routes.search.name,
         path: Routes.search.route,

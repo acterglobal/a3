@@ -1,6 +1,5 @@
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-
-import 'package:acter/features/home/widgets/user_avatar.dart';
 
 class InviteResultCard extends StatelessWidget {
   final String? displayName;
@@ -14,7 +13,11 @@ class InviteResultCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const UserAvatarWidget(),
+        ActerAvatar(
+          mode: DisplayMode.User,
+          uniqueId: '',
+          size: 50,
+        ),
         Container(
           margin: const EdgeInsets.only(left: 10),
           child: Column(
