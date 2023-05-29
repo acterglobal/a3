@@ -70,7 +70,7 @@ async fn onboarding_is_created() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), move || {
         let client = news_client.clone();
         async move {
-            if client.latest_news(10).await?.len() != 1 {
+            if client.latest_news_entries(10).await?.len() != 1 {
                 bail!("not all news found");
             } else {
                 Ok(())

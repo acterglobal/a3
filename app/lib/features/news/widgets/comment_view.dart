@@ -1,10 +1,8 @@
-import 'package:acter/features/news/controllers/news_comment_controller.dart';
-import 'package:acter/models/CommentModel.dart';
 import 'package:acter/features/news/widgets/reply_view.dart';
+import 'package:acter/models/CommentModel.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:get/get.dart';
 
 class CommentView extends StatefulWidget {
   final CommentModel commentModel;
@@ -22,14 +20,11 @@ class CommentView extends StatefulWidget {
 
 class CommentViewState extends State<CommentView> {
   bool replyView = false;
-  final newsCommentController = Get.put(NewsCommentController());
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onDoubleTap: () {
-        newsCommentController.handleCommentLikeClick(widget.postition);
-      },
+      onDoubleTap: () {},
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -56,7 +51,7 @@ class CommentViewState extends State<CommentView> {
                 Expanded(
                   // fit: FlexFit.loose,
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 12.0),
+                    padding: const EdgeInsets.only(left: 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -75,7 +70,7 @@ class CommentViewState extends State<CommentView> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 12.0),
+                          padding: const EdgeInsets.only(top: 12),
                           child: Row(
                             children: [
                               Text(
@@ -86,7 +81,7 @@ class CommentViewState extends State<CommentView> {
                                 ),
                               ),
                               const Padding(
-                                padding: EdgeInsets.only(left: 8.0),
+                                padding: EdgeInsets.only(left: 8),
                                 child: Text(
                                   'Reply',
                                   style: TextStyle(
@@ -105,10 +100,7 @@ class CommentViewState extends State<CommentView> {
                 Column(
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        newsCommentController
-                            .handleCommentLikeClick(widget.postition);
-                      },
+                      onTap: () {},
                       child: widget.commentModel.liked
                           ? const Icon(Atlas.heart, color: Colors.red)
                           : const Icon(Atlas.heart),
@@ -127,12 +119,10 @@ class CommentViewState extends State<CommentView> {
           ),
           GestureDetector(
             onTap: () {
-              setState(() {
-                replyView = replyView ? false : true;
-              });
+              setState(() => replyView = !replyView);
             },
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(52.0, 12.0, 0.0, 8.0),
+              padding: const EdgeInsets.fromLTRB(52, 12, 0, 8),
               child: Text(
                 replyView ? 'Hide replies' : 'View replies',
                 style: const TextStyle(color: Colors.white),

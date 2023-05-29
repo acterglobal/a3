@@ -1,25 +1,25 @@
 import 'dart:io';
 
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/news/widgets/news_widget.dart';
-import 'package:acter/main/routing/routing.dart';
-import 'package:date_format/date_format.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
+import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
+import 'package:acter/features/news/widgets/news_widget.dart';
+import 'package:acter/main/routing/routes.dart';
+import 'package:acter/main/routing/routing.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/features/home/providers/navigation.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
-import 'package:go_router/go_router.dart';
-import 'package:acter/main/routing/routes.dart';
 
 class HomeShell extends ConsumerStatefulWidget {
   final Widget child;

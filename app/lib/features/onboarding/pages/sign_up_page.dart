@@ -5,6 +5,7 @@ import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/states/auth_state.dart';
 import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
+import 'package:acter/main/routing/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/main/routing/routes.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});

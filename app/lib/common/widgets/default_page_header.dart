@@ -13,7 +13,7 @@ class PageHeaderWidget extends StatelessWidget {
     required this.title,
     required this.sectionColor,
     this.gradientBottom,
-    this.expandedHeight = 160.0,
+    this.expandedHeight = 160,
     this.actions,
     this.expandedContent,
   }) : super(key: key);
@@ -34,25 +34,25 @@ class PageHeaderWidget extends StatelessWidget {
             ? SizedBox.expand(
                 child: Container(
                   decoration: BoxDecoration(
-                      color: sectionColor,
-                      gradient: LinearGradient(
-                          begin: FractionalOffset.topCenter,
-                          end: FractionalOffset.bottomCenter,
-                          colors: [
-                            sectionColor,
-                            gradientBottom ?? Theme.of(context).canvasColor,
-                          ],
-                          stops: const [
-                            0.0,
-                            1.0
-                          ],),),
+                    color: sectionColor,
+                    gradient: LinearGradient(
+                      begin: FractionalOffset.topCenter,
+                      end: FractionalOffset.bottomCenter,
+                      colors: [
+                        sectionColor,
+                        gradientBottom ?? Theme.of(context).canvasColor,
+                      ],
+                      stops: const [0, 1],
+                    ),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 40),
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: expandedContent!,),
+                        padding: const EdgeInsets.all(16),
+                        child: expandedContent!,
+                      ),
                     ),
                   ),
                 ),

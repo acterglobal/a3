@@ -45,7 +45,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
     final bugReport = ref.watch(bugReportNotifierProvider);
     final isLoading = ref.watch(loadingProvider);
     return ConstrainedBox(
-      constraints: const BoxConstraints(minWidth: 350.0),
+      constraints: const BoxConstraints(minWidth: 350),
       child: Scaffold(
         appBar: AppBar(title: const Text('Report a problem')),
         body: SingleChildScrollView(
@@ -55,9 +55,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 10),
-              const Text(
-                'Issue description',
-              ),
+              const Text('Issue description'),
               const SizedBox(height: 10),
               TextFormField(
                 style: const TextStyle(color: Colors.white),
@@ -73,9 +71,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
               SelectTag(),
               const SizedBox(height: 10),
               CheckboxListTile(
-                title: const Text(
-                  'Including log file',
-                ),
+                title: const Text('Including log file'),
                 value: bugReport.withLog,
                 onChanged: (bool? value) => ref
                     .read(bugReportNotifierProvider.notifier)
@@ -84,9 +80,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
               ),
               const SizedBox(height: 10),
               CheckboxListTile(
-                title: const Text(
-                  'Including screenshot',
-                ),
+                title: const Text('Including screenshot'),
                 value: bugReport.withScreenshot,
                 onChanged: (bool? value) => ref
                     .read(bugReportNotifierProvider.notifier)
@@ -108,10 +102,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                   },
                 ),
               if (bugReport.withScreenshot) const SizedBox(height: 10),
-              const Divider(
-                endIndent: 10,
-                indent: 10,
-              ),
+              const Divider(endIndent: 10, indent: 10),
               const SizedBox(height: 10),
               isLoading
                   ? const Center(child: CircularProgressIndicator())

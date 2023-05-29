@@ -1,12 +1,12 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
+import 'package:acter/main/routing/routes.dart';
 import 'package:acter/main/routing/routing.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/main/routing/routes.dart';
 
 const fallbackSidebarIdx = 1;
 const fallbackBottomBarIdx = 0;
@@ -135,10 +135,7 @@ final sidebarItemsProvider =
             softWrap: false,
           ),
           const SizedBox(height: 10),
-          const Divider(
-            indent: 10,
-            endIndent: 10,
-          )
+          const Divider(indent: 10, endIndent: 10)
         ],
       ),
       location: Routes.activities.route,

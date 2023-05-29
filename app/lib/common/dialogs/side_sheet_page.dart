@@ -25,47 +25,49 @@ class SideSheetPage<T> extends CustomTransitionPage<T> {
   });
 
   @override
-  Route<T> createRoute(BuildContext context) => RawDialogRoute<T>(
-        pageBuilder: (
-          BuildContext context,
-          Animation<double> animation,
-          Animation<double> secondaryAnimation,
-        ) {
-          final totalWidth = MediaQuery.of(context).size.width;
-          double width = MediaQuery.of(context).size.width / 1.4;
-          if (width < 300) {
-            width = totalWidth * 0.95;
-          } else if (width > 450) {
-            width = 450;
-          }
+  Route<T> createRoute(BuildContext context) {
+    return RawDialogRoute<T>(
+      pageBuilder: (
+        BuildContext ctx,
+        Animation<double> animation,
+        Animation<double> secondaryAnimation,
+      ) {
+        final totalWidth = MediaQuery.of(ctx).size.width;
+        double width = MediaQuery.of(ctx).size.width / 1.4;
+        if (width < 300) {
+          width = totalWidth * 0.95;
+        } else if (width > 450) {
+          width = 450;
+        }
 
-          Widget dialogChild = IntrinsicWidth(
-            stepWidth: 56.0,
-            child: child,
+        Widget dialogChild = IntrinsicWidth(
+          stepWidth: 56,
+          child: child,
+        );
+        if (label != null) {
+          dialogChild = Semantics(
+            scopesRoute: true,
+            explicitChildNodes: true,
+            namesRoute: true,
+            label: label,
+            child: dialogChild,
           );
-          if (label != null) {
-            dialogChild = Semantics(
-              scopesRoute: true,
-              explicitChildNodes: true,
-              namesRoute: true,
-              label: label,
-              child: dialogChild,
-            );
-          }
-          return Align(
-            alignment: Alignment.centerRight,
-            child: SizedBox(
-              height: double.infinity,
-              width: width,
-              child: dialogChild,
-            ),
-          );
-        },
-        settings: this,
-        transitionBuilder: transitionsBuilder,
-        anchorPoint: anchorPoint,
-        barrierColor: barrierColor,
-        barrierDismissible: barrierDismissible,
-        barrierLabel: barrierLabel,
-      );
+        }
+        return Align(
+          alignment: Alignment.centerRight,
+          child: SizedBox(
+            height: double.infinity,
+            width: width,
+            child: dialogChild,
+          ),
+        );
+      },
+      settings: this,
+      transitionBuilder: transitionsBuilder,
+      anchorPoint: anchorPoint,
+      barrierColor: barrierColor,
+      barrierDismissible: barrierDismissible,
+      barrierLabel: barrierLabel,
+    );
+  }
 }

@@ -68,12 +68,13 @@ impl UserProfile {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::File,
                 };
-                let result = client
+                let buf = client
                     .media()
                     .get_media_content(&request, true)
                     .await
-                    .context("Couldn't get media content from user profile")?;
-                Ok(FfiBuffer::new(result))
+                    // sometimes fetching failed, i don't know that reason
+                    .context("Could not get media content from user profile")?;
+                Ok(FfiBuffer::new(buf))
             })
             .await?
     }
@@ -92,12 +93,13 @@ impl UserProfile {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::Thumbnail(size),
                 };
-                let result = client
+                let buf = client
                     .media()
                     .get_media_content(&request, true)
                     .await
-                    .context("Couldn't get media content from user profile")?;
-                Ok(FfiBuffer::new(result))
+                    // sometimes fetching failed, i don't know that reason
+                    .context("Could not get media content from user profile")?;
+                Ok(FfiBuffer::new(buf))
             })
             .await?
     }
@@ -153,12 +155,13 @@ impl RoomProfile {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::File,
                 };
-                let result = client
+                let buf = client
                     .media()
                     .get_media_content(&request, true)
                     .await
-                    .context("Couldn't get media content from room profile")?;
-                Ok(FfiBuffer::new(result))
+                    // sometimes fetching failed, i don't know that reason
+                    .context("Could not get media content from room profile")?;
+                Ok(FfiBuffer::new(buf))
             })
             .await?
     }
@@ -177,12 +180,13 @@ impl RoomProfile {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::Thumbnail(size),
                 };
-                let result = client
+                let buf = client
                     .media()
                     .get_media_content(&request, true)
                     .await
-                    .context("Couldn't get media content from room profile")?;
-                Ok(FfiBuffer::new(result))
+                    // sometimes fetching failed, i don't know that reason
+                    .context("Could not get media content from room profile")?;
+                Ok(FfiBuffer::new(buf))
             })
             .await?
     }

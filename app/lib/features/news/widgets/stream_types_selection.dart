@@ -30,9 +30,7 @@ class _StreamTypesSelectionState extends State<StreamTypesSelection> {
       ],
       selected: selection,
       onSelectionChanged: (Set<StreamTypes> newSelection) {
-        setState(() {
-          selection = newSelection;
-        });
+        setState(() => selection = newSelection);
       },
       multiSelectionEnabled: true,
     );

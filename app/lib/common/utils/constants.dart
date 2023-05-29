@@ -33,8 +33,16 @@ const inCI = bool.fromEnvironment(
   defaultValue: false,
 );
 
-final desktopPlatforms = [
-  TargetPlatform.linux,
+const giphyKey = String.fromEnvironment(
+  'GIPHY_KEY',
+  defaultValue: 'C4dMA7Q19nqEGdpfj82T8ssbOeZIylD4',
+);
+
+const List<TargetPlatform> desktopPlatforms = [
   TargetPlatform.macOS,
+  TargetPlatform.linux,
   TargetPlatform.windows
 ];
+
+// hide bottom nav at locations.
+const List<String> hideNavLocations = ['/updates/post', '/updates/edit'];

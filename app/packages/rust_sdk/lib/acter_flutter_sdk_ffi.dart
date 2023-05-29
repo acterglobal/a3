@@ -1461,6 +1461,96 @@ class Api {
     return tmp7;
   }
 
+  EventId? __newsEntryDraftSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryDraftSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __newsEntryUpdateBuilderSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryUpdateBuilderSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   EventId? __pinDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -3958,7 +4048,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListNewsEntry? __spaceLatestNewsFuturePoll(
+  FfiListNewsEntry? __spaceLatestNewsEntriesFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3972,7 +4062,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _spaceLatestNewsFuturePoll(
+    final tmp6 = _spaceLatestNewsEntriesFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -4138,6 +4228,370 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListActerPin");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp14 = FfiListActerPin._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  EventId? __spaceSendImageMessageFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSendImageMessageFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiBufferUint8? __spaceImageBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceImageBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  EventId? __spaceSendAudioMessageFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSendAudioMessageFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiBufferUint8? __spaceAudioBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceAudioBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  EventId? __spaceSendVideoMessageFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSendVideoMessageFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiBufferUint8? __spaceVideoBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceVideoBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  EventId? __spaceSendFileMessageFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSendFileMessageFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiBufferUint8? __spaceFileBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceFileBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
     final tmp7 = tmp14;
     return tmp7;
   }
@@ -4325,7 +4779,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __accountSetAvatarFuturePoll(
+  MxcUri? __accountSetAvatarFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -4363,7 +4817,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_MxcUri");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = MxcUri._(this, tmp13_1);
     return tmp7;
   }
 
@@ -4644,7 +5101,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListNewsEntry? __clientLatestNewsFuturePoll(
+  FfiListNewsEntry? __clientLatestNewsEntriesFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -4658,7 +5115,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientLatestNewsFuturePoll(
+    final tmp6 = _clientLatestNewsEntriesFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -7349,6 +7806,338 @@ class Api {
       int Function(
     int,
   )>();
+  late final _newsEntryRoomIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__NewsEntry_room_id");
+
+  late final _newsEntryRoomId = _newsEntryRoomIdPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _newsEntryDraftAddTextSlidePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__NewsEntryDraft_add_text_slide");
+
+  late final _newsEntryDraftAddTextSlide =
+      _newsEntryDraftAddTextSlidePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _newsEntryDraftAddImageSlidePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__NewsEntryDraft_add_image_slide");
+
+  late final _newsEntryDraftAddImageSlide =
+      _newsEntryDraftAddImageSlidePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _newsEntryDraftAddAudioSlidePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+  )>>("__NewsEntryDraft_add_audio_slide");
+
+  late final _newsEntryDraftAddAudioSlide =
+      _newsEntryDraftAddAudioSlidePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _newsEntryDraftAddVideoSlidePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__NewsEntryDraft_add_video_slide");
+
+  late final _newsEntryDraftAddVideoSlide =
+      _newsEntryDraftAddVideoSlidePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _newsEntryDraftAddFileSlidePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+  )>>("__NewsEntryDraft_add_file_slide");
+
+  late final _newsEntryDraftAddFileSlide =
+      _newsEntryDraftAddFileSlidePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _newsEntryDraftUnsetSlidesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__NewsEntryDraft_unset_slides");
+
+  late final _newsEntryDraftUnsetSlides =
+      _newsEntryDraftUnsetSlidesPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _newsEntryDraftColorsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__NewsEntryDraft_colors");
+
+  late final _newsEntryDraftColors = _newsEntryDraftColorsPtr.asFunction<
+      void Function(
+    int,
+    int,
+  )>();
+  late final _newsEntryDraftUnsetColorsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__NewsEntryDraft_unset_colors");
+
+  late final _newsEntryDraftUnsetColors =
+      _newsEntryDraftUnsetColorsPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _newsEntryDraftSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__NewsEntryDraft_send");
+
+  late final _newsEntryDraftSend = _newsEntryDraftSendPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _newsEntryUpdateBuilderSlidesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__NewsEntryUpdateBuilder_slides");
+
+  late final _newsEntryUpdateBuilderSlides =
+      _newsEntryUpdateBuilderSlidesPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _newsEntryUpdateBuilderUnsetSlidesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__NewsEntryUpdateBuilder_unset_slides");
+
+  late final _newsEntryUpdateBuilderUnsetSlides =
+      _newsEntryUpdateBuilderUnsetSlidesPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _newsEntryUpdateBuilderUnsetSlidesUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__NewsEntryUpdateBuilder_unset_slides_update");
+
+  late final _newsEntryUpdateBuilderUnsetSlidesUpdate =
+      _newsEntryUpdateBuilderUnsetSlidesUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _newsEntryUpdateBuilderColorsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__NewsEntryUpdateBuilder_colors");
+
+  late final _newsEntryUpdateBuilderColors =
+      _newsEntryUpdateBuilderColorsPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _newsEntryUpdateBuilderUnsetColorsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__NewsEntryUpdateBuilder_unset_colors");
+
+  late final _newsEntryUpdateBuilderUnsetColors =
+      _newsEntryUpdateBuilderUnsetColorsPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _newsEntryUpdateBuilderUnsetColorsUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__NewsEntryUpdateBuilder_unset_colors_update");
+
+  late final _newsEntryUpdateBuilderUnsetColorsUpdate =
+      _newsEntryUpdateBuilderUnsetColorsUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _newsEntryUpdateBuilderSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__NewsEntryUpdateBuilder_send");
+
+  late final _newsEntryUpdateBuilderSend =
+      _newsEntryUpdateBuilderSendPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _tagTitlePtr = _lookup<
       ffi.NativeFunction<
           _TagTitleReturn Function(
@@ -7792,6 +8581,16 @@ class Api {
 
   late final _eventIdToString = _eventIdToStringPtr.asFunction<
       _EventIdToStringReturn Function(
+    int,
+  )>();
+  late final _mxcUriToStringPtr = _lookup<
+      ffi.NativeFunction<
+          _MxcUriToStringReturn Function(
+    ffi.Int64,
+  )>>("__MxcUri_to_string");
+
+  late final _mxcUriToString = _mxcUriToStringPtr.asFunction<
+      _MxcUriToStringReturn Function(
     int,
   )>();
   late final _roomIdToStringPtr = _lookup<
@@ -8643,11 +9442,19 @@ class Api {
     ffi.Uint32,
     ffi.Uint8,
     ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
   )>>("__Conversation_send_image_message");
 
   late final _conversationSendImageMessage =
       _conversationSendImageMessagePtr.asFunction<
           int Function(
+    int,
+    int,
+    int,
+    int,
     int,
     int,
     int,
@@ -11128,14 +11935,14 @@ class Api {
       _SpaceTaskListDraftReturn Function(
     int,
   )>();
-  late final _spaceLatestNewsPtr = _lookup<
+  late final _spaceLatestNewsEntriesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Uint32,
-  )>>("__Space_latest_news");
+  )>>("__Space_latest_news_entries");
 
-  late final _spaceLatestNews = _spaceLatestNewsPtr.asFunction<
+  late final _spaceLatestNewsEntries = _spaceLatestNewsEntriesPtr.asFunction<
       int Function(
     int,
     int,
@@ -11188,6 +11995,236 @@ class Api {
 
   late final _spacePinDraft = _spacePinDraftPtr.asFunction<
       _SpacePinDraftReturn Function(
+    int,
+  )>();
+  late final _spaceSendImageMessagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Space_send_image_message");
+
+  late final _spaceSendImageMessage = _spaceSendImageMessagePtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceImageBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Space_image_binary");
+
+  late final _spaceImageBinary = _spaceImageBinaryPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceSendAudioMessagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+  )>>("__Space_send_audio_message");
+
+  late final _spaceSendAudioMessage = _spaceSendAudioMessagePtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceAudioBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Space_audio_binary");
+
+  late final _spaceAudioBinary = _spaceAudioBinaryPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceSendVideoMessagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Space_send_video_message");
+
+  late final _spaceSendVideoMessage = _spaceSendVideoMessagePtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceVideoBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Space_video_binary");
+
+  late final _spaceVideoBinary = _spaceVideoBinaryPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceSendFileMessagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint32,
+  )>>("__Space_send_file_message");
+
+  late final _spaceSendFileMessage = _spaceSendFileMessagePtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceFileBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Space_file_binary");
+
+  late final _spaceFileBinary = _spaceFileBinaryPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
     int,
   )>();
   late final _memberGetProfilePtr = _lookup<
@@ -11511,14 +12548,14 @@ class Api {
     int,
     int,
   )>();
-  late final _clientLatestNewsPtr = _lookup<
+  late final _clientLatestNewsEntriesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Uint32,
-  )>>("__Client_latest_news");
+  )>>("__Client_latest_news_entries");
 
-  late final _clientLatestNews = _clientLatestNewsPtr.asFunction<
+  late final _clientLatestNewsEntries = _clientLatestNewsEntriesPtr.asFunction<
       int Function(
     int,
     int,
@@ -12505,6 +13542,36 @@ class Api {
     int,
     int,
   )>();
+  late final _newsEntryDraftSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryDraftSendFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__NewsEntryDraft_send_future_poll");
+
+  late final _newsEntryDraftSendFuturePoll =
+      _newsEntryDraftSendFuturePollPtr.asFunction<
+          _NewsEntryDraftSendFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _newsEntryUpdateBuilderSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryUpdateBuilderSendFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__NewsEntryUpdateBuilder_send_future_poll");
+
+  late final _newsEntryUpdateBuilderSendFuturePoll =
+      _newsEntryUpdateBuilderSendFuturePollPtr.asFunction<
+          _NewsEntryUpdateBuilderSendFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _pinDraftSendFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _PinDraftSendFuturePollReturn Function(
@@ -13340,17 +14407,17 @@ class Api {
     int,
     int,
   )>();
-  late final _spaceLatestNewsFuturePollPtr = _lookup<
+  late final _spaceLatestNewsEntriesFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _SpaceLatestNewsFuturePollReturn Function(
+          _SpaceLatestNewsEntriesFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Space_latest_news_future_poll");
+  )>>("__Space_latest_news_entries_future_poll");
 
-  late final _spaceLatestNewsFuturePoll =
-      _spaceLatestNewsFuturePollPtr.asFunction<
-          _SpaceLatestNewsFuturePollReturn Function(
+  late final _spaceLatestNewsEntriesFuturePoll =
+      _spaceLatestNewsEntriesFuturePollPtr.asFunction<
+          _SpaceLatestNewsEntriesFuturePollReturn Function(
     int,
     int,
     int,
@@ -13395,6 +14462,126 @@ class Api {
   late final _spacePinnedLinksFuturePoll =
       _spacePinnedLinksFuturePollPtr.asFunction<
           _SpacePinnedLinksFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceSendImageMessageFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceSendImageMessageFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Space_send_image_message_future_poll");
+
+  late final _spaceSendImageMessageFuturePoll =
+      _spaceSendImageMessageFuturePollPtr.asFunction<
+          _SpaceSendImageMessageFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceImageBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceImageBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Space_image_binary_future_poll");
+
+  late final _spaceImageBinaryFuturePoll =
+      _spaceImageBinaryFuturePollPtr.asFunction<
+          _SpaceImageBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceSendAudioMessageFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceSendAudioMessageFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Space_send_audio_message_future_poll");
+
+  late final _spaceSendAudioMessageFuturePoll =
+      _spaceSendAudioMessageFuturePollPtr.asFunction<
+          _SpaceSendAudioMessageFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceAudioBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceAudioBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Space_audio_binary_future_poll");
+
+  late final _spaceAudioBinaryFuturePoll =
+      _spaceAudioBinaryFuturePollPtr.asFunction<
+          _SpaceAudioBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceSendVideoMessageFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceSendVideoMessageFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Space_send_video_message_future_poll");
+
+  late final _spaceSendVideoMessageFuturePoll =
+      _spaceSendVideoMessageFuturePollPtr.asFunction<
+          _SpaceSendVideoMessageFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceVideoBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceVideoBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Space_video_binary_future_poll");
+
+  late final _spaceVideoBinaryFuturePoll =
+      _spaceVideoBinaryFuturePollPtr.asFunction<
+          _SpaceVideoBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceSendFileMessageFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceSendFileMessageFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Space_send_file_message_future_poll");
+
+  late final _spaceSendFileMessageFuturePoll =
+      _spaceSendFileMessageFuturePollPtr.asFunction<
+          _SpaceSendFileMessageFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceFileBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceFileBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Space_file_binary_future_poll");
+
+  late final _spaceFileBinaryFuturePoll =
+      _spaceFileBinaryFuturePollPtr.asFunction<
+          _SpaceFileBinaryFuturePollReturn Function(
     int,
     int,
     int,
@@ -13562,17 +14749,17 @@ class Api {
     int,
     int,
   )>();
-  late final _clientLatestNewsFuturePollPtr = _lookup<
+  late final _clientLatestNewsEntriesFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientLatestNewsFuturePollReturn Function(
+          _ClientLatestNewsEntriesFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_latest_news_future_poll");
+  )>>("__Client_latest_news_entries_future_poll");
 
-  late final _clientLatestNewsFuturePoll =
-      _clientLatestNewsFuturePollPtr.asFunction<
-          _ClientLatestNewsFuturePollReturn Function(
+  late final _clientLatestNewsEntriesFuturePoll =
+      _clientLatestNewsEntriesFuturePollPtr.asFunction<
+          _ClientLatestNewsEntriesFuturePollReturn Function(
     int,
     int,
     int,
@@ -14874,6 +16061,55 @@ class Api {
 
   late final _ffiListNewsEntryInsert =
       _ffiListNewsEntryInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListNewsSlide createFfiListNewsSlide() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListNewsSlideCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListNewsSlide");
+    return FfiListNewsSlide._(this, list_box);
+  }
+
+  late final _ffiListNewsSlideCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListNewsSlideCreate");
+
+  late final _ffiListNewsSlideCreate =
+      _ffiListNewsSlideCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListNewsSlideLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListNewsSlideLen");
+
+  late final _ffiListNewsSlideLen =
+      _ffiListNewsSlideLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListNewsSlideElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListNewsSlideElementAt");
+
+  late final _ffiListNewsSlideElementAt =
+      _ffiListNewsSlideElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListNewsSlideRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListNewsSlideRemove");
+
+  late final _ffiListNewsSlideRemove =
+      _ffiListNewsSlideRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListNewsSlideAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListNewsSlideAdd");
+
+  late final _ffiListNewsSlideAdd =
+      _ffiListNewsSlideAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListNewsSlideInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListNewsSlideInsert");
+
+  late final _ffiListNewsSlideInsert =
+      _ffiListNewsSlideInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListObjRef createFfiListObjRef() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListObjRefCreate());
@@ -15816,7 +17052,7 @@ class NewsSlide {
     return tmp2;
   }
 
-  /// the references linked in this slide,
+  /// the references linked in this slide
   FfiListObjRef references() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -16060,6 +17296,21 @@ class NewsEntry {
     return tmp2;
   }
 
+  /// get room id
+  RoomId roomId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryRoomId(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RoomId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = RoomId._(_api, tmp3_1);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -16072,6 +17323,514 @@ class NewsEntryDraft {
 
   NewsEntryDraft._(this._api, this._box);
 
+  /// create news slide for text msg
+  void addTextSlide(
+    String body,
+  ) {
+    final tmp1 = body;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._newsEntryDraftAddTextSlide(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// create news slide for image msg
+  void addImageSlide(
+    String body,
+    String url,
+    String? mimetype,
+    int? size,
+    int? width,
+    int? height,
+    String? blurhash,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = width;
+    final tmp23 = height;
+    final tmp27 = blurhash;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp31 = 0;
+    var tmp32 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      tmp22 = tmp21;
+    }
+    if (tmp23 == null) {
+      tmp24 = 0;
+    } else {
+      tmp24 = 1;
+      final tmp25 = tmp23;
+      tmp26 = tmp25;
+    }
+    if (tmp27 == null) {
+      tmp28 = 0;
+    } else {
+      tmp28 = 1;
+      final tmp29 = tmp27;
+      final tmp29_0 = utf8.encode(tmp29);
+      tmp31 = tmp29_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp30_0 = _api.__allocate(tmp31 * 1, 1);
+      final Uint8List tmp30_1 = tmp30_0.asTypedList(tmp31);
+      tmp30_1.setAll(0, tmp29_0);
+      tmp30 = tmp30_0.address;
+      tmp32 = tmp31;
+    }
+    _api._newsEntryDraftAddImageSlide(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp30,
+      tmp31,
+      tmp32,
+    );
+    return;
+  }
+
+  /// create news slide for audio msg
+  void addAudioSlide(
+    String body,
+    String url,
+    int? secs,
+    String? mimetype,
+    int? size,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = secs;
+    final tmp13 = mimetype;
+    final tmp19 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      tmp22 = tmp21;
+    }
+    _api._newsEntryDraftAddAudioSlide(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+      tmp20,
+      tmp22,
+    );
+    return;
+  }
+
+  /// create news slide for video msg
+  void addVideoSlide(
+    String body,
+    String url,
+    int? secs,
+    int? height,
+    int? width,
+    String? mimetype,
+    int? size,
+    String? blurhash,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = secs;
+    final tmp13 = height;
+    final tmp17 = width;
+    final tmp21 = mimetype;
+    final tmp27 = size;
+    final tmp31 = blurhash;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp25 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp34 = 0;
+    var tmp35 = 0;
+    var tmp36 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      final tmp23_0 = utf8.encode(tmp23);
+      tmp25 = tmp23_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
+      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
+      tmp24_1.setAll(0, tmp23_0);
+      tmp24 = tmp24_0.address;
+      tmp26 = tmp25;
+    }
+    if (tmp27 == null) {
+      tmp28 = 0;
+    } else {
+      tmp28 = 1;
+      final tmp29 = tmp27;
+      tmp30 = tmp29;
+    }
+    if (tmp31 == null) {
+      tmp32 = 0;
+    } else {
+      tmp32 = 1;
+      final tmp33 = tmp31;
+      final tmp33_0 = utf8.encode(tmp33);
+      tmp35 = tmp33_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
+      final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
+      tmp34_1.setAll(0, tmp33_0);
+      tmp34 = tmp34_0.address;
+      tmp36 = tmp35;
+    }
+    _api._newsEntryDraftAddVideoSlide(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp25,
+      tmp26,
+      tmp28,
+      tmp30,
+      tmp32,
+      tmp34,
+      tmp35,
+      tmp36,
+    );
+    return;
+  }
+
+  /// create news slide for file msg
+  void addFileSlide(
+    String body,
+    String url,
+    String? mimetype,
+    int? size,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    _api._newsEntryDraftAddFileSlide(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp18,
+    );
+    return;
+  }
+
+  /// clear slides
+  void unsetSlides() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._newsEntryDraftUnsetSlides(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the color for this news entry
+  void colors(
+    Colorize colors,
+  ) {
+    final tmp1 = colors;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._newsEntryDraftColors(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetColors() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._newsEntryDraftUnsetColors(
+      tmp0,
+    );
+    return;
+  }
+
+  /// create this news entry
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryDraftSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntryDraft_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryDraftSendFuturePoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -16083,6 +17842,91 @@ class NewsEntryUpdateBuilder {
   final _Box _box;
 
   NewsEntryUpdateBuilder._(this._api, this._box);
+
+  /// set the slides for this news entry
+  void slides(
+    FfiListNewsSlide slides,
+  ) {
+    final tmp1 = slides;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._newsEntryUpdateBuilderSlides(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetSlides() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._newsEntryUpdateBuilderUnsetSlides(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetSlidesUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._newsEntryUpdateBuilderUnsetSlidesUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the color for this news entry
+  void colors(
+    Colorize colors,
+  ) {
+    final tmp1 = colors;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._newsEntryUpdateBuilderColors(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetColors() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._newsEntryUpdateBuilderUnsetColors(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetColorsUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._newsEntryUpdateBuilderUnsetColorsUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// update this news entry
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryUpdateBuilderSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__NewsEntryUpdateBuilder_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__newsEntryUpdateBuilderSendFuturePoll);
+    return tmp2;
+  }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -16906,6 +18750,37 @@ class EventId {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._eventIdToString(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class MxcUri {
+  final Api _api;
+  final _Box _box;
+
+  MxcUri._(this._api, this._box);
+
+  String toString() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._mxcUriToString(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -18650,6 +20525,7 @@ class Conversation {
     int? size,
     int? width,
     int? height,
+    String? blurhash,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
@@ -18657,6 +20533,7 @@ class Conversation {
     final tmp13 = size;
     final tmp17 = width;
     final tmp21 = height;
+    final tmp25 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -18673,6 +20550,10 @@ class Conversation {
     var tmp20 = 0;
     var tmp22 = 0;
     var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -18716,7 +20597,20 @@ class Conversation {
       final tmp23 = tmp21;
       tmp24 = tmp23;
     }
-    final tmp25 = _api._conversationSendImageMessage(
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      final tmp27_0 = utf8.encode(tmp27);
+      tmp29 = tmp27_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+      tmp28_1.setAll(0, tmp27_0);
+      tmp28 = tmp28_0.address;
+      tmp30 = tmp29;
+    }
+    final tmp31 = _api._conversationSendImageMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -18733,18 +20627,22 @@ class Conversation {
       tmp20,
       tmp22,
       tmp24,
+      tmp26,
+      tmp28,
+      tmp29,
+      tmp30,
     );
-    final tmp27 = tmp25;
-    final ffi.Pointer<ffi.Void> tmp27_0 = ffi.Pointer.fromAddress(tmp27);
-    final tmp27_1 =
-        _Box(_api, tmp27_0, "__Conversation_send_image_message_future_drop");
-    tmp27_1._finalizer = _api._registerFinalizer(tmp27_1);
-    final tmp26 =
-        _nativeFuture(tmp27_1, _api.__conversationSendImageMessageFuturePoll);
-    return tmp26;
+    final tmp33 = tmp31;
+    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
+    final tmp33_1 =
+        _Box(_api, tmp33_0, "__Conversation_send_image_message_future_drop");
+    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
+    final tmp32 =
+        _nativeFuture(tmp33_1, _api.__conversationSendImageMessageFuturePoll);
+    return tmp32;
   }
 
-  /// decrypted image buffer data
+  /// decrypted image file data
   /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
   /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
   Future<FfiBufferUint8> imageBinary(
@@ -20891,7 +22789,7 @@ class TaskUpdateBuilder {
   }
 
   /// set the utc_due for this task list in rfc3339 format
-  bool utcDueFromRfc3339(
+  void utcDueFromRfc3339(
     String utcDue,
   ) {
     final tmp1 = utcDue;
@@ -20917,7 +22815,6 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -20928,12 +22825,11 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
   /// set the utc_due for this task list in rfc2822 format
-  bool utcDueFromRfc2822(
+  void utcDueFromRfc2822(
     String utcDue,
   ) {
     final tmp1 = utcDue;
@@ -20959,7 +22855,6 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -20970,12 +22865,11 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
   /// set the utc_due for this task list in custom format
-  bool utcDueFromFormat(
+  void utcDueFromFormat(
     String utcDue,
     String format,
   ) {
@@ -21016,7 +22910,6 @@ class TaskUpdateBuilder {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
       final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
@@ -21027,8 +22920,7 @@ class TaskUpdateBuilder {
       }
       throw tmp11_0;
     }
-    final tmp10 = tmp15 > 0;
-    return tmp10;
+    return;
   }
 
   void unsetUtcDue() {
@@ -21050,7 +22942,7 @@ class TaskUpdateBuilder {
   }
 
   /// set the utc_start for this task list in rfc3339 format
-  bool utcStartFromRfc3339(
+  void utcStartFromRfc3339(
     String utcStart,
   ) {
     final tmp1 = utcStart;
@@ -21076,7 +22968,6 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -21087,12 +22978,11 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
   /// set the utc_start for this task list in rfc2822 format
-  bool utcStartFromRfc2822(
+  void utcStartFromRfc2822(
     String utcStart,
   ) {
     final tmp1 = utcStart;
@@ -21118,7 +23008,6 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -21129,12 +23018,11 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
   /// set the utc_start for this task list in custom format
-  bool utcStartFromFormat(
+  void utcStartFromFormat(
     String utcStart,
     String format,
   ) {
@@ -21175,7 +23063,6 @@ class TaskUpdateBuilder {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
       final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
@@ -21186,8 +23073,7 @@ class TaskUpdateBuilder {
       }
       throw tmp11_0;
     }
-    final tmp10 = tmp15 > 0;
-    return tmp10;
+    return;
   }
 
   void unsetUtcStart() {
@@ -21399,7 +23285,7 @@ class TaskUpdateBuilder {
     return;
   }
 
-  /// send this task update
+  /// update this task
   Future<EventId> send() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -21452,7 +23338,7 @@ class TaskDraft {
     return;
   }
 
-  /// set the description for this task list
+  /// set the description for this task
   void descriptionText(
     String text,
   ) {
@@ -21487,7 +23373,7 @@ class TaskDraft {
     return;
   }
 
-  /// set the sort order for this task list
+  /// set the sort order for this task
   void sortOrder(
     int sortOrder,
   ) {
@@ -21503,7 +23389,7 @@ class TaskDraft {
     return;
   }
 
-  /// set the color for this task list
+  /// set the color for this task
   void color(
     EfkColor color,
   ) {
@@ -21528,8 +23414,8 @@ class TaskDraft {
     return;
   }
 
-  /// set the utc_due for this task list in rfc3339 format
-  bool utcDueFromRfc3339(
+  /// set the utc_due for this task in rfc3339 format
+  void utcDueFromRfc3339(
     String utcDue,
   ) {
     final tmp1 = utcDue;
@@ -21555,7 +23441,6 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -21566,12 +23451,11 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
-  /// set the utc_due for this task list in rfc2822 format
-  bool utcDueFromRfc2822(
+  /// set the utc_due for this task in rfc2822 format
+  void utcDueFromRfc2822(
     String utcDue,
   ) {
     final tmp1 = utcDue;
@@ -21597,7 +23481,6 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -21608,12 +23491,11 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
-  /// set the utc_due for this task list in custom format
-  bool utcDueFromFormat(
+  /// set the utc_due for this task in custom format
+  void utcDueFromFormat(
     String utcDue,
     String format,
   ) {
@@ -21654,7 +23536,6 @@ class TaskDraft {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
       final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
@@ -21665,8 +23546,7 @@ class TaskDraft {
       }
       throw tmp11_0;
     }
-    final tmp10 = tmp15 > 0;
-    return tmp10;
+    return;
   }
 
   void unsetUtcDue() {
@@ -21678,8 +23558,8 @@ class TaskDraft {
     return;
   }
 
-  /// set the utc_start for this task list in rfc3339 format
-  bool utcStartFromRfc3339(
+  /// set the utc_start for this task in rfc3339 format
+  void utcStartFromRfc3339(
     String utcStart,
   ) {
     final tmp1 = utcStart;
@@ -21705,7 +23585,6 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -21716,12 +23595,11 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
-  /// set the utc_start for this task list in rfc2822 format
-  bool utcStartFromRfc2822(
+  /// set the utc_start for this task in rfc2822 format
+  void utcStartFromRfc2822(
     String utcStart,
   ) {
     final tmp1 = utcStart;
@@ -21747,7 +23625,6 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
@@ -21758,12 +23635,11 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
-    return tmp6;
+    return;
   }
 
-  /// set the utc_start for this task list in custom format
-  bool utcStartFromFormat(
+  /// set the utc_start for this task in custom format
+  void utcStartFromFormat(
     String utcStart,
     String format,
   ) {
@@ -21804,7 +23680,6 @@ class TaskDraft {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
       final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
@@ -21815,8 +23690,7 @@ class TaskDraft {
       }
       throw tmp11_0;
     }
-    final tmp10 = tmp15 > 0;
-    return tmp10;
+    return;
   }
 
   void unsetUtcStart() {
@@ -21828,7 +23702,7 @@ class TaskDraft {
     return;
   }
 
-  /// set the sort order for this task list
+  /// set the sort order for this task
   void progressPercent(
     int progressPercent,
   ) {
@@ -21853,7 +23727,7 @@ class TaskDraft {
     return;
   }
 
-  /// set the keywords for this task list
+  /// set the keywords for this task
   void keywords(
     FfiListFfiString keywords,
   ) {
@@ -21878,7 +23752,7 @@ class TaskDraft {
     return;
   }
 
-  /// set the categories for this task list
+  /// set the categories for this task
   void categories(
     FfiListFfiString categories,
   ) {
@@ -21903,7 +23777,7 @@ class TaskDraft {
     return;
   }
 
-  /// set the assignees for this task list
+  /// set the assignees for this task
   void assignees(
     FfiListUserId assignees,
   ) {
@@ -21928,7 +23802,7 @@ class TaskDraft {
     return;
   }
 
-  /// set the subscribers for this task list
+  /// set the subscribers for this task
   void subscribers(
     FfiListUserId subscribers,
   ) {
@@ -21953,7 +23827,6 @@ class TaskDraft {
     return;
   }
 
-  /// send this task list draft
   /// create this task
   Future<EventId> send() {
     var tmp0 = 0;
@@ -22458,7 +24331,7 @@ class TaskListDraft {
     return;
   }
 
-  /// send this task list draft
+  /// create this task list
   Future<EventId> send() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -22707,7 +24580,7 @@ class TaskListUpdateBuilder {
     return;
   }
 
-  /// send this task update
+  /// update this task
   Future<EventId> send() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -23058,7 +24931,7 @@ class Space {
   }
 
   /// get latest news
-  Future<FfiListNewsEntry> latestNews(
+  Future<FfiListNewsEntry> latestNewsEntries(
     int count,
   ) {
     final tmp1 = count;
@@ -23066,15 +24939,16 @@ class Space {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._spaceLatestNews(
+    final tmp3 = _api._spaceLatestNewsEntries(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "__Space_latest_news_future_drop");
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__Space_latest_news_entries_future_drop");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = _nativeFuture(tmp5_1, _api.__spaceLatestNewsFuturePoll);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__spaceLatestNewsEntriesFuturePoll);
     return tmp4;
   }
 
@@ -23093,7 +24967,7 @@ class Space {
     return tmp2;
   }
 
-  /// news draft builder
+  /// create news draft
   NewsEntryDraft newsDraft() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -23179,6 +25053,557 @@ class Space {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp2 = PinDraft._(_api, tmp7_1);
     return tmp2;
+  }
+
+  /// send the image message to this room
+  Future<EventId> sendImageMessage(
+    String uri,
+    String name,
+    String mimetype,
+    int? size,
+    int? width,
+    int? height,
+    String? blurhash,
+  ) {
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = mimetype;
+    final tmp13 = size;
+    final tmp17 = width;
+    final tmp21 = height;
+    final tmp25 = blurhash;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
+    }
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      final tmp27_0 = utf8.encode(tmp27);
+      tmp29 = tmp27_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+      tmp28_1.setAll(0, tmp27_0);
+      tmp28 = tmp28_0.address;
+      tmp30 = tmp29;
+    }
+    final tmp31 = _api._spaceSendImageMessage(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp29,
+      tmp30,
+    );
+    final tmp33 = tmp31;
+    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
+    final tmp33_1 =
+        _Box(_api, tmp33_0, "__Space_send_image_message_future_drop");
+    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
+    final tmp32 =
+        _nativeFuture(tmp33_1, _api.__spaceSendImageMessageFuturePoll);
+    return tmp32;
+  }
+
+  /// decrypted image buffer data
+  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+  Future<FfiBufferUint8> imageBinary(
+    String eventId,
+  ) {
+    final tmp1 = eventId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._spaceImageBinary(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Space_image_binary_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceImageBinaryFuturePoll);
+    return tmp6;
+  }
+
+  /// send the audio message to this room
+  Future<EventId> sendAudioMessage(
+    String uri,
+    String name,
+    String mimetype,
+    int? secs,
+    int? size,
+  ) {
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = mimetype;
+    final tmp13 = secs;
+    final tmp17 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    final tmp21 = _api._spaceSendAudioMessage(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+    );
+    final tmp23 = tmp21;
+    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
+    final tmp23_1 =
+        _Box(_api, tmp23_0, "__Space_send_audio_message_future_drop");
+    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
+    final tmp22 =
+        _nativeFuture(tmp23_1, _api.__spaceSendAudioMessageFuturePoll);
+    return tmp22;
+  }
+
+  /// decrypted audio buffer data
+  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+  Future<FfiBufferUint8> audioBinary(
+    String eventId,
+  ) {
+    final tmp1 = eventId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._spaceAudioBinary(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Space_audio_binary_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceAudioBinaryFuturePoll);
+    return tmp6;
+  }
+
+  /// send the video message to this room
+  Future<EventId> sendVideoMessage(
+    String uri,
+    String name,
+    String mimetype,
+    int? secs,
+    int? height,
+    int? width,
+    int? size,
+    String? blurhash,
+  ) {
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = mimetype;
+    final tmp13 = secs;
+    final tmp17 = height;
+    final tmp21 = width;
+    final tmp25 = size;
+    final tmp29 = blurhash;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp33 = 0;
+    var tmp34 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
+    }
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      tmp28 = tmp27;
+    }
+    if (tmp29 == null) {
+      tmp30 = 0;
+    } else {
+      tmp30 = 1;
+      final tmp31 = tmp29;
+      final tmp31_0 = utf8.encode(tmp31);
+      tmp33 = tmp31_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
+      final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
+      tmp32_1.setAll(0, tmp31_0);
+      tmp32 = tmp32_0.address;
+      tmp34 = tmp33;
+    }
+    final tmp35 = _api._spaceSendVideoMessage(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp30,
+      tmp32,
+      tmp33,
+      tmp34,
+    );
+    final tmp37 = tmp35;
+    final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
+    final tmp37_1 =
+        _Box(_api, tmp37_0, "__Space_send_video_message_future_drop");
+    tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
+    final tmp36 =
+        _nativeFuture(tmp37_1, _api.__spaceSendVideoMessageFuturePoll);
+    return tmp36;
+  }
+
+  /// decrypted video buffer data
+  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+  Future<FfiBufferUint8> videoBinary(
+    String eventId,
+  ) {
+    final tmp1 = eventId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._spaceVideoBinary(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Space_video_binary_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceVideoBinaryFuturePoll);
+    return tmp6;
+  }
+
+  /// send the file message to this room
+  Future<EventId> sendFileMessage(
+    String uri,
+    String name,
+    String mimetype,
+    int size,
+  ) {
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = mimetype;
+    final tmp13 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    tmp14 = tmp13;
+    final tmp15 = _api._spaceSendFileMessage(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+    );
+    final tmp17 = tmp15;
+    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
+    final tmp17_1 =
+        _Box(_api, tmp17_0, "__Space_send_file_message_future_drop");
+    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
+    final tmp16 = _nativeFuture(tmp17_1, _api.__spaceSendFileMessageFuturePoll);
+    return tmp16;
+  }
+
+  /// decrypted file buffer data
+  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+  Future<FfiBufferUint8> fileBinary(
+    String eventId,
+  ) {
+    final tmp1 = eventId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._spaceFileBinary(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Space_file_binary_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceFileBinaryFuturePoll);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -23313,7 +25738,7 @@ class Account {
 
   /// Change the avatar of the account
   /// provide the c_type as MIME, e.g. `image/jpeg`
-  Future<bool> setAvatar(
+  Future<MxcUri> setAvatar(
     String cType,
     List<int> data,
   ) {
@@ -23791,7 +26216,7 @@ class Client {
   }
 
   /// Get the latest News for the client
-  Future<FfiListNewsEntry> latestNews(
+  Future<FfiListNewsEntry> latestNewsEntries(
     int count,
   ) {
     final tmp1 = count;
@@ -23799,15 +26224,17 @@ class Client {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._clientLatestNews(
+    final tmp3 = _api._clientLatestNewsEntries(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "__Client_latest_news_future_drop");
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__Client_latest_news_entries_future_drop");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = _nativeFuture(tmp5_1, _api.__clientLatestNewsFuturePoll);
+    final tmp4 =
+        _nativeFuture(tmp5_1, _api.__clientLatestNewsEntriesFuturePoll);
     return tmp4;
   }
 
@@ -25929,6 +28356,15 @@ class _EventIdToStringReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _MxcUriToStringReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _RoomIdToStringReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -26458,8 +28894,6 @@ class _TaskUpdateBuilderUtcDueFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcDueFromRfc2822Return extends ffi.Struct {
@@ -26471,8 +28905,6 @@ class _TaskUpdateBuilderUtcDueFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcDueFromFormatReturn extends ffi.Struct {
@@ -26484,8 +28916,6 @@ class _TaskUpdateBuilderUtcDueFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
@@ -26497,8 +28927,6 @@ class _TaskUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
@@ -26510,8 +28938,6 @@ class _TaskUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
@@ -26523,8 +28949,6 @@ class _TaskUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskDraftUtcDueFromRfc3339Return extends ffi.Struct {
@@ -26536,8 +28960,6 @@ class _TaskDraftUtcDueFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskDraftUtcDueFromRfc2822Return extends ffi.Struct {
@@ -26549,8 +28971,6 @@ class _TaskDraftUtcDueFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskDraftUtcDueFromFormatReturn extends ffi.Struct {
@@ -26562,8 +28982,6 @@ class _TaskDraftUtcDueFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskDraftUtcStartFromRfc3339Return extends ffi.Struct {
@@ -26575,8 +28993,6 @@ class _TaskDraftUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskDraftUtcStartFromRfc2822Return extends ffi.Struct {
@@ -26588,8 +29004,6 @@ class _TaskDraftUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskDraftUtcStartFromFormatReturn extends ffi.Struct {
@@ -26601,8 +29015,6 @@ class _TaskDraftUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _TaskListNameReturn extends ffi.Struct {
@@ -27087,6 +29499,36 @@ class _NewsSlideVideoBinaryFuturePollReturn extends ffi.Struct {
 }
 
 class _NewsSlideFileBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _NewsEntryDraftSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _NewsEntryUpdateBuilderSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -27941,7 +30383,7 @@ class _SpaceTaskListsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _SpaceLatestNewsFuturePollReturn extends ffi.Struct {
+class _SpaceLatestNewsEntriesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -27987,6 +30429,126 @@ class _SpacePinsFuturePollReturn extends ffi.Struct {
 }
 
 class _SpacePinnedLinksFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceSendImageMessageFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceImageBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceSendAudioMessageFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceAudioBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceSendVideoMessageFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceVideoBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceSendFileMessageFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceFileBinaryFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -28076,7 +30638,7 @@ class _AccountSetAvatarFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint64()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.Int64()
   external int arg5;
 }
 
@@ -28174,7 +30736,7 @@ class _ClientGetSpaceFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientLatestNewsFuturePollReturn extends ffi.Struct {
+class _ClientLatestNewsEntriesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -29434,6 +31996,66 @@ class FfiListNewsEntry extends Iterable<NewsEntry>
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, NewsEntry element) {
     _api._ffiListNewsEntryInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListNewsSlide extends Iterable<NewsSlide>
+    implements CustomIterable<NewsSlide> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListNewsSlide._(this._api, this._box);
+
+  @override
+  Iterator<NewsSlide> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListNewsSlideLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  NewsSlide elementAt(int index) {
+    final address = _api._ffiListNewsSlideElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return NewsSlide._(_api, reference);
+  }
+
+  NewsSlide operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  NewsSlide remove(int index) {
+    final address = _api._ffiListNewsSlideRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_NewsSlide");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return NewsSlide._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(NewsSlide element) {
+    _api._ffiListNewsSlideAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, NewsSlide element) {
+    _api._ffiListNewsSlideInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

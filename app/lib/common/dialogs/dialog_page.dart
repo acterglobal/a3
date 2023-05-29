@@ -26,32 +26,32 @@ class DialogPage<T> extends Page<T> {
   });
 
   @override
-  Route<T> createRoute(BuildContext context) => DialogRoute<T>(
-        context: context,
-        settings: this,
-        builder: (context) {
-          Widget dialogChild = IntrinsicWidth(
-            stepWidth: 56.0,
-            child: builder(context),
-          );
-          if (label != null) {
-            dialogChild = Semantics(
-              scopesRoute: true,
-              explicitChildNodes: true,
-              namesRoute: true,
-              label: label,
-              child: dialogChild,
-            );
-          }
-          return Dialog(
+  Route<T> createRoute(BuildContext context) {
+    return DialogRoute<T>(
+      context: context,
+      settings: this,
+      builder: (BuildContext ctx) {
+        Widget dialogChild = IntrinsicWidth(
+          stepWidth: 56,
+          child: builder(ctx),
+        );
+        if (label != null) {
+          dialogChild = Semantics(
+            scopesRoute: true,
+            explicitChildNodes: true,
+            namesRoute: true,
+            label: label,
             child: dialogChild,
           );
-        },
-        anchorPoint: anchorPoint,
-        barrierColor: barrierColor,
-        barrierDismissible: barrierDismissible,
-        barrierLabel: barrierLabel,
-        useSafeArea: useSafeArea,
-        themes: themes,
-      );
+        }
+        return Dialog(child: dialogChild);
+      },
+      anchorPoint: anchorPoint,
+      barrierColor: barrierColor,
+      barrierDismissible: barrierDismissible,
+      barrierLabel: barrierLabel,
+      useSafeArea: useSafeArea,
+      themes: themes,
+    );
+  }
 }

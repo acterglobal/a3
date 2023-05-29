@@ -1,12 +1,22 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use matrix_sdk::ruma::events::macros::EventContent;
+use matrix_sdk::ruma::{
+    events::{
+        macros::EventContent,
+        room::{
+            message::{
+                AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+                ImageMessageEventContent, TextMessageEventContent, VideoInfo,
+                VideoMessageEventContent,
+            },
+            ImageInfo,
+        },
+    },
+    OwnedMxcUri,
+};
 use serde::{Deserialize, Serialize};
 
-use super::{
-    AudioMessageEventContent, Colorize, FileMessageEventContent, ImageMessageEventContent, ObjRef,
-    TextMessageEventContent, Update, VideoMessageEventContent,
-};
+use super::{Colorize, ObjRef, Update};
 use crate::util::deserialize_some;
 
 // if you change the order of these enum variables, enum value will change and parsing of old content will fail
@@ -19,7 +29,7 @@ pub enum NewsContent {
     Text(TextMessageEventContent),
     /// A video message.
     Video(VideoMessageEventContent),
-    /// A audio message.
+    /// An audio message.
     Audio(AudioMessageEventContent),
     /// A file message.
     File(FileMessageEventContent),
@@ -85,7 +95,44 @@ pub struct NewsSlide {
     references: Vec<ObjRef>,
 }
 
-/// The payload for our news event.
+impl NewsSlide {
+    pub fn new_text(body: String) -> Self {
+        NewsSlide {
+            content: NewsContent::Text(TextMessageEventContent::plain(body)),
+            references: vec![],
+        }
+    }
+
+    pub fn new_image(body: String, url: OwnedMxcUri, info: Option<Box<ImageInfo>>) -> Self {
+        NewsSlide {
+            content: NewsContent::Image(ImageMessageEventContent::plain(body, url, info)),
+            references: vec![],
+        }
+    }
+
+    pub fn new_audio(body: String, url: OwnedMxcUri, info: Option<Box<AudioInfo>>) -> Self {
+        NewsSlide {
+            content: NewsContent::Audio(AudioMessageEventContent::plain(body, url, info)),
+            references: vec![],
+        }
+    }
+
+    pub fn new_video(body: String, url: OwnedMxcUri, info: Option<Box<VideoInfo>>) -> Self {
+        NewsSlide {
+            content: NewsContent::Video(VideoMessageEventContent::plain(body, url, info)),
+            references: vec![],
+        }
+    }
+
+    pub fn new_file(body: String, url: OwnedMxcUri, info: Option<Box<FileInfo>>) -> Self {
+        NewsSlide {
+            content: NewsContent::File(FileMessageEventContent::plain(body, url, info)),
+            references: vec![],
+        }
+    }
+}
+
+/// The payload for our news creation event.
 #[derive(Clone, Debug, Builder, Deserialize, Serialize, Getters, EventContent)]
 #[ruma_event(type = "global.acter.dev.news", kind = MessageLike)]
 #[builder(name = "NewsEntryBuilder", derive(Debug))]
@@ -104,7 +151,7 @@ pub struct NewsEntryEventContent {
     colors: Option<Colorize>,
 }
 
-/// The payload for our news event.
+/// The payload for our news update event.
 #[derive(Clone, Debug, Builder, Deserialize, Serialize, EventContent)]
 #[ruma_event(type = "global.acter.dev.news.update", kind = MessageLike)]
 #[builder(name = "NewsEntryUpdateBuilder", derive(Debug))]
