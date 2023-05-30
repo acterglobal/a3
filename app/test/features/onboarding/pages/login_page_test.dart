@@ -38,7 +38,7 @@ void main() {
       );
       expect(
         find.text(
-          AppLocalizations.of(context)!.signInContinue,
+          AppLocalizations.of(context)!.loginContinue,
         ),
         findsOneWidget,
       );

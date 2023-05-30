@@ -30,7 +30,7 @@
     "logIn":"Login",
     "register":"Register",
     "welcomeBack":"Welcome Back",
-    "signInContinue":"Sign in to Continue",
+    "loginContinue":"Login to Continue",
     "email":"Email Address",
     "username":"Username",
     "emptyUsername":"Please enter Username",

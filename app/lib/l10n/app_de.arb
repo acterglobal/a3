@@ -30,7 +30,7 @@
     "logIn":"Einloggen",
     "register":"Anmelden",
     "welcomeBack":"Willkommen zurück",
-    "signInContinue":"Melden Sie sich an, um fortzufahren",
+    "loginContinue":"Melden Sie sich an, um fortzufahren",
     "email":"E-Mail-Adresse",
     "username":"Benutzername",
     "emptyUsername":"Benutzernamen eingeben",

@@ -75,10 +75,10 @@ class RegisterTextField extends StatelessWidget {
   }
 }
 
-enum SignInOnboardingTextFieldEnum { userName, password }
+enum LoginOnboardingTextFieldEnum { userName, password }
 
-class SignInTextField extends StatelessWidget {
-  const SignInTextField({
+class LoginTextField extends StatelessWidget {
+  const LoginTextField({
     super.key,
     required this.hintText,
     required this.controller,
@@ -88,7 +88,7 @@ class SignInTextField extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
   final String validatorText;
-  final SignInOnboardingTextFieldEnum type;
+  final LoginOnboardingTextFieldEnum type;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -98,7 +98,7 @@ class SignInTextField extends StatelessWidget {
         inputFormatters: [
           FilteringTextInputFormatter.deny(RegExp(r'\s')),
         ],
-        obscureText: type == SignInOnboardingTextFieldEnum.password,
+        obscureText: type == LoginOnboardingTextFieldEnum.password,
         controller: controller,
         decoration: InputDecoration(
           hintText: hintText, // pass the hint text parameter here
@@ -113,13 +113,13 @@ class SignInTextField extends StatelessWidget {
         },
         onChanged: (value) {
           switch (type) {
-            case SignInOnboardingTextFieldEnum.userName:
+            case LoginOnboardingTextFieldEnum.userName:
               controller.text = value;
               controller.selection = TextSelection.fromPosition(
                 TextPosition(offset: controller.text.length),
               );
               break;
-            case SignInOnboardingTextFieldEnum.password:
+            case LoginOnboardingTextFieldEnum.password:
               controller.text = value;
               controller.selection = TextSelection.fromPosition(
                 TextPosition(offset: controller.text.length),
