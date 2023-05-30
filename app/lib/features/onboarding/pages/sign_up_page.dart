@@ -29,7 +29,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   final TextEditingController confirmPassword = TextEditingController();
   final TextEditingController name = TextEditingController();
 
-  void _validateSignUp(BuildContext context) async {
+  void _validateSignUp(BuildContext context) {
     final bool isLoggedIn = ref.read(isLoggedInProvider);
     if (isLoggedIn) {
       ScaffoldMessenger.of(context).showSnackBar(

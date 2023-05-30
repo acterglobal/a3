@@ -1,15 +1,16 @@
-import 'package:acter/features/home/states/client_state.dart';
+import 'dart:core';
+
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:core';
 
 final chatProfileDataProvider =
     FutureProvider.family<ProfileData, Conversation>((ref, chat) async {
   // FIXME: how to get informed about updates!?!
-  final profile = await chat.getProfile();
-  final name = profile.getDisplayName();
-  final displayName = name ?? chat.getRoomId().toString();
+  final profile = chat.getProfile();
+  DispName name = await profile.getDisplayName();
+  final displayName = name.text();
   if (!profile.hasAvatar()) {
     return ProfileData(displayName, null);
   }
