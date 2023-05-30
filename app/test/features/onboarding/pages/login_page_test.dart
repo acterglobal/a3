@@ -1,6 +1,6 @@
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
-import 'package:acter/features/onboarding/pages/sign_up_page.dart';
+import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,7 +38,7 @@ void main() {
       );
       expect(
         find.text(
-          AppLocalizations.of(context)!.signInContinue,
+          AppLocalizations.of(context)!.loginContinue,
         ),
         findsOneWidget,
       );
@@ -99,7 +99,7 @@ void main() {
           initialRoute: '/login',
           routes: <String, WidgetBuilder>{
             '/login': (BuildContext context) => const LoginPage(),
-            '/signup': (BuildContext context) => const SignupPage(),
+            '/register': (BuildContext context) => const RegisterPage(),
           },
           navigatorObservers: [mockObserver],
         ),
@@ -113,7 +113,7 @@ void main() {
     //     newRoute: anyNamed('newRoute'),
     //   ),
     // );
-    expect(find.byType(SignupPage), findsOneWidget);
+    expect(find.byType(RegisterPage), findsOneWidget);
     expect(find.byType(LoginPage), findsNothing);
   });
 }

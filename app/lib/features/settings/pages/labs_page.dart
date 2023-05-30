@@ -1,8 +1,9 @@
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/in_settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:acter/features/settings/providers/labs_features.dart';
 
 class SettingsLabsPage extends ConsumerWidget {
   const SettingsLabsPage({super.key});

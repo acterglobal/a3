@@ -1,26 +1,8 @@
 import 'package:acter/common/utils/feature_flagger.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-
-enum LabsFeature {
-  // apps in general
-  tasks,
-  events,
-  notes,
-  pins,
-  cobudget,
-  polls,
-  discussions,
-
-  // searchOptions
-  searchSpaces,
-  ;
-
-  static List<LabsFeature> get defaults =>
-      [LabsFeature.events, LabsFeature.pins];
-}
 
 class SharedPrefFeaturesNotifier extends FeaturesNotifier<LabsFeature> {
   late SharedPreferences prefInstance;
@@ -47,15 +29,3 @@ class SharedPrefFeaturesNotifier extends FeaturesNotifier<LabsFeature> {
     debugPrint('end of init');
   }
 }
-
-final featuresProvider =
-    StateNotifierProvider<SharedPrefFeaturesNotifier, Features<LabsFeature>>(
-        (ref) {
-  return SharedPrefFeaturesNotifier(
-    'a3.labs',
-    Features<LabsFeature>(
-      flags: const [],
-      defaultOn: LabsFeature.defaults,
-    ),
-  );
-});

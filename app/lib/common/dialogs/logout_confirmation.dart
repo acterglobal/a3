@@ -1,4 +1,4 @@
-import 'package:acter/features/onboarding/states/auth_state.dart';
+import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,7 +22,7 @@ void confirmationDialog(BuildContext ctx, WidgetRef ref) {
             child: const Text('No'),
           ),
           TextButton(
-            onPressed: () => ref.read(authStateProvider.notifier).logOut(ctx),
+            onPressed: () => ref.read(authStateProvider.notifier).logout(ctx),
             child: const Text('Yes'),
           ),
         ],

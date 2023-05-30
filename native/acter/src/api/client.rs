@@ -555,16 +555,10 @@ impl Client {
         Ok(device_id.to_owned())
     }
 
-    pub async fn get_user_profile(&self) -> Result<UserProfile> {
+    pub fn get_user_profile(&self) -> Result<UserProfile> {
         let client = self.core.client().clone();
         let user_id = self.user_id()?;
-        RUNTIME
-            .spawn(async move {
-                let mut user_profile = UserProfile::new(client, user_id, None, None);
-                user_profile.fetch().await;
-                Ok(user_profile)
-            })
-            .await?
+        Ok(UserProfile::new(client, user_id))
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {

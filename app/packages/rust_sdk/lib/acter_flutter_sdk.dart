@@ -287,7 +287,7 @@ class ActerSdk {
     ); // Explicitly-ignored fire-and-forget.
   }
 
-  Future<ffi.Client> signUp(
+  Future<ffi.Client> register(
     String username,
     String password,
     String displayName,
