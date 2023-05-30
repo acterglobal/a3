@@ -2,18 +2,13 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:acter/features/home/states/client_state.dart';
-import 'package:acter/features/news/notifiers/search_space_notifier.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, EventId, NewsEntryDraft, Space;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mime/mime.dart';
-
-final postUpdateProvider =
-    AutoDisposeAsyncNotifierProvider<PostUpdateNotifier, void>(
-  () => PostUpdateNotifier(),
-);
 
 class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
   @override

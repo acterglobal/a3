@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter/features/events/widgets/events_calendar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

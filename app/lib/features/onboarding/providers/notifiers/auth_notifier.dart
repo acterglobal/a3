@@ -2,18 +2,13 @@ import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/home/data/repositories/sdk_repository.dart';
-import 'package:acter/features/home/states/client_state.dart';
-import 'package:acter/main/routing/routes.dart';
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
-
-final authStateProvider = StateNotifierProvider<AuthStateNotifier, bool>(
-  (ref) => AuthStateNotifier(ref),
-);
-
-final isLoggedInProvider = StateProvider<bool>((ref) => false);
 
 class AuthStateNotifier extends StateNotifier<bool> {
   final Ref ref;
