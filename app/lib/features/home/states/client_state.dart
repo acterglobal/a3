@@ -7,27 +7,28 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
+final sdkProvider = FutureProvider<ActerSdk>((ref) async {
+  return await ActerSdk.instance;
+});
+
 final clientProvider = StateNotifierProvider<ClientNotifier, Client?>(
   (ref) => ClientNotifier(ref),
 );
 
 class ClientNotifier extends StateNotifier<Client?> {
-  final Ref ref;
-  late ActerSdk sdk;
   late SyncState syncState;
-  ClientNotifier(this.ref) : super(null) {
-    _loadUp();
+  ClientNotifier(Ref ref) : super(null) {
+    _loadUp(ref);
   }
 
-  void _loadUp() async {
-    final asyncSdk = await ActerSdk.instance;
+  Future<ActerSdk> _loadUp(Ref ref) async {
+    final asyncSdk = await ref.watch(sdkProvider.future);
     PlatformDispatcher.instance.onError = (exception, stackTrace) {
       asyncSdk.writeLog(exception.toString(), 'error');
       asyncSdk.writeLog(stackTrace.toString(), 'error');
       return true; // make this error handled
     };
-    sdk = asyncSdk;
-    state = sdk.currentClient;
+    state = asyncSdk.currentClient;
     if (state != null || !state!.isGuest()) {
       Get.put(ChatListController(client: state!));
       Get.put(ChatRoomController(client: state!));
@@ -39,5 +40,6 @@ class ClientNotifier extends StateNotifier<Client?> {
       await Future.delayed(const Duration(milliseconds: 1500));
       syncState = state!.startSync();
     }
+    return asyncSdk;
   }
 }

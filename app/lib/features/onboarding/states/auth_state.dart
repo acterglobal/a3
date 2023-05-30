@@ -1,7 +1,6 @@
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
-import 'package:acter/features/home/data/repositories/sdk_repository.dart';
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter/main/routing/routes.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +24,9 @@ class AuthStateNotifier extends StateNotifier<bool> {
     BuildContext context,
   ) async {
     state = true;
-    final sdk = ref.read(sdkRepositoryProvider);
+    final sdk = await ref.watch(sdkProvider.future);
     try {
-      final client = await sdk.loginClient(username, password);
+      final client = await sdk.login(username, password);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
       ref.read(clientProvider.notifier).syncState = client.startSync();
@@ -43,6 +42,24 @@ class AuthStateNotifier extends StateNotifier<bool> {
     }
   }
 
+  Future<void> makeGuest(
+    BuildContext? context,
+  ) async {
+    state = true;
+    final sdk = await ref.watch(sdkProvider.future);
+    try {
+      final client = await sdk.newGuestClient(setAsCurrent: true);
+      ref.read(isLoggedInProvider.notifier).update((state) => !state);
+      ref.read(clientProvider.notifier).state = client;
+      state = false;
+      if (context != null) {
+        context.go(Routes.main.name);
+      }
+    } catch (e) {
+      state = false;
+    }
+  }
+
   Future<void> signUp(
     String username,
     String password,
@@ -51,10 +68,9 @@ class AuthStateNotifier extends StateNotifier<bool> {
     BuildContext context,
   ) async {
     state = true;
-    final sdk = ref.read(sdkRepositoryProvider);
+    final sdk = await ref.watch(sdkProvider.future);
     try {
-      final client =
-          await sdk.signUpClient(username, password, displayName, token);
+      final client = await sdk.signUp(username, password, displayName, token);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
       state = false;
@@ -65,8 +81,8 @@ class AuthStateNotifier extends StateNotifier<bool> {
   }
 
   void logOut(BuildContext context) async {
-    final sdk = ref.read(sdkRepositoryProvider);
-    await sdk.logoutClient();
+    final sdk = await ref.watch(sdkProvider.future);
+    await sdk.logout();
     ref.read(isLoggedInProvider.notifier).update((state) => !state);
     // return to guest client.
     ref.read(clientProvider.notifier).state = sdk.currentClient;

@@ -33,6 +33,11 @@ const inCI = bool.fromEnvironment(
   defaultValue: false,
 );
 
+const canGuestLogin = bool.fromEnvironment(
+  'CAN_LOGIN_AS_GUEST',
+  defaultValue: false,
+);
+
 const autoGuestLogin = bool.fromEnvironment(
   'AUTO_LOGIN_AS_GUEST',
   defaultValue: false,

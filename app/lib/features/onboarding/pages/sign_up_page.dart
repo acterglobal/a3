@@ -1,12 +1,11 @@
 import 'package:acter/common/states/network_state.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/states/auth_state.dart';
 import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
 import 'package:acter/main/routing/routes.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -55,8 +54,23 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     final authState = ref.watch(authStateProvider);
     var network = ref.watch(networkAwareProvider);
 
+    final List<Widget> actions = [];
+    if (canGuestLogin) {
+      actions.add(
+        OutlinedButton(
+          onPressed: () async {
+            await ref.read(authStateProvider.notifier).makeGuest(context);
+          },
+          child: const Text('Continue as guest'),
+        ),
+      );
+    }
+
     return SimpleDialog(
-      title: AppBar(title: const Text('Register')),
+      title: AppBar(
+        title: const Text('Register'),
+        actions: actions,
+      ),
       children: [
         Form(
           key: formKey,
