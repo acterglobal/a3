@@ -38,7 +38,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     }
   }
 
-  Future<void> signUp(
+  Future<void> register(
     String username,
     String password,
     String displayName,
@@ -49,7 +49,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     final sdk = ref.read(sdkRepositoryProvider);
     try {
       final client =
-          await sdk.signUpClient(username, password, displayName, token);
+          await sdk.registerClient(username, password, displayName, token);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
       state = false;
