@@ -1,4 +1,4 @@
-import 'package:acter/features/onboarding/states/auth_state.dart';
+import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

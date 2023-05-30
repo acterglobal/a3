@@ -1,9 +1,10 @@
-import 'package:acter/common/providers/profile_provider.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class MyProfile extends ConsumerWidget {
   const MyProfile({super.key});
@@ -28,10 +29,7 @@ class MyProfile extends ConsumerWidget {
             IconButton(
               icon: const Icon(Atlas.construction_tools_thin),
               onPressed: () {
-                showNotYetImplementedMsg(
-                  context,
-                  'User Settings page not yet implemented',
-                );
+                context.go('/settings');
               },
             )
           ],

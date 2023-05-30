@@ -1,4 +1,4 @@
-import 'package:acter/features/bug_report/states/bug_report_state.dart';
+import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_selector/flutter_custom_selector.dart';

@@ -137,3 +137,24 @@ List<String>? asDartStringList(List<FfiString> list) {
   }
   return null;
 }
+
+// ignore: constant_identifier_names
+enum NetworkStatus { NotDetermined, On, Off }
+
+enum LabsFeature {
+  // apps in general
+  tasks,
+  events,
+  notes,
+  pins,
+  cobudget,
+  polls,
+  discussions,
+
+  // searchOptions
+  searchSpaces,
+  ;
+
+  static List<LabsFeature> get defaults =>
+      [LabsFeature.events, LabsFeature.pins];
+}

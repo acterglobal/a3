@@ -1,6 +1,6 @@
 import 'package:acter/common/widgets/custom_app_bar.dart';
 import 'package:acter/common/widgets/search_widget.dart';
-import 'package:acter/features/news/notifiers/search_space_notifier.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/space_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
