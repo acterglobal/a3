@@ -50,16 +50,57 @@ class _RequestsPageState extends State<RequestsPage> {
   }
 }
 
-class _TabBarWidget extends StatelessWidget {
+class _TabBarWidget extends StatefulWidget {
+  final List<UserProfile> userProfiles;
+  final int reqLength;
+  final int pendingLength;
+
   const _TabBarWidget({
     required this.userProfiles,
     required this.reqLength,
     required this.pendingLength,
   });
 
-  final List<UserProfile> userProfiles;
-  final int reqLength;
-  final int pendingLength;
+  @override
+  State<_TabBarWidget> createState() => _TabBarWidgetState();
+}
+
+class _UserItem {
+  String userId;
+  String? displayName;
+  Future<FfiBufferUint8> avatar;
+
+  _UserItem({
+    required this.userId,
+    required this.displayName,
+    required this.avatar,
+  });
+}
+
+class _TabBarWidgetState extends State<_TabBarWidget> {
+  List<_UserItem> userItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadProfiles();
+  }
+
+  void loadProfiles() async {
+    List<_UserItem> items = [];
+    for (var profile in widget.userProfiles) {
+      DispName dispName = await profile.getDisplayName();
+      var item = _UserItem(
+        userId: profile.userId().toString(),
+        displayName: dispName.text(),
+        avatar: profile.getAvatar(),
+      );
+      items.add(item);
+    }
+    if (mounted) {
+      setState(() => userItems = items);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,18 +130,18 @@ class _TabBarWidget extends StatelessWidget {
                 Column(
                   children: [
                     Visibility(
-                      visible: userProfiles.isNotEmpty,
+                      visible: userItems.isNotEmpty,
                       child: ListView.builder(
-                        itemCount: userProfiles.length,
+                        itemCount: userItems.length,
                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int index) {
-                          var p = userProfiles[index];
+                          var item = userItems[index];
                           return Padding(
                             padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                             child: PendingReqListView(
-                              userId: p.userId().toString(),
-                              avatar: p.hasAvatar() ? p.getAvatar() : null,
-                              displayName: p.getDisplayName(),
+                              userId: item.userId,
+                              avatar: item.avatar,
+                              displayName: item.displayName,
                             ),
                           );
                         },
@@ -109,7 +150,7 @@ class _TabBarWidget extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 200),
                       child: Visibility(
-                        visible: (pendingLength == 0),
+                        visible: (widget.pendingLength == 0),
                         child: Column(
                           children: [
                             SizedBox(
@@ -147,9 +188,9 @@ class _TabBarWidget extends StatelessWidget {
                 Column(
                   children: [
                     Visibility(
-                      visible: (reqLength > 0),
+                      visible: (widget.reqLength > 0),
                       child: ListView.builder(
-                        itemCount: reqLength,
+                        itemCount: widget.reqLength,
                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int index) {
                           return const Padding(
@@ -162,7 +203,7 @@ class _TabBarWidget extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 200),
                       child: Visibility(
-                        visible: (reqLength == 0),
+                        visible: (widget.reqLength == 0),
                         child: Column(
                           children: [
                             SizedBox(

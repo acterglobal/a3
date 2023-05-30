@@ -1,4 +1,4 @@
-import 'package:acter/features/home/states/client_state.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show ActerSdk, Client;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,14 +31,14 @@ class SdkRepository {
     }
   }
 
-  Future<Client> signUpClient(
+  Future<Client> registerClient(
     String name,
     String username,
     String password,
     String token,
   ) async {
     try {
-      final client = await sdk.signUp(username, password, name, token);
+      final client = await sdk.register(username, password, name, token);
       return client;
     } catch (e) {
       rethrow;

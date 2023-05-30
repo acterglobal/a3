@@ -1,4 +1,4 @@
-import 'package:acter/features/home/states/client_state.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/tasks/models/tasks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:core';

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:acter/common/providers/loading_provider.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/bug_report/data/bug_report.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,11 +12,6 @@ import 'package:path/path.dart';
 const rageshakeUrl = String.fromEnvironment(
   'RAGESHAKE_URL',
   defaultValue: 'https://rageshake.acter.global/api/submit',
-);
-
-final bugReportNotifierProvider =
-    StateNotifierProvider<BugReportStateNotifier, BugReport>(
-  (ref) => BugReportStateNotifier(ref),
 );
 
 class BugReportStateNotifier extends StateNotifier<BugReport> {

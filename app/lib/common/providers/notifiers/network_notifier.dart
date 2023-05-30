@@ -1,13 +1,6 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// ignore: constant_identifier_names
-enum NetworkStatus { NotDetermined, On, Off }
-
-final networkAwareProvider =
-    StateNotifierProvider<NetworkStateNotifier, NetworkStatus>(
-  (ref) => NetworkStateNotifier(),
-);
 
 class NetworkStateNotifier extends StateNotifier<NetworkStatus> {
   late NetworkStatus res;
