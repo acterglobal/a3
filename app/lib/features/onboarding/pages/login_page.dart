@@ -122,7 +122,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           }
                         }
                       },
-                      title: AppLocalizations.of(context)!.login,
+                      title: AppLocalizations.of(context)!.logIn,
                     ),
               const SizedBox(height: 40),
               Row(
@@ -134,7 +134,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     key: LoginPageKeys.signUpBtn,
                     onTap: () => context.goNamed(Routes.authRegister.name),
                     child: Text(
-                      AppLocalizations.of(context)!.signUp,
+                      AppLocalizations.of(context)!.register,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.tertiary,
                       ),

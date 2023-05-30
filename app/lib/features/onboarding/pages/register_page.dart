@@ -174,7 +174,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 }
                               }
                             },
-                            title: AppLocalizations.of(context)!.signUp,
+                            title: AppLocalizations.of(context)!.register,
                           ),
                     const SizedBox(height: 20),
                     Row(
@@ -186,7 +186,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         InkWell(
                           onTap: () => context.goNamed(Routes.authLogin.name),
                           child: Text(
-                            AppLocalizations.of(context)!.login,
+                            AppLocalizations.of(context)!.logIn,
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.tertiary,
                             ),
