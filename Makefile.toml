@@ -75,10 +75,10 @@ disabled = true
 [tasks.android-dev]
 # development android x86_64 emulator
 dependencies = [
-    "ffigen",
     "pre-android",
     "android-x86_64",
     "android-x86_64-release",
+    "ffigen",
     "post-android-x86_64",
     "post-android",
 ]
@@ -87,10 +87,10 @@ dependencies = [
 [tasks.android-ci]
 # development android i686 emulator
 dependencies = [
-    "ffigen",
     "pre-android",
     "android-i686",
     "android-i686-release",
+    "ffigen",
     "post-android-i686",
     "post-android",
 ]
@@ -384,10 +384,10 @@ dependencies = ["ffigen"]
 [tasks.desktop]
 # Build rust SDK for desktop
 dependencies = [
-    "ffigen",
     "desktop-build",
     "desktop-build-release",
     "desktop-build-release-mac",
+    "ffigen",
     "copy-desktop-lib",
     "copy-desktop-lib-release",
 ]
