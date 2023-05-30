@@ -31,14 +31,14 @@ class SdkRepository {
     }
   }
 
-  Future<Client> signUpClient(
+  Future<Client> registerClient(
     String name,
     String username,
     String password,
     String token,
   ) async {
     try {
-      final client = await sdk.signUp(username, password, name, token);
+      final client = await sdk.register(username, password, name, token);
       return client;
     } catch (e) {
       rethrow;
