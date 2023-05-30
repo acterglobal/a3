@@ -15,7 +15,7 @@ final relatedSpacesProvider =
   final spaces = [];
   for (final related in relatedSpaces.children()) {
     String targetType = related.targetType();
-    if (targetType != 'ChatRoom' && targetType != 'Unknown') {
+    if (targetType != 'ChatRoom') {
       final roomId = related.roomId().toString();
       final space = await client.getSpace(roomId);
       spaces.add(space);
