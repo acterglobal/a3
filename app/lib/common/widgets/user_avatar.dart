@@ -1,26 +1,25 @@
 import 'package:acter/features/home/states/client_state.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show DispName, FfiBufferUint8;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class UserItem {
+class _UserItem {
   Future<FfiBufferUint8> avatar;
   String? displayName;
 
-  UserItem({
+  _UserItem({
     required this.avatar,
     required this.displayName,
   });
 }
 
-final userProfileProvider = FutureProvider<UserItem>((ref) async {
+final _userItemProvider = FutureProvider<_UserItem>((ref) async {
   final client = ref.watch(clientProvider);
   var profile = client!.getUserProfile();
   DispName name = await profile.getDisplayName();
-  return UserItem(
+  return _UserItem(
     avatar: profile.getAvatar(),
     displayName: name.text(),
   );
@@ -32,8 +31,8 @@ class UserAvatarWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(clientProvider)!;
-    final userProfile = ref.watch(userProfileProvider);
-    return userProfile.when(
+    final userItem = ref.watch(_userItemProvider);
+    return userItem.when(
       data: (data) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,

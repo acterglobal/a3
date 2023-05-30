@@ -65,12 +65,12 @@ class _TabBarWidget extends StatefulWidget {
   State<_TabBarWidget> createState() => _TabBarWidgetState();
 }
 
-class UserItem {
+class _UserItem {
   String userId;
   String? displayName;
   Future<FfiBufferUint8> avatar;
 
-  UserItem({
+  _UserItem({
     required this.userId,
     required this.displayName,
     required this.avatar,
@@ -78,7 +78,7 @@ class UserItem {
 }
 
 class _TabBarWidgetState extends State<_TabBarWidget> {
-  List<UserItem> userItems = [];
+  List<_UserItem> userItems = [];
 
   @override
   void initState() {
@@ -87,12 +87,11 @@ class _TabBarWidgetState extends State<_TabBarWidget> {
   }
 
   void loadProfiles() async {
-    List<UserItem> items = [];
+    List<_UserItem> items = [];
     for (var profile in widget.userProfiles) {
-      String userId = profile.userId().toString();
       DispName dispName = await profile.getDisplayName();
-      var item = UserItem(
-        userId: userId,
+      var item = _UserItem(
+        userId: profile.userId().toString(),
         displayName: dispName.text(),
         avatar: profile.getAvatar(),
       );

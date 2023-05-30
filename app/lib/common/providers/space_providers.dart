@@ -6,7 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Future<ProfileData> getProfileData(Space space) async {
+Future<ProfileData> getSpaceProfileData(Space space) async {
   // FIXME: how to get informed about updates!?!
   final profile = space.getProfile();
   DispName name = await profile.getDisplayName();
@@ -20,7 +20,7 @@ Future<ProfileData> getProfileData(Space space) async {
 
 final spaceProfileDataProvider =
     FutureProvider.family<ProfileData, Space>((ref, space) async {
-  return await getProfileData(space);
+  return await getSpaceProfileData(space);
 });
 
 final spacesProvider = FutureProvider<List<Space>>((ref) async {
@@ -104,6 +104,6 @@ final canonicalParentProvider =
 
   final client = ref.watch(clientProvider)!;
   final space = await client.getSpace(parent.roomId().toString());
-  final profile = await getProfileData(space);
+  final profile = await getSpaceProfileData(space);
   return SpaceWithProfileData(space, profile);
 });
