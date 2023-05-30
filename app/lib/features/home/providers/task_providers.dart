@@ -1,4 +1,3 @@
-import 'package:acter/features/home/providers/notifiers/client_notifier.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/tasks/models/tasks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

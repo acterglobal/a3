@@ -42,7 +42,7 @@ final accountProfileProvider = FutureProvider((ref) async {
 
 final userProfileProvider = FutureProvider<UserProfile>((ref) async {
   final client = ref.watch(clientProvider);
-  return await client!.getUserProfile();
+  return client!.getUserProfile();
 });
 
 // Chat Providers
