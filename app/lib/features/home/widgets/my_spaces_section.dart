@@ -1,12 +1,14 @@
+import 'dart:core';
+
+import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:core';
 
 class MySpacesSection extends ConsumerWidget {
   final int limit;
+
   const MySpacesSection({super.key, required this.limit});
 
   @override
@@ -38,7 +40,7 @@ class MySpacesSection extends ConsumerWidget {
                       child: ListTile(
                         onTap: () => context.go('/$roomId'),
                         title: Text(
-                          profile.displayName,
+                          profile.displayName ?? roomId,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         leading: ActerAvatar(
@@ -63,12 +65,8 @@ class MySpacesSection extends ConsumerWidget {
               ),
               spaces.length > limit
                   ? Padding(
-                      padding: const EdgeInsets.only(
-                        left: 30,
-                      ),
-                      child: Text(
-                        'see all ${spaces.length} spaces',
-                      ),
+                      padding: const EdgeInsets.only(left: 30),
+                      child: Text('see all ${spaces.length} spaces'),
                     ) // FIXME: click and where?
                   : const Text(''),
             ],

@@ -49,9 +49,9 @@ final userProfileProvider = FutureProvider<UserProfile>((ref) async {
 final chatProfileDataProvider =
     FutureProvider.family<ProfileData, Conversation>((ref, chat) async {
   // FIXME: how to get informed about updates!?!
-  final profile = await chat.getProfile();
-  final name = profile.getDisplayName();
-  final displayName = name ?? chat.getRoomId().toString();
+  final profile = chat.getProfile();
+  final name = await profile.getDisplayName();
+  final displayName = name.text() ?? chat.getRoomId().toString();
   if (!profile.hasAvatar()) {
     return ProfileData(displayName, null);
   }

@@ -32,7 +32,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
-  void _validateLogin() async {
+  void _validateLogin() {
     final isLoggedIn = ref.watch(isLoggedInProvider);
 
     if (isLoggedIn) {

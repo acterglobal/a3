@@ -59,21 +59,10 @@ impl std::ops::Deref for Member {
 }
 
 impl Member {
-    pub async fn get_profile(&self) -> Result<UserProfile> {
+    pub fn get_profile(&self) -> UserProfile {
         let client = self.client.clone();
-        let member = self.member.clone();
-
-        RUNTIME
-            .spawn(async move {
-                let user_profile = UserProfile::new(
-                    client,
-                    member.user_id().to_owned(),
-                    member.avatar_url().map(|x| (*x).to_owned()),
-                    member.display_name().map(|x| x.to_string()),
-                );
-                Ok(user_profile)
-            })
-            .await?
+        let user_id = self.member.user_id().to_owned();
+        UserProfile::new(client, user_id)
     }
 
     pub fn user_id(&self) -> OwnedUserId {
@@ -91,17 +80,10 @@ impl Room {
         is_acter_space(&self.room).await
     }
 
-    pub async fn get_profile(&self) -> Result<RoomProfile> {
+    pub fn get_profile(&self) -> RoomProfile {
         let client = self.room.client();
         let room_id = self.room_id().to_owned();
-
-        RUNTIME
-            .spawn(async move {
-                let mut room_profile = RoomProfile::new(client, room_id);
-                room_profile.fetch().await;
-                Ok(room_profile)
-            })
-            .await?
+        RoomProfile::new(client, room_id)
     }
 
     pub async fn active_members(&self) -> Result<Vec<Member>> {
@@ -1125,7 +1107,6 @@ impl Room {
             bail!("Can't send reply as image to a room we are not in")
         };
         let client = self.room.client();
-        let r = self.room.clone();
 
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
@@ -1196,7 +1177,6 @@ impl Room {
             bail!("Can't send reply as audio to a room we are not in")
         };
         let client = self.room.client();
-        let r = self.room.clone();
 
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
@@ -1269,7 +1249,6 @@ impl Room {
             bail!("Can't send reply as video to a room we are not in")
         };
         let client = self.room.client();
-        let r = self.room.clone();
 
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;

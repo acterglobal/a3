@@ -77,7 +77,7 @@ final spaceItemsProvider =
               size: 24,
             ),
             label: Text(
-              info.displayName,
+              info.displayName ?? roomId,
               style: Theme.of(context).textTheme.labelSmall,
               softWrap: false,
             ),
