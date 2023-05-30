@@ -15,12 +15,8 @@ final relatedChatsProvider =
   final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
   final chats = [];
   final children = relatedSpaces.children();
-  debugPrint('children count: ${children.length}');
   for (final related in children) {
-    RelationTargetType targetType = related.targetType();
-    debugPrint('RelationTargetType before');
-    if (targetType.tag == RelationTargetTypeTag.ChatRoom) {
-      debugPrint('RelationTargetType after');
+    if (related.targetType() == 'ChatRoom') {
       final roomId = related.roomId().toString();
       final room = await client.conversation(roomId);
       chats.add(room);

@@ -1003,7 +1003,7 @@ object SpaceRelation {
     /// how to find this room
     fn via() -> Vec<string>;
     /// of what type is the targeted room?
-    fn target_type() -> RelationTargetType;
+    fn target_type() -> string;
 }
 
 object SpaceRelations {

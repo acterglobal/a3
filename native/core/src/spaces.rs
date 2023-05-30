@@ -111,8 +111,8 @@ impl SpaceRelation {
         self.room_id.clone()
     }
 
-    pub fn target_type(&self) -> RelationTargetType {
-        self.target_type.clone()
+    pub fn target_type(&self) -> String {
+        self.target_type.to_string()
     }
 
     pub fn via(&self) -> Vec<String> {
