@@ -130,7 +130,7 @@ class AppTheme {
       dividerColor: const Color(0xFFDDEDFC),
       cardTheme: CardTheme(color: brandColorScheme.background, elevation: 0),
       dialogTheme: DialogTheme(
-        backgroundColor: brandColorScheme.secondary,
+        backgroundColor: brandColorScheme.background,
         elevation: 0,
       ),
       buttonTheme: ButtonThemeData(
