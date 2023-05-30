@@ -1,12 +1,14 @@
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:flutter/material.dart';
-import 'package:acter/features/home/providers/task_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'dart:core';
+
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/home/providers/task_providers.dart';
+import 'package:atlas_icons/atlas_icons.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MyTasksSection extends ConsumerWidget {
   final int limit;
+
   const MyTasksSection({super.key, required this.limit});
 
   @override
@@ -28,64 +30,57 @@ class MyTasksSection extends ConsumerWidget {
                 return [
                   ...tasks
                       .sublist(0, tasks.length > limit ? limit : tasks.length)
-                      .map(
-                        (brief) => Padding(
-                          padding: const EdgeInsets.only(
-                            bottom: 10,
-                          ),
-                          child: ListTile(
-                            // onTap: () => context.go('/$roomId'),
-                            title: Text(
-                              brief.task.title(),
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                            subtitle: Wrap(
-                              direction: Axis.horizontal,
-                              children: [
-                                Text(
-                                  brief.taskList.name(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .apply(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .neutral5,
-                                      ),
-                                ),
-                                Text(
-                                  ' in ',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                                Text(
-                                  brief.space.profile.displayName,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .apply(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            leading: brief.task.isDone()
-                                ? const Icon(Atlas.check_circle_thin)
-                                : const Icon(
-                                    Icons.check_box_outline_blank_outlined,
-                                  ),
-                          ),
+                      .map((brief) {
+                    String roomId = brief.space.space.getRoomId().toString();
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: ListTile(
+                        // onTap: () => context.go('/$roomId'),
+                        title: Text(
+                          brief.task.title(),
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
+                        subtitle: Wrap(
+                          direction: Axis.horizontal,
+                          children: [
+                            Text(
+                              brief.taskList.name(),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .apply(
+                                    color:
+                                        Theme.of(context).colorScheme.neutral5,
+                                  ),
+                            ),
+                            Text(
+                              ' in ',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            Text(
+                              brief.space.profile.displayName ?? roomId,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .apply(
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        leading: brief.task.isDone()
+                            ? const Icon(Atlas.check_circle_thin)
+                            : const Icon(
+                                Icons.check_box_outline_blank_outlined,
+                              ),
                       ),
+                    );
+                  }),
                   tasks.length > limit
                       ? Padding(
-                          padding: const EdgeInsets.only(
-                            left: 30,
-                          ),
-                          child: Text(
-                            'see all my ${tasks.length} tasks',
-                          ),
+                          padding: const EdgeInsets.only(left: 30),
+                          child: Text('see all my ${tasks.length} tasks'),
                         ) // FIXME: click and where?
                       : const Text(''),
                 ];

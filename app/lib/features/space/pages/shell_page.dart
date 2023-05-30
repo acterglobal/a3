@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 class SpaceShell extends ConsumerStatefulWidget {
   final String spaceIdOrAlias;
   final Widget child;
+
   const SpaceShell({
     super.key,
     required this.spaceIdOrAlias,
@@ -24,6 +25,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
     'Member',
     'Admin',
   ];
+
   @override
   Widget build(BuildContext context) {
     // get platform of context.
@@ -108,7 +110,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                             child: Container(
                               margin: const EdgeInsets.only(left: 20),
                               child: Text(
-                                profile.displayName,
+                                profile.displayName ?? widget.spaceIdOrAlias,
                                 style:
                                     Theme.of(context).textTheme.headlineMedium,
                               ),

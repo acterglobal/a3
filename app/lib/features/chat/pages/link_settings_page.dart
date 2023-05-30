@@ -45,8 +45,14 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
   void initState() {
     super.initState();
 
-    widget.room.getProfile().then((value) {
-      setState(() => displayName = value.getDisplayName());
+    final profile = widget.room.getProfile();
+    profile.getDisplayName().then((value) {
+      if (mounted) {
+        String? name = value.text();
+        if (name != null) {
+          setState(() => displayName = name);
+        }
+      }
     });
   }
 
@@ -56,7 +62,7 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
       appBar: AppBar(
         title: const Text('Link Settings'),
         centerTitle: true,
-        elevation: 0.0,
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
