@@ -275,7 +275,7 @@ class ActerSdk {
     }
   }
 
-  Future<ffi.Client> signUp(
+  Future<ffi.Client> register(
     String username,
     String password,
     String displayName,

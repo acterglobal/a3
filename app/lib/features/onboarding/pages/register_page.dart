@@ -14,14 +14,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-class SignupPage extends ConsumerStatefulWidget {
-  const SignupPage({super.key});
+class RegisterPage extends ConsumerStatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _SignupPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _RegisterPageState();
 }
 
-class _SignupPageState extends ConsumerState<SignupPage> {
+class _RegisterPageState extends ConsumerState<RegisterPage> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
@@ -29,7 +29,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   final TextEditingController confirmPassword = TextEditingController();
   final TextEditingController name = TextEditingController();
 
-  void _validateSignUp(BuildContext context) {
+  void _validateRegister(BuildContext context) {
     final bool isLoggedIn = ref.read(isLoggedInProvider);
     if (isLoggedIn) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -90,31 +90,31 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       AppLocalizations.of(context)!.createAccountText,
                     ),
                     const SizedBox(height: 20),
-                    SignUpTextField(
+                    RegisterTextField(
                       hintText: AppLocalizations.of(context)!.name,
                       controller: name,
                       validatorText: AppLocalizations.of(context)!.missingName,
-                      type: SignUpOnboardingTextFieldEnum.name,
+                      type: RegisterOnboardingTextFieldEnum.name,
                     ),
-                    SignUpTextField(
+                    RegisterTextField(
                       hintText: AppLocalizations.of(context)!.username,
                       controller: username,
                       validatorText:
                           AppLocalizations.of(context)!.emptyUsername,
-                      type: SignUpOnboardingTextFieldEnum.userName,
+                      type: RegisterOnboardingTextFieldEnum.userName,
                     ),
-                    SignUpTextField(
+                    RegisterTextField(
                       hintText: AppLocalizations.of(context)!.password,
                       controller: password,
                       validatorText:
                           AppLocalizations.of(context)!.emptyPassword,
-                      type: SignUpOnboardingTextFieldEnum.password,
+                      type: RegisterOnboardingTextFieldEnum.password,
                     ),
-                    SignUpTextField(
+                    RegisterTextField(
                       hintText: AppLocalizations.of(context)!.token,
                       controller: token,
                       validatorText: AppLocalizations.of(context)!.emptyToken,
-                      type: SignUpOnboardingTextFieldEnum.token,
+                      type: RegisterOnboardingTextFieldEnum.token,
                     ),
                     const SizedBox(height: 30),
                     Container(
@@ -163,14 +163,14 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                 } else {
                                   await ref
                                       .read(authStateProvider.notifier)
-                                      .signUp(
+                                      .register(
                                         username.text,
                                         password.text,
                                         name.text,
                                         token.text,
                                         context,
                                       );
-                                  _validateSignUp(context);
+                                  _validateRegister(context);
                                 }
                               }
                             },

@@ -10,7 +10,7 @@ import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
-import 'package:acter/features/onboarding/pages/sign_up_page.dart';
+import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/search/pages/search.dart';
@@ -40,7 +40,7 @@ final _routes = [
   GoRoute(
     name: Routes.authRegister.name,
     path: Routes.authRegister.route,
-    builder: (context, state) => const SignupPage(),
+    builder: (context, state) => const RegisterPage(),
   ),
   GoRoute(
     path: '/gallery',
