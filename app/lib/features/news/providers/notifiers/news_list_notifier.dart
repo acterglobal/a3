@@ -1,11 +1,6 @@
-import 'package:acter/features/home/states/client_state.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final newsListProvider =
-    StateNotifierProvider<NewsListStateNotifier, AsyncValue<List<NewsEntry>>>(
-  (ref) => NewsListStateNotifier(ref),
-);
 
 class NewsListStateNotifier extends StateNotifier<AsyncValue<List<NewsEntry>>> {
   final Ref ref;

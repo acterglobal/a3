@@ -1,15 +1,6 @@
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final searchSpaceProvider =
-    StateNotifierProvider.autoDispose<SearchSpaceNotifier, List<SpaceItem>>(
-  (ref) => SearchSpaceNotifier(ref, []),
-);
-
-final selectedSpaceProvider =
-    StateProvider.autoDispose<SpaceItem?>((ref) => null);
-
-final isSearchingProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 class SearchSpaceNotifier extends StateNotifier<List<SpaceItem>> {
   final Ref ref;

@@ -5,7 +5,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/widgets/invite_info_card.dart';
 import 'package:acter/features/chat/widgets/list_item.dart';
-import 'package:acter/features/home/states/client_state.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/models/JoinedRoom.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Invitation, RoomId;

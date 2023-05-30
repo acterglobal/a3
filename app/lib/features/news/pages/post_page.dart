@@ -1,12 +1,11 @@
 import 'dart:io';
 
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_app_bar.dart';
-import 'package:acter/features/home/states/client_state.dart';
-import 'package:acter/features/news/notifiers/post_update_notifier.dart';
-import 'package:acter/features/news/notifiers/search_space_notifier.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show remapToImage;
 import 'package:atlas_icons/atlas_icons.dart';

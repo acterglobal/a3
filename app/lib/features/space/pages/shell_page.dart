@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';

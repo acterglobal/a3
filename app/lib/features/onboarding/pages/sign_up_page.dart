@@ -1,11 +1,11 @@
-import 'package:acter/common/states/network_state.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
-import 'package:acter/features/onboarding/states/auth_state.dart';
 import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
-import 'package:acter/main/routing/routes.dart';
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

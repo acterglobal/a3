@@ -7,10 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
-final clientProvider = StateNotifierProvider<ClientNotifier, Client?>(
-  (ref) => ClientNotifier(ref),
-);
-
 class ClientNotifier extends StateNotifier<Client?> {
   final Ref ref;
   late ActerSdk sdk;
