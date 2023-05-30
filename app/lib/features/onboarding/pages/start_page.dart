@@ -16,11 +16,11 @@ class StartPage extends StatelessWidget {
         finishButtonStyle: const FinishButtonStyle(
           backgroundColor: Colors.black,
         ),
-        onFinish: () => context.goNamed(Routes.authRegister.name),
+        onFinish: () => context.pushNamed(Routes.authRegister.name),
         skipTextButton: const Text('Skip'),
         trailing: InkWell(
           child: const Text('Login'),
-          onTap: () => context.goNamed(Routes.authLogin.name),
+          onTap: () => context.pushNamed(Routes.authLogin.name),
         ),
         background: [
           Image.asset('assets/images/onboarding-welcome.png'),

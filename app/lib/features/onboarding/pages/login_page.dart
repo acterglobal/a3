@@ -60,7 +60,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final authState = ref.watch(authStateProvider);
     var network = ref.watch(networkAwareProvider);
     return SimpleDialog(
-      title: const Text('Login'),
+      title: AppBar(title: const Text('Login')),
       children: [
         Form(
           key: formKey,
