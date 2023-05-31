@@ -18,8 +18,6 @@ You'll need a recent:
  - Android NDK / XCode setup for the target - and device or simulator set up
  - [flutter](https://docs.flutter.dev/get-started/install)
 
-_Note_ on the Android NDK. We use `cargo-ndk` internally, which we've only tested with NDK r23. If you have troubles, try removing the NDK and installing version r23.
-
 ## Setup
 
 You need `cargo make` for managing and building the native core artefacts. Install via
