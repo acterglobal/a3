@@ -51,7 +51,7 @@ jobs:
             os: ubuntu-latest
             cargo_make_setup: setup-android
             cargo_make_args: android-arm
-            with_ndk_version: r23c
+            with_ndk_version: r25
             flutter_build_args: "build apk --target-platform android-arm64"
             artifact_prefix: acter-nightly-android-arm64
             artifact_path:  app/build/app/outputs/apk/release/
@@ -270,13 +270,14 @@ jobs:
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          TITLE: "${{matrix.name}} nightly build failed"
+          TAG: ${{ needs.tags.outputs.tag }}
+          NAME: ${{matrix.name}}
           FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
           ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         with:
           assignees: gnunicorn
           filename: .github/templates/failure-report-template.md.tmpl
-          update_existing: true
+          update_existing: false
 
   publish:
     environment: nightly

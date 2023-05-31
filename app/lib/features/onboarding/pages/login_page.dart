@@ -76,22 +76,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               const SizedBox(height: 20),
               Text(AppLocalizations.of(context)!.welcomeBack),
               const SizedBox(height: 20),
-              Text(AppLocalizations.of(context)!.signInContinue),
+              Text(AppLocalizations.of(context)!.loginContinue),
               const SizedBox(height: 40),
-              SignInTextField(
+              LoginTextField(
                 key: LoginPageKeys.usernameField,
                 hintText: AppLocalizations.of(context)!.username,
                 controller: username,
                 validatorText: AppLocalizations.of(context)!.emptyUsername,
-                type: SignInOnboardingTextFieldEnum.userName,
+                type: LoginOnboardingTextFieldEnum.userName,
               ),
               const SizedBox(height: 20),
-              SignInTextField(
+              LoginTextField(
                 key: LoginPageKeys.passwordField,
                 hintText: AppLocalizations.of(context)!.password,
                 controller: password,
                 validatorText: AppLocalizations.of(context)!.emptyPassword,
-                type: SignInOnboardingTextFieldEnum.password,
+                type: LoginOnboardingTextFieldEnum.password,
               ),
               const SizedBox(height: 40),
               Container(
@@ -123,7 +123,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           }
                         }
                       },
-                      title: AppLocalizations.of(context)!.login,
+                      title: AppLocalizations.of(context)!.logIn,
                     ),
               const SizedBox(height: 40),
               Row(
@@ -135,7 +135,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     key: LoginPageKeys.signUpBtn,
                     onTap: () => context.goNamed(Routes.authRegister.name),
                     child: Text(
-                      AppLocalizations.of(context)!.signUp,
+                      AppLocalizations.of(context)!.register,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.tertiary,
                       ),

@@ -100,7 +100,7 @@ class SidebarWidget extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         child: Text(
-                          'Log Out',
+                          'Logout',
                           style: Theme.of(context).textTheme.labelSmall,
                           softWrap: false,
                         ),
