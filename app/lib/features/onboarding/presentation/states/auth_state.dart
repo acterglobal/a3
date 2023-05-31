@@ -65,7 +65,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     }
   }
 
-  void logOut(BuildContext context) async {
+  Future<void> logout(BuildContext context) async {
     final sdk = ref.read(sdkRepositoryProvider);
     await sdk.logoutClient();
     ref.read(isLoggedInProvider.notifier).update((state) => !state);
