@@ -23,13 +23,14 @@ class AuthStateNotifier extends StateNotifier<bool> {
     try {
       final client = await sdk.login(username, password);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
-      ref.read(clientProvider.notifier).state = client;
-      ref.read(clientProvider.notifier).syncState = client.startSync();
+      ref.watch(clientProvider.notifier).state = client;
+      ref.watch(clientProvider.notifier).syncState = client.startSync();
       // inject chat dependencies once actual client is logged in.
       Get.replace(ChatListController(client: client));
       Get.replace(ChatRoomController(client: client));
       Get.replace(ReceiptController(client: client));
       state = false;
+      context.goNamed(Routes.main.name);
     } catch (e) {
       debugPrint('$e');
       state = false;
@@ -47,7 +48,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
       ref.read(clientProvider.notifier).state = client;
       state = false;
       if (context != null) {
-        context.go(Routes.main.name);
+        context.goNamed(Routes.main.name);
       }
     } catch (e) {
       state = false;
@@ -68,7 +69,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
       state = false;
-      context.go(Routes.main.name);
+      context.goNamed(Routes.main.name);
     } catch (e) {
       state = false;
     }
@@ -80,9 +81,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     ref.read(isLoggedInProvider.notifier).update((state) => !state);
     // return to guest client.
     ref.read(clientProvider.notifier).state = sdk.currentClient;
-    Get.delete<ChatListController>();
-    Get.delete<ChatRoomController>();
-    Get.delete<ReceiptController>();
-    context.go(Routes.main.name);
+    context.goNamed(Routes.main.name);
+    context.pop();
   }
 }
