@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
 import 'package:go_router/go_router.dart';
@@ -17,9 +18,9 @@ class StartPage extends StatelessWidget {
           backgroundColor: Colors.black,
         ),
         onFinish: () => context.pushNamed(Routes.authRegister.name),
-        skipTextButton: const Text('Skip'),
+        skipTextButton: const Text('Skip', key: Keys.skipBtn),
         trailing: InkWell(
-          child: const Text('Login'),
+          child: const Text('Login', key: Keys.loginBtn),
           onTap: () => context.pushNamed(Routes.authLogin.name),
         ),
         background: [

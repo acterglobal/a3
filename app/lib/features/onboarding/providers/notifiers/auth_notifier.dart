@@ -17,7 +17,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
   Future<void> login(
     String username,
     String password,
-    BuildContext context,
   ) async {
     state = true;
     final sdk = await ref.watch(sdkProvider.future);
@@ -31,7 +30,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
       Get.replace(ChatRoomController(client: client));
       Get.replace(ReceiptController(client: client));
       state = false;
-      context.go(Routes.main.name);
     } catch (e) {
       debugPrint('$e');
       state = false;

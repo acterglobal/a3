@@ -32,18 +32,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
-  void _validateLogin() {
+  void _validateLogin(BuildContext context) {
     final isLoggedIn = ref.watch(isLoggedInProvider);
 
     if (isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          key: LoginPageKeys.snackbarSuccess,
-          backgroundColor: Theme.of(context).colorScheme.success,
-          content: Text(AppLocalizations.of(context)!.loginSuccess),
-          duration: const Duration(seconds: 4),
-        ),
-      );
+      context.goNamed(Routes.main.name);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -117,9 +110,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             await ref.read(authStateProvider.notifier).login(
                                   username.text,
                                   password.text,
-                                  context,
                                 );
-                            _validateLogin();
+                            _validateLogin(context);
                           }
                         }
                       },
