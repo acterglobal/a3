@@ -66,5 +66,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
     // return to guest client.
     ref.watch(clientProvider.notifier).state = sdk.getClient();
     context.goNamed(Routes.main.name);
+    context.pop();
   }
 }
