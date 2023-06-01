@@ -4,7 +4,9 @@ import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:io';
 
+
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info/package_info.dart';
@@ -12,11 +14,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 export './acter_flutter_sdk_ffi.dart' show Client;
-
-// class ActerClient extends ChangeNotifier {
-//   final Client client;
-//   ActerClient(this.client);
-// }
 
 const defaultServerUrl = String.fromEnvironment(
   'DEFAULT_HOMESERVER_URL',
@@ -64,6 +61,47 @@ Color convertColor(ffi.EfkColor? primary, Color fallback) {
   );
 }
 
+Completer<SharedPreferences>? _sharedPrefCompl;
+Completer<String>? _appDirCompl;
+Completer<ActerSdk>? _instanceCompl;
+
+Future<String> appDir() async {
+  if (_appDirCompl == null) {
+    Completer<String> completer = Completer();
+    completer.complete(appDirInner());
+    _appDirCompl = completer;
+  }
+  return _appDirCompl!.future;
+}
+
+Future<String> appDirInner() async {
+    Directory appDocDir = await getApplicationSupportDirectory();
+    if (versionName == 'DEV') {
+      // on dev we put this into a subfolder to separate from any installed version
+      appDocDir = Directory(p.join(appDocDir.path, 'DEV'));
+      if (! await appDocDir.exists()) {
+        await appDocDir.create();
+      }
+    }
+    return appDocDir.path;
+}
+
+Future<SharedPreferences> sharedPrefs() async {
+  if (_sharedPrefCompl ==  null) {
+    if (versionName == 'DEV') {
+      // on dev we put this into a prefix to separate from any installed version
+      SharedPreferences.setPrefix('dev.flutter');
+    }
+    final Completer<SharedPreferences> completer =
+          Completer<SharedPreferences>();
+    completer.complete(SharedPreferences.getInstance());
+    _sharedPrefCompl = completer;
+  }
+
+  return _sharedPrefCompl!.future;
+}
+
+
 /// Convert an future of a FfiBufferUint8 (which you commonly get for images) to
 /// a flutter ImageProvider.
 ///
@@ -98,7 +136,6 @@ DateTime toDartDatetime(ffi.UtcDateTime dt) {
 }
 
 class ActerSdk {
-  static ActerSdk? _instance;
   late final ffi.Api _api;
   static String _sessionKey = defaultSessionKey;
   int _index = 0;
@@ -113,7 +150,7 @@ class ActerSdk {
       String token = await c.restoreToken();
       sessions.add(token);
     }
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await sharedPrefs();
     await prefs.setStringList(_sessionKey, sessions);
     await prefs.setInt('$_sessionKey::currentClientIdx', _index);
   }
@@ -122,15 +159,14 @@ class ActerSdk {
     await _unrestoredInstance;
     _clients.clear();
     _sessionKey = sessionKey;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await sharedPrefs();
     await prefs.setStringList(_sessionKey, []);
   }
 
   Future<void> _restore() async {
-    Directory appDocDir = await getApplicationSupportDirectory();
-    String appDocPath = appDocDir.path;
+    String appDocPath = await appDir();
     debugPrint('loading configuration from $appDocPath');
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await sharedPrefs();
     List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
     bool loggedIn = false;
     for (var token in sessions) {
@@ -154,8 +190,7 @@ class ActerSdk {
     String? serverUrl,
     bool setAsCurrent = false,
   }) async {
-    Directory appDocDir = await getApplicationSupportDirectory();
-    String appDocPath = appDocDir.path;
+    String appDocPath = await appDir();
     ffi.Client client = await _api.guestClient(
       appDocPath,
       serverName ?? defaultServerName,
@@ -205,24 +240,30 @@ class ActerSdk {
     }
   }
 
-  static Future<ActerSdk> get _unrestoredInstance async {
-    if (_instance == null) {
-      final api = Platform.isAndroid
-          ? ffi.Api(await _getAndroidDynLib('libacter.so'))
-          : ffi.Api.load();
-      Directory appDocDir = await getApplicationSupportDirectory();
-      try {
-        api.initLogging(appDocDir.path, logSettings);
-      } catch (e) {
-        developer.log(
-          'Logging setup failed',
-          level: 900, // warning
-          error: e,
-        );
-      }
-      _instance = ActerSdk._(api);
+  static Future<ActerSdk> _unrestoredInstanceInner() async {
+    final api = Platform.isAndroid
+        ? ffi.Api(await _getAndroidDynLib('libacter.so'))
+        : ffi.Api.load();
+    String appPath = await appDir();
+    try {
+      api.initLogging(appPath, logSettings);
+    } catch (e) {
+      developer.log(
+        'Logging setup failed',
+        level: 900, // warning
+        error: e,
+      );
     }
-    return _instance!;
+    return ActerSdk._(api);
+  }
+
+  static Future<ActerSdk> get _unrestoredInstance async {
+    if (_instanceCompl == null) {
+      Completer<ActerSdk>  completer = Completer();
+      completer.complete(_unrestoredInstanceInner());
+      _instanceCompl = completer;
+    }
+    return _instanceCompl!.future;
   }
 
   static Future<ActerSdk> get instance async {
@@ -241,8 +282,7 @@ class ActerSdk {
       }
     }
 
-    Directory appDocDir = await getApplicationSupportDirectory();
-    String appDocPath = appDocDir.path;
+    String appDocPath = await appDir();
     final client = await _api.loginNewClient(
       appDocPath,
       username,
@@ -300,8 +340,7 @@ class ActerSdk {
       }
     }
 
-    Directory appDocDir = await getApplicationSupportDirectory();
-    String appDocPath = appDocDir.path;
+    String appDocPath = await appDir();
     final client = await _api.registerWithToken(
       appDocPath,
       username,
