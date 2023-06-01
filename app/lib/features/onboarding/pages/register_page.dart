@@ -156,7 +156,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   : CustomButton(
                       onPressed: () async {
                         if (formKey.currentState!.validate()) {
-                          if (network == NetworkStatus.Off) {
+                          if (!inCI && network == NetworkStatus.Off) {
                             showNoInternetNotification();
                           } else {
                             await ref.read(authStateProvider.notifier).register(

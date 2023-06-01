@@ -105,7 +105,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       key: LoginPageKeys.submitBtn,
                       onPressed: () async {
                         if (formKey.currentState!.validate()) {
-                          if (network == NetworkStatus.Off) {
+                          if (!inCI && network == NetworkStatus.Off) {
                             showNoInternetNotification();
                           } else {
                             await ref.read(authStateProvider.notifier).login(
