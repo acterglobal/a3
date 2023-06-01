@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -258,6 +259,9 @@ class _TextInputWidget extends StatelessWidget {
           data: controller.mentionList,
           matchAll: false,
           suggestionBuilder: (Map<String, dynamic> roomMember) {
+            String title = roomMember.containsKey('display')
+                ? roomMember['display']
+                : simplifyUserId(roomMember['link']);
             return Container(
               color: Theme.of(context).colorScheme.neutral2,
               padding: const EdgeInsets.symmetric(vertical: 10),
@@ -275,7 +279,7 @@ class _TextInputWidget extends StatelessWidget {
                   ),
                 ),
                 title: Text(
-                  roomMember['display'],
+                  title,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
@@ -291,7 +295,9 @@ class _TextInputWidget extends StatelessWidget {
     Map<String, dynamic> roomMember,
   ) {
     String userId = roomMember['link'];
-    String displayName = roomMember['display'];
+    String displayName = roomMember.containsKey('display')
+        ? roomMember['display']
+        : simplifyUserId(roomMember['link']);
     controller.messageTextMapMarkDown.addAll({
       '@$displayName': '[$displayName](https://matrix.to/#/$userId)',
     });

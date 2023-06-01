@@ -112,13 +112,13 @@ class _ChatListItemState extends State<ListItem> {
 }
 
 class _TitleWidget extends StatelessWidget {
+  final String? displayName;
+  final BuildContext context;
+
   const _TitleWidget({
     required this.displayName,
     required this.context,
   });
-
-  final String? displayName;
-  final BuildContext context;
 
   @override
   Widget build(BuildContext context) {

@@ -12,7 +12,6 @@ use acter_core::{
     },
     executor::Executor,
     models::AnyActerModel,
-    ruma::{events::MessageLikeEvent, OwnedRoomAliasId, OwnedRoomId, OwnedUserId},
     spaces::is_acter_space,
     statics::default_acter_space_states,
     templates::Engine,
@@ -24,12 +23,13 @@ use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
     event_handler::Ctx,
     room::{Messages, MessagesOptions, Room as MatrixRoom},
+    ruma::{
+        api::client::state::send_state_event,
+        events::{AnyStateEventContent, MessageLikeEvent},
+        serde::Raw,
+        OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
+    },
     Client as MatrixClient,
-};
-use ruma::{
-    api::client::state::send_state_event,
-    events::{AnyStateEventContent, StateEventContent, _custom::CustomStateEventContent},
-    serde::Raw,
 };
 use serde::{Deserialize, Serialize};
 

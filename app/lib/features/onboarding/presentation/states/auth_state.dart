@@ -17,6 +17,7 @@ final isLoggedInProvider = StateProvider<bool>((ref) => false);
 
 class AuthStateNotifier extends StateNotifier<bool> {
   final Ref ref;
+
   AuthStateNotifier(this.ref) : super(false);
 
   Future<void> login(
@@ -64,7 +65,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     }
   }
 
-  void logOut(BuildContext context) async {
+  Future<void> logout(BuildContext context) async {
     final sdk = ref.read(sdkRepositoryProvider);
     await sdk.logoutClient();
     ref.read(isLoggedInProvider.notifier).update((state) => !state);

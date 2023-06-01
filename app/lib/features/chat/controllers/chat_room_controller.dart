@@ -454,11 +454,11 @@ class ChatRoomController extends GetxController {
       }
       DispName dispName = await profile.getDisplayName();
       String? name = dispName.text();
-      record['display'] = name ?? userId;
-      record['link'] = userId;
       if (name != null) {
+        record['display'] = name;
         names[userId] = name;
       }
+      record['link'] = userId;
       mentionRecords.add(record);
       if (i % 3 == 0 || i == activeMembers.length - 1) {
         _userAvatars.addAll(avatars);

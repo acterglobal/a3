@@ -12,6 +12,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         FfiListInvitation,
         Invitation,
         RoomId,
+        RoomProfile,
         TypingEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -145,7 +146,7 @@ class ChatListController extends GetxController {
   }
 
   Future<void> setRoomProfile(Conversation room, JoinedRoom item) async {
-    final profile = room.getProfile();
+    RoomProfile profile = room.getProfile();
     if (profile.hasAvatar()) {
       item.avatar = profile.getThumbnail(62, 60);
     }

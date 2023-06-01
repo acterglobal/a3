@@ -59,13 +59,13 @@ class AuthStateNotifier extends StateNotifier<bool> {
     }
   }
 
-  void logOut(BuildContext context) async {
+  Future<void> logout(BuildContext context) async {
     final sdk = ref.read(sdkRepositoryProvider);
     await sdk.logoutClient();
     ref.read(isLoggedInProvider.notifier).update((state) => !state);
     // return to guest client.
     ref.watch(clientProvider.notifier).state = sdk.getClient();
-    context.goNamed(Routes.main.name);
     context.pop();
+    context.goNamed(Routes.main.name);
   }
 }

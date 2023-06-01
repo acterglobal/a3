@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SearchSpaceNotifier extends StateNotifier<List<SpaceItem>> {
   final Ref ref;
   List<SpaceItem> items;
+
   SearchSpaceNotifier(this.ref, this.items) : super([]) {
     _init();
   }

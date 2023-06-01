@@ -14,8 +14,9 @@ final relatedChatsProvider =
   final client = ref.watch(clientProvider)!;
   final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
   final chats = [];
-  for (final related in relatedSpaces.children()) {
-    if (related.targetType().tag == RelationTargetTypeTag.ChatRoom) {
+  final children = relatedSpaces.children();
+  for (final related in children) {
+    if (related.targetType() == 'ChatRoom') {
       final roomId = related.roomId().toString();
       final room = await client.conversation(roomId);
       chats.add(room);
@@ -53,7 +54,7 @@ class ChatsCard extends ConsumerWidget {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: chats.length,
-                  itemBuilder: ((context, index) {
+                  itemBuilder: (context, index) {
                     final roomId = chats[index].getRoomId().toString();
                     final provider = chatProfileDataProvider(chats[index]);
                     final profile = ref.watch(provider);
@@ -106,7 +107,7 @@ class ChatsCard extends ConsumerWidget {
                         subtitle: const Text('loading'),
                       ),
                     );
-                  }),
+                  },
                 );
               },
             ),

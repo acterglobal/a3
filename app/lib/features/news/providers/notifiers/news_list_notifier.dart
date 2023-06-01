@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NewsListStateNotifier extends StateNotifier<AsyncValue<List<NewsEntry>>> {
   final Ref ref;
+
   NewsListStateNotifier(this.ref) : super(const AsyncData([])) {
     _fetchNews();
   }

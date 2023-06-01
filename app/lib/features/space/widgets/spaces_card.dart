@@ -13,7 +13,8 @@ final relatedSpacesProvider =
   final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
   final spaces = [];
   for (final related in relatedSpaces.children()) {
-    if (related.targetType().tag != RelationTargetTypeTag.ChatRoom) {
+    String targetType = related.targetType();
+    if (targetType != 'ChatRoom') {
       final roomId = related.roomId().toString();
       final space = await client.getSpace(roomId);
       spaces.add(space);
