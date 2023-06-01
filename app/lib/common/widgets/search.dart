@@ -2,16 +2,11 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class SearchWidget extends StatelessWidget {
+class Search extends StatelessWidget {
   final TextEditingController searchController;
   final Function(dynamic) onChanged;
-  final Function()? onReset;
-  const SearchWidget({
-    Key? key,
-    required this.searchController,
-    required this.onChanged,
-    this.onReset,
-  }) : super(key: key);
+  
+  const Search({super.key, required this.searchController, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -28,16 +23,15 @@ class SearchWidget extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: 'Search',
                 hintStyle: TextStyle(
-                  fontSize: 16,
-                  color: Theme.of(context).colorScheme.neutral4,
-                ),
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.neutral4,),
                 prefixIcon: const Icon(Atlas.magnifying_glass),
                 border: InputBorder.none,
                 focusedBorder: InputBorder.none,
               ),
               cursorColor: Colors.white,
               controller: searchController,
-              onChanged: (value) {
+              onChanged: (value){
                 onChanged(value);
               },
             ),

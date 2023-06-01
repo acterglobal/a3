@@ -1,11 +1,10 @@
 import 'dart:math';
 
 import 'package:acter/features/space/widgets/about_card.dart';
-import 'package:acter/features/space/widgets/links_card.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
-import 'package:acter/features/space/widgets/spaces_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
-
+import 'package:acter/features/space/widgets/links_card.dart';
+import 'package:acter/features/space/widgets/spaces_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -17,7 +16,6 @@ class SpaceOverview extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final widthCount = (MediaQuery.of(context).size.width ~/ 300).toInt();
-
     const int minCount = 2;
     // get platform of context.
     return Padding(

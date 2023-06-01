@@ -167,11 +167,11 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
 }
 
 class _NameWidget extends StatelessWidget {
+  final String? displayName;
+
   const _NameWidget({
     required this.displayName,
   });
-
-  final String? displayName;
 
   @override
   Widget build(BuildContext context) {

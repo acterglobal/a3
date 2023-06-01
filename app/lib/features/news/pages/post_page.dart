@@ -115,26 +115,19 @@ class _PostPageState extends ConsumerState<PostPage> {
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: selectedSpace != null
-                            ? ActerAvatar(
-                                mode: DisplayMode.Space,
-                                uniqueId: client.userId().toString(),
-                                avatarProviderFuture: remapToImage(
-                                  ref.watch(selectedSpaceProvider)!.avatar,
+                        child: ActerAvatar(
+                          mode: DisplayMode.Space,
+                          uniqueId: client.userId().toString(),
+                          avatarProviderFuture: selectedSpace != null &&
+                                  selectedSpace.avatar != null
+                              ? remapToImage(
+                                  selectedSpace.avatar!,
                                   cacheHeight: 120,
                                   cacheWidth: 120,
-                                ),
-                                size: 36,
-                              )
-                            : Container(
-                                height: 36,
-                                width: 36,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: Theme.of(context).colorScheme.neutral5,
-                                  shape: BoxShape.rectangle,
-                                ),
-                              ),
+                                )
+                              : null,
+                          size: 36,
+                        ),
                       ),
                       Text(
                         selectedSpace != null
