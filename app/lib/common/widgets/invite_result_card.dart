@@ -15,8 +15,10 @@ class InviteResultCard extends StatelessWidget {
       children: [
         ActerAvatar(
           mode: DisplayMode.User,
-          uniqueId: '',
+          uniqueId: username!,
+          displayName: displayName,
           size: 50,
+
         ),
         Container(
           margin: const EdgeInsets.only(left: 10),

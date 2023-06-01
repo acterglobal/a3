@@ -9,12 +9,15 @@ class SpaceCard extends StatelessWidget {
   final String? displayImage;
   final String? title;
   final String? subtitle;
+  final String? username;
+  final String? displayName;
+  final String? roomId;
 
   const SpaceCard({
     super.key,
     this.displayImage,
     this.title,
-    this.subtitle,
+    this.subtitle, this.username, this.displayName, this.roomId,
   });
 
   @override
@@ -35,7 +38,8 @@ class SpaceCard extends StatelessWidget {
                 children: [
                   ActerAvatar(
                     mode: DisplayMode.Space,
-                    uniqueId: '',
+                    uniqueId: roomId!,
+                    displayName: username,
                     size: 50,
                   ),
                   Text(
@@ -128,12 +132,12 @@ class SpaceCard extends StatelessWidget {
                       Column(
                         children: [
                           Text(
-                            'OceanKAN Global',
+                            title!,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
-                          const Text(
-                            '#oceankan:acter.global',
-                            style: TextStyle(color: Color(0xff79747E)),
+                           Text(
+                            subtitle!,
+                            style: const TextStyle(color: Color(0xff79747E)),
                           ),
                         ],
                       )
