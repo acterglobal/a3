@@ -105,7 +105,6 @@ final routes = [
           );
         },
       ),
-
       GoRoute(
         name: Routes.activities.name,
         path: Routes.activities.route,
@@ -127,6 +126,8 @@ final routes = [
           );
         },
       ),
+
+      
 
       GoRoute(
         name: Routes.search.name,

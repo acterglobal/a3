@@ -13,6 +13,8 @@ extension CustomColorScheme on ColorScheme {
   Color get neutral4 => const Color(0xFF898989);
   Color get neutral5 => const Color(0xFFB7B7B7);
   Color get neutral6 => const Color(0xFFE5E5E5);
+  Color get m3Primary => const Color(0xFFD0BCFF);
+  
 }
 
 const brandColorScheme = ColorScheme.dark(
