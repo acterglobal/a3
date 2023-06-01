@@ -59,7 +59,7 @@ features = [
     "markdown",
 #   "qrcode",
     "rustls-tls",
-    "sqlite",
+    "bundled-sqlite",
 ]
 
 [dependencies.matrix-sdk-base]
@@ -68,10 +68,6 @@ optional = true
 
 [dependencies.proc-macro2]
 version = "=1.0.55" # fix issue 'Your compiler does not support spans which is required by genco'
-
-[dependencies.rusqlite]
-version = "0.28.0"
-features = ["bundled"] # fetch sqlite3.lib for linking
 
 #   ----   WASM
 [target.'cfg(target_arch = "wasm32")'.dependencies]

@@ -32,7 +32,6 @@ dependencies = [
  "parse-env-filter",
  "proc-macro2",
  "ruma",
- "rusqlite",
  "sanitize-filename-reader-friendly",
  "serde",
  "serde_json",
