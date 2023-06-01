@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';

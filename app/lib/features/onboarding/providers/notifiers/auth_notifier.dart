@@ -30,7 +30,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
       Get.replace(ChatRoomController(client: client));
       Get.replace(ReceiptController(client: client));
       state = false;
-      context.goNamed(Routes.main.name);
     } catch (e) {
       debugPrint('$e');
       state = false;
