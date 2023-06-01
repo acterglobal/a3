@@ -82,8 +82,8 @@ use matrix_sdk::{
     },
 };
 use matrix_sdk_ui::timeline::{
-    EventTimelineItem, MemberProfileChange, MembershipChange, TimelineDetails,
-    TimelineItem, TimelineItemContent, VirtualTimelineItem,
+    EventTimelineItem, MemberProfileChange, MembershipChange, TimelineDetails, TimelineItem,
+    TimelineItemContent, VirtualTimelineItem,
 };
 use std::{collections::HashMap, sync::Arc};
 
