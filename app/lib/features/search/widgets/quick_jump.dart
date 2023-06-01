@@ -1,5 +1,6 @@
-import 'package:acter/features/settings/providers/labs_features.dart';
-import 'package:acter/main/routing/routes.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -5,19 +5,34 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 
-final membersProfileProvider =
-    FutureProvider.family<UserProfile, Member>((ref, member) async {
-  return await member.getProfile();
+class _MemberItem {
+  Future<FfiBufferUint8> avatar;
+  String? displayName;
+
+  _MemberItem({
+    required this.avatar,
+    required this.displayName,
+  });
+}
+
+final _memberItemProvider =
+    FutureProvider.family<_MemberItem, Member>((ref, member) async {
+  UserProfile profile = member.getProfile();
+  DispName dispName = await profile.getDisplayName();
+  return _MemberItem(
+    avatar: profile.getAvatar(),
+    displayName: dispName.text(),
+  );
 });
 
 class MemberAvatar extends ConsumerWidget {
   final Member member;
+
   const MemberAvatar({super.key, required this.member});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(membersProfileProvider(member));
-
+    final profile = ref.watch(_memberItemProvider(member));
     return profile.when(
       data: (data) {
         return Column(
@@ -35,10 +50,10 @@ class MemberAvatar extends ConsumerWidget {
                 uniqueId: member.userId().toString(),
                 size: 20,
                 avatarProviderFuture: remapToImage(
-                  data.getAvatar(),
+                  data.avatar,
                   cacheHeight: 54,
                 ),
-                displayName: data.getDisplayName(),
+                displayName: data.displayName,
               ),
             ),
           ],

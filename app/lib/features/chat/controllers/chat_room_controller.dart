@@ -11,6 +11,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         AudioDesc,
         Client,
         Conversation,
+        DispName,
         FfiBufferUint8,
         FileDesc,
         ImageDesc,
@@ -445,14 +446,15 @@ class ChatRoomController extends GetxController {
     for (int i = 0; i < activeMembers.length; i++) {
       String userId = activeMembers[i].userId().toString();
       ids.add('user-profile-$userId');
-      UserProfile profile = await activeMembers[i].getProfile();
+      UserProfile profile = activeMembers[i].getProfile();
       Map<String, dynamic> record = {};
-      if (profile.hasAvatar()) {
+      if (await profile.hasAvatar()) {
         avatars[userId] = profile.getThumbnail(62, 60);
         record['avatar'] = avatars[userId];
       }
-      String? name = profile.getDisplayName();
-      record['display'] = name;
+      DispName dispName = await profile.getDisplayName();
+      String? name = dispName.text();
+      record['display'] = name ?? userId;
       record['link'] = userId;
       if (name != null) {
         names[userId] = name;

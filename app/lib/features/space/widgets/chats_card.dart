@@ -1,12 +1,13 @@
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter/features/home/states/client_state.dart';
-import 'package:flutter/material.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/providers/chat_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:core';
+
+import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 final relatedChatsProvider =
     FutureProvider.family<List<Conversation>, String>((ref, spaceId) async {
@@ -25,6 +26,7 @@ final relatedChatsProvider =
 
 class ChatsCard extends ConsumerWidget {
   final String spaceId;
+
   const ChatsCard({super.key, required this.spaceId});
 
   @override
@@ -53,8 +55,8 @@ class ChatsCard extends ConsumerWidget {
                   itemCount: chats.length,
                   itemBuilder: ((context, index) {
                     final roomId = chats[index].getRoomId().toString();
-                    final profile =
-                        ref.watch(chatProfileDataProvider(chats[index]));
+                    final provider = chatProfileDataProvider(chats[index]);
+                    final profile = ref.watch(provider);
                     return profile.when(
                       data: (profile) => ListTile(
                         onTap: () => context.go('/chat/$roomId'),
@@ -78,7 +80,7 @@ class ChatsCard extends ConsumerWidget {
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 8),
                                   child: Text(
-                                    profile.displayName,
+                                    profile.displayName ?? roomId,
                                     style:
                                         Theme.of(context).textTheme.titleSmall,
                                   ),

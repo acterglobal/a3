@@ -1,16 +1,16 @@
 import 'dart:core';
 
 import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/features/home/states/client_state.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Future<ProfileData> getProfileData(Space space) async {
+Future<ProfileData> getSpaceProfileData(Space space) async {
   // FIXME: how to get informed about updates!?!
-  final profile = await space.getProfile();
-  final name = profile.getDisplayName();
-  final displayName = name ?? space.getRoomId().toString();
+  final profile = space.getProfile();
+  DispName name = await profile.getDisplayName();
+  final displayName = name.text();
   if (!profile.hasAvatar()) {
     return ProfileData(displayName, null);
   }
@@ -20,7 +20,7 @@ Future<ProfileData> getProfileData(Space space) async {
 
 final spaceProfileDataProvider =
     FutureProvider.family<ProfileData, Space>((ref, space) async {
-  return await getProfileData(space);
+  return await getSpaceProfileData(space);
 });
 
 final spacesProvider = FutureProvider<List<Space>>((ref) async {
@@ -50,12 +50,13 @@ final spaceItemsProvider = FutureProvider<List<SpaceItem>>((ref) async {
   final spaces = await client.spaces();
   List<SpaceItem> items = [];
   spaces.toList().forEach((element) async {
-    RoomProfile profile = await element.getProfile();
+    RoomProfile profile = element.getProfile();
     List<Member> members =
         await element.activeMembers().then((ffiList) => ffiList.toList());
+    DispName name = await profile.getDisplayName();
     var item = SpaceItem(
       roomId: element.getRoomId().toString(),
-      displayName: profile.getDisplayName(),
+      displayName: name.text(),
       activeMembers: members,
       avatar: profile.hasAvatar()
           ? profile.getThumbnail(120, 120)
@@ -103,6 +104,6 @@ final canonicalParentProvider =
 
   final client = ref.watch(clientProvider)!;
   final space = await client.getSpace(parent.roomId().toString());
-  final profile = await getProfileData(space);
+  final profile = await getSpaceProfileData(space);
   return SpaceWithProfileData(space, profile);
 });
