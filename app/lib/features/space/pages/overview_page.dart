@@ -4,6 +4,7 @@ import 'package:acter/features/space/widgets/about_card.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
 import 'package:acter/features/space/widgets/links_card.dart';
+import 'package:acter/features/space/widgets/space_card.dart';
 import 'package:acter/features/space/widgets/spaces_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,7 +29,8 @@ class SpaceOverview extends ConsumerWidget {
           EventsCard(spaceId: spaceIdOrAlias),
           LinksCard(spaceId: spaceIdOrAlias),
           ChatsCard(spaceId: spaceIdOrAlias),
-          SpacesCard(spaceId: spaceIdOrAlias),
+          RelatedSpacesCard(
+              cardTitle: 'Related Spaces', spaceId: spaceIdOrAlias),
         ],
       ),
     );
