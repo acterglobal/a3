@@ -3,13 +3,7 @@ use core::time::Duration;
 use log::info;
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
-    room::{
-        timeline::{
-            EventTimelineItem, MemberProfileChange, MembershipChange, TimelineDetails,
-            TimelineItem, TimelineItemContent, VirtualTimelineItem,
-        },
-        Room,
-    },
+    room::Room,
     ruma::{
         events::{
             call::{
@@ -86,6 +80,10 @@ use matrix_sdk::{
         },
         OwnedEventId, OwnedRoomId, OwnedUserId,
     },
+};
+use matrix_sdk_ui::timeline::{
+    EventTimelineItem, MemberProfileChange, MembershipChange, TimelineDetails,
+    TimelineItem, TimelineItemContent, VirtualTimelineItem,
 };
 use std::{collections::HashMap, sync::Arc};
 
@@ -2693,15 +2691,13 @@ impl RoomMessage {
         let sender = event.sender().to_string();
         let origin_server_ts: u64 = event.timestamp().get().into();
         let mut reactions: HashMap<String, ReactionDesc> = HashMap::new();
-        if let Some(evt) = event.as_remote() {
-            for (key, value) in evt.reactions().iter() {
-                let senders = value
-                    .senders()
-                    .map(|x| x.to_owned())
-                    .collect::<Vec<OwnedUserId>>();
-                let description = ReactionDesc::new(senders.len() as u32, senders);
-                reactions.insert(key.clone(), description);
-            }
+        for (key, value) in event.reactions().iter() {
+            let senders = value
+                .senders()
+                .map(|x| x.to_owned())
+                .collect::<Vec<OwnedUserId>>();
+            let description = ReactionDesc::new(senders.len() as u32, senders);
+            reactions.insert(key.clone(), description);
         }
 
         let event_item = match event.content() {

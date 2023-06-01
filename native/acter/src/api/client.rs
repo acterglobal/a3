@@ -12,7 +12,6 @@ use futures_signals::signal::{
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
-    locks::{Mutex, RwLock},
     room::Room as MatrixRoom,
     ruma::{device_id, OwnedDeviceId, OwnedUserId, RoomId, UserId},
     Client as MatrixClient, LoopCtrl, RumaApiError,
@@ -24,7 +23,10 @@ use std::{
         Arc,
     },
 };
-use tokio::task::JoinHandle;
+use tokio::{
+    sync::{Mutex, RwLock},
+    task::JoinHandle,
+};
 
 use super::{
     account::Account,

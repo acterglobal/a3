@@ -33,8 +33,9 @@ use matrix_sdk::{
         room::RoomType,
         EventId, Int, OwnedUserId, TransactionId, UInt, UserId,
     },
-    Client as MatrixClient, RoomState,
+    Client as MatrixClient, RoomMemberships, RoomState,
 };
+use matrix_sdk_ui::timeline::RoomExt;
 use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
 
 use super::{
@@ -93,7 +94,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let members = room
-                    .active_members()
+                    .members(RoomMemberships::ACTIVE)
                     .await
                     .context("No members")?
                     .into_iter()
@@ -114,7 +115,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let members = room
-                    .active_members_no_sync()
+                    .members_no_sync(RoomMemberships::ACTIVE)
                     .await
                     .context("No members")?
                     .into_iter()
@@ -630,7 +631,7 @@ impl Room {
             .spawn(async move {
                 let invited = my_client
                     .store()
-                    .get_invited_user_ids(room.room_id())
+                    .get_user_ids(room.room_id(), RoomMemberships::INVITE)
                     .await
                     .context("Couldn't get invited user ids from store")?;
                 let mut accounts: Vec<Account> = vec![];

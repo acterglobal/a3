@@ -56,16 +56,22 @@ workspace = true
 features = [
     "anyhow",
     "e2e-encryption",
-    "experimental-timeline",
     "markdown",
 #   "qrcode",
     "rustls-tls",
-    "sled",
+    "sqlite",
 ]
 
 [dependencies.matrix-sdk-base]
 workspace = true
 optional = true
+
+[dependencies.proc-macro2]
+version = "=1.0.55" # fix issue 'Your compiler does not support spans which is required by genco'
+
+[dependencies.rusqlite]
+version = "0.28.0"
+features = ["bundled"] # fetch sqlite3.lib for linking
 
 #   ----   WASM
 [target.'cfg(target_arch = "wasm32")'.dependencies]
@@ -74,7 +80,8 @@ wasm-bindgen-futures = "0.4.28"
 
 #   ----   non-WASM
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-matrix-sdk-sled = { workspace = true }
+matrix-sdk-sqlite = { workspace = true }
+matrix-sdk-ui = { workspace = true }
 
 #   ----   ANDROID
 [target.'cfg(target_os = "android")'.dependencies]

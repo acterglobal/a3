@@ -10,7 +10,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
-use matrix_sdk_sled::make_store_config;
+use matrix_sdk_sqlite::make_store_config;
 use std::collections::HashMap;
 
 #[derive(Parser, Debug)]
@@ -97,7 +97,7 @@ impl Mock {
 
                 let store_config = if self.persist {
                     let path = sanitize(".local", &username);
-                    make_store_config(path, Some(&username)).await?
+                    make_store_config(&path, Some(&username)).await?
                 } else {
                     StoreConfig::new().state_store(MemoryStore::new())
                 };

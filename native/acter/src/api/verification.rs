@@ -8,7 +8,6 @@ use matrix_sdk::{
     config::SyncSettings,
     encryption::verification::{Verification, VerificationRequest},
     event_handler::{Ctx, EventHandlerHandle},
-    locks::Mutex,
     ruma::{
         events::{
             forwarded_room_key::ToDeviceForwardedRoomKeyEvent,
@@ -45,6 +44,7 @@ use matrix_sdk::{
     Client as MatrixClient,
 };
 use std::sync::Arc;
+use tokio::sync::Mutex;
 
 use super::{client::Client, RUNTIME};
 

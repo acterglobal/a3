@@ -3,10 +3,7 @@ use eyeball_im::VectorDiff;
 use futures::{Stream, StreamExt};
 use log::info;
 use matrix_sdk::{
-    room::{
-        timeline::{PaginationOptions, Timeline, TimelineItem, VirtualTimelineItem},
-        Room,
-    },
+    room::Room,
     ruma::{
         events::{
             relation::Replacement,
@@ -15,6 +12,9 @@ use matrix_sdk::{
         EventId,
     },
     Client,
+};
+use matrix_sdk_ui::timeline::{
+    PaginationOptions, Timeline, TimelineItem, VirtualTimelineItem,
 };
 use std::sync::Arc;
 
