@@ -105,3 +105,19 @@ final canonicalParentProvider =
   final profile = await getSpaceProfileData(parentSpace);
   return SpaceWithProfileData(parentSpace, profile);
 });
+
+final relatedSpacesProvider =
+    FutureProvider.family<List<Space>, String>((ref, spaceId) async {
+  final client = ref.watch(clientProvider)!;
+  final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
+  final spaces = [];
+  for (final related in relatedSpaces.children()) {
+    String targetType = related.targetType();
+    if (targetType != 'ChatRoom') {
+      final roomId = related.roomId().toString();
+      final space = await client.getSpace(roomId);
+      spaces.add(space);
+    }
+  }
+  return List<Space>.from(spaces);
+});

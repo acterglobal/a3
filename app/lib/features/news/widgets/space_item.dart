@@ -6,13 +6,13 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SpaceCard extends ConsumerWidget {
+class SpaceItem extends ConsumerWidget {
   final String? title;
   final List<Member> members;
   final Future<FfiBufferUint8>? avatar;
   final Function()? callback;
 
-  const SpaceCard({
+  const SpaceItem({
     super.key,
     this.title,
     required this.members,

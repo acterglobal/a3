@@ -74,7 +74,6 @@ final spaceItemsProvider =
               displayName: info.displayName,
               mode: DisplayMode.Space,
               avatar: info.getAvatarImage(),
-              size: 24,
             ),
             label: Text(
               info.displayName ?? roomId,

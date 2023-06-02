@@ -1,29 +1,9 @@
 import 'dart:core';
-
-import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-
-final relatedChatsProvider =
-    FutureProvider.family<List<Conversation>, String>((ref, spaceId) async {
-  final client = ref.watch(clientProvider)!;
-  final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
-  final chats = [];
-  final children = relatedSpaces.children();
-  for (final related in children) {
-    if (related.targetType() == 'ChatRoom') {
-      final roomId = related.roomId().toString();
-      final room = await client.conversation(roomId);
-      chats.add(room);
-    }
-  }
-  return List<Conversation>.from(chats);
-});
 
 class ChatsCard extends ConsumerWidget {
   final String spaceId;
@@ -33,7 +13,6 @@ class ChatsCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(relatedChatsProvider(spaceId));
-
     return Card(
       elevation: 0,
       child: Padding(
@@ -70,12 +49,12 @@ class ChatsCard extends ConsumerWidget {
                                     ? CircleAvatar(
                                         foregroundImage:
                                             profile.getAvatarImage(),
-                                        radius: 24,
+                                        radius: 18,
                                       )
                                     : SvgPicture.asset(
                                         'assets/icon/acter.svg',
-                                        height: 24,
-                                        width: 24,
+                                        height: 32,
+                                        width: 32,
                                       ),
                                 Padding(
                                   padding:

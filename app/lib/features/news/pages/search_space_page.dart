@@ -1,7 +1,7 @@
 import 'package:acter/common/widgets/custom_app_bar.dart';
 import 'package:acter/common/widgets/search_widget.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
-import 'package:acter/features/news/widgets/space_card.dart';
+import 'package:acter/features/news/widgets/space_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -51,7 +51,7 @@ class _SearchSpacePageState extends ConsumerState<SearchSpacePage> {
                         itemCount: spaceItems.length,
                         itemBuilder: (context, index) => Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: SpaceCard(
+                          child: SpaceItem(
                             title: spaceItems[index].displayName,
                             members: spaceItems[index].activeMembers,
                             avatar: spaceItems[index].avatar,
@@ -73,7 +73,7 @@ class _SearchSpacePageState extends ConsumerState<SearchSpacePage> {
                         ref.read(searchSpaceProvider.notifier).items.length,
                     itemBuilder: (context, index) => Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: SpaceCard(
+                      child: SpaceItem(
                         title: ref
                             .read(searchSpaceProvider.notifier)
                             .items[index]
