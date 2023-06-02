@@ -14,10 +14,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: a809654e40f3cc144e33f031d88ba081f7e8e684
+      resolved-ref: e0a8b030d2ed4daabd2f9459ac3a9e1e570b8cbd
       url: "https://github.com/acterglobal/acter-avatar"
     source: git
-    version: "0.0.6"
+    version: "0.0.7"
   acter_flutter_sdk:
     dependency: "direct main"
     description:
@@ -931,10 +931,10 @@ packages:
     dependency: transitive
     description:
       name: logging
-      sha256: "04094f2eb032cbb06c6f6e8d3607edcfcb0455e2bb6cbc010cb01171dcb64e6d"
+      sha256: "623a88c9594aa774443aa3eb2d41807a48486b5613e67599fb4c41c0ad47c340"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.1"
+    version: "1.2.0"
   matcher:
     dependency: transitive
     description:
