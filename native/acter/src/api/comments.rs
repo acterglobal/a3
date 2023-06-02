@@ -8,8 +8,7 @@ use async_broadcast::Receiver;
 use core::time::Duration;
 use matrix_sdk::room::{Joined, Room};
 
-use super::{client::Client, RUNTIME};
-use crate::UserId;
+use super::{client::Client, UserId, RUNTIME};
 
 impl Client {
     pub async fn wait_for_comment(

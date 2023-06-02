@@ -83,8 +83,13 @@ async fn kyra_can_restore() -> Result<()> {
         .to_string();
     let tmp_dir = TempDir::new()?;
     let base_path = tmp_dir.path().to_str().expect("always works").to_string();
-    let (config, user_id) =
-        make_client_config(base_path, "@kyra".to_string(), homeserver_name, homeserver_url).await?;
+    let (config, user_id) = make_client_config(
+        base_path,
+        "@kyra".to_string(),
+        homeserver_name,
+        homeserver_url,
+    )
+    .await?;
 
     let (token, user_id) = {
         let client = login_new_client_under_config(
