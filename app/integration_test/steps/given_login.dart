@@ -23,6 +23,12 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
       // await context.world.appDriver.tap(sidebar);
       // await context.world.appDriver.waitForAppToSettle();
 
+      Finder skip = find.byKey(Keys.skipBtn);
+      context.expect(skip, findsOneWidget);
+
+      await context.world.appDriver.tap(skip);
+      await context.world.appDriver.waitForAppToSettle();
+
       Finder login = find.byKey(Keys.loginBtn);
       context.expect(login, findsOneWidget);
 
@@ -43,14 +49,13 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
       context.expect(submitBtn, findsOneWidget);
       await context.world.appDriver.tap(submitBtn);
       await context.world.appDriver.waitForAppToSettle();
-      bool verify =
-          await context.world.appDriver.isPresent(find.byKey(Keys.logoutBtn));
-      context.expect(true, verify);
+      context.expect(find.byKey(Keys.logoutBtn), findsOneWidget);
 
       // we are back on the news screen
       // On successful login, user avatar should appear.
-      // Finder userAvatar = find.byKey(Keys.avatar);
-      // context.expect(userAvatar, findsOneWidget);
+      Finder userAvatar = find.byKey(Keys.avatar);
+      context.expect(userAvatar, findsOneWidget);
+      await context.world.appDriver.waitForAppToSettle();
 
       // implement your code
     },

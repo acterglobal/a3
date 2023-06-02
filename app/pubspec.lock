@@ -14,10 +14,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: a809654e40f3cc144e33f031d88ba081f7e8e684
+      resolved-ref: e0a8b030d2ed4daabd2f9459ac3a9e1e570b8cbd
       url: "https://github.com/acterglobal/acter-avatar"
     source: git
-    version: "0.0.6"
+    version: "0.0.7"
   acter_flutter_sdk:
     dependency: "direct main"
     description:
@@ -587,6 +587,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  flutter_onboarding_slider:
+    dependency: "direct main"
+    description:
+      name: flutter_onboarding_slider
+      sha256: "88fbbb3db593f4171cc8fa17814d83de80d0d04d3265ad8e384ba21ab8d5681a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.9"
   flutter_parsed_text:
     dependency: transitive
     description:
@@ -923,10 +931,10 @@ packages:
     dependency: transitive
     description:
       name: logging
-      sha256: "04094f2eb032cbb06c6f6e8d3607edcfcb0455e2bb6cbc010cb01171dcb64e6d"
+      sha256: "623a88c9594aa774443aa3eb2d41807a48486b5613e67599fb4c41c0ad47c340"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.1"
+    version: "1.2.0"
   matcher:
     dependency: transitive
     description:
@@ -1371,10 +1379,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences
-      sha256: "858aaa72d8f61637d64e776aca82e1c67e6d9ee07979123c5d17115031c1b13b"
+      sha256: "16d3fb6b3692ad244a695c0183fca18cf81fd4b821664394a781de42386bf022"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.0"
+    version: "2.1.1"
   shared_preferences_android:
     dependency: transitive
     description:

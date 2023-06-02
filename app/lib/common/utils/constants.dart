@@ -23,6 +23,7 @@ class Keys {
   static const newsSectionBtn = Key('news-section-btn');
   static const sidebarBtn = Key('sidebar-btn');
   static const logoutBtn = Key('login-btn');
+  static const skipBtn = Key('skip-btn');
   static const loginBtn = Key('login-btn');
   static const avatar = Key('user-avatar');
   static const usernameLabel = Key('username-lbl');
@@ -30,6 +31,16 @@ class Keys {
 
 const inCI = bool.fromEnvironment(
   'CI',
+  defaultValue: false,
+);
+
+const canGuestLogin = bool.fromEnvironment(
+  'CAN_LOGIN_AS_GUEST',
+  defaultValue: false,
+);
+
+const autoGuestLogin = bool.fromEnvironment(
+  'AUTO_LOGIN_AS_GUEST',
   defaultValue: false,
 );
 
