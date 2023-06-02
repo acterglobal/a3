@@ -17,143 +17,166 @@ use super::{client::Client, spaces::Space, RUNTIME};
 
 impl Client {
     pub async fn wait_for_pin(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Pin> {
-        let AnyActerModel::Pin(content) = self.wait_for(key.clone(), timeout).await? else {
-            bail!("{key} is not a pin");
-        };
-        let room = self
-            .core
-            .client()
-            .get_room(content.room_id())
-            .context("Room not found")?;
-        Ok(Pin {
-            client: self.clone(),
-            room,
-            content,
-        })
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let AnyActerModel::Pin(content) = client.wait_for(key.clone(), timeout).await? else {
+                    bail!("{key} is not a pin");
+                };
+                let room = client
+                    .core
+                    .client()
+                    .get_room(content.room_id())
+                    .context("Room not found")?;
+                Ok(Pin {
+                    client: client.clone(),
+                    room,
+                    content,
+                })
+            })
+            .await?
     }
 
     pub async fn pins(&self) -> Result<Vec<Pin>> {
         let mut pins = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
-        for mdl in self
-            .store()
-            .get_list(KEYS::PINS)
-            .await
-            .context("Couldn't get pin list from store")?
-        {
-            if let AnyActerModel::Pin(t) = mdl {
-                let room_id = t.room_id().to_owned();
-                let room = match rooms_map.entry(room_id) {
-                    Entry::Occupied(t) => t.get().clone(),
-                    Entry::Vacant(e) => {
-                        if let Some(room) = client.get_room(e.key()) {
-                            e.insert(room.clone());
-                            room
-                        } else {
-                            /// User not part of the room anymore, ignore
-                            continue;
-                        }
+        RUNTIME
+            .spawn(async move {
+                for mdl in client
+                    .store()
+                    .get_list(KEYS::PINS)
+                    .await
+                    .context("Couldn't get pin list from store")?
+                {
+                    if let AnyActerModel::Pin(t) = mdl {
+                        let room_id = t.room_id().to_owned();
+                        let room = match rooms_map.entry(room_id) {
+                            Entry::Occupied(t) => t.get().clone(),
+                            Entry::Vacant(e) => {
+                                if let Some(room) = client.get_room(e.key()) {
+                                    e.insert(room.clone());
+                                    room
+                                } else {
+                                    /// User not part of the room anymore, ignore
+                                    continue;
+                                }
+                            }
+                        };
+                        pins.push(Pin {
+                            client: client.clone(),
+                            room,
+                            content: t,
+                        })
+                    } else {
+                        tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
                     }
-                };
-                pins.push(Pin {
-                    client: client.clone(),
-                    room,
-                    content: t,
-                })
-            } else {
-                tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
-            }
-        }
-        Ok(pins)
+                }
+                Ok(pins)
+            })
+            .await?
     }
 
     pub async fn pinned_links(&self) -> Result<Vec<Pin>> {
         let mut pins = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
-        for mdl in self
-            .store()
-            .get_list(KEYS::PINS)
-            .await
-            .context("Couldn't get pin list from store")?
-        {
-            if let AnyActerModel::Pin(pin) = mdl {
-                if !pin.is_link() {
-                    continue;
-                }
-                let room_id = pin.room_id().to_owned();
-                let room = match rooms_map.entry(room_id) {
-                    Entry::Occupied(t) => t.get().clone(),
-                    Entry::Vacant(e) => {
-                        if let Some(room) = client.get_room(e.key()) {
-                            e.insert(room.clone());
-                            room
-                        } else {
-                            /// User not part of the room anymore, ignore
+        RUNTIME
+            .spawn(async move {
+                for mdl in client
+                    .store()
+                    .get_list(KEYS::PINS)
+                    .await
+                    .context("Couldn't get pin list from store")?
+                {
+                    if let AnyActerModel::Pin(pin) = mdl {
+                        if !pin.is_link() {
                             continue;
                         }
+                        let room_id = pin.room_id().to_owned();
+                        let room = match rooms_map.entry(room_id) {
+                            Entry::Occupied(t) => t.get().clone(),
+                            Entry::Vacant(e) => {
+                                if let Some(room) = client.get_room(e.key()) {
+                                    e.insert(room.clone());
+                                    room
+                                } else {
+                                    /// User not part of the room anymore, ignore
+                                    continue;
+                                }
+                            }
+                        };
+                        pins.push(Pin {
+                            client: client.clone(),
+                            room,
+                            content: pin,
+                        })
+                    } else {
+                        tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
                     }
-                };
-                pins.push(Pin {
-                    client: client.clone(),
-                    room,
-                    content: pin,
-                })
-            } else {
-                tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
-            }
-        }
-        Ok(pins)
+                }
+                Ok(pins)
+            })
+            .await?
     }
 }
 
 impl Space {
     pub async fn pins(&self) -> Result<Vec<Pin>> {
         let mut pins = Vec::new();
-        let room_id = self.room_id();
-        for mdl in self
-            .client
-            .store()
-            .get_list(&format!("{room_id}::{}", KEYS::PINS))
+        let room_id = self.room_id().to_owned();
+        let client = self.client.clone();
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                for mdl in client
+                    .store()
+                    .get_list(&format!("{room_id}::{}", KEYS::PINS))
+                    .await?
+                {
+                    if let AnyActerModel::Pin(t) = mdl {
+                        pins.push(Pin {
+                            client: client.clone(),
+                            room: room.clone(),
+                            content: t,
+                        })
+                    } else {
+                        tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
+                    }
+                }
+                Ok(pins)
+            })
             .await?
-        {
-            if let AnyActerModel::Pin(t) = mdl {
-                pins.push(Pin {
-                    client: self.client.clone(),
-                    room: self.room.clone(),
-                    content: t,
-                })
-            } else {
-                tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
-            }
-        }
-        Ok(pins)
     }
 
     pub async fn pinned_links(&self) -> Result<Vec<Pin>> {
         let mut pins = Vec::new();
-        let room_id = self.room_id();
-        for mdl in self
-            .client
-            .store()
-            .get_list(&format!("{room_id}::{}", KEYS::PINS))
-            .await
-            .context("Couldn't get pin list from store")?
-        {
-            if let AnyActerModel::Pin(pin) = mdl {
-                if pin.is_link() {
-                    pins.push(Pin {
-                        client: self.client.clone(),
-                        room: self.room.clone(),
-                        content: pin,
-                    })
+        let room_id = self.room_id().to_owned();
+        let client = self.client.clone();
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                for mdl in client
+                    .store()
+                    .get_list(&format!("{room_id}::{}", KEYS::PINS))
+                    .await
+                    .context("Couldn't get pin list from store")?
+                {
+                    if let AnyActerModel::Pin(pin) = mdl {
+                        if pin.is_link() {
+                            pins.push(Pin {
+                                client: client.clone(),
+                                room: room.clone(),
+                                content: pin,
+                            })
+                        }
+                    } else {
+                        tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
+                    }
                 }
-            } else {
-                tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
-            }
-        }
-        Ok(pins)
+                Ok(pins)
+            })
+            .await?
     }
 }
 

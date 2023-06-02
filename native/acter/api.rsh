@@ -1025,9 +1025,6 @@ object Space {
     /// what is the description / topic
     fn topic() -> Option<string>;
 
-    /// whether this an acter space
-    fn is_acter_space() -> Future<bool>;
-
     /// the members currently in the space
     fn active_members() -> Future<Result<Vec<Member>>>;
 
@@ -1042,6 +1039,9 @@ object Space {
 
     /// the Tasks lists of this Space
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
+
+    /// the Tasks list of this Space
+    fn task_list(key: string) -> Future<Result<TaskList>>;
 
     /// task list draft builder
     fn task_list_draft() -> Result<TaskListDraft>;
@@ -1195,12 +1195,6 @@ object Client {
     /// roomId or room alias;
     fn get_space(id_or_alias: string) -> Future<Result<Space>>;
 
-    /// Get the latest News for the client
-    fn latest_news_entries(count: u32) -> Future<Result<Vec<NewsEntry>>>;
-
-    /// Get the Pins for the client
-    fn pins() -> Future<Result<Vec<ActerPin>>>;
-
     /// Get the Pinned Links for the client
     fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
 
@@ -1234,9 +1228,6 @@ object Client {
     /// Return the message receiver
     fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
 
-    /// the Tasks lists of this Space
-    fn task_lists() -> Future<Result<Vec<TaskList>>>;
-
     /// create default space
     fn create_acter_space(settings: CreateSpaceSettings) -> Future<Result<RoomId>>;
 
@@ -1246,11 +1237,29 @@ object Client {
     /// Fetch the Comment or use its event_id to wait for it to come down the wire
     fn wait_for_comment(key: string, timeout: Option<EfkDuration>) -> Future<Result<Comment>>;
 
+    /// Fetch the NewsEntry or use its event_id to wait for it to come down the wire
+    fn wait_for_news(key: string, timeout: Option<EfkDuration>) -> Future<Result<NewsEntry>>;
+
+    /// Get the latest News for the client
+    fn latest_news_entries(count: u32) -> Future<Result<Vec<NewsEntry>>>;
+
+    /// Fetch the ActerPin or use its event_id to wait for it to come down the wire
+    fn wait_for_pin(key: string, timeout: Option<EfkDuration>) -> Future<Result<ActerPin>>;
+
+    /// Get the Pins for the client
+    fn pins() -> Future<Result<Vec<ActerPin>>>;
+
     /// Fetch the Tasklist or use its event_id to wait for it to come down the wire
     fn wait_for_task_list(key: string, timeout: Option<EfkDuration>) -> Future<Result<TaskList>>;
 
+    /// the Tasks lists for the client
+    fn task_lists() -> Future<Result<Vec<TaskList>>>;
+
     /// Fetch the Task or use its event_id to wait for it to come down the wire
     fn wait_for_task(key: string, timeout: Option<EfkDuration>) -> Future<Result<Task>>;
+
+    /// the Tasks list for the client
+    fn task_list(key: string) -> Future<Result<TaskList>>;
 
     /// get all calendar events
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;

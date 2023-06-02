@@ -3751,34 +3751,6 @@ class Api {
     return tmp7;
   }
 
-  bool? __spaceIsActerSpaceFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _spaceIsActerSpaceFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    if (tmp8 == 0) {
-      return null;
-    }
-    final tmp7 = tmp9 > 0;
-    return tmp7;
-  }
-
   FfiListMember? __spaceActiveMembersFuturePoll(
     int boxed,
     int postCobject,
@@ -3955,6 +3927,51 @@ class Api {
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp14 = FfiListTaskList._(this, tmp13_1);
     final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  TaskList? __spaceTaskListFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceTaskListFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_TaskList");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = TaskList._(this, tmp13_1);
     return tmp7;
   }
 
@@ -4921,98 +4938,6 @@ class Api {
     return tmp7;
   }
 
-  FfiListNewsEntry? __clientLatestNewsEntriesFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _clientLatestNewsEntriesFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListNewsEntry");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListNewsEntry._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiListActerPin? __clientPinsFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _clientPinsFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListActerPin");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListActerPin._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
   FfiListActerPin? __clientPinnedLinksFuturePoll(
     int boxed,
     int postCobject,
@@ -5189,52 +5114,6 @@ class Api {
     return tmp7;
   }
 
-  FfiListTaskList? __clientTaskListsFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _clientTaskListsFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListTaskList");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListTaskList._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
   RoomId? __clientCreateActerSpaceFuturePoll(
     int boxed,
     int postCobject,
@@ -5325,6 +5204,188 @@ class Api {
     return tmp7;
   }
 
+  NewsEntry? __clientWaitForNewsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientWaitForNewsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_NewsEntry");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = NewsEntry._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiListNewsEntry? __clientLatestNewsEntriesFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientLatestNewsEntriesFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListNewsEntry");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListNewsEntry._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  ActerPin? __clientWaitForPinFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientWaitForPinFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ActerPin");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ActerPin._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiListActerPin? __clientPinsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientPinsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListActerPin");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListActerPin._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   TaskList? __clientWaitForTaskListFuturePoll(
     int boxed,
     int postCobject,
@@ -5370,6 +5431,52 @@ class Api {
     return tmp7;
   }
 
+  FfiListTaskList? __clientTaskListsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientTaskListsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListTaskList");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListTaskList._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   Task? __clientWaitForTaskFuturePoll(
     int boxed,
     int postCobject,
@@ -5412,6 +5519,51 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_Task");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = Task._(this, tmp13_1);
+    return tmp7;
+  }
+
+  TaskList? __clientTaskListFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientTaskListFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_TaskList");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = TaskList._(this, tmp13_1);
     return tmp7;
   }
 
@@ -11766,16 +11918,6 @@ class Api {
       _SpaceTopicReturn Function(
     int,
   )>();
-  late final _spaceIsActerSpacePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__Space_is_acter_space");
-
-  late final _spaceIsActerSpace = _spaceIsActerSpacePtr.asFunction<
-      int Function(
-    int,
-  )>();
   late final _spaceActiveMembersPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -11830,6 +11972,22 @@ class Api {
 
   late final _spaceTaskLists = _spaceTaskListsPtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _spaceTaskListPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Space_task_list");
+
+  late final _spaceTaskList = _spaceTaskListPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
     int,
   )>();
   late final _spaceTaskListDraftPtr = _lookup<
@@ -12455,28 +12613,6 @@ class Api {
     int,
     int,
   )>();
-  late final _clientLatestNewsEntriesPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Uint32,
-  )>>("__Client_latest_news_entries");
-
-  late final _clientLatestNewsEntries = _clientLatestNewsEntriesPtr.asFunction<
-      int Function(
-    int,
-    int,
-  )>();
-  late final _clientPinsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__Client_pins");
-
-  late final _clientPins = _clientPinsPtr.asFunction<
-      int Function(
-    int,
-  )>();
   late final _clientPinnedLinksPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -12602,16 +12738,6 @@ class Api {
       _ClientIncomingMessageRxReturn Function(
     int,
   )>();
-  late final _clientTaskListsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__Client_task_lists");
-
-  late final _clientTaskLists = _clientTaskListsPtr.asFunction<
-      int Function(
-    int,
-  )>();
   late final _clientCreateActerSpacePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -12660,6 +12786,68 @@ class Api {
     int,
     int,
   )>();
+  late final _clientWaitForNewsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+  )>>("__Client_wait_for_news");
+
+  late final _clientWaitForNews = _clientWaitForNewsPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientLatestNewsEntriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Uint32,
+  )>>("__Client_latest_news_entries");
+
+  late final _clientLatestNewsEntries = _clientLatestNewsEntriesPtr.asFunction<
+      int Function(
+    int,
+    int,
+  )>();
+  late final _clientWaitForPinPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+  )>>("__Client_wait_for_pin");
+
+  late final _clientWaitForPin = _clientWaitForPinPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientPinsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Client_pins");
+
+  late final _clientPins = _clientPinsPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _clientWaitForTaskListPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -12680,6 +12868,16 @@ class Api {
     int,
     int,
   )>();
+  late final _clientTaskListsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Client_task_lists");
+
+  late final _clientTaskLists = _clientTaskListsPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _clientWaitForTaskPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -12695,6 +12893,22 @@ class Api {
       int Function(
     int,
     int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientTaskListPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_task_list");
+
+  late final _clientTaskList = _clientTaskListPtr.asFunction<
+      int Function(
     int,
     int,
     int,
@@ -14219,21 +14433,6 @@ class Api {
     int,
     int,
   )>();
-  late final _spaceIsActerSpaceFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceIsActerSpaceFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Space_is_acter_space_future_poll");
-
-  late final _spaceIsActerSpaceFuturePoll =
-      _spaceIsActerSpaceFuturePollPtr.asFunction<
-          _SpaceIsActerSpaceFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
   late final _spaceActiveMembersFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _SpaceActiveMembersFuturePollReturn Function(
@@ -14290,6 +14489,20 @@ class Api {
   late final _spaceTaskListsFuturePoll =
       _spaceTaskListsFuturePollPtr.asFunction<
           _SpaceTaskListsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceTaskListFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceTaskListFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Space_task_list_future_poll");
+
+  late final _spaceTaskListFuturePoll = _spaceTaskListFuturePollPtr.asFunction<
+      _SpaceTaskListFuturePollReturn Function(
     int,
     int,
     int,
@@ -14606,35 +14819,6 @@ class Api {
     int,
     int,
   )>();
-  late final _clientLatestNewsEntriesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientLatestNewsEntriesFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Client_latest_news_entries_future_poll");
-
-  late final _clientLatestNewsEntriesFuturePoll =
-      _clientLatestNewsEntriesFuturePollPtr.asFunction<
-          _ClientLatestNewsEntriesFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
-  late final _clientPinsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientPinsFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Client_pins_future_poll");
-
-  late final _clientPinsFuturePoll = _clientPinsFuturePollPtr.asFunction<
-      _ClientPinsFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
   late final _clientPinnedLinksFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientPinnedLinksFuturePollReturn Function(
@@ -14694,21 +14878,6 @@ class Api {
     int,
     int,
   )>();
-  late final _clientTaskListsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientTaskListsFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Client_task_lists_future_poll");
-
-  late final _clientTaskListsFuturePoll =
-      _clientTaskListsFuturePollPtr.asFunction<
-          _ClientTaskListsFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
   late final _clientCreateActerSpaceFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientCreateActerSpaceFuturePollReturn Function(
@@ -14739,6 +14908,65 @@ class Api {
     int,
     int,
   )>();
+  late final _clientWaitForNewsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientWaitForNewsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_wait_for_news_future_poll");
+
+  late final _clientWaitForNewsFuturePoll =
+      _clientWaitForNewsFuturePollPtr.asFunction<
+          _ClientWaitForNewsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientLatestNewsEntriesFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientLatestNewsEntriesFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_latest_news_entries_future_poll");
+
+  late final _clientLatestNewsEntriesFuturePoll =
+      _clientLatestNewsEntriesFuturePollPtr.asFunction<
+          _ClientLatestNewsEntriesFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientWaitForPinFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientWaitForPinFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_wait_for_pin_future_poll");
+
+  late final _clientWaitForPinFuturePoll =
+      _clientWaitForPinFuturePollPtr.asFunction<
+          _ClientWaitForPinFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientPinsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientPinsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_pins_future_poll");
+
+  late final _clientPinsFuturePoll = _clientPinsFuturePollPtr.asFunction<
+      _ClientPinsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _clientWaitForTaskListFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientWaitForTaskListFuturePollReturn Function(
@@ -14754,6 +14982,21 @@ class Api {
     int,
     int,
   )>();
+  late final _clientTaskListsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientTaskListsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_task_lists_future_poll");
+
+  late final _clientTaskListsFuturePoll =
+      _clientTaskListsFuturePollPtr.asFunction<
+          _ClientTaskListsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _clientWaitForTaskFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientWaitForTaskFuturePollReturn Function(
@@ -14765,6 +15008,21 @@ class Api {
   late final _clientWaitForTaskFuturePoll =
       _clientWaitForTaskFuturePollPtr.asFunction<
           _ClientWaitForTaskFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientTaskListFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientTaskListFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_task_list_future_poll");
+
+  late final _clientTaskListFuturePoll =
+      _clientTaskListFuturePollPtr.asFunction<
+          _ClientTaskListFuturePollReturn Function(
     int,
     int,
     int,
@@ -24688,21 +24946,6 @@ class Space {
     return tmp2;
   }
 
-  /// whether this an acter space
-  Future<bool> isActerSpace() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._spaceIsActerSpace(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Space_is_acter_space_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__spaceIsActerSpaceFuturePoll);
-    return tmp2;
-  }
-
   /// the members currently in the space
   Future<FfiListMember> activeMembers() {
     var tmp0 = 0;
@@ -24791,6 +25034,37 @@ class Space {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__spaceTaskListsFuturePoll);
     return tmp2;
+  }
+
+  /// the Tasks list of this Space
+  Future<TaskList> taskList(
+    String key,
+  ) {
+    final tmp1 = key;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._spaceTaskList(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Space_task_list_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceTaskListFuturePoll);
+    return tmp6;
   }
 
   /// task list draft builder
@@ -26121,44 +26395,6 @@ class Client {
     return tmp6;
   }
 
-  /// Get the latest News for the client
-  Future<FfiListNewsEntry> latestNewsEntries(
-    int count,
-  ) {
-    final tmp1 = count;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1;
-    final tmp3 = _api._clientLatestNewsEntries(
-      tmp0,
-      tmp2,
-    );
-    final tmp5 = tmp3;
-    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 =
-        _Box(_api, tmp5_0, "__Client_latest_news_entries_future_drop");
-    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 =
-        _nativeFuture(tmp5_1, _api.__clientLatestNewsEntriesFuturePoll);
-    return tmp4;
-  }
-
-  /// Get the Pins for the client
-  Future<FfiListActerPin> pins() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._clientPins(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Client_pins_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__clientPinsFuturePoll);
-    return tmp2;
-  }
-
   /// Get the Pinned Links for the client
   Future<FfiListActerPin> pinnedLinks() {
     var tmp0 = 0;
@@ -26390,21 +26626,6 @@ class Client {
     return tmp2;
   }
 
-  /// the Tasks lists of this Space
-  Future<FfiListTaskList> taskLists() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._clientTaskLists(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Client_task_lists_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__clientTaskListsFuturePoll);
-    return tmp2;
-  }
-
   /// create default space
   Future<RoomId> createActerSpace(
     CreateSpaceSettings settings,
@@ -26503,6 +26724,132 @@ class Client {
     return tmp10;
   }
 
+  /// Fetch the NewsEntry or use its event_id to wait for it to come down the wire
+  Future<NewsEntry> waitForNews(
+    String key,
+    EfkDuration? timeout,
+  ) {
+    final tmp1 = key;
+    final tmp5 = timeout;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      tmp8 = tmp7._box.move();
+    }
+    final tmp9 = _api._clientWaitForNews(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__Client_wait_for_news_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__clientWaitForNewsFuturePoll);
+    return tmp10;
+  }
+
+  /// Get the latest News for the client
+  Future<FfiListNewsEntry> latestNewsEntries(
+    int count,
+  ) {
+    final tmp1 = count;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._clientLatestNewsEntries(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__Client_latest_news_entries_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 =
+        _nativeFuture(tmp5_1, _api.__clientLatestNewsEntriesFuturePoll);
+    return tmp4;
+  }
+
+  /// Fetch the ActerPin or use its event_id to wait for it to come down the wire
+  Future<ActerPin> waitForPin(
+    String key,
+    EfkDuration? timeout,
+  ) {
+    final tmp1 = key;
+    final tmp5 = timeout;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      tmp8 = tmp7._box.move();
+    }
+    final tmp9 = _api._clientWaitForPin(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__Client_wait_for_pin_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__clientWaitForPinFuturePoll);
+    return tmp10;
+  }
+
+  /// Get the Pins for the client
+  Future<FfiListActerPin> pins() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientPins(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_pins_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientPinsFuturePoll);
+    return tmp2;
+  }
+
   /// Fetch the Tasklist or use its event_id to wait for it to come down the wire
   Future<TaskList> waitForTaskList(
     String key,
@@ -26549,6 +26896,21 @@ class Client {
     return tmp10;
   }
 
+  /// the Tasks lists for the client
+  Future<FfiListTaskList> taskLists() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientTaskLists(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_task_lists_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientTaskListsFuturePoll);
+    return tmp2;
+  }
+
   /// Fetch the Task or use its event_id to wait for it to come down the wire
   Future<Task> waitForTask(
     String key,
@@ -26591,6 +26953,37 @@ class Client {
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
     final tmp10 = _nativeFuture(tmp11_1, _api.__clientWaitForTaskFuturePoll);
     return tmp10;
+  }
+
+  /// the Tasks list for the client
+  Future<TaskList> taskList(
+    String key,
+  ) {
+    final tmp1 = key;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientTaskList(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Client_task_list_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__clientTaskListFuturePoll);
+    return tmp6;
   }
 
   /// get all calendar events
@@ -30253,13 +30646,6 @@ class _SpaceSpaceRelationsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _SpaceIsActerSpaceFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-}
-
 class _SpaceActiveMembersFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -30306,6 +30692,21 @@ class _SpaceIsEncryptedFuturePollReturn extends ffi.Struct {
 }
 
 class _SpaceTaskListsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceTaskListFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -30643,36 +31044,6 @@ class _ClientGetSpaceFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientLatestNewsEntriesFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _ClientPinsFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
 class _ClientPinnedLinksFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -30733,21 +31104,6 @@ class _ClientLogoutFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientTaskListsFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
 class _ClientCreateActerSpaceFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -30778,6 +31134,66 @@ class _ClientWaitForCommentFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientWaitForNewsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientLatestNewsEntriesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientWaitForPinFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientPinsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ClientWaitForTaskListFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -30793,7 +31209,37 @@ class _ClientWaitForTaskListFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientTaskListsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ClientWaitForTaskFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientTaskListFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

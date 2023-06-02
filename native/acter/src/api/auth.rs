@@ -53,12 +53,12 @@ pub async fn guest_client(
     default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let config = platform::new_client_config(base_path, default_homeserver_name, true)
-        .await
-        .context("building failed in client")?
-        .homeserver_url(default_homeserver_url);
     RUNTIME
         .spawn(async move {
+            let config = platform::new_client_config(base_path, default_homeserver_name, true)
+                .await
+                .context("building failed in client")?
+                .homeserver_url(default_homeserver_url);
             let client = config.build().await.context("Couldn't set display name")?;
             let mut request = register::v3::Request::new();
             request.kind = register::RegistrationKind::Guest;
@@ -106,32 +106,28 @@ pub async fn login_with_token_under_config(
     } = serde_json::from_str(&restore_token).context("Deserializing Restore Token failed")?;
     let user_id = session.user_id.to_string();
     // First we need to log in.
-    RUNTIME
-        .spawn(async move {
-            let client = config
-                .homeserver_url(homeurl)
-                .build()
-                .await
-                .context("building client from config failed")?;
-            client
-                .restore_session(session)
-                .await
-                .context("restoring failed")?;
-            let state = ClientStateBuilder::default()
-                .is_guest(is_guest)
-                .build()
-                .context("building client state builder failed")?;
-            let c = Client::new(client.clone(), state)
-                .await
-                .context("Couldn't create client")?;
-            info!(
-                "Successfully logged in user {:?}, device {:?} with token.",
-                user_id,
-                client.device_id(),
-            );
-            Ok(c)
-        })
-        .await?
+    let client = config
+        .homeserver_url(homeurl)
+        .build()
+        .await
+        .context("building client from config failed")?;
+    client
+        .restore_session(session)
+        .await
+        .context("restoring failed")?;
+    let state = ClientStateBuilder::default()
+        .is_guest(is_guest)
+        .build()
+        .context("building client state builder failed")?;
+    let c = Client::new(client.clone(), state)
+        .await
+        .context("Couldn't create client")?;
+    info!(
+        "Successfully logged in user {:?}, device {:?} with token.",
+        user_id,
+        client.device_id(),
+    );
+    Ok(c)
 }
 
 pub async fn login_with_token(base_path: String, restore_token: String) -> Result<Client> {
@@ -141,10 +137,14 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         is_guest,
     } = serde_json::from_str(&restore_token).context("Deserializing Restore Token failed")?;
     let user_id = session.user_id.to_string();
-    let config = platform::new_client_config(base_path, user_id.clone(), false)
-        .await
-        .context("can't build client")?;
-    login_with_token_under_config(restore_token, config).await
+    RUNTIME
+        .spawn(async move {
+            let config = platform::new_client_config(base_path, user_id.clone(), false)
+                .await
+                .context("can't build client")?;
+            login_with_token_under_config(restore_token, config).await
+        })
+        .await?
 }
 
 // for only integration test, not api.rsh
@@ -154,34 +154,30 @@ pub async fn login_new_client_under_config(
     password: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    RUNTIME
-        .spawn(async move {
-            let client = config.build().await.context("buidling failed in client")?;
-            let mut login_builder = client.login_username(&user_id, &password);
-            let name; // to capture the inner string for login-builder lifetime
-            if let Some(s) = device_name {
-                name = s;
-                login_builder = login_builder.initial_device_display_name(name.as_str())
-            };
-            login_builder
-                .send()
-                .await
-                .context("Couldn't send login request")?;
-            let state = ClientStateBuilder::default()
-                .is_guest(false)
-                .build()
-                .context("building failed in client state")?;
-            let c = Client::new(client.clone(), state)
-                .await
-                .context("Couldn't create client")?;
-            info!(
-                "Successfully logged in user {:?}, device {:?}",
-                user_id,
-                client.device_id(),
-            );
-            Ok(c)
-        })
-        .await?
+    let client = config.build().await.context("buidling failed in client")?;
+    let mut login_builder = client.login_username(&user_id, &password);
+    let name; // to capture the inner string for login-builder lifetime
+    if let Some(s) = device_name {
+        name = s;
+        login_builder = login_builder.initial_device_display_name(name.as_str())
+    };
+    login_builder
+        .send()
+        .await
+        .context("Couldn't send login request")?;
+    let state = ClientStateBuilder::default()
+        .is_guest(false)
+        .build()
+        .context("building failed in client state")?;
+    let c = Client::new(client.clone(), state)
+        .await
+        .context("Couldn't create client")?;
+    info!(
+        "Successfully logged in user {:?}, device {:?}",
+        user_id,
+        client.device_id(),
+    );
+    Ok(c)
 }
 
 pub async fn smart_login(
@@ -192,15 +188,19 @@ pub async fn smart_login(
     default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let (config, user_id) = make_client_config(
-        base_path,
-        &username,
-        &default_homeserver_name,
-        &default_homeserver_url,
-    )
-    .await
-    .context("Couldn't make client config")?;
-    login_new_client_under_config(config, user_id, password, device_name).await
+    RUNTIME
+        .spawn(async move {
+            let (config, user_id) = make_client_config(
+                base_path,
+                &username,
+                &default_homeserver_name,
+                &default_homeserver_url,
+            )
+            .await
+            .context("Couldn't make client config")?;
+            login_new_client_under_config(config, user_id, password, device_name).await
+        })
+        .await?
 }
 
 pub async fn login_new_client(
@@ -211,15 +211,19 @@ pub async fn login_new_client(
     default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let (config, user_id) = make_client_config(
-        base_path,
-        &username,
-        &default_homeserver_name,
-        &default_homeserver_url,
-    )
-    .await
-    .context("Couldn't make client config")?;
-    login_new_client_under_config(config, user_id, password, device_name).await
+    RUNTIME
+        .spawn(async move {
+            let (config, user_id) = make_client_config(
+                base_path,
+                &username,
+                &default_homeserver_name,
+                &default_homeserver_url,
+            )
+            .await
+            .context("Couldn't make client config")?;
+            login_new_client_under_config(config, user_id, password, device_name).await
+        })
+        .await?
 }
 
 pub async fn register_with_token(
@@ -231,16 +235,15 @@ pub async fn register_with_token(
     default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let (config, user_id) = make_client_config(
-        base_path,
-        &username,
-        &default_homeserver_name,
-        &default_homeserver_url,
-    )
-    .await?;
-    // First we need to log in.
     RUNTIME
         .spawn(async move {
+            let (config, user_id) = make_client_config(
+                base_path,
+                &username,
+                &default_homeserver_name,
+                &default_homeserver_url,
+            )
+            .await?;
             let client = config.build().await.context("building failed in client")?;
             let Err(err) = client.register(register::v3::Request::new()).await else {
                 bail!("Server is not set up to allow registration.");
