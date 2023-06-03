@@ -94,7 +94,7 @@ final relatedChatsProvider =
 
 // Member Providers
 final memberProfileProvider =
-    FutureProvider.family<ProfileData, Member>((ref, member) async {
+    FutureProvider.family.autoDispose<ProfileData, Member>((ref, member) async {
   UserProfile profile = member.getProfile();
   DispName dispName = await profile.getDisplayName();
   final avatar = await profile.getAvatar();

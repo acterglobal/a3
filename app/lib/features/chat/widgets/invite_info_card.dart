@@ -58,12 +58,6 @@ class _InviteInfoCardState extends State<InviteInfoCard> {
             leading: ActerAvatar(
               mode: DisplayMode.User,
               uniqueId: myId,
-              avatarProviderFuture: avatar != null
-                  ? remapToImage(
-                      avatar!,
-                      cacheHeight: 54,
-                    )
-                  : null,
               displayName: displayName,
               size: 20,
             ),

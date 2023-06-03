@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoTask.dart';
@@ -9,18 +10,20 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Account;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
-class CommentInput extends StatefulWidget {
+class CommentInput extends ConsumerStatefulWidget {
   const CommentInput(this.task, this.callback, {super.key});
   final ToDoTask task;
   final VoidCallback? callback;
 
   @override
-  State<CommentInput> createState() => CommentInputState();
+  ConsumerState<CommentInput> createState() => CommentInputState();
 }
 
-class CommentInputState extends State<CommentInput> {
+class CommentInputState extends ConsumerState<CommentInput> {
   final ToDoController controller = Get.find<ToDoController>();
   bool emojiShowing = false;
   final TextEditingController _inputController = TextEditingController();
@@ -44,7 +47,7 @@ class CommentInputState extends State<CommentInput> {
   @override
   Widget build(BuildContext context) {
     String userId = controller.client.userId().toString();
-    Account account = controller.client.account();
+    final accountProfile = ref.watch(accountProfileProvider);
     return Container(
       decoration: const BoxDecoration(),
       child: Padding(
@@ -53,18 +56,22 @@ class CommentInputState extends State<CommentInput> {
           children: [
             Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ActerAvatar(
-                    mode: DisplayMode.User,
-                    uniqueId: userId,
-                    size: 18,
-                    avatarProviderFuture: remapToImage(
-                      account.avatar(),
-                      cacheHeight: 32,
-                    ),
-                    displayName: simplifyUserId(userId),
-                  ),
+                accountProfile.when(
+                  data: (data) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ActerAvatar(
+                        mode: DisplayMode.User,
+                        uniqueId: userId,
+                        size: 18,
+                        displayName: simplifyUserId(userId),
+                        avatar: data.profile.getAvatarImage(),
+                      ),
+                    );
+                  },
+                  loading: () => const CircularProgressIndicator(),
+                  error: (error, stackTrace) =>
+                      Text('Failed to load avatar $error'),
                 ),
                 GetBuilder<ToDoController>(
                   id: 'comment-input',

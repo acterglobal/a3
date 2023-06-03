@@ -27,12 +27,6 @@ class GroupMember extends StatelessWidget {
           mode: DisplayMode.User,
           uniqueId: userId,
           size: 16,
-          avatarProviderFuture: avatar != null
-              ? remapToImage(
-                  avatar!,
-                  cacheHeight: 32,
-                )
-              : null,
           displayName: name,
         ),
         Expanded(

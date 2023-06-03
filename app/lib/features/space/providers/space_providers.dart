@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:typed_data';
 
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -32,15 +33,13 @@ final spacesProvider = FutureProvider<List<Space>>((ref) async {
 
 class SpaceItem {
   String roomId;
-  String? displayName;
+  ProfileData spaceProfileData;
   List<Member> activeMembers;
-  Future<FfiBufferUint8>? avatar;
 
   SpaceItem({
     required this.roomId,
     required this.activeMembers,
-    this.displayName,
-    this.avatar,
+    required this.spaceProfileData,
   });
 }
 
@@ -50,15 +49,14 @@ final spaceItemsProvider = FutureProvider<List<SpaceItem>>((ref) async {
   final spaces = await client.spaces();
   List<SpaceItem> items = [];
   spaces.toList().forEach((element) async {
-    RoomProfile profile = element.getProfile();
     List<Member> members =
         await element.activeMembers().then((ffiList) => ffiList.toList());
-    DispName name = await profile.getDisplayName();
+    final profileData =
+        await ref.watch(spaceProfileDataProvider(element).future);
     var item = SpaceItem(
       roomId: element.getRoomId().toString(),
-      displayName: name.text(),
       activeMembers: members,
-      avatar: profile.hasAvatar() ? profile.getThumbnail(120, 120) : null,
+      spaceProfileData: profileData,
     );
     items.add(item);
   });

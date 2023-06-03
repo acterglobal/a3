@@ -52,10 +52,13 @@ class _SearchSpacePageState extends ConsumerState<SearchSpacePage> {
                         itemBuilder: (context, index) => Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: SpaceItem(
-                            title: spaceItems[index].displayName,
+                            title:
+                                spaceItems[index].spaceProfileData.displayName,
                             members: spaceItems[index].activeMembers,
-                            avatar: spaceItems[index].avatar,
                             callback: () => selectionUpdate(index),
+                            avatar: spaceItems[index]
+                                .spaceProfileData
+                                .getAvatarImage(),
                           ),
                         ),
                       )
@@ -77,6 +80,7 @@ class _SearchSpacePageState extends ConsumerState<SearchSpacePage> {
                         title: ref
                             .read(searchSpaceProvider.notifier)
                             .items[index]
+                            .spaceProfileData
                             .displayName,
                         members: ref
                             .read(searchSpaceProvider.notifier)
@@ -85,7 +89,8 @@ class _SearchSpacePageState extends ConsumerState<SearchSpacePage> {
                         avatar: ref
                             .read(searchSpaceProvider.notifier)
                             .items[index]
-                            .avatar,
+                            .spaceProfileData
+                            .getAvatarImage(),
                         callback: () => selectionUpdate(index),
                       ),
                     ),

@@ -89,12 +89,6 @@ class ProfilePage extends StatelessWidget {
                       child: ActerAvatar(
                         mode: DisplayMode.User,
                         uniqueId: roomId,
-                        avatarProviderFuture: roomAvatar != null
-                            ? remapToImage(
-                                roomAvatar!,
-                                cacheHeight: 200,
-                              )
-                            : null,
                         displayName: roomName,
                         size: 20,
                       ),

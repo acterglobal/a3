@@ -128,12 +128,6 @@ class _RoomPageState extends State<RoomPage> {
         child: ActerAvatar(
           mode: DisplayMode.User,
           uniqueId: userId,
-          avatarProviderFuture: avtr != null
-              ? remapToImage(
-                  avtr,
-                  cacheHeight: 54,
-                )
-              : null,
           displayName: roomController.getUserName(userId),
           size: 50,
         ),
@@ -454,12 +448,6 @@ class _RoomPageState extends State<RoomPage> {
         child: ActerAvatar(
           mode: DisplayMode.User,
           uniqueId: roomId,
-          avatarProviderFuture: widget.avatar != null
-              ? remapToImage(
-                  widget.avatar!,
-                  cacheHeight: 90,
-                )
-              : null,
           displayName: widget.name,
           size: 45,
         ),
