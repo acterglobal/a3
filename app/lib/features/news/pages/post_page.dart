@@ -7,7 +7,6 @@ import 'package:acter/common/widgets/custom_app_bar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show remapToImage;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +30,6 @@ class _PostPageState extends ConsumerState<PostPage> {
   Widget build(BuildContext context) {
     final client = ref.watch(clientProvider)!;
     final selectedSpace = ref.watch(selectedSpaceProvider);
-
     // pre-fetch spaces prior to selection
     ref.watch(searchSpaceProvider);
 
@@ -118,20 +116,14 @@ class _PostPageState extends ConsumerState<PostPage> {
                         child: ActerAvatar(
                           mode: DisplayMode.Space,
                           uniqueId: client.userId().toString(),
-                          avatarProviderFuture: selectedSpace != null &&
-                                  selectedSpace.avatar != null
-                              ? remapToImage(
-                                  selectedSpace.avatar!,
-                                  cacheHeight: 120,
-                                  cacheWidth: 120,
-                                )
-                              : null,
+                          avatar:
+                              selectedSpace?.spaceProfileData.getAvatarImage(),
                           size: 36,
                         ),
                       ),
                       Text(
                         selectedSpace != null
-                            ? selectedSpace.displayName!
+                            ? selectedSpace.spaceProfileData.displayName!
                             : 'Select Space',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),

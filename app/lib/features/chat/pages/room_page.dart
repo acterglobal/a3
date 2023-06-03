@@ -17,7 +17,6 @@ import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/chat/widgets/type_indicator.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8;
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show remapToImage;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -118,7 +117,7 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   Widget avatarBuilder(String userId) {
-    var avtr = roomController.getUserAvatar(userId);
+    // var avtr = roomController.getUserAvatar(userId);
 
     return Padding(
       padding: const EdgeInsets.only(right: 10),
@@ -128,12 +127,6 @@ class _RoomPageState extends State<RoomPage> {
         child: ActerAvatar(
           mode: DisplayMode.User,
           uniqueId: userId,
-          avatarProviderFuture: avtr != null
-              ? remapToImage(
-                  avtr,
-                  cacheHeight: 54,
-                )
-              : null,
           displayName: roomController.getUserName(userId),
           size: 50,
         ),
@@ -454,12 +447,6 @@ class _RoomPageState extends State<RoomPage> {
         child: ActerAvatar(
           mode: DisplayMode.User,
           uniqueId: roomId,
-          avatarProviderFuture: widget.avatar != null
-              ? remapToImage(
-                  widget.avatar!,
-                  cacheHeight: 90,
-                )
-              : null,
           displayName: widget.name,
           size: 45,
         ),

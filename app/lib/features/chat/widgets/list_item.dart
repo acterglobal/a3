@@ -4,7 +4,6 @@ import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/models/JoinedRoom.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -53,12 +52,7 @@ class _ChatListItemState extends State<ListItem> {
           leading: ActerAvatar(
             mode: DisplayMode.GroupChat, // FIXME: checking for DM somehow?
             uniqueId: roomId,
-            avatarProviderFuture: widget.room.avatar != null
-                ? remapToImage(
-                    widget.room.avatar!,
-                    cacheHeight: 54,
-                  )
-                : null,
+
             displayName: widget.room.displayName,
             size: 25,
           ),

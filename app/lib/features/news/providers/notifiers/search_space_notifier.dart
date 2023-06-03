@@ -21,7 +21,7 @@ class SearchSpaceNotifier extends StateNotifier<List<SpaceItem>> {
     String data = value.trim().toLowerCase();
     if (value.isNotEmpty) {
       for (var item in items) {
-        if (item.displayName!.toLowerCase().startsWith(data)) {
+        if (item.spaceProfileData.displayName!.toLowerCase().startsWith(data)) {
           state = [...state, item];
           ref.read(isSearchingProvider.notifier).update((state) => true);
         }
