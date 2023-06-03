@@ -1,5 +1,4 @@
 import 'dart:core';
-import 'dart:typed_data';
 
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/features/home/providers/client_providers.dart';

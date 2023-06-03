@@ -2,7 +2,6 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show remapToImage;
 
 class GroupMember extends StatelessWidget {
   final String userId;

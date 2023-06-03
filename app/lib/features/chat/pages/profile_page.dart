@@ -1,4 +1,3 @@
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show remapToImage;
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/pages/link_settings_page.dart';
 import 'package:acter/features/chat/pages/edit_group_page.dart';
