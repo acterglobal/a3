@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
