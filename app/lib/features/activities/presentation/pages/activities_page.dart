@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,7 @@ class ActivitiesPage extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Atlas.funnel_sort_thin),
                 onPressed: () {
-                  showNotYetImplementedMsg(
+                  customMsgSnackbar(
                     context,
                     'Activities filters not yet implemented',
                   );
@@ -31,7 +31,7 @@ class ActivitiesPage extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Atlas.gear_thin),
                 onPressed: () {
-                  showNotYetImplementedMsg(
+                  customMsgSnackbar(
                     context,
                     'Notifications Settings page not yet implemented',
                   );

@@ -20,7 +20,7 @@ class MyProfile extends ConsumerWidget {
             IconButton(
               icon: const Icon(Atlas.pencil_edit_thin),
               onPressed: () {
-                showNotYetImplementedMsg(
+                customMsgSnackbar(
                   context,
                   'Profile Edit page not yet implemented',
                 );

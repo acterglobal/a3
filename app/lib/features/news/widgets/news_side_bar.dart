@@ -286,7 +286,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                           ),
                           IconButton(
                             onPressed: () {
-                              showNotYetImplementedMsg(
+                              customMsgSnackbar(
                                 context,
                                 'Send not yet implemented',
                               );
@@ -358,7 +358,7 @@ class _ProfileImageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        showNotYetImplementedMsg(context, 'Profile Action not yet implemented');
+        customMsgSnackbar(context, 'Profile Action not yet implemented');
       },
       child: CachedNetworkImage(
         imageUrl:

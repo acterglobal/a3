@@ -7,7 +7,10 @@ import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/features/news/pages/news_builder_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
+import 'package:acter/features/news/pages/post_page.dart';
+import 'package:acter/features/news/pages/search_space_page.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
@@ -175,9 +178,50 @@ final routes = [
             child: const NewsPage(),
           );
         },
+        routes: <RouteBase>[
+          // hide bottom nav for nested pages, use rootNavigatorKey
+          GoRoute(
+            parentNavigatorKey: rootNavigatorKey,
+            name: Routes.updatesEdit.name,
+            path: Routes.updatesEdit.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const NewsBuilderPage(),
+              );
+            },
+          ),
+          GoRoute(
+            parentNavigatorKey: rootNavigatorKey,
+            name: Routes.updatesPost.name,
+            path: Routes.updatesPost.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: PostPage(
+                  attachmentUri: state.extra as String?,
+                ),
+              );
+            },
+            routes: <RouteBase>[
+              GoRoute(
+                parentNavigatorKey: rootNavigatorKey,
+                name: Routes.updatesPostSearch.name,
+                path: Routes.updatesPostSearch.route,
+                redirect: authGuardRedirect,
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: const SearchSpacePage(),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
       ),
-
-      
 
       GoRoute(
         name: Routes.search.name,

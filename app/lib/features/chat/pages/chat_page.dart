@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/widgets/invite_info_card.dart';
@@ -94,7 +94,7 @@ class ChatPage extends ConsumerWidget {
                         ),
                         IconButton(
                           onPressed: () {
-                            showNotYetImplementedMsg(
+                            customMsgSnackbar(
                               context,
                               'Multiselect is not implemented yet',
                             );
@@ -106,7 +106,7 @@ class ChatPage extends ConsumerWidget {
                         ),
                         IconButton(
                           onPressed: () {
-                            showNotYetImplementedMsg(
+                            customMsgSnackbar(
                               context,
                               'Starting a new chat is not implemented yet',
                             );
