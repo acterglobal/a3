@@ -90,7 +90,7 @@ async fn news_smoketest() -> Result<()> {
     let mut draft = main_space.news_draft()?;
     draft.add_text_slide("This is text slide".to_string());
     let event_id = draft.send().await?;
-    print!("draft sent event id: {}", event_id.to_string());
+    print!("draft sent event id: {}", event_id);
 
     Ok(())
 }

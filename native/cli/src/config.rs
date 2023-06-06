@@ -6,8 +6,11 @@ use std::path::PathBuf;
 
 use crate::action::Action;
 
+pub const ENV_DEFAULT_HOMESERVER_URL: &str = "DEFAULT_HOMESERVER_URL";
+pub const ENV_DEFAULT_HOMESERVER_NAME: &str = "DEFAULT_HOMESERVER_NAME";
 pub const ENV_USER: &str = "ACTER_USER";
 pub const ENV_PASSWORD: &str = "ACTER_PASSWORD";
+pub const ENV_REG_TOKEN: &str = "ACTER_REGISTRATIOn_TOKEN";
 pub const ENV_ROOM: &str = "ACTER_ROOM";
 
 /// Generic Login Configuration helper
@@ -16,7 +19,7 @@ pub struct LoginConfig {
     /// the URL to the homeserver are we running against
     #[clap(
         long = "homeserver-url",
-        env = "DEFAULT_HOMESERVER_URL",
+        env = ENV_DEFAULT_HOMESERVER_URL,
         default_value = "http://localhost:8118"
     )]
     pub homeserver: String,
@@ -24,7 +27,7 @@ pub struct LoginConfig {
     /// name of that homeserver
     #[clap(
         long = "homeserver-name",
-        env = "DEFAULT_HOMESERVER_NAME",
+        env = ENV_DEFAULT_HOMESERVER_NAME,
         default_value = "localhost"
     )]
     pub server_name: String,
@@ -37,6 +40,13 @@ pub struct LoginConfig {
         env = ENV_USER
     )]
     login_username: String,
+
+    /// optional registration token
+    #[clap(
+        long = "registration=-token",
+        env = ENV_REG_TOKEN
+    )]
+    reg_token: Option<String>,
 
     #[clap(long="password", env = ENV_PASSWORD)]
     login_password: Option<String>,
@@ -90,7 +100,10 @@ impl LoginConfig {
         let client = login_new_client(
             base_path,
             username.clone(),
-            password,
+            self.reg_token
+                .as_ref()
+                .map(|r| format!("{r}:{password}"))
+                .unwrap_or_else(|| password.clone()),
             self.server_name.clone(),
             self.homeserver.clone(),
             Some(format!("acter-cli/{}", crate_version!())),

@@ -3,6 +3,8 @@ use anyhow::Result;
 use futures::stream::StreamExt;
 use tempfile::TempDir;
 
+use crate::utils::default_user_password;
+
 #[tokio::test]
 async fn sisko_reads_msg_reactions() -> Result<()> {
     let _ = env_logger::try_init();
@@ -17,7 +19,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let mut sisko = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko".to_string(),
-        "sisko".to_string(),
+        default_user_password("sisko"),
         homeserver_name.clone(),
         homeserver_url.clone(),
         Some("SISKO_DEV".to_string()),
@@ -38,7 +40,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let mut kyra = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@kyra".to_string(),
-        "kyra".to_string(),
+        default_user_password("kyra"),
         homeserver_name.clone(),
         homeserver_url.clone(),
         Some("KYRA_DEV".to_string()),
@@ -56,7 +58,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let mut worf = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@worf".to_string(),
-        "worf".to_string(),
+        default_user_password("worf"),
         homeserver_name.clone(),
         homeserver_url.clone(),
         Some("WORF_DEV".to_string()),
@@ -74,7 +76,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let mut bashir = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@bashir".to_string(),
-        "bashir".to_string(),
+        default_user_password("bashir"),
         homeserver_name.clone(),
         homeserver_url.clone(),
         Some("BASHIR_DEV".to_string()),
@@ -92,7 +94,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let mut miles = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@miles".to_string(),
-        "miles".to_string(),
+        default_user_password("miles"),
         homeserver_name.clone(),
         homeserver_url.clone(),
         Some("MILES_DEV".to_string()),
@@ -110,7 +112,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let mut jadzia = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@jadzia".to_string(),
-        "jadzia".to_string(),
+        default_user_password("jadzia"),
         homeserver_name.clone(),
         homeserver_url.clone(),
         Some("JADZIA_DEV".to_string()),
@@ -128,7 +130,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let mut odo = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@odo".to_string(),
-        "odo".to_string(),
+        default_user_password("odo"),
         homeserver_name.clone(),
         homeserver_url.clone(),
         Some("ODO_DEV".to_string()),

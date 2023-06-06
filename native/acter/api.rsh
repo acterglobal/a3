@@ -17,7 +17,7 @@ fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Cl
 fn guest_client(basepath: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
 
 /// Create a new client from the registration token
-fn register_with_token(basepath: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
+fn register_with_token(basepath: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: string) -> Future<Result<Client>>;
 
 /// Representing a time frame
 object EfkDuration {}
