@@ -1,4 +1,4 @@
-import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoComment.dart';
@@ -838,7 +838,7 @@ class _SubscribersWidget extends StatelessWidget {
             style: Theme.of(context).textTheme.bodySmall,
           ),
           InkWell(
-            onTap: () => showNotYetImplementedMsg(
+            onTap: () => customMsgSnackbar(
               context,
               'Subscriber Screen not yet implemented',
             ),

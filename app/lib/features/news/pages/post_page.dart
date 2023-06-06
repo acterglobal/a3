@@ -1,7 +1,8 @@
 import 'dart:io';
 
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
-import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_app_bar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -28,7 +29,6 @@ class _PostPageState extends ConsumerState<PostPage> {
 
   @override
   Widget build(BuildContext context) {
-    final client = ref.watch(clientProvider)!;
     final selectedSpace = ref.watch(selectedSpaceProvider);
     // pre-fetch spaces prior to selection
     ref.watch(searchSpaceProvider);
@@ -104,23 +104,36 @@ class _PostPageState extends ConsumerState<PostPage> {
               ),
               const Divider(indent: 10, endIndent: 10),
               GestureDetector(
-                onTap: () => context.push('/updates/post/search_space'),
+                onTap: () => context.pushNamed(Routes.updatesPostSearch.name),
                 child: Padding(
                   padding: const EdgeInsets.all(8),
                   child: Wrap(
                     spacing: 10,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: ActerAvatar(
-                          mode: DisplayMode.Space,
-                          uniqueId: client.userId().toString(),
-                          avatar:
-                              selectedSpace?.spaceProfileData.getAvatarImage(),
-                          size: 36,
-                        ),
-                      ),
+                      selectedSpace != null
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              child: ActerAvatar(
+                                mode: DisplayMode.Space,
+                                uniqueId: selectedSpace.roomId,
+                                avatar: selectedSpace.spaceProfileData
+                                    .getAvatarImage(),
+                                size: 36,
+                                displayName:
+                                    selectedSpace.spaceProfileData.displayName,
+                              ),
+                            )
+                          : Container(
+                              height: 36,
+                              width: 36,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.neutral5,
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
                       Text(
                         selectedSpace != null
                             ? selectedSpace.spaceProfileData.displayName!
@@ -218,7 +231,10 @@ class _PostPageState extends ConsumerState<PostPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () => customMsgSnackbar(
+                  context,
+                  'Save to Draft is not implemented yet',
+                ),
                 child: Text(
                   'Save to Draft',
                   style: Theme.of(context).textTheme.bodyMedium,
@@ -240,7 +256,10 @@ class _PostPageState extends ConsumerState<PostPage> {
               ElevatedButton(
                 onPressed: () => ref.read(selectedSpaceProvider) != null
                     ? handlePost(context, mounted)
-                    : null,
+                    : customMsgSnackbar(
+                        context,
+                        'Please select space to continue',
+                      ),
                 child: Text(
                   'Post',
                   style: Theme.of(context).textTheme.bodyMedium,
@@ -335,9 +354,5 @@ class _PostPageState extends ConsumerState<PostPage> {
         ),
       );
     }
-  }
-
-  void handleDraft(SpaceItem? selectedSpace) {
-    showNotYetImplementedMsg(context, "'Save to Draft' is not implemented yet");
   }
 }

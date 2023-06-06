@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -76,7 +77,7 @@ class NewsPage extends ConsumerWidget {
             child: IconButton(
               /// [GoRouter] use context.push() for preserving states
               /// of previous route and context.go() for vice versa.
-              onPressed: () => context.push('/updates/edit'),
+              onPressed: () => context.pushNamed(Routes.updatesEdit.name),
               icon: Icon(
                 Atlas.plus_circle_thin,
                 color: Theme.of(context).colorScheme.neutral5,

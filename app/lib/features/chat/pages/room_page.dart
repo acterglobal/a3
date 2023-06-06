@@ -4,7 +4,7 @@ import 'dart:math';
 
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
@@ -211,7 +211,7 @@ class _RoomPageState extends State<RoomPage> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      showNotYetImplementedMsg(
+                                      customMsgSnackbar(
                                         ctx,
                                         'Report feature not yet implemented',
                                       );
@@ -523,7 +523,7 @@ class _RoomPageState extends State<RoomPage> {
               showUserAvatars: true,
               onAttachmentPressed: () => handleAttachmentPressed(context),
               onAvatarTap: (types.User user) {
-                showNotYetImplementedMsg(
+                customMsgSnackbar(
                   context,
                   'Chat Profile view is not implemented yet',
                 );

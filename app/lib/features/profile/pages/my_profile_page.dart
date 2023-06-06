@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ class MyProfile extends ConsumerWidget {
             IconButton(
               icon: const Icon(Atlas.pencil_edit_thin),
               onPressed: () {
-                showNotYetImplementedMsg(
+                customMsgSnackbar(
                   context,
                   'Profile Edit page not yet implemented',
                 );
