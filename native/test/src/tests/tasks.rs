@@ -13,8 +13,14 @@ async fn odos_tasks() -> Result<()> {
     let _ = env_logger::try_init();
     let list_name = "Daily Security Brief".to_owned();
     let mut odo = ensure_user(
-        option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118"),
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
         "odo".to_owned(),
+        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
         "acter-integration-tests".to_owned(),
         StoreConfig::default(),
     )

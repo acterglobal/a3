@@ -6,8 +6,14 @@ use futures::{pin_mut, StreamExt};
 pub async fn random_user_with_random_space(prefix: &str) -> Result<(acter::Client, OwnedRoomId)> {
     let uuid = uuid::Uuid::new_v4().to_string();
     let user = ensure_user(
-        option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118"),
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
         format!("it-{prefix}-{uuid}"),
+        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
         "acter-integration-tests".to_owned(),
         StoreConfig::default(),
     )
@@ -20,14 +26,27 @@ pub async fn random_user_with_random_space(prefix: &str) -> Result<(acter::Clien
     Ok((user, room_id))
 }
 
+pub fn default_user_password(username: &str) -> String {
+    match option_env!("REGISTRATION_TOKEN") {
+        Some(t) => format!("{t}:{username}"),
+        _ => username.to_string(),
+    }
+}
+
 pub async fn random_user_with_template(
     prefix: &str,
     template: &str,
 ) -> Result<(acter::Client, acter::SyncState, Engine)> {
     let uuid = uuid::Uuid::new_v4().to_string();
     let mut user = ensure_user(
-        option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118"),
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
         format!("it-{prefix}-{uuid}"),
+        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
         "acter-integration-tests".to_owned(),
         StoreConfig::default(),
     )

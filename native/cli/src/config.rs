@@ -100,7 +100,10 @@ impl LoginConfig {
         let client = login_new_client(
             base_path,
             username.clone(),
-            self.reg_token.as_ref().map(|r| format!("{r}:{password}")).unwrap_or_else(|| password.clone()),
+            self.reg_token
+                .as_ref()
+                .map(|r| format!("{r}:{password}"))
+                .unwrap_or_else(|| password.clone()),
             self.server_name.clone(),
             self.homeserver.clone(),
             Some(format!("acter-cli/{}", crate_version!())),

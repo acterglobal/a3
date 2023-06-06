@@ -65,7 +65,7 @@ pub enum MockCmd {
 
 impl MockOpts {
     pub async fn run(&self) -> Result<()> {
-        let mut m = Mock::new(&self)?;
+        let mut m = Mock::new(self)?;
         match self.cmd {
             Some(MockCmd::Users) => {
                 m.everyone().await;
@@ -131,9 +131,10 @@ impl<'a> Mock<'a> {
         })
     }
 
-    async fn team(&mut self) -> [EfkClient; 7] {
+    async fn team(&mut self) -> [EfkClient; 8] {
         [
             self.client("sisko".to_owned()).await.unwrap(),
+            self.client("sisko1".to_owned()).await.unwrap(),
             self.client("kyra".to_owned()).await.unwrap(),
             self.client("worf".to_owned()).await.unwrap(),
             self.client("bashir".to_owned()).await.unwrap(),

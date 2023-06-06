@@ -103,33 +103,28 @@ pub async fn ensure_user(
     let cl = config.clone().build().await?;
     let login_res = cl.login_username(username.clone(), &password).send().await;
 
-    if let Err(e) = login_res {
-        log::warn!("Login for {username} failed: {e}. Trying to register instead.");
-        let client = if let Some(token) = reg_token {
-            register_with_token_under_config(
-                config.clone(),
-                username.clone(),
-                password.clone(),
-                user_agent.clone(),
-                token,
-            )
-            .await?
-        } else {
-            register_under_config(
-                config.clone(),
-                username.clone(),
-                username.clone(),
-                user_agent.clone(),
-            )
-            .await?
-        };
-        client
-            .login_username(username.clone(), &username)
-            .send()
-            .await?;
-        Ok(client)
+    let Err(e) = login_res else {
+        return EfkClient::new(cl, Default::default()).await
+    };
+
+    if let Some(token) = reg_token {
+        log::info!("Login for {username} failed: {e}. Trying to register with token instead.");
+        register_with_token_under_config(
+            config.clone(),
+            user_id,
+            password.clone(),
+            user_agent.clone(),
+            token,
+        )
+        .await
     } else {
-        // login went fine
-        EfkClient::new(cl, Default::default()).await
+        log::info!("Login for {username} failed: {e}. Trying to register instead.");
+        register_under_config(
+            config.clone(),
+            user_id,
+            password.clone(),
+            user_agent.clone(),
+        )
+        .await
     }
 }

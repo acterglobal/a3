@@ -27,7 +27,7 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
 
       // await context.world.appDriver.tap(sidebar);
       // await context.world.appDriver.waitForAppToSettle();
-      var passwordText;
+      String passwordText;
       if (registrationToken.isNotEmpty) {
         passwordText = registrationToken + ':' + username;
       } else {
