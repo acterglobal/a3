@@ -40,12 +40,21 @@ flutter test
 
 ### Infrastructure
 
-You need a fresh [`synapse` matrix backend](https://matrix-org.github.io/synapse/latest/) with a specific configuration. We recommend to just use our docker-compose setup for that:
+You need a fresh [`synapse` matrix backend](https://matrix-org.github.io/synapse/latest/) with a specific configuration. We recommend to just use our docker-compose setup for that to run them locally - for an installation guide see below. As a team member with access to bitwarden, you can also run them against the stageing / testing instances (see below).
 
 #### Docker Container
 
 We have a `docker` container image available with that setup already for you at `lightyear/acter-synapse-ci:latest`. Easiest is to use `docker-compose up -d` to run it locally from the root directory. This will also create the necessary `admin` account.
 
+**Alternatives**
+
+<details>
+<summary><strong>Using the shared testing servers</strong></summary>
+
+If you are a team member with access to bitwarden, you can also use the staging and testing instances we have set up. They registered with a registration token to prevent unauthorized access, which are also prefixed to each password and thus need to be supplied for running the tests. Currently the following servers are available for testing with mock-data pre-installed, the registration tokens can be found in bitwarden under the same name.
+
+- **`m-1.acter.global`** (`export DEFAULT_HOMESERVER_URL=https://matrix.m-1.acter.global DEFAULT_HOMESERVER_NAME=m-1.acter.global`)
+</details>
 <details>
 <summary><strong>Custom Synapse-Server</strong></summary>
 
@@ -406,9 +415,11 @@ Flutter integration tests can be found `app/integration_test/features`. We use (
 
 To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at `$DEFAULT_HOMESERVER_URL` with the `$DEFAULT_HOMESERVER_NAME` set. The following will build the App and run the tests with on the default target (or you specify it via `-d`, e.g. `-d linux` or `-d windows`).
 
+_Reminder_: If running against the testing/staging server, you need the registration token from Bitwarden to access the server.
+
 ```
 cd app
-flutter test integration_test/gherkin_suite_test.dart --dart-define DEFAULT_HOMESERVER_URL=$DEFAULT_HOMESERVER_URL --dart-define DEFAULT_HOMESERVER_NAME=$DEFAULT_HOMESERVER_NAME
+flutter test integration_test/gherkin_suite_test.dart --dart-define DEFAULT_HOMESERVER_URL=$DEFAULT_HOMESERVER_URL --dart-define DEFAULT_HOMESERVER_NAME=$DEFAULT_HOMESERVER_NAME --dart-define REGISTRATION_TOKEN=$REGISTRATION_TOKEN
 ```
 
 **From Visual Studio Code**
