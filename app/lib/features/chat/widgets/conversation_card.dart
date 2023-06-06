@@ -1,88 +1,94 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
-import 'package:acter/models/JoinedRoom.dart';
+import 'package:acter/features/chat/models/joined_room.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class ListItem extends StatefulWidget {
-  final Client client;
+class ConversationCard extends ConsumerStatefulWidget {
   final JoinedRoom room;
 
-  const ListItem({
+  const ConversationCard({
     Key? key,
-    required this.client,
     required this.room,
   }) : super(key: key);
 
   @override
-  State<ListItem> createState() => _ChatListItemState();
+  ConsumerState<ConversationCard> createState() => _ConversationCardState();
 }
 
-class _ChatListItemState extends State<ListItem> {
+class _ConversationCardState extends ConsumerState<ConversationCard> {
   final ReceiptController recieptController = Get.find<ReceiptController>();
-  final ChatListController chatListController = Get.find<ChatListController>();
 
   List<Member> activeMembers = [];
 
   @override
   void initState() {
     super.initState();
-    chatListController.setRoomProfile(widget.room.conversation, widget.room);
     getActiveMembers();
   }
 
   @override
   Widget build(BuildContext context) {
+    final client = ref.watch(clientProvider);
     String roomId = widget.room.conversation.getRoomId().toString();
+    final convoProfile =
+        ref.watch(chatProfileDataProvider(widget.room.conversation));
     // ToDo: UnreadCounter
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        ListTile(
-          onTap: () => handleTap(context),
-          leading: ActerAvatar(
-            mode: DisplayMode.GroupChat, // FIXME: checking for DM somehow?
-            uniqueId: roomId,
-
-            displayName: widget.room.displayName,
-            size: 25,
-          ),
-          title: _TitleWidget(
-            displayName: widget.room.displayName,
-            context: context,
-          ),
-          subtitle: GetBuilder<ChatListController>(
-            id: 'chatroom-$roomId-subtitle',
-            builder: (_) => _SubtitleWidget(
-              typingUsers: widget.room.typingUsers,
-              latestMessage: widget.room.latestMessage,
+    return convoProfile.when(
+      data: (data) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              onTap: () => handleTap(context),
+              leading: ActerAvatar(
+                mode: DisplayMode.GroupChat, // FIXME: checking for DM somehow?
+                uniqueId: roomId,
+                displayName: data.displayName ?? roomId,
+                avatar: data.getAvatarImage(),
+                size: 36,
+              ),
+              title: Text(
+                data.displayName ?? roomId,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium!
+                    .copyWith(fontWeight: FontWeight.w700),
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: _SubtitleWidget(
+                typingUsers: widget.room.typingUsers,
+                latestMessage: widget.room.latestMessage,
+              ),
+              trailing: _TrailingWidget(
+                controller: recieptController,
+                room: widget.room.conversation,
+                latestMessage: widget.room.latestMessage,
+                activeMembers: activeMembers,
+                userId: client!.userId().toString(),
+              ),
             ),
-          ),
-          trailing: _TrailingWidget(
-            controller: recieptController,
-            room: widget.room.conversation,
-            latestMessage: widget.room.latestMessage,
-            activeMembers: activeMembers,
-            userId: widget.client.userId().toString(),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(bottom: 5),
-          child: Divider(
-            indent: 75,
-            endIndent: 10,
-          ),
-        ),
-      ],
+            Divider(
+              indent: 75,
+              endIndent: 10,
+              color: Theme.of(context).colorScheme.tertiary,
+            ),
+          ],
+        );
+      },
+      error: (error, stackTrace) => const Text('Failed to load Conversation'),
+      loading: () => const CircularProgressIndicator(),
     );
   }
 
@@ -91,7 +97,6 @@ class _ChatListItemState extends State<ListItem> {
       context,
       MaterialPageRoute(
         builder: (context) => RoomPage(
-          client: widget.client,
           conversation: widget.room.conversation,
           name: widget.room.displayName,
           avatar: widget.room.avatar,
@@ -105,30 +110,7 @@ class _ChatListItemState extends State<ListItem> {
   }
 }
 
-class _TitleWidget extends StatelessWidget {
-  final String? displayName;
-  final BuildContext context;
-
-  const _TitleWidget({
-    required this.displayName,
-    required this.context,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (displayName == null) {
-      return Text(
-        AppLocalizations.of(context)!.loadingName,
-      );
-    }
-    return Text(
-      displayName!,
-      style: Theme.of(context).textTheme.bodyMedium,
-    );
-  }
-}
-
-class _SubtitleWidget extends StatelessWidget {
+class _SubtitleWidget extends ConsumerWidget {
   const _SubtitleWidget({
     required this.typingUsers,
     required this.latestMessage,
@@ -137,13 +119,13 @@ class _SubtitleWidget extends StatelessWidget {
   final RoomMessage? latestMessage;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (typingUsers.isNotEmpty) {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
         child: Text(
           getUserPlural(typingUsers),
-          style: Theme.of(context).textTheme.bodySmall,
+          style: Theme.of(context).textTheme.labelLarge,
         ),
       );
     }
@@ -216,7 +198,10 @@ class _SubtitleWidget extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Text(
                     '${simplifyUserId(sender)}: ',
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall!
+                        .copyWith(fontWeight: FontWeight.w700),
                   ),
                 ),
                 Flexible(
@@ -254,7 +239,10 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(fontWeight: FontWeight.w700),
               ),
             ),
             Flexible(
@@ -280,7 +268,10 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(fontWeight: FontWeight.w700),
               ),
             ),
             Text(
@@ -297,7 +288,10 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(fontWeight: FontWeight.w700),
               ),
             ),
             Flexible(
@@ -316,7 +310,10 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(fontWeight: FontWeight.w700),
               ),
             ),
             Flexible(
@@ -344,7 +341,10 @@ class _SubtitleWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(fontWeight: FontWeight.w700),
               ),
             ),
             Flexible(

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
@@ -21,30 +22,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:string_validator/string_validator.dart';
 
-class RoomPage extends StatefulWidget {
+class RoomPage extends ConsumerStatefulWidget {
   final Future<FfiBufferUint8>? avatar;
   final String? name;
   final Conversation conversation;
-  final Client client;
 
   const RoomPage({
     Key? key,
     required this.conversation,
-    required this.client,
     this.avatar,
     this.name,
   }) : super(key: key);
 
   @override
-  State<RoomPage> createState() => _RoomPageState();
+  ConsumerState<RoomPage> createState() => _RoomPageConsumerState();
 }
 
-class _RoomPageState extends State<RoomPage> {
+class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   ChatRoomController roomController = Get.find<ChatRoomController>();
-  ChatListController listController = Get.find<ChatListController>();
 
   @override
   void initState() {
@@ -425,6 +424,7 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   Widget buildProfileAction() {
+    final client = ref.watch(clientProvider);
     String roomId = widget.conversation.getRoomId().toString();
     return GestureDetector(
       onTap: () {
@@ -432,7 +432,7 @@ class _RoomPageState extends State<RoomPage> {
           context,
           MaterialPageRoute(
             builder: (context) => ProfilePage(
-              client: widget.client,
+              client: client!,
               room: widget.conversation,
               roomName: widget.name,
               roomAvatar: widget.avatar,
@@ -480,6 +480,8 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   Widget buildBody(BuildContext context) {
+    final client = ref.watch(clientProvider);
+    final chatList = ref.watch(chatListProvider);
     if (roomController.isLoading.isTrue) {
       return const Center(
         child: SizedBox(
@@ -489,7 +491,7 @@ class _RoomPageState extends State<RoomPage> {
         ),
       );
     }
-    int invitedIndex = listController.invitations.indexWhere((x) {
+    int invitedIndex = chatList.invitations.indexWhere((x) {
       return x.roomId() == widget.conversation.getRoomId();
     });
     return GetBuilder<ChatRoomController>(
@@ -512,7 +514,7 @@ class _RoomPageState extends State<RoomPage> {
                 customTypingIndicator: buildTypingIndicator(),
               ),
               onSendPressed: (types.PartialText partialText) {},
-              user: types.User(id: widget.client.userId().toString()),
+              user: types.User(id: client!.userId().toString()),
               // disable image preview
               disableImageGallery: true,
               //custom avatar builder
@@ -660,8 +662,9 @@ class _RoomPageState extends State<RoomPage> {
     return GetBuilder<ChatRoomController>(
       id: 'chat-bubble',
       builder: (context) {
+        final client = ref.watch(clientProvider);
         return BubbleBuilder(
-          userId: widget.client.userId().toString(),
+          userId: client!.userId().toString(),
           child: child,
           message: message,
           nextMessageInGroup: nextMessageInGroup,

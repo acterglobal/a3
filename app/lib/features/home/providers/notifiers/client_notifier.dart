@@ -1,4 +1,3 @@
-import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
@@ -27,7 +26,6 @@ class ClientNotifier extends StateNotifier<Client?> {
     };
     state = asyncSdk.currentClient;
     if (state != null || !state!.isGuest()) {
-      Get.put(ChatListController(client: state!));
       Get.put(ChatRoomController(client: state!));
       Get.put(ReceiptController(client: state!));
       // on release we have a really weird behavior, where, if we schedule
