@@ -1,3 +1,6 @@
+use super::super::config::{
+    ENV_DEFAULT_HOMESERVER_NAME, ENV_DEFAULT_HOMESERVER_URL, ENV_REG_TOKEN,
+};
 use acter::{
     platform::sanitize,
     testing::{ensure_user, wait_for},
@@ -18,7 +21,7 @@ pub struct MockOpts {
     /// the URL to the homeserver are we running against
     #[clap(
         long = "homeserver-url",
-        env = "DEFAULT_HOMESERVER_URL",
+        env = ENV_DEFAULT_HOMESERVER_URL,
         default_value = "http://localhost:8118"
     )]
     pub homeserver: String,
@@ -26,10 +29,17 @@ pub struct MockOpts {
     /// name of that homeserver
     #[clap(
         long = "homeserver-name",
-        env = "DEFAULT_HOMESERVER_NAME",
+        env = ENV_DEFAULT_HOMESERVER_NAME,
         default_value = "localhost"
     )]
     pub server_name: String,
+
+    /// name of that homeserver
+    #[clap(
+        long = "registration-token",
+        env = ENV_REG_TOKEN,
+    )]
+    pub reg_token: Option<String>,
 
     /// Persist the store in .local/{user_id}
     #[clap(long)]
@@ -55,9 +65,7 @@ pub enum MockCmd {
 
 impl MockOpts {
     pub async fn run(&self) -> Result<()> {
-        let homeserver = self.homeserver.clone();
-        let server_name = self.server_name.clone();
-        let mut m = Mock::new(homeserver, server_name, self.persist).await?;
+        let mut m = Mock::new(&self)?;
         match self.cmd {
             Some(MockCmd::Users) => {
                 m.everyone().await;
@@ -81,21 +89,19 @@ impl MockOpts {
 
 /// Posting a news item to a given room
 #[derive(Debug, Clone)]
-pub struct Mock {
-    persist: bool,
+pub struct Mock<'a> {
     users: HashMap<String, EfkClient>,
-    server_name: String,
-    homeserver: String,
+    opts: &'a MockOpts,
 }
 
-impl Mock {
+impl<'a> Mock<'a> {
     async fn client(&mut self, username: String) -> Result<EfkClient> {
         match self.users.get(&username) {
             Some(c) => Ok(c.clone()),
             None => {
                 tracing::trace!("client not found. creating for {:}", username);
 
-                let store_config = if self.persist {
+                let store_config = if self.opts.persist {
                     let path = sanitize(".local", &username);
                     make_store_config(path, Some(&username)).await?
                 } else {
@@ -105,8 +111,10 @@ impl Mock {
                 let user_agent = format!("acter-cli/{}", crate_version!());
 
                 let client = ensure_user(
-                    self.homeserver.as_str(),
+                    self.opts.homeserver.clone(),
+                    self.opts.server_name.clone(),
                     username.clone(),
+                    self.opts.reg_token.clone(),
                     user_agent,
                     store_config,
                 )
@@ -116,11 +124,9 @@ impl Mock {
             }
         }
     }
-    pub async fn new(homeserver: String, server_name: String, persist: bool) -> Result<Self> {
+    pub fn new(opts: &'a MockOpts) -> Result<Self> {
         Ok(Mock {
-            homeserver,
-            persist,
-            server_name,
+            opts,
             users: Default::default(),
         })
     }
@@ -289,7 +295,7 @@ impl Mock {
     }
 
     fn local_alias(&self, name: &str) -> String {
-        format!("{name}:{0}", self.server_name)
+        format!("{name}:{0}", self.opts.server_name)
     }
 
     pub async fn tasks(&mut self) -> Result<()> {

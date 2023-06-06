@@ -14,7 +14,10 @@ use core::{future::Future, time::Duration};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use tokio::time::sleep;
 
-use crate::Client as EfkClient;
+use crate::{
+    api::register_with_token_under_config, register_under_config, sanatize_user,
+    Client as EfkClient,
+};
 
 /// testing helper to give a task time to finish
 ///
@@ -65,60 +68,68 @@ pub async fn default_client_config(
         .homeserver_url(homeserver))
 }
 
-pub async fn register(
-    homeserver: &str,
-    username: String,
-    user_agent: String,
-    store_config: StoreConfig,
-) -> Result<Client> {
-    let client = default_client_config(homeserver, &username, user_agent, store_config)
-        .await?
-        .build()
-        .await?;
-    if let Err(resp) = client.register(RegistrationRequest::new()).await {
-        // FIXME: do actually check the registration types...
-        if let Some(_response) = resp.as_uiaa_response() {
-            let request = assign!(RegistrationRequest::new(), {
-                username: Some(username.clone()),
-                password: Some(username),
-                auth: Some(uiaa::AuthData::Dummy(uiaa::Dummy::new())),
-            });
-            client.register(request).await?;
-        } else {
-            tracing::error!(?resp, "Not a UIAA response");
-            bail!("No a uiaa response");
-        }
-    }
-
-    Ok(client)
-}
-
 pub async fn ensure_user(
-    homeserver: &str,
+    homeserver_url: String,
+    homeserver_name: String,
     username: String,
+    reg_token: Option<String>,
     user_agent: String,
     store_config: StoreConfig,
 ) -> Result<EfkClient> {
-    let cl = match register(
-        homeserver,
-        username.clone(),
-        user_agent.clone(),
-        store_config.clone(),
-    )
-    .await
-    {
-        Ok(cl) => cl,
-        Err(e) => {
-            tracing::warn!("Could not register {:}, {:}", username, e);
-            default_client_config(homeserver, &username, user_agent, store_config)
-                .await?
-                .build()
-                .await?
-        }
-    };
-    cl.login_username(username.clone(), &username)
-        .send()
+    let (user_id, config) = {
+        let (user_id, fallback_to_default_homeserver) =
+            sanatize_user(&username, &homeserver_name).await?;
+        let mut config = default_client_config(
+            &homeserver_url,
+            &username,
+            user_agent.clone(),
+            store_config.clone(),
+        )
         .await?;
 
-    EfkClient::new(cl, Default::default()).await
+        if fallback_to_default_homeserver {
+            (user_id, config.homeserver_url(homeserver_url.clone()))
+        } else {
+            (user_id.clone(), config.server_name(user_id.server_name()))
+        }
+    };
+
+    let with_token = reg_token.is_some();
+    let password = match &reg_token {
+        Some(token) => format!("{token}:{username}"),
+        None => username.clone(),
+    };
+
+    let cl = config.clone().build().await?;
+    let login_res = cl.login_username(username.clone(), &password).send().await;
+
+    if let Err(e) = login_res {
+        log::warn!("Login for {username} failed: {e}. Trying to register instead.");
+        let client = if let Some(token) = reg_token {
+            register_with_token_under_config(
+                config.clone(),
+                username.clone(),
+                password.clone(),
+                user_agent.clone(),
+                token,
+            )
+            .await?
+        } else {
+            register_under_config(
+                config.clone(),
+                username.clone(),
+                username.clone(),
+                user_agent.clone(),
+            )
+            .await?
+        };
+        client
+            .login_username(username.clone(), &username)
+            .send()
+            .await?;
+        Ok(client)
+    } else {
+        // login went fine
+        EfkClient::new(cl, Default::default()).await
+    }
 }
