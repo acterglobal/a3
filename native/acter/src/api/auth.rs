@@ -16,7 +16,8 @@ use super::{
     RUNTIME,
 };
 
-pub async fn sanatize_user(
+// public for only integration test, not api.rsh
+pub async fn sanitize_user(
     username: &str,
     default_homeserver_name: &str,
 ) -> Result<(OwnedUserId, bool)> {
@@ -37,14 +38,14 @@ pub async fn sanatize_user(
     Ok((user_id, true))
 }
 
-// for only integration test, not api.rsh
+// public for only integration test, not api.rsh
 pub async fn make_client_config(
     base_path: String,
     username: &str,
     default_homeserver_name: &str,
     default_homeserver_url: &str,
 ) -> Result<(ClientBuilder, OwnedUserId)> {
-    let (user_id, fallback) = sanatize_user(username, default_homeserver_name).await?;
+    let (user_id, fallback) = sanitize_user(username, default_homeserver_name).await?;
     let builder = platform::new_client_config(base_path, user_id.to_string(), true).await?;
     if fallback {
         Ok((builder.homeserver_url(default_homeserver_url), user_id))
@@ -89,7 +90,7 @@ pub async fn guest_client(
         .await?
 }
 
-// for only integration test, not api.rsh
+// public for only integration test, not api.rsh
 pub async fn login_with_token_under_config(
     restore_token: String,
     config: ClientBuilder,
@@ -148,7 +149,7 @@ async fn login_client(
     Client::new(client.clone(), state).await
 }
 
-// for only integration test, not api.rsh
+// public for only integration test, not api.rsh
 pub async fn login_new_client_under_config(
     config: ClientBuilder,
     user_id: OwnedUserId,
