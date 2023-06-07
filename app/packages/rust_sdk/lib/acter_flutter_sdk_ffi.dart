@@ -29,7 +29,8 @@ class _DartApi extends ffi.Struct {
 ffi.Pointer<T> _lookupDartSymbol<T extends ffi.NativeType>(String symbol) {
   final ffi.Pointer<_DartApi> api = ffi.NativeApi.initializeApiDLData.cast();
   final ffi.Pointer<_DartApiEntry> functions = api.ref.functions;
-  for (var i = 0; i < 100; i++) {
+  final maxInt = double.maxFinite.toInt();
+  for (var i = 0; i < maxInt; i++) {
     final func = functions.elementAt(i).ref;
     var symbol2 = "";
     var j = 0;

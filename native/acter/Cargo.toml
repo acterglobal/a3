@@ -67,6 +67,9 @@ features = [
 workspace = true
 optional = true
 
+[dependencies.proc-macro2]
+version = "=1.0.55"
+
 #   ----   WASM
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 tracing-wasm = "0.2.1"

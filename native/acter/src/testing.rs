@@ -15,7 +15,7 @@ use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use tokio::time::sleep;
 
 use crate::{
-    api::register_with_token_under_config, register_under_config, sanatize_user,
+    api::register_with_token_under_config, register_under_config, sanitize_user,
     Client as EfkClient,
 };
 
@@ -78,7 +78,7 @@ pub async fn ensure_user(
 ) -> Result<EfkClient> {
     let (user_id, config) = {
         let (user_id, fallback_to_default_homeserver) =
-            sanatize_user(&username, &homeserver_name).await?;
+            sanitize_user(&username, &homeserver_name).await?;
         let mut config = default_client_config(
             &homeserver_url,
             &username,
