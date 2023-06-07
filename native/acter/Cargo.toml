@@ -24,7 +24,7 @@ anyhow = "1.0.51"
 async-broadcast = { workspace = true }
 async-stream =  "0.3.4"
 chrono =  "0.4"
-derive_builder = { version = "0.10.2" }
+derive_builder = "0.10.2"
 eyeball-im = "0.2"
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
 ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen" }
@@ -38,7 +38,7 @@ parse-env-filter = "0.1.0"
 ruma = { workspace = true }
 sanitize-filename-reader-friendly = "2.2.1"
 serde = { version = "1", features = ["derive"] }
-serde_json = { version = "1" }
+serde_json = "1"
 tokio = "1"
 tracing = { version = "0.1.29", default-features = false, features = ["log"] }
 url = "2.2.2"

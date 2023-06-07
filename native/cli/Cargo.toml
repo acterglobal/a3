@@ -12,7 +12,7 @@ license-file = "../../LICENSE.txt"
 anyhow = "1"
 clap = { version = "4.1.8", features = ["derive", "cargo", "env", "unicode", "wrap_help"] }
 dialoguer = "0.9.0"
-futures = { version = "0.3.21" }
+futures = "0.3.21"
 env_logger = "0.10.0"
 matrix-sdk = { workspace = true }
 matrix-sdk-base = { workspace = true }
