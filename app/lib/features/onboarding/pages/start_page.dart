@@ -1,5 +1,5 @@
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
 import 'package:go_router/go_router.dart';
@@ -67,6 +67,7 @@ class StartPage extends StatelessWidget {
           ),
         ],
       ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
