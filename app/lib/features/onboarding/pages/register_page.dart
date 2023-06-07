@@ -1,8 +1,8 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
@@ -29,7 +29,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final TextEditingController confirmPassword = TextEditingController();
   final TextEditingController name = TextEditingController();
 
-  void _validateRegister(BuildContext context) {
+  void validateRegister(BuildContext context) {
     final bool isLoggedIn = ref.read(isLoggedInProvider);
     if (isLoggedIn) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -50,26 +50,40 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     }
   }
 
+  Future<void> handleSubmit() async {
+    if (formKey.currentState!.validate()) {
+      var network = ref.read(networkAwareProvider);
+      if (!inCI && network == NetworkStatus.Off) {
+        showNoInternetNotification();
+      } else {
+        var notifier = ref.read(authStateProvider.notifier);
+        await notifier.register(
+          username.text,
+          password.text,
+          name.text,
+          token.text,
+          context,
+        );
+        validateRegister(context);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
-    var network = ref.watch(networkAwareProvider);
-
-    final List<Widget> actions = [];
-    if (canGuestLogin) {
-      actions.add(
-        OutlinedButton(
-          onPressed: () async {
-            await ref.read(authStateProvider.notifier).makeGuest(context);
-          },
-          child: const Text('Continue as guest'),
-        ),
-      );
-    }
     return SimpleDialog(
       title: AppBar(
         title: const Text('Register'),
-        actions: actions,
+        actions: [
+          if (canGuestLogin)
+            OutlinedButton(
+              onPressed: () async {
+                await ref.read(authStateProvider.notifier).makeGuest(context);
+              },
+              child: const Text('Continue as guest'),
+            ),
+        ],
       ),
       children: [
         Form(
@@ -154,22 +168,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               authState
                   ? const CircularProgressIndicator()
                   : CustomButton(
-                      onPressed: () async {
-                        if (formKey.currentState!.validate()) {
-                          if (!inCI && network == NetworkStatus.Off) {
-                            showNoInternetNotification();
-                          } else {
-                            await ref.read(authStateProvider.notifier).register(
-                                  username.text,
-                                  password.text,
-                                  name.text,
-                                  token.text,
-                                  context,
-                                );
-                            _validateRegister(context);
-                          }
-                        }
-                      },
+                      onPressed: handleSubmit,
                       title: AppLocalizations.of(context)!.register,
                     ),
               const SizedBox(height: 20),

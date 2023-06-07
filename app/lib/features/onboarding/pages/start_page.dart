@@ -35,9 +35,7 @@ class StartPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Column(
               children: const <Widget>[
-                SizedBox(
-                  height: 480,
-                ),
+                SizedBox(height: 480),
                 Text('Welcome to acter'),
                 Text('Team. Team. Team.'),
               ],
@@ -47,9 +45,7 @@ class StartPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Column(
               children: const <Widget>[
-                SizedBox(
-                  height: 480,
-                ),
+                SizedBox(height: 480),
                 Text('Get organized. Together.'),
               ],
             ),
@@ -58,9 +54,7 @@ class StartPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Column(
               children: const <Widget>[
-                SizedBox(
-                  height: 480,
-                ),
+                SizedBox(height: 480),
                 Text('From anywhere. Any time. Mobile first'),
               ],
             ),
