@@ -1,11 +1,8 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/features/chat/controllers/chat_list_controller.dart';
-import 'package:acter/features/chat/controllers/chat_providers.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Client, Invitation;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +20,6 @@ class InvitationCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final invitationProfile = ref.watch(invitationProfileProvider(invitation));
-    final client = ref.watch(clientProvider);
     return invitationProfile.when(
       data: (data) {
         return Card(
@@ -69,8 +65,8 @@ class InvitationCard extends ConsumerWidget {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (await invitation.accept() == true) {
-                          final chatList = ref.watch(chatListProvider);
-                          for (var room in chatList.joinedRooms) {
+                          final joinedRooms = ref.watch(roomListProvider);
+                          for (var room in joinedRooms) {
                             if (room.conversation.getRoomId() ==
                                 invitation.roomId()) {
                               Navigator.push(

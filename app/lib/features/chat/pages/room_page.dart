@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/chat_theme.dart';
-import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/pages/profile_page.dart';
 import 'package:acter/features/chat/widgets/bubble_builder.dart';
@@ -16,8 +16,7 @@ import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:acter/features/chat/widgets/empty_history_placeholder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/chat/widgets/type_indicator.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Client, Conversation, FfiBufferUint8;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Conversation;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -27,14 +26,12 @@ import 'package:get/get.dart';
 import 'package:string_validator/string_validator.dart';
 
 class RoomPage extends ConsumerStatefulWidget {
-  final Future<FfiBufferUint8>? avatar;
   final String? name;
   final Conversation conversation;
 
   const RoomPage({
     Key? key,
     required this.conversation,
-    this.avatar,
     this.name,
   }) : super(key: key);
 
@@ -435,7 +432,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               client: client!,
               room: widget.conversation,
               roomName: widget.name,
-              roomAvatar: widget.avatar,
               isGroup: true,
               isAdmin: true,
             ),
@@ -481,7 +477,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
 
   Widget buildBody(BuildContext context) {
     final client = ref.watch(clientProvider);
-    final chatList = ref.watch(chatListProvider);
+    final invitations = ref.watch(invitationListProvider);
     if (roomController.isLoading.isTrue) {
       return const Center(
         child: SizedBox(
@@ -491,7 +487,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
         ),
       );
     }
-    int invitedIndex = chatList.invitations.indexWhere((x) {
+    int invitedIndex = invitations.indexWhere((x) {
       return x.roomId() == widget.conversation.getRoomId();
     });
     return GetBuilder<ChatRoomController>(

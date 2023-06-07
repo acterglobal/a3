@@ -16,7 +16,6 @@ class ProfilePage extends StatelessWidget {
   final Client client;
   final Conversation room;
   final String? roomName;
-  final Future<FfiBufferUint8>? roomAvatar;
   final bool isGroup;
   final bool isAdmin;
 
@@ -27,7 +26,6 @@ class ProfilePage extends StatelessWidget {
     required this.isGroup,
     required this.isAdmin,
     this.roomName,
-    this.roomAvatar,
   }) : super(key: key);
 
   @override

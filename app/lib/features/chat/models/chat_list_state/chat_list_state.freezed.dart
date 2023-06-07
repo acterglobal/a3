@@ -16,8 +16,6 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ChatListState {
-  List<JoinedRoom> get joinedRooms => throw _privateConstructorUsedError;
-  List<Invitation> get invitations => throw _privateConstructorUsedError;
   bool get showSearch => throw _privateConstructorUsedError;
   List<JoinedRoom> get searchData => throw _privateConstructorUsedError;
   bool get initialLoaded => throw _privateConstructorUsedError;
@@ -33,12 +31,7 @@ abstract class $ChatListStateCopyWith<$Res> {
           ChatListState value, $Res Function(ChatListState) then) =
       _$ChatListStateCopyWithImpl<$Res, ChatListState>;
   @useResult
-  $Res call(
-      {List<JoinedRoom> joinedRooms,
-      List<Invitation> invitations,
-      bool showSearch,
-      List<JoinedRoom> searchData,
-      bool initialLoaded});
+  $Res call({bool showSearch, List<JoinedRoom> searchData, bool initialLoaded});
 }
 
 /// @nodoc
@@ -54,21 +47,11 @@ class _$ChatListStateCopyWithImpl<$Res, $Val extends ChatListState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? joinedRooms = null,
-    Object? invitations = null,
     Object? showSearch = null,
     Object? searchData = null,
     Object? initialLoaded = null,
   }) {
     return _then(_value.copyWith(
-      joinedRooms: null == joinedRooms
-          ? _value.joinedRooms
-          : joinedRooms // ignore: cast_nullable_to_non_nullable
-              as List<JoinedRoom>,
-      invitations: null == invitations
-          ? _value.invitations
-          : invitations // ignore: cast_nullable_to_non_nullable
-              as List<Invitation>,
       showSearch: null == showSearch
           ? _value.showSearch
           : showSearch // ignore: cast_nullable_to_non_nullable
@@ -93,12 +76,7 @@ abstract class _$$_ChatListStateCopyWith<$Res>
       __$$_ChatListStateCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {List<JoinedRoom> joinedRooms,
-      List<Invitation> invitations,
-      bool showSearch,
-      List<JoinedRoom> searchData,
-      bool initialLoaded});
+  $Res call({bool showSearch, List<JoinedRoom> searchData, bool initialLoaded});
 }
 
 /// @nodoc
@@ -112,21 +90,11 @@ class __$$_ChatListStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? joinedRooms = null,
-    Object? invitations = null,
     Object? showSearch = null,
     Object? searchData = null,
     Object? initialLoaded = null,
   }) {
     return _then(_$_ChatListState(
-      joinedRooms: null == joinedRooms
-          ? _value.joinedRooms
-          : joinedRooms // ignore: cast_nullable_to_non_nullable
-              as List<JoinedRoom>,
-      invitations: null == invitations
-          ? _value.invitations
-          : invitations // ignore: cast_nullable_to_non_nullable
-              as List<Invitation>,
       showSearch: null == showSearch
           ? _value.showSearch
           : showSearch // ignore: cast_nullable_to_non_nullable
@@ -147,18 +115,10 @@ class __$$_ChatListStateCopyWithImpl<$Res>
 
 class _$_ChatListState implements _ChatListState {
   const _$_ChatListState(
-      {this.joinedRooms = const [],
-      this.invitations = const [],
-      this.showSearch = false,
+      {this.showSearch = false,
       this.searchData = const [],
       this.initialLoaded = false});
 
-  @override
-  @JsonKey()
-  final List<JoinedRoom> joinedRooms;
-  @override
-  @JsonKey()
-  final List<Invitation> invitations;
   @override
   @JsonKey()
   final bool showSearch;
@@ -171,7 +131,7 @@ class _$_ChatListState implements _ChatListState {
 
   @override
   String toString() {
-    return 'ChatListState(joinedRooms: $joinedRooms, invitations: $invitations, showSearch: $showSearch, searchData: $searchData, initialLoaded: $initialLoaded)';
+    return 'ChatListState(showSearch: $showSearch, searchData: $searchData, initialLoaded: $initialLoaded)';
   }
 
   @override
@@ -179,10 +139,6 @@ class _$_ChatListState implements _ChatListState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_ChatListState &&
-            const DeepCollectionEquality()
-                .equals(other.joinedRooms, joinedRooms) &&
-            const DeepCollectionEquality()
-                .equals(other.invitations, invitations) &&
             (identical(other.showSearch, showSearch) ||
                 other.showSearch == showSearch) &&
             const DeepCollectionEquality()
@@ -192,13 +148,8 @@ class _$_ChatListState implements _ChatListState {
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(joinedRooms),
-      const DeepCollectionEquality().hash(invitations),
-      showSearch,
-      const DeepCollectionEquality().hash(searchData),
-      initialLoaded);
+  int get hashCode => Object.hash(runtimeType, showSearch,
+      const DeepCollectionEquality().hash(searchData), initialLoaded);
 
   @JsonKey(ignore: true)
   @override
@@ -209,16 +160,10 @@ class _$_ChatListState implements _ChatListState {
 
 abstract class _ChatListState implements ChatListState {
   const factory _ChatListState(
-      {final List<JoinedRoom> joinedRooms,
-      final List<Invitation> invitations,
-      final bool showSearch,
+      {final bool showSearch,
       final List<JoinedRoom> searchData,
       final bool initialLoaded}) = _$_ChatListState;
 
-  @override
-  List<JoinedRoom> get joinedRooms;
-  @override
-  List<Invitation> get invitations;
   @override
   bool get showSearch;
   @override

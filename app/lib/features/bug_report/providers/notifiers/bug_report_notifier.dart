@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/features/bug_report/data/bug_report.dart';
+import 'package:acter/features/bug_report/models/bug_report.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';

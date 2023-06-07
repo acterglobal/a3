@@ -2,7 +2,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
-import 'package:acter/features/chat/models/joined_room.dart';
+import 'package:acter/features/chat/models/joined_room/joined_room.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -40,7 +40,7 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
   @override
   Widget build(BuildContext context) {
     final client = ref.watch(clientProvider);
-    String roomId = widget.room.conversation.getRoomId().toString();
+    String roomId = widget.room.id;
     final convoProfile =
         ref.watch(chatProfileDataProvider(widget.room.conversation));
     // ToDo: UnreadCounter
@@ -99,7 +99,6 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
         builder: (context) => RoomPage(
           conversation: widget.room.conversation,
           name: widget.room.displayName,
-          avatar: widget.room.avatar,
         ),
       ),
     );
