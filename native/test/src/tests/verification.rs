@@ -4,6 +4,8 @@ use futures::{channel::mpsc::Receiver, stream::StreamExt};
 use log::info;
 use tempfile::TempDir;
 
+use crate::utils::default_user_password;
+
 fn wait_for_verification_event(
     rx: &mut Receiver<VerificationEvent>,
     name: &str,
@@ -26,7 +28,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let mut alice = login_new_client(
         alice_dir.path().to_str().expect("always works").to_string(),
         "@sisko".to_string(),
-        "sisko".to_string(),
+        default_user_password("sisko"),
         option_env!("DEFAULT_HOMESERVER_NAME")
             .unwrap_or("localhost")
             .to_string(),
@@ -44,7 +46,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let mut bob = login_new_client(
         bob_dir.path().to_str().expect("always works").to_string(),
         "@sisko".to_string(),
-        "sisko".to_string(),
+        default_user_password("sisko"),
         option_env!("DEFAULT_HOMESERVER_NAME")
             .unwrap_or("localhost")
             .to_string(),

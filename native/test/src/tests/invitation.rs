@@ -5,6 +5,8 @@ use std::time::Duration;
 use tempfile::TempDir;
 use tokio::time::sleep;
 
+use crate::utils::default_user_password;
+
 #[tokio::test]
 async fn load_pending_invitation() -> Result<()> {
     let _ = env_logger::try_init();
@@ -20,7 +22,7 @@ async fn load_pending_invitation() -> Result<()> {
     let mut sisko = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko".to_string(),
-        "sisko".to_string(),
+        default_user_password("sisko"),
         homeserver_name.clone(),
         homeserver_url.clone(),
         Some("SISKO_DEV".to_string()),
@@ -32,7 +34,7 @@ async fn load_pending_invitation() -> Result<()> {
     let mut kyra = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@kyra".to_string(),
-        "kyra".to_string(),
+        default_user_password("kyra"),
         homeserver_name.clone(),
         homeserver_url.clone(),
         Some("KYRA_DEV".to_string()),
