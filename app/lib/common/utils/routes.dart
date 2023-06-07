@@ -3,6 +3,7 @@ enum Routes {
   actionAddTask('/actions/addTask'),
 
   // --- Auth
+  start('/start'),
   authLogin('/login'),
   authRegister('/register'),
 
@@ -19,6 +20,11 @@ enum Routes {
   // --- chat
   chat('/chat'),
   chatroom('/chat/:spaceId([!#][^/]+)'), // !roomId, #roomName
+
+  // --- updates
+  updatesEdit('updates_edit'),
+  updatesPost('updates_post'),
+  updatesPostSearch('post_search'),
 
   // -- spaces
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName

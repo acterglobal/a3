@@ -3,3 +3,4 @@ Feature: Login Smoketest
 
   Scenario: After login, ensure username
     Given kyra has logged in
+    Given App has settled

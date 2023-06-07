@@ -1,29 +1,9 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-
-class _MemberItem {
-  Future<FfiBufferUint8> avatar;
-  String? displayName;
-
-  _MemberItem({
-    required this.avatar,
-    required this.displayName,
-  });
-}
-
-final _memberItemProvider =
-    FutureProvider.family<_MemberItem, Member>((ref, member) async {
-  UserProfile profile = member.getProfile();
-  DispName dispName = await profile.getDisplayName();
-  return _MemberItem(
-    avatar: profile.getAvatar(),
-    displayName: dispName.text(),
-  );
-});
 
 class MemberAvatar extends ConsumerWidget {
   final Member member;
@@ -32,7 +12,7 @@ class MemberAvatar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(_memberItemProvider(member));
+    final profile = ref.watch(memberProfileProvider(member));
     return profile.when(
       data: (data) {
         return Column(
@@ -49,10 +29,7 @@ class MemberAvatar extends ConsumerWidget {
                 mode: DisplayMode.User,
                 uniqueId: member.userId().toString(),
                 size: 20,
-                avatarProviderFuture: remapToImage(
-                  data.avatar,
-                  cacheHeight: 54,
-                ),
+                avatar: data.getAvatarImage(),
                 displayName: data.displayName,
               ),
             ),

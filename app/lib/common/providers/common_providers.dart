@@ -2,8 +2,9 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/network_notifier.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Account, Conversation, Member, UserProfile;
+    show Account, Conversation, DispName, Member, UserProfile;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Network/Connectivity Providers
@@ -35,14 +36,9 @@ final accountProvider = FutureProvider((ref) async {
 });
 
 final accountProfileProvider = FutureProvider((ref) async {
-  final account = ref.watch(accountProvider).requireValue;
+  final account = await ref.watch(accountProvider.future);
   final profile = await getProfileData(account);
   return AccountProfile(account, profile);
-});
-
-final userProfileProvider = FutureProvider<UserProfile>((ref) async {
-  final client = ref.watch(clientProvider);
-  return client!.getUserProfile();
 });
 
 // Chat Providers
@@ -78,4 +74,29 @@ final chatMembersProvider =
   final chat = ref.watch(chatProvider(roomIdOrAlias)).requireValue;
   final members = await chat.activeMembers();
   return members.toList();
+});
+
+final relatedChatsProvider =
+    FutureProvider.family<List<Conversation>, String>((ref, spaceId) async {
+  final client = ref.watch(clientProvider)!;
+  final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
+  final chats = [];
+  final children = relatedSpaces.children();
+  for (final related in children) {
+    if (related.targetType() == 'ChatRoom') {
+      final roomId = related.roomId().toString();
+      final room = await client.conversation(roomId);
+      chats.add(room);
+    }
+  }
+  return List<Conversation>.from(chats);
+});
+
+// Member Providers
+final memberProfileProvider =
+    FutureProvider.family.autoDispose<ProfileData, Member>((ref, member) async {
+  UserProfile profile = member.getProfile();
+  DispName dispName = await profile.getDisplayName();
+  final avatar = await profile.getAvatar();
+  return ProfileData(dispName.text(), avatar);
 });

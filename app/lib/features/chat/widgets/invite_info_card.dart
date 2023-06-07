@@ -2,7 +2,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, DispName, FfiBufferUint8, Invitation;
 import 'package:flutter/material.dart';
@@ -58,12 +57,6 @@ class _InviteInfoCardState extends State<InviteInfoCard> {
             leading: ActerAvatar(
               mode: DisplayMode.User,
               uniqueId: myId,
-              avatarProviderFuture: avatar != null
-                  ? remapToImage(
-                      avatar!,
-                      cacheHeight: 54,
-                    )
-                  : null,
               displayName: displayName,
               size: 20,
             ),

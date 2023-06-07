@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -31,7 +31,7 @@ class Dashboard extends ConsumerWidget {
                 IconButton(
                   icon: const Icon(Atlas.settings_monitor_thin),
                   onPressed: () {
-                    showNotYetImplementedMsg(
+                    customMsgSnackbar(
                       context,
                       'Configuration Page for Dashboard not yet implemented',
                     );

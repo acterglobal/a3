@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
@@ -286,7 +286,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                           ),
                           IconButton(
                             onPressed: () {
-                              showNotYetImplementedMsg(
+                              customMsgSnackbar(
                                 context,
                                 'Send not yet implemented',
                               );
@@ -358,7 +358,7 @@ class _ProfileImageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        showNotYetImplementedMsg(context, 'Profile Action not yet implemented');
+        customMsgSnackbar(context, 'Profile Action not yet implemented');
       },
       child: CachedNetworkImage(
         imageUrl:

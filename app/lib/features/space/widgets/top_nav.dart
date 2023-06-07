@@ -19,12 +19,12 @@ class _TopNavBarState extends State<TopNavBar>
     'Events',
     'Tasks'
   ];
-  final List<Icon> tabIcons = const [
-    Icon(Atlas.layout_half_thin),
-    Icon(Atlas.chats_thin),
-    Icon(Atlas.connection_thin),
-    Icon(Atlas.calendar_dots_thin),
-    Icon(Atlas.check_folder_thin),
+  final List<IconData> tabIcons = const [
+    Atlas.layout_half_thin,
+    Atlas.chats_thin,
+    Atlas.connection_thin,
+    Atlas.calendar_dots_thin,
+    Atlas.check_folder_thin,
   ];
 
   @override
@@ -35,38 +35,73 @@ class _TopNavBarState extends State<TopNavBar>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(10),
-          topRight: Radius.circular(10),
-        ),
-        color: Theme.of(context).colorScheme.background,
-      ),
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: TabBar(
-        controller: _tabController,
-        labelStyle: Theme.of(context).textTheme.bodySmall,
-        labelColor: Colors.white,
-        indicatorColor: Theme.of(context).colorScheme.tertiary,
-        tabs: List.generate(
-          tabLabels.length,
-          (index) => Tab(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                tabIcons[index],
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(tabLabels[index]),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return (constraints.maxWidth > 600)
+            ? Container(
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                  color: Theme.of(context).colorScheme.background,
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: TabBar(
+                  controller: _tabController,
+                  labelStyle: Theme.of(context).textTheme.bodySmall,
+                  labelColor: Colors.white,
+                  indicatorColor: Theme.of(context).colorScheme.tertiary,
+                  tabs: List.generate(
+                    tabLabels.length,
+                    (index) => Tab(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(tabIcons[index]),
+                          const SizedBox(width: 10),
+                          Text(tabLabels[index]),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Container(
+                height: MediaQuery.of(context).size.height * 0.12,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                  color: Theme.of(context).colorScheme.background,
+                ),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: TabBar(
+                  controller: _tabController,
+                  labelStyle: Theme.of(context).textTheme.labelSmall,
+                  labelColor: Colors.white,
+                  indicatorColor: Theme.of(context).colorScheme.tertiary,
+                  tabs: List.generate(
+                    tabLabels.length,
+                    (index) => Tab(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(tabIcons[index]),
+                          const SizedBox(height: 5),
+                          Text(tabLabels[index]),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+      },
     );
   }
 }

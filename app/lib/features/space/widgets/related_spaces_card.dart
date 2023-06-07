@@ -1,32 +1,13 @@
 import 'dart:core';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-final relatedSpacesProvider =
-    FutureProvider.family<List<Space>, String>((ref, spaceId) async {
-  final client = ref.watch(clientProvider)!;
-  final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
-  final spaces = [];
-  for (final related in relatedSpaces.children()) {
-    String targetType = related.targetType();
-    if (targetType != 'ChatRoom') {
-      final roomId = related.roomId().toString();
-      final space = await client.getSpace(roomId);
-      spaces.add(space);
-    }
-  }
-  return List<Space>.from(spaces);
-});
-
-class SpacesCard extends ConsumerWidget {
+class RelatedSpacesCard extends ConsumerWidget {
   final String spaceId;
-
-  const SpacesCard({super.key, required this.spaceId});
+  const RelatedSpacesCard({super.key, required this.spaceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,22 +33,26 @@ class SpacesCard extends ConsumerWidget {
                   return profile.when(
                     data: (profile) => Padding(
                       padding: const EdgeInsets.only(bottom: 10),
-                      child: ListTile(
-                        onTap: () => context.go('/$roomId'),
-                        title: Text(
-                          profile.displayName ?? roomId,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        leading: profile.hasAvatar()
-                            ? CircleAvatar(
-                                foregroundImage: profile.getAvatarImage(),
-                                radius: 24,
-                              )
-                            : SvgPicture.asset(
-                                'assets/icon/acter.svg',
-                                height: 24,
-                                width: 24,
-                              ),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            onTap: () => context.go('/$roomId'),
+                            title: Text(
+                              profile.displayName ?? roomId,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            leading: profile.hasAvatar()
+                                ? CircleAvatar(
+                                    foregroundImage: profile.getAvatarImage(),
+                                    radius: 24,
+                                  )
+                                : SvgPicture.asset(
+                                    'assets/icon/acter.svg',
+                                    height: 24,
+                                    width: 24,
+                                  ),
+                          ),
+                        ],
                       ),
                     ),
                     error: (error, stack) => ListTile(
@@ -83,7 +68,7 @@ class SpacesCard extends ConsumerWidget {
               ),
               error: (error, stack) => [Text('Loading spaces failed: $error')],
               loading: () => [const Text('Loading')],
-            )
+            ),
           ],
         ),
       ),

@@ -32,15 +32,13 @@ final spacesProvider = FutureProvider<List<Space>>((ref) async {
 
 class SpaceItem {
   String roomId;
-  String? displayName;
+  ProfileData spaceProfileData;
   List<Member> activeMembers;
-  Future<FfiBufferUint8>? avatar;
 
   SpaceItem({
     required this.roomId,
     required this.activeMembers,
-    this.displayName,
-    this.avatar,
+    required this.spaceProfileData,
   });
 }
 
@@ -50,15 +48,14 @@ final spaceItemsProvider = FutureProvider<List<SpaceItem>>((ref) async {
   final spaces = await client.spaces();
   List<SpaceItem> items = [];
   spaces.toList().forEach((element) async {
-    RoomProfile profile = element.getProfile();
     List<Member> members =
         await element.activeMembers().then((ffiList) => ffiList.toList());
-    DispName name = await profile.getDisplayName();
+    final profileData =
+        await ref.watch(spaceProfileDataProvider(element).future);
     var item = SpaceItem(
       roomId: element.getRoomId().toString(),
-      displayName: name.text(),
       activeMembers: members,
-      avatar: profile.hasAvatar() ? profile.getThumbnail(120, 120) : null,
+      spaceProfileData: profileData,
     );
     items.add(item);
   });
@@ -104,4 +101,20 @@ final canonicalParentProvider =
   final parentSpace = await client.getSpace(parent.roomId().toString());
   final profile = await getSpaceProfileData(parentSpace);
   return SpaceWithProfileData(parentSpace, profile);
+});
+
+final relatedSpacesProvider =
+    FutureProvider.family<List<Space>, String>((ref, spaceId) async {
+  final client = ref.watch(clientProvider)!;
+  final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
+  final spaces = [];
+  for (final related in relatedSpaces.children()) {
+    String targetType = related.targetType();
+    if (targetType != 'ChatRoom') {
+      final roomId = related.roomId().toString();
+      final space = await client.getSpace(roomId);
+      spaces.add(space);
+    }
+  }
+  return List<Space>.from(spaces);
 });

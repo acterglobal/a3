@@ -29,7 +29,8 @@ class _DartApi extends ffi.Struct {
 ffi.Pointer<T> _lookupDartSymbol<T extends ffi.NativeType>(String symbol) {
   final ffi.Pointer<_DartApi> api = ffi.NativeApi.initializeApiDLData.cast();
   final ffi.Pointer<_DartApiEntry> functions = api.ref.functions;
-  for (var i = 0; i < 100; i++) {
+  final maxInt = double.maxFinite.toInt();
+  for (var i = 0; i < maxInt; i++) {
     final func = functions.elementAt(i).ref;
     var symbol2 = "";
     var j = 0;
@@ -900,7 +901,7 @@ class Api {
     String registrationToken,
     String defaultHomeserverName,
     String defaultHomeserverUrl,
-    String? deviceName,
+    String deviceName,
   ) {
     final tmp0 = basepath;
     final tmp4 = username;
@@ -928,9 +929,8 @@ class Api {
     var tmp22 = 0;
     var tmp23 = 0;
     var tmp25 = 0;
+    var tmp26 = 0;
     var tmp27 = 0;
-    var tmp28 = 0;
-    var tmp29 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
@@ -973,20 +973,14 @@ class Api {
     tmp21_1.setAll(0, tmp20_0);
     tmp21 = tmp21_0.address;
     tmp23 = tmp22;
-    if (tmp24 == null) {
-      tmp25 = 0;
-    } else {
-      tmp25 = 1;
-      final tmp26 = tmp24;
-      final tmp26_0 = utf8.encode(tmp26);
-      tmp28 = tmp26_0.length;
-      final ffi.Pointer<ffi.Uint8> tmp27_0 = this.__allocate(tmp28 * 1, 1);
-      final Uint8List tmp27_1 = tmp27_0.asTypedList(tmp28);
-      tmp27_1.setAll(0, tmp26_0);
-      tmp27 = tmp27_0.address;
-      tmp29 = tmp28;
-    }
-    final tmp30 = _registerWithToken(
+    final tmp24_0 = utf8.encode(tmp24);
+    tmp26 = tmp24_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp25_0 = this.__allocate(tmp26 * 1, 1);
+    final Uint8List tmp25_1 = tmp25_0.asTypedList(tmp26);
+    tmp25_1.setAll(0, tmp24_0);
+    tmp25 = tmp25_0.address;
+    tmp27 = tmp26;
+    final tmp28 = _registerWithToken(
       tmp1,
       tmp2,
       tmp3,
@@ -1006,16 +1000,15 @@ class Api {
       tmp22,
       tmp23,
       tmp25,
+      tmp26,
       tmp27,
-      tmp28,
-      tmp29,
     );
-    final tmp32 = tmp30;
-    final ffi.Pointer<ffi.Void> tmp32_0 = ffi.Pointer.fromAddress(tmp32);
-    final tmp32_1 = _Box(this, tmp32_0, "__register_with_token_future_drop");
-    tmp32_1._finalizer = this._registerFinalizer(tmp32_1);
-    final tmp31 = _nativeFuture(tmp32_1, this.__registerWithTokenFuturePoll);
-    return tmp31;
+    final tmp30 = tmp28;
+    final ffi.Pointer<ffi.Void> tmp30_0 = ffi.Pointer.fromAddress(tmp30);
+    final tmp30_1 = _Box(this, tmp30_0, "__register_with_token_future_drop");
+    tmp30_1._finalizer = this._registerFinalizer(tmp30_1);
+    final tmp29 = _nativeFuture(tmp30_1, this.__registerWithTokenFuturePoll);
+    return tmp29;
   }
 
   EfkDuration durationFromSecs(
@@ -7486,7 +7479,6 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Uint8,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
@@ -7494,7 +7486,6 @@ class Api {
 
   late final _registerWithToken = _registerWithTokenPtr.asFunction<
       int Function(
-    int,
     int,
     int,
     int,

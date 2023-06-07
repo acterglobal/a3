@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,8 +22,8 @@ class _NewsBuilderPageState extends ConsumerState<NewsBuilderPage> {
           child: StoriesEditor(
             giphyKey: giphyKey,
             onDone: (uri) {
-              debugPrint(uri);
-              context.push('/updates/post', extra: uri);
+              debugPrint('Post URI:$uri');
+              context.pushNamed(Routes.updatesPost.name, extra: uri);
             },
             middleBottomWidget: const BottomWidget(),
             onDoneButtonStyle: const DoneButton(),

@@ -1,7 +1,7 @@
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
-import 'package:acter/features/home/data/repositories/sdk_repository.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
@@ -17,12 +17,11 @@ class AuthStateNotifier extends StateNotifier<bool> {
   Future<void> login(
     String username,
     String password,
-    BuildContext context,
   ) async {
     state = true;
-    final sdk = ref.read(sdkRepositoryProvider);
+    final sdk = await ref.watch(sdkProvider.future);
     try {
-      final client = await sdk.loginClient(username, password);
+      final client = await sdk.login(username, password);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.watch(clientProvider.notifier).state = client;
       ref.watch(clientProvider.notifier).syncState = client.startSync();
@@ -31,9 +30,26 @@ class AuthStateNotifier extends StateNotifier<bool> {
       Get.replace(ChatRoomController(client: client));
       Get.replace(ReceiptController(client: client));
       state = false;
-      context.goNamed(Routes.main.name);
     } catch (e) {
       debugPrint('$e');
+      state = false;
+    }
+  }
+
+  Future<void> makeGuest(
+    BuildContext? context,
+  ) async {
+    state = true;
+    final sdk = await ref.watch(sdkProvider.future);
+    try {
+      final client = await sdk.newGuestClient(setAsCurrent: true);
+      ref.read(isLoggedInProvider.notifier).update((state) => !state);
+      ref.read(clientProvider.notifier).state = client;
+      state = false;
+      if (context != null) {
+        context.goNamed(Routes.main.name);
+      }
+    } catch (e) {
       state = false;
     }
   }
@@ -46,10 +62,9 @@ class AuthStateNotifier extends StateNotifier<bool> {
     BuildContext context,
   ) async {
     state = true;
-    final sdk = ref.read(sdkRepositoryProvider);
+    final sdk = await ref.watch(sdkProvider.future);
     try {
-      final client =
-          await sdk.registerClient(username, password, displayName, token);
+      final client = await sdk.register(username, password, displayName, token);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
       state = false;
@@ -59,13 +74,12 @@ class AuthStateNotifier extends StateNotifier<bool> {
     }
   }
 
-  Future<void> logout(BuildContext context) async {
-    final sdk = ref.read(sdkRepositoryProvider);
-    await sdk.logoutClient();
+  void logout(BuildContext context) async {
+    final sdk = await ref.watch(sdkProvider.future);
+    await sdk.logout();
     ref.read(isLoggedInProvider.notifier).update((state) => !state);
     // return to guest client.
-    ref.watch(clientProvider.notifier).state = sdk.getClient();
-    context.pop();
+    ref.read(clientProvider.notifier).state = sdk.currentClient;
     context.goNamed(Routes.main.name);
   }
 }

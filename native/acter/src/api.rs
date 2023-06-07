@@ -46,7 +46,8 @@ pub use acter_core::{
 };
 pub use auth::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token,
-    login_with_token_under_config, make_client_config, register_with_token,
+    login_with_token_under_config, make_client_config, register_under_config, register_with_token,
+    register_with_token_under_config, sanitize_user,
 };
 pub use calendar_events::CalendarEvent;
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};

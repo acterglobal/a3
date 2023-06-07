@@ -6,6 +6,8 @@ use anyhow::{bail, Result};
 use futures::stream::StreamExt;
 use tempfile::TempDir;
 
+use crate::utils::default_user_password;
+
 #[tokio::test]
 async fn sisko_replies_message() -> Result<()> {
     let _ = env_logger::try_init();
@@ -20,7 +22,7 @@ async fn sisko_replies_message() -> Result<()> {
     let mut sisko = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko".to_string(),
-        "sisko".to_string(),
+        default_user_password("sisko"),
         homeserver_name,
         homeserver_url,
         Some("SISKO_DEV".to_string()),

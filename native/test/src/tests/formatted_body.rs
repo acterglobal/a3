@@ -5,6 +5,8 @@ use log::warn;
 use tempfile::TempDir;
 use tokio::time::{sleep, Duration};
 
+use crate::utils::default_user_password;
+
 #[tokio::test]
 #[ignore = "test runs forever in github runner, it works well in local synapse :("]
 async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
@@ -22,7 +24,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let mut sisko = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko".to_string(),
-        "sisko".to_string(),
+        default_user_password("sisko"),
         homeserver_name.clone(),
         homeserver_url.clone(),
         Some("SISKO_DEV".to_string()),
@@ -43,7 +45,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let mut kyra = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@kyra".to_string(),
-        "kyra".to_string(),
+        default_user_password("kyra"),
         homeserver_name.clone(),
         homeserver_url.clone(),
         Some("KYRA_DEV".to_string()),

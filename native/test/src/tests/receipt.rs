@@ -3,6 +3,8 @@ use anyhow::Result;
 use futures::stream::StreamExt;
 use tempfile::TempDir;
 
+use crate::utils::default_user_password;
+
 #[tokio::test]
 async fn sisko_detects_kyra_read() -> Result<()> {
     let _ = env_logger::try_init();
@@ -17,7 +19,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     let mut sisko = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko".to_string(),
-        "sisko".to_string(),
+        default_user_password("sisko"),
         homeserver_name.clone(),
         homeserver_url.clone(),
         Some("SISKO_DEV".to_string()),
@@ -38,7 +40,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     let mut kyra = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@kyra".to_string(),
-        "kyra".to_string(),
+        default_user_password("kyra"),
         homeserver_name.clone(),
         homeserver_url.clone(),
         Some("KYRA_DEV".to_string()),

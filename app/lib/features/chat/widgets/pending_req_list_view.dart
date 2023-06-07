@@ -1,5 +1,4 @@
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
@@ -23,12 +22,6 @@ class PendingReqListView extends StatelessWidget {
         leading: ActerAvatar(
           mode: DisplayMode.User,
           uniqueId: userId,
-          avatarProviderFuture: avatar != null
-              ? remapToImage(
-                  avatar!,
-                  cacheSize: 54,
-                )
-              : null,
           displayName: displayName,
           size: 25,
         ),

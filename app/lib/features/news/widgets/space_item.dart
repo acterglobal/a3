@@ -1,22 +1,20 @@
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show remapToImage;
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show FfiBufferUint8, Member;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Member;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SpaceCard extends ConsumerWidget {
+class SpaceItem extends ConsumerWidget {
   final String? title;
   final List<Member> members;
-  final Future<FfiBufferUint8>? avatar;
+  final MemoryImage? avatar;
   final Function()? callback;
 
-  const SpaceCard({
+  const SpaceItem({
     super.key,
     this.title,
     required this.members,
-    required this.avatar,
+    this.avatar,
     this.callback,
   });
 
@@ -39,14 +37,8 @@ class SpaceCard extends ConsumerWidget {
                 child: ActerAvatar(
                   mode: DisplayMode.Space,
                   uniqueId: client.userId().toString(),
-                  avatarProviderFuture: avatar != null
-                      ? remapToImage(
-                          avatar!,
-                          cacheHeight: 120,
-                          cacheWidth: 120,
-                        )
-                      : null,
                   size: 36,
+                  avatar: avatar,
                 ),
               ),
               Container(

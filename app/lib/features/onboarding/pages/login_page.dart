@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
@@ -32,18 +31,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
-  void _validateLogin() {
+  void _validateLogin(BuildContext context) {
     final isLoggedIn = ref.watch(isLoggedInProvider);
 
     if (isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          key: LoginPageKeys.snackbarSuccess,
-          backgroundColor: Theme.of(context).colorScheme.success,
-          content: Text(AppLocalizations.of(context)!.loginSuccess),
-          duration: const Duration(seconds: 4),
-        ),
-      );
+      context.goNamed(Routes.main.name);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -61,7 +53,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final authState = ref.watch(authStateProvider);
     var network = ref.watch(networkAwareProvider);
     return SimpleDialog(
-      title: Text(AppLocalizations.of(context)!.logIn),
+      title: AppBar(
+        title: Text(AppLocalizations.of(context)!.logIn),
+      ),
       children: [
         Form(
           key: formKey,
@@ -111,15 +105,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       key: LoginPageKeys.submitBtn,
                       onPressed: () async {
                         if (formKey.currentState!.validate()) {
-                          if (network == NetworkStatus.Off) {
+                          if (!inCI && network == NetworkStatus.Off) {
                             showNoInternetNotification();
                           } else {
                             await ref.read(authStateProvider.notifier).login(
                                   username.text,
                                   password.text,
-                                  context,
                                 );
-                            _validateLogin();
+                            _validateLogin(context);
                           }
                         }
                       },

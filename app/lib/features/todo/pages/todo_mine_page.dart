@@ -1,4 +1,4 @@
-import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/features/todo/pages/assignments_page.dart';
 import 'package:acter/features/todo/pages/recent_activity_page.dart';
 import 'package:acter/features/todo/pages/bookmarks_page.dart';
@@ -70,7 +70,7 @@ class _ToDoMinePageState extends State<ToDoMinePage> {
         ),
         ListTile(
           onTap: () {
-            showNotYetImplementedMsg(
+            customMsgSnackbar(
               context,
               'Upcoming events is not yet Implemented',
             );

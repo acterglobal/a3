@@ -19,10 +19,7 @@ void confirmationDialog(BuildContext context, WidgetRef ref) {
             child: const Text('No'),
           ),
           TextButton(
-            onPressed: () async {
-              var notifier = ref.read(authStateProvider.notifier);
-              await notifier.logout(ctx);
-            },
+            onPressed: () => ref.read(authStateProvider.notifier).logout(ctx),
             child: const Text('Yes'),
           ),
         ],

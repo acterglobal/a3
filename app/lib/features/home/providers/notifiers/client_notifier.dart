@@ -1,5 +1,6 @@
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -7,24 +8,24 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
-class ClientNotifier extends StateNotifier<Client?> {
-  final Ref ref;
-  late ActerSdk sdk;
-  late SyncState syncState;
+final clientProvider = StateNotifierProvider<ClientNotifier, Client?>(
+  (ref) => ClientNotifier(ref),
+);
 
-  ClientNotifier(this.ref) : super(null) {
-    _loadUp();
+class ClientNotifier extends StateNotifier<Client?> {
+  late SyncState syncState;
+  ClientNotifier(Ref ref) : super(null) {
+    _loadUp(ref);
   }
 
-  void _loadUp() async {
-    final asyncSdk = await ActerSdk.instance;
+  Future<ActerSdk> _loadUp(Ref ref) async {
+    final asyncSdk = await ref.watch(sdkProvider.future);
     PlatformDispatcher.instance.onError = (exception, stackTrace) {
       asyncSdk.writeLog(exception.toString(), 'error');
       asyncSdk.writeLog(stackTrace.toString(), 'error');
       return true; // make this error handled
     };
-    sdk = asyncSdk;
-    state = sdk.currentClient;
+    state = asyncSdk.currentClient;
     if (state != null || !state!.isGuest()) {
       Get.put(ChatListController(client: state!));
       Get.put(ChatRoomController(client: state!));
@@ -36,5 +37,6 @@ class ClientNotifier extends StateNotifier<Client?> {
       await Future.delayed(const Duration(milliseconds: 1500));
       syncState = state!.startSync();
     }
+    return asyncSdk;
   }
 }
