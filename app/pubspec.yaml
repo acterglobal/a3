@@ -122,6 +122,11 @@ dev_dependencies:
   icons_launcher: ^2.0.1
   flutter_lints: ^1.0.4
   build_runner: ^2.3.3
+  # The current build runner version is breaking when generating due to the issue 
+  # https://github.com/dart-lang/build/issues/3519, the most probable fix is to upgrade
+  # but that requires updated flutter SDK, temporarily we can add build_runner_core
+  # as a fix and be compatible with flutter 3.7 versions.
+  build_runner_core: ^7.2.7+1
   flutter_gherkin:
     # path: "../../flutter_gherkin"
     git:
