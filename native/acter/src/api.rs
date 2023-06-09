@@ -77,11 +77,11 @@ pub use tasks::{
 pub use typing::TypingEvent;
 pub use verification::{VerificationEmoji, VerificationEvent};
 
-pub type DeviceId = acter_core::ruma::OwnedDeviceId;
-pub type EventId = acter_core::ruma::OwnedEventId;
-pub type MxcUri = acter_core::ruma::OwnedMxcUri;
-pub type RoomId = acter_core::ruma::OwnedRoomId;
-pub type UserId = acter_core::ruma::OwnedUserId;
+pub type DeviceId = matrix_sdk::ruma::OwnedDeviceId;
+pub type EventId = matrix_sdk::ruma::OwnedEventId;
+pub type MxcUri = matrix_sdk::ruma::OwnedMxcUri;
+pub type RoomId = matrix_sdk::ruma::OwnedRoomId;
+pub type UserId = matrix_sdk::ruma::OwnedUserId;
 
 #[cfg(all(not(doctest), feature = "dart"))]
 ffi_gen_macro::ffi_gen!("native/acter/api.rsh");

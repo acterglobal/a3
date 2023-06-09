@@ -101,13 +101,15 @@ mod tests {
     use super::*;
     use crate::events::{comments::CommentEventContent, BelongsTo};
     use crate::models::{Comment, TestModelBuilder};
-    use crate::ruma::{api::MatrixVersion, event_id};
     use env_logger;
-    use matrix_sdk::{ruma::events::room::message::TextMessageEventContent, Client};
+    use matrix_sdk::{
+        ruma::{api::MatrixVersion, event_id, events::room::message::TextMessageEventContent},
+        Client,
+    };
+    use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 
     async fn fresh_executor() -> crate::Result<Executor> {
-        let config = matrix_sdk_base::store::StoreConfig::default()
-            .state_store(matrix_sdk_base::store::MemoryStore::new());
+        let config = StoreConfig::default().state_store(MemoryStore::new());
         let client = Client::builder()
             .homeserver_url("http://localhost")
             .server_versions([MatrixVersion::V1_5])

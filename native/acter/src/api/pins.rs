@@ -4,13 +4,15 @@ use acter_core::{
         Icon, TextMessageEventContent,
     },
     models::{self, ActerModel, AnyActerModel, Color},
-    ruma::{OwnedEventId, OwnedRoomId},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
 use core::time::Duration;
-use matrix_sdk::{room::Joined, room::Room};
+use matrix_sdk::{
+    room::{Joined, Room},
+    ruma::{OwnedEventId, OwnedRoomId},
+};
 use std::collections::{hash_map::Entry, HashMap};
 
 use super::{client::Client, spaces::Space, RUNTIME};

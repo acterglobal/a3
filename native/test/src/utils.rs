@@ -1,9 +1,13 @@
-use acter::{matrix_sdk::config::StoreConfig, testing::ensure_user, CreateSpaceSettingsBuilder};
-use acter_core::{ruma::OwnedRoomId, templates::Engine};
+use acter::{
+    matrix_sdk::{config::StoreConfig, ruma::OwnedRoomId},
+    testing::ensure_user,
+    Client, CreateSpaceSettingsBuilder, SyncState,
+};
+use acter_core::templates::Engine;
 use anyhow::Result;
 use futures::{pin_mut, StreamExt};
 
-pub async fn random_user_with_random_space(prefix: &str) -> Result<(acter::Client, OwnedRoomId)> {
+pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, OwnedRoomId)> {
     let uuid = uuid::Uuid::new_v4().to_string();
     let user = ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
@@ -36,7 +40,7 @@ pub fn default_user_password(username: &str) -> String {
 pub async fn random_user_with_template(
     prefix: &str,
     template: &str,
-) -> Result<(acter::Client, acter::SyncState, Engine)> {
+) -> Result<(Client, SyncState, Engine)> {
     let uuid = uuid::Uuid::new_v4().to_string();
     let mut user = ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")

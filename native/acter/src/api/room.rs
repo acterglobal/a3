@@ -1,9 +1,4 @@
-use acter_core::{
-    ruma::{
-        api::client::receipt::create_receipt::v3::ReceiptType as CreateReceiptType, OwnedEventId,
-    },
-    spaces::is_acter_space,
-};
+use acter_core::spaces::is_acter_space;
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use log::{info, warn};
@@ -14,6 +9,7 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Room as MatrixRoom, RoomMember},
     ruma::{
+        api::client::receipt::create_receipt::v3::ReceiptType as CreateReceiptType,
         assign,
         events::{
             reaction::ReactionEventContent,
@@ -31,7 +27,7 @@ use matrix_sdk::{
             AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent, StateEvent,
         },
         room::RoomType,
-        EventId, Int, OwnedUserId, TransactionId, UInt, UserId,
+        EventId, Int, OwnedEventId, OwnedUserId, TransactionId, UInt, UserId,
     },
     Client as MatrixClient, RoomMemberships, RoomState,
 };

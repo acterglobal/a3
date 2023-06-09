@@ -1,4 +1,4 @@
-use acter_core::util::{DateTime, Utc};
+use chrono::{DateTime, Utc};
 use core::time::Duration;
 use log::info;
 use matrix_sdk::{

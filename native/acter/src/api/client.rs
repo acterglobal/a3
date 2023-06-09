@@ -1,6 +1,6 @@
 use acter_core::{
-    client::CoreClient, executor::Executor, models::AnyActerModel, ruma::OwnedRoomId,
-    spaces::is_acter_space, store::Store, templates::Engine, RestoreToken,
+    client::CoreClient, executor::Executor, models::AnyActerModel, spaces::is_acter_space,
+    store::Store, templates::Engine, RestoreToken,
 };
 use anyhow::{Context, Result};
 use core::time::Duration;
@@ -13,7 +13,7 @@ use log::info;
 use matrix_sdk::{
     config::SyncSettings,
     room::Room as MatrixRoom,
-    ruma::{device_id, OwnedDeviceId, OwnedUserId, RoomId, UserId},
+    ruma::{device_id, OwnedDeviceId, OwnedRoomId, OwnedUserId, RoomId, UserId},
     Client as MatrixClient, LoopCtrl, RumaApiError,
 };
 use std::{
