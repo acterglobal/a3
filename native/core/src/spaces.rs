@@ -1,6 +1,6 @@
 use derive_builder::Builder;
 use matrix_sdk::{
-    room::Room as MatrixRoom,
+    room::Room,
     ruma::{
         api::client::room::{
             create_room::v3::{CreationContent, Request as CreateRoomRequest},
@@ -23,7 +23,7 @@ use crate::{
 };
 
 /// Calculate whether we may consider this an acter space
-pub async fn is_acter_space(room: &MatrixRoom) -> bool {
+pub async fn is_acter_space(room: &Room) -> bool {
     if !room.is_space() {
         return false;
     }
@@ -189,7 +189,7 @@ impl CoreClient {
 
     // calculate the space relationships in accordance with:
     // https://spec.matrix.org/v1.6/client-server-api/#mspacechild-relationship
-    pub async fn space_relations(&self, room: &MatrixRoom) -> Result<SpaceRelations> {
+    pub async fn space_relations(&self, room: &Room) -> Result<SpaceRelations> {
         let mut main_parent: Option<SpaceRelation> = None;
         let mut parents = Vec::new();
         let mut children = Vec::new();

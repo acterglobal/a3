@@ -3,12 +3,12 @@ use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStr
 use log::{error, info};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
-    room::Room as MatrixRoom,
+    room::Room,
     ruma::{
         events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
         OwnedRoomId, OwnedUserId, RoomId,
     },
-    Client as MatrixClient,
+    Client as SdkClient,
 };
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
@@ -21,7 +21,7 @@ use super::{
 
 #[derive(Clone, Debug)]
 pub struct Invitation {
-    client: MatrixClient,
+    client: SdkClient,
     origin_server_ts: Option<u64>,
     room_id: OwnedRoomId,
     sender: OwnedUserId,
@@ -150,14 +150,14 @@ impl InvitationController {
         }
     }
 
-    pub fn add_event_handler(&mut self, client: &MatrixClient) {
+    pub fn add_event_handler(&mut self, client: &SdkClient) {
         let me = self.clone();
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: StrippedRoomMemberEvent,
-             room: MatrixRoom,
-             c: MatrixClient,
+             room: Room,
+             c: SdkClient,
              Ctx(me): Ctx<InvitationController>| async move {
                 // user got invitation
                 me.clone().process_stripped_event(ev, room, &c);
@@ -168,8 +168,8 @@ impl InvitationController {
         client.add_event_handler_context(me);
         let handle = client.add_event_handler(
             |ev: SyncRoomMemberEvent,
-             room: MatrixRoom,
-             c: MatrixClient,
+             room: Room,
+             c: SdkClient,
              Ctx(me): Ctx<InvitationController>| async move {
                 // user accepted or rejected invitation
                 me.clone().process_sync_event(ev, room, &c);
@@ -178,7 +178,7 @@ impl InvitationController {
         self.sync_event_handle = Some(handle);
     }
 
-    pub fn remove_event_handler(&mut self, client: &MatrixClient) {
+    pub fn remove_event_handler(&mut self, client: &SdkClient) {
         if let Some(handle) = self.stripped_event_handle.clone() {
             client.remove_event_handler(handle);
             self.stripped_event_handle = None;
@@ -189,7 +189,7 @@ impl InvitationController {
         }
     }
 
-    pub async fn load_invitations(&self, client: &MatrixClient) -> Result<()> {
+    pub async fn load_invitations(&self, client: &SdkClient) -> Result<()> {
         let mut invitations: Vec<Invitation> = vec![];
         for room in client.invited_rooms().iter() {
             let details = room
@@ -213,8 +213,8 @@ impl InvitationController {
     fn process_stripped_event(
         &mut self,
         ev: StrippedRoomMemberEvent,
-        room: MatrixRoom,
-        client: &MatrixClient,
+        room: Room,
+        client: &SdkClient,
     ) -> Result<()> {
         // filter only event for me
         let user_id = client.user_id().expect("You seem to be not logged in");
@@ -254,8 +254,8 @@ impl InvitationController {
     fn process_sync_event(
         &mut self,
         ev: SyncRoomMemberEvent,
-        room: MatrixRoom,
-        client: &MatrixClient,
+        room: Room,
+        client: &SdkClient,
     ) {
         if let Some(evt) = ev.as_original() {
             // filter only event for me

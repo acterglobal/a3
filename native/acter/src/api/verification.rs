@@ -42,7 +42,7 @@ use matrix_sdk::{
         },
         OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId,
     },
-    Client as MatrixClient,
+    Client as SdkClient,
 };
 use std::sync::Arc;
 
@@ -50,7 +50,7 @@ use super::{client::Client, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct VerificationEvent {
-    client: MatrixClient,
+    client: SdkClient,
     event_type: String,
     /// for ToDevice event
     event_id: Option<OwnedEventId>,
@@ -68,7 +68,7 @@ pub struct VerificationEvent {
 impl VerificationEvent {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
-        client: &MatrixClient,
+        client: &SdkClient,
         event_type: String,
         event_id: Option<OwnedEventId>,
         txn_id: Option<OwnedTransactionId>,
@@ -625,13 +625,13 @@ impl VerificationController {
         }
     }
 
-    pub fn add_sync_event_handler(&mut self, client: &MatrixClient) {
+    pub fn add_sync_event_handler(&mut self, client: &SdkClient) {
         let me = self.clone();
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncRoomMessageEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 if let MessageType::VerificationRequest(content) = &ev.content.msgtype {
                     let dev_id = c.device_id().expect("guest user cannot get device id");
@@ -660,7 +660,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncKeyVerificationReadyEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -686,7 +686,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncKeyVerificationStartEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -713,7 +713,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncKeyVerificationCancelEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -739,7 +739,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncKeyVerificationAcceptEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -766,7 +766,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncKeyVerificationKeyEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -793,7 +793,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncKeyVerificationMacEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -821,7 +821,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncKeyVerificationDoneEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -847,7 +847,7 @@ impl VerificationController {
         client.add_event_handler_context(me);
         let handle = client.add_event_handler(
             |ev: OriginalSyncRoomEncryptedEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -857,7 +857,7 @@ impl VerificationController {
         self.sync_room_encrypted_handle = Some(handle);
     }
 
-    pub fn remove_sync_event_handler(&mut self, client: &MatrixClient) {
+    pub fn remove_sync_event_handler(&mut self, client: &SdkClient) {
         if let Some(handle) = self.sync_key_verification_request_handle.clone() {
             client.remove_event_handler(handle);
             self.sync_key_verification_request_handle = None;
@@ -896,13 +896,13 @@ impl VerificationController {
         }
     }
 
-    pub fn add_to_device_event_handler(&mut self, client: &MatrixClient) {
+    pub fn add_to_device_event_handler(&mut self, client: &SdkClient) {
         let me = self.clone();
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceKeyVerificationRequestEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -929,7 +929,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceKeyVerificationReadyEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -956,7 +956,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceKeyVerificationStartEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -983,7 +983,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceKeyVerificationCancelEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -1009,7 +1009,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceKeyVerificationAcceptEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -1036,7 +1036,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceKeyVerificationKeyEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -1063,7 +1063,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceKeyVerificationMacEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -1091,7 +1091,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceKeyVerificationDoneEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -1117,7 +1117,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceRoomEncryptedEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -1129,7 +1129,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceRoomKeyEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -1141,7 +1141,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceRoomKeyRequestEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -1153,7 +1153,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceForwardedRoomKeyEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -1165,7 +1165,7 @@ impl VerificationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceSecretSendEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -1177,7 +1177,7 @@ impl VerificationController {
         client.add_event_handler_context(me);
         let handle = client.add_event_handler(
             |ev: ToDeviceSecretRequestEvent,
-             c: MatrixClient,
+             c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 let event_type = ev.content.event_type();
@@ -1205,7 +1205,7 @@ impl VerificationController {
         self.to_device_secret_request_handle = Some(handle);
     }
 
-    pub fn remove_to_device_event_handler(&mut self, client: &MatrixClient) {
+    pub fn remove_to_device_event_handler(&mut self, client: &SdkClient) {
         if let Some(handle) = self.to_device_key_verification_request_handle.clone() {
             client.remove_event_handler(handle);
             self.to_device_key_verification_request_handle = None;

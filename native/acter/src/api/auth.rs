@@ -9,12 +9,11 @@ use matrix_sdk::{
     Client as SdkClient, ClientBuilder, Session,
 };
 
-use crate::platform;
-
 use super::{
     client::{Client, ClientStateBuilder},
     RUNTIME,
 };
+use crate::platform;
 
 // public for only integration test, not api.rsh
 pub async fn sanitize_user(

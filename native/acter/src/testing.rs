@@ -9,14 +9,14 @@ use matrix_sdk::{
         },
         assign, OwnedUserId,
     },
-    Client, ClientBuilder,
+    Client as SdkClient, ClientBuilder,
 };
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use tokio::time::sleep;
 
 use crate::{
     api::register_with_token_under_config, register_under_config, sanitize_user,
-    Client as EfkClient,
+    Client,
 };
 
 /// testing helper to give a task time to finish
@@ -62,10 +62,11 @@ pub async fn default_client_config(
     user_agent: String,
     store_cfg: StoreConfig,
 ) -> Result<ClientBuilder> {
-    Ok(Client::builder()
+    let builder = SdkClient::builder()
         .user_agent(user_agent)
         .store_config(store_cfg)
-        .homeserver_url(homeserver))
+        .homeserver_url(homeserver);
+    Ok(builder)
 }
 
 pub async fn ensure_user(
@@ -75,7 +76,7 @@ pub async fn ensure_user(
     reg_token: Option<String>,
     user_agent: String,
     store_config: StoreConfig,
-) -> Result<EfkClient> {
+) -> Result<Client> {
     let (user_id, config) = {
         let (user_id, fallback_to_default_homeserver) =
             sanitize_user(&username, &homeserver_name).await?;
@@ -104,7 +105,7 @@ pub async fn ensure_user(
     let login_res = cl.login_username(username.clone(), &password).send().await;
 
     let Err(e) = login_res else {
-        return EfkClient::new(cl, Default::default()).await
+        return Client::new(cl, Default::default()).await
     };
 
     if let Some(token) = reg_token {

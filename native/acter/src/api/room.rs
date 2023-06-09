@@ -7,7 +7,7 @@ use matrix_sdk::{
         AttachmentConfig, AttachmentInfo, BaseAudioInfo, BaseFileInfo, BaseImageInfo, BaseVideoInfo,
     },
     media::{MediaFormat, MediaRequest},
-    room::{Room as MatrixRoom, RoomMember},
+    room::{Room as SdkRoom, RoomMember},
     ruma::{
         api::client::receipt::create_receipt::v3::ReceiptType as CreateReceiptType,
         assign,
@@ -29,7 +29,7 @@ use matrix_sdk::{
         room::RoomType,
         EventId, Int, OwnedEventId, OwnedUserId, TransactionId, UInt, UserId,
     },
-    Client as MatrixClient, RoomState,
+    Client, RoomState,
 };
 use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
 
@@ -43,7 +43,7 @@ use super::{
 };
 
 pub struct Member {
-    pub(crate) client: MatrixClient,
+    pub(crate) client: Client,
     pub(crate) member: RoomMember,
 }
 
@@ -68,7 +68,7 @@ impl Member {
 
 #[derive(Clone, Debug)]
 pub struct Room {
-    pub(crate) room: MatrixRoom,
+    pub(crate) room: SdkRoom,
 }
 
 impl Room {
@@ -154,7 +154,7 @@ impl Room {
     }
 
     pub async fn typing_notice(&self, typing: bool) -> Result<bool> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send typing notice to a room we are not in")
@@ -171,7 +171,7 @@ impl Room {
     }
 
     pub async fn read_receipt(&self, event_id: String) -> Result<bool> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send read_receipt to a room we are not in")
@@ -195,7 +195,7 @@ impl Room {
     }
 
     pub async fn send_plain_message(&self, message: String) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send message to a room we are not in")
@@ -215,7 +215,7 @@ impl Room {
     }
 
     pub async fn send_formatted_message(&self, markdown: String) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send message to a room we are not in")
@@ -235,7 +235,7 @@ impl Room {
     }
 
     pub async fn send_reaction(&self, event_id: String, key: String) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send message to a room we are not in")
@@ -269,7 +269,7 @@ impl Room {
         height: Option<u32>,
         blurhash: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send message as image to a room we are not in")
@@ -297,7 +297,7 @@ impl Room {
     }
 
     pub async fn image_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't read message from a room we are not in")
@@ -343,7 +343,7 @@ impl Room {
         secs: Option<u32>,
         size: Option<u32>,
     ) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send message as audio to a room we are not in")
@@ -369,7 +369,7 @@ impl Room {
     }
 
     pub async fn audio_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't read message from a room we are not in")
@@ -419,7 +419,7 @@ impl Room {
         size: Option<u32>,
         blurhash: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send message as video to a room we are not in")
@@ -448,7 +448,7 @@ impl Room {
     }
 
     pub async fn video_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't read message from a room we are not in")
@@ -493,7 +493,7 @@ impl Room {
         mimetype: String,
         size: u32,
     ) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send message as file to a room we are not in")
@@ -518,7 +518,7 @@ impl Room {
     }
 
     pub async fn file_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't read message from a room we are not in")
@@ -565,7 +565,7 @@ impl Room {
     }
 
     pub async fn invite_user(&self, user_id: String) -> Result<bool> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send message to a room we are not in")
@@ -585,7 +585,7 @@ impl Room {
     }
 
     pub async fn join(&self) -> Result<bool> {
-        let room = if let MatrixRoom::Left(r) = &self.room {
+        let room = if let SdkRoom::Left(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't join a room we are not left")
@@ -600,7 +600,7 @@ impl Room {
     }
 
     pub async fn leave(&self) -> Result<bool> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't leave a room we are not joined")
@@ -616,7 +616,7 @@ impl Room {
 
     pub async fn get_invitees(&self) -> Result<Vec<Account>> {
         let my_client = self.room.client();
-        let room = if let MatrixRoom::Invited(r) = &self.room {
+        let room = if let SdkRoom::Invited(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't get a room we are not invited")
@@ -631,7 +631,7 @@ impl Room {
                     .context("Couldn't get invited user ids from store")?;
                 let mut accounts: Vec<Account> = vec![];
                 for user_id in invited.iter() {
-                    let other_client = MatrixClient::builder()
+                    let other_client = Client::builder()
                         .server_name(user_id.server_name())
                         .build()
                         .await
@@ -644,7 +644,7 @@ impl Room {
     }
 
     pub async fn download_media(&self, event_id: String, dir_path: String) -> Result<String> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't read message from a room we are not in")
@@ -726,7 +726,7 @@ impl Room {
     }
 
     pub async fn media_path(&self, event_id: String) -> Result<String> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't read message from a room we are not in")
@@ -771,7 +771,7 @@ impl Room {
     }
 
     pub async fn is_encrypted(&self) -> Result<bool> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't know if a room we are not in is encrypted")
@@ -789,7 +789,7 @@ impl Room {
     }
 
     pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't read message from a room we are not in")
@@ -1048,7 +1048,7 @@ impl Room {
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send reply as text to a room we are not in")
@@ -1097,7 +1097,7 @@ impl Room {
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send reply as image to a room we are not in")
@@ -1167,7 +1167,7 @@ impl Room {
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send reply as audio to a room we are not in")
@@ -1239,7 +1239,7 @@ impl Room {
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send reply as video to a room we are not in")
@@ -1309,7 +1309,7 @@ impl Room {
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send reply as file to a room we are not in")
@@ -1371,7 +1371,7 @@ impl Room {
         reason: Option<String>,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't redact any message from a room we are not in")
@@ -1391,7 +1391,7 @@ impl Room {
     }
 
     pub async fn update_power_level(&self, user_id: String, level: i32) -> Result<OwnedEventId> {
-        let room = if let MatrixRoom::Joined(r) = &self.room {
+        let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't update power level in a room we are not in")
@@ -1413,8 +1413,8 @@ impl Room {
 }
 
 impl std::ops::Deref for Room {
-    type Target = MatrixRoom;
-    fn deref(&self) -> &MatrixRoom {
+    type Target = SdkRoom;
+    fn deref(&self) -> &SdkRoom {
         &self.room
     }
 }

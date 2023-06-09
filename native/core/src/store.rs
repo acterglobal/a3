@@ -1,6 +1,6 @@
 use dashmap::{mapref::one::RefMut, DashMap};
 use futures::future::{join_all, try_join_all};
-use matrix_sdk::Client as MatrixClient;
+use matrix_sdk::Client;
 use std::{iter::FromIterator, sync::Arc};
 
 use crate::{
@@ -10,7 +10,7 @@ use crate::{
 
 #[derive(Clone, Debug)]
 pub struct Store {
-    client: MatrixClient,
+    client: Client,
     fresh: bool,
     models: Arc<dashmap::DashMap<String, AnyActerModel>>,
     indizes: Arc<dashmap::DashMap<String, Vec<String>>>,
@@ -22,7 +22,7 @@ static DB_VERSION_KEY: &str = "ACTER::DB_VERSION";
 static CURRENT_DB_VERSION: u32 = 1;
 
 async fn get_from_store<T: serde::de::DeserializeOwned>(
-    client: MatrixClient,
+    client: Client,
     key: &str,
 ) -> Result<T> {
     let v = client
@@ -53,7 +53,7 @@ impl Store {
         Ok(())
     }
 
-    pub async fn new(client: MatrixClient) -> Result<Self> {
+    pub async fn new(client: Client) -> Result<Self> {
         if client
             .store()
             .get_custom_value(DB_VERSION_KEY.as_bytes())

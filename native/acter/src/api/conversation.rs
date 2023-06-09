@@ -8,7 +8,7 @@ use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
     locks::Mutex,
-    room::{MessagesOptions, Room as MatrixRoom},
+    room::{MessagesOptions, Room as SdkRoom},
     ruma::{
         api::client::room::{
             create_room::v3::{CreationContent, Request as CreateRoomRequest},
@@ -28,7 +28,7 @@ use matrix_sdk::{
         serde::Raw,
         OwnedRoomId, OwnedUserId,
     },
-    Client as MatrixClient,
+    Client as SdkClient,
 };
 use std::sync::Arc;
 
@@ -149,15 +149,15 @@ impl ConversationController {
         }
     }
 
-    pub fn add_event_handler(&mut self, client: &MatrixClient) {
+    pub fn add_event_handler(&mut self, client: &SdkClient) {
         info!("sync room message event handler");
         let me = self.clone();
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: Raw<OriginalSyncRoomEncryptedEvent>,
-             room: MatrixRoom,
-             c: MatrixClient,
+             room: SdkRoom,
+             c: SdkClient,
              Ctx(me): Ctx<ConversationController>| async move {
                 me.clone().process_room_encrypted(ev, &room, &c);
             },
@@ -167,8 +167,8 @@ impl ConversationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncRoomMessageEvent,
-             room: MatrixRoom,
-             c: MatrixClient,
+             room: SdkRoom,
+             c: SdkClient,
              Ctx(me): Ctx<ConversationController>| async move {
                 me.clone().process_room_message(ev, &room, &c);
             },
@@ -178,8 +178,8 @@ impl ConversationController {
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncRoomMemberEvent,
-             room: MatrixRoom,
-             c: MatrixClient,
+             room: SdkRoom,
+             c: SdkClient,
              Ctx(me): Ctx<ConversationController>| async move {
                 // user accepted invitation or left room
                 me.clone().process_room_member(ev, &room, &c);
@@ -190,8 +190,8 @@ impl ConversationController {
         client.add_event_handler_context(me);
         let handle = client.add_event_handler(
             |ev: SyncRoomRedactionEvent,
-             room: MatrixRoom,
-             c: MatrixClient,
+             room: SdkRoom,
+             c: SdkClient,
              Ctx(me): Ctx<ConversationController>| async move {
                 me.clone().process_room_redaction(ev, &room, &c);
             },
@@ -199,7 +199,7 @@ impl ConversationController {
         self.redaction_event_handle = Some(handle);
     }
 
-    pub fn remove_event_handler(&mut self, client: &MatrixClient) {
+    pub fn remove_event_handler(&mut self, client: &SdkClient) {
         if let Some(handle) = self.encrypted_event_handle.clone() {
             client.remove_event_handler(handle);
             self.encrypted_event_handle = None;
@@ -232,11 +232,11 @@ impl ConversationController {
     async fn process_room_encrypted(
         &mut self,
         raw_event: Raw<OriginalSyncRoomEncryptedEvent>,
-        room: &MatrixRoom,
-        client: &MatrixClient,
+        room: &SdkRoom,
+        client: &SdkClient,
     ) {
         info!("original sync room encrypted event: {:?}", raw_event);
-        if let MatrixRoom::Joined(joined) = room {
+        if let SdkRoom::Joined(joined) = room {
             let mut convos = self.conversations.lock_mut();
             let room_id = room.room_id();
 
@@ -265,11 +265,11 @@ impl ConversationController {
     fn process_room_message(
         &mut self,
         ev: OriginalSyncRoomMessageEvent,
-        room: &MatrixRoom,
-        client: &MatrixClient,
+        room: &SdkRoom,
+        client: &SdkClient,
     ) {
         info!("original sync room message event: {:?}", ev);
-        if let MatrixRoom::Joined(joined) = room {
+        if let SdkRoom::Joined(joined) = room {
             let mut convos = self.conversations.lock_mut();
             let room_id = room.room_id();
 
@@ -293,13 +293,13 @@ impl ConversationController {
     fn process_room_member(
         &mut self,
         ev: OriginalSyncRoomMemberEvent,
-        room: &MatrixRoom,
-        client: &MatrixClient,
+        room: &SdkRoom,
+        client: &SdkClient,
     ) {
         // filter only event for me
         let user_id = client.user_id().expect("You seem to be not logged in");
         if ev.state_key != *user_id {
-            if let MatrixRoom::Joined(joined) = room {
+            if let SdkRoom::Joined(joined) = room {
                 let mut convos = self.conversations.lock_mut();
                 let room_id = room.room_id();
 
@@ -351,11 +351,11 @@ impl ConversationController {
     async fn process_room_redaction(
         &mut self,
         ev: SyncRoomRedactionEvent,
-        room: &MatrixRoom,
-        client: &MatrixClient,
+        room: &SdkRoom,
+        client: &SdkClient,
     ) {
         info!("original sync room redaction event: {:?}", ev);
-        if let MatrixRoom::Joined(joined) = room {
+        if let SdkRoom::Joined(joined) = room {
             let mut convos = self.conversations.lock_mut();
             let room_id = room.room_id();
 

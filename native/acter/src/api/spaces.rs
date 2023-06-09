@@ -22,14 +22,14 @@ use log::warn;
 use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
     event_handler::Ctx,
-    room::{Messages, MessagesOptions, Room as MatrixRoom},
+    room::{Messages, MessagesOptions, Room as SdkRoom},
     ruma::{
         api::client::state::send_state_event,
         events::{AnyStateEventContent, MessageLikeEvent},
         serde::Raw,
         OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
     },
-    Client as MatrixClient,
+    Client as SdkClient,
 };
 use serde::{Deserialize, Serialize};
 
@@ -91,7 +91,7 @@ impl Space {
         // Tasks
         self.room.add_event_handler(
             move |ev: SyncTaskListEvent,
-                  client: MatrixClient,
+                  client: SdkClient,
                   //  room: Room,
                   encryption_info: Option<EncryptionInfo>,
                   Ctx(executor): Ctx<Executor>| {
@@ -107,7 +107,7 @@ impl Space {
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
             move |ev: SyncTaskListUpdateEvent,
-                  client: MatrixClient,
+                  client: SdkClient,
                   Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
@@ -122,7 +122,7 @@ impl Space {
         );
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
-            move |ev: SyncTaskEvent, client: MatrixClient, Ctx(executor): Ctx<Executor>| {
+            move |ev: SyncTaskEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
                     // FIXME: handle redactions
@@ -134,7 +134,7 @@ impl Space {
         );
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
-            move |ev: SyncTaskUpdateEvent, client: MatrixClient, Ctx(executor): Ctx<Executor>| {
+            move |ev: SyncTaskUpdateEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
                     // FIXME: handle redactions
@@ -148,7 +148,7 @@ impl Space {
         // Comments
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
-            move |ev: SyncCommentEvent, client: MatrixClient, Ctx(executor): Ctx<Executor>| {
+            move |ev: SyncCommentEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
                     // FIXME: handle redactions
@@ -161,7 +161,7 @@ impl Space {
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
             move |ev: SyncCommentUpdateEvent,
-                  client: MatrixClient,
+                  client: SdkClient,
                   Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
@@ -178,7 +178,7 @@ impl Space {
         // Pins
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
-            move |ev: SyncPinEvent, client: MatrixClient, Ctx(executor): Ctx<Executor>| {
+            move |ev: SyncPinEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
                     // FIXME: handle redactions
@@ -190,7 +190,7 @@ impl Space {
         );
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
-            move |ev: SyncPinUpdateEvent, client: MatrixClient, Ctx(executor): Ctx<Executor>| {
+            move |ev: SyncPinUpdateEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
                     // FIXME: handle redactions
@@ -205,7 +205,7 @@ impl Space {
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
             move |ev: SyncCalendarEventEvent,
-                  client: MatrixClient,
+                  client: SdkClient,
                   Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
@@ -221,7 +221,7 @@ impl Space {
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
             move |ev: SyncCalendarEventUpdateEvent,
-                  client: MatrixClient,
+                  client: SdkClient,
                   Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
@@ -238,7 +238,7 @@ impl Space {
         // NewsEntrys
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
-            move |ev: SyncNewsEntryEvent, client: MatrixClient, Ctx(executor): Ctx<Executor>| {
+            move |ev: SyncNewsEntryEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
                     // FIXME: handle redactions
@@ -251,7 +251,7 @@ impl Space {
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
             move |ev: SyncNewsEntryUpdateEvent,
-                  client: MatrixClient,
+                  client: SdkClient,
                   Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
@@ -271,7 +271,7 @@ impl Space {
     }
 
     pub async fn set_acter_space_states(&self) -> Result<()> {
-        let MatrixRoom::Joined(ref joined) = self.inner.room else {
+        let SdkRoom::Joined(ref joined) = self.inner.room else {
             bail!("You can't convert a space you didn't join");
         };
         for state in default_acter_space_states() {

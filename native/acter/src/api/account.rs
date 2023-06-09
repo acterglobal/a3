@@ -2,26 +2,26 @@ use anyhow::{Context, Result};
 use matrix_sdk::{
     media::MediaFormat,
     ruma::{OwnedMxcUri, OwnedUserId},
-    Account as MatrixAccount,
+    Account as SdkAccount,
 };
 
 use super::{api::FfiBuffer, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct Account {
-    account: MatrixAccount,
+    account: SdkAccount,
     user_id: OwnedUserId,
 }
 
 impl std::ops::Deref for Account {
-    type Target = MatrixAccount;
-    fn deref(&self) -> &MatrixAccount {
+    type Target = SdkAccount;
+    fn deref(&self) -> &SdkAccount {
         &self.account
     }
 }
 
 impl Account {
-    pub fn new(account: MatrixAccount, user_id: OwnedUserId) -> Self {
+    pub fn new(account: SdkAccount, user_id: OwnedUserId) -> Self {
         Account { account, user_id }
     }
 
