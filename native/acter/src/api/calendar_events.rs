@@ -7,10 +7,10 @@ use acter_core::{
     models::{self, ActerModel, AnyActerModel, Color},
     statics::KEYS,
     store::Store,
-    util::DateTime,
 };
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
+use chrono::DateTime;
 use core::time::Duration;
 use futures_signals::signal::Mutable;
 use matrix_sdk::{
