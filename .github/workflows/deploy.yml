@@ -30,7 +30,7 @@ jobs:
         uses: davidB/rust-cargo-make@v1
       - run: cargo make setup-android
       - uses: subosito/flutter-action@v2
-        name: 'Set up flutter'
+        name: Set up flutter
         with:
           flutter-version: '3.7.12'
           channel: 'stable'
@@ -78,7 +78,7 @@ jobs:
       - uses: Swatinem/rust-cache@v1
       - run: cargo make setup-ios
       - uses: subosito/flutter-action@v2
-        name: 'Set up flutter'
+        name: Set up flutter
         with:
           flutter-version: '3.7.12'
           channel: 'stable'
@@ -93,7 +93,7 @@ jobs:
       #     command: test
       #     args: -p acter --target x86_64-apple-ios
       - name: Build iOS FFI
-        run: cargo make --profile release  ios
+        run: cargo make --profile release ios
       # - name: Ensure ffi-interface is up to date
       #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
       # FIXME: tests are not set up to work yet
