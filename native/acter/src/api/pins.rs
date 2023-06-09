@@ -13,7 +13,10 @@ use matrix_sdk::{
     room::{Joined, Room},
     ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId},
 };
-use std::collections::{hash_map::Entry, HashMap};
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    ops::Deref,
+};
 
 use super::{client::Client, spaces::Space, RUNTIME};
 
@@ -166,7 +169,7 @@ pub struct Pin {
     content: models::Pin,
 }
 
-impl std::ops::Deref for Pin {
+impl Deref for Pin {
     type Target = models::Pin;
     fn deref(&self) -> &Self::Target {
         &self.content

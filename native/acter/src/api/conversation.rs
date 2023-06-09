@@ -30,7 +30,7 @@ use matrix_sdk::{
     },
     Client as SdkClient,
 };
-use std::sync::Arc;
+use std::{ops::Deref, sync::Arc};
 
 use super::{
     client::Client,
@@ -117,7 +117,7 @@ impl Conversation {
     }
 }
 
-impl std::ops::Deref for Conversation {
+impl Deref for Conversation {
     type Target = Room;
     fn deref(&self) -> &Room {
         &self.inner

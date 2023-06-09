@@ -31,7 +31,7 @@ use matrix_sdk::{
     },
     Client, RoomState,
 };
-use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
+use std::{fs::File, io::Write, ops::Deref, path::PathBuf, sync::Arc};
 
 use super::{
     account::Account,
@@ -47,7 +47,7 @@ pub struct Member {
     pub(crate) member: RoomMember,
 }
 
-impl std::ops::Deref for Member {
+impl Deref for Member {
     type Target = RoomMember;
     fn deref(&self) -> &RoomMember {
         &self.member
@@ -1412,7 +1412,7 @@ impl Room {
     }
 }
 
-impl std::ops::Deref for Room {
+impl Deref for Room {
     type Target = SdkRoom;
     fn deref(&self) -> &SdkRoom {
         &self.room

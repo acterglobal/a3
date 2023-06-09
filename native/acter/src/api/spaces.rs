@@ -32,6 +32,7 @@ use matrix_sdk::{
     Client as SdkClient,
 };
 use serde::{Deserialize, Serialize};
+use std::ops::Deref;
 
 use super::{
     client::{devide_spaces_from_convos, Client},
@@ -398,7 +399,7 @@ impl Space {
     }
 }
 
-impl std::ops::Deref for Space {
+impl Deref for Space {
     type Target = Room;
     fn deref(&self) -> &Room {
         &self.inner

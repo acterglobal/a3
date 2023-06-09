@@ -4,6 +4,7 @@ use matrix_sdk::{
     ruma::{OwnedMxcUri, OwnedUserId},
     Account as SdkAccount,
 };
+use std::ops::Deref;
 
 use super::{api::FfiBuffer, RUNTIME};
 
@@ -13,7 +14,7 @@ pub struct Account {
     user_id: OwnedUserId,
 }
 
-impl std::ops::Deref for Account {
+impl Deref for Account {
     type Target = SdkAccount;
     fn deref(&self) -> &SdkAccount {
         &self.account

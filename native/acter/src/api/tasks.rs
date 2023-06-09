@@ -16,7 +16,10 @@ use matrix_sdk::{
         events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId, OwnedUserId,
     },
 };
-use std::collections::{hash_map::Entry, HashMap};
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    ops::Deref,
+};
 
 use super::{client::Client, spaces::Space, RUNTIME};
 
@@ -263,7 +266,7 @@ pub struct TaskList {
     content: models::TaskList,
 }
 
-impl std::ops::Deref for TaskList {
+impl Deref for TaskList {
     type Target = models::TaskList;
     fn deref(&self) -> &Self::Target {
         &self.content
@@ -432,7 +435,7 @@ pub struct Task {
     content: models::Task,
 }
 
-impl std::ops::Deref for Task {
+impl Deref for Task {
     type Target = models::Task;
     fn deref(&self) -> &Self::Target {
         &self.content

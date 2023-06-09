@@ -13,7 +13,10 @@ use matrix_sdk::{
     room::{Joined, Room},
     ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId},
 };
-use std::collections::{hash_map::Entry, HashMap};
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    ops::Deref,
+};
 
 use super::{client::Client, spaces::Space, RUNTIME};
 
@@ -113,7 +116,7 @@ pub struct CalendarEvent {
     inner: models::CalendarEvent,
 }
 
-impl std::ops::Deref for CalendarEvent {
+impl Deref for CalendarEvent {
     type Target = models::CalendarEvent;
     fn deref(&self) -> &Self::Target {
         &self.inner

@@ -19,6 +19,7 @@ use matrix_sdk::{
 };
 use std::{
     collections::BTreeMap,
+    ops::Deref,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -67,7 +68,7 @@ pub struct Client {
     pub(crate) conversation_controller: ConversationController,
 }
 
-impl std::ops::Deref for Client {
+impl Deref for Client {
     type Target = SdkClient;
     fn deref(&self) -> &SdkClient {
         self.core.client()

@@ -9,6 +9,7 @@ use matrix_sdk::{
     room::{Joined, Room},
     ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedUserId},
 };
+use std::ops::Deref;
 
 use super::{client::Client, RUNTIME};
 
@@ -41,7 +42,7 @@ pub struct Comment {
     inner: models::Comment,
 }
 
-impl std::ops::Deref for Comment {
+impl Deref for Comment {
     type Target = models::Comment;
     fn deref(&self) -> &Self::Target {
         &self.inner
@@ -88,7 +89,7 @@ pub struct CommentsManager {
     inner: models::CommentsManager,
 }
 
-impl std::ops::Deref for CommentsManager {
+impl Deref for CommentsManager {
     type Target = models::CommentsManager;
     fn deref(&self) -> &Self::Target {
         &self.inner

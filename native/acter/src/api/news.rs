@@ -26,7 +26,10 @@ use matrix_sdk::{
         MxcUri, OwnedEventId, OwnedRoomId, UInt,
     },
 };
-use std::collections::{hash_map::Entry, HashMap};
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    ops::Deref,
+};
 
 use super::{
     api::FfiBuffer,
@@ -146,7 +149,7 @@ pub struct NewsSlide {
     inner: news::NewsSlide,
 }
 
-impl std::ops::Deref for NewsSlide {
+impl Deref for NewsSlide {
     type Target = news::NewsSlide;
     fn deref(&self) -> &Self::Target {
         &self.inner
@@ -296,7 +299,7 @@ pub struct NewsEntry {
     content: models::NewsEntry,
 }
 
-impl std::ops::Deref for NewsEntry {
+impl Deref for NewsEntry {
     type Target = models::NewsEntry;
     fn deref(&self) -> &Self::Target {
         &self.content
