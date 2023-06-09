@@ -1,4 +1,3 @@
-pub use chrono_tz::Tz as TimeZone;
 pub use matrix_sdk::ruma::events::room::ImageInfo;
 
 use chrono::{DateTime, Utc};

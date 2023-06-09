@@ -1,3 +1,4 @@
+use chrono_tz::Tz;
 use derive_builder::Builder;
 use derive_getters::Getters;
 use matrix_sdk::ruma::{events::macros::EventContent, OwnedUserId};
@@ -9,7 +10,7 @@ use super::TextMessageEventContent;
 /// modeled after [JMAP Tasks](https://jmap.io/spec-tasks.html), extensions to
 /// [ietf rfc8984](https://www.rfc-editor.org/rfc/rfc8984.html#name-task).
 ///
-use super::{BelongsTo, Color, TimeZone, Update, UtcDateTime};
+use super::{BelongsTo, Color, Update, UtcDateTime};
 use crate::util::deserialize_some;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -74,7 +75,7 @@ pub struct TaskListEventContent {
 
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub time_zone: Option<TimeZone>,
+    pub time_zone: Option<Tz>,
 
     // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
     #[builder(setter(into), default)]
@@ -152,7 +153,7 @@ pub struct TaskListUpdateEventContent {
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
-    pub time_zone: Option<Option<TimeZone>>,
+    pub time_zone: Option<Option<Tz>>,
 
     // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
     #[builder(setter(into), default)]
