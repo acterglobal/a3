@@ -106,9 +106,7 @@ impl Space {
         );
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
-            move |ev: SyncTaskListUpdateEvent,
-                  client: SdkClient,
-                  Ctx(executor): Ctx<Executor>| {
+            move |ev: SyncTaskListUpdateEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
                     // FIXME: handle redactions
@@ -160,9 +158,7 @@ impl Space {
         );
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
-            move |ev: SyncCommentUpdateEvent,
-                  client: SdkClient,
-                  Ctx(executor): Ctx<Executor>| {
+            move |ev: SyncCommentUpdateEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
                     // FIXME: handle redactions
@@ -204,9 +200,7 @@ impl Space {
         // CalendarEvents
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
-            move |ev: SyncCalendarEventEvent,
-                  client: SdkClient,
-                  Ctx(executor): Ctx<Executor>| {
+            move |ev: SyncCalendarEventEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
                     // FIXME: handle redactions
@@ -250,9 +244,7 @@ impl Space {
         );
         let room_id = self.room_id().to_owned();
         self.room.add_event_handler(
-            move |ev: SyncNewsEntryUpdateEvent,
-                  client: SdkClient,
-                  Ctx(executor): Ctx<Executor>| {
+            move |ev: SyncNewsEntryUpdateEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();
                 async move {
                     // FIXME: handle redactions

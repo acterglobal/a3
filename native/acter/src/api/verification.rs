@@ -1127,15 +1127,16 @@ impl VerificationController {
         self.to_device_room_encrypted_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
-        let handle = client.add_event_handler(
-            |ev: ToDeviceRoomKeyEvent,
-             c: SdkClient,
-             Ctx(mut me): Ctx<VerificationController>| async move {
-                let dev_id = c.device_id().expect("guest user cannot get device id");
-                let event_type = ev.content.event_type();
-                info!("{} got {}", dev_id, event_type);
-            },
-        );
+        let handle =
+            client.add_event_handler(
+                |ev: ToDeviceRoomKeyEvent,
+                 c: SdkClient,
+                 Ctx(mut me): Ctx<VerificationController>| async move {
+                    let dev_id = c.device_id().expect("guest user cannot get device id");
+                    let event_type = ev.content.event_type();
+                    info!("{} got {}", dev_id, event_type);
+                },
+            );
         self.to_device_room_key_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());

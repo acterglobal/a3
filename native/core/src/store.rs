@@ -21,10 +21,7 @@ static ALL_MODELS_KEY: &str = "ACTER::ALL";
 static DB_VERSION_KEY: &str = "ACTER::DB_VERSION";
 static CURRENT_DB_VERSION: u32 = 1;
 
-async fn get_from_store<T: serde::de::DeserializeOwned>(
-    client: Client,
-    key: &str,
-) -> Result<T> {
+async fn get_from_store<T: serde::de::DeserializeOwned>(client: Client, key: &str) -> Result<T> {
     let v = client
         .store()
         .get_custom_value(format!("acter:{key}").as_bytes())

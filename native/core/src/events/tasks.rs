@@ -1,11 +1,13 @@
 use chrono_tz::Tz;
 use derive_builder::Builder;
 use derive_getters::Getters;
-use matrix_sdk::ruma::{events::macros::EventContent, OwnedUserId};
+use matrix_sdk::ruma::{
+    events::{macros::EventContent, room::message::TextMessageEventContent},
+    OwnedUserId,
+};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-use super::TextMessageEventContent;
 /// ToDo Lists and Task Items management
 /// modeled after [JMAP Tasks](https://jmap.io/spec-tasks.html), extensions to
 /// [ietf rfc8984](https://www.rfc-editor.org/rfc/rfc8984.html#name-task).

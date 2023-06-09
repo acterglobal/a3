@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-        TextMessageEventContent, UtcDateTime,
+        UtcDateTime,
     },
     models::{self, ActerModel, AnyActerModel, Color, TaskStats},
     statics::KEYS,
@@ -12,7 +12,9 @@ use chrono::DateTime;
 use core::time::Duration;
 use matrix_sdk::{
     room::{Joined, Room},
-    ruma::{OwnedEventId, OwnedRoomId, OwnedUserId},
+    ruma::{
+        events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId, OwnedUserId,
+    },
 };
 use std::collections::{hash_map::Entry, HashMap};
 

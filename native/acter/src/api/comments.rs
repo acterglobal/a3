@@ -1,5 +1,5 @@
 use acter_core::{
-    events::{comments::CommentBuilder, TextMessageEventContent},
+    events::comments::CommentBuilder,
     models::{self, ActerModel, AnyActerModel, Color},
 };
 use anyhow::{bail, Context, Result};
@@ -7,7 +7,7 @@ use async_broadcast::Receiver;
 use core::time::Duration;
 use matrix_sdk::{
     room::{Joined, Room},
-    ruma::{OwnedEventId, OwnedUserId},
+    ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedUserId},
 };
 
 use super::{client::Client, RUNTIME};

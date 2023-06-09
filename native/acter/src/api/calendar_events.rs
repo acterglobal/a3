@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         calendar::{self as calendar_events, CalendarEventBuilder},
-        Icon, TextMessageEventContent,
+        Icon,
     },
     models::{self, ActerModel, AnyActerModel, Color},
     statics::KEYS,
@@ -11,7 +11,7 @@ use async_broadcast::Receiver;
 use core::time::Duration;
 use matrix_sdk::{
     room::{Joined, Room},
-    ruma::{OwnedEventId, OwnedRoomId},
+    ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId},
 };
 use std::collections::{hash_map::Entry, HashMap};
 

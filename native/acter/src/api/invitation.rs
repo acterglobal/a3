@@ -251,12 +251,7 @@ impl InvitationController {
         Ok(())
     }
 
-    fn process_sync_event(
-        &mut self,
-        ev: SyncRoomMemberEvent,
-        room: Room,
-        client: &SdkClient,
-    ) {
+    fn process_sync_event(&mut self, ev: SyncRoomMemberEvent, room: Room, client: &SdkClient) {
         if let Some(evt) = ev.as_original() {
             // filter only event for me
             let user_id = client.user_id().expect("You seem to be not logged in");

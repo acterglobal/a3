@@ -14,10 +14,7 @@ use matrix_sdk::{
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use tokio::time::sleep;
 
-use crate::{
-    api::register_with_token_under_config, register_under_config, sanitize_user,
-    Client,
-};
+use crate::{api::register_with_token_under_config, register_under_config, sanitize_user, Client};
 
 /// testing helper to give a task time to finish
 ///

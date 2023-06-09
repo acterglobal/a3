@@ -266,11 +266,7 @@ impl Client {
         });
     }
 
-    fn refresh_history_on_way(
-        &self,
-        history: Mutable<HistoryLoadState>,
-        new_spaces: Vec<SdkRoom>,
-    ) {
+    fn refresh_history_on_way(&self, history: Mutable<HistoryLoadState>, new_spaces: Vec<SdkRoom>) {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
