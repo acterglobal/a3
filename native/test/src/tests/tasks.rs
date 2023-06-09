@@ -2,7 +2,7 @@ use acter::{
     matrix_sdk::config::StoreConfig,
     testing::{ensure_user, wait_for},
 };
-use acter_core::models::ActerModel;
+use acter_core::models::{ActerModel, TaskList};
 use anyhow::{bail, Result};
 use tokio::time::{sleep, Duration};
 
@@ -136,7 +136,7 @@ async fn task_smoketests() -> Result<()> {
         draft.send().await?
     };
 
-    let task_list_key = acter_core::models::TaskList::key_from_event(&task_list_id);
+    let task_list_key = TaskList::key_from_event(&task_list_id);
 
     let wait_for_space = space.clone();
     let Some(task_list) = wait_for(move || {
@@ -305,7 +305,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
         draft.send().await?
     };
 
-    let task_list_key = acter_core::models::TaskList::key_from_event(&task_list_id);
+    let task_list_key = TaskList::key_from_event(&task_list_id);
 
     let wait_for_space = space.clone();
     let Some(task_list) = wait_for(move || {
@@ -380,7 +380,7 @@ async fn task_comment_smoketests() -> Result<()> {
         draft.send().await?
     };
 
-    let task_list_key = acter_core::models::TaskList::key_from_event(&task_list_id);
+    let task_list_key = TaskList::key_from_event(&task_list_id);
 
     let wait_for_space = space.clone();
     let Some(task_list) = wait_for(move || {

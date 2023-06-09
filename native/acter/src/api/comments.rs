@@ -7,11 +7,10 @@ use async_broadcast::Receiver;
 use core::time::Duration;
 use matrix_sdk::{
     room::{Joined, Room},
-    ruma::OwnedEventId,
+    ruma::{OwnedEventId, OwnedUserId},
 };
 
 use super::{client::Client, RUNTIME};
-use crate::UserId;
 
 impl Client {
     pub async fn wait_for_comment(
@@ -61,7 +60,7 @@ impl Comment {
         })
     }
 
-    pub fn sender(&self) -> UserId {
+    pub fn sender(&self) -> OwnedUserId {
         self.inner.meta.sender.clone()
     }
 
