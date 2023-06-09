@@ -4,14 +4,16 @@ use acter_core::{
         TextMessageEventContent, UtcDateTime,
     },
     models::{self, ActerModel, AnyActerModel, Color, TaskStats},
-    ruma::{OwnedEventId, OwnedRoomId, OwnedUserId},
     statics::KEYS,
     util::DateTime,
 };
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
 use core::time::Duration;
-use matrix_sdk::{room::Joined, room::Room};
+use matrix_sdk::{
+    room::{Joined, Room},
+    ruma::{OwnedEventId, OwnedRoomId, OwnedUserId},
+};
 use std::collections::{hash_map::Entry, HashMap};
 
 use super::{client::Client, spaces::Space, RUNTIME};

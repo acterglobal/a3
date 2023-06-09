@@ -1,5 +1,4 @@
-use acter::{api::login_new_client, Client};
-use acter_core::matrix_sdk::ruma::OwnedUserId;
+use acter::{api::login_new_client, matrix_sdk::ruma::OwnedUserId, Client};
 use anyhow::Result;
 use clap::Parser;
 use dialoguer::{theme::ColorfulTheme, Password};

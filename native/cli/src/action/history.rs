@@ -1,10 +1,10 @@
-use acter_core::matrix_sdk::{
-    room::{Messages, MessagesOptions},
-    ruma::OwnedRoomId,
-};
 use anyhow::{bail, Context, Result};
 use clap::Parser;
 use futures::StreamExt;
+use matrix_sdk::{
+    room::{Messages, MessagesOptions},
+    ruma::OwnedRoomId,
+};
 
 use crate::config::{LoginConfig, ENV_ROOM};
 

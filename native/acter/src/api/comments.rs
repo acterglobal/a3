@@ -1,12 +1,14 @@
 use acter_core::{
     events::{comments::CommentBuilder, TextMessageEventContent},
     models::{self, ActerModel, AnyActerModel, Color},
-    ruma::OwnedEventId,
 };
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
 use core::time::Duration;
-use matrix_sdk::room::{Joined, Room};
+use matrix_sdk::{
+    room::{Joined, Room},
+    ruma::OwnedEventId,
+};
 
 use super::{client::Client, RUNTIME};
 use crate::UserId;
