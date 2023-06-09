@@ -9,7 +9,6 @@ use super::{
     },
     CALENDAR_KEY,
 };
-
 use crate::events::{
     calendar::{
         CalendarEventEventContent, CalendarEventUpdateBuilder, CalendarEventUpdateEventContent,

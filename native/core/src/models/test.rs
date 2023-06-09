@@ -1,5 +1,7 @@
 use derive_builder::Builder;
-use matrix_sdk::ruma::{event_id, room_id, user_id, OwnedEventId};
+use matrix_sdk::ruma::{
+    event_id, room_id, user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId,
+};
 use serde::{Deserialize, Serialize};
 
 use super::EventMeta;
@@ -28,14 +30,14 @@ impl TestModelBuilder {
         EventMeta {
             event_id: event_id!("$ASDas29ak").to_owned(),
             sender: user_id!("@test:example.org").to_owned(),
-            origin_server_ts: matrix_sdk::ruma::MilliSecondsSinceUnixEpoch(123567890u32.into()),
+            origin_server_ts: MilliSecondsSinceUnixEpoch(123567890u32.into()),
             room_id: room_id!("!5678ijhgasdf093:Asdfa").to_owned(),
         }
     }
 }
 
 impl ActerModel for TestModel {
-    fn event_id(&self) -> &matrix_sdk::ruma::EventId {
+    fn event_id(&self) -> &EventId {
         &self.event_id
     }
 

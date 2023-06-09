@@ -1,9 +1,8 @@
 use minijinja::value::{StructObject, Value};
 use std::sync::Arc;
 
-use crate::{client::CoreClient, events::UtcDateTime};
-
 use super::Error;
+use crate::{client::CoreClient, events::UtcDateTime};
 
 /// Hold a User client
 #[derive(Debug)]

@@ -10,7 +10,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use super::super::RUNTIME;
+use crate::RUNTIME;
 
 pub async fn new_client_config(
     base_path: String,

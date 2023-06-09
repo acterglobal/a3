@@ -1,16 +1,16 @@
 //! Testing modules, don't use in production!
 
-use acter_core::{
-    matrix_sdk::{Client, ClientBuilder},
+use anyhow::{bail, Result};
+use core::{future::Future, time::Duration};
+use matrix_sdk::{
     ruma::{
         api::client::{
             account::register::v3::Request as RegistrationRequest, room::Visibility, uiaa,
         },
         assign, OwnedUserId,
     },
+    Client, ClientBuilder,
 };
-use anyhow::{bail, Result};
-use core::{future::Future, time::Duration};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use tokio::time::sleep;
 

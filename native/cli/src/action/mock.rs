@@ -1,20 +1,17 @@
-use super::super::config::{
-    ENV_DEFAULT_HOMESERVER_NAME, ENV_DEFAULT_HOMESERVER_URL, ENV_REG_TOKEN,
-};
 use acter::{
     platform::sanitize,
     testing::{ensure_user, wait_for},
     Client as EfkClient, CreateSpaceSettingsBuilder,
 };
-use acter_core::{
-    models::ActerModel,
-    ruma::{api::client::room::Visibility, OwnedUserId},
-};
+use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
+use matrix_sdk::ruma::{api::client::room::Visibility, OwnedUserId};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sled::make_store_config;
 use std::collections::HashMap;
+
+use crate::config::{ENV_DEFAULT_HOMESERVER_NAME, ENV_DEFAULT_HOMESERVER_URL, ENV_REG_TOKEN};
 
 #[derive(Parser, Debug)]
 pub struct MockOpts {

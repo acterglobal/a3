@@ -1,13 +1,13 @@
-use acter_core::{
+use acter_core::RestoreToken;
+use anyhow::{bail, Context, Result};
+use log::info;
+use matrix_sdk::{
     ruma::{
         api::client::{account::register, session::login, uiaa},
         assign, OwnedUserId,
     },
-    RestoreToken,
+    Client as SdkClient, ClientBuilder, Session,
 };
-use anyhow::{bail, Context, Result};
-use log::info;
-use matrix_sdk::{Client as SdkClient, ClientBuilder, Session};
 
 use crate::platform;
 
