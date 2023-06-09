@@ -5,9 +5,9 @@ use futures::{
 use log::{info, warn};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
-    room::Room as MatrixRoom,
+    room::Room,
     ruma::{events::typing::SyncTypingEvent, OwnedRoomId, OwnedUserId},
-    Client as MatrixClient,
+    Client as SdkClient,
 };
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -51,25 +51,25 @@ impl TypingController {
         }
     }
 
-    pub fn add_event_handler(&mut self, client: &MatrixClient) {
+    pub fn add_event_handler(&mut self, client: &SdkClient) {
         let me = self.clone();
         client.add_event_handler_context(me);
         let handle = client.add_event_handler(
-            |ev: SyncTypingEvent, room: MatrixRoom, Ctx(me): Ctx<TypingController>| async move {
+            |ev: SyncTypingEvent, room: Room, Ctx(me): Ctx<TypingController>| async move {
                 me.clone().process_ephemeral_event(ev, &room);
             },
         );
         self.event_handle = Some(handle);
     }
 
-    pub fn remove_event_handler(&mut self, client: &MatrixClient) {
+    pub fn remove_event_handler(&mut self, client: &SdkClient) {
         if let Some(handle) = self.event_handle.clone() {
             client.remove_event_handler(handle);
             self.event_handle = None;
         }
     }
 
-    fn process_ephemeral_event(&mut self, ev: SyncTypingEvent, room: &MatrixRoom) {
+    fn process_ephemeral_event(&mut self, ev: SyncTypingEvent, room: &Room) {
         info!("typing: {:?}", ev.content.user_ids);
         let room_id = room.room_id().to_owned();
         let msg = TypingEvent::new(room_id.clone(), ev.content.user_ids);

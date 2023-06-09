@@ -1,7 +1,7 @@
 use acter::{
     platform::sanitize,
     testing::{ensure_user, wait_for},
-    Client as EfkClient, CreateSpaceSettingsBuilder,
+    Client, CreateSpaceSettingsBuilder,
 };
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
@@ -87,12 +87,12 @@ impl MockOpts {
 /// Posting a news item to a given room
 #[derive(Debug, Clone)]
 pub struct Mock<'a> {
-    users: HashMap<String, EfkClient>,
+    users: HashMap<String, Client>,
     opts: &'a MockOpts,
 }
 
 impl<'a> Mock<'a> {
-    async fn client(&mut self, username: String) -> Result<EfkClient> {
+    async fn client(&mut self, username: String) -> Result<Client> {
         match self.users.get(&username) {
             Some(c) => Ok(c.clone()),
             None => {
@@ -128,7 +128,7 @@ impl<'a> Mock<'a> {
         })
     }
 
-    async fn team(&mut self) -> [EfkClient; 8] {
+    async fn team(&mut self) -> [Client; 8] {
         [
             self.client("sisko".to_owned()).await.unwrap(),
             self.client("sisko1".to_owned()).await.unwrap(),
@@ -140,7 +140,7 @@ impl<'a> Mock<'a> {
             self.client("odo".to_owned()).await.unwrap(),
         ]
     }
-    async fn civilians(&mut self) -> [EfkClient; 4] {
+    async fn civilians(&mut self) -> [Client; 4] {
         [
             self.client("quark".to_owned()).await.unwrap(),
             self.client("rom".to_owned()).await.unwrap(),
@@ -149,7 +149,7 @@ impl<'a> Mock<'a> {
         ]
     }
 
-    async fn quark_customers(&mut self) -> [EfkClient; 7] {
+    async fn quark_customers(&mut self) -> [Client; 7] {
         [
             self.client("quark".to_owned()).await.unwrap(),
             self.client("rom".to_owned()).await.unwrap(),
@@ -161,7 +161,7 @@ impl<'a> Mock<'a> {
         ]
     }
 
-    async fn everyone(&mut self) -> Vec<EfkClient> {
+    async fn everyone(&mut self) -> Vec<Client> {
         let mut everyone = Vec::new();
         everyone.extend_from_slice(&self.team().await);
         everyone.extend_from_slice(&self.civilians().await);

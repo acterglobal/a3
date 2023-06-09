@@ -2,7 +2,7 @@ use core::time::Duration;
 use matrix_sdk::ruma::{
     events::room::{
         message::{AudioInfo, FileInfo, VideoInfo},
-        ImageInfo, MediaSource as MatrixMediaSource, ThumbnailInfo as MatrixThumbnailInfo,
+        ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
     },
     OwnedUserId,
 };
@@ -12,21 +12,21 @@ pub fn duration_from_secs(secs: u64) -> Duration {
 }
 
 pub struct MediaSource {
-    inner: MatrixMediaSource,
+    inner: SdkMediaSource,
 }
 
 impl MediaSource {
     pub fn url(&self) -> String {
         match self.inner.clone() {
-            MatrixMediaSource::Plain(url) => url.to_string(),
-            MatrixMediaSource::Encrypted(file) => file.url.to_string(),
+            SdkMediaSource::Plain(url) => url.to_string(),
+            SdkMediaSource::Encrypted(file) => file.url.to_string(),
         }
     }
 }
 
 #[derive(Clone)]
 pub struct ThumbnailInfo {
-    inner: MatrixThumbnailInfo,
+    inner: SdkThumbnailInfo,
 }
 
 impl ThumbnailInfo {
@@ -99,12 +99,12 @@ impl TextDesc {
 #[derive(Clone, Debug)]
 pub struct ImageDesc {
     name: String,
-    source: MatrixMediaSource,
+    source: SdkMediaSource,
     info: ImageInfo,
 }
 
 impl ImageDesc {
-    pub fn new(name: String, source: MatrixMediaSource, info: ImageInfo) -> Self {
+    pub fn new(name: String, source: SdkMediaSource, info: ImageInfo) -> Self {
         ImageDesc { name, source, info }
     }
 
@@ -170,12 +170,12 @@ impl ImageDesc {
 #[derive(Clone, Debug)]
 pub struct AudioDesc {
     name: String,
-    source: MatrixMediaSource,
+    source: SdkMediaSource,
     info: AudioInfo,
 }
 
 impl AudioDesc {
-    pub fn new(name: String, source: MatrixMediaSource, info: AudioInfo) -> Self {
+    pub fn new(name: String, source: SdkMediaSource, info: AudioInfo) -> Self {
         AudioDesc { name, source, info }
     }
 
@@ -217,12 +217,12 @@ impl AudioDesc {
 #[derive(Clone, Debug)]
 pub struct VideoDesc {
     name: String,
-    source: MatrixMediaSource,
+    source: SdkMediaSource,
     info: VideoInfo,
 }
 
 impl VideoDesc {
-    pub fn new(name: String, source: MatrixMediaSource, info: VideoInfo) -> Self {
+    pub fn new(name: String, source: SdkMediaSource, info: VideoInfo) -> Self {
         VideoDesc { name, source, info }
     }
 
@@ -302,12 +302,12 @@ impl VideoDesc {
 #[derive(Clone, Debug)]
 pub struct FileDesc {
     name: String,
-    source: MatrixMediaSource,
+    source: SdkMediaSource,
     info: FileInfo,
 }
 
 impl FileDesc {
-    pub fn new(name: String, source: MatrixMediaSource, info: FileInfo) -> Self {
+    pub fn new(name: String, source: SdkMediaSource, info: FileInfo) -> Self {
         FileDesc { name, source, info }
     }
 

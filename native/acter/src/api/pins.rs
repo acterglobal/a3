@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         pins::{self, PinBuilder},
-        Icon, TextMessageEventContent,
+        Icon,
     },
     models::{self, ActerModel, AnyActerModel, Color},
     statics::KEYS,
@@ -11,9 +11,12 @@ use async_broadcast::Receiver;
 use core::time::Duration;
 use matrix_sdk::{
     room::{Joined, Room},
-    ruma::{OwnedEventId, OwnedRoomId},
+    ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId},
 };
-use std::collections::{hash_map::Entry, HashMap};
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    ops::Deref,
+};
 
 use super::{client::Client, spaces::Space, RUNTIME};
 
@@ -189,7 +192,7 @@ pub struct Pin {
     content: models::Pin,
 }
 
-impl std::ops::Deref for Pin {
+impl Deref for Pin {
     type Target = models::Pin;
     fn deref(&self) -> &Self::Target {
         &self.content

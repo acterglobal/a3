@@ -12,12 +12,13 @@ use futures_signals::signal::{
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
-    room::Room as MatrixRoom,
+    room::Room as SdkRoom,
     ruma::{device_id, OwnedDeviceId, OwnedRoomId, OwnedUserId, RoomId, UserId},
-    Client as MatrixClient, LoopCtrl, RumaApiError,
+    Client as SdkClient, LoopCtrl, RumaApiError,
 };
 use std::{
     collections::BTreeMap,
+    ops::Deref,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -69,9 +70,9 @@ pub struct Client {
     pub(crate) conversation_controller: ConversationController,
 }
 
-impl std::ops::Deref for Client {
-    type Target = MatrixClient;
-    fn deref(&self) -> &MatrixClient {
+impl Deref for Client {
+    type Target = SdkClient;
+    fn deref(&self) -> &SdkClient {
         self.core.client()
     }
 }
@@ -202,7 +203,7 @@ impl Drop for SyncState {
 }
 
 impl Client {
-    pub async fn new(client: MatrixClient, state: ClientState) -> Result<Self> {
+    pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
         let core = CoreClient::new(client)
             .await
             .context("Couldn't create core client")?;
@@ -268,7 +269,7 @@ impl Client {
     async fn refresh_history_on_way(
         &self,
         history: Mutable<HistoryLoadState>,
-        new_spaces: Vec<MatrixRoom>,
+        new_spaces: Vec<SdkRoom>,
     ) -> Result<()> {
         tracing::trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
 

@@ -1,9 +1,9 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use matrix_sdk::ruma::events::macros::EventContent;
+use matrix_sdk::ruma::events::{macros::EventContent, room::message::TextMessageEventContent};
 use serde::{Deserialize, Serialize};
 
-use super::{Color, Icon, TextMessageEventContent, Update};
+use super::{Color, Icon, Update};
 use crate::util::deserialize_some;
 
 #[derive(Clone, Debug, Deserialize, Serialize, Builder)]

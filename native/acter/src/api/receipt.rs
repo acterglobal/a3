@@ -5,12 +5,12 @@ use futures::{
 use log::{info, warn};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
-    room::Room as MatrixRoom,
+    room::Room,
     ruma::{
         events::receipt::{ReceiptType, SyncReceiptEvent},
         MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
     },
-    Client as MatrixClient,
+    Client as SdkClient,
 };
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -104,25 +104,25 @@ impl ReceiptController {
         }
     }
 
-    pub fn add_event_handler(&mut self, client: &MatrixClient) {
+    pub fn add_event_handler(&mut self, client: &SdkClient) {
         let me = self.clone();
         client.add_event_handler_context(me);
         let handle = client.add_event_handler(
-            |ev: SyncReceiptEvent, room: MatrixRoom, Ctx(me): Ctx<ReceiptController>| async move {
+            |ev: SyncReceiptEvent, room: Room, Ctx(me): Ctx<ReceiptController>| async move {
                 me.clone().process_ephemeral_event(ev, &room);
             },
         );
         self.event_handle = Some(handle);
     }
 
-    pub fn remove_event_handler(&mut self, client: &MatrixClient) {
+    pub fn remove_event_handler(&mut self, client: &SdkClient) {
         if let Some(handle) = self.event_handle.clone() {
             client.remove_event_handler(handle);
             self.event_handle = None;
         }
     }
 
-    fn process_ephemeral_event(&mut self, ev: SyncReceiptEvent, room: &MatrixRoom) {
+    fn process_ephemeral_event(&mut self, ev: SyncReceiptEvent, room: &Room) {
         info!("receipt: {:?}", ev.content);
         let room_id = room.room_id();
         let mut msg = ReceiptEvent::new(room_id.to_owned());

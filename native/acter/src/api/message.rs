@@ -68,7 +68,7 @@ use matrix_sdk::{
                 },
                 tombstone::{OriginalRoomTombstoneEvent, OriginalSyncRoomTombstoneEvent},
                 topic::{OriginalRoomTopicEvent, OriginalSyncRoomTopicEvent},
-                ImageInfo, MediaSource as MatrixMediaSource,
+                ImageInfo, MediaSource,
             },
             space::{
                 child::{OriginalSpaceChildEvent, OriginalSyncSpaceChildEvent},
@@ -2832,7 +2832,7 @@ impl RoomMessage {
                 let content = s.content();
                 let image_desc = ImageDesc::new(
                     content.body.clone(),
-                    MatrixMediaSource::Plain(content.url.clone()),
+                    MediaSource::Plain(content.url.clone()),
                     content.info.clone(),
                 );
                 RoomEventItem::new(
@@ -2965,7 +2965,7 @@ impl RoomMessage {
                     change.new.as_ref().map(|uri| {
                         ImageDesc::new(
                             "new_picture".to_string(),
-                            MatrixMediaSource::Plain(uri.clone()),
+                            MediaSource::Plain(uri.clone()),
                             ImageInfo::new(),
                         )
                     })

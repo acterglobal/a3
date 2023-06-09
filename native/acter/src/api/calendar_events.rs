@@ -1,33 +1,21 @@
 use acter_core::{
     events::{
-        calendar::{self as calendar_events, CalendarEventBuilder, SyncCalendarEventEvent},
-        Icon, TextMessageEventContent, UtcDateTime,
+        calendar::{self as calendar_events, CalendarEventBuilder},
+        Icon,
     },
-    executor::Executor,
     models::{self, ActerModel, AnyActerModel, Color},
     statics::KEYS,
-    store::Store,
 };
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
-use chrono::DateTime;
 use core::time::Duration;
-use futures_signals::signal::Mutable;
 use matrix_sdk::{
-    event_handler::Ctx,
     room::{Joined, Room},
-    ruma::{
-        events::{
-            room::message::{RoomMessageEventContent, SyncRoomMessageEvent},
-            MessageLikeEvent,
-        },
-        OwnedEventId, OwnedRoomId, OwnedUserId,
-    },
-    Client as MatrixClient,
+    ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId},
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
-    convert::{TryFrom, TryInto},
+    ops::Deref,
 };
 
 use super::{client::Client, spaces::Space, RUNTIME};
@@ -137,7 +125,7 @@ pub struct CalendarEvent {
     inner: models::CalendarEvent,
 }
 
-impl std::ops::Deref for CalendarEvent {
+impl Deref for CalendarEvent {
     type Target = models::CalendarEvent;
     fn deref(&self) -> &Self::Target {
         &self.inner

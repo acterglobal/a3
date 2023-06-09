@@ -1,11 +1,3 @@
-pub use matrix_sdk::ruma::{
-    events::room::message::{
-        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-        TextMessageEventContent, VideoMessageEventContent,
-    },
-    EventId,
-};
-
 pub mod calendar;
 pub mod comments;
 mod common;
@@ -15,5 +7,5 @@ pub mod tasks;
 
 pub use common::{
     BelongsTo, BrandIcon, Color, Colorize, Icon, Labels, ObjRef, Position, RefDetails, Reference,
-    References, TimeZone, Update, UtcDateTime,
+    References, Update, UtcDateTime,
 };

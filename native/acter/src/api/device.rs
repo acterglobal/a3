@@ -11,7 +11,7 @@ use matrix_sdk::{
         OwnedDeviceId, OwnedUserId,
     },
     sync::SyncResponse,
-    Client as MatrixClient,
+    Client as SdkClient,
 };
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -20,11 +20,11 @@ use super::{client::Client, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct DeviceChangedEvent {
-    client: MatrixClient,
+    client: SdkClient,
 }
 
 impl DeviceChangedEvent {
-    pub(crate) fn new(client: &MatrixClient) -> Self {
+    pub(crate) fn new(client: &SdkClient) -> Self {
         DeviceChangedEvent {
             client: client.clone(),
         }
@@ -164,11 +164,11 @@ impl DeviceChangedEvent {
 
 #[derive(Clone, Debug)]
 pub struct DeviceLeftEvent {
-    client: MatrixClient,
+    client: SdkClient,
 }
 
 impl DeviceLeftEvent {
-    pub(crate) fn new(client: &MatrixClient) -> Self {
+    pub(crate) fn new(client: &SdkClient) -> Self {
         DeviceLeftEvent {
             client: client.clone(),
         }
@@ -284,7 +284,7 @@ impl DeviceController {
         }
     }
 
-    pub fn process_device_lists(&mut self, client: &MatrixClient, response: &SyncResponse) {
+    pub fn process_device_lists(&mut self, client: &SdkClient, response: &SyncResponse) {
         info!("process device lists: {:?}", response);
 
         // avoid device changed event in case that user joined room
