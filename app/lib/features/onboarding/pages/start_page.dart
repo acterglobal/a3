@@ -61,7 +61,6 @@ class StartPage extends StatelessWidget {
           ),
         ],
       ),
-      debugShowCheckedModeBanner: false,
     );
   }
 }

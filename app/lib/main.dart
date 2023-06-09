@@ -53,7 +53,6 @@ class Acter extends ConsumerWidget {
       child: OverlaySupport.global(
         child: MaterialApp.router(
           routerConfig: appRouter,
-          debugShowCheckedModeBanner: false,
           theme: AppTheme.theme,
           title: 'Acter',
           localizationsDelegates: const [
