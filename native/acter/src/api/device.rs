@@ -6,7 +6,6 @@ use futures::{
 use log::{info, warn};
 use matrix_sdk::{
     encryption::identities::Device,
-    locks::Mutex,
     ruma::{
         device_id, events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch,
         OwnedDeviceId, OwnedUserId,
@@ -15,6 +14,7 @@ use matrix_sdk::{
     Client as SdkClient,
 };
 use std::sync::Arc;
+use tokio::sync::Mutex;
 
 use super::{client::Client, RUNTIME};
 

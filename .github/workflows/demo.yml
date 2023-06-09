@@ -34,7 +34,7 @@ jobs:
           #   os: ubuntu-latest
           #   cargo_make_setup: setup-android
           #   cargo_make_args: android-arm
-          #   with_ndk_version: r23c
+          #   with_ndk_version: r22b
           #   flutter_build_args: 'build apk --target-platform android-arm64'
           #   artifact_prefix: acter-demo-android-arm64
           #   artifact_path:  app/build/app/outputs/apk/release/

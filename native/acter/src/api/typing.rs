@@ -5,12 +5,12 @@ use futures::{
 use log::{info, warn};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
-    locks::Mutex,
     room::Room,
     ruma::{events::typing::SyncTypingEvent, OwnedRoomId, OwnedUserId},
     Client as SdkClient,
 };
 use std::sync::Arc;
+use tokio::sync::Mutex;
 
 use super::client::Client;
 

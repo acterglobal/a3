@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -50,7 +49,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
   @override
   void dispose() {
-    Get.delete<ChatListController>();
     Get.delete<ChatRoomController>();
     Get.delete<ReceiptController>();
     super.dispose();

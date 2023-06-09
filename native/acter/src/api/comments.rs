@@ -19,19 +19,24 @@ impl Client {
         key: String,
         timeout: Option<Box<Duration>>,
     ) -> Result<Comment> {
-        let AnyActerModel::Comment(comment) = self.wait_for(key.clone(), timeout).await? else {
-            bail!("{key} is not a comment");
-        };
-        let room = self
-            .core
-            .client()
-            .get_room(&comment.meta.room_id)
-            .context("Room not found")?;
-        Ok(Comment {
-            client: self.clone(),
-            room,
-            inner: comment,
-        })
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let AnyActerModel::Comment(comment) = me.wait_for(key.clone(), timeout).await? else {
+                    bail!("{key} is not a comment");
+                };
+                let room = me
+                    .core
+                    .client()
+                    .get_room(&comment.meta.room_id)
+                    .context("Room not found")?;
+                Ok(Comment {
+                    client: me.clone(),
+                    room,
+                    inner: comment,
+                })
+            })
+            .await?
     }
 }
 

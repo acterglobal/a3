@@ -1,4 +1,3 @@
-import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
@@ -26,7 +25,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
       ref.watch(clientProvider.notifier).state = client;
       ref.watch(clientProvider.notifier).syncState = client.startSync();
       // inject chat dependencies once actual client is logged in.
-      Get.replace(ChatListController(client: client));
       Get.replace(ChatRoomController(client: client));
       Get.replace(ReceiptController(client: client));
       state = false;

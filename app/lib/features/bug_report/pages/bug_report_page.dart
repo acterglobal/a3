@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
-import 'package:acter/features/bug_report/data/bug_report.dart';
+import 'package:acter/features/bug_report/models/bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/bug_report/widgets/select_tag.dart';
 import 'package:flutter/material.dart';

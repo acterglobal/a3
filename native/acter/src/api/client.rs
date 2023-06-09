@@ -12,7 +12,6 @@ use futures_signals::signal::{
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
-    locks::{Mutex, RwLock},
     room::Room as SdkRoom,
     ruma::{device_id, OwnedDeviceId, OwnedRoomId, OwnedUserId, RoomId, UserId},
     Client as SdkClient, LoopCtrl, RumaApiError,
@@ -25,7 +24,10 @@ use std::{
         Arc,
     },
 };
-use tokio::task::JoinHandle;
+use tokio::{
+    sync::{Mutex, RwLock},
+    task::JoinHandle,
+};
 
 use super::{
     account::Account,
@@ -235,73 +237,70 @@ impl Client {
         Ok(engine)
     }
 
-    fn refresh_history_on_start(&self, history: Mutable<HistoryLoadState>) {
-        let me = self.clone();
-        RUNTIME.spawn(async move {
-            tracing::trace!(user_id=?me.user_id_ref(), "refreshing history");
-            let spaces = me
-                .spaces()
-                .await
-                .context("Couldn't get spaces from client")?;
-            let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
-            history.lock_mut().start(space_ids);
+    async fn refresh_history_on_start(&self, history: Mutable<HistoryLoadState>) -> Result<()> {
+        tracing::trace!(user_id=?self.user_id_ref(), "refreshing history");
+        let spaces = self
+            .spaces()
+            .await
+            .context("Couldn't get spaces from client")?;
+        let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
+        history.lock_mut().start(space_ids);
 
-            join_all(spaces.iter().map(|g| async {
-                if !g.is_acter_space().await {
-                    tracing::trace!(room_id=?g.room_id(), "not an acter space");
-                    history.lock_mut().unknow_room(&g.room_id().to_owned());
-                    return;
-                }
+        join_all(spaces.iter().map(|space| async {
+            if !space.is_acter_space().await {
+                tracing::trace!(room_id=?space.room_id(), "not an acter space");
+                history.lock_mut().unknow_room(&space.room_id().to_owned());
+                return;
+            }
 
-                g.add_handlers().await;
+            space.add_handlers().await;
 
-                if let Err(err) = g.refresh_history().await {
-                    tracing::error!(?err, room_id=?g.room_id(),  "Loading space history failed");
-                };
-                history
-                    .lock_mut()
-                    .set_loading(g.room_id().to_owned(), false);
-            }))
-            .await;
-            anyhow::Ok(())
-        });
+            if let Err(err) = space.refresh_history().await {
+                tracing::error!(?err, room_id=?space.room_id(), "Loading space history failed");
+            };
+            history
+                .lock_mut()
+                .set_loading(space.room_id().to_owned(), false);
+        }))
+        .await;
+        Ok(())
     }
 
-    fn refresh_history_on_way(&self, history: Mutable<HistoryLoadState>, new_spaces: Vec<SdkRoom>) {
-        let me = self.clone();
-        RUNTIME
-            .spawn(async move {
-                tracing::trace!(user_id=?me.user_id_ref(), count=?new_spaces.len(), "found new spaces");
+    async fn refresh_history_on_way(
+        &self,
+        history: Mutable<HistoryLoadState>,
+        new_spaces: Vec<SdkRoom>,
+    ) -> Result<()> {
+        tracing::trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
 
-                join_all(
-                    new_spaces
-                        .into_iter()
-                        .map(|room| Space::new(me.clone(), Room { room }))
-                        .map(|g| {
-                            let history = history.clone();
-                            async move {
-                                {
-                                    let room_id = g.room_id().to_owned();
-                                    let mut history = history.lock_mut();
-                                    if history.is_loading(&room_id) {
-                                        tracing::trace!(room_id=?room_id, "Already loading room.");
-                                        return;
-                                    }
-                                    history.set_loading(room_id, true);
-                                }
-                                g.add_handlers().await;
-                                if let Err(err) = g.refresh_history().await {
-                                    tracing::error!(?err, room_id=?g.room_id(), "refreshing history failed");
-                                }
-                                history.lock_mut().set_loading(g.room_id().to_owned(), false);
+        join_all(
+            new_spaces
+                .into_iter()
+                .map(|room| Space::new(self.clone(), Room { room }))
+                .map(|space| {
+                    let history = history.clone();
+                    async move {
+                        {
+                            let room_id = space.room_id().to_owned();
+                            let mut history = history.lock_mut();
+                            if history.is_loading(&room_id) {
+                                tracing::trace!(room_id=?room_id, "Already loading room.");
+                                return;
                             }
+                            history.set_loading(room_id, true);
                         }
-                    ),
-                )
-                .await;
-                anyhow::Ok(())
-            }
-        );
+
+                        space.add_handlers().await;
+
+                        if let Err(err) = space.refresh_history().await {
+                            tracing::error!(?err, room_id=?space.room_id(), "refreshing history failed");
+                        }
+                        history.lock_mut().set_loading(space.room_id().to_owned(), false);
+                    }
+                })
+        )
+        .await;
+        Ok(())
     }
 
     pub fn start_sync(&mut self) -> SyncState {
@@ -385,7 +384,8 @@ impl Client {
                         // load invitations after first sync
                         invitation_controller.load_invitations(&client).await;
 
-                        me.refresh_history_on_start(sync_state_history.clone());
+                        me.refresh_history_on_start(sync_state_history.clone())
+                            .await;
 
                         initial.store(false, Ordering::SeqCst);
                         first_synced_arc.send(true);
@@ -410,7 +410,8 @@ impl Client {
                         }
 
                         if !new_spaces.is_empty() {
-                            me.refresh_history_on_way(sync_state_history.clone(), new_spaces);
+                            me.refresh_history_on_way(sync_state_history.clone(), new_spaces)
+                                .await;
                         }
                     }
 

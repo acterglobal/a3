@@ -77,6 +77,7 @@ impl Space {
         Ok(())
     }
 
+    // for only cli run_marking_space, not api.rsh
     pub async fn is_acter_space(&self) -> bool {
         is_acter_space(&self.inner).await
     }
