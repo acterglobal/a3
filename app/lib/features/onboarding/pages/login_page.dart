@@ -1,11 +1,11 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
-import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
+import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +31,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
-  void _validateLogin(BuildContext context) {
+  void validateLogin(BuildContext context) {
     final isLoggedIn = ref.watch(isLoggedInProvider);
 
     if (isLoggedIn) {
@@ -48,10 +48,25 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
+  Future<void> handleSubmit() async {
+    if (formKey.currentState!.validate()) {
+      var network = ref.read(networkAwareProvider);
+      if (!inCI && network == NetworkStatus.Off) {
+        showNoInternetNotification();
+      } else {
+        var notifier = ref.read(authStateProvider.notifier);
+        await notifier.login(
+          username.text,
+          password.text,
+        );
+        validateLogin(context);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
-    var network = ref.watch(networkAwareProvider);
     return SimpleDialog(
       title: AppBar(
         title: Text(AppLocalizations.of(context)!.logIn),
@@ -103,19 +118,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ? const CircularProgressIndicator()
                   : CustomButton(
                       key: LoginPageKeys.submitBtn,
-                      onPressed: () async {
-                        if (formKey.currentState!.validate()) {
-                          if (!inCI && network == NetworkStatus.Off) {
-                            showNoInternetNotification();
-                          } else {
-                            await ref.read(authStateProvider.notifier).login(
-                                  username.text,
-                                  password.text,
-                                );
-                            _validateLogin(context);
-                          }
-                        }
-                      },
+                      onPressed: handleSubmit,
                       title: AppLocalizations.of(context)!.logIn,
                     ),
               const SizedBox(height: 40),
