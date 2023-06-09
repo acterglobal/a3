@@ -36,8 +36,8 @@ use serde::{Deserialize, Serialize};
 use super::{
     client::{devide_spaces_from_convos, Client},
     room::Room,
+    RUNTIME,
 };
-use crate::api::RUNTIME;
 
 #[derive(Debug, Clone)]
 pub struct Space {
