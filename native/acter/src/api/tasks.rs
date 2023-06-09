@@ -24,143 +24,172 @@ impl Client {
         key: String,
         timeout: Option<Box<Duration>>,
     ) -> Result<TaskList> {
-        let AnyActerModel::TaskList(content) = self.wait_for(key.clone(), timeout).await? else {
-            bail!("{key} is not a task");
-        };
-        let room = self
-            .core
-            .client()
-            .get_room(content.room_id())
-            .context("Room not found")?;
-        Ok(TaskList {
-            client: self.clone(),
-            room,
-            content,
-        })
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let AnyActerModel::TaskList(content) = me.wait_for(key.clone(), timeout).await? else {
+                    bail!("{key} is not a task");
+                };
+                let room = me
+                    .core
+                    .client()
+                    .get_room(content.room_id())
+                    .context("Room not found")?;
+                Ok(TaskList {
+                    client: me.clone(),
+                    room,
+                    content,
+                })
+            })
+            .await?
     }
 
     pub async fn wait_for_task(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Task> {
-        let AnyActerModel::Task(content) = self.wait_for(key.clone(), timeout).await? else {
-            bail!("{key} is not a task");
-        };
-        let room = self
-            .core
-            .client()
-            .get_room(content.room_id())
-            .context("Room not found")?;
-        Ok(Task {
-            client: self.clone(),
-            room,
-            content,
-        })
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let AnyActerModel::Task(content) = me.wait_for(key.clone(), timeout).await? else {
+                    bail!("{key} is not a task");
+                };
+                let room = me
+                    .core
+                    .client()
+                    .get_room(content.room_id())
+                    .context("Room not found")?;
+                Ok(Task {
+                    client: me.clone(),
+                    room,
+                    content,
+                })
+            })
+            .await?
     }
 
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut task_lists = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
-        for mdl in self
-            .store()
-            .get_list(KEYS::TASKS)
-            .await
-            .context("Couldn't get task lists from store")?
-        {
-            #[allow(irrefutable_let_patterns)]
-            if let AnyActerModel::TaskList(content) = mdl {
-                let room_id = content.room_id().to_owned();
-                let room = match rooms_map.entry(room_id) {
-                    Entry::Occupied(t) => t.get().clone(),
-                    Entry::Vacant(e) => {
-                        if let Some(room) = client.get_room(e.key()) {
-                            e.insert(room.clone());
-                            room
-                        } else {
-                            /// User not part of the room anymore, ignore
-                            continue;
-                        }
+        RUNTIME
+            .spawn(async move {
+                for mdl in client
+                    .store()
+                    .get_list(KEYS::TASKS)
+                    .await
+                    .context("Couldn't get task lists from store")?
+                {
+                    #[allow(irrefutable_let_patterns)]
+                    if let AnyActerModel::TaskList(content) = mdl {
+                        let room_id = content.room_id().to_owned();
+                        let room = match rooms_map.entry(room_id) {
+                            Entry::Occupied(t) => t.get().clone(),
+                            Entry::Vacant(e) => {
+                                if let Some(room) = client.get_room(e.key()) {
+                                    e.insert(room.clone());
+                                    room
+                                } else {
+                                    /// User not part of the room anymore, ignore
+                                    continue;
+                                }
+                            }
+                        };
+                        task_lists.push(TaskList {
+                            client: client.clone(),
+                            room,
+                            content,
+                        })
+                    } else {
+                        tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
                     }
+                }
+                Ok(task_lists)
+            })
+            .await?
+    }
+
+    pub async fn task_list(&self, key: String) -> Result<TaskList> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let mdl = client
+                    .store()
+                    .get(key.as_str())
+                    .await
+                    .context("Couldn't get task list from store")?;
+
+                let AnyActerModel::TaskList(content) = mdl else  {
+                    bail!("Not a Tasklist model: {key}")
                 };
-                task_lists.push(TaskList {
+                let Some(room) = client.get_room(content.room_id()) else {
+                    bail!("Room not found for task_list item");
+                };
+
+                Ok(TaskList {
                     client: client.clone(),
                     room,
                     content,
                 })
-            } else {
-                tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
-            }
-        }
-        Ok(task_lists)
-    }
-
-    pub async fn task_list(&self, key: &str) -> Result<TaskList> {
-        let client = self.clone();
-        let mdl = self
-            .store()
-            .get(key)
-            .await
-            .context("Couldn't get task list from store")?;
-
-        let AnyActerModel::TaskList(content) = mdl else  {
-            bail!("Not a Tasklist model: {key}")
-        };
-        let Some(room) = client.get_room(content.room_id()) else {
-            bail!("Room not found for task_list item");
-        };
-
-        Ok(TaskList {
-            client: client.clone(),
-            room,
-            content,
-        })
+            })
+            .await?
     }
 }
 
 impl Space {
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut task_lists = Vec::new();
-        let room_id = self.room_id();
-        for mdl in self
-            .client
-            .store()
-            .get_list(&format!("{room_id}::{}", KEYS::TASKS))
-            .await
-            .context("Couldn't get task list from store")?
-        {
-            #[allow(irrefutable_let_patterns)]
-            if let AnyActerModel::TaskList(content) = mdl {
-                task_lists.push(TaskList {
-                    client: self.client.clone(),
-                    room: self.room.clone(),
-                    content,
-                });
-            } else {
-                tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
-            }
-        }
-        Ok(task_lists)
+        let room_id = self.room_id().to_owned();
+        let client = self.client.clone();
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                for mdl in client
+                    .store()
+                    .get_list(&format!("{room_id}::{}", KEYS::TASKS))
+                    .await
+                    .context("Couldn't get task list from store")?
+                {
+                    #[allow(irrefutable_let_patterns)]
+                    if let AnyActerModel::TaskList(content) = mdl {
+                        task_lists.push(TaskList {
+                            client: client.clone(),
+                            room: room.clone(),
+                            content,
+                        });
+                    } else {
+                        tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
+                    }
+                }
+                Ok(task_lists)
+            })
+            .await?
     }
 
-    pub async fn task_list(&self, key: &str) -> Result<TaskList> {
-        let mdl = self
-            .client
-            .store()
-            .get(key)
-            .await
-            .context("Couldn't get task list from store")?;
+    pub async fn task_list(&self, key: String) -> Result<TaskList> {
+        let room_id = self.room_id().to_owned();
+        let client = self.client.clone();
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let mdl = client
+                    .store()
+                    .get(key.as_str())
+                    .await
+                    .context("Couldn't get task list from store")?;
 
-        let AnyActerModel::TaskList(content) = mdl else  {
-            bail!("Not a Tasklist model: {key}")
-        };
-        assert!(
-            self.room_id() == content.room_id(),
-            "This task doesn't belong to this room"
-        );
+                let AnyActerModel::TaskList(content) = mdl else  {
+                    bail!("Not a Tasklist model: {key}")
+                };
+                assert!(
+                    room_id == content.room_id(),
+                    "This task doesn't belong to this room"
+                );
 
-        Ok(TaskList {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            content,
-        })
+                Ok(TaskList {
+                    client: client.clone(),
+                    room: room.clone(),
+                    content,
+                })
+            })
+            .await?
     }
 }
 

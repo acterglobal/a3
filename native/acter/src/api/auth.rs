@@ -101,7 +101,6 @@ pub async fn login_with_token_under_config(
         is_guest,
     } = serde_json::from_str(&restore_token)?;
     let user_id = session.user_id.to_string();
-    // First we need to log in.
     RUNTIME
         .spawn(async move {
             let client = config.homeserver_url(homeurl).build().await?;

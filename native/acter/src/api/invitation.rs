@@ -8,7 +8,7 @@ use matrix_sdk::{
         events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
         OwnedRoomId, OwnedUserId, RoomId,
     },
-    Client as MatrixClient,
+    Client as MatrixClient, RoomMemberships,
 };
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
@@ -308,7 +308,7 @@ impl Client {
             .spawn(async move {
                 // get member list of target room
                 let members = room
-                    .members()
+                    .members(RoomMemberships::ACTIVE)
                     .await
                     .context("Couldn't get members of room")?;
                 let room_members = members
@@ -323,7 +323,7 @@ impl Client {
                         continue;
                     }
                     let members = convo
-                        .members()
+                        .members(RoomMemberships::ACTIVE)
                         .await
                         .context("Couldn't get members of conversation")?;
                     for member in members {

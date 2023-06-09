@@ -8,7 +8,7 @@ use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
 use matrix_sdk::ruma::{api::client::room::Visibility, OwnedUserId};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
-use matrix_sdk_sled::make_store_config;
+use matrix_sdk_sqlite::make_store_config;
 use std::collections::HashMap;
 
 use crate::config::{ENV_DEFAULT_HOMESERVER_NAME, ENV_DEFAULT_HOMESERVER_URL, ENV_REG_TOKEN};
@@ -100,7 +100,7 @@ impl<'a> Mock<'a> {
 
                 let store_config = if self.opts.persist {
                     let path = sanitize(".local", &username);
-                    make_store_config(path, Some(&username)).await?
+                    make_store_config(&path, Some(&username)).await?
                 } else {
                     StoreConfig::new().state_store(MemoryStore::new())
                 };

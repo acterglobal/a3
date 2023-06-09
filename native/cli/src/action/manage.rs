@@ -75,9 +75,9 @@ impl Manage {
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         tracing::info!(" - First Sync finished - ");
 
-        let room = client.get_space(room_id.to_string()).await?;
+        let space = client.get_space(room_id.to_string()).await?;
 
-        room.create_onboarding_data().await?;
+        space.create_onboarding_data().await?;
 
         println!("Onboarding Space created: {room_id}");
         Ok(())

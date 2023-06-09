@@ -14,6 +14,20 @@ top = false
 
 The current system has a problem with the latest android native development kit (NDK), please downgrade to version r22.\* - then things should be fine.
 
+### libgcc issue
+
+Android NDK missed `libgcc.a` from linking stage since `r25`.
+Rust standard library uses `libgcc` for its unwinder implementation on Android, but `libgcc` is not included in new versions of the NDK.
+Without sqlite, rust build works well under `ndk r24` and `cargo-ndk v3.1.2`.
+
+### SQLite issue on android x86_64 architecture
+
+`matrix-sdk-sqlite` is the alternative of `matrix-sdk-sled`.
+Acording to [this document](https://github.com/mozilla/rust-android-gradle/issues/105), SQLite uses `long double` type but rust doesn't support it.
+Not only `rust 1.70` but also `rust 1.68` doesn't support `long double` on x86_64 architecture.
+Android NDK r22 supports `long double` type for rust, so we will use `ndk r22` and `cargo-ndk v2.12.7`.
+When you built on `ndk r23`, you will get this runtime error `dlopen failed: cannot locate symbol "__extenddftf2" referenced by "/data/app/global.acter.a3-1/lib/x86_64/libacter.so"...`.
+
 ## Android Build in Windows
 
 1. 35GB of HDD needed for project building. It doesn't cover android emulator vm.

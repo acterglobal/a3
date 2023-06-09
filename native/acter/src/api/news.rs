@@ -42,100 +42,114 @@ impl Client {
         key: String,
         timeout: Option<Box<Duration>>,
     ) -> Result<NewsEntry> {
-        let AnyActerModel::NewsEntry(content) = self.wait_for(key.clone(), timeout).await? else {
-            bail!("{key} is not a news");
-        };
-        let room = self
-            .core
-            .client()
-            .get_room(content.room_id())
-            .context("Room not found")?;
-        Ok(NewsEntry {
-            client: self.clone(),
-            room,
-            content,
-        })
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let AnyActerModel::NewsEntry(content) = me.wait_for(key.clone(), timeout).await? else {
+                    bail!("{key} is not a news");
+                };
+                let room = me
+                    .core
+                    .client()
+                    .get_room(content.room_id())
+                    .context("Room not found")?;
+                Ok(NewsEntry {
+                    client: me.clone(),
+                    room,
+                    content,
+                })
+            })
+            .await?
     }
 
     pub async fn latest_news_entries(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
         let mut news = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
-        let mut all_news = self
-            .store()
-            .get_list(KEYS::NEWS)
-            .await
-            .context("Couldn't get news list from store")?
-            .filter_map(|any| {
-                if let AnyActerModel::NewsEntry(t) = any {
-                    Some(t)
-                } else {
-                    None
-                }
-            })
-            .collect::<Vec<models::NewsEntry>>();
-        all_news.reverse();
+        RUNTIME
+            .spawn(async move {
+                let mut all_news = client
+                    .store()
+                    .get_list(KEYS::NEWS)
+                    .await
+                    .context("Couldn't get news list from store")?
+                    .filter_map(|any| {
+                        if let AnyActerModel::NewsEntry(t) = any {
+                            Some(t)
+                        } else {
+                            None
+                        }
+                    })
+                    .collect::<Vec<models::NewsEntry>>();
+                all_news.reverse();
 
-        for content in all_news {
-            if count == 0 {
-                break; // we filled what we wanted
-            }
-            let room_id = content.room_id().to_owned();
-            let room = match rooms_map.entry(room_id) {
-                Entry::Occupied(t) => t.get().clone(),
-                Entry::Vacant(e) => {
-                    if let Some(room) = client.get_room(e.key()) {
-                        e.insert(room.clone());
-                        room
-                    } else {
-                        /// User not part of the room anymore, ignore
-                        continue;
+                for content in all_news {
+                    if count == 0 {
+                        break; // we filled what we wanted
                     }
+                    let room_id = content.room_id().to_owned();
+                    let room = match rooms_map.entry(room_id) {
+                        Entry::Occupied(t) => t.get().clone(),
+                        Entry::Vacant(e) => {
+                            if let Some(room) = client.get_room(e.key()) {
+                                e.insert(room.clone());
+                                room
+                            } else {
+                                /// User not part of the room anymore, ignore
+                                continue;
+                            }
+                        }
+                    };
+                    news.push(NewsEntry {
+                        client: client.clone(),
+                        room,
+                        content,
+                    });
+                    count -= 1;
                 }
-            };
-            news.push(NewsEntry {
-                client: client.clone(),
-                room,
-                content,
-            });
-            count -= 1;
-        }
-        Ok(news)
+                Ok(news)
+            })
+            .await?
     }
 }
 
 impl Space {
     pub async fn latest_news_entries(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
         let mut news = Vec::new();
-        let room_id = self.room_id();
-        let mut all_news = self
-            .client
-            .store()
-            .get_list(&format!("{room_id}::{}", KEYS::NEWS))
-            .await
-            .context("Couldn't get news list from store")?
-            .filter_map(|any| {
-                if let AnyActerModel::NewsEntry(t) = any {
-                    Some(t)
-                } else {
-                    None
-                }
-            })
-            .collect::<Vec<models::NewsEntry>>();
-        all_news.reverse();
+        let room_id = self.room_id().to_owned();
+        let client = self.client.clone();
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let mut all_news = client
+                    .store()
+                    .get_list(&format!("{room_id}::{}", KEYS::NEWS))
+                    .await
+                    .context("Couldn't get news list from store")?
+                    .filter_map(|any| {
+                        if let AnyActerModel::NewsEntry(t) = any {
+                            Some(t)
+                        } else {
+                            None
+                        }
+                    })
+                    .collect::<Vec<models::NewsEntry>>();
+                all_news.reverse();
 
-        for content in all_news {
-            if count == 0 {
-                break; // we filled what we wanted
-            }
-            news.push(NewsEntry {
-                client: self.client.clone(),
-                room: self.room.clone(),
-                content,
-            });
-            count -= 1;
-        }
-        Ok(news)
+                for content in all_news {
+                    if count == 0 {
+                        break; // we filled what we wanted
+                    }
+                    news.push(NewsEntry {
+                        client: client.clone(),
+                        room: room.clone(),
+                        content,
+                    });
+                    count -= 1;
+                }
+                Ok(news)
+            })
+            .await?
     }
 }
 

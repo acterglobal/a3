@@ -57,67 +57,76 @@ impl Client {
         let mut calendar_events = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
-        for mdl in self
-            .store()
-            .get_list(KEYS::CALENDAR)
-            .await
-            .context("Couldn't get list from store")?
-        {
-            if let AnyActerModel::CalendarEvent(t) = mdl {
-                let room_id = t.room_id().to_owned();
-                let room = match rooms_map.entry(room_id) {
-                    Entry::Occupied(t) => t.get().clone(),
-                    Entry::Vacant(e) => {
-                        if let Some(room) = client.get_room(e.key()) {
-                            e.insert(room.clone());
-                            room
-                        } else {
-                            /// User not part of the room anymore, ignore
-                            continue;
-                        }
+        RUNTIME
+            .spawn(async move {
+                for mdl in client
+                    .store()
+                    .get_list(KEYS::CALENDAR)
+                    .await
+                    .context("Couldn't get list from store")?
+                {
+                    if let AnyActerModel::CalendarEvent(t) = mdl {
+                        let room_id = t.room_id().to_owned();
+                        let room = match rooms_map.entry(room_id) {
+                            Entry::Occupied(t) => t.get().clone(),
+                            Entry::Vacant(e) => {
+                                if let Some(room) = client.get_room(e.key()) {
+                                    e.insert(room.clone());
+                                    room
+                                } else {
+                                    /// User not part of the room anymore, ignore
+                                    continue;
+                                }
+                            }
+                        };
+                        calendar_events.push(CalendarEvent {
+                            client: client.clone(),
+                            room,
+                            inner: t,
+                        })
+                    } else {
+                        tracing::warn!(
+                            "Non calendar_event model found in `calendar_events` index: {:?}",
+                            mdl
+                        );
                     }
-                };
-                calendar_events.push(CalendarEvent {
-                    client: client.clone(),
-                    room,
-                    inner: t,
-                })
-            } else {
-                tracing::warn!(
-                    "Non calendar_event model found in `calendar_events` index: {:?}",
-                    mdl
-                );
-            }
-        }
-        Ok(calendar_events)
+                }
+                Ok(calendar_events)
+            })
+            .await?
     }
 }
 
 impl Space {
     pub async fn calendar_events(&self) -> Result<Vec<CalendarEvent>> {
+        let client = self.client.clone();
         let mut calendar_events = Vec::new();
-        let room_id = self.room_id();
-        for mdl in self
-            .client
-            .store()
-            .get_list(&format!("{room_id}::{}", KEYS::CALENDAR))
-            .await
-            .context("Couldn't get list from store")?
-        {
-            if let AnyActerModel::CalendarEvent(t) = mdl {
-                calendar_events.push(CalendarEvent {
-                    client: self.client.clone(),
-                    room: self.room.clone(),
-                    inner: t,
-                })
-            } else {
-                tracing::warn!(
-                    "Non calendar_event model found in `calendar_events` index: {:?}",
-                    mdl
-                );
-            }
-        }
-        Ok(calendar_events)
+        let room = self.room.clone();
+        let room_id = self.room_id().to_owned();
+        RUNTIME
+            .spawn(async move {
+                for mdl in client
+                    .store()
+                    .get_list(&format!("{room_id}::{}", KEYS::CALENDAR))
+                    .await
+                    .context("Couldn't get list from store")?
+                {
+                    if let AnyActerModel::CalendarEvent(t) = mdl {
+                        calendar_events.push(CalendarEvent {
+                            client: client.clone(),
+                            room: room.clone(),
+                            inner: t,
+                        })
+                    } else {
+                        tracing::warn!(
+                            "Non calendar_event model found in `calendar_events` index: {:?}",
+                            mdl
+                        );
+                    }
+                }
+                Ok(calendar_events)
+            })
+            .await?
     }
 }
 

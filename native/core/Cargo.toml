@@ -15,7 +15,7 @@ templates = ["toml", "minijinja", "indexmap", "tokio-retry"]
 [dependencies]
 async-broadcast = { workspace = true }
 async-recursion = "1"
-chrono = {version = "0.4", default-features = false, features = ["serde", "clock"]}
+chrono = { version = "0.4", default-features = false, features = ["serde", "clock"] }
 chrono-tz = { version = "0.5", default-features = false, features = ["serde"] }
 csscolorparser = { version = "0.5.0", features = ["serde"] }
 dashmap = "5.4.0"
@@ -32,21 +32,22 @@ tracing = "0.1.37"
 url = { version = "2.2.2", features = ["serde"] }
 
 # templates
-toml = { version = "0.7.2", optional = true, features = ["preserve_order"] }
-minijinja = { version = "0.30.5", optional = true, features = ["builtins"] }
+async-stream = "0.3.4"
 indexmap = { version = "1.9.2", optional = true }
-async-stream = { version = "0.3.4" }
+minijinja = { version = "0.30.5", optional = true, features = ["builtins"] }
 tokio-retry = { version = "0.3.0", optional = true }
+toml = { version = "0.7.2", optional = true, features = ["preserve_order"] }
 
 [dependencies.matrix-sdk]
 workspace = true
 default-features = false
+features = ["rustls-tls"]
 
 [dev-dependencies]
-env_logger = { version = "0.10.0" }
+anyhow = "1.0.69"
+env_logger = "0.10.0"
 tokio = { version = "1", features = ["rt", "macros"]}
 tracing = { version = "0.1.37", default-features = false, features = ["log"] }
-anyhow = "1.0.69"
 
 [dev-dependencies.matrix-sdk]
 workspace = true

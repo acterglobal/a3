@@ -25,7 +25,7 @@ jobs:
       - uses: Swatinem/rust-cache@v1
       - uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r23c
+          ndk-version: r22b
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
       - run: cargo make setup-android

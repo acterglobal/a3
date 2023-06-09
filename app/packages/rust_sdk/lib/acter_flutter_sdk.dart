@@ -4,7 +4,6 @@ import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:io';
 
-
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
@@ -75,32 +74,31 @@ Future<String> appDir() async {
 }
 
 Future<String> appDirInner() async {
-    Directory appDocDir = await getApplicationSupportDirectory();
-    if (versionName == 'DEV') {
-      // on dev we put this into a subfolder to separate from any installed version
-      appDocDir = Directory(p.join(appDocDir.path, 'DEV'));
-      if (! await appDocDir.exists()) {
-        await appDocDir.create();
-      }
+  Directory appDocDir = await getApplicationSupportDirectory();
+  if (versionName == 'DEV') {
+    // on dev we put this into a subfolder to separate from any installed version
+    appDocDir = Directory(p.join(appDocDir.path, 'DEV'));
+    if (!await appDocDir.exists()) {
+      await appDocDir.create();
     }
-    return appDocDir.path;
+  }
+  return appDocDir.path;
 }
 
 Future<SharedPreferences> sharedPrefs() async {
-  if (_sharedPrefCompl ==  null) {
+  if (_sharedPrefCompl == null) {
     if (versionName == 'DEV') {
       // on dev we put this into a prefix to separate from any installed version
       SharedPreferences.setPrefix('dev.flutter');
     }
     final Completer<SharedPreferences> completer =
-          Completer<SharedPreferences>();
+        Completer<SharedPreferences>();
     completer.complete(SharedPreferences.getInstance());
     _sharedPrefCompl = completer;
   }
 
   return _sharedPrefCompl!.future;
 }
-
 
 /// Convert an future of a FfiBufferUint8 (which you commonly get for images) to
 /// a flutter ImageProvider.
@@ -223,17 +221,21 @@ class ActerSdk {
     try {
       // android api 30 is working here
       return DynamicLibrary.open(libName);
-    } catch (_) {
+    } catch (e1) {
+      debugPrint('DynamicLibrary.open by lib name failed: $e1');
       try {
         // android api 23 is working here
         final String? nativeLibDir = await _getNativeLibraryDirectory();
         return DynamicLibrary.open('$nativeLibDir/$libName');
-      } catch (_) {
+      } catch (e2) {
+        debugPrint('DynamicLibrary.open from /data/app failed: $e2');
         try {
+          // android api 8 (2010) is working here
           final PackageInfo pkgInfo = await PackageInfo.fromPlatform();
           final String pkgName = pkgInfo.packageName;
           return DynamicLibrary.open('/data/data/$pkgName/$libName');
-        } catch (_) {
+        } catch (e3) {
+          debugPrint('DynamicLibrary.open from /data/data failed: $e3');
           rethrow;
         }
       }
@@ -259,7 +261,7 @@ class ActerSdk {
 
   static Future<ActerSdk> get _unrestoredInstance async {
     if (_instanceCompl == null) {
-      Completer<ActerSdk>  completer = Completer();
+      Completer<ActerSdk> completer = Completer();
       completer.complete(_unrestoredInstanceInner());
       _instanceCompl = completer;
     }

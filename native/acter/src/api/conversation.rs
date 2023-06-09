@@ -7,7 +7,6 @@ use log::{info, warn};
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
-    locks::Mutex,
     room::{MessagesOptions, Room as MatrixRoom},
     ruma::{
         api::client::room::{
@@ -28,9 +27,10 @@ use matrix_sdk::{
         serde::Raw,
         OwnedRoomId, OwnedUserId,
     },
-    Client as MatrixClient,
+    Client as MatrixClient, RoomMemberships,
 };
 use std::sync::Arc;
+use tokio::sync::Mutex;
 
 use super::{
     client::Client,
@@ -97,7 +97,7 @@ impl Conversation {
             .spawn(async move {
                 let mut records: Vec<ReceiptRecord> = vec![];
                 for member in room
-                    .active_members()
+                    .members(RoomMemberships::ACTIVE)
                     .await
                     .context("Couldn't get active members from room")?
                 {

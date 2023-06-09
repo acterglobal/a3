@@ -3,7 +3,7 @@ use chrono::Local;
 use lazy_static::lazy_static;
 use log::{LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
-use matrix_sdk_sled::make_store_config;
+use matrix_sdk_sqlite::make_store_config;
 use parse_env_filter::eager::{filters, Filter};
 use std::{
     path::PathBuf,
