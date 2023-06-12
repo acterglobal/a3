@@ -4,7 +4,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/chat/pages/image_selection_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
@@ -423,14 +422,14 @@ class ChatRoomController extends GetxController {
       sleep(const Duration(milliseconds: 500));
     } while (hasMore && _messages.length < 10);
     // load receipt status of room
-    var receipts = (await convoRoom.userReceipts()).toList();
+    // var receipts = (await convoRoom.userReceipts()).toList();
     if (_currentRoom == null) {
       // user may close chat screen before long loading completed
       isLoading.value = false;
       return;
     }
-    var receiptController = Get.find<ReceiptController>();
-    receiptController.loadRoom(convoRoom, receipts);
+    // var receiptController = Get.find<ReceiptController>();
+    // receiptController.loadRoom(convoRoom, receipts);
     isLoading.value = false;
   }
 
@@ -715,41 +714,41 @@ class ChatRoomController extends GetxController {
 
   void _insertMessage(types.Message m) {
     if (m is! types.UnsupportedMessage) {
-      var receiptController = Get.find<ReceiptController>();
-      List<String> seenByList = receiptController.getSeenByList(
-        _currentRoom!.getRoomId(),
-        m.createdAt!,
-      );
-      if (m.author.id == myId) {
-        types.Status status = seenByList.isEmpty
-            ? types.Status.sent
-            : seenByList.length < activeMembers.length
-                ? types.Status.delivered
-                : types.Status.seen;
-        _messages.add(m.copyWith(showStatus: true, status: status));
-        return;
-      }
+      // var receiptController = Get.find<ReceiptController>();
+      // List<String> seenByList = receiptController.getSeenByList(
+      //   _currentRoom!.getRoomId(),
+      //   m.createdAt!,
+      // );
+      // if (m.author.id == myId) {
+      //   types.Status status = seenByList.isEmpty
+      //       ? types.Status.sent
+      //       : seenByList.length < activeMembers.length
+      //           ? types.Status.delivered
+      //           : types.Status.seen;
+      //   _messages.add(m.copyWith(showStatus: true, status: status));
+      //   return;
+      // }
     }
     _messages.add(m);
   }
 
   void _updateMessage(types.Message m, int index) {
-    if (m is! types.UnsupportedMessage) {
-      var receiptController = Get.find<ReceiptController>();
-      List<String> seenByList = receiptController.getSeenByList(
-        _currentRoom!.getRoomId(),
-        m.createdAt!,
-      );
-      if (m.author.id == myId) {
-        types.Status status = seenByList.isEmpty
-            ? types.Status.sent
-            : seenByList.length < activeMembers.length
-                ? types.Status.delivered
-                : types.Status.seen;
-        _messages[index] = m.copyWith(showStatus: true, status: status);
-        return;
-      }
-    }
+    // if (m is! types.UnsupportedMessage) {
+    //   var receiptController = Get.find<ReceiptController>();
+    //   List<String> seenByList = receiptController.getSeenByList(
+    //     _currentRoom!.getRoomId(),
+    //     m.createdAt!,
+    //   );
+    //   if (m.author.id == myId) {
+    //     types.Status status = seenByList.isEmpty
+    //         ? types.Status.sent
+    //         : seenByList.length < activeMembers.length
+    //             ? types.Status.delivered
+    //             : types.Status.seen;
+    //     _messages[index] = m.copyWith(showStatus: true, status: status);
+    //     return;
+    //   }
+    // }
     _messages[index] = m;
   }
 

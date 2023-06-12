@@ -1,8 +1,9 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/controllers/receipt_controller.dart';
+// import 'package:acter/features/chat/providers/notifiers/receipt_notifier.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/models/joined_room/joined_room.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -11,7 +12,6 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ConversationCard extends ConsumerStatefulWidget {
@@ -27,7 +27,7 @@ class ConversationCard extends ConsumerStatefulWidget {
 }
 
 class _ConversationCardState extends ConsumerState<ConversationCard> {
-  final ReceiptController recieptController = Get.find<ReceiptController>();
+  // final ReceiptController recieptController = Get.find<ReceiptController>();
 
   List<Member> activeMembers = [];
 
@@ -72,7 +72,7 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
                 latestMessage: widget.room.latestMessage,
               ),
               trailing: _TrailingWidget(
-                controller: recieptController,
+                // controller: recieptController,
                 room: widget.room.conversation,
                 latestMessage: widget.room.latestMessage,
                 activeMembers: activeMembers,
@@ -378,22 +378,20 @@ class _SubtitleWidget extends ConsumerWidget {
   }
 }
 
-class _TrailingWidget extends StatelessWidget {
+class _TrailingWidget extends ConsumerWidget {
   const _TrailingWidget({
-    required this.controller,
     required this.room,
     required this.activeMembers,
     this.latestMessage,
     required this.userId,
   });
-  final ReceiptController controller;
   final Conversation room;
   final List<Member> activeMembers;
   final RoomMessage? latestMessage;
   final String? userId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (latestMessage == null) {
       return const SizedBox.shrink();
     }
@@ -405,10 +403,10 @@ class _TrailingWidget extends StatelessWidget {
     types.Status? messageStatus;
     int ts = eventItem.originServerTs();
 
-    List<String> seenByList = controller.getSeenByList(
-      room.getRoomId(),
-      ts,
-    );
+    List<String> seenByList = ref.read(receiptProvider.notifier).getSeenByList(
+          room.getRoomId(),
+          ts,
+        );
 
     senderID = latestMessage!.eventItem()!.sender();
 

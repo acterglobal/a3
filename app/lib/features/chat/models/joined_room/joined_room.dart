@@ -1,6 +1,6 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Conversation, RoomMessage;
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_types/flutter_chat_types.dart' show User;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'joined_room.freezed.dart';
@@ -12,6 +12,6 @@ class JoinedRoom with _$JoinedRoom {
     required Conversation conversation,
     @Default(null) RoomMessage? latestMessage,
     @Default(null) String? displayName,
-    @Default([]) List<types.User> typingUsers,
+    @Default([]) List<User> typingUsers,
   }) = _JoinedRoom;
 }
