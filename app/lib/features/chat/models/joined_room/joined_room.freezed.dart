@@ -20,7 +20,7 @@ mixin _$JoinedRoom {
   Conversation get conversation => throw _privateConstructorUsedError;
   RoomMessage? get latestMessage => throw _privateConstructorUsedError;
   String? get displayName => throw _privateConstructorUsedError;
-  List<types.User> get typingUsers => throw _privateConstructorUsedError;
+  List<User> get typingUsers => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $JoinedRoomCopyWith<JoinedRoom> get copyWith =>
@@ -38,7 +38,7 @@ abstract class $JoinedRoomCopyWith<$Res> {
       Conversation conversation,
       RoomMessage? latestMessage,
       String? displayName,
-      List<types.User> typingUsers});
+      List<User> typingUsers});
 }
 
 /// @nodoc
@@ -80,7 +80,7 @@ class _$JoinedRoomCopyWithImpl<$Res, $Val extends JoinedRoom>
       typingUsers: null == typingUsers
           ? _value.typingUsers
           : typingUsers // ignore: cast_nullable_to_non_nullable
-              as List<types.User>,
+              as List<User>,
     ) as $Val);
   }
 }
@@ -98,7 +98,7 @@ abstract class _$$_JoinedRoomCopyWith<$Res>
       Conversation conversation,
       RoomMessage? latestMessage,
       String? displayName,
-      List<types.User> typingUsers});
+      List<User> typingUsers});
 }
 
 /// @nodoc
@@ -138,7 +138,7 @@ class __$$_JoinedRoomCopyWithImpl<$Res>
       typingUsers: null == typingUsers
           ? _value.typingUsers
           : typingUsers // ignore: cast_nullable_to_non_nullable
-              as List<types.User>,
+              as List<User>,
     ));
   }
 }
@@ -165,7 +165,7 @@ class _$_JoinedRoom implements _JoinedRoom {
   final String? displayName;
   @override
   @JsonKey()
-  final List<types.User> typingUsers;
+  final List<User> typingUsers;
 
   @override
   String toString() {
@@ -205,7 +205,7 @@ abstract class _JoinedRoom implements JoinedRoom {
       required final Conversation conversation,
       final RoomMessage? latestMessage,
       final String? displayName,
-      final List<types.User> typingUsers}) = _$_JoinedRoom;
+      final List<User> typingUsers}) = _$_JoinedRoom;
 
   @override
   String get id;
@@ -216,7 +216,7 @@ abstract class _JoinedRoom implements JoinedRoom {
   @override
   String? get displayName;
   @override
-  List<types.User> get typingUsers;
+  List<User> get typingUsers;
   @override
   @JsonKey(ignore: true)
   _$$_JoinedRoomCopyWith<_$_JoinedRoom> get copyWith =>
