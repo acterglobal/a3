@@ -42,6 +42,7 @@ final invitationProfileProvider =
 });
 
 // CHAT Receipt Provider
-final receiptProvider = StateNotifierProvider<ReceiptNotifier, ReceiptRoom?>(
+final receiptProvider =
+    StateNotifierProvider.autoDispose<ReceiptNotifier, ReceiptRoom?>(
   (ref) => ReceiptNotifier(ref),
 );
