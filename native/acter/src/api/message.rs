@@ -185,7 +185,11 @@ impl RoomEventItem {
     }
 
     pub fn reaction_keys(&self) -> Vec<String> {
-        self.reactions.keys().cloned().collect()
+        let mut keys = vec![];
+        for key in self.reactions.keys() {
+            keys.push(String::from(key.to_owned()));
+        }
+        keys
     }
 
     pub fn reaction_desc(&self, key: String) -> Option<ReactionDesc> {

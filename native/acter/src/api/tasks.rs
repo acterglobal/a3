@@ -335,11 +335,19 @@ impl TaskList {
     }
 
     pub fn keywords(&self) -> Vec<String> {
-        self.content.keywords.clone()
+        let mut result = vec![];
+        for keyword in &self.content.keywords {
+            result.push(String::from(keyword.to_owned()));
+        }
+        result
     }
 
     pub fn categories(&self) -> Vec<String> {
-        self.content.categories.clone()
+        let mut result = vec![];
+        for category in &self.content.categories {
+            result.push(String::from(category.to_owned()));
+        }
+        result
     }
 
     pub fn space(&self) -> Space {
@@ -529,11 +537,19 @@ impl Task {
     }
 
     pub fn keywords(&self) -> Vec<String> {
-        self.content.keywords.clone()
+        let mut result = vec![];
+        for keyword in &self.content.keywords {
+            result.push(String::from(keyword.to_owned()));
+        }
+        result
     }
 
     pub fn categories(&self) -> Vec<String> {
-        self.content.categories.clone()
+        let mut result = vec![];
+        for category in &self.content.categories {
+            result.push(String::from(category.to_owned()));
+        }
+        result
     }
 }
 
