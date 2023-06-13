@@ -2,7 +2,6 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/network_notifier.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Account, Conversation, DispName, Member, UserProfile;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +19,7 @@ final loadingProvider = StateProvider<bool>((ref) => false);
 class AccountProfile {
   final Account account;
   final ProfileData profile;
+
   const AccountProfile(this.account, this.profile);
 }
 
@@ -30,13 +30,9 @@ Future<ProfileData> getProfileData(Account account) async {
   return ProfileData(name, avatar);
 }
 
-final accountProvider = FutureProvider((ref) async {
-  final client = ref.watch(clientProvider)!;
-  return client.account();
-});
-
 final accountProfileProvider = FutureProvider((ref) async {
-  final account = await ref.watch(accountProvider.future);
+  final client = ref.watch(clientProvider)!;
+  final account = client.account();
   final profile = await getProfileData(account);
   return AccountProfile(account, profile);
 });
@@ -76,20 +72,39 @@ final chatMembersProvider =
   return members.toList();
 });
 
+class ConvoProfile {
+  final Conversation convo;
+  final String roomId;
+  final ProfileData profile;
+
+  const ConvoProfile(this.convo, this.roomId, this.profile);
+}
+
 final relatedChatsProvider =
-    FutureProvider.family<List<Conversation>, String>((ref, spaceId) async {
+    FutureProvider.family<List<ConvoProfile>, String>((ref, spaceId) async {
   final client = ref.watch(clientProvider)!;
-  final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
-  final chats = [];
+  final space = await client.getSpace(spaceId);
+  final relatedSpaces = await space.spaceRelations();
+  List<ConvoProfile> items = [];
   final children = relatedSpaces.children();
   for (final related in children) {
     if (related.targetType() == 'ChatRoom') {
       final roomId = related.roomId().toString();
       final room = await client.conversation(roomId);
-      chats.add(room);
+      final roomProf = room.getProfile();
+      final name = await roomProf.getDisplayName();
+      final displayName = name.text() ?? roomId;
+      if (roomProf.hasAvatar()) {
+        final avatar = await roomProf.getThumbnail(48, 48);
+        final profile = ProfileData(displayName, avatar);
+        items.add(ConvoProfile(room, roomId, profile));
+      } else {
+        final profile = ProfileData(displayName, null);
+        items.add(ConvoProfile(room, roomId, profile));
+      }
     }
   }
-  return List<Conversation>.from(chats);
+  return items;
 });
 
 // Member Providers

@@ -19,7 +19,9 @@ Future<ProfileData> getSpaceProfileData(Space space) async {
 }
 
 final spaceProfileDataProvider =
-    FutureProvider.family<ProfileData, Space>((ref, space) async {
+    FutureProvider.family<ProfileData, String>((ref, roomIdOrAlias) async {
+  final client = ref.watch(clientProvider)!;
+  final space = await client.getSpace(roomIdOrAlias);
   return await getSpaceProfileData(space);
 });
 
@@ -47,18 +49,16 @@ final spaceItemsProvider = FutureProvider<List<SpaceItem>>((ref) async {
   // FIXME: how to get informed about updates!?!
   final spaces = await client.spaces();
   List<SpaceItem> items = [];
-  spaces.toList().forEach((element) async {
-    List<Member> members =
-        await element.activeMembers().then((ffiList) => ffiList.toList());
-    final profileData =
-        await ref.watch(spaceProfileDataProvider(element).future);
+  for (final space in spaces.toList()) {
+    FfiListMember members = await space.activeMembers();
+    final profile = await getSpaceProfileData(space);
     var item = SpaceItem(
-      roomId: element.getRoomId().toString(),
-      activeMembers: members,
-      spaceProfileData: profileData,
+      roomId: space.getRoomId().toString(),
+      activeMembers: members.toList(),
+      spaceProfileData: profile,
     );
     items.add(item);
-  });
+  }
   return items;
 });
 
@@ -104,17 +104,25 @@ final canonicalParentProvider =
 });
 
 final relatedSpacesProvider =
-    FutureProvider.family<List<Space>, String>((ref, spaceId) async {
+    FutureProvider.family<List<SpaceItem>, String>((ref, spaceId) async {
   final client = ref.watch(clientProvider)!;
-  final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
-  final spaces = [];
+  final parent = await client.getSpace(spaceId);
+  final relatedSpaces = await parent.spaceRelations();
+  List<SpaceItem> items = [];
   for (final related in relatedSpaces.children()) {
     String targetType = related.targetType();
     if (targetType != 'ChatRoom') {
       final roomId = related.roomId().toString();
-      final space = await client.getSpace(roomId);
-      spaces.add(space);
+      final child = await client.getSpace(roomId);
+      FfiListMember members = await child.activeMembers();
+      final profile = await getSpaceProfileData(child);
+      var item = SpaceItem(
+        roomId: roomId,
+        activeMembers: members.toList(),
+        spaceProfileData: profile,
+      );
+      items.add(item);
     }
   }
-  return List<Space>.from(spaces);
+  return items;
 });

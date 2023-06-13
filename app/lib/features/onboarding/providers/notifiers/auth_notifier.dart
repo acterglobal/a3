@@ -1,6 +1,6 @@
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:flutter/material.dart';
@@ -12,17 +12,15 @@ class AuthStateNotifier extends StateNotifier<bool> {
   final Ref ref;
   AuthStateNotifier(this.ref) : super(false);
 
-  Future<void> login(
-    String username,
-    String password,
-  ) async {
+  Future<void> login(String username, String password) async {
     state = true;
     final sdk = await ref.watch(sdkProvider.future);
     try {
       final client = await sdk.login(username, password);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
-      ref.watch(clientProvider.notifier).state = client;
-      ref.watch(clientProvider.notifier).syncState = client.startSync();
+      final clientNotifier = ref.watch(clientProvider.notifier);
+      clientNotifier.state = client;
+      clientNotifier.syncState = client.startSync();
       // inject chat dependencies once actual client is logged in.
       Get.replace(ChatRoomController(client: client));
       // Get.replace(ReceiptController(client: client));
@@ -33,9 +31,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     }
   }
 
-  Future<void> makeGuest(
-    BuildContext? context,
-  ) async {
+  Future<void> makeGuest(BuildContext? context) async {
     state = true;
     final sdk = await ref.watch(sdkProvider.future);
     try {

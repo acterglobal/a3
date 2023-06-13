@@ -18,10 +18,12 @@ class _SearchSpacePageState extends ConsumerState<SearchSpacePage> {
   final TextEditingController searchController = TextEditingController();
 
   void selectionUpdate(int index) {
-    ref.read(selectedSpaceProvider.notifier).update(
-          (state) => ref.watch(searchSpaceProvider)[index],
-        );
-    ref.read(isSearchingProvider.notifier).update((state) => false);
+    final spaceNotifier = ref.read(selectedSpaceProvider.notifier);
+    spaceNotifier.update((state) => ref.watch(searchSpaceProvider)[index]);
+
+    final searchNotifier = ref.read(isSearchingProvider.notifier);
+    searchNotifier.update((state) => false);
+
     context.pop();
   }
 

@@ -1,7 +1,7 @@
-import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -39,51 +39,33 @@ final spaceItemsProvider =
         location: null,
       )
     ],
-    data: (spaces) {
+    data: (spaces) async {
       spaces.sort((a, b) {
         // FIXME probably not the way we want to sort
         /// but at least this gives us a predictable order
         return a.getRoomId().toString().compareTo(b.getRoomId().toString());
       });
-
-      return spaces.map((space) {
-        final profileData = ref.watch(spaceProfileDataProvider(space));
+      List<SidebarNavigationItem> items = [];
+      for (var space in spaces) {
+        final profile = await getSpaceProfileData(space);
         final roomId = space.getRoomId().toString();
-        return profileData.when(
-          loading: () => SidebarNavigationItem(
-            icon: const Icon(Atlas.arrows_dots_rotate_thin),
-            label: Text(
-              roomId,
-              style: Theme.of(context).textTheme.labelSmall,
-              softWrap: false,
-            ),
-            location: '/$roomId',
+        final item = SidebarNavigationItem(
+          icon: ActerAvatar(
+            uniqueId: roomId,
+            displayName: profile.displayName,
+            mode: DisplayMode.Space,
+            avatar: profile.getAvatarImage(),
           ),
-          error: (err, _trace) => SidebarNavigationItem(
-            icon: const Icon(Atlas.warning_bold),
-            label: Text(
-              '$roomId: $err',
-              style: Theme.of(context).textTheme.labelSmall,
-              softWrap: false,
-            ),
-            location: '/$roomId',
+          label: Text(
+            profile.displayName ?? roomId,
+            style: Theme.of(context).textTheme.labelSmall,
+            softWrap: false,
           ),
-          data: (info) => SidebarNavigationItem(
-            icon: ActerAvatar(
-              uniqueId: roomId,
-              displayName: info.displayName,
-              mode: DisplayMode.Space,
-              avatar: info.getAvatarImage(),
-            ),
-            label: Text(
-              info.displayName ?? roomId,
-              style: Theme.of(context).textTheme.labelSmall,
-              softWrap: false,
-            ),
-            location: '/$roomId',
-          ),
+          location: '/$roomId',
         );
-      }).toList();
+        items.add(item);
+      }
+      return items;
     },
   );
 });

@@ -5,10 +5,10 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/conversation_card.dart';
 import 'package:acter/features/chat/widgets/invitations_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reorderable_list_2.dart';
 import 'package:implicitly_animated_reorderable_list_2/transitions.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ConversationsList extends ConsumerWidget {
   const ConversationsList({super.key});
@@ -57,9 +57,7 @@ class ConversationsList extends ConsumerWidget {
                       color: color,
                       elevation: elevation ?? 0.0,
                       type: MaterialType.transparency,
-                      child: ConversationCard(
-                        room: item,
-                      ),
+                      child: ConversationCard(room: item),
                     ),
                   );
                 },
@@ -70,9 +68,7 @@ class ConversationsList extends ConsumerWidget {
               builder: (context, animation, inDrag) {
                 return FadeTransition(
                   opacity: animation,
-                  child: ConversationCard(
-                    room: item,
-                  ),
+                  child: ConversationCard(room: item),
                 );
               },
             ),
@@ -91,9 +87,7 @@ class ConversationsList extends ConsumerWidget {
                     color: color,
                     elevation: elevation ?? 0.0,
                     type: MaterialType.transparency,
-                    child: ConversationCard(
-                      room: item,
-                    ),
+                    child: ConversationCard(room: item),
                   ),
                 );
               },

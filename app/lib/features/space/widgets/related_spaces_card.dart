@@ -1,4 +1,5 @@
 import 'dart:core';
+
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,11 +8,12 @@ import 'package:go_router/go_router.dart';
 
 class RelatedSpacesCard extends ConsumerWidget {
   final String spaceId;
+
   const RelatedSpacesCard({super.key, required this.spaceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaces = ref.watch(relatedSpacesProvider(spaceId));
+    final spaceItems = ref.watch(relatedSpacesProvider(spaceId));
 
     return Card(
       elevation: 0,
@@ -25,43 +27,32 @@ class RelatedSpacesCard extends ConsumerWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 10),
-            ...spaces.when(
-              data: (spaces) => spaces.map(
-                (space) {
-                  final roomId = space.getRoomId().toString();
-                  final profile = ref.watch(spaceProfileDataProvider(space));
-                  return profile.when(
-                    data: (profile) => Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Column(
-                        children: [
-                          ListTile(
-                            onTap: () => context.go('/$roomId'),
-                            title: Text(
-                              profile.displayName ?? roomId,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            leading: profile.hasAvatar()
-                                ? CircleAvatar(
-                                    foregroundImage: profile.getAvatarImage(),
-                                    radius: 24,
-                                  )
-                                : SvgPicture.asset(
-                                    'assets/icon/acter.svg',
-                                    height: 24,
-                                    width: 24,
-                                  ),
+            ...spaceItems.when(
+              data: (items) => items.map(
+                (item) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          onTap: () => context.go('/${item.roomId}'),
+                          title: Text(
+                            item.spaceProfileData.displayName ?? item.roomId,
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
-                        ],
-                      ),
-                    ),
-                    error: (error, stack) => ListTile(
-                      title: Text('Error loading: $roomId'),
-                      subtitle: Text('$error'),
-                    ),
-                    loading: () => ListTile(
-                      title: Text(roomId),
-                      subtitle: const Text('loading'),
+                          leading: item.spaceProfileData.hasAvatar()
+                              ? CircleAvatar(
+                                  foregroundImage:
+                                      item.spaceProfileData.getAvatarImage(),
+                                  radius: 24,
+                                )
+                              : SvgPicture.asset(
+                                  'assets/icon/acter.svg',
+                                  height: 24,
+                                  width: 24,
+                                ),
+                        ),
+                      ],
                     ),
                   );
                 },

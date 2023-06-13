@@ -1,4 +1,5 @@
 import 'dart:core';
+
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,56 +35,44 @@ class ChatsCard extends ConsumerWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: chats.length,
                   itemBuilder: (context, index) {
-                    final roomId = chats[index].getRoomId().toString();
-                    final provider = chatProfileDataProvider(chats[index]);
-                    final profile = ref.watch(provider);
-                    return profile.when(
-                      data: (profile) => ListTile(
-                        onTap: () => context.go('/chat/$roomId'),
-                        title: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                profile.hasAvatar()
-                                    ? CircleAvatar(
-                                        foregroundImage:
-                                            profile.getAvatarImage(),
-                                        radius: 18,
-                                      )
-                                    : SvgPicture.asset(
-                                        'assets/icon/acter.svg',
-                                        height: 32,
-                                        width: 32,
-                                      ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 8),
-                                  child: Text(
-                                    profile.displayName ?? roomId,
-                                    style:
-                                        Theme.of(context).textTheme.titleSmall,
-                                  ),
+                    final avatarImage = chats[index].profile.getAvatarImage();
+                    final name =
+                        chats[index].profile.displayName ?? chats[index].roomId;
+                    return ListTile(
+                      onTap: () => context.go('/chat/${chats[index].roomId}'),
+                      title: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              chats[index].profile.avatar != null
+                                  ? CircleAvatar(
+                                      foregroundImage: avatarImage,
+                                      radius: 18,
+                                    )
+                                  : SvgPicture.asset(
+                                      'assets/icon/acter.svg',
+                                      height: 32,
+                                      width: 32,
+                                    ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                child: Text(
+                                  name,
+                                  style: Theme.of(context).textTheme.titleSmall,
                                 ),
-                              ],
-                            ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 16,
                               ),
-                              child: const Divider(indent: 0),
+                            ],
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 16,
                             ),
-                          ],
-                        ),
-                      ),
-                      error: (error, stack) => ListTile(
-                        title: Text('Error loading: $roomId'),
-                        subtitle: Text('$error'),
-                      ),
-                      loading: () => ListTile(
-                        title: Text(roomId),
-                        subtitle: const Text('loading'),
+                            child: const Divider(indent: 0),
+                          ),
+                        ],
                       ),
                     );
                   },
