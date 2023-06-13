@@ -187,7 +187,7 @@ impl RoomEventItem {
     pub fn reaction_keys(&self) -> Vec<String> {
         let mut keys = vec![];
         for key in self.reactions.keys() {
-            keys.push(String::from(key.to_owned()));
+            keys.push(key.to_owned());
         }
         keys
     }

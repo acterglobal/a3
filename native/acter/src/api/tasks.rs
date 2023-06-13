@@ -337,7 +337,7 @@ impl TaskList {
     pub fn keywords(&self) -> Vec<String> {
         let mut result = vec![];
         for keyword in &self.content.keywords {
-            result.push(String::from(keyword.to_owned()));
+            result.push(keyword.to_owned());
         }
         result
     }
@@ -345,7 +345,7 @@ impl TaskList {
     pub fn categories(&self) -> Vec<String> {
         let mut result = vec![];
         for category in &self.content.categories {
-            result.push(String::from(category.to_owned()));
+            result.push(category.to_owned());
         }
         result
     }
@@ -539,7 +539,7 @@ impl Task {
     pub fn keywords(&self) -> Vec<String> {
         let mut result = vec![];
         for keyword in &self.content.keywords {
-            result.push(String::from(keyword.to_owned()));
+            result.push(keyword.to_owned());
         }
         result
     }
@@ -547,7 +547,7 @@ impl Task {
     pub fn categories(&self) -> Vec<String> {
         let mut result = vec![];
         for category in &self.content.categories {
-            result.push(String::from(category.to_owned()));
+            result.push(category.to_owned());
         }
         result
     }
