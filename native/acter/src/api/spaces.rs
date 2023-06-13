@@ -18,7 +18,6 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use log::warn;
 use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
     event_handler::Ctx,
