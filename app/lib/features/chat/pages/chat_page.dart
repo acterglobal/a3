@@ -41,9 +41,7 @@ class ChatPage extends ConsumerWidget {
                             .searchRoom(value),
                         cursorColor: Theme.of(context).colorScheme.tertiary2,
                         decoration: InputDecoration(
-                          hintStyle: const TextStyle(
-                            color: Colors.white,
-                          ),
+                          hintStyle: const TextStyle(color: Colors.white),
                           suffixIcon: GestureDetector(
                             onTap: () => ref
                                 .read(chatListProvider.notifier)
@@ -76,9 +74,7 @@ class ChatPage extends ConsumerWidget {
                             .read(chatListProvider.notifier)
                             .toggleSearchView(),
                         padding: const EdgeInsets.only(right: 10, left: 5),
-                        icon: const Icon(
-                          Atlas.magnifying_glass,
-                        ),
+                        icon: const Icon(Atlas.magnifying_glass),
                       ),
                       IconButton(
                         onPressed: () {
@@ -88,9 +84,7 @@ class ChatPage extends ConsumerWidget {
                           );
                         },
                         padding: const EdgeInsets.only(right: 10, left: 5),
-                        icon: const Icon(
-                          Atlas.menu_square,
-                        ),
+                        icon: const Icon(Atlas.menu_square),
                       ),
                       IconButton(
                         onPressed: () {
@@ -100,9 +94,7 @@ class ChatPage extends ConsumerWidget {
                           );
                         },
                         padding: const EdgeInsets.only(right: 10, left: 10),
-                        icon: const Icon(
-                          Atlas.plus_circle_thin,
-                        ),
+                        icon: const Icon(Atlas.plus_circle_thin),
                       ),
                     ],
             ),

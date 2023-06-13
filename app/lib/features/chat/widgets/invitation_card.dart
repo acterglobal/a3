@@ -65,7 +65,7 @@ class InvitationCard extends ConsumerWidget {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (await invitation.accept() == true) {
-                          final joinedRooms = ref.watch(roomListProvider);
+                          final joinedRooms = ref.read(roomListProvider);
                           for (var room in joinedRooms) {
                             if (room.conversation.getRoomId() ==
                                 invitation.roomId()) {
