@@ -4,11 +4,11 @@ import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
-class ImageSelectionPage extends StatefulWidget {
+class ImageSelectionPage extends ConsumerStatefulWidget {
   final List<PlatformFile> imageList;
   final String roomName;
 
@@ -19,11 +19,12 @@ class ImageSelectionPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ImageSelectionPage> createState() => _ImageSelectionPageState();
+  ConsumerState<ImageSelectionPage> createState() =>
+      _ImageSelectionPageConsumerState();
 }
 
-class _ImageSelectionPageState extends State<ImageSelectionPage> {
-  ChatRoomController controller = Get.find<ChatRoomController>();
+class _ImageSelectionPageConsumerState
+    extends ConsumerState<ImageSelectionPage> {
   int selectedIndex = 0;
   final PageController pageController = PageController(initialPage: 0);
 
@@ -71,13 +72,12 @@ class _ImageSelectionPageState extends State<ImageSelectionPage> {
             ),
           ),
           CustomChatInput(
-            roomController: controller,
             isChatScreen: false,
             roomName: widget.roomName,
             onButtonPressed: () async {
               Navigator.of(context).pop();
               for (PlatformFile file in widget.imageList) {
-                await controller.sendImage(file);
+                await ref.read(chatRoomProvider.notifier).sendImage(file);
               }
             },
           )

@@ -10,9 +10,10 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   final Client client;
   final Conversation room;
   final String? roomName;
@@ -29,17 +30,21 @@ class ProfilePage extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  ConsumerState<ProfilePage> createState() => _ProfilePageConsumerState();
+}
+
+class _ProfilePageConsumerState extends ConsumerState<ProfilePage> {
+  @override
   Widget build(BuildContext context) {
-    final ChatRoomController roomController = Get.find<ChatRoomController>();
     String chatDesc =
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.';
-    String roomId = room.getRoomId().toString();
+    String roomId = widget.room.getRoomId().toString();
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
         actions: <Widget>[
           Visibility(
-            visible: isAdmin,
+            visible: widget.isAdmin,
             child: PopupMenuButton<int>(
               onSelected: (item) => handleItemClick(item, context),
               itemBuilder: (context) => [
@@ -68,8 +73,9 @@ class ProfilePage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => EditGroupInfoScreen(
-                      room: room,
-                      name: roomName ?? AppLocalizations.of(context)!.noName,
+                      room: widget.room,
+                      name: widget.roomName ??
+                          AppLocalizations.of(context)!.noName,
                       description: chatDesc,
                     ),
                   ),
@@ -86,7 +92,7 @@ class ProfilePage extends StatelessWidget {
                       child: ActerAvatar(
                         mode: DisplayMode.User,
                         uniqueId: roomId,
-                        displayName: roomName,
+                        displayName: widget.roomName,
                         size: 20,
                       ),
                     ),
@@ -94,7 +100,7 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
             ),
-            if (roomName == null)
+            if (widget.roomName == null)
               const Text('Loading Name')
             else
               GestureDetector(
@@ -103,15 +109,16 @@ class ProfilePage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => EditGroupInfoScreen(
-                        room: room,
-                        name: roomName ?? AppLocalizations.of(context)!.noName,
+                        room: widget.room,
+                        name: widget.roomName ??
+                            AppLocalizations.of(context)!.noName,
                         description: chatDesc,
                       ),
                     ),
                   );
                 },
                 child: Text(
-                  roomName!,
+                  widget.roomName!,
                   overflow: TextOverflow.clip,
                 ),
               ),
@@ -121,15 +128,16 @@ class ProfilePage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => EditGroupInfoScreen(
-                      room: room,
-                      name: roomName ?? AppLocalizations.of(context)!.noName,
+                      room: widget.room,
+                      name: widget.roomName ??
+                          AppLocalizations.of(context)!.noName,
                       description: chatDesc,
                     ),
                   ),
                 );
               },
               child: Visibility(
-                visible: isGroup,
+                visible: widget.isGroup,
                 child: const Padding(
                   padding: EdgeInsets.fromLTRB(16, 12, 16, 20),
                   child: Text(
@@ -141,7 +149,7 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             Visibility(
-              visible: !isGroup,
+              visible: !widget.isGroup,
               child: const Padding(
                 padding: EdgeInsets.fromLTRB(16, 8, 16, 20),
                 child: Text(
@@ -159,7 +167,7 @@ class ProfilePage extends StatelessWidget {
               ],
             ),
             Visibility(
-              visible: isGroup,
+              visible: widget.isGroup,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Card(
@@ -195,36 +203,36 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             Visibility(
-              visible: !isGroup,
+              visible: !widget.isGroup,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: buildGroupLabel(),
               ),
             ),
             Visibility(
-              visible: !isGroup,
+              visible: !widget.isGroup,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: buildBlockButton(),
               ),
             ),
             Visibility(
-              visible: isGroup,
+              visible: widget.isGroup,
               child: Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.all(16),
-                child: buildActiveMembersLabel(context, roomController),
+                child: buildActiveMembersLabel(context),
               ),
             ),
             Visibility(
-              visible: isGroup,
+              visible: widget.isGroup,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                child: buildMemberList(roomController),
+                child: buildMemberList(),
               ),
             ),
             Visibility(
-              visible: isGroup,
+              visible: widget.isGroup,
               child: buildLeaveButton(context),
             )
           ],
@@ -313,8 +321,8 @@ class ProfilePage extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => RequestsPage(
-              client: client,
-              room: room,
+              client: widget.client,
+              room: widget.room,
             ),
           ),
         );
@@ -460,7 +468,7 @@ class ProfilePage extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => LinkSettingsPage(
-                                    room: room,
+                                    room: widget.room,
                                   ),
                                 ),
                               );
@@ -569,10 +577,11 @@ class ProfilePage extends StatelessWidget {
 
   Widget buildActiveMembersLabel(
     BuildContext context,
-    ChatRoomController roomController,
   ) {
+    final activeMembers =
+        ref.watch(chatRoomProvider.select((e) => e.activeMembers));
     return Text(
-      '${roomController.activeMembers.length} ${AppLocalizations.of(context)!.members}',
+      '${activeMembers.length} ${AppLocalizations.of(context)!.members}',
       style: const TextStyle(
         color: Colors.white,
         fontSize: 16.0,
@@ -581,31 +590,28 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget buildMemberList(ChatRoomController roomController) {
+  Widget buildMemberList() {
+    final activeMembers =
+        ref.watch(chatRoomProvider.select((e) => e.activeMembers));
+    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListView.builder(
-        itemCount: roomController.activeMembers.length,
+        itemCount: activeMembers.length,
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          String userId =
-              roomController.activeMembers[index].userId().toString();
+          String userId = activeMembers[index].userId().toString();
           return Padding(
             padding: const EdgeInsets.all(12),
-            child: GetBuilder<ChatRoomController>(
-              id: 'user-profile-$userId',
-              builder: (ChatRoomController controller) {
-                return (controller.getUserName(userId) == null)
-                    ? const Center(child: CircularProgressIndicator())
-                    : GroupMember(
-                        userId: userId,
-                        name: controller.getUserName(userId),
-                        isAdmin: true,
-                        avatar: controller.getUserAvatar(userId),
-                      );
-              },
-            ),
+            child: (chatInputNotifier.getUserName(userId) == null)
+                ? const Center(child: CircularProgressIndicator())
+                : GroupMember(
+                    userId: userId,
+                    name: chatInputNotifier.getUserName(userId),
+                    isAdmin: true,
+                    avatar: chatInputNotifier.getUserAvatar(userId),
+                  ),
           );
         },
       ),

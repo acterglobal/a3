@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/models/receipt_user.dart';
 import 'package:acter/features/chat/models/reciept_room/receipt_room.dart';
+import 'package:acter/features/chat/providers/notifiers/chat_messages_notifier.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -23,19 +24,13 @@ class ReceiptNotifier extends StateNotifier<ReceiptRoom?> {
     _subscription = client?.receiptEventRx()?.listen((event) {
       String myId = client.userId().toString();
       RoomId roomId = event.roomId();
-      bool changed = false;
       for (var record in event.receiptRecords()) {
         String seenBy = record.seenBy();
         if (seenBy != myId) {
           var room = _getRoom(roomId);
           state = room;
           updateUser(seenBy, record.eventId(), record.ts());
-          changed = true;
         }
-      }
-      if (changed) {
-        var roomController = Get.find<ChatRoomController>();
-        roomController.update(['Chat']);
       }
     });
 

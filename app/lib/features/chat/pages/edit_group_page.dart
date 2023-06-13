@@ -2,9 +2,9 @@ import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EditGroupInfoScreen extends StatefulWidget {
+class EditGroupInfoScreen extends ConsumerStatefulWidget {
   final Conversation room;
   final String name;
   final String description;
@@ -17,15 +17,14 @@ class EditGroupInfoScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _EditGroupInfoState createState() => _EditGroupInfoState();
+  _EditGroupInfoConsumerState createState() => _EditGroupInfoConsumerState();
 }
 
-class _EditGroupInfoState extends State<EditGroupInfoScreen> {
+class _EditGroupInfoConsumerState extends ConsumerState<EditGroupInfoScreen> {
   Future<FfiBufferUint8>? avatar;
   String? displayName;
   TextEditingController nameController = TextEditingController();
   TextEditingController descController = TextEditingController();
-  ChatRoomController chatController = Get.find<ChatRoomController>();
 
   @override
   void initState() {
@@ -58,9 +57,9 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
-              onTap: () {
-                chatController.handleImageSelection(context);
-              },
+              onTap: () => ref
+                  .read(chatRoomProvider.notifier)
+                  .handleImageSelection(context),
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 38, bottom: 12),

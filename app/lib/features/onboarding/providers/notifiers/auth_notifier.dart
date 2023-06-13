@@ -24,7 +24,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
       ref.watch(clientProvider.notifier).state = client;
       ref.watch(clientProvider.notifier).syncState = client.startSync();
       // inject chat dependencies once actual client is logged in.
-      Get.replace(ChatRoomController(client: client));
+      // Get.replace(ChatRoomController(client: client));
       // Get.replace(ReceiptController(client: client));
       state = false;
     } catch (e) {

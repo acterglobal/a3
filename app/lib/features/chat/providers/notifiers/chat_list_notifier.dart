@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/models/joined_room/joined_room.dart';
@@ -17,7 +18,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 
 class ChatListNotifier extends StateNotifier<ChatListState> {
   final Ref ref;
@@ -123,8 +123,8 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
       }
       // will not ignore empty list
       // because empty list means that peer stopped typing
-      var roomController = Get.find<ChatRoomController>();
-      RoomId? currentRoomId = roomController.currentRoomId();
+      RoomId? currentRoomId =
+          ref.read(chatRoomProvider.notifier).currentRoomId();
       if (currentRoomId == null) {
         // we are in chat list page
         final List<JoinedRoom> tempState = roomList;
@@ -133,8 +133,9 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
         ref.read(roomListProvider.notifier).insertRoom(idx, tempState[idx]);
       } else if (roomId == currentRoomId) {
         // we are in chat room page
-        roomController.typingUsers = typingUsers;
-        roomController.update(['typing indicator']);
+        ChatRoomState roomState = ref.read(chatRoomProvider);
+        roomState = roomState.copyWith(typingUsers: typingUsers);
+        ref.read(chatRoomProvider.notifier).state = roomState;
       }
     });
     // call stream close when provider isn't listened

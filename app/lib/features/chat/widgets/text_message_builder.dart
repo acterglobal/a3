@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -8,16 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TextMessageBuilder extends StatelessWidget {
+class TextMessageBuilder extends ConsumerStatefulWidget {
   final types.TextMessage message;
   final void Function(types.TextMessage, types.PreviewData)?
       onPreviewDataFetched;
   final int messageWidth;
-  final controller = Get.find<ChatRoomController>();
 
-  TextMessageBuilder({
+  const TextMessageBuilder({
     Key? key,
     required this.message,
     this.onPreviewDataFetched,
@@ -25,32 +25,40 @@ class TextMessageBuilder extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  ConsumerState<TextMessageBuilder> createState() =>
+      _TextMessageBuilderConsumerState();
+}
+
+class _TextMessageBuilderConsumerState
+    extends ConsumerState<TextMessageBuilder> {
+  @override
   Widget build(BuildContext context) {
+    final myId = ref.watch(clientProvider)!.userId().toString();
     String msgType = '';
-    if (message.metadata!.containsKey('msgType')) {
-      msgType = message.metadata?['msgType'];
+    if (widget.message.metadata!.containsKey('msgType')) {
+      msgType = widget.message.metadata?['msgType'];
     }
     final bool isNotice =
         (msgType == 'm.notice' || msgType == 'm.server_notice');
     //remove mx-reply tags.
-    String parsedString = simplifyBody(message.text);
+    String parsedString = simplifyBody(widget.message.text);
     bool enlargeEmoji = false;
     final urlRegexp = RegExp(
       r'https://matrix\.to/#/@[A-Za-z0-9]+:[A-Za-z0-9]+\.[A-Za-z0-9]+',
       caseSensitive: false,
     );
-    if (message.metadata!.containsKey('enlargeEmoji')) {
-      enlargeEmoji = message.metadata!['enlargeEmoji'];
+    if (widget.message.metadata!.containsKey('enlargeEmoji')) {
+      enlargeEmoji = widget.message.metadata!['enlargeEmoji'];
     }
 
     //will return empty if link is other than mention
     final matches = urlRegexp.allMatches(parsedString);
     if (matches.isEmpty) {
       return LinkPreview(
-        metadataTitleStyle: controller.myId == message.author.id
+        metadataTitleStyle: myId == widget.message.author.id
             ? const ActerChatTheme().sentMessageLinkTitleTextStyle
             : const ActerChatTheme().receivedMessageLinkTitleTextStyle,
-        metadataTextStyle: controller.myId == message.author.id
+        metadataTextStyle: myId == widget.message.author.id
             ? const ActerChatTheme().sentMessageLinkDescriptionTextStyle
             : const ActerChatTheme().receivedMessageLinkDescriptionTextStyle,
         enableAnimation: true,
@@ -66,51 +74,49 @@ class TextMessageBuilder extends StatelessWidget {
             ),
           );
         },
-        previewData: message.previewData,
+        previewData: widget.message.previewData,
         text: parsedString,
         onPreviewDataFetched: _onPreviewDataFetched,
         textWidget: _TextWidget(
-          controller: controller,
-          message: message,
-          enlargeEmoji: message.metadata!['enlargeEmoji'] ?? enlargeEmoji,
+          message: widget.message,
+          enlargeEmoji:
+              widget.message.metadata!['enlargeEmoji'] ?? enlargeEmoji,
           isNotice: isNotice,
         ),
-        width: messageWidth.toDouble(),
+        width: widget.messageWidth.toDouble(),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       );
     }
     return _TextWidget(
-      controller: controller,
-      message: message,
+      message: widget.message,
       enlargeEmoji: enlargeEmoji,
       isNotice: isNotice,
     );
   }
 
   void _onPreviewDataFetched(types.PreviewData previewData) {
-    final controller = Get.find<ChatRoomController>();
-    if (message.previewData == null) {
-      controller.handlePreviewDataFetched.call(message, previewData);
+    if (widget.message.previewData == null) {
+      final chatRoomState = ref.read(chatRoomProvider.notifier);
+      chatRoomState.handlePreviewDataFetched.call(widget.message, previewData);
     }
   }
 }
 
-class _TextWidget extends StatelessWidget {
-  final ChatRoomController controller;
+class _TextWidget extends ConsumerWidget {
   final types.TextMessage message;
   final bool enlargeEmoji;
   final bool isNotice;
 
   const _TextWidget({
-    required this.controller,
     required this.message,
     required this.enlargeEmoji,
     required this.isNotice,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final emojiTextStyle = controller.myId == message.author.id
+  Widget build(BuildContext context, WidgetRef ref) {
+    final myId = ref.watch(clientProvider)!.userId().toString();
+    final emojiTextStyle = myId == message.author.id
         ? const ActerChatTheme().sentEmojiMessageTextStyle
         : const ActerChatTheme().receivedEmojiMessageTextStyle;
     return ConstrainedBox(

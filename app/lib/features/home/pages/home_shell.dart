@@ -49,7 +49,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
   @override
   void dispose() {
-    Get.delete<ChatRoomController>();
+    // Get.delete<ChatRoomController>();
     // Get.delete<ReceiptController>();
     super.dispose();
   }

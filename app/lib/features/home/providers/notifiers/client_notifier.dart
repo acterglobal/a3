@@ -25,7 +25,7 @@ class ClientNotifier extends StateNotifier<Client?> {
     };
     state = asyncSdk.currentClient;
     if (state != null || !state!.isGuest()) {
-      Get.put(ChatRoomController(client: state!));
+      // Get.put(ChatRoomController(client: state!));
       // Get.put(ReceiptController(client: state!));
       // on release we have a really weird behavior, where, if we schedule
       // any async call in rust too early, they just pend forever. this
