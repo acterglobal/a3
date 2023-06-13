@@ -13,7 +13,8 @@ class MySpacesSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaces = ref.watch(spacesProvider);
+    // remove nested watches to avoid big memory error on release runtime
+    final spaces = ref.watch(spaceItemsProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Column(
@@ -30,35 +31,23 @@ class MySpacesSection extends ConsumerWidget {
                   .sublist(0, spaces.length > limit ? limit : spaces.length)
                   .map(
                 (space) {
-                  final roomId = space.getRoomId().toString();
-                  final profile = ref.watch(spaceProfileDataProvider(space));
-                  return profile.when(
-                    data: (profile) => Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: 10,
-                      ),
-                      child: ListTile(
-                        onTap: () => context.go('/$roomId'),
-                        title: Text(
-                          profile.displayName ?? roomId,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        leading: ActerAvatar(
-                          mode: DisplayMode.Space,
-                          displayName: profile.displayName,
-                          uniqueId: roomId,
-                          avatar: profile.getAvatarImage(),
-                          size: 48,
-                        ),
-                      ),
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 10,
                     ),
-                    error: (error, stack) => ListTile(
-                      title: Text('Error loading: $roomId'),
-                      subtitle: Text('$error'),
-                    ),
-                    loading: () => ListTile(
-                      title: Text(roomId),
-                      subtitle: const Text('loading'),
+                    child: ListTile(
+                      onTap: () => context.go('/${space.roomId}'),
+                      title: Text(
+                        space.spaceProfileData.displayName ?? space.roomId,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      leading: ActerAvatar(
+                        mode: DisplayMode.Space,
+                        displayName: space.spaceProfileData.displayName,
+                        uniqueId: space.roomId,
+                        avatar: space.spaceProfileData.getAvatarImage(),
+                        size: 48,
+                      ),
                     ),
                   );
                 },
