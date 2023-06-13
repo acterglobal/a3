@@ -1,14 +1,18 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 
 class MemberAvatar extends ConsumerWidget {
   final Member member;
+  late final String _userId;
 
-  const MemberAvatar({super.key, required this.member});
+  MemberAvatar({Key? key, required this.member}) : super(key: key) {
+    // get user id in advance to avoid error on release runtime
+    _userId = member.userId().toString();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,7 +31,7 @@ class MemberAvatar extends ConsumerWidget {
               ),
               child: ActerAvatar(
                 mode: DisplayMode.User,
-                uniqueId: member.userId().toString(),
+                uniqueId: _userId,
                 size: 20,
                 avatar: data.getAvatarImage(),
                 displayName: data.displayName,
