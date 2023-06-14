@@ -124,7 +124,7 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
       RoomId? currentRoomId = roomController.currentRoomId();
       if (currentRoomId == null) {
         // we are in chat list page
-        final List<JoinedRoom> tempState = roomList;
+        List<JoinedRoom> tempState = roomList;
         tempState[idx] = tempState[idx].copyWith(typingUsers: typingUsers);
         ref.read(joinedRoomListProvider.notifier).removeRoom(idx);
         ref
