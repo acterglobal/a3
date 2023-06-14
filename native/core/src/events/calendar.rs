@@ -146,7 +146,7 @@ pub struct CalendarEventUpdateEventContent {
     )]
     pub description: Option<Option<TextMessageEventContent>>,
 
-    /// When was this calendar_event started?
+    /// When will this calendar_event start?
     #[builder(default)]
     #[serde(
         default,
@@ -155,7 +155,7 @@ pub struct CalendarEventUpdateEventContent {
     )]
     pub utc_start: Option<UtcDateTime>,
 
-    /// When was this calendar_event started?
+    /// When will this calendar_event end?
     #[builder(default)]
     #[serde(
         default,
