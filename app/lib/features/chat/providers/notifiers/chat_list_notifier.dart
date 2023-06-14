@@ -107,10 +107,10 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
       }
       List<types.User> typingUsers = [];
       for (var userId in event.userIds()) {
-        // if (userId == client.userId()) {
-        //   // filter out my typing
-        //   continue;
-        // }
+        if (userId == client.userId()) {
+          // filter out my typing
+          continue;
+        }
         String uid = userId.toString();
         var user = types.User(
           id: uid,
