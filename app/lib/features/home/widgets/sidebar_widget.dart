@@ -1,9 +1,9 @@
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
@@ -21,10 +21,10 @@ class SidebarWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final client = ref.watch(clientProvider)!;
     final sidebarNavItems = ref.watch(sidebarItemsProvider(context));
     final selectedSidebarIndex =
         ref.watch(currentSelectedSidebarIndexProvider(context));
-    final isGuest = ref.watch(clientProvider)!.isGuest();
 
     return AdaptiveScaffold.standardNavigationRail(
       // main logic
@@ -53,7 +53,7 @@ class SidebarWidget extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Visibility(
-            visible: !ref.watch(clientProvider)!.isGuest(),
+            visible: !client.isGuest(),
             child: Container(
               key: Keys.avatar,
               margin: const EdgeInsets.only(top: 8),
@@ -89,7 +89,7 @@ class SidebarWidget extends ConsumerWidget {
             ),
             const Divider(indent: 18, endIndent: 18),
             Visibility(
-              visible: !isGuest,
+              visible: !client.isGuest(),
               child: InkWell(
                 key: Keys.logoutBtn,
                 onTap: () => confirmationDialog(context, ref),
@@ -112,7 +112,7 @@ class SidebarWidget extends ConsumerWidget {
               ),
             ),
             Visibility(
-              visible: isGuest,
+              visible: client.isGuest(),
               child: InkWell(
                 key: Keys.loginBtn,
                 onTap: () => context.pushNamed(Routes.authLogin.name),

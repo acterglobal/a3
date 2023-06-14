@@ -421,7 +421,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   }
 
   Widget buildProfileAction() {
-    final client = ref.watch(clientProvider);
+    final client = ref.watch(clientProvider)!;
     String roomId = widget.conversation.getRoomId().toString();
     return GestureDetector(
       onTap: () {
@@ -429,7 +429,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           context,
           MaterialPageRoute(
             builder: (context) => ProfilePage(
-              client: client!,
+              client: client,
               room: widget.conversation,
               roomName: widget.name,
               isGroup: true,
@@ -476,7 +476,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   }
 
   Widget buildBody(BuildContext context) {
-    final client = ref.watch(clientProvider);
+    final client = ref.watch(clientProvider)!;
     final invitations = ref.watch(invitationListProvider);
     if (roomController.isLoading.isTrue) {
       return const Center(
@@ -510,7 +510,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                 customTypingIndicator: buildTypingIndicator(),
               ),
               onSendPressed: (types.PartialText partialText) {},
-              user: types.User(id: client!.userId().toString()),
+              user: types.User(id: client.userId().toString()),
               // disable image preview
               disableImageGallery: true,
               //custom avatar builder
@@ -658,9 +658,9 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     return GetBuilder<ChatRoomController>(
       id: 'chat-bubble',
       builder: (context) {
-        final client = ref.watch(clientProvider);
+        final client = ref.watch(clientProvider)!;
         return BubbleBuilder(
-          userId: client!.userId().toString(),
+          userId: client.userId().toString(),
           child: child,
           message: message,
           nextMessageInGroup: nextMessageInGroup,

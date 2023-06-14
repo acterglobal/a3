@@ -1,7 +1,8 @@
+import 'dart:core';
+
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/tasks/models/tasks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:core';
 
 final myTasksProvider = FutureProvider<List<TaskBrief>>((ref) async {
   final client = ref.watch(clientProvider)!;

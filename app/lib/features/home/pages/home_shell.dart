@@ -1,13 +1,13 @@
 import 'dart:io';
 
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 // import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
-import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';

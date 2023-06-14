@@ -14,8 +14,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // CHAT PAGE state provider
 final chatListProvider =
     StateNotifierProvider.autoDispose<ChatListNotifier, ChatListState>((ref) {
-  final client = ref.watch(clientProvider);
-  return ChatListNotifier(ref, client: client!);
+  final client = ref.watch(clientProvider)!;
+  return ChatListNotifier(ref, client: client);
 });
 
 // Conversations List Provider (CHAT PAGE)

@@ -39,7 +39,7 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
 
   @override
   Widget build(BuildContext context) {
-    final client = ref.watch(clientProvider);
+    final client = ref.watch(clientProvider)!;
     String roomId = widget.room.id;
     final convoProfile =
         ref.watch(chatProfileDataProvider(widget.room.conversation));
@@ -76,7 +76,7 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
                 room: widget.room.conversation,
                 latestMessage: widget.room.latestMessage,
                 activeMembers: activeMembers,
-                userId: client!.userId().toString(),
+                userId: client.userId().toString(),
               ),
             ),
             Divider(
