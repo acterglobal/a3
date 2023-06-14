@@ -1,14 +1,12 @@
 import 'dart:async';
-
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/models/joined_room/joined_room.dart';
 import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
-        Client,
         Conversation,
         FfiListConversation,
         FfiListInvitation,
@@ -21,71 +19,69 @@ import 'package:get/get.dart';
 
 class ChatListNotifier extends StateNotifier<ChatListState> {
   final Ref ref;
-  final Client client;
 
-  ChatListNotifier(this.ref, {required this.client})
-      : super(const ChatListState()) {
+  ChatListNotifier(this.ref)
+      : super(
+          const ChatListState(
+            initialLoaded: false,
+            showSearch: false,
+            searchData: [],
+          ),
+        ) {
     _init();
   }
 
   void _init() async {
-    if (state.initialLoaded) {
-      state = state.copyWith(initialLoaded: false);
-    }
-    final conversations = await ref.read(chatsProvider.future);
-    for (var item in conversations) {
-      String? roomName = await item
-          .getProfile()
-          .getDisplayName()
-          .then((value) => value.text().toString());
-      JoinedRoom room = JoinedRoom(
-        id: item.getRoomId().toString(),
-        conversation: item,
-        latestMessage: item.latestMessage(),
-        displayName: roomName ?? item.getRoomId().toString(),
-      );
-      ref.read(roomListProvider.notifier).addRoom(room);
-    }
+    final client = ref.read(clientProvider)!;
+
+    ///FIXME: This provider doesn't fetch latest messages in conversation for some reason.
+    // final conversations = await ref.read(chatsProvider.future);
+    /// Using conversation stream then...
+    StreamSubscription<FfiListConversation>? _convosSubscription;
+    _convosSubscription = client.conversationsRx().listen((event) async {
+      // FIXME: Maybe have CRUD possibility here instead of whole list reset
+      ref.read(joinedRoomListProvider.notifier).reset();
+      for (Conversation convo in event.toList()) {
+        final convoProfile = convo.getProfile();
+        var dispName = await convoProfile.getDisplayName();
+        RoomId r1 = convo.getRoomId();
+        String r2 = r1.toString();
+        String name = dispName.text() ?? r2;
+        JoinedRoom newItem = JoinedRoom(
+          id: r2,
+          conversation: convo,
+          latestMessage: convo.latestMessage(),
+          displayName: name,
+        );
+        if (newItem.latestMessage != null) {
+          debugPrint(
+            'latest message timestamp: ${newItem.latestMessage!.eventItem()!.originServerTs()}',
+          );
+        }
+        ref.read(joinedRoomListProvider.notifier).addRoom(newItem);
+      }
+    });
+    // await call so the update occurs in list from conversations
+    await Future.delayed(const Duration(milliseconds: 200), () {});
+
+    ref.read(joinedRoomListProvider.notifier).sortRooms();
+    final roomList = ref.read(joinedRoomListProvider);
     state = state.copyWith(
-      searchData: ref.read(roomListProvider),
+      searchData: roomList,
       initialLoaded: true,
+      showSearch: false,
     );
+    ref.onDispose(() {
+      _convosSubscription?.cancel();
+    });
     // start listener streams
-    _convoStream();
     _invitationsStream();
     _typingEventStream();
   }
 
-  // Conversations stream
-  void _convoStream() {
-    StreamSubscription<FfiListConversation>? _convosSubscription;
-    _convosSubscription = client.conversationsRx().listen((event) {
-      // FIXME: Maybe have CRUD possibility here instead of whole list reset
-      // and reassignment?
-      ref.read(roomListProvider.notifier).reset();
-      for (Conversation convo in event.toList()) {
-        JoinedRoom newItem = JoinedRoom(
-          id: convo.getRoomId().toString(),
-          conversation: convo,
-          latestMessage: convo.latestMessage(),
-        );
-        if (newItem.latestMessage != null) {
-          debugPrint(
-            'timestamp is ${newItem.latestMessage!.eventItem()!.originServerTs()}',
-          );
-        }
-        ref.read(roomListProvider.notifier).addRoom(newItem);
-        ref.read(roomListProvider.notifier).sortRooms();
-      }
-    });
-    // call stream close when provider isn't listened
-    ref.onDispose(() {
-      _convosSubscription?.cancel();
-    });
-  }
-
   // Invitations stream
   void _invitationsStream() {
+    final client = ref.read(clientProvider)!;
     StreamSubscription<FfiListInvitation>? _invitesSubscription;
     _invitesSubscription = client.invitationsRx().listen((event) {
       ref.read(invitationListProvider.notifier).setList(event.toList());
@@ -98,8 +94,9 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
 
   // Typing notification stream
   void _typingEventStream() {
+    final client = ref.read(clientProvider)!;
     StreamSubscription<TypingEvent>? _typingSubscription;
-    final roomList = ref.read(roomListProvider);
+    final roomList = ref.read(joinedRoomListProvider);
     _typingSubscription = client.typingEventRx()?.listen((event) {
       RoomId roomId = event.roomId();
       int idx = roomList.indexWhere((x) {
@@ -110,10 +107,10 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
       }
       List<types.User> typingUsers = [];
       for (var userId in event.userIds()) {
-        if (userId == client.userId()) {
-          // filter out my typing
-          continue;
-        }
+        // if (userId == client.userId()) {
+        //   // filter out my typing
+        //   continue;
+        // }
         String uid = userId.toString();
         var user = types.User(
           id: uid,
@@ -129,14 +126,17 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
         // we are in chat list page
         final List<JoinedRoom> tempState = roomList;
         tempState[idx] = tempState[idx].copyWith(typingUsers: typingUsers);
-        ref.read(roomListProvider.notifier).removeRoom(idx);
-        ref.read(roomListProvider.notifier).insertRoom(idx, tempState[idx]);
+        ref.read(joinedRoomListProvider.notifier).removeRoom(idx);
+        ref
+            .read(joinedRoomListProvider.notifier)
+            .insertRoom(idx, tempState[idx]);
       } else if (roomId == currentRoomId) {
         // we are in chat room page
         roomController.typingUsers = typingUsers;
         roomController.update(['typing indicator']);
       }
     });
+
     // call stream close when provider isn't listened
     ref.onDispose(() {
       _typingSubscription?.cancel();
@@ -147,7 +147,7 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
     List<JoinedRoom> tempState = [];
     state = state.copyWith(searchData: tempState);
     var name = '';
-    final joinedRooms = ref.read(roomListProvider);
+    final joinedRooms = ref.read(joinedRoomListProvider);
 
     if (data.isNotEmpty) {
       for (var element in joinedRooms) {
@@ -163,10 +163,10 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
   }
 
   void moveItem(int from, int to) {
-    ref.read(roomListProvider.notifier).removeRoom(from);
+    ref.read(joinedRoomListProvider.notifier).removeRoom(from);
     ref
-        .read(roomListProvider.notifier)
-        .insertRoom(to, ref.read(roomListProvider)[from]);
+        .read(joinedRoomListProvider.notifier)
+        .insertRoom(to, ref.read(joinedRoomListProvider)[from]);
   }
 
   void toggleSearchView() {
