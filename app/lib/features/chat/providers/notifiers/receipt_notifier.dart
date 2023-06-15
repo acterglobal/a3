@@ -6,22 +6,20 @@ import 'package:acter/features/chat/models/reciept_room/receipt_room.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_messages_notifier.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
-class ReceiptNotifier extends StateNotifier<ReceiptRoom?> {
+class ReceiptNotifier extends StateNotifier<ReceiptRoom> {
   final Ref ref;
   final Map<RoomId, ReceiptRoom> _rooms = {};
-  ReceiptNotifier(this.ref) : super(null) {
+  ReceiptNotifier(this.ref) : super(const ReceiptRoom(users: {})) {
     _init();
   }
 
   void _init() {
-    final client = ref.read(clientProvider);
-    state = const ReceiptRoom(users: {});
+    final client = ref.read(clientProvider)!;
     StreamSubscription<ReceiptEvent>? _subscription;
-    _subscription = client?.receiptEventRx()?.listen((event) {
+    _subscription = client.receiptEventRx()?.listen((event) {
       String myId = client.userId().toString();
       RoomId roomId = event.roomId();
       for (var record in event.receiptRecords()) {
@@ -40,7 +38,7 @@ class ReceiptNotifier extends StateNotifier<ReceiptRoom?> {
   }
 
   void updateUser(String userId, String eventId, int? ts) {
-    final Map<String, ReceiptUser> receiptUsers = state!.users;
+    Map<String, ReceiptUser> receiptUsers = state.users;
     if (receiptUsers.containsKey(userId)) {
       receiptUsers[userId]!.eventId = eventId;
       if (ts != null) {
@@ -50,16 +48,15 @@ class ReceiptNotifier extends StateNotifier<ReceiptRoom?> {
       receiptUsers[userId] =
           ReceiptUser(userId: userId, eventId: eventId, ts: ts);
     }
-    state = state!.copyWith(users: receiptUsers);
+    state = state.copyWith(users: receiptUsers);
   }
 
   ReceiptRoom _getRoom(RoomId roomId) {
-    if (state!.users.containsKey(roomId)) {
+    if (state.users.containsKey(roomId)) {
       return _rooms[roomId]!;
     }
     var room = const ReceiptRoom();
     _rooms[roomId] = room;
-    debugPrint('$_rooms');
     return room;
   }
 

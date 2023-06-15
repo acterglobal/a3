@@ -185,7 +185,14 @@ impl RoomEventItem {
     }
 
     pub fn reaction_keys(&self) -> Vec<String> {
-        self.reactions.keys().cloned().collect()
+        // don't use cloned().
+        // create string vector to deallocate string item using toDartString().
+        // apply this way for only function that string vector is calculated indirectly.
+        let mut keys = vec![];
+        for key in self.reactions.keys() {
+            keys.push(key.to_owned());
+        }
+        keys
     }
 
     pub fn reaction_desc(&self, key: String) -> Option<ReactionDesc> {

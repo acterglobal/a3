@@ -335,11 +335,25 @@ impl TaskList {
     }
 
     pub fn keywords(&self) -> Vec<String> {
-        self.content.keywords.clone()
+        // don't use cloned().
+        // create string vector to deallocate string item using toDartString().
+        // apply this way for only function that string vector is calculated indirectly.
+        let mut result = vec![];
+        for keyword in &self.content.keywords {
+            result.push(keyword.to_owned());
+        }
+        result
     }
 
     pub fn categories(&self) -> Vec<String> {
-        self.content.categories.clone()
+        // don't use cloned().
+        // create string vector to deallocate string item using toDartString().
+        // apply this way for only function that string vector is calculated indirectly.
+        let mut result = vec![];
+        for category in &self.content.categories {
+            result.push(category.to_owned());
+        }
+        result
     }
 
     pub fn space(&self) -> Space {
@@ -529,11 +543,25 @@ impl Task {
     }
 
     pub fn keywords(&self) -> Vec<String> {
-        self.content.keywords.clone()
+        // don't use cloned().
+        // create string vector to deallocate string item using toDartString().
+        // apply this way for only function that string vector is calculated indirectly.
+        let mut result = vec![];
+        for keyword in &self.content.keywords {
+            result.push(keyword.to_owned());
+        }
+        result
     }
 
     pub fn categories(&self) -> Vec<String> {
-        self.content.categories.clone()
+        // don't use cloned().
+        // create string vector to deallocate string item using toDartString().
+        // apply this way for only function that string vector is calculated indirectly.
+        let mut result = vec![];
+        for category in &self.content.categories {
+            result.push(category.to_owned());
+        }
+        result
     }
 }
 

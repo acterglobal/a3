@@ -421,6 +421,11 @@ class FfiString {
     final parts = _api._ffiStringIntoParts(_box.borrow());
     final ffi.Pointer<ffi.Uint8> tmp2_0 = ffi.Pointer.fromAddress(parts.addr);
     final tmp1 = utf8.decode(tmp2_0.asTypedList(parts.len));
+    if (parts.capacity > 0) {
+      final ffi.Pointer<ffi.Void> tmp2_0;
+      tmp2_0 = ffi.Pointer.fromAddress(parts.addr);
+      _api.__deallocate(tmp2_0, parts.capacity * 1, 1);
+    }
     return tmp1;
   }
 
