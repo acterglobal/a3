@@ -16,8 +16,8 @@ class ConversationsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chatList = ref.watch(chatListProvider);
-    final joinedRooms = ref.watch(roomListProvider);
-    return !chatList.initialLoaded
+    final joinedRooms = ref.watch(joinedRoomListProvider);
+    return !ref.watch(chatListProvider.select((e) => e.initialLoaded))
         ? Center(
             heightFactor: 10,
             child: Column(

@@ -23,17 +23,20 @@ class JoinedRoomNotifier extends StateNotifier<List<JoinedRoom>> {
 
   void sortRooms() {
     List<JoinedRoom> tempState = state;
+    // rooms could contain RoomMessage as null, so handle null values differently.
     tempState.sort((a, b) {
-      if (a.latestMessage != null && b.latestMessage != null) {
+      if (a.latestMessage == null) {
+        return 1;
+      }
+      if (b.latestMessage == null) {
+        return -1;
+      } else {
         return b.latestMessage!
             .eventItem()!
             .originServerTs()
             .compareTo(a.latestMessage!.eventItem()!.originServerTs());
-      } else {
-        return 0;
       }
     });
-    tempState.reversed;
     state = tempState;
   }
 
