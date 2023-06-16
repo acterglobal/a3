@@ -1,4 +1,4 @@
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/type_indicator.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter/material.dart';

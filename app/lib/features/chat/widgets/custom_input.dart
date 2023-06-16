@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -35,8 +35,8 @@ class CustomChatInput extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Size size = MediaQuery.of(context).size;
-    final client = ref.read(clientProvider);
-    final chatRoom = ref.read(chatRoomProvider);
+    final client = ref.watch(clientProvider);
+    final chatRoom = ref.watch(chatRoomProvider);
     final chatInputState = ref.watch(chatInputProvider);
     return Column(
       children: [

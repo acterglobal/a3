@@ -73,7 +73,7 @@ class InvitationCard extends ConsumerWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => RoomPage(
-                                    conversation: room.conversation,
+                                    room: room,
                                   ),
                                 ),
                               );

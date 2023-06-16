@@ -17,8 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ChatInputState {
   Map<String, String> get usernames => throw _privateConstructorUsedError;
-  Map<String, Future<FfiBufferUint8>> get userAvatars =>
-      throw _privateConstructorUsedError;
+  Map<String, Uint8List> get userAvatars => throw _privateConstructorUsedError;
   Map<String, String> get messageTextMapMarkDown =>
       throw _privateConstructorUsedError;
   Map<String, String> get messageTextMapHtml =>
@@ -46,7 +45,7 @@ abstract class $ChatInputStateCopyWith<$Res> {
   @useResult
   $Res call(
       {Map<String, String> usernames,
-      Map<String, Future<FfiBufferUint8>> userAvatars,
+      Map<String, Uint8List> userAvatars,
       Map<String, String> messageTextMapMarkDown,
       Map<String, String> messageTextMapHtml,
       List<Map<String, dynamic>> mentionList,
@@ -93,7 +92,7 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
       userAvatars: null == userAvatars
           ? _value.userAvatars
           : userAvatars // ignore: cast_nullable_to_non_nullable
-              as Map<String, Future<FfiBufferUint8>>,
+              as Map<String, Uint8List>,
       messageTextMapMarkDown: null == messageTextMapMarkDown
           ? _value.messageTextMapMarkDown
           : messageTextMapMarkDown // ignore: cast_nullable_to_non_nullable
@@ -148,7 +147,7 @@ abstract class _$$_ChatInputStateCopyWith<$Res>
   @useResult
   $Res call(
       {Map<String, String> usernames,
-      Map<String, Future<FfiBufferUint8>> userAvatars,
+      Map<String, Uint8List> userAvatars,
       Map<String, String> messageTextMapMarkDown,
       Map<String, String> messageTextMapHtml,
       List<Map<String, dynamic>> mentionList,
@@ -193,7 +192,7 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
       userAvatars: null == userAvatars
           ? _value._userAvatars
           : userAvatars // ignore: cast_nullable_to_non_nullable
-              as Map<String, Future<FfiBufferUint8>>,
+              as Map<String, Uint8List>,
       messageTextMapMarkDown: null == messageTextMapMarkDown
           ? _value._messageTextMapMarkDown
           : messageTextMapMarkDown // ignore: cast_nullable_to_non_nullable
@@ -243,7 +242,7 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
 class _$_ChatInputState implements _ChatInputState {
   const _$_ChatInputState(
       {final Map<String, String> usernames = const {},
-      final Map<String, Future<FfiBufferUint8>> userAvatars = const {},
+      final Map<String, Uint8List> userAvatars = const {},
       final Map<String, String> messageTextMapMarkDown = const {},
       final Map<String, String> messageTextMapHtml = const {},
       final List<Map<String, dynamic>> mentionList = const [],
@@ -269,10 +268,10 @@ class _$_ChatInputState implements _ChatInputState {
     return EqualUnmodifiableMapView(_usernames);
   }
 
-  final Map<String, Future<FfiBufferUint8>> _userAvatars;
+  final Map<String, Uint8List> _userAvatars;
   @override
   @JsonKey()
-  Map<String, Future<FfiBufferUint8>> get userAvatars {
+  Map<String, Uint8List> get userAvatars {
     if (_userAvatars is EqualUnmodifiableMapView) return _userAvatars;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_userAvatars);
@@ -392,7 +391,7 @@ class _$_ChatInputState implements _ChatInputState {
 abstract class _ChatInputState implements ChatInputState {
   const factory _ChatInputState(
       {final Map<String, String> usernames,
-      final Map<String, Future<FfiBufferUint8>> userAvatars,
+      final Map<String, Uint8List> userAvatars,
       final Map<String, String> messageTextMapMarkDown,
       final Map<String, String> messageTextMapHtml,
       final List<Map<String, dynamic>> mentionList,
@@ -407,7 +406,7 @@ abstract class _ChatInputState implements ChatInputState {
   @override
   Map<String, String> get usernames;
   @override
-  Map<String, Future<FfiBufferUint8>> get userAvatars;
+  Map<String, Uint8List> get userAvatars;
   @override
   Map<String, String> get messageTextMapMarkDown;
   @override

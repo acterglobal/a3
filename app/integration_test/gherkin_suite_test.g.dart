@@ -35,7 +35,7 @@ class _CustomGherkinIntegrationTestRunner extends GherkinIntegrationTestRunner {
           name: 'After login, ensure username',
           description: null,
           path:
-              'C:\\flutter-projects\\acter\\app\\.\\integration_test\\features\\login_smoketest.feature',
+              '/Users/gtalhaa/Work/flutter-projects/a3/app/./integration_test/features/login_smoketest.feature',
           tags: <String>[],
           steps: [
             (
@@ -50,18 +50,30 @@ class _CustomGherkinIntegrationTestRunner extends GherkinIntegrationTestRunner {
                 skip: skip,
               );
             },
+            (
+              TestDependencies dependencies,
+              bool skip,
+            ) async {
+              return await runStep(
+                name: 'Given App has settled',
+                multiLineStrings: <String>[],
+                table: null,
+                dependencies: dependencies,
+                skip: skip,
+              );
+            },
           ],
           onBefore: () async => onBeforeRunFeature(
             name: 'Login Smoketest',
             path:
-                'C:\\flutter-projects\\acter\\app\\.\\integration_test\\features\\login_smoketest.feature',
+                '/Users/gtalhaa/Work/flutter-projects/a3/app/./integration_test/features/login_smoketest.feature',
             description: """Trying to login and ensure it works""",
             tags: <String>[],
           ),
           onAfter: () async => onAfterRunFeature(
             name: 'Login Smoketest',
             path:
-                'C:\\flutter-projects\\acter\\app\\.\\integration_test\\features\\login_smoketest.feature',
+                '/Users/gtalhaa/Work/flutter-projects/a3/app/./integration_test/features/login_smoketest.feature',
             description: """Trying to login and ensure it works""",
             tags: <String>[],
           ),

@@ -1,3 +1,6 @@
+import 'dart:ffi';
+import 'dart:typed_data';
+
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show FfiBufferUint8;
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -8,7 +11,7 @@ part 'chat_input_state.freezed.dart';
 class ChatInputState with _$ChatInputState {
   const factory ChatInputState({
     @Default({}) Map<String, String> usernames,
-    @Default({}) Map<String, Future<FfiBufferUint8>> userAvatars,
+    @Default({}) Map<String, Uint8List> userAvatars,
     @Default({}) Map<String, String> messageTextMapMarkDown,
     @Default({}) Map<String, String> messageTextMapHtml,
     @Default([]) List<Map<String, dynamic>> mentionList,

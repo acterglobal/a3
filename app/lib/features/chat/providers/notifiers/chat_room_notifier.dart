@@ -33,130 +33,15 @@ import 'package:file_picker/file_picker.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
 import 'package:open_app_file/open_app_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-final chatInputProvider =
-    StateNotifierProvider<ChatInputNotifier, ChatInputState>(
-  (ref) => ChatInputNotifier(ref),
-);
-
-class ChatInputNotifier extends StateNotifier<ChatInputState> {
-  final Ref ref;
-  FocusNode focusNode = FocusNode();
-  GlobalKey<FlutterMentionsState> mentionKey =
-      GlobalKey<FlutterMentionsState>();
-  String? authorId;
-
-  ChatInputNotifier(this.ref) : super(const ChatInputState()) {
-    _init();
-  }
-
-  void _init() {
-    focusNode.addListener(() {
-      if (focusNode.hasFocus) {
-        state = state.copyWith(
-          isEmojiContainerVisible: false,
-          isAttachmentVisible: false,
-        );
-      }
-    });
-    ref.onDispose(() {
-      focusNode.removeListener(() {});
-    });
-  }
-
-  void setChatInputState({
-    Map<String, String>? names,
-    Map<String, Future<FfiBufferUint8>>? avatars,
-    Map<String, String>? messageTextMapMarkDown,
-    Map<String, String>? messageTextMapHtml,
-    List<Map<String, dynamic>>? mentions,
-    bool? isAttachmentVisible,
-    bool? isEmojiVisible,
-    bool? isEmojiContainerVisible,
-    bool? isSendButtonVisible,
-    bool? showReplyView,
-  }) {
-    state = state.copyWith(
-      userAvatars: avatars ?? state.userAvatars,
-      usernames: names ?? state.usernames,
-      mentionList: mentions ?? state.mentionList,
-      isAttachmentVisible: isAttachmentVisible ?? state.isAttachmentVisible,
-      isEmojiVisible: isEmojiVisible ?? state.isEmojiVisible,
-      isEmojiContainerVisible:
-          isEmojiContainerVisible ?? state.isEmojiContainerVisible,
-      isSendButtonVisible: isSendButtonVisible ?? state.isSendButtonVisible,
-      showReplyView: showReplyView ?? state.showReplyView,
-      messageTextMapMarkDown:
-          messageTextMapMarkDown ?? state.messageTextMapMarkDown,
-      messageTextMapHtml: messageTextMapHtml ?? state.messageTextMapHtml,
-    );
-  }
-
-  /// Update button state based on text editor.
-  void sendButtonUpdate() => state = state.copyWith(
-        isSendButtonVisible:
-            mentionKey.currentState!.controller!.text.trim().isNotEmpty,
-      );
-
-  /// Disable button as soon as send button is pressed.
-  void sendButtonDisable() =>
-      state = state.copyWith(isSendButtonVisible: !state.isSendButtonVisible);
-
-  void toggleEmojiContainer() => state =
-      state.copyWith(isEmojiContainerVisible: !state.isEmojiContainerVisible);
-
-  void updateEmojiState(types.Message message) {
-    final _messages = ref.read(chatMessagesProvider);
-    int emojiMessageIndex = _messages.indexWhere((x) => x.id == message.id);
-    String? emojiCurrentId = _messages[emojiMessageIndex].id;
-    if (emojiCurrentId == message.id) {
-      state = state.copyWith(
-        isEmojiContainerVisible: !state.isEmojiContainerVisible,
-      );
-    }
-
-    if (state.isEmojiContainerVisible) {
-      authorId = message.author.id;
-    }
-  }
-
-  bool isAuthor() {
-    final myId = ref.read(clientProvider)!.userId().toString();
-    return myId == authorId;
-  }
-
-  Future<FfiBufferUint8>? getUserAvatar(String userId) =>
-      state.userAvatars.containsKey(userId) ? state.userAvatars[userId] : null;
-
-  String? getUserName(String userId) =>
-      state.usernames.containsKey(userId) ? state.usernames[userId] : null;
-
-  void reset() {
-    state = state.copyWith(
-      userAvatars: {},
-      usernames: {},
-      mentionList: [],
-      isAttachmentVisible: false,
-      isEmojiVisible: false,
-      isEmojiContainerVisible: false,
-      isSendButtonVisible: false,
-    );
-  }
-}
-
-final chatRoomProvider = StateNotifierProvider<ChatRoomNotifier, ChatRoomState>(
-  (ref) => ChatRoomNotifier(ref),
-);
-
 class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   final Ref ref;
+  Conversation? _currentRoom;
   TimelineStream? _stream;
   StreamSubscription<TimelineDiff>? _diffSubscription;
   StreamSubscription<RoomMessage>? _messageSubscription;
@@ -167,16 +52,20 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     _init();
   }
   // initialization call
-  void _init() {
+  void _init() async {
+    // set the current room as Conversation object.
+    final room = ref.read(currentRoomProvider);
+    _currentRoom = room;
+    await _setCurrentRoom();
     final client = ref.read(clientProvider);
     _messageSubscription = client!.incomingMessageRx()?.listen((event) {
       // the latest message is dealt in convo receiver of ChatListController
       // here manage only its message history
-      if (state.currentRoom == null) {
+      if (_currentRoom == null) {
         return;
       }
       // filter only message of this room
-      if (event.roomId() != state.currentRoom!.getRoomId()) {
+      if (event.roomId() != _currentRoom!.getRoomId()) {
         return;
       }
       // filter only message from other not me
@@ -196,9 +85,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       RoomEventItem? eventItem = event.eventItem();
       if (eventItem != null) {
         if (eventItem.sender() != client.userId().toString()) {
-          // if (isLoading.isFalse) {
-          //   update(['Chat']);
-          // }
           switch (eventItem.subType()) {
             case 'm.image':
               _fetchImageContent(m.id);
@@ -219,18 +105,268 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
     ref.onDispose(() {
       _messageSubscription?.cancel();
+      _diffSubscription?.cancel();
     });
   }
 
+  // get the timeline of room
+  Future<void> _setCurrentRoom() async {
+    List<Member> _activeMembers =
+        (await _currentRoom!.activeMembers()).toList();
+    state = state.copyWith(activeMembers: _activeMembers);
+    await _fetchUserProfiles();
+    state = state.copyWith(isLoaded: true);
+    _stream = await _currentRoom!.timelineStream();
+    // event handler from paginate
+    _diffSubscription = _stream?.diffRx().listen((event) {
+      // stream is rendered in reverse order
+      switch (event.action()) {
+        // Append the given elements at the end of the `Vector` and notify subscribers
+        case 'Append':
+          debugPrint('chat room message append');
+          List<RoomMessage> values = event.values()!.toList();
+          List<types.Message> _messages = ref.read(chatMessagesProvider);
+          for (RoomMessage msg in values) {
+            var m = _prepareMessage(msg);
+            if (m is types.UnsupportedMessage) {
+              continue;
+            }
+            _messages.insert(0, m);
+            ref.read(chatMessagesProvider.notifier).state = _messages;
+            if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+              _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+            }
+            RoomEventItem? eventItem = msg.eventItem();
+            if (eventItem != null) {
+              switch (eventItem.subType()) {
+                case 'm.image':
+                  _fetchImageContent(m.id);
+                  break;
+                case 'm.audio':
+                  _fetchAudioContent(m.id);
+                  break;
+                case 'm.video':
+                  _fetchVideoContent(m.id);
+                  break;
+              }
+            }
+          }
+          break;
+        // Insert an element at the given position and notify subscribers
+        case 'Insert':
+          debugPrint('chat room message insert');
+          RoomMessage value = event.value()!;
+          var m = _prepareMessage(value);
+          if (m is types.UnsupportedMessage) {
+            break;
+          }
+          int index = ref
+              .read(chatMessagesProvider)
+              .indexWhere((msg) => m.id == msg.id);
+          if (index == -1) {
+            _insertMessage(m);
+          } else {
+            // update event may be fetched prior to insert event
+            _updateMessage(m, index);
+          }
+          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+          }
+          RoomEventItem? eventItem = value.eventItem();
+          if (eventItem != null) {
+            switch (eventItem.subType()) {
+              case 'm.image':
+                _fetchImageContent(m.id);
+                break;
+              case 'm.audio':
+                _fetchAudioContent(m.id);
+                break;
+              case 'm.video':
+                _fetchVideoContent(m.id);
+                break;
+            }
+          }
+          break;
+        // Replace the element at the given position, notify subscribers and return the previous element at that position
+        case 'Set':
+          debugPrint('chat room message set');
+          RoomMessage value = event.value()!;
+          var m = _prepareMessage(value);
+          if (m is types.UnsupportedMessage) {
+            break;
+          }
+          int index = ref
+              .read(chatMessagesProvider)
+              .indexWhere((msg) => m.id == msg.id);
+          if (index == -1) {
+            // update event may be fetched prior to insert event
+            _insertMessage(m);
+          } else {
+            _updateMessage(m, index);
+          }
+          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+          }
+          RoomEventItem? eventItem = value.eventItem();
+          if (eventItem != null) {
+            switch (eventItem.subType()) {
+              case 'm.image':
+                _fetchImageContent(m.id);
+                break;
+              case 'm.audio':
+                _fetchAudioContent(m.id);
+                break;
+              case 'm.video':
+                _fetchVideoContent(m.id);
+                break;
+            }
+          }
+          break;
+        // Remove the element at the given position, notify subscribers and return the element
+        case 'Remove':
+          debugPrint('chat room message remove');
+          List<types.Message> _messages = ref.read(chatMessagesProvider);
+          int index = event.index()!;
+          if (index < _messages.length) {
+            _messages.removeAt(_messages.length - 1 - index);
+            ref.read(chatMessagesProvider.notifier).state = _messages;
+          }
+          break;
+        // Add an element at the back of the list and notify subscribers
+        case 'PushBack':
+          debugPrint('chat room message push_back');
+          final _messages = ref.read(chatMessagesProvider);
+          RoomMessage value = event.value()!;
+          var m = _prepareMessage(value);
+          if (m is types.UnsupportedMessage) {
+            break;
+          }
+          _messages.insert(0, m);
+          ref.read(chatMessagesProvider.notifier).state = _messages;
+          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+          }
+          RoomEventItem? eventItem = value.eventItem();
+          if (eventItem != null) {
+            switch (eventItem.subType()) {
+              case 'm.image':
+                _fetchImageContent(m.id);
+                break;
+              case 'm.audio':
+                _fetchAudioContent(m.id);
+                break;
+              case 'm.video':
+                _fetchVideoContent(m.id);
+                break;
+            }
+          }
+          break;
+        // Add an element at the front of the list and notify subscribers
+        case 'PushFront':
+          debugPrint('chat room message push_front');
+          RoomMessage value = event.value()!;
+          var m = _prepareMessage(value);
+          if (m is types.UnsupportedMessage) {
+            break;
+          }
+          ref.read(chatMessagesProvider.notifier).addMessage(m);
+          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+          }
+          RoomEventItem? eventItem = value.eventItem();
+          if (eventItem != null) {
+            switch (eventItem.subType()) {
+              case 'm.image':
+                _fetchImageContent(m.id);
+                break;
+              case 'm.audio':
+                _fetchAudioContent(m.id);
+                break;
+              case 'm.video':
+                _fetchVideoContent(m.id);
+                break;
+            }
+          }
+          break;
+        // Remove the last element, notify subscribers and return the element
+        case 'PopBack':
+          debugPrint('chat room message pop_back');
+          List<types.Message> _messages = ref.read(chatMessagesProvider);
+          if (_messages.isNotEmpty) {
+            ref.read(chatMessagesProvider.notifier).removeMessage(0);
+          }
+          break;
+        // Remove the first element, notify subscribers and return the element
+        case 'PopFront':
+          debugPrint('chat room message pop_front');
+          List<types.Message> _messages = ref.read(chatMessagesProvider);
+          if (_messages.isNotEmpty) {
+            _messages.removeLast();
+            ref.read(chatMessagesProvider.notifier).state = _messages;
+          }
+          break;
+        // Clear out all of the elements in this `Vector` and notify subscribers
+        case 'Clear':
+          debugPrint('chat room message clear');
+          ref.read(chatMessagesProvider.notifier).state = [];
+          break;
+        case 'Reset':
+          debugPrint('chat room message reset');
+          List<RoomMessage> values = event.values()!.toList();
+          for (RoomMessage msg in values) {
+            var m = _prepareMessage(msg);
+            if (m is types.UnsupportedMessage) {
+              continue;
+            }
+            int index = ref
+                .read(chatMessagesProvider)
+                .indexWhere((msg) => m.id == msg.id);
+            if (index == -1) {
+              _insertMessage(m);
+            } else {
+              // update event may be fetched prior to insert event
+              _updateMessage(m, index);
+            }
+            if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+              _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+            }
+            RoomEventItem? eventItem = msg.eventItem();
+            if (eventItem != null) {
+              switch (eventItem.subType()) {
+                case 'm.image':
+                  _fetchImageContent(m.id);
+                  break;
+                case 'm.audio':
+                  _fetchAudioContent(m.id);
+                  break;
+                case 'm.video':
+                  _fetchVideoContent(m.id);
+                  break;
+              }
+            }
+          }
+          break;
+      }
+    });
+    bool hasMore = true;
+    do {
+      hasMore = await _stream!.paginateBackwards(10);
+      // wait for diff rx to be finished
+      sleep(const Duration(milliseconds: 500));
+    } while (hasMore && ref.read(chatMessagesProvider).length < 10);
+    // load receipt status of room
+    // var receipts = (await convoRoom.userReceipts()).toList();
+    // var receiptController = Get.find<ReceiptController>();
+    // receiptController.loadRoom(convoRoom, receipts);
+  }
+
   void setChatRoomState({
-    Conversation? currentRoom,
     List<Member>? activeMembers,
     List<types.User>? typingUsers,
     Widget? replyMessageWidget,
     types.Message? repliedToMessage,
   }) {
     state = state.copyWith(
-      currentRoom: currentRoom ?? state.currentRoom,
       activeMembers: activeMembers ?? state.activeMembers,
       typingUsers: typingUsers ?? state.typingUsers,
       replyMessageWidget: replyMessageWidget ?? state.replyMessageWidget,
@@ -255,8 +391,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   Future<void> handleEndReached() async {
     bool hasMore = await _stream!.paginateBackwards(10);
     debugPrint('backward pagination has more: $hasMore');
-    // _page = _page + 1;
-    // update(['Chat']);
   }
 
   Future<void> handleMessageTap(
@@ -267,7 +401,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         message is types.AudioMessage ||
         message is types.VideoMessage ||
         message is types.FileMessage) {
-      String mediaPath = await state.currentRoom!.mediaPath(message.id);
+      String mediaPath = await _currentRoom!.mediaPath(message.id);
       if (mediaPath.isEmpty) {
         Directory? rootPath = await getApplicationSupportDirectory();
         String? dirPath = await FilesystemPicker.open(
@@ -282,7 +416,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               : null,
         );
         if (dirPath != null) {
-          await state.currentRoom!.downloadMedia(message.id, dirPath);
+          await _currentRoom!.downloadMedia(message.id, dirPath);
         }
       } else {
         final result = await OpenAppFile.open(mediaPath);
@@ -623,7 +757,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     if (m is! types.UnsupportedMessage) {
       List<String> seenByList =
           ref.read(receiptProvider.notifier).getSeenByList(
-                state.currentRoom!.getRoomId(),
+                _currentRoom!.getRoomId(),
                 m.createdAt!,
               );
       if (m.author.id == client!.userId().toString()) {
@@ -647,7 +781,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     if (m is! types.UnsupportedMessage) {
       List<String> seenByList =
           ref.read(receiptProvider.notifier).getSeenByList(
-                state.currentRoom!.getRoomId(),
+                _currentRoom!.getRoomId(),
                 m.createdAt!,
               );
       if (m.author.id == client!.userId().toString()) {
@@ -665,17 +799,17 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   Future<void> _fetchUserProfiles() async {
-    Map<String, Future<FfiBufferUint8>> avatars = {};
+    Map<String, Uint8List> avatars = {};
     Map<String, String> names = {};
-    List<String> ids = [];
     List<Map<String, dynamic>> mentionRecords = [];
     for (int i = 0; i < state.activeMembers.length; i++) {
       String userId = state.activeMembers[i].userId().toString();
-      ids.add('user-profile-$userId');
       UserProfile profile = state.activeMembers[i].getProfile();
       Map<String, dynamic> record = {};
       if (await profile.hasAvatar()) {
-        avatars[userId] = profile.getThumbnail(62, 60);
+        var avatar =
+            await profile.getThumbnail(62, 60).then((e) => e.asTypedList());
+        avatars[userId] = avatar;
         record['avatar'] = avatars[userId];
       }
       DispName dispName = await profile.getDisplayName();
@@ -696,334 +830,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-  // get the timeline of room
-  Future<void> setCurrentRoom(Conversation? convoRoom) async {
-    if (convoRoom == null) {
-      // _messages.clear();
-      // typingUsers.clear();
-      // // activeMembers.clear();
-      // mentionList.clear();
-      // _diffSubscription?.cancel();
-      // _stream = null;
-      // _page = 0;
-      // _currentRoom = null;
-      state = state.copyWith(
-        currentRoom: null,
-        activeMembers: [],
-        typingUsers: [],
-      );
-      ref.read(chatMessagesProvider.notifier).state = [];
-      _stream = null;
-      ref.read(chatInputProvider.notifier).reset();
-      _diffSubscription!.cancel();
-      return;
-    }
-    state = state.copyWith(currentRoom: convoRoom);
-    // _currentRoom = convoRoom;
-    // update(['room-profile']);
-    // isLoading.value = true;
-
-    List<Member> _activeMembers = (await convoRoom.activeMembers()).toList();
-    state = state.copyWith(activeMembers: _activeMembers);
-    // update(['active-members']);
-    _fetchUserProfiles();
-    if (state.currentRoom == null) {
-      // user may close chat screen before long loading completed
-      ref.read(loadingProvider.notifier).update((state) => false);
-      return;
-    }
-    _stream = await state.currentRoom!.timelineStream();
-    // event handler from paginate
-    _diffSubscription = _stream?.diffRx().listen((event) {
-      // stream is rendered in reverse order
-      switch (event.action()) {
-        // Append the given elements at the end of the `Vector` and notify subscribers
-        case 'Append':
-          debugPrint('chat room message append');
-          List<RoomMessage> values = event.values()!.toList();
-          List<types.Message> _messages = ref.read(chatMessagesProvider);
-          for (RoomMessage msg in values) {
-            var m = _prepareMessage(msg);
-            if (m is types.UnsupportedMessage) {
-              continue;
-            }
-            _messages.insert(0, m);
-            ref.read(chatMessagesProvider.notifier).state = _messages;
-            if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
-              _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
-            }
-            RoomEventItem? eventItem = msg.eventItem();
-            if (eventItem != null) {
-              // if (isLoading.isFalse) {
-              //   update(['Chat']);
-              // }
-              switch (eventItem.subType()) {
-                case 'm.image':
-                  _fetchImageContent(m.id);
-                  break;
-                case 'm.audio':
-                  _fetchAudioContent(m.id);
-                  break;
-                case 'm.video':
-                  _fetchVideoContent(m.id);
-                  break;
-              }
-            }
-          }
-          break;
-        // Insert an element at the given position and notify subscribers
-        case 'Insert':
-          debugPrint('chat room message insert');
-          RoomMessage value = event.value()!;
-          var m = _prepareMessage(value);
-          if (m is types.UnsupportedMessage) {
-            break;
-          }
-          int index = ref
-              .read(chatMessagesProvider)
-              .indexWhere((msg) => m.id == msg.id);
-          if (index == -1) {
-            _insertMessage(m);
-          } else {
-            // update event may be fetched prior to insert event
-            _updateMessage(m, index);
-          }
-          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
-            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
-          }
-          RoomEventItem? eventItem = value.eventItem();
-          if (eventItem != null) {
-            // if (isLoading.isFalse) {
-            //   update(['Chat']);
-            // }
-            switch (eventItem.subType()) {
-              case 'm.image':
-                _fetchImageContent(m.id);
-                break;
-              case 'm.audio':
-                _fetchAudioContent(m.id);
-                break;
-              case 'm.video':
-                _fetchVideoContent(m.id);
-                break;
-            }
-          }
-          break;
-        // Replace the element at the given position, notify subscribers and return the previous element at that position
-        case 'Set':
-          debugPrint('chat room message set');
-          RoomMessage value = event.value()!;
-          var m = _prepareMessage(value);
-          if (m is types.UnsupportedMessage) {
-            break;
-          }
-          int index = ref
-              .read(chatMessagesProvider)
-              .indexWhere((msg) => m.id == msg.id);
-          if (index == -1) {
-            // update event may be fetched prior to insert event
-            _insertMessage(m);
-          } else {
-            _updateMessage(m, index);
-          }
-          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
-            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
-          }
-          RoomEventItem? eventItem = value.eventItem();
-          if (eventItem != null) {
-            // if (isLoading.isFalse) {
-            //   update(['Chat']);
-            // }
-            switch (eventItem.subType()) {
-              case 'm.image':
-                _fetchImageContent(m.id);
-                break;
-              case 'm.audio':
-                _fetchAudioContent(m.id);
-                break;
-              case 'm.video':
-                _fetchVideoContent(m.id);
-                break;
-            }
-          }
-          break;
-        // Remove the element at the given position, notify subscribers and return the element
-        case 'Remove':
-          debugPrint('chat room message remove');
-          List<types.Message> _messages = ref.read(chatMessagesProvider);
-          int index = event.index()!;
-          if (index < _messages.length) {
-            _messages.removeAt(_messages.length - 1 - index);
-            ref.read(chatMessagesProvider.notifier).state = _messages;
-            // if (isLoading.isFalse) {
-            //   update(['Chat']);
-            // }
-          }
-          break;
-        // Add an element at the back of the list and notify subscribers
-        case 'PushBack':
-          debugPrint('chat room message push_back');
-          final _messages = ref.read(chatMessagesProvider);
-          RoomMessage value = event.value()!;
-          var m = _prepareMessage(value);
-          if (m is types.UnsupportedMessage) {
-            break;
-          }
-          _messages.insert(0, m);
-          ref.read(chatMessagesProvider.notifier).state = _messages;
-          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
-            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
-          }
-          RoomEventItem? eventItem = value.eventItem();
-          if (eventItem != null) {
-            // if (isLoading.isFalse) {
-            //   update(['Chat']);
-            // }
-            switch (eventItem.subType()) {
-              case 'm.image':
-                _fetchImageContent(m.id);
-                break;
-              case 'm.audio':
-                _fetchAudioContent(m.id);
-                break;
-              case 'm.video':
-                _fetchVideoContent(m.id);
-                break;
-            }
-          }
-          break;
-        // Add an element at the front of the list and notify subscribers
-        case 'PushFront':
-          debugPrint('chat room message push_front');
-          RoomMessage value = event.value()!;
-          var m = _prepareMessage(value);
-          if (m is types.UnsupportedMessage) {
-            break;
-          }
-          ref.read(chatMessagesProvider.notifier).addMessage(m);
-          if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
-            _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
-          }
-          RoomEventItem? eventItem = value.eventItem();
-          if (eventItem != null) {
-            // if (isLoading.isFalse) {
-            //   update(['Chat']);
-            // }
-            switch (eventItem.subType()) {
-              case 'm.image':
-                _fetchImageContent(m.id);
-                break;
-              case 'm.audio':
-                _fetchAudioContent(m.id);
-                break;
-              case 'm.video':
-                _fetchVideoContent(m.id);
-                break;
-            }
-          }
-          break;
-        // Remove the last element, notify subscribers and return the element
-        case 'PopBack':
-          debugPrint('chat room message pop_back');
-          List<types.Message> _messages = ref.read(chatMessagesProvider);
-          if (_messages.isNotEmpty) {
-            ref.read(chatMessagesProvider.notifier).removeMessage(0);
-            // if (isLoading.isFalse) {
-            //   update(['Chat']);
-            // }
-          }
-          break;
-        // Remove the first element, notify subscribers and return the element
-        case 'PopFront':
-          debugPrint('chat room message pop_front');
-          List<types.Message> _messages = ref.read(chatMessagesProvider);
-          if (_messages.isNotEmpty) {
-            _messages.removeLast();
-            ref.read(chatMessagesProvider.notifier).state = _messages;
-            // if (isLoading.isFalse) {
-            //   update(['Chat']);
-            // }
-          }
-          break;
-        // Clear out all of the elements in this `Vector` and notify subscribers
-        case 'Clear':
-          debugPrint('chat room message clear');
-          ref.read(chatMessagesProvider.notifier).state = [];
-          // if (isLoading.isFalse) {
-          //   update(['Chat']);
-          // }
-          break;
-        case 'Reset':
-          debugPrint('chat room message reset');
-          List<RoomMessage> values = event.values()!.toList();
-          for (RoomMessage msg in values) {
-            var m = _prepareMessage(msg);
-            if (m is types.UnsupportedMessage) {
-              continue;
-            }
-            int index = ref
-                .read(chatMessagesProvider)
-                .indexWhere((msg) => m.id == msg.id);
-            if (index == -1) {
-              _insertMessage(m);
-            } else {
-              // update event may be fetched prior to insert event
-              _updateMessage(m, index);
-            }
-            if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
-              _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
-            }
-            RoomEventItem? eventItem = msg.eventItem();
-            if (eventItem != null) {
-              // if (isLoading.isFalse) {
-              //   update(['Chat']);
-              // }
-              switch (eventItem.subType()) {
-                case 'm.image':
-                  _fetchImageContent(m.id);
-                  break;
-                case 'm.audio':
-                  _fetchAudioContent(m.id);
-                  break;
-                case 'm.video':
-                  _fetchVideoContent(m.id);
-                  break;
-              }
-            }
-          }
-          break;
-      }
-    });
-
-    if (state.currentRoom == null) {
-      // user may close chat screen before long loading completed
-      ref.read(loadingProvider.notifier).update((state) => false);
-      return;
-    }
-    bool hasMore = true;
-
-    do {
-      hasMore = await _stream!.paginateBackwards(10);
-      // wait for diff rx to be finished
-      sleep(const Duration(milliseconds: 500));
-    } while (hasMore && ref.read(chatMessagesProvider).length < 10);
-    // load receipt status of room
-    // var receipts = (await convoRoom.userReceipts()).toList();
-    if (state.currentRoom == null) {
-      // user may close chat screen before long loading completed
-      ref.read(loadingProvider.notifier).update((state) => false);
-      return;
-    }
-    // var receiptController = Get.find<ReceiptController>();
-    // receiptController.loadRoom(convoRoom, receipts);
-    ref.read(loadingProvider.notifier).update((state) => false);
-  }
-
-  RoomId? currentRoomId() => state.currentRoom?.getRoomId();
+  RoomId? currentRoomId() => _currentRoom?.getRoomId();
 
   void _fetchImageContent(String eventId) {
     List<types.Message> _messages = ref.read(chatMessagesProvider);
-    state.currentRoom!.imageBinary(eventId).then((data) {
+    _currentRoom!.imageBinary(eventId).then((data) {
       int index = _messages.indexWhere((x) => x.id == eventId);
       if (index != -1) {
         final metadata = _messages[index].metadata ?? {};
@@ -1039,7 +850,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   void _fetchAudioContent(String eventId) {
     List<types.Message> _messages = ref.read(chatMessagesProvider);
-    state.currentRoom!.audioBinary(eventId).then((data) {
+    _currentRoom!.audioBinary(eventId).then((data) {
       int index = _messages.indexWhere((x) => x.id == eventId);
       if (index != -1) {
         final metadata = _messages[index].metadata ?? {};
@@ -1055,7 +866,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   void _fetchVideoContent(String eventId) {
     List<types.Message> _messages = ref.read(chatMessagesProvider);
-    state.currentRoom!.videoBinary(eventId).then((data) {
+    _currentRoom!.videoBinary(eventId).then((data) {
       int index = _messages.indexWhere((x) => x.id == eventId);
       if (index != -1) {
         final metadata = _messages[index].metadata ?? {};
@@ -1071,7 +882,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
 // fetch original content media for reply msg .i.e. text,image,file etc.
   void _fetchOriginalContent(String originalId, String replyId) {
-    state.currentRoom!.getMessage(originalId).then((roomMsg) {
+    _currentRoom!.getMessage(originalId).then((roomMsg) {
       // reply is allowed for only EventItem not VirtualItem
       // user should be able to get original event as RoomMessage
       RoomEventItem orgEventItem = roomMsg.eventItem()!;
@@ -1097,7 +908,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       } else if (orgMsgType == 'm.image') {
         ImageDesc? description = orgEventItem.imageDesc();
         if (description != null) {
-          state.currentRoom!.imageBinary(originalId).then((data) {
+          _currentRoom!.imageBinary(originalId).then((data) {
             repliedToContent['content'] = base64Encode(data.asTypedList());
           });
           repliedTo = types.ImageMessage(
@@ -1113,7 +924,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       } else if (orgMsgType == 'm.audio') {
         AudioDesc? description = orgEventItem.audioDesc();
         if (description != null) {
-          state.currentRoom!.audioBinary(originalId).then((data) {
+          _currentRoom!.audioBinary(originalId).then((data) {
             repliedToContent['content'] = base64Encode(data.asTypedList());
           });
           repliedTo = types.AudioMessage(
@@ -1130,7 +941,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       } else if (orgMsgType == 'm.video') {
         VideoDesc? description = orgEventItem.videoDesc();
         if (description != null) {
-          state.currentRoom!.videoBinary(originalId).then((data) {
+          _currentRoom!.videoBinary(originalId).then((data) {
             repliedToContent['content'] = base64Encode(data.asTypedList());
           });
           repliedTo = types.VideoMessage(
@@ -1201,9 +1012,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   ) async {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
-    await state.currentRoom!.typingNotice(false);
+    await _currentRoom!.typingNotice(false);
     if (state.repliedToMessage != null) {
-      await state.currentRoom!.sendTextReply(
+      await _currentRoom!.sendTextReply(
         markdownMessage,
         state.repliedToMessage!.id,
         null,
@@ -1214,7 +1025,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       ref.read(chatInputProvider.notifier).state = inputState;
       // update(['chat-input']);
     } else {
-      await state.currentRoom!.sendFormattedMessage(markdownMessage);
+      await _currentRoom!.sendFormattedMessage(markdownMessage);
     }
   }
 
@@ -1255,7 +1066,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
     final image = await decodeImageFromList(bytes);
     if (state.repliedToMessage != null) {
-      await state.currentRoom!.sendImageReply(
+      await _currentRoom!.sendImageReply(
         path,
         name,
         mimeType!,
@@ -1271,7 +1082,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       ref.read(chatInputProvider.notifier).state = inputState;
       // update(['chat-input']);
     } else {
-      await state.currentRoom!.sendImageMessage(
+      await _currentRoom!.sendImageMessage(
         path,
         name,
         mimeType!,
@@ -1300,7 +1111,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     Uint8List bytes = File(path).readAsBytesSync();
     final image = await decodeImageFromList(bytes);
     if (state.repliedToMessage != null) {
-      await state.currentRoom!.sendImageReply(
+      await _currentRoom!.sendImageReply(
         path,
         name,
         mimeType!,
@@ -1317,7 +1128,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       // showReplyView = false;
       // update(['chat-input']);
     } else {
-      await state.currentRoom!.sendImageMessage(
+      await _currentRoom!.sendImageMessage(
         path,
         name,
         mimeType!,
@@ -1344,7 +1155,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     String? name = result.files.single.name;
     String? mimeType = lookupMimeType(path);
     if (state.repliedToMessage != null) {
-      await state.currentRoom!.sendFileReply(
+      await _currentRoom!.sendFileReply(
         path,
         name,
         mimeType!,
@@ -1357,7 +1168,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       inputState = inputState.copyWith(showReplyView: false);
       ref.read(chatInputProvider.notifier).state = inputState;
     } else {
-      await state.currentRoom!.sendFileMessage(
+      await _currentRoom!.sendFileMessage(
         path,
         name,
         mimeType!,
@@ -1380,18 +1191,18 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   Future<bool> typingNotice(bool typing) async {
-    if (state.currentRoom == null) {
+    if (_currentRoom == null) {
       return Future.value(false);
     }
-    return await state.currentRoom!.typingNotice(typing);
+    return await _currentRoom!.typingNotice(typing);
   }
 
   Future<void> sendEmojiReaction(String eventId, String emoji) async {
-    await state.currentRoom!.sendReaction(eventId, emoji);
+    await _currentRoom!.sendReaction(eventId, emoji);
   }
 
   Future<void> redactRoomMessage(String eventId) async {
-    await state.currentRoom!.redactMessage(eventId, '', null);
+    await _currentRoom!.redactMessage(eventId, '', null);
   }
 }
 
@@ -1403,7 +1214,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //   TimelineStream? _stream;
 //   RxBool isLoading = false.obs;
 //   int _page = 0;
-//   Conversation? _currentRoom;
+//   Conversation? __currentRoom;
 
 //   RxBool isEmojiVisible = false.obs;
 //   RxBool isAttachmentVisible = false.obs;
@@ -1444,11 +1255,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //     _messageSubscription = client.incomingMessageRx()?.listen((event) {
 //       // the latest message is dealt in convo receiver of ChatListController
 //       // here manage only its message history
-//       if (_currentRoom == null) {
+//       if (__currentRoom == null) {
 //         return;
 //       }
 //       // filter only message of this room
-//       if (event.roomId() != _currentRoom!.getRoomId()) {
+//       if (event.roomId() != __currentRoom!.getRoomId()) {
 //         return;
 //       }
 //       // filter only message from other not me
@@ -1499,7 +1310,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //   }
 
 //   // get the timeline of room
-//   Future<void> setCurrentRoom(Conversation? convoRoom) async {
+//   Future<void> set_currentRoom(Conversation? convoRoom) async {
 //     if (convoRoom == null) {
 //       _messages.clear();
 //       typingUsers.clear();
@@ -1508,21 +1319,21 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //       _diffSubscription?.cancel();
 //       _stream = null;
 //       _page = 0;
-//       _currentRoom = null;
+//       __currentRoom = null;
 //       return;
 //     }
-//     _currentRoom = convoRoom;
+//     __currentRoom = convoRoom;
 //     update(['room-profile']);
 //     isLoading.value = true;
 //     // activeMembers = (await convoRoom.activeMembers()).toList();
 //     update(['active-members']);
 //     _fetchUserProfiles();
-//     if (_currentRoom == null) {
+//     if (__currentRoom == null) {
 //       // user may close chat screen before long loading completed
 //       isLoading.value = false;
 //       return;
 //     }
-//     _stream = await _currentRoom!.timelineStream();
+//     _stream = await __currentRoom!.timelineStream();
 //     // event handler from paginate
 //     _diffSubscription = _stream?.diffRx().listen((event) {
 //       // stream is rendered in reverse order
@@ -1770,7 +1581,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //       }
 //     });
 
-//     if (_currentRoom == null) {
+//     if (__currentRoom == null) {
 //       // user may close chat screen before long loading completed
 //       isLoading.value = false;
 //       return;
@@ -1783,7 +1594,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //     } while (hasMore && _messages.length < 10);
 //     // load receipt status of room
 //     // var receipts = (await convoRoom.userReceipts()).toList();
-//     if (_currentRoom == null) {
+//     if (__currentRoom == null) {
 //       // user may close chat screen before long loading completed
 //       isLoading.value = false;
 //       return;
@@ -1817,9 +1628,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //   ) async {
 //     // image or video is sent automatically
 //     // user will click "send" button explicitly for text only
-//     await _currentRoom!.typingNotice(false);
+//     await __currentRoom!.typingNotice(false);
 //     if (repliedToMessage != null) {
-//       await _currentRoom!.sendTextReply(
+//       await __currentRoom!.sendTextReply(
 //         markdownMessage,
 //         repliedToMessage!.id,
 //         null,
@@ -1829,7 +1640,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //       showReplyView = false;
 //       update(['chat-input']);
 //     } else {
-//       await _currentRoom!.sendFormattedMessage(markdownMessage);
+//       await __currentRoom!.sendFormattedMessage(markdownMessage);
 //     }
 //   }
 
@@ -1870,7 +1681,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //     }
 //     final image = await decodeImageFromList(bytes);
 //     if (repliedToMessage != null) {
-//       await _currentRoom!.sendImageReply(
+//       await __currentRoom!.sendImageReply(
 //         path,
 //         name,
 //         mimeType!,
@@ -1885,7 +1696,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //       showReplyView = false;
 //       update(['chat-input']);
 //     } else {
-//       await _currentRoom!.sendImageMessage(
+//       await __currentRoom!.sendImageMessage(
 //         path,
 //         name,
 //         mimeType!,
@@ -1914,7 +1725,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //     Uint8List bytes = File(path).readAsBytesSync();
 //     final image = await decodeImageFromList(bytes);
 //     if (repliedToMessage != null) {
-//       await _currentRoom!.sendImageReply(
+//       await __currentRoom!.sendImageReply(
 //         path,
 //         name,
 //         mimeType!,
@@ -1929,7 +1740,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //       showReplyView = false;
 //       update(['chat-input']);
 //     } else {
-//       await _currentRoom!.sendImageMessage(
+//       await __currentRoom!.sendImageMessage(
 //         path,
 //         name,
 //         mimeType!,
@@ -1956,7 +1767,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //     String? name = result.files.single.name;
 //     String? mimeType = lookupMimeType(path);
 //     if (repliedToMessage != null) {
-//       await _currentRoom!.sendFileReply(
+//       await __currentRoom!.sendFileReply(
 //         path,
 //         name,
 //         mimeType!,
@@ -1969,7 +1780,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //       showReplyView = false;
 //       update(['chat-input']);
 //     } else {
-//       await _currentRoom!.sendFileMessage(
+//       await __currentRoom!.sendFileMessage(
 //         path,
 //         name,
 //         mimeType!,
@@ -2320,7 +2131,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //   }
 
 //   void _fetchImageContent(String eventId) {
-//     _currentRoom!.imageBinary(eventId).then((data) {
+//     __currentRoom!.imageBinary(eventId).then((data) {
 //       int index = _messages.indexWhere((x) => x.id == eventId);
 //       if (index != -1) {
 //         final metadata = _messages[index].metadata ?? {};
@@ -2334,7 +2145,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //   }
 
 //   void _fetchAudioContent(String eventId) {
-//     _currentRoom!.audioBinary(eventId).then((data) {
+//     __currentRoom!.audioBinary(eventId).then((data) {
 //       int index = _messages.indexWhere((x) => x.id == eventId);
 //       if (index != -1) {
 //         final metadata = _messages[index].metadata ?? {};
@@ -2348,7 +2159,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //   }
 
 //   void _fetchVideoContent(String eventId) {
-//     _currentRoom!.videoBinary(eventId).then((data) {
+//     __currentRoom!.videoBinary(eventId).then((data) {
 //       int index = _messages.indexWhere((x) => x.id == eventId);
 //       if (index != -1) {
 //         final metadata = _messages[index].metadata ?? {};
@@ -2363,7 +2174,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
 //   // fetch original content media for reply msg .i.e. text,image,file etc.
 //   void _fetchOriginalContent(String originalId, String replyId) {
-//     _currentRoom!.getMessage(originalId).then((roomMsg) {
+//     __currentRoom!.getMessage(originalId).then((roomMsg) {
 //       // reply is allowed for only EventItem not VirtualItem
 //       // user should be able to get original event as RoomMessage
 //       RoomEventItem orgEventItem = roomMsg.eventItem()!;
@@ -2389,7 +2200,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //       } else if (orgMsgType == 'm.image') {
 //         ImageDesc? description = orgEventItem.imageDesc();
 //         if (description != null) {
-//           _currentRoom!.imageBinary(originalId).then((data) {
+//           __currentRoom!.imageBinary(originalId).then((data) {
 //             repliedToContent['content'] = base64Encode(data.asTypedList());
 //           });
 //           repliedTo = types.ImageMessage(
@@ -2405,7 +2216,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //       } else if (orgMsgType == 'm.audio') {
 //         AudioDesc? description = orgEventItem.audioDesc();
 //         if (description != null) {
-//           _currentRoom!.audioBinary(originalId).then((data) {
+//           __currentRoom!.audioBinary(originalId).then((data) {
 //             repliedToContent['content'] = base64Encode(data.asTypedList());
 //           });
 //           repliedTo = types.AudioMessage(
@@ -2422,7 +2233,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //       } else if (orgMsgType == 'm.video') {
 //         VideoDesc? description = orgEventItem.videoDesc();
 //         if (description != null) {
-//           _currentRoom!.videoBinary(originalId).then((data) {
+//           __currentRoom!.videoBinary(originalId).then((data) {
 //             repliedToContent['content'] = base64Encode(data.asTypedList());
 //           });
 //           repliedTo = types.VideoMessage(
@@ -2478,10 +2289,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //   }
 
 //   Future<bool> typingNotice(bool typing) async {
-//     if (_currentRoom == null) {
+//     if (__currentRoom == null) {
 //       return Future.value(false);
 //     }
-//     return await _currentRoom!.typingNotice(typing);
+//     return await __currentRoom!.typingNotice(typing);
 //   }
 
 //   void updateEmojiState(types.Message message) {
@@ -2505,10 +2316,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 //   }
 
 //   Future<void> sendEmojiReaction(String eventId, String emoji) async {
-//     await _currentRoom!.sendReaction(eventId, emoji);
+//     await __currentRoom!.sendReaction(eventId, emoji);
 //   }
 
 //   Future<void> redactRoomMessage(String eventId) async {
-//     await _currentRoom!.redactMessage(eventId, '', null);
+//     await __currentRoom!.redactMessage(eventId, '', null);
 //   }
 // }

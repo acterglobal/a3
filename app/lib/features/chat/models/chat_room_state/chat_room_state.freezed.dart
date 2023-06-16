@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ChatRoomState {
-  Conversation? get currentRoom => throw _privateConstructorUsedError;
+  bool get isLoaded => throw _privateConstructorUsedError;
   List<User> get typingUsers => throw _privateConstructorUsedError;
   List<Member> get activeMembers => throw _privateConstructorUsedError;
   Widget? get replyMessageWidget => throw _privateConstructorUsedError;
@@ -34,7 +34,7 @@ abstract class $ChatRoomStateCopyWith<$Res> {
       _$ChatRoomStateCopyWithImpl<$Res, ChatRoomState>;
   @useResult
   $Res call(
-      {Conversation? currentRoom,
+      {bool isLoaded,
       List<User> typingUsers,
       List<Member> activeMembers,
       Widget? replyMessageWidget,
@@ -54,17 +54,17 @@ class _$ChatRoomStateCopyWithImpl<$Res, $Val extends ChatRoomState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? currentRoom = freezed,
+    Object? isLoaded = null,
     Object? typingUsers = null,
     Object? activeMembers = null,
     Object? replyMessageWidget = freezed,
     Object? repliedToMessage = freezed,
   }) {
     return _then(_value.copyWith(
-      currentRoom: freezed == currentRoom
-          ? _value.currentRoom
-          : currentRoom // ignore: cast_nullable_to_non_nullable
-              as Conversation?,
+      isLoaded: null == isLoaded
+          ? _value.isLoaded
+          : isLoaded // ignore: cast_nullable_to_non_nullable
+              as bool,
       typingUsers: null == typingUsers
           ? _value.typingUsers
           : typingUsers // ignore: cast_nullable_to_non_nullable
@@ -94,7 +94,7 @@ abstract class _$$_ChatRoomStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Conversation? currentRoom,
+      {bool isLoaded,
       List<User> typingUsers,
       List<Member> activeMembers,
       Widget? replyMessageWidget,
@@ -112,17 +112,17 @@ class __$$_ChatRoomStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? currentRoom = freezed,
+    Object? isLoaded = null,
     Object? typingUsers = null,
     Object? activeMembers = null,
     Object? replyMessageWidget = freezed,
     Object? repliedToMessage = freezed,
   }) {
     return _then(_$_ChatRoomState(
-      currentRoom: freezed == currentRoom
-          ? _value.currentRoom
-          : currentRoom // ignore: cast_nullable_to_non_nullable
-              as Conversation?,
+      isLoaded: null == isLoaded
+          ? _value.isLoaded
+          : isLoaded // ignore: cast_nullable_to_non_nullable
+              as bool,
       typingUsers: null == typingUsers
           ? _value._typingUsers
           : typingUsers // ignore: cast_nullable_to_non_nullable
@@ -147,7 +147,7 @@ class __$$_ChatRoomStateCopyWithImpl<$Res>
 
 class _$_ChatRoomState implements _ChatRoomState {
   const _$_ChatRoomState(
-      {this.currentRoom = null,
+      {this.isLoaded = false,
       final List<User> typingUsers = const [],
       final List<Member> activeMembers = const [],
       this.replyMessageWidget = null,
@@ -157,7 +157,7 @@ class _$_ChatRoomState implements _ChatRoomState {
 
   @override
   @JsonKey()
-  final Conversation? currentRoom;
+  final bool isLoaded;
   final List<User> _typingUsers;
   @override
   @JsonKey()
@@ -185,7 +185,7 @@ class _$_ChatRoomState implements _ChatRoomState {
 
   @override
   String toString() {
-    return 'ChatRoomState(currentRoom: $currentRoom, typingUsers: $typingUsers, activeMembers: $activeMembers, replyMessageWidget: $replyMessageWidget, repliedToMessage: $repliedToMessage)';
+    return 'ChatRoomState(isLoaded: $isLoaded, typingUsers: $typingUsers, activeMembers: $activeMembers, replyMessageWidget: $replyMessageWidget, repliedToMessage: $repliedToMessage)';
   }
 
   @override
@@ -193,8 +193,8 @@ class _$_ChatRoomState implements _ChatRoomState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_ChatRoomState &&
-            (identical(other.currentRoom, currentRoom) ||
-                other.currentRoom == currentRoom) &&
+            (identical(other.isLoaded, isLoaded) ||
+                other.isLoaded == isLoaded) &&
             const DeepCollectionEquality()
                 .equals(other._typingUsers, _typingUsers) &&
             const DeepCollectionEquality()
@@ -208,7 +208,7 @@ class _$_ChatRoomState implements _ChatRoomState {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      currentRoom,
+      isLoaded,
       const DeepCollectionEquality().hash(_typingUsers),
       const DeepCollectionEquality().hash(_activeMembers),
       replyMessageWidget,
@@ -223,14 +223,14 @@ class _$_ChatRoomState implements _ChatRoomState {
 
 abstract class _ChatRoomState implements ChatRoomState {
   const factory _ChatRoomState(
-      {final Conversation? currentRoom,
+      {final bool isLoaded,
       final List<User> typingUsers,
       final List<Member> activeMembers,
       final Widget? replyMessageWidget,
       final Message? repliedToMessage}) = _$_ChatRoomState;
 
   @override
-  Conversation? get currentRoom;
+  bool get isLoaded;
   @override
   List<User> get typingUsers;
   @override

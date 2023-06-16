@@ -3,9 +3,9 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:bubble/bubble.dart';
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ReactionDesc;
@@ -14,8 +14,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BubbleBuilder extends StatelessWidget {
-  final String userId;
+class BubbleBuilder extends ConsumerWidget {
   final Widget child;
   final types.Message message;
   final bool nextMessageInGroup;
@@ -26,16 +25,15 @@ class BubbleBuilder extends StatelessWidget {
     required this.child,
     required this.message,
     required this.nextMessageInGroup,
-    required this.userId,
     required this.enlargeEmoji,
   }) : super(key: key);
 
-  bool isAuthor() {
-    return userId == message.author.id;
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final client = ref.watch(clientProvider)!;
+    final clientId = client.userId();
+    final userId = clientId.toString();
+    bool isAuthor = userId == message.author.id;
     String msgType = '';
     if (message.metadata!.containsKey('eventType')) {
       msgType = message.metadata?['eventType'];
@@ -43,13 +41,13 @@ class BubbleBuilder extends StatelessWidget {
     bool isMemberEvent = msgType == 'm.room.member';
     return Column(
       crossAxisAlignment:
-          isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
         Stack(
           clipBehavior: Clip.none,
           children: [
             _ChatBubble(
-              isAuthor: isAuthor(),
+              isAuthor: isAuthor,
               userId: userId,
               message: message,
               nextMessageInGroup: nextMessageInGroup,
@@ -59,7 +57,7 @@ class BubbleBuilder extends StatelessWidget {
             ),
             !isMemberEvent
                 ? _EmojiRow(
-                    isAuthor: isAuthor(),
+                    isAuthor: isAuthor,
                     message: message,
                   )
                 : const SizedBox.shrink()
@@ -68,9 +66,9 @@ class BubbleBuilder extends StatelessWidget {
         !isMemberEvent
             ? Align(
                 alignment:
-                    !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
+                    !isAuthor ? Alignment.bottomLeft : Alignment.bottomRight,
                 child: _EmojiContainer(
-                  isAuthor: isAuthor(),
+                  isAuthor: isAuthor,
                   message: message,
                   nextMessageInGroup: nextMessageInGroup,
                 ),

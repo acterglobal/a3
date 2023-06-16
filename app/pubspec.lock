@@ -14,7 +14,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: adeea04a92d4dc7dbe26e615d7303879fa6436bf
+      resolved-ref: "403ff9919add6f841eff8a19b339087ff5a4b22e"
       url: "https://github.com/acterglobal/acter-avatar"
     source: git
     version: "0.0.8"

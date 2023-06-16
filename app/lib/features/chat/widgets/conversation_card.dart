@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-// import 'package:acter/features/chat/providers/notifiers/receipt_notifier.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/models/joined_room/joined_room.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -37,6 +36,19 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
     getActiveMembers();
   }
 
+  void handleTap(BuildContext context, MemoryImage? roomAvatar) {
+    ref
+        .watch(currentRoomProvider.notifier)
+        .update((state) => state = widget.room.conversation);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            RoomPage(room: widget.room, roomAvatar: roomAvatar),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final client = ref.watch(clientProvider);
@@ -50,7 +62,7 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              onTap: () => handleTap(context),
+              onTap: () => handleTap(context, data.getAvatarImage()),
               leading: ActerAvatar(
                 mode: DisplayMode.GroupChat, // FIXME: checking for DM somehow?
                 uniqueId: roomId,
@@ -89,18 +101,6 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
       },
       error: (error, stackTrace) => const Text('Failed to load Conversation'),
       loading: () => const CircularProgressIndicator(),
-    );
-  }
-
-  void handleTap(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RoomPage(
-          conversation: widget.room.conversation,
-          name: widget.room.displayName,
-        ),
-      ),
     );
   }
 

@@ -16,4 +16,20 @@ class ChatMessagesNotifier extends StateNotifier<List<types.Message>> {
   void removeMessage(int index) {
     state = [...state.where((element) => state[index] != element)];
   }
+
+  List<types.Message> getMessages() {
+    // add delay to avoid building during widget lifecycle
+    Future.delayed(const Duration(milliseconds: 100), () {
+      state = [
+        ...state.where((x) {
+          if (x.metadata?['itemType'] == 'virtual') {
+            // UnsupportedMessage
+            return false;
+          }
+          return true;
+        })
+      ];
+    });
+    return state;
+  }
 }
