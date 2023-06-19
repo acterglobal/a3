@@ -136,9 +136,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                                 AppLocalizations.of(context)!.message,
                             sendButtonAccessibilityLabel: '',
                           ),
-                          messages: ref
-                              .watch(chatMessagesProvider.notifier)
-                              .getMessages(),
+                          messages: ref.watch(chatMessagesProvider),
                           typingIndicatorOptions: TypingIndicatorOptions(
                             customTypingIndicator: buildTypingIndicator(),
                           ),
@@ -147,7 +145,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                           // disable image preview
                           disableImageGallery: true,
                           //custom avatar builder
-                          avatarBuilder: avatarBuilder,
+                          // avatarBuilder: avatarBuilder,
                           bubbleBuilder: bubbleBuilder,
                           imageMessageBuilder: imageMessageBuilder,
                           customMessageBuilder: customMessageBuilder,
@@ -371,36 +369,36 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     );
   }
 
-  Widget avatarBuilder(String userId) {
-    return Consumer(
-      builder: (context, ref, child) {
-        final chatInputState = ref.watch(chatInputProvider.notifier);
-        return Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: SizedBox(
-            height: 28,
-            width: 28,
-            child: chatInputState.getUserAvatar(userId) != null
-                ? ActerAvatar(
-                    mode: DisplayMode.User,
-                    uniqueId: userId,
-                    displayName: chatInputState.getUserName(userId),
-                    size: 50,
-                    avatar: MemoryImage(
-                      chatInputState.getUserAvatar(userId)!,
-                    ),
-                  )
-                : ActerAvatar(
-                    uniqueId: userId,
-                    mode: DisplayMode.User,
-                    displayName: chatInputState.getUserName(userId),
-                    size: 50,
-                  ),
-          ),
-        );
-      },
-    );
-  }
+  // Widget avatarBuilder(String userId) {
+  //   return Consumer(
+  //     builder: (context, ref, child) {
+  //       final chatInputState = ref.watch(chatInputProvider.notifier);
+  //       return Padding(
+  //         padding: const EdgeInsets.only(right: 10),
+  //         child: SizedBox(
+  //           height: 28,
+  //           width: 28,
+  //           child: chatInputState.getUserAvatar(userId) != null
+  //               ? ActerAvatar(
+  //                   mode: DisplayMode.User,
+  //                   uniqueId: userId,
+  //                   displayName: chatInputState.getUserName(userId),
+  //                   size: 50,
+  //                   avatar: MemoryImage(
+  //                     chatInputState.getUserAvatar(userId)!,
+  //                   ),
+  //                 )
+  //               : ActerAvatar(
+  //                   uniqueId: userId,
+  //                   mode: DisplayMode.User,
+  //                   displayName: chatInputState.getUserName(userId),
+  //                   size: 50,
+  //                 ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   Widget buildTypingIndicator() {
     return Consumer(
@@ -688,6 +686,9 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     types.CustomMessage customMessage, {
     required int messageWidth,
   }) {
+    if (customMessage.metadata?['itemType'] == 'vitrual') {
+      return const SizedBox.shrink();
+    }
     // state event
     switch (customMessage.metadata?['eventType']) {
       case 'm.policy.rule.room':

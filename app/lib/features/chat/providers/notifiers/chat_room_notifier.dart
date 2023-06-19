@@ -48,11 +48,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   final List<PlatformFile> _imageFileList = [];
   final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
 
-  ChatRoomNotifier(this.ref) : super(const ChatRoomState()) {
-    _init();
-  }
+  ChatRoomNotifier(this.ref) : super(const ChatRoomState());
   // initialization call
-  void _init() async {
+  void init() async {
     // set the current room as Conversation object.
     final room = ref.read(currentRoomProvider);
     _currentRoom = room;
@@ -128,9 +126,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           List<types.Message> _messages = ref.read(chatMessagesProvider);
           for (RoomMessage msg in values) {
             var m = _prepareMessage(msg);
-            if (m is types.UnsupportedMessage) {
-              continue;
-            }
+            // if (m is types.UnsupportedMessage) {
+            //   continue;
+            // }
             _messages.insert(0, m);
             ref.read(chatMessagesProvider.notifier).state = _messages;
             if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
@@ -157,9 +155,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           debugPrint('chat room message insert');
           RoomMessage value = event.value()!;
           var m = _prepareMessage(value);
-          if (m is types.UnsupportedMessage) {
-            break;
-          }
+          // if (m is types.UnsupportedMessage) {
+          //   break;
+          // }
           int index = ref
               .read(chatMessagesProvider)
               .indexWhere((msg) => m.id == msg.id);
@@ -238,9 +236,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           final _messages = ref.read(chatMessagesProvider);
           RoomMessage value = event.value()!;
           var m = _prepareMessage(value);
-          if (m is types.UnsupportedMessage) {
-            break;
-          }
+          // if (m is types.UnsupportedMessage) {
+          //   break;
+          // }
           _messages.insert(0, m);
           ref.read(chatMessagesProvider.notifier).state = _messages;
           if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
@@ -266,9 +264,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           debugPrint('chat room message push_front');
           RoomMessage value = event.value()!;
           var m = _prepareMessage(value);
-          if (m is types.UnsupportedMessage) {
-            break;
-          }
+          // if (m is types.UnsupportedMessage) {
+          //   break;
+          // }
           ref.read(chatMessagesProvider.notifier).addMessage(m);
           if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
             _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
@@ -301,8 +299,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           debugPrint('chat room message pop_front');
           List<types.Message> _messages = ref.read(chatMessagesProvider);
           if (_messages.isNotEmpty) {
-            _messages.removeLast();
-            ref.read(chatMessagesProvider.notifier).state = _messages;
+            ref
+                .read(chatMessagesProvider.notifier)
+                .removeMessage(_messages.length - 1);
           }
           break;
         // Clear out all of the elements in this `Vector` and notify subscribers
@@ -315,9 +314,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           List<RoomMessage> values = event.values()!.toList();
           for (RoomMessage msg in values) {
             var m = _prepareMessage(msg);
-            if (m is types.UnsupportedMessage) {
-              continue;
-            }
+            // if (m is types.UnsupportedMessage) {
+            //   continue;
+            // }
             int index = ref
                 .read(chatMessagesProvider)
                 .indexWhere((msg) => m.id == msg.id);
@@ -374,19 +373,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     );
   }
 
-  // filter messages from virtual (non-render) items
-  List<types.Message> getMessages() {
-    final _messages = ref.read(chatMessagesProvider);
-    List<types.Message> msgs = _messages.where((x) {
-      if (x.metadata?['itemType'] == 'virtual') {
-        // UnsupportedMessage
-        return false;
-      }
-      return true;
-    }).toList();
-    return msgs;
-  }
-
 // pagination control
   Future<void> handleEndReached() async {
     bool hasMore = await _stream!.paginateBackwards(10);
@@ -436,7 +422,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     RoomVirtualItem? virtualItem = message.virtualItem();
     if (virtualItem != null) {
       // should not return null, before we can keep track of index in diff receiver
-      return types.UnsupportedMessage(
+      return types.CustomMessage(
         author: types.User(id: client!.userId().toString()),
         id: UniqueKey().toString(),
         metadata: {
@@ -753,47 +739,47 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   void _insertMessage(types.Message m) {
-    final client = ref.read(clientProvider);
-    if (m is! types.UnsupportedMessage) {
-      List<String> seenByList =
-          ref.read(receiptProvider.notifier).getSeenByList(
-                _currentRoom!.getRoomId(),
-                m.createdAt!,
-              );
-      if (m.author.id == client!.userId().toString()) {
-        types.Status status = seenByList.isEmpty
-            ? types.Status.sent
-            : seenByList.length < state.activeMembers.length
-                ? types.Status.delivered
-                : types.Status.seen;
-        ref
-            .read(chatMessagesProvider.notifier)
-            .addMessage(m.copyWith(showStatus: true, status: status));
-        return;
-      }
-    }
+    // final client = ref.read(clientProvider);
+    // if (m is! types.UnsupportedMessage) {
+    //   List<String> seenByList =
+    //       ref.read(receiptProvider.notifier).getSeenByList(
+    //             _currentRoom!.getRoomId(),
+    //             m.createdAt!,
+    //           );
+    //   if (m.author.id == client!.userId().toString()) {
+    //     types.Status status = seenByList.isEmpty
+    //         ? types.Status.sent
+    //         : seenByList.length < state.activeMembers.length
+    //             ? types.Status.delivered
+    //             : types.Status.seen;
+    //     ref
+    //         .read(chatMessagesProvider.notifier)
+    //         .addMessage(m.copyWith(showStatus: true, status: status));
+    //     return;
+    //   }
+    // }
     ref.read(chatMessagesProvider.notifier).addMessage(m);
   }
 
   void _updateMessage(types.Message m, int index) {
-    final client = ref.read(clientProvider);
+    // final client = ref.read(clientProvider);
     List<types.Message> _messages = ref.read(chatMessagesProvider);
-    if (m is! types.UnsupportedMessage) {
-      List<String> seenByList =
-          ref.read(receiptProvider.notifier).getSeenByList(
-                _currentRoom!.getRoomId(),
-                m.createdAt!,
-              );
-      if (m.author.id == client!.userId().toString()) {
-        types.Status status = seenByList.isEmpty
-            ? types.Status.sent
-            : seenByList.length < state.activeMembers.length
-                ? types.Status.delivered
-                : types.Status.seen;
-        _messages[index] = m.copyWith(showStatus: true, status: status);
-        return;
-      }
-    }
+    // if (m is! types.UnsupportedMessage) {
+    //   List<String> seenByList =
+    //       ref.read(receiptProvider.notifier).getSeenByList(
+    //             _currentRoom!.getRoomId(),
+    //             m.createdAt!,
+    //           );
+    //   if (m.author.id == client!.userId().toString()) {
+    //     types.Status status = seenByList.isEmpty
+    //         ? types.Status.sent
+    //         : seenByList.length < state.activeMembers.length
+    //             ? types.Status.delivered
+    //             : types.Status.seen;
+    //     _messages[index] = m.copyWith(showStatus: true, status: status);
+    //     return;
+    //   }
+    // }
     _messages[index] = m;
     ref.read(chatMessagesProvider.notifier).state = _messages;
   }
@@ -840,9 +826,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         final metadata = _messages[index].metadata ?? {};
         metadata['base64'] = base64Encode(data.asTypedList());
         _messages[index] = _messages[index].copyWith(metadata: metadata);
-        // if (isLoading.isFalse) {
-        //   update(['Chat']);
-        // }
         ref.read(chatMessagesProvider.notifier).state = _messages;
       }
     });
@@ -856,9 +839,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         final metadata = _messages[index].metadata ?? {};
         metadata['base64'] = base64Encode(data.asTypedList());
         _messages[index] = _messages[index].copyWith(metadata: metadata);
-        // if (isLoading.isFalse) {
-        //   update(['Chat']);
-        // }
         ref.read(chatMessagesProvider.notifier).state = _messages;
       }
     });
@@ -872,9 +852,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         final metadata = _messages[index].metadata ?? {};
         metadata['base64'] = base64Encode(data.asTypedList());
         _messages[index] = _messages[index].copyWith(metadata: metadata);
-        // if (isLoading.isFalse) {
-        //   update(['Chat']);
-        // }
         ref.read(chatMessagesProvider.notifier).state = _messages;
       }
     });
@@ -980,9 +957,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         _messages[index] = _messages[index].copyWith(repliedMessage: repliedTo);
       }
       ref.read(chatMessagesProvider.notifier).state = _messages;
-      // if (isLoading.isFalse) {
-      //   update(['Chat']);
-      // }
     });
   }
 
@@ -996,10 +970,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     final updatedMessage = (_messages[index] as types.TextMessage).copyWith(
       previewData: previewData,
     );
-
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       _messages[index] = updatedMessage;
-      // update(['Chat']);
       ref.read(chatMessagesProvider.notifier).state = _messages;
     });
   }

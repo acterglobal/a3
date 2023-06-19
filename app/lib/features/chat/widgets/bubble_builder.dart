@@ -35,6 +35,11 @@ class BubbleBuilder extends ConsumerWidget {
     final userId = clientId.toString();
     bool isAuthor = userId == message.author.id;
     String msgType = '';
+    if (message.metadata!.containsKey('itemType')) {
+      if (message.metadata?['itemType'] == 'virtual') {
+        return const SizedBox.shrink();
+      }
+    }
     if (message.metadata!.containsKey('eventType')) {
       msgType = message.metadata?['eventType'];
     }

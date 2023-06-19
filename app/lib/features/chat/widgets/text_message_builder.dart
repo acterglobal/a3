@@ -96,7 +96,7 @@ class _TextMessageBuilderConsumerState
 
   void _onPreviewDataFetched(types.PreviewData previewData) {
     if (widget.message.previewData == null) {
-      final chatRoomState = ref.read(chatRoomProvider.notifier);
+      final chatRoomState = ref.watch(chatRoomProvider.notifier);
       chatRoomState.handlePreviewDataFetched.call(widget.message, previewData);
     }
   }

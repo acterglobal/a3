@@ -1,18 +1,19 @@
+import 'package:acter/features/chat/providers/notifiers/chat_messages_notifier.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_input_notifier.dart';
-import 'package:acter/features/chat/providers/notifiers/receipt_notifier.dart';
-import 'package:acter/features/chat/models/reciept_room/receipt_room.dart';
+// import 'package:acter/features/chat/providers/notifiers/receipt_notifier.dart';
+// import 'package:acter/features/chat/models/reciept_room/receipt_room.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_list_notifier.dart';
 import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
 import 'package:acter/features/chat/models/invitation_profile.dart';
 import 'package:acter/features/chat/models/joined_room/joined_room.dart';
 import 'package:acter/features/chat/providers/notifiers/invitation_list_notifier.dart';
 import 'package:acter/features/chat/providers/notifiers/joined_room_notifier.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Conversation, DispName, Invitation, UserProfile;
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // CHAT PAGE state provider
@@ -45,10 +46,10 @@ final invitationProfileProvider =
 });
 
 // CHAT Receipt Provider
-final receiptProvider =
-    StateNotifierProvider.autoDispose<ReceiptNotifier, ReceiptRoom?>(
-  (ref) => ReceiptNotifier(ref),
-);
+// final receiptProvider =
+//     StateNotifierProvider.autoDispose<ReceiptNotifier, ReceiptRoom?>(
+//   (ref) => ReceiptNotifier(ref),
+// );
 
 final chatInputProvider =
     StateNotifierProvider<ChatInputNotifier, ChatInputState>(
@@ -61,4 +62,9 @@ final currentRoomProvider =
 final chatRoomProvider =
     StateNotifierProvider.autoDispose<ChatRoomNotifier, ChatRoomState>(
   (ref) => ChatRoomNotifier(ref),
+);
+
+final chatMessagesProvider = StateNotifierProvider.autoDispose<
+    ChatMessagesNotifier, List<types.Message>>(
+  (ref) => ChatMessagesNotifier(),
 );

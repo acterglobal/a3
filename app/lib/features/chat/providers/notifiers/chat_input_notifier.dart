@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
-import 'package:acter/features/chat/providers/notifiers/chat_messages_notifier.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show FfiBufferUint8;
+// import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+//     show FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_mentions/flutter_mentions.dart';
