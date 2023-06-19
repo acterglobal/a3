@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/chat/pages/image_selection_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
@@ -733,22 +734,22 @@ class ChatRoomController extends GetxController {
   }
 
   void _updateMessage(types.Message m, int index) {
-    // if (m is! types.UnsupportedMessage) {
-    //   var receiptController = Get.find<ReceiptController>();
-    //   List<String> seenByList = receiptController.getSeenByList(
-    //     _currentRoom!.getRoomId(),
-    //     m.createdAt!,
-    //   );
-    //   if (m.author.id == myId) {
-    //     types.Status status = seenByList.isEmpty
-    //         ? types.Status.sent
-    //         : seenByList.length < activeMembers.length
-    //             ? types.Status.delivered
-    //             : types.Status.seen;
-    //     _messages[index] = m.copyWith(showStatus: true, status: status);
-    //     return;
-    //   }
-    // }
+    if (m is! types.UnsupportedMessage) {
+      var receiptController = Get.find<ReceiptController>();
+      List<String> seenByList = receiptController.getSeenByList(
+        _currentRoom!.getRoomId(),
+        m.createdAt!,
+      );
+      if (m.author.id == myId) {
+        types.Status status = seenByList.isEmpty
+            ? types.Status.sent
+            : seenByList.length < activeMembers.length
+                ? types.Status.delivered
+                : types.Status.seen;
+        _messages[index] = m.copyWith(showStatus: true, status: status);
+        return;
+      }
+    }
     _messages[index] = m;
   }
 
