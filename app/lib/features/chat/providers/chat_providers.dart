@@ -1,5 +1,3 @@
-import 'package:acter/features/chat/providers/notifiers/receipt_notifier.dart';
-import 'package:acter/features/chat/models/reciept_room/receipt_room.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_list_notifier.dart';
 import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
 import 'package:acter/features/chat/models/invitation_profile.dart';
@@ -38,9 +36,3 @@ final invitationProfileProvider =
   final avatar = await profile.getAvatar();
   return InvitationProfile(dispName.text(), avatar, roomName, roomId);
 });
-
-// CHAT Receipt Provider
-final receiptProvider =
-    StateNotifierProvider.autoDispose<ReceiptNotifier, ReceiptRoom?>(
-  (ref) => ReceiptNotifier(ref),
-);

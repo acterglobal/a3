@@ -1,23 +1,47 @@
 import 'dart:async';
 
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
-import 'package:acter/features/chat/models/receipt_user.dart';
-import 'package:acter/features/chat/models/reciept_room/receipt_room.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
-class ReceiptNotifier extends StateNotifier<ReceiptRoom> {
-  final Ref ref;
-  final Map<RoomId, ReceiptRoom> _rooms = {};
-  ReceiptNotifier(this.ref) : super(const ReceiptRoom(users: {})) {
-    _init();
-  }
+// this controller keeps seen_by data by room/user
 
-  void _init() {
-    final client = ref.read(clientProvider)!;
-    StreamSubscription<ReceiptEvent>? _subscription;
+class ReceiptRoom {
+  Map<String, ReceiptUser> users = {};
+
+  void updateUser(String userId, String eventId, int? ts) {
+    if (users.containsKey(userId)) {
+      users[userId]!.eventId = eventId;
+      if (ts != null) {
+        users[userId]!.ts = ts;
+      }
+    } else {
+      users[userId] = ReceiptUser(eventId: eventId, ts: ts);
+    }
+  }
+}
+
+class ReceiptUser {
+  String eventId;
+  int? ts;
+
+  ReceiptUser({
+    required this.eventId,
+    this.ts,
+  });
+}
+
+class ReceiptController extends GetxController {
+  Client client;
+  StreamSubscription<ReceiptEvent>? _subscription;
+  final Map<RoomId, ReceiptRoom> _rooms = {};
+
+  ReceiptController({required this.client}) : super();
+
+  @override
+  void onInit() {
+    super.onInit();
+
     _subscription = client.receiptEventRx()?.listen((event) {
       String myId = client.userId().toString();
       RoomId roomId = event.roomId();
@@ -26,8 +50,7 @@ class ReceiptNotifier extends StateNotifier<ReceiptRoom> {
         String seenBy = record.seenBy();
         if (seenBy != myId) {
           var room = _getRoom(roomId);
-          state = room;
-          updateUser(seenBy, record.eventId(), record.ts());
+          room.updateUser(seenBy, record.eventId(), record.ts());
           changed = true;
         }
       }
@@ -36,41 +59,29 @@ class ReceiptNotifier extends StateNotifier<ReceiptRoom> {
         roomController.update(['Chat']);
       }
     });
-
-    ref.onDispose(() {
-      _subscription!.cancel();
-    });
   }
 
-  void updateUser(String userId, String eventId, int? ts) {
-    Map<String, ReceiptUser> receiptUsers = state.users;
-    if (receiptUsers.containsKey(userId)) {
-      receiptUsers[userId]!.eventId = eventId;
-      if (ts != null) {
-        receiptUsers[userId]!.ts = ts;
-      }
-    } else {
-      receiptUsers[userId] =
-          ReceiptUser(userId: userId, eventId: eventId, ts: ts);
-    }
-    state = state.copyWith(users: receiptUsers);
+  @override
+  void onClose() {
+    _subscription?.cancel();
+
+    super.onClose();
   }
 
   ReceiptRoom _getRoom(RoomId roomId) {
-    if (state.users.containsKey(roomId)) {
+    if (_rooms.containsKey(roomId)) {
       return _rooms[roomId]!;
     }
-    var room = const ReceiptRoom();
+    ReceiptRoom room = ReceiptRoom();
     _rooms[roomId] = room;
     return room;
   }
 
   void loadRoom(Conversation conversation, List<ReceiptRecord> records) {
     var room = _getRoom(conversation.getRoomId());
-    state = room;
     for (var record in records) {
       String seenBy = record.seenBy();
-      updateUser(seenBy, record.eventId(), record.ts());
+      room.updateUser(seenBy, record.eventId(), record.ts());
     }
   }
 
