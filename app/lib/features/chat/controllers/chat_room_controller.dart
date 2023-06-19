@@ -715,20 +715,20 @@ class ChatRoomController extends GetxController {
 
   void _insertMessage(types.Message m) {
     if (m is! types.UnsupportedMessage) {
-      // var receiptController = Get.find<ReceiptController>();
-      // List<String> seenByList = receiptController.getSeenByList(
-      //   _currentRoom!.getRoomId(),
-      //   m.createdAt!,
-      // );
-      // if (m.author.id == myId) {
-      //   types.Status status = seenByList.isEmpty
-      //       ? types.Status.sent
-      //       : seenByList.length < activeMembers.length
-      //           ? types.Status.delivered
-      //           : types.Status.seen;
-      //   _messages.add(m.copyWith(showStatus: true, status: status));
-      //   return;
-      // }
+      var receiptController = Get.find<ReceiptController>();
+      List<String> seenByList = receiptController.getSeenByList(
+        _currentRoom!.getRoomId(),
+        m.createdAt!,
+      );
+      if (m.author.id == myId) {
+        types.Status status = seenByList.isEmpty
+            ? types.Status.sent
+            : seenByList.length < activeMembers.length
+                ? types.Status.delivered
+                : types.Status.seen;
+        _messages.add(m.copyWith(showStatus: true, status: status));
+        return;
+      }
     }
     _messages.add(m);
   }
