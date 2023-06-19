@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -114,7 +115,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
 
   Widget avatarBuilder(String userId) {
     // var avtr = roomController.getUserAvatar(userId);
-
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: SizedBox(
@@ -438,14 +438,28 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           ),
         );
       },
-      child: Padding(
-        padding: const EdgeInsets.only(right: 10),
-        child: ActerAvatar(
-          mode: DisplayMode.User,
-          uniqueId: roomId,
-          displayName: widget.name,
-          size: 45,
-        ),
+      child: Consumer(
+        builder: (context, ref, child) {
+          final convoProfile =
+              ref.watch(chatProfileDataProvider(widget.conversation));
+          return convoProfile.when(
+            data: (data) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: ActerAvatar(
+                  mode: DisplayMode.User,
+                  uniqueId: roomId,
+                  displayName: widget.name,
+                  avatar: data.getAvatarImage(),
+                  size: data.hasAvatar() ? 24 : 45,
+                ),
+              );
+            },
+            error: ((error, stackTrace) =>
+                Text('Failed to load avatar due to $error')),
+            loading: () => const CircularProgressIndicator(),
+          );
+        },
       ),
     );
   }
