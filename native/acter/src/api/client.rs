@@ -304,6 +304,7 @@ impl Client {
     }
 
     pub fn start_sync(&mut self) -> SyncState {
+        tracing::info!("starting sync");
         let state = self.state.clone();
         let me = self.clone();
         let executor = self.executor().clone();
@@ -333,6 +334,7 @@ impl Client {
         let sync_state_history = sync_state.history_loading.clone();
 
         let handle = RUNTIME.spawn(async move {
+            tracing::info!("spawning sync callback");
             let client = client.clone();
             let state = state.clone();
 
@@ -346,6 +348,7 @@ impl Client {
             client
                 .clone()
                 .sync_with_result_callback(SyncSettings::new(), |result| async {
+                    tracing::info!("received sync callback");
                     let client = client.clone();
                     let me = me.clone();
                     let executor = executor.clone();
@@ -372,7 +375,7 @@ impl Client {
                     };
 
                     device_controller.process_device_lists(&client, &response);
-                    tracing::trace!("post device controller");
+                    tracing::trace!("post decallbackvice controller");
 
                     if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
                         == Ok(true)

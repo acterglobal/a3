@@ -150,7 +150,7 @@ impl ConversationController {
     }
 
     pub fn add_event_handler(&mut self, client: &SdkClient) {
-        info!("sync room message event handler");
+        info!("sync room message event handler added");
         let me = self.clone();
 
         client.add_event_handler_context(me.clone());

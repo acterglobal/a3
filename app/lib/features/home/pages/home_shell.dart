@@ -61,6 +61,8 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     final location =
         ref.watch(goRouterProvider.select((value) => value.location));
     final client = ref.watch(clientProvider);
+    final clientState = ref.read(clientProvider.notifier);
+    final loading = !clientState.hasFirstSynced;
     if (client == null) {
       return const Scaffold(
         body: Center(
@@ -85,6 +87,19 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           child: AdaptiveLayout(
             key: _key,
             bodyRatio: bodyRatio,
+            topNavigation: loading
+                ? SlotLayout(
+                    config: <Breakpoint, SlotLayoutConfig?>{
+                      Breakpoints.smallAndUp: SlotLayout.from(
+                        key: const Key('LoadingIndictor'),
+                        builder: (BuildContext ctx) =>
+                            const LinearProgressIndicator(
+                          semanticsLabel: 'Loading first sync',
+                        ),
+                      )
+                    },
+                  )
+                : null,
             primaryNavigation: desktop
                 ? SlotLayout(
                     config: <Breakpoint, SlotLayoutConfig?>{
