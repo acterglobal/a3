@@ -7,14 +7,28 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ToDoPage extends StatefulWidget {
-  const ToDoPage({Key? key, required this.client}) : super(key: key);
-  final Client client;
+import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// FIXME: temporary wrapper from riverpod -> GetX client
+class TodoPage extends ConsumerWidget {
+  const TodoPage({Key? key}) : super(key: key);
+
   @override
-  State<ToDoPage> createState() => _ToDoPageState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final client = ref.watch(clientProvider)!;
+    return ToDoPageX(client: client);
+  }
 }
 
-class _ToDoPageState extends State<ToDoPage> {
+class ToDoPageX extends StatefulWidget {
+  const ToDoPageX({Key? key, required this.client}) : super(key: key);
+  final Client client;
+  @override
+  State<ToDoPageX> createState() => _ToDoPageXState();
+}
+
+class _ToDoPageXState extends State<ToDoPageX> {
   late final ToDoController todoController;
   List<String> buttonText = ['All', 'Mine', 'Unassigned', 'All Teams'];
   late final List<Widget> buttonWidgets;

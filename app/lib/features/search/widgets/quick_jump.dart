@@ -36,8 +36,8 @@ class QuickJump extends ConsumerWidget {
                             .withOpacity(0.12),
                       ),
                     ),
-                    onPressed: () => {
-                      //navigateTo(route: Routes.tasks);
+                    onPressed: () {
+                      navigateTo(route: Routes.tasks);
                     },
                     icon: SvgPicture.asset(
                       'assets/images/tasks.svg',
@@ -55,8 +55,13 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () {},
-              icon: const Icon(Atlas.back_vr_thin, size: 48),
+              onPressed: () {
+                navigateTo(route: Routes.chat);
+              },
+              icon: const Icon(
+                Atlas.chats_thin,
+                size: 48,
+              ),
             ),
             IconButton(
               style: IconButton.styleFrom(
@@ -65,66 +70,13 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () {},
-              icon: const Icon(Atlas.cabin_thin, size: 48),
+              onPressed: () {
+                navigateTo(route: Routes.activities);
+              },
+              icon: const Icon(Atlas.audio_wave_thin, size: 48),
             ),
-            IconButton(
-              style: IconButton.styleFrom(
-                side: BorderSide(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-                ),
-              ),
-              onPressed: () {},
-              icon: const Icon(Atlas.dart_thin, size: 48),
-            )
           ].where((element) => element != null),
         ),
-      ),
-      ButtonBar(
-        alignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          IconButton(
-            style: IconButton.styleFrom(
-              side: BorderSide(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-              ),
-            ),
-            onPressed: () {},
-            icon: const Icon(Atlas.ear_muffs_thin, size: 48),
-          ),
-          IconButton(
-            style: IconButton.styleFrom(
-              side: BorderSide(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-              ),
-            ),
-            onPressed: () {},
-            icon: const Icon(Atlas.face_mask_thin, size: 48),
-          ),
-          IconButton(
-            style: IconButton.styleFrom(
-              side: BorderSide(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-              ),
-            ),
-            onPressed: () {},
-            icon: const Icon(Atlas.game_plan_thin, size: 48),
-          ),
-          IconButton(
-            style: IconButton.styleFrom(
-              side: BorderSide(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-              ),
-            ),
-            onPressed: () {},
-            icon: const Icon(Atlas.hair_dryer_thin, size: 48),
-          )
-        ],
       ),
     ];
   }
