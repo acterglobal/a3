@@ -26,43 +26,44 @@ class MySpacesSection extends ConsumerWidget {
           const SizedBox(height: 10),
           ...spaces.when(
             data: (spaces) => [
-              ...spaces
-                  .sublist(0, spaces.length > limit ? limit : spaces.length)
-                  .map(
-                (space) {
-                  final roomId = space.getRoomId().toString();
-                  final profile = ref.watch(spaceProfileDataProvider(space));
-                  return profile.when(
-                    data: (profile) => Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: 10,
-                      ),
-                      child: ListTile(
-                        onTap: () => context.go('/$roomId'),
-                        title: Text(
-                          profile.displayName ?? roomId,
-                          style: Theme.of(context).textTheme.bodySmall,
+              if (spaces.isEmpty)
+                ...spaces
+                    .sublist(0, spaces.length > limit ? limit : spaces.length)
+                    .map(
+                  (space) {
+                    final roomId = space.getRoomId().toString();
+                    final profile = ref.watch(spaceProfileDataProvider(space));
+                    return profile.when(
+                      data: (profile) => Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 10,
                         ),
-                        leading: ActerAvatar(
-                          mode: DisplayMode.Space,
-                          displayName: profile.displayName,
-                          uniqueId: roomId,
-                          avatar: profile.getAvatarImage(),
-                          size: 48,
+                        child: ListTile(
+                          onTap: () => context.go('/$roomId'),
+                          title: Text(
+                            profile.displayName ?? roomId,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          leading: ActerAvatar(
+                            mode: DisplayMode.Space,
+                            displayName: profile.displayName,
+                            uniqueId: roomId,
+                            avatar: profile.getAvatarImage(),
+                            size: 48,
+                          ),
                         ),
                       ),
-                    ),
-                    error: (error, stack) => ListTile(
-                      title: Text('Error loading: $roomId'),
-                      subtitle: Text('$error'),
-                    ),
-                    loading: () => ListTile(
-                      title: Text(roomId),
-                      subtitle: const Text('loading'),
-                    ),
-                  );
-                },
-              ),
+                      error: (error, stack) => ListTile(
+                        title: Text('Error loading: $roomId'),
+                        subtitle: Text('$error'),
+                      ),
+                      loading: () => ListTile(
+                        title: Text(roomId),
+                        subtitle: const Text('loading'),
+                      ),
+                    );
+                  },
+                ),
               spaces.length > limit
                   ? Padding(
                       padding: const EdgeInsets.only(left: 30),

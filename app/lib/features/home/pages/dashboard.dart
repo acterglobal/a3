@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/dialogs/onboarding_dialog.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
@@ -65,12 +66,23 @@ class Dashboard extends ConsumerWidget {
                       ),
                     ),
                     PopupMenuItem(
-                      child: Row(
-                        children: const <Widget>[
-                          Text('Create Event'),
-                          SizedBox(width: 10),
-                          Icon(Atlas.calendar_dots),
-                        ],
+                      child: InkWell(
+                        onTap: () => onBoardingDialog(
+                          context: context,
+                          btnText: 'Join Existing Space',
+                          btn2Text: 'Create New Space',
+                          onPressed1: () {},
+                          onPressed2: () =>
+                              context.goNamed(Routes.createSpace.name),
+                          canDismissable: true,
+                        ),
+                        child: Row(
+                          children: const <Widget>[
+                            Text('Create Event'),
+                            SizedBox(width: 10),
+                            Icon(Atlas.calendar_dots),
+                          ],
+                        ),
                       ),
                     ),
                     PopupMenuItem(
