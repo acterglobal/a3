@@ -1,11 +1,5 @@
 import 'package:acter/features/space/providers/space_providers.dart';
-import 'package:acter/features/home/data/models/nav_item.dart';
-import 'package:acter/features/home/widgets/custom_selected_icon.dart';
-import 'package:acter/common/utils/routes.dart';
-import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:atlas_icons/atlas_icons.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/features/search/providers/search.dart';
 

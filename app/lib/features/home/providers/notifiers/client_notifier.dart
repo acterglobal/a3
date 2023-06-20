@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
+// ignore_for_file: avoid_print
 class ClientNotifier extends StateNotifier<Client?> {
   late SyncState syncState;
   bool hasFirstSynced = false;
@@ -33,12 +34,12 @@ class ClientNotifier extends StateNotifier<Client?> {
       await Future.delayed(const Duration(milliseconds: 1500));
       syncState = state!.startSync();
       print('sync started');
-      final first_syncer = syncState.firstSyncedRx();
-      print(first_syncer != null);
-      first_syncer!.forEach((event) {
+      final firstSyncer = syncState.firstSyncedRx();
+      print(firstSyncer != null);
+      firstSyncer!.forEach((event) {
         print('first sync received: $event');
         if (event) {
-          print("first synced received");
+          print('first synced received');
           hasFirstSynced = true;
         }
       });
