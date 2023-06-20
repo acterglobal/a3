@@ -17,6 +17,9 @@ enum Routes {
   search('/search'),
   activities('/activities'),
 
+  // --- dashboard
+  createSpace('create_space'),
+
   // --- chat
   chat('/chat'),
   chatroom('/chat/:spaceId([!#][^/]+)'), // !roomId, #roomName

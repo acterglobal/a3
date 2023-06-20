@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -27,7 +28,7 @@ class Dashboard extends ConsumerWidget {
     return Scaffold(
       appBar: !isDesktop
           ? AppBar(
-              actions: [
+              actions: <Widget>[
                 IconButton(
                   icon: const Icon(Atlas.settings_monitor_thin),
                   onPressed: () {
@@ -43,6 +44,46 @@ class Dashboard extends ConsumerWidget {
                     context.go('/settings');
                   },
                 ),
+                PopupMenuButton(
+                  icon: Icon(
+                    Atlas.plus_circle,
+                    color: Theme.of(context).colorScheme.neutral5,
+                  ),
+                  iconSize: 28,
+                  color: Theme.of(context).colorScheme.surface,
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                    PopupMenuItem(
+                      child: InkWell(
+                        onTap: () => context.pushNamed(Routes.createSpace.name),
+                        child: Row(
+                          children: const <Widget>[
+                            Text('Create Space'),
+                            SizedBox(width: 10),
+                            Icon(Atlas.connection),
+                          ],
+                        ),
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: Row(
+                        children: const <Widget>[
+                          Text('Create Event'),
+                          SizedBox(width: 10),
+                          Icon(Atlas.calendar_dots),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: Row(
+                        children: const <Widget>[
+                          Text('Create ToDo'),
+                          SizedBox(width: 10),
+                          Icon(Atlas.check_folder)
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
                 Visibility(
                   // FIXME: Only show mobile / when bottom bar shown...
                   visible: !ref.watch(clientProvider)!.isGuest(),
@@ -55,7 +96,7 @@ class Dashboard extends ConsumerWidget {
                   ),
                   child: Container(
                     key: Keys.avatar,
-                    margin: const EdgeInsets.only(top: 8),
+                    margin: const EdgeInsets.all(8),
                     child: InkWell(
                       onTap: () => context.pushNamed(Routes.myProfile.name),
                       child: const UserAvatarWidget(),
@@ -63,7 +104,9 @@ class Dashboard extends ConsumerWidget {
                   ),
                 ),
               ],
-              title: const Text('Acter Dashboard'),
+              title: isDesktop
+                  ? const Text('Acter Dashboard')
+                  : const Text('Overview'),
             )
           : null,
       body: SingleChildScrollView(
