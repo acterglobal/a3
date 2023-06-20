@@ -33,7 +33,10 @@ class ClientNotifier extends StateNotifier<Client?> {
       await Future.delayed(const Duration(milliseconds: 1500));
       syncState = state!.startSync();
       print('sync started');
-      syncState.firstSyncedRx()!.listen((event) {
+      final first_syncer = syncState.firstSyncedRx();
+      print(first_syncer != null);
+      first_syncer!.forEach((event) {
+        print('first sync received: $event');
         if (event) {
           print("first synced received");
           hasFirstSynced = true;

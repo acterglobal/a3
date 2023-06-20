@@ -61,7 +61,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     final location =
         ref.watch(goRouterProvider.select((value) => value.location));
     final client = ref.watch(clientProvider);
-    final clientState = ref.read(clientProvider.notifier);
+    final clientState = ref.watch(clientProvider.notifier);
     final loading = !clientState.hasFirstSynced;
     if (client == null) {
       return const Scaffold(
