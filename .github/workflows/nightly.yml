@@ -16,7 +16,7 @@ on:
    - cron: 0 3 * * *
 
 jobs:
-  check_date:
+  run_checker:
     runs-on: ubuntu-latest
     name: Check latest commit
     outputs:
@@ -99,9 +99,9 @@ jobs:
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     needs:
-     - check_date
+     - run_checker
      - tags
-    if: ${{ needs.check_date.outputs.should_run != 'false' }}
+    if: ${{ needs.run_checker.outputs.should_run != 'false' }}
 
     continue-on-error: true
     steps:

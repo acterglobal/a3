@@ -26,87 +26,89 @@ jobs:
           filterOutClosed: true
           # Only return if PR is not in draft state. (By default it returns PRs in any state.)
           # filterOutDraft: true
-      - run: "echo PR ${prNumber} ${prTitle} at ${prUrl} is ${prJSON}: ${prLabels} and is tagged ${tagged}"
-        if: steps.PR.outputs.pr_found == 'true'
-        env:
-          # JSON object with the full PR object
-          # toJSON(fromJSON(...pr)) parses it into memory and then format is with pretty-print.
-          prJSON: ${{ toJSON(fromJSON(steps.PR.outputs.pr)) }}
-          # Direct access to common PR properties
-          prNumber: ${{ steps.PR.outputs.number }}
-          prUrl: ${{ steps.PR.outputs.pr_url }}
-          prTitle: ${{ steps.PR.outputs.pr_title }}
-          prBody: ${{ steps.PR.outputs.pr_body }}
-          prCreatedAt: ${{ steps.PR.outputs.pr_created_at }}
-          prMergedAt: ${{ steps.PR.outputs.pr_merged_at }}
-          prClosedAt: ${{ steps.PR.outputs.pr_closed_at }}
-          prLabel: ${{ steps.PR.outputs.pr_labels }}
-          tagged: ${{contains(steps.PR.outputs.pr_labels, 'build-demo')}}
+
+  tags:
+    runs-on: ubuntu-latest
+    # Map a step output to a job output
+    outputs:
+      tag: ${{ inputs.custom_tag || steps.tag.outputs.tag }}
+      build_num: ${{ steps.build_num.outputs.build_num }}
+    steps:
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v6
+      - id: tag
+        name: Create Tag
+        run: echo "tag=${{ steps.branch-name.outputs.current_branch }}-`date +%FT%H%M`" >> $GITHUB_OUTPUT
+        shell: bash
+      - id: build_num
+        run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
 
   build:
+    environment: nightly
     strategy:
       matrix:
        include:
-          # - name: Android Arm64
-          #   os: ubuntu-latest
-          #   cargo_make_setup: setup-android
-          #   cargo_make_args: android-arm
-          #   with_ndk_version: r25
-          #   flutter_build_args: 'build apk --target-platform android-arm64'
-          #   artifact_prefix: acter-demo-android-arm64
-          #   artifact_path:  app/build/app/outputs/apk/release/
-          #   artifact_files: 'app-release.apk'
+          - name: Android Arm64
+            target: android
+            os: ubuntu-latest
+            cargo_make_setup: setup-android
+            cargo_make_args: android-arm
+            with_ndk_version: r25
+            flutter_build_args: "build apk --target-platform android-arm64"
+            artifact_prefix: acter-nightly-android-arm64
+            artifact_path:  app/build/app/outputs/apk/release/
+            rename_file: "app-release.apk"
+            rename_suffix: "apk"
           - name: Linux x64
             os: ubuntu-latest
             apt_install: ninja-build libgtk-3-dev
             cargo_make_args: desktop
-            flutter_config: '--enable-linux-desktop'
-            flutter_build_args: 'build linux --debug'
-            artifact_prefix: acter-demo-linux-x64
-            artifact_path: app/build/linux/x64/debug/bundle/
-            artifact_files: lib/ data/ acter
-          # - name: iOS
-          #   os: macos-latest
-          #   cargo_make_setup: setup-ios
-          #   cargo_make_args: ios
-          #   flutter_build_args: 'build ipa --no-codesign'
-          #   artifact_prefix: acter-demo-ios
-          #   artifact_path:  app/build/ios/archive/
-          #   artifact_files: Runner.xcarchive
+            flutter_config: "--enable-linux-desktop"
+            flutter_build_args: "build linux"
+            artifact_prefix: acter-nightly-linux-x64
+            artifact_path: app/build/linux/x64/release/bundle/
+            tar_files: lib/ data/ acter
+          - name: iOS
+            os: macos-latest
+            target: ios
+            with_apple_cert: true
+            cargo_make_setup: setup-ios
+            cargo_make_args: ios
+            flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_nightly_adhoc.plist --build-number=${{ needs.tags.outputs.build_num }}"
+            artifact_prefix: acter-nightly-ios
+            artifact_path:  app/build/ios/ipa/
+            rename_file: "acter.ipa"
+            rename_suffix: "ipa"
+            extra_artifacts: "ios-manifest.plist"
           - name: Mac OSx 
             os: macos-12
+            with_apple_cert: true
             cargo_make_args: desktop
-            flutter_config: '--enable-macos-desktop'
-            flutter_build_args: 'build macos --debug'
-            artifact_prefix: acter-demo-macosx
-            artifact_path: app/build/macos/Build/Products/Debug/
-            artifact_files: 'Acter.app'
-          # - name: Windows
-          #   os: windows-latest
-          #   cargo_make_args: desktop
-          #   flutter_config: '--enable-windows-desktop'
-          #   flutter_build_args: 'build windows'
-          #   artifact_prefix: acter-demo-windows
-          #   artifact_path: app/build/windows/runner/
-          #   artifact_files: 'Release'
+            flutter_config: "--enable-macos-desktop"
+            flutter_build_args: "build macos"
+            artifact_prefix: acter-nightly-macosx
+            artifact_path: app/build/macos/Build/Products/Release/
+            tar_files: "Acter.app"
+          - name: Windows
+            os: windows-latest
+            cargo_make_args: desktop
+            flutter_config: "--enable-windows-desktop"
+            flutter_build_args: "build windows"
+            artifact_prefix: acter-nightly-windows
+            artifact_path: app/build/windows/runner/
+            zip_files: "Release"
 
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
-    needs: run_checker
+    needs:
+     - run_checker
+     - tags
     if: ${{ needs.run_checker.outputs.should_run != 'false' }}
 
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
-
-      - name: Get branch name
-        id: branch-name
-        uses: tj-actions/branch-names@v6
-
-      - id: tag
-        name: Create Tag
-        run: echo "tag=${{ steps.branch-name.outputs.current_branch }}-`date +%FT%H%M`" >> $GITHUB_OUTPUT
-        shell: bash
 
       - name: Install supported toolchain
         id: rust_toolchain
@@ -127,7 +129,7 @@ jobs:
         with:
           path: |
             target
-          key: ${{ runner.os }}-demo-${{matrix.artifact_prefix}}-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+          key: ${{ runner.os }}-nightly-${{matrix.artifact_prefix}}-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
       - name: Install extra deps
         if: matrix.apt_install
@@ -168,28 +170,92 @@ jobs:
       # - name: Ensure ffi-interface is up to date
       #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
 
-      - name: Flutter build
+      # Install the Apple certificate and provisioning profile
+      - name: Install the Apple certificate and provisioning profile
+        if: matrix.with_apple_cert
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.NIGHTLY_ADHOC_CERT_BASE64 }}
+          P12_PASSWORD: ${{ secrets.NIGHTLY_ADHOC_CERT_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.NIGHTLY_MOBILEPROVISION_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.NIGHTLY_KEYCHAIN_PASSWORD }}
+        run: |
+          echo "starting in $RUNNER_TEMP"
+          # create variables
+          CERTIFICATE_PATH="$RUNNER_TEMP/build_certificate.p12"
+          PP_PATH="$RUNNER_TEMP/build_pp.mobileprovision"
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          echo "vars set"
+          # import certificate and provisioning profile from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output "$CERTIFICATE_PATH"
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output "$PP_PATH"
+          # create temporary keychain
+          echo "creating keychain"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          echo "setting keychain"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          echo "unlocking keychain"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          # import certificate to keychain
+          echo "importing certificate"
+          security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          echo "listing keychains"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          # apply provisioning profile
+          echo "copying over"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+      - name: Expose JKS file
+        if: matrix.target == 'android'
+        working-directory: ./app/android
+        run: echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 --decode > key.jks
+
+      - name: Flutter Build
         env:
           RAGESHAKE_URL: ${{ secrets.RAGESHAKE_URL }}
           RAGESHAKE_APP_NAME: ${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        shell: bash
         run: |
           flutter ${{ matrix.flutter_build_args }} \
-            --dart-define=VERSION_NAME=Demo+${{ steps.tag.outputs.tag }} \
+            --dart-define=VERSION_NAME=Nightly+${{ needs.tags.outputs.tag }} \
             --dart-define=RAGESHAKE_URL=$RAGESHAKE_URL \
             --dart-define=RAGESHAKE_APP_NAME=$RAGESHAKE_APP_NAME \
-            --dart-define=RAGESHAKE_APP_VERSION="Demo-${{ steps.tag.outputs.tag }}/${{ matrix.name }}"
+            --dart-define=RAGESHAKE_APP_VERSION="Nightly-${{ needs.tags.outputs.tag }}/${{ matrix.name }}"
         working-directory: ./app
 
-      - name: Package Tar file
-        if: matrix.os != 'windows-latest'
-        working-directory: ${{ matrix.artifact_path }}
-        run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.tar.bz2" ${{ matrix.artifact_files }}
+      # Important! Cleanup: remove the certificate and provisioning profile from the runner!
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() && matrix.with_apple_cert }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
 
-      - name: Package Zip file
-        if: matrix.os == 'windows-latest'
+      - name: Generate manifest
+        if: matrix.target == 'ios'
+        env:
+          TAG: ${{needs.tags.outputs.tag}}
+          VERSION: ${{ needs.tags.outputs.build_num }}
+        run: |
+          sed "s/__TAG__/$TAG/g ; s/__VERSION__/$VERSION/g" .github/templates/ios-manifest.plist.tmpl > ios-manifest.plist
+
+      - name: Rename file
+        if: matrix.rename_file
         working-directory: ${{ matrix.artifact_path }}
         run: |
-          7z a "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.zip" ${{ matrix.artifact_files }}
+          mv "${{matrix.rename_file}}" "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.${{matrix.rename_suffix}}"
+
+      - name: Package Tar file
+        if: matrix.tar_files
+        working-directory: ${{ matrix.artifact_path }}
+        run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.tar.bz2" ${{ matrix.tar_files }}
+
+      - name: Package Zip file
+        if: matrix.zip_files
+        working-directory: ${{ matrix.artifact_path }}
+        run: |
+          7z a "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.zip" ${{ matrix.zip_files }}
 
       - name: Archive demo artifacts
         uses: actions/upload-artifact@v3
