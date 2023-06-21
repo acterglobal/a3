@@ -24,7 +24,7 @@ jobs:
           # Only return if PR is still open. (By default it returns PRs in any state.)
           filterOutClosed: true
           # Only return if PR is not in draft state. (By default it returns PRs in any state.)
-          filterOutDraft: true
+          # filterOutDraft: true
       - run: echo ${{steps.PR.outputs.pr_labels}}
 
   build:
