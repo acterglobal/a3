@@ -3,6 +3,7 @@ name: Demo builds
 on:
   pull_request:
     branches: [ main ]
+  push:
 
 # env:
 #   RELEASE: true
