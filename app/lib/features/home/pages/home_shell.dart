@@ -61,8 +61,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     final location =
         ref.watch(goRouterProvider.select((value) => value.location));
     final client = ref.watch(clientProvider);
-    final clientState = ref.watch(clientProvider.notifier);
-    final loading = !clientState.hasFirstSynced;
     if (client == null) {
       return const Scaffold(
         body: Center(
@@ -70,6 +68,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         ),
       );
     }
+    final hasFirstSynced = ref.watch(syncStateProvider);
     final bottomBarIdx =
         ref.watch(currentSelectedBottomBarIndexProvider(context));
 
@@ -87,7 +86,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           child: AdaptiveLayout(
             key: _key,
             bodyRatio: bodyRatio,
-            topNavigation: loading
+            topNavigation: !hasFirstSynced
                 ? SlotLayout(
                     config: <Breakpoint, SlotLayoutConfig?>{
                       Breakpoints.smallAndUp: SlotLayout.from(

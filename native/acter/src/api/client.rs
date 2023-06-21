@@ -380,6 +380,7 @@ impl Client {
                     if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
                         == Ok(true)
                     {
+                        tracing::info!("received first sync");
                         tracing::trace!(user_id=?client.user_id(), "initial synced");
                         // divide_spaces_from_convos must be called after first sync
                         let (spaces, convos) = devide_spaces_from_convos(me.clone()).await;
@@ -387,14 +388,16 @@ impl Client {
                         // load invitations after first sync
                         invitation_controller.load_invitations(&client).await;
 
-                        me.refresh_history_on_start(sync_state_history.clone())
-                            .await;
-
                         initial.store(false, Ordering::SeqCst);
+
+                        tracing::info!("issuing first sync update");
                         first_synced_arc.send(true);
                         if let Ok(mut w) = state.try_write() {
                             w.has_first_synced = true;
                         }
+
+                        me.refresh_history_on_start(sync_state_history.clone())
+                            .await;
                     } else {
                         // see if we have new spaces to catch up upon
                         let mut new_spaces = Vec::new();
