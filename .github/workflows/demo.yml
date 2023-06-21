@@ -16,10 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Check legibility
     outputs:
-      should_run: ${{steps.PR.outputs.pr_found == "true" && contains(steps.PR.outputs.pr_labels, "build-demo")}}
+      should_run: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'build-demo')}}
     steps:
       - uses: 8BitJonny/gh-get-current-pr@2.2.0
-        id: pr
+        id: PR
         with:
           # Only return if PR is still open. (By default it returns PRs in any state.)
           filterOutClosed: true
@@ -34,7 +34,7 @@ jobs:
           #   os: ubuntu-latest
           #   cargo_make_setup: setup-android
           #   cargo_make_args: android-arm
-          #   with_ndk_version: r23c
+          #   with_ndk_version: r25
           #   flutter_build_args: 'build apk --target-platform android-arm64'
           #   artifact_prefix: acter-demo-android-arm64
           #   artifact_path:  app/build/app/outputs/apk/release/
