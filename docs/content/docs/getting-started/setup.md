@@ -10,13 +10,13 @@ toc = true
 top = false
 +++
 
-
 ## Requirements
 
 You'll need a recent:
- - [Rustup](https://rustup.rs/) setup for Rust
- - Android NDK / XCode setup for the target - and device or simulator set up
- - [flutter](https://docs.flutter.dev/get-started/install)
+
+- [Rustup](https://rustup.rs/) setup for Rust
+- Android NDK / XCode setup for the target - and device or simulator set up
+- [flutter](https://docs.flutter.dev/get-started/install)
 
 ## Setup
 
