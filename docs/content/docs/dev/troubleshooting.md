@@ -30,3 +30,16 @@ We are using [`path_provider`'s `getApplicationDirectory`](https://pub.dev/packa
 - MacOS: `$USER/Library/Containers/global.acter.app/` (e.g. `/Users/ben/Library/Containers/global.acter.app/`, notice that _Finder_ doesn't see the `Library` folder, you need to use the terminal to get there)
 
 Just opening a terminal and doing `rm -rf $PATH` (where `$PATH` is the necessary path above), usually resets all locally stored data. **Careful as this also removes all locally held crypto tokens**.
+
+## Execution failed for task ':app:processDebugMainManifest'.
+> Unable to make field private final java.lang.String java.io.File.path accessible: module java.base does not "opens java.io" to unnamed module @7fbe8ef
+
+If you happen to come across this exception while compiling Android build for application launch, the reason for that is with the flutter fetching the JDK path from Android Studio directory as a default option. This is reported to be occuring in latest **Android Studio Flamingo (2022.2.1)** in reference to the Flutter issue [#106416](https://github.com/flutter/flutter/issues/106416).
+
+As long as you have default `$JAVA_HOME` variable set up in environment variables, you can set up flutter path for finding JDK to be:
+```
+flutter config --android-studio-dir=/
+```
+This'll ensure the flutter to look for the second option of JDK path which is `$JAVA_HOME`. And can be confirmed with ```flutter doctor --v``` output.
+
+
