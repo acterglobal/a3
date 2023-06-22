@@ -27,7 +27,7 @@ use matrix_sdk::{
             AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent, StateEvent,
         },
         room::RoomType,
-        EventId, Int, OwnedEventId, OwnedUserId, TransactionId, UInt, UserId,
+        EventId, Int, OwnedEventId, OwnedMxcUri, OwnedUserId, TransactionId, UInt, UserId,
     },
     Client, RoomMemberships, RoomState,
 };
@@ -81,6 +81,59 @@ impl Room {
         let client = self.room.client();
         let room_id = self.room_id().to_owned();
         RoomProfile::new(client, room_id)
+    }
+
+    pub async fn upload_avatar(&self, content_type: String, data: Vec<u8>) -> Result<OwnedMxcUri> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't upload avatar to a room we are not in")
+        };
+        let content_type = content_type.parse::<mime::Mime>()?;
+        RUNTIME
+            .spawn(async move {
+                let resp = room
+                    .upload_avatar(&content_type, data, None)
+                    .await
+                    .context("Couldn't upload avatar to room")?;
+                let url = room.avatar_url().context("No avatar URL given")?;
+                Ok(url)
+            })
+            .await?
+    }
+
+    pub async fn remove_avatar(&self) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't remove avatar to a room we are not in")
+        };
+        RUNTIME
+            .spawn(async move {
+                let resp = room
+                    .remove_avatar()
+                    .await
+                    .context("Couldn't remove avatar from room")?;
+                Ok(resp.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_topic(&self, topic: String) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't set topic to a room we are not in")
+        };
+        RUNTIME
+            .spawn(async move {
+                let resp = room
+                    .set_room_topic(topic.as_str())
+                    .await
+                    .context("Couldn't set topic to the room")?;
+                Ok(resp.event_id)
+            })
+            .await?
     }
 
     pub async fn active_members(&self) -> Result<Vec<Member>> {

@@ -74,7 +74,7 @@ impl Account {
             .await?
     }
 
-    pub async fn set_avatar(&self, content_type: String, data: Vec<u8>) -> Result<OwnedMxcUri> {
+    pub async fn upload_avatar(&self, content_type: String, data: Vec<u8>) -> Result<OwnedMxcUri> {
         let account = self.account.clone();
         let content_type = content_type.parse::<mime::Mime>()?;
         RUNTIME

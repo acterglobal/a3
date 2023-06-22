@@ -94,7 +94,7 @@ impl Space {
         self.room.add_event_handler(
             move |ev: SyncTaskListEvent,
                   client: SdkClient,
-                  //  room: Room,
+                  // room: Room,
                   encryption_info: Option<EncryptionInfo>,
                   Ctx(executor): Ctx<Executor>| {
                 let room_id = room_id.clone();

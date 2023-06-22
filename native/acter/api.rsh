@@ -519,8 +519,18 @@ object Conversation {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
 
+    /// Change the avatar of the room
+    /// provide the content_type as MIME, e.g. `image/jpeg`
+    fn upload_avatar(content_type: string, data: Vec<u8>) -> Future<Result<MxcUri>>;
+
+    /// Remove the avatar of the room
+    fn remove_avatar() -> Future<Result<EventId>>;
+
     /// what is the description / topic
     fn topic() -> Option<string>;
+
+    /// set description / topic of the room
+    fn set_topic(topic: string) -> Future<Result<EventId>>;
 
     /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
@@ -1022,8 +1032,18 @@ object Space {
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
 
+    /// Change the avatar of the room
+    /// provide the content_type as MIME, e.g. `image/jpeg`
+    fn upload_avatar(content_type: string, data: Vec<u8>) -> Future<Result<MxcUri>>;
+
+    /// Remove the avatar of the room
+    fn remove_avatar() -> Future<Result<EventId>>;
+
     /// what is the description / topic
     fn topic() -> Option<string>;
+
+    /// set description / topic of the room
+    fn set_topic(topic: string) -> Future<Result<EventId>>;
 
     /// the members currently in the space
     fn active_members() -> Future<Result<Vec<Member>>>;
@@ -1095,6 +1115,12 @@ object Space {
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// join this room
+    fn join() -> Future<Result<bool>>;
+
+    /// leave this room
+    fn leave() -> Future<Result<bool>>;
 }
 
 object Member {
@@ -1119,8 +1145,8 @@ object Account {
     fn avatar() -> Future<Result<buffer<u8>>>;
 
     /// Change the avatar of the account
-    /// provide the c_type as MIME, e.g. `image/jpeg`
-    fn set_avatar(c_type: string, data: Vec<u8>) -> Future<Result<MxcUri>>;
+    /// provide the content_type as MIME, e.g. `image/jpeg`
+    fn upload_avatar(content_type: string, data: Vec<u8>) -> Future<Result<MxcUri>>;
 }
 
 object SyncState {
