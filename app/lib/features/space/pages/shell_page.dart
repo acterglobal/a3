@@ -1,3 +1,4 @@
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -6,6 +7,7 @@ import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Space;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -54,7 +56,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const _ShellToolbar(),
+                      _ShellToolbar(space),
                       _ShellHeader(widget.spaceIdOrAlias, profile),
                       const TopNavBar(),
                       SizedBox(
@@ -78,7 +80,8 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
 }
 
 class _ShellToolbar extends ConsumerWidget {
-  const _ShellToolbar();
+  final Space space;
+  const _ShellToolbar(this.space);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -103,38 +106,56 @@ class _ShellToolbar extends ConsumerWidget {
             color: Theme.of(context).colorScheme.surface,
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
               PopupMenuItem(
-                child: InkWell(
-                  onTap: () {
-                    customMsgSnackbar(
-                      context,
-                      'Edit Space is not implemented yet',
-                    );
-                  },
-                  child: const Text('Edit Space'),
+                onTap: () => customMsgSnackbar(
+                  context,
+                  'Edit Space is not implemented yet',
                 ),
+                child: const Text('Edit Space'),
               ),
               PopupMenuItem(
-                child: InkWell(
-                  onTap: () => customMsgSnackbar(
-                    context,
-                    'Space settings is not implemented yet',
-                  ),
-                  child: const Text('Settings'),
+                onTap: () => customMsgSnackbar(
+                  context,
+                  'Edit Space is not implemented yet',
                 ),
+                child: const Text('Settings'),
               ),
               PopupMenuItem(
-                child: InkWell(
-                  onTap: () => customMsgSnackbar(
-                    context,
-                    'Leave Space is not implemented yet',
-                  ),
-                  child: const Text('Leave Space'),
-                ),
+                onTap: () => _handleLeaveSpace(context, space),
+                child: const Text('Leave Space'),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  void _handleLeaveSpace(
+    BuildContext context,
+    Space space,
+  ) {
+    popUpDialog(
+      context: context,
+      title: Column(
+        children: <Widget>[
+          const Icon(Icons.person_remove_outlined),
+          const SizedBox(height: 5),
+          Text('Leave Space', style: Theme.of(context).textTheme.titleMedium),
+        ],
+      ),
+      subtitle: const Text(
+        'Are you sure you want to leave this space?',
+      ),
+      btnText: 'No, Stay!',
+      onPressedBtn: () => context.pop(),
+      btn2Text: 'Yes, Leave!',
+      onPressedBtn2: () async => {
+        await space.leave(),
+        context.pop(),
+      },
+      btnColor: Colors.transparent,
+      btn2Color: Theme.of(context).colorScheme.errorContainer,
+      btnBorderColor: Theme.of(context).colorScheme.success,
     );
   }
 }

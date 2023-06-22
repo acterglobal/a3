@@ -105,30 +105,26 @@ class _DashboardState extends ConsumerState<Dashboard> {
                   color: Theme.of(context).colorScheme.surface,
                   itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                     PopupMenuItem(
-                      child: InkWell(
-                        onTap: () {
-                          context.pop();
-                          context.goNamed(Routes.createSpace.name);
-                        },
-                        child: Row(
-                          children: const <Widget>[
-                            Text('Create Space'),
-                            Spacer(),
-                            Icon(Atlas.connection),
-                          ],
-                        ),
+                      onTap: () => context.goNamed(Routes.createSpace.name),
+                      child: Row(
+                        children: const <Widget>[
+                          Text('Create Space'),
+                          Spacer(),
+                          Icon(Atlas.connection),
+                        ],
                       ),
                     ),
                     PopupMenuItem(
-                      child: InkWell(
-                        onTap: () => {},
-                        child: Row(
-                          children: const <Widget>[
-                            Text('Join Space'),
-                            Spacer(),
-                            Icon(Atlas.calendar_dots),
-                          ],
-                        ),
+                      onTap: () => customMsgSnackbar(
+                        context,
+                        'Join space feature isn\'t implemented yet',
+                      ),
+                      child: Row(
+                        children: const <Widget>[
+                          Text('Join Space'),
+                          Spacer(),
+                          Icon(Atlas.calendar_dots),
+                        ],
                       ),
                     ),
                   ],

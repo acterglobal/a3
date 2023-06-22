@@ -36,36 +36,41 @@ void popUpDialog({
                         child: CircularProgressIndicator(),
                       ),
                     )
-                  : Row(
-                      children: <Widget>[
-                        btnText != null
-                            ? ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: btnColor,
-                                  side: BorderSide(
-                                    color: btnBorderColor ?? Colors.transparent,
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          btnText != null
+                              ? ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: btnColor,
+                                    side: BorderSide(
+                                      color:
+                                          btnBorderColor ?? Colors.transparent,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6),
+                                  onPressed: onPressedBtn ?? () {},
+                                  child: Text(btnText),
+                                )
+                              : const SizedBox.shrink(),
+                          btn2Text != null
+                              ? ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: btn2Color,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
                                   ),
-                                ),
-                                onPressed: onPressedBtn ?? () {},
-                                child: Text(btnText),
-                              )
-                            : const SizedBox.shrink(),
-                        btn2Text != null
-                            ? ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: btnColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                ),
-                                onPressed: onPressedBtn2 ?? () {},
-                                child: Text(btn2Text),
-                              )
-                            : const SizedBox.shrink(),
-                      ],
+                                  onPressed: onPressedBtn2 ?? () {},
+                                  child: Text(btn2Text),
+                                )
+                              : const SizedBox.shrink(),
+                        ],
+                      ),
                     ),
             ],
           ),
