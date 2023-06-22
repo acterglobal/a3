@@ -13,8 +13,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mime/mime.dart';
 
-final toggleCreateBtn = StateProvider<String>((ref) => '');
+final titleProvider = StateProvider<String>((ref) => '');
+final topicProvider = StateProvider<String>((ref) => '');
 
 // upload avatar path
 final avatarProvider = StateProvider.autoDispose<String>((ref) => '');
@@ -29,9 +31,11 @@ class CreateSpacePage extends ConsumerStatefulWidget {
 
 class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _topicController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    final _titleInput = ref.watch(toggleCreateBtn);
+    final _titleInput = ref.watch(titleProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -58,7 +62,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                       builder: (context, ref, child) {
                         final _avatarUpload = ref.watch(avatarProvider);
                         return GestureDetector(
-                          onTap: () => _handleAvatarUpload(),
+                          onTap: _handleAvatarUpload,
                           child: Container(
                             height: 75,
                             width: 75,
@@ -97,15 +101,35 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                         hintText: 'Type Name',
                         textInputType: TextInputType.multiline,
                         controller: _titleController,
-                        onInputChanged: (value) {
-                          ref
-                              .read(toggleCreateBtn.notifier)
-                              .update((state) => value!);
-                        },
+                        onInputChanged: _handleTitleChange,
                       ),
                       const SizedBox(height: 3),
                       Text(
                         'eg. Global Movement',
+                        style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                              color: Theme.of(context).colorScheme.neutral4,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 5),
+                        child: Text('Space Topic'),
+                      ),
+                      InputTextField(
+                        hintText: 'Type Topic',
+                        textInputType: TextInputType.multiline,
+                        controller: _topicController,
+                        onInputChanged: _handleTopicChange,
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        'eg. Transparent feedback',
                         style: Theme.of(context).textTheme.labelSmall!.copyWith(
                               color: Theme.of(context).colorScheme.neutral4,
                             ),
@@ -199,6 +223,14 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
   }
 
+  void _handleTitleChange(String? value) {
+    ref.read(titleProvider.notifier).update((state) => value!);
+  }
+
+  void _handleTopicChange(String? value) {
+    ref.read(topicProvider.notifier).update((state) => value!);
+  }
+
   void _handleAvatarUpload() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
@@ -206,7 +238,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     if (result != null) {
       File file = File(result.files.single.path!);
       String filepath = file.path;
-      ref.watch(avatarProvider.notifier).update((state) => filepath);
+      ref.read(avatarProvider.notifier).update((state) => filepath);
     } else {
       // user cancelled the picker
     }
@@ -223,9 +255,23 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
     final sdk = await ref.watch(sdkProvider.future);
     var settings = sdk.newSpaceSettings(spaceName);
-    final client = ref.watch(clientProvider)!;
+    final client = ref.read(clientProvider)!;
     var roomId = await client.createActerSpace(settings);
     debugPrint('New Space created: ${roomId.toString()}:$spaceName');
+    var space = await client.getSpace(roomId.toString());
+
+    // upload avatar
+    var avatarPath = ref.read(avatarProvider);
+    String? mimeType = lookupMimeType(avatarPath);
+    var imgBuffer = File(avatarPath).readAsBytesSync();
+    var url = await space.uploadAvatar(mimeType!, imgBuffer);
+    debugPrint('Space avatar url: ${url.toString()}');
+
+    // set topic
+    var topic = ref.read(topicProvider);
+    var eventId = await space.setTopic(topic);
+    debugPrint('Space topic event: ${eventId.toString()}');
+
     // pop off loading dialog once process finished.
     context.pop();
     //FIXME: a way to refresh list from spaces provider?
