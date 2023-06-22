@@ -14,7 +14,7 @@ const fallbackBottomBarIdx = 0;
 final spaceItemsProvider =
     FutureProvider.family<List<SidebarNavigationItem>, BuildContext>(
         (ref, context) async {
-  final spaces = ref.watch(spacesProvider);
+  final spaces = ref.read(spacesProvider);
 
   return spaces.when(
     loading: () => [

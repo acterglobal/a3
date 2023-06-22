@@ -4,7 +4,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,50 +26,51 @@ class MySpacesSection extends ConsumerWidget {
           const SizedBox(height: 10),
           spaces.when(
             data: (data) {
-              if (data.isNotEmpty) {
+              if (data.isEmpty) {
                 return const _NoSpacesWidget();
               }
               return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: data.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    final roomId = data[index].getRoomId().toString();
-                    final spaceProfile =
-                        ref.watch(spaceProfileDataProvider(data[index]));
+                shrinkWrap: true,
+                itemCount: data.length,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  final roomId = data[index].getRoomId().toString();
+                  final spaceProfile =
+                      ref.watch(spaceProfileDataProvider(data[index]));
 
-                    return spaceProfile.when(
-                      data: (profile) => Card(
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(
-                            color: Theme.of(context).colorScheme.inversePrimary,
-                            width: 1.5,
-                          ),
-                          borderRadius: BorderRadius.circular(6),
+                  return spaceProfile.when(
+                    data: (profile) => Card(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                          width: 1.5,
                         ),
-                        color: Theme.of(context).colorScheme.surface,
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(15),
-                          onTap: () => context.go('/$roomId'),
-                          title: Text(
-                            profile.displayName ?? roomId,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          leading: ActerAvatar(
-                            mode: DisplayMode.Space,
-                            displayName: profile.displayName,
-                            uniqueId: roomId,
-                            avatar: profile.getAvatarImage(),
-                            size: 48,
-                          ),
-                          trailing: const Icon(Icons.more_vert),
-                        ),
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                      error: (error, stackTrace) =>
-                          Text('Failed to load space due to $error'),
-                      loading: () => const CircularProgressIndicator(),
-                    );
-                  });
+                      color: Theme.of(context).colorScheme.surface,
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(15),
+                        onTap: () => context.go('/$roomId'),
+                        title: Text(
+                          profile.displayName ?? roomId,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        leading: ActerAvatar(
+                          mode: DisplayMode.Space,
+                          displayName: profile.displayName,
+                          uniqueId: roomId,
+                          avatar: profile.getAvatarImage(),
+                          size: 48,
+                        ),
+                        trailing: const Icon(Icons.more_vert),
+                      ),
+                    ),
+                    error: (error, stackTrace) =>
+                        Text('Failed to load space due to $error'),
+                    loading: () => const CircularProgressIndicator(),
+                  );
+                },
+              );
             },
             error: (error, stackTrace) =>
                 Text('Failed to load spaces due to $error'),
@@ -169,7 +169,7 @@ class _NoSpacesWidget extends ConsumerWidget {
         ),
         Center(
           child: ElevatedButton(
-            onPressed: () => context.pushNamed(Routes.createSpace.name),
+            onPressed: () => context.goNamed(Routes.createSpace.name),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [

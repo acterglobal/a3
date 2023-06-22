@@ -107,7 +107,10 @@ class _DashboardState extends ConsumerState<Dashboard> {
                   itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                     PopupMenuItem(
                       child: InkWell(
-                        onTap: () => context.pushNamed(Routes.createSpace.name),
+                        onTap: () {
+                          context.pop();
+                          context.goNamed(Routes.createSpace.name);
+                        },
                         child: Row(
                           children: const <Widget>[
                             Text('Create Space'),
