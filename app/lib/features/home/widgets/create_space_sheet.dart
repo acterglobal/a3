@@ -1,14 +1,23 @@
+import 'dart:io';
+
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 final toggleCreateBtn = StateProvider<String>((ref) => '');
+
+// upload avatar path
+final avatarProvider = StateProvider.autoDispose<String>((ref) => '');
 
 class CreateSpacePage extends ConsumerStatefulWidget {
   const CreateSpacePage({super.key});
@@ -45,17 +54,33 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                       padding: EdgeInsets.only(bottom: 5),
                       child: Text('Avatar'),
                     ),
-                    Container(
-                      height: 75,
-                      width: 75,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Icon(
-                        Atlas.up_arrow_from_bracket_thin,
-                        color: Theme.of(context).colorScheme.neutral4,
-                      ),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final _avatarUpload = ref.watch(avatarProvider);
+                        return GestureDetector(
+                          onTap: () => _handleAvatarUpload(),
+                          child: Container(
+                            height: 75,
+                            width: 75,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: _avatarUpload.isNotEmpty
+                                ? Image.file(
+                                    File(_avatarUpload),
+                                    fit: BoxFit.cover,
+                                  )
+                                : Icon(
+                                    Atlas.up_arrow_from_bracket_thin,
+                                    color:
+                                        Theme.of(context).colorScheme.neutral4,
+                                  ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -92,19 +117,25 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
             ),
             const SizedBox(height: 15),
             const Text('Wallpaper'),
-            Container(
-              margin: const EdgeInsets.only(top: 15),
-              padding: const EdgeInsets.all(10),
-              height: 75,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(12),
+            GestureDetector(
+              onTap: () => customMsgSnackbar(
+                context,
+                'Wallpaper uploading feature isn\'t available yet',
               ),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Icon(
-                  Atlas.up_arrow_from_bracket_thin,
-                  color: Theme.of(context).colorScheme.neutral4,
+              child: Container(
+                margin: const EdgeInsets.only(top: 15),
+                padding: const EdgeInsets.all(10),
+                height: 75,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Icon(
+                    Atlas.up_arrow_from_bracket_thin,
+                    color: Theme.of(context).colorScheme.neutral4,
+                  ),
                 ),
               ),
             ),
@@ -168,6 +199,19 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
   }
 
+  void _handleAvatarUpload() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
+    if (result != null) {
+      File file = File(result.files.single.path!);
+      String filepath = file.path;
+      ref.watch(avatarProvider.notifier).update((state) => filepath);
+    } else {
+      // user cancelled the picker
+    }
+  }
+
   void _handleCreateSpace(BuildContext context, String spaceName) async {
     popUpDialog(
       context: context,
@@ -182,6 +226,9 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     final client = ref.watch(clientProvider)!;
     var roomId = await client.createActerSpace(settings);
     debugPrint('New Space created: ${roomId.toString()}:$spaceName');
+    // pop off loading dialog once process finished.
+    context.pop();
+    //FIXME: a way to refresh list from spaces provider?
     context.pop();
   }
 }

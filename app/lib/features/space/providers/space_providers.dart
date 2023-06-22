@@ -23,7 +23,7 @@ final spaceProfileDataProvider =
   return await getSpaceProfileData(space);
 });
 
-final spacesProvider = FutureProvider<List<Space>>((ref) async {
+final spacesProvider = FutureProvider.autoDispose<List<Space>>((ref) async {
   final client = ref.watch(clientProvider)!;
   // FIXME: how to get informed about updates!?!
   final spaces = await client.spaces();
