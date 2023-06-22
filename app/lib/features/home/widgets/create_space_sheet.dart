@@ -1,5 +1,8 @@
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -140,7 +143,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => _handleCreateSpace(context, _titleInput),
                     child: const Text('Create Space'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _titleInput.isNotEmpty
@@ -163,5 +166,22 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         ),
       ),
     );
+  }
+
+  void _handleCreateSpace(BuildContext context, String spaceName) async {
+    popUpDialog(
+      context: context,
+      title: Text(
+        'Creating Space',
+        style: Theme.of(context).textTheme.titleSmall,
+      ),
+      isLoader: true,
+    );
+    final sdk = await ref.watch(sdkProvider.future);
+    var settings = sdk.newSpaceSettings(spaceName);
+    final client = ref.watch(clientProvider)!;
+    var roomId = await client.createActerSpace(settings);
+    debugPrint('New Space created: ${roomId.toString()}:$spaceName');
+    context.pop();
   }
 }

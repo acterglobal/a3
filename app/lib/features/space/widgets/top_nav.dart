@@ -15,16 +15,12 @@ class _TopNavBarState extends State<TopNavBar>
   final List<String> tabLabels = [
     'Overview',
     'Chat',
-    'Groups',
-    'Events',
-    'Tasks'
+    'Spaces',
   ];
   final List<IconData> tabIcons = const [
     Atlas.layout_half_thin,
     Atlas.chats_thin,
     Atlas.connection_thin,
-    Atlas.calendar_dots_thin,
-    Atlas.check_folder_thin,
   ];
 
   @override
@@ -70,27 +66,23 @@ class _TopNavBarState extends State<TopNavBar>
                 ),
               )
             : Container(
-                height: MediaQuery.of(context).size.height * 0.12,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                  ),
                   color: Theme.of(context).colorScheme.background,
                 ),
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: TabBar(
                   controller: _tabController,
+                  dividerColor: Colors.transparent,
                   labelStyle: Theme.of(context).textTheme.labelSmall,
                   labelColor: Colors.white,
+                  labelPadding: const EdgeInsets.all(8),
                   indicatorColor: Theme.of(context).colorScheme.tertiary,
                   tabs: List.generate(
                     tabLabels.length,
                     (index) => Tab(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Icon(tabIcons[index]),
                           const SizedBox(height: 5),

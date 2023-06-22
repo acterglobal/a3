@@ -12,6 +12,7 @@ void onBoardingDialog({
   required bool canDismissable,
 }) async {
   await showModalBottomSheet(
+    useRootNavigator: true,
     enableDrag: false,
     isScrollControlled: true,
     context: (context),
