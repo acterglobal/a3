@@ -37,7 +37,6 @@ class MySpacesSection extends ConsumerWidget {
                   final roomId = data[index].getRoomId().toString();
                   final spaceProfile =
                       ref.watch(spaceProfileDataProvider(data[index]));
-
                   return spaceProfile.when(
                     data: (profile) => Card(
                       shape: RoundedRectangleBorder(

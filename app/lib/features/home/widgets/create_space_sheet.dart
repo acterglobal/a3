@@ -4,10 +4,8 @@ import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +14,6 @@ import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
 
 final titleProvider = StateProvider<String>((ref) => '');
-final topicProvider = StateProvider<String>((ref) => '');
 
 // upload avatar path
 final avatarProvider = StateProvider.autoDispose<String>((ref) => '');
@@ -31,7 +28,7 @@ class CreateSpacePage extends ConsumerStatefulWidget {
 
 class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _topicController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -113,30 +110,6 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                     ],
                   ),
                 ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 5),
-                        child: Text('Space Topic'),
-                      ),
-                      InputTextField(
-                        hintText: 'Type Topic',
-                        textInputType: TextInputType.multiline,
-                        controller: _topicController,
-                        onInputChanged: _handleTopicChange,
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        'eg. Transparent feedback',
-                        style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                              color: Theme.of(context).colorScheme.neutral4,
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
             const SizedBox(height: 15),
@@ -166,10 +139,11 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
             const SizedBox(height: 15),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const <Widget>[
-                Text('About'),
-                SizedBox(height: 15),
+              children: <Widget>[
+                const Text('About'),
+                const SizedBox(height: 15),
                 InputTextField(
+                  controller: _descriptionController,
                   hintText: 'Description',
                   textInputType: TextInputType.multiline,
                   maxLines: 10,
@@ -198,7 +172,16 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
-                    onPressed: () => _handleCreateSpace(context, _titleInput),
+                    onPressed: () => _titleInput.isNotEmpty
+                        ? _handleCreateSpace(
+                            context,
+                            _titleInput,
+                            _descriptionController.text.trim(),
+                          )
+                        : customMsgSnackbar(
+                            context,
+                            'Please enter space name',
+                          ),
                     child: const Text('Create Space'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _titleInput.isNotEmpty
@@ -227,12 +210,9 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     ref.read(titleProvider.notifier).update((state) => value!);
   }
 
-  void _handleTopicChange(String? value) {
-    ref.read(topicProvider.notifier).update((state) => value!);
-  }
-
   void _handleAvatarUpload() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
+      dialogTitle: 'Upload Avatar',
       type: FileType.image,
     );
     if (result != null) {
@@ -244,7 +224,11 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     }
   }
 
-  void _handleCreateSpace(BuildContext context, String spaceName) async {
+  void _handleCreateSpace(
+    BuildContext context,
+    String spaceName,
+    String? description,
+  ) async {
     popUpDialog(
       context: context,
       title: Text(
@@ -260,17 +244,18 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     debugPrint('New Space created: ${roomId.toString()}:$spaceName');
     var space = await client.getSpace(roomId.toString());
 
-    // upload avatar
-    var avatarPath = ref.read(avatarProvider);
-    String? mimeType = lookupMimeType(avatarPath);
-    var imgBuffer = File(avatarPath).readAsBytesSync();
-    var url = await space.uploadAvatar(mimeType!, imgBuffer);
-    debugPrint('Space avatar url: ${url.toString()}');
-
     // set topic
-    var topic = ref.read(topicProvider);
-    var eventId = await space.setTopic(topic);
-    debugPrint('Space topic event: ${eventId.toString()}');
+    var eventId = await space.setTopic(description ?? '');
+    debugPrint('Set Space topic event: ${eventId.toString()}');
+
+    // upload avatar
+    var avatarPath = ref.watch(avatarProvider);
+    if (avatarPath.isNotEmpty) {
+      String? mimeType = lookupMimeType(avatarPath);
+      var imgBuffer = File(avatarPath).readAsBytesSync();
+      var url = await space.uploadAvatar(mimeType!, imgBuffer);
+      debugPrint('Space avatar url: ${url.toString()}');
+    }
 
     // pop off loading dialog once process finished.
     context.pop();

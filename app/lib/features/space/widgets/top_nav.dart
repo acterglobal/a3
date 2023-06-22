@@ -2,8 +2,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
 class TopNavBar extends StatefulWidget {
-  final bool isDesktop;
-  const TopNavBar({super.key, required this.isDesktop});
+  const TopNavBar({super.key});
 
   @override
   State<TopNavBar> createState() => _TopNavBarState();
