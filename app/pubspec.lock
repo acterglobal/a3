@@ -895,6 +895,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  jiffy:
+    dependency: "direct main"
+    description:
+      name: jiffy
+      sha256: "85172c4fc975a50224521c05bf43abc845288863b19d91bd3c221a96a8785dd3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.0"
   js:
     dependency: transitive
     description:
