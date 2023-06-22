@@ -16,6 +16,7 @@ use matrix_sdk::{
             receipt::ReceiptThread,
             relation::Annotation,
             room::{
+                avatar::ImageInfo as AvatarImageInfo,
                 message::{
                     AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
                     ForwardThread, ImageMessageEventContent, MessageType, RoomMessageEvent,
@@ -89,15 +90,24 @@ impl Room {
         } else {
             bail!("Can't upload avatar to a room we are not in")
         };
+        let client = room.client();
         let content_type = content_type.parse::<mime::Mime>()?;
         RUNTIME
             .spawn(async move {
-                let resp = room
-                    .upload_avatar(&content_type, data, None)
+                let upload_resp = client
+                    .media()
+                    .upload(&content_type, data)
                     .await
-                    .context("Couldn't upload avatar to room")?;
-                let url = room.avatar_url().context("No avatar URL given")?;
-                Ok(url)
+                    .context("Couldn't upload avatar")?;
+                let info = assign!(AvatarImageInfo::new(), {
+                    blurhash: upload_resp.blurhash,
+                    mimetype: Some(content_type.to_string()),
+                });
+                let change_resp = room
+                    .set_avatar_url(&upload_resp.content_uri, Some(info))
+                    .await
+                    .context("Couldn't change avatar to room")?;
+                Ok(upload_resp.content_uri)
             })
             .await?
     }
