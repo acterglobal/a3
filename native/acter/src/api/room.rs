@@ -24,7 +24,8 @@ use matrix_sdk::{
                 },
                 ImageInfo,
             },
-            AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent, StateEvent,
+            AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent,
+            MessageLikeEventType, StateEvent, StateEventType,
         },
         room::RoomType,
         EventId, Int, OwnedEventId, OwnedUserId, TransactionId, UInt, UserId,
@@ -161,8 +162,21 @@ impl Room {
             bail!("Can't send typing notice to a room we are not in")
         };
 
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
                 room.typing_notice(typing)
                     .await
                     .context("Couldn't send typing notice")?;
@@ -202,8 +216,21 @@ impl Room {
             bail!("Can't send message to a room we are not in")
         };
 
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
                 let content = RoomMessageEventContent::text_plain(message);
                 let txn_id = TransactionId::new();
                 let response = room
@@ -222,8 +249,21 @@ impl Room {
             bail!("Can't send message to a room we are not in")
         };
 
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
                 let content = RoomMessageEventContent::text_markdown(markdown);
                 let txn_id = TransactionId::new();
                 let response = room
@@ -242,11 +282,24 @@ impl Room {
             bail!("Can't send message to a room we are not in")
         };
 
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         let event_id =
             EventId::parse(event_id).context("Couldn't parse event id to send reaction")?;
 
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::Reaction) {
+                    bail!("No permission to send reaction in this room");
+                }
                 let relates_to = Annotation::new(event_id, key);
                 let content = ReactionEventContent::new(relates_to);
                 let txn_id = TransactionId::new();
@@ -276,6 +329,12 @@ impl Room {
             bail!("Can't send message as image to a room we are not in")
         };
 
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
             height: height.map(UInt::from),
@@ -287,6 +346,13 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
                 let image_buf = std::fs::read(path).context("Couldn't read image data to send")?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, image_buf, config)
@@ -350,6 +416,12 @@ impl Room {
             bail!("Can't send message as audio to a room we are not in")
         };
 
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::Audio(BaseAudioInfo {
             duration: secs.map(|x| Duration::from_secs(x as u64)),
@@ -359,6 +431,13 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
                 let audio_buf = std::fs::read(path).context("Couldn't read audio data to send")?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, audio_buf, config)
@@ -426,6 +505,12 @@ impl Room {
             bail!("Can't send message as video to a room we are not in")
         };
 
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::Video(BaseVideoInfo {
             duration: secs.map(|x| Duration::from_secs(x as u64)),
@@ -438,6 +523,13 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
                 let video_buf = std::fs::read(path).context("Couldn't read video data to send")?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, video_buf, config)
@@ -500,6 +592,12 @@ impl Room {
             bail!("Can't send message as file to a room we are not in")
         };
 
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
             size: Some(UInt::from(size)),
@@ -508,6 +606,13 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
                 let file_buf = std::fs::read(path).context("Couldn't read file data to send")?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, file_buf, config)
@@ -572,11 +677,24 @@ impl Room {
             bail!("Can't send message to a room we are not in")
         };
 
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         let user_id =
             UserId::parse(user_id.as_str()).context("Couldn't parse user id to invite")?;
 
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_invite() {
+                    bail!("No permission to invite someone in this room");
+                }
                 room.invite_user_by_id(&user_id)
                     .await
                     .context("Couldn't invite user by id")?;
@@ -1055,10 +1173,24 @@ impl Room {
             bail!("Can't send reply as text to a room we are not in")
         };
 
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
 
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
                 let timeline_event = room
                     .event(&event_id)
                     .await
@@ -1103,7 +1235,8 @@ impl Room {
         } else {
             bail!("Can't send reply as image to a room we are not in")
         };
-        let client = self.room.client();
+        let client = room.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
 
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
@@ -1117,6 +1250,14 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
                 let image_buf =
                     std::fs::read(path).context("Couldn't read image buffer to reply")?;
 
@@ -1173,7 +1314,8 @@ impl Room {
         } else {
             bail!("Can't send reply as audio to a room we are not in")
         };
-        let client = self.room.client();
+        let client = room.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
 
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
@@ -1186,6 +1328,14 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
                 let image_buf =
                     std::fs::read(path).context("Couldn't read audio buffer to reply")?;
 
@@ -1245,7 +1395,8 @@ impl Room {
         } else {
             bail!("Can't send reply as video to a room we are not in")
         };
-        let client = self.room.client();
+        let client = room.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
 
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
@@ -1261,6 +1412,14 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
                 let video_buf =
                     std::fs::read(path).context("Couldn't read video buffer to reply")?;
 
@@ -1315,7 +1474,8 @@ impl Room {
         } else {
             bail!("Can't send reply as file to a room we are not in")
         };
-        let client = self.room.client();
+        let client = room.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
 
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
@@ -1327,6 +1487,14 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
                 let file_buf = std::fs::read(path).context("Couldn't read file buffer to reply")?;
 
                 let timeline_event = room
@@ -1378,10 +1546,23 @@ impl Room {
             bail!("Can't redact any message from a room we are not in")
         };
 
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         let event_id = EventId::parse(event_id).context("Couldn't parse event id to redact")?;
 
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_redact() {
+                    bail!("No permission to redact message in this room");
+                }
                 let response = room
                     .redact(&event_id, reason.as_deref(), txn_id.map(Into::into))
                     .await
@@ -1398,11 +1579,24 @@ impl Room {
             bail!("Can't update power level in a room we are not in")
         };
 
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         let user_id =
             UserId::parse(user_id).context("Couldn't parse user id to change power level")?;
 
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_state(StateEventType::RoomPowerLevels) {
+                    bail!("No permission to change power levels in this room");
+                }
                 let resp = room
                     .update_power_levels(vec![(&user_id, Int::from(level))])
                     .await

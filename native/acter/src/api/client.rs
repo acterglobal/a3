@@ -239,14 +239,14 @@ impl Client {
 
     async fn refresh_history_on_start(&self, history: Mutable<HistoryLoadState>) -> Result<()> {
         tracing::trace!(user_id=?self.user_id_ref(), "refreshing history");
-        let spaces = self
+        let mut spaces = self
             .spaces()
             .await
             .context("Couldn't get spaces from client")?;
         let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
         history.lock_mut().start(space_ids);
 
-        join_all(spaces.iter().map(|space| async {
+        join_all(spaces.iter_mut().map(|space| async {
             if !space.is_acter_space().await {
                 tracing::trace!(room_id=?space.room_id(), "not an acter space");
                 history.lock_mut().unknow_room(&space.room_id().to_owned());
@@ -277,7 +277,7 @@ impl Client {
             new_spaces
                 .into_iter()
                 .map(|room| Space::new(self.clone(), Room { room }))
-                .map(|space| {
+                .map(|mut space| {
                     let history = history.clone();
                     async move {
                         {
