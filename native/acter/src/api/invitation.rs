@@ -3,7 +3,7 @@ use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStr
 use log::{error, info};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
-    room::Room,
+    room::{Room, RoomMember},
     ruma::{
         events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
         OwnedRoomId, OwnedUserId, RoomId,
@@ -23,7 +23,7 @@ use super::{
 pub struct Invitation {
     client: SdkClient,
     origin_server_ts: Option<u64>,
-    room_id: OwnedRoomId,
+    room: Room,
     sender: OwnedUserId,
 }
 
@@ -33,12 +33,12 @@ impl Invitation {
     }
 
     pub fn room_id(&self) -> OwnedRoomId {
-        self.room_id.clone()
+        self.room.room_id().to_owned()
     }
 
     pub async fn room_name(&self) -> Result<String> {
         let client = self.client.clone();
-        let room_id = self.room_id.clone();
+        let room_id = self.room.room_id().to_owned();
         let room = client
             .get_invited_room(&room_id)
             .context("Can't accept a room we are not invited")?;
@@ -57,15 +57,23 @@ impl Invitation {
         self.sender.clone()
     }
 
-    pub fn get_sender_profile(&self) -> UserProfile {
-        let client = self.client.clone();
-        let user_id = self.sender.clone();
-        UserProfile::new(client, user_id)
+    pub async fn get_sender_profile(&self) -> Result<UserProfile> {
+        let room = self.room.clone();
+        let sender = self.sender.clone();
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&sender)
+                    .await?
+                    .context("Couldn't get room member")?;
+                Ok(UserProfile::from_member(member))
+            })
+            .await?
     }
 
     pub async fn accept(&self) -> Result<bool> {
         let client = self.client.clone();
-        let room_id = self.room_id.clone();
+        let room_id = self.room.room_id().to_owned();
         let room = client
             .get_invited_room(&room_id)
             .context("Can't accept a room we are not invited")?;
@@ -100,7 +108,7 @@ impl Invitation {
 
     pub async fn reject(&self) -> Result<bool> {
         let client = self.client.clone();
-        let room_id = self.room_id.clone();
+        let room_id = self.room.room_id().to_owned();
         let room = client
             .get_invited_room(&room_id)
             .context("Can't accept a room we are not invited")?;
@@ -200,7 +208,7 @@ impl InvitationController {
                 let invitation = Invitation {
                     client: client.clone(),
                     origin_server_ts: None,
-                    room_id: room.room_id().to_owned(),
+                    room: Room::Invited(room.clone()),
                     sender: inviter.user_id().to_owned(),
                 };
                 invitations.push(invitation);
@@ -237,13 +245,13 @@ impl InvitationController {
             let invitation = Invitation {
                 client: client.clone(),
                 origin_server_ts: Some(since_the_epoch.as_millis() as u64),
-                room_id: room_id.to_owned(),
+                room: room.clone(),
                 sender: sender.to_owned(),
             };
             let mut invitations = self.invitations.lock_mut();
             if !invitations
                 .iter()
-                .any(|x| x.room_id == *room_id && x.sender == *sender)
+                .any(|x| x.room_id() == *room_id && x.sender == *sender)
             {
                 invitations.insert(0, invitation);
             }
@@ -265,14 +273,14 @@ impl InvitationController {
                     (MembershipState::Invite, MembershipState::Join) => {
                         // remove this invitation from list
                         let room_id = room.room_id().to_string();
-                        if let Some(idx) = invitations.iter().position(|x| x.room_id == room_id) {
+                        if let Some(idx) = invitations.iter().position(|x| x.room_id() == room_id) {
                             invitations.remove(idx);
                         }
                     }
                     (MembershipState::Invite, MembershipState::Leave) => {
                         // remove this invitation from list
                         let room_id = room.room_id().to_string();
-                        if let Some(idx) = invitations.iter().position(|x| x.room_id == room_id) {
+                        if let Some(idx) = invitations.iter().position(|x| x.room_id() == room_id) {
                             invitations.remove(idx);
                         }
                     }
@@ -331,7 +339,7 @@ impl Client {
                         if profiles.iter().any(|x| x.user_id() == user_id) {
                             continue;
                         }
-                        let user_profile = UserProfile::new(client.core.client().clone(), user_id);
+                        let user_profile = UserProfile::from_member(member);
                         profiles.push(user_profile);
                     }
                 }
