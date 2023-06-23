@@ -91,11 +91,7 @@ impl Room {
         };
         let client = room.client();
         let content_type = content_type.parse::<mime::Mime>()?;
-
-        let my_id = client
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = client.user_id().context("User not found")?.to_owned();
 
         RUNTIME
             .spawn(async move {
