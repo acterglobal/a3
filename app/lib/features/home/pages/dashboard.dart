@@ -45,26 +45,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    // final widthCount = (MediaQuery.of(context).size.width ~/ 300).toInt();
     final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
-    // const int minCount = 2;
-    // get platform of context.
     return Scaffold(
-      // body: SingleChildScrollView(
-      //   child: Container(
-      //     margin: const EdgeInsets.all(20),
-      //     child:  StaggeredGrid.count(
-      //       crossAxisSpacing: 20,
-      //       axisDirection: AxisDirection.down,
-      //       crossAxisCount: min(widthCount, minCount),
-      //       children: const [
-      //         MyTasksSection(limit: 5),
-      //         MySpacesSection(limit: 5),
-      //         MyEventsSection(),
-      //       ],
-      //     ),
-      //   ),
-      // ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
