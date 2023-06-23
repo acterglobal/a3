@@ -91,8 +91,21 @@ impl Room {
         };
         let client = room.client();
         let content_type = content_type.parse::<mime::Mime>()?;
+
+        let my_id = client
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_state(StateEventType::RoomAvatar) {
+                    bail!("No permission to change avatar of this room");
+                }
                 let upload_resp = client
                     .media()
                     .upload(&content_type, data)
@@ -117,8 +130,22 @@ impl Room {
         } else {
             bail!("Can't remove avatar to a room we are not in")
         };
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_state(StateEventType::RoomAvatar) {
+                    bail!("No permission to change avatar of this room");
+                }
                 let resp = room
                     .remove_avatar()
                     .await
@@ -134,8 +161,22 @@ impl Room {
         } else {
             bail!("Can't set topic to a room we are not in")
         };
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_state(StateEventType::RoomTopic) {
+                    bail!("No permission to change topic of this room");
+                }
                 let resp = room
                     .set_room_topic(topic.as_str())
                     .await
