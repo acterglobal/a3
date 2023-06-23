@@ -603,7 +603,7 @@ object Conversation {
     fn leave() -> Future<Result<bool>>;
 
     /// get the users that were invited to this room
-    fn get_invitees() -> Future<Result<Vec<Account>>>;
+    fn get_invitees() -> Future<Result<Vec<Member>>>;
 
     /// download media (image/audio/video/file) to specified path
     fn download_media(event_id: string, dir_path: string) -> Future<Result<string>>;
@@ -1315,7 +1315,7 @@ object Invitation {
     fn sender() -> UserId;
 
     /// get the user profile that contains avatar and display name
-    fn get_sender_profile() -> UserProfile;
+    fn get_sender_profile() -> Future<Result<UserProfile>>;
 
     /// accept invitation about me to this room
     fn accept() -> Future<Result<bool>>;
