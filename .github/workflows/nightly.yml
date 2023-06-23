@@ -16,7 +16,7 @@ on:
    - cron: 0 3 * * *
 
 jobs:
-  check_date:
+  run_checker:
     runs-on: ubuntu-latest
     name: Check latest commit
     outputs:
@@ -51,7 +51,7 @@ jobs:
             os: ubuntu-latest
             cargo_make_setup: setup-android
             cargo_make_args: android-arm
-            with_ndk_version: r22b
+            with_ndk_version: r25
             flutter_build_args: "build apk --target-platform android-arm64"
             artifact_prefix: acter-nightly-android-arm64
             artifact_path:  app/build/app/outputs/apk/release/
@@ -99,9 +99,9 @@ jobs:
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     needs:
-     - check_date
+     - run_checker
      - tags
-    if: ${{ needs.check_date.outputs.should_run != 'false' }}
+    if: ${{ needs.run_checker.outputs.should_run != 'false' }}
 
     continue-on-error: true
     steps:

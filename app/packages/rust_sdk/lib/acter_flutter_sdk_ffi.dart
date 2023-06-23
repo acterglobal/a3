@@ -97,9 +97,15 @@ class _Box {
       throw StateError("can't drop moved value");
     }
     _dropped = true;
+    print("would drop box. won't drop");
+    return;
     _api._unregisterFinalizer(this);
     _drop(ffi.Pointer.fromAddress(0), _ptr);
   }
+}
+
+void debugAllocation(String name, int address, int len) {
+  print("$name - address: $address ; len: $len");
 }
 
 class FfiBufferInt8 {
@@ -420,6 +426,7 @@ class FfiString {
   String toDartString() {
     final parts = _api._ffiStringIntoParts(_box.borrow());
     final ffi.Pointer<ffi.Uint8> tmp2_0 = ffi.Pointer.fromAddress(parts.addr);
+    debugAllocation("ffistring", parts.addr, parts.len);
     final tmp1 = utf8.decode(tmp2_0.asTypedList(parts.len));
     if (parts.capacity > 0) {
       final ffi.Pointer<ffi.Void> tmp2_0;
@@ -544,6 +551,8 @@ class Api {
     var tmp7 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
+    debugAllocation("lower string", tmp1, tmp2);
+
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
     tmp1_1.setAll(0, tmp0_0);
@@ -551,6 +560,8 @@ class Api {
     tmp3 = tmp2;
     final tmp4_0 = utf8.encode(tmp4);
     tmp6 = tmp4_0.length;
+    debugAllocation("lower string", tmp5, tmp6);
+
     final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
     final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
     tmp5_1.setAll(0, tmp4_0);
@@ -569,6 +580,7 @@ class Api {
     final tmp12 = tmp8.arg2;
     final tmp13 = tmp8.arg3;
     if (tmp10 == 0) {
+      debugAllocation("handle error", tmp11, tmp12);
       final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
       final tmp10_0 = utf8.decode(tmp11_0.asTypedList(tmp12));
       if (tmp12 > 0) {
@@ -592,6 +604,7 @@ class Api {
     final tmp7 = tmp0.arg5;
     final tmp8 = tmp0.arg6;
     if (tmp2 == 0) {
+      debugAllocation("handle error", tmp3, tmp4);
       final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       final tmp2_0 = utf8.decode(tmp3_0.asTypedList(tmp4));
       if (tmp4 > 0) {
@@ -601,8 +614,20 @@ class Api {
       }
       throw tmp2_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-    final tmp1 = utf8.decode(tmp6_0.asTypedList(tmp7));
+    if (tmp7 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp6, tmp7);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp6_ptr = ffi.Pointer.fromAddress(tmp6);
+    List<int> tmp6_buf = [];
+    final tmp6_precast = tmp6_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp7; i++) {
+      int char = tmp6_precast.elementAt(i).value;
+      tmp6_buf.add(char);
+    }
+    final tmp1 = utf8Decoder.convert(tmp6_buf);
     if (tmp8 > 0) {
       final ffi.Pointer<ffi.Void> tmp6_0;
       tmp6_0 = ffi.Pointer.fromAddress(tmp6);
@@ -626,6 +651,8 @@ class Api {
     var tmp7 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
+    debugAllocation("lower string", tmp1, tmp2);
+
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
     tmp1_1.setAll(0, tmp0_0);
@@ -633,6 +660,8 @@ class Api {
     tmp3 = tmp2;
     final tmp4_0 = utf8.encode(tmp4);
     tmp6 = tmp4_0.length;
+    debugAllocation("lower string", tmp5, tmp6);
+
     final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
     final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
     tmp5_1.setAll(0, tmp4_0);
@@ -651,6 +680,7 @@ class Api {
     final tmp12 = tmp8.arg2;
     final tmp13 = tmp8.arg3;
     if (tmp10 == 0) {
+      debugAllocation("handle error", tmp11, tmp12);
       final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
       final tmp10_0 = utf8.decode(tmp11_0.asTypedList(tmp12));
       if (tmp12 > 0) {
@@ -699,6 +729,8 @@ class Api {
     var tmp25 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
+    debugAllocation("lower string", tmp1, tmp2);
+
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
     tmp1_1.setAll(0, tmp0_0);
@@ -706,6 +738,8 @@ class Api {
     tmp3 = tmp2;
     final tmp4_0 = utf8.encode(tmp4);
     tmp6 = tmp4_0.length;
+    debugAllocation("lower string", tmp5, tmp6);
+
     final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
     final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
     tmp5_1.setAll(0, tmp4_0);
@@ -713,6 +747,8 @@ class Api {
     tmp7 = tmp6;
     final tmp8_0 = utf8.encode(tmp8);
     tmp10 = tmp8_0.length;
+    debugAllocation("lower string", tmp9, tmp10);
+
     final ffi.Pointer<ffi.Uint8> tmp9_0 = this.__allocate(tmp10 * 1, 1);
     final Uint8List tmp9_1 = tmp9_0.asTypedList(tmp10);
     tmp9_1.setAll(0, tmp8_0);
@@ -720,6 +756,8 @@ class Api {
     tmp11 = tmp10;
     final tmp12_0 = utf8.encode(tmp12);
     tmp14 = tmp12_0.length;
+    debugAllocation("lower string", tmp13, tmp14);
+
     final ffi.Pointer<ffi.Uint8> tmp13_0 = this.__allocate(tmp14 * 1, 1);
     final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
     tmp13_1.setAll(0, tmp12_0);
@@ -727,6 +765,8 @@ class Api {
     tmp15 = tmp14;
     final tmp16_0 = utf8.encode(tmp16);
     tmp18 = tmp16_0.length;
+    debugAllocation("lower string", tmp17, tmp18);
+
     final ffi.Pointer<ffi.Uint8> tmp17_0 = this.__allocate(tmp18 * 1, 1);
     final Uint8List tmp17_1 = tmp17_0.asTypedList(tmp18);
     tmp17_1.setAll(0, tmp16_0);
@@ -739,6 +779,8 @@ class Api {
       final tmp22 = tmp20;
       final tmp22_0 = utf8.encode(tmp22);
       tmp24 = tmp22_0.length;
+      debugAllocation("lower string", tmp23, tmp24);
+
       final ffi.Pointer<ffi.Uint8> tmp23_0 = this.__allocate(tmp24 * 1, 1);
       final Uint8List tmp23_1 = tmp23_0.asTypedList(tmp24);
       tmp23_1.setAll(0, tmp22_0);
@@ -789,6 +831,8 @@ class Api {
     var tmp7 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
+    debugAllocation("lower string", tmp1, tmp2);
+
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
     tmp1_1.setAll(0, tmp0_0);
@@ -796,6 +840,8 @@ class Api {
     tmp3 = tmp2;
     final tmp4_0 = utf8.encode(tmp4);
     tmp6 = tmp4_0.length;
+    debugAllocation("lower string", tmp5, tmp6);
+
     final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
     final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
     tmp5_1.setAll(0, tmp4_0);
@@ -843,6 +889,8 @@ class Api {
     var tmp17 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
+    debugAllocation("lower string", tmp1, tmp2);
+
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
     tmp1_1.setAll(0, tmp0_0);
@@ -850,6 +898,8 @@ class Api {
     tmp3 = tmp2;
     final tmp4_0 = utf8.encode(tmp4);
     tmp6 = tmp4_0.length;
+    debugAllocation("lower string", tmp5, tmp6);
+
     final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
     final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
     tmp5_1.setAll(0, tmp4_0);
@@ -857,6 +907,8 @@ class Api {
     tmp7 = tmp6;
     final tmp8_0 = utf8.encode(tmp8);
     tmp10 = tmp8_0.length;
+    debugAllocation("lower string", tmp9, tmp10);
+
     final ffi.Pointer<ffi.Uint8> tmp9_0 = this.__allocate(tmp10 * 1, 1);
     final Uint8List tmp9_1 = tmp9_0.asTypedList(tmp10);
     tmp9_1.setAll(0, tmp8_0);
@@ -869,6 +921,8 @@ class Api {
       final tmp14 = tmp12;
       final tmp14_0 = utf8.encode(tmp14);
       tmp16 = tmp14_0.length;
+      debugAllocation("lower string", tmp15, tmp16);
+
       final ffi.Pointer<ffi.Uint8> tmp15_0 = this.__allocate(tmp16 * 1, 1);
       final Uint8List tmp15_1 = tmp15_0.asTypedList(tmp16);
       tmp15_1.setAll(0, tmp14_0);
@@ -938,6 +992,8 @@ class Api {
     var tmp27 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
+    debugAllocation("lower string", tmp1, tmp2);
+
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
     tmp1_1.setAll(0, tmp0_0);
@@ -945,6 +1001,8 @@ class Api {
     tmp3 = tmp2;
     final tmp4_0 = utf8.encode(tmp4);
     tmp6 = tmp4_0.length;
+    debugAllocation("lower string", tmp5, tmp6);
+
     final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
     final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
     tmp5_1.setAll(0, tmp4_0);
@@ -952,6 +1010,8 @@ class Api {
     tmp7 = tmp6;
     final tmp8_0 = utf8.encode(tmp8);
     tmp10 = tmp8_0.length;
+    debugAllocation("lower string", tmp9, tmp10);
+
     final ffi.Pointer<ffi.Uint8> tmp9_0 = this.__allocate(tmp10 * 1, 1);
     final Uint8List tmp9_1 = tmp9_0.asTypedList(tmp10);
     tmp9_1.setAll(0, tmp8_0);
@@ -959,6 +1019,8 @@ class Api {
     tmp11 = tmp10;
     final tmp12_0 = utf8.encode(tmp12);
     tmp14 = tmp12_0.length;
+    debugAllocation("lower string", tmp13, tmp14);
+
     final ffi.Pointer<ffi.Uint8> tmp13_0 = this.__allocate(tmp14 * 1, 1);
     final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
     tmp13_1.setAll(0, tmp12_0);
@@ -966,6 +1028,8 @@ class Api {
     tmp15 = tmp14;
     final tmp16_0 = utf8.encode(tmp16);
     tmp18 = tmp16_0.length;
+    debugAllocation("lower string", tmp17, tmp18);
+
     final ffi.Pointer<ffi.Uint8> tmp17_0 = this.__allocate(tmp18 * 1, 1);
     final Uint8List tmp17_1 = tmp17_0.asTypedList(tmp18);
     tmp17_1.setAll(0, tmp16_0);
@@ -973,6 +1037,8 @@ class Api {
     tmp19 = tmp18;
     final tmp20_0 = utf8.encode(tmp20);
     tmp22 = tmp20_0.length;
+    debugAllocation("lower string", tmp21, tmp22);
+
     final ffi.Pointer<ffi.Uint8> tmp21_0 = this.__allocate(tmp22 * 1, 1);
     final Uint8List tmp21_1 = tmp21_0.asTypedList(tmp22);
     tmp21_1.setAll(0, tmp20_0);
@@ -980,6 +1046,8 @@ class Api {
     tmp23 = tmp22;
     final tmp24_0 = utf8.encode(tmp24);
     tmp26 = tmp24_0.length;
+    debugAllocation("lower string", tmp25, tmp26);
+
     final ffi.Pointer<ffi.Uint8> tmp25_0 = this.__allocate(tmp26 * 1, 1);
     final Uint8List tmp25_1 = tmp25_0.asTypedList(tmp26);
     tmp25_1.setAll(0, tmp24_0);
@@ -1042,6 +1110,8 @@ class Api {
     var tmp3 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
+    debugAllocation("lower string", tmp1, tmp2);
+
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
     tmp1_1.setAll(0, tmp0_0);
@@ -1124,6 +1194,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1169,6 +1240,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1214,6 +1286,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1259,6 +1332,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1304,6 +1378,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1350,6 +1425,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1396,6 +1472,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1442,6 +1519,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1488,6 +1566,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1533,6 +1612,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1578,6 +1658,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1623,6 +1704,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1668,6 +1750,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1713,6 +1796,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1758,6 +1842,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1800,6 +1885,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1842,6 +1928,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1888,6 +1975,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1933,6 +2021,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -1978,6 +2067,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2020,6 +2110,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2062,6 +2153,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2107,6 +2199,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2152,6 +2245,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2197,6 +2291,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2242,6 +2337,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2288,6 +2384,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2333,6 +2430,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2379,6 +2477,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2424,6 +2523,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2470,6 +2570,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2515,6 +2616,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2561,6 +2663,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2603,6 +2706,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2645,6 +2749,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2687,6 +2792,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2735,6 +2841,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2744,8 +2851,20 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp13, tmp14);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8Decoder.convert(tmp13_buf);
     if (tmp15 > 0) {
       final ffi.Pointer<ffi.Void> tmp13_0;
       tmp13_0 = ffi.Pointer.fromAddress(tmp13);
@@ -2785,6 +2904,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2794,8 +2914,20 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp13, tmp14);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8Decoder.convert(tmp13_buf);
     if (tmp15 > 0) {
       final ffi.Pointer<ffi.Void> tmp13_0;
       tmp13_0 = ffi.Pointer.fromAddress(tmp13);
@@ -2833,6 +2965,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2879,6 +3012,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2921,6 +3055,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -2966,6 +3101,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3011,6 +3147,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3056,6 +3193,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3101,6 +3239,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3146,6 +3285,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3191,6 +3331,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3236,6 +3377,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3281,6 +3423,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3326,6 +3469,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3372,6 +3516,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3417,6 +3562,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3462,6 +3608,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3507,6 +3654,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3552,6 +3700,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3598,6 +3747,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3643,6 +3793,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3688,6 +3839,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3733,6 +3885,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3778,6 +3931,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3824,6 +3978,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3869,6 +4024,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3911,6 +4067,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -3957,6 +4114,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4002,6 +4160,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4048,6 +4207,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4094,6 +4254,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4140,6 +4301,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4186,6 +4348,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4231,6 +4394,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4277,6 +4441,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4322,6 +4487,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4368,6 +4534,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4413,6 +4580,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4459,6 +4627,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4504,6 +4673,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4552,6 +4722,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4561,8 +4732,20 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp13, tmp14);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8Decoder.convert(tmp13_buf);
     if (tmp15 > 0) {
       final ffi.Pointer<ffi.Void> tmp13_0;
       tmp13_0 = ffi.Pointer.fromAddress(tmp13);
@@ -4600,6 +4783,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4642,6 +4826,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4688,6 +4873,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4735,6 +4921,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4744,8 +4931,20 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp13, tmp14);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8Decoder.convert(tmp13_buf);
     if (tmp15 > 0) {
       final ffi.Pointer<ffi.Void> tmp13_0;
       tmp13_0 = ffi.Pointer.fromAddress(tmp13);
@@ -4783,6 +4982,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4828,6 +5028,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4874,6 +5075,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4920,6 +5122,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -4965,6 +5168,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5011,6 +5215,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5057,6 +5262,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5099,6 +5305,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5141,6 +5348,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5186,6 +5394,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5231,6 +5440,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5276,6 +5486,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5322,6 +5533,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5367,6 +5579,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5413,6 +5626,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5458,6 +5672,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5504,6 +5719,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5549,6 +5765,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5594,6 +5811,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5640,6 +5858,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5682,6 +5901,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5728,6 +5948,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5774,6 +5995,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5819,6 +6041,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5865,6 +6088,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5911,6 +6135,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5958,6 +6183,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -5967,8 +6193,20 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp13, tmp14);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8Decoder.convert(tmp13_buf);
     if (tmp15 > 0) {
       final ffi.Pointer<ffi.Void> tmp13_0;
       tmp13_0 = ffi.Pointer.fromAddress(tmp13);
@@ -6006,6 +6244,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6048,6 +6287,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6090,6 +6330,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6132,6 +6373,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6175,6 +6417,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6217,6 +6460,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6259,6 +6503,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6301,6 +6546,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6343,6 +6589,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6385,6 +6632,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6427,6 +6675,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6473,6 +6722,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6515,6 +6765,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6557,6 +6808,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6599,6 +6851,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6645,6 +6898,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6687,6 +6941,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6730,6 +6985,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6773,6 +7029,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -6815,6 +7072,7 @@ class Api {
       return null;
     }
     if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
       final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
       if (tmp11 > 0) {
@@ -16825,8 +17083,20 @@ class UtcDateTime {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -16844,8 +17114,20 @@ class UtcDateTime {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -16891,8 +17173,20 @@ class RefDetails {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -16915,8 +17209,20 @@ class RefDetails {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -16935,8 +17241,20 @@ class RefDetails {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -16955,8 +17273,20 @@ class RefDetails {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -16979,8 +17309,20 @@ class RefDetails {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -17003,8 +17345,20 @@ class RefDetails {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -17027,8 +17381,20 @@ class RefDetails {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -17064,8 +17430,20 @@ class ObjRef {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -17163,8 +17541,20 @@ class NewsSlide {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -17183,8 +17573,20 @@ class NewsSlide {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -17476,6 +17878,8 @@ class NewsEntryDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -17531,6 +17935,8 @@ class NewsEntryDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -17538,6 +17944,8 @@ class NewsEntryDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -17550,6 +17958,8 @@ class NewsEntryDraft {
       final tmp11 = tmp9;
       final tmp11_0 = utf8.encode(tmp11);
       tmp13 = tmp11_0.length;
+      debugAllocation("lower string", tmp12, tmp13);
+
       final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
       final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
       tmp12_1.setAll(0, tmp11_0);
@@ -17584,6 +17994,8 @@ class NewsEntryDraft {
       final tmp29 = tmp27;
       final tmp29_0 = utf8.encode(tmp29);
       tmp31 = tmp29_0.length;
+      debugAllocation("lower string", tmp30, tmp31);
+
       final ffi.Pointer<ffi.Uint8> tmp30_0 = _api.__allocate(tmp31 * 1, 1);
       final Uint8List tmp30_1 = tmp30_0.asTypedList(tmp31);
       tmp30_1.setAll(0, tmp29_0);
@@ -17647,6 +18059,8 @@ class NewsEntryDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -17654,6 +18068,8 @@ class NewsEntryDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -17673,6 +18089,8 @@ class NewsEntryDraft {
       final tmp15 = tmp13;
       final tmp15_0 = utf8.encode(tmp15);
       tmp17 = tmp15_0.length;
+      debugAllocation("lower string", tmp16, tmp17);
+
       final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
       final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
       tmp16_1.setAll(0, tmp15_0);
@@ -17751,6 +18169,8 @@ class NewsEntryDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -17758,6 +18178,8 @@ class NewsEntryDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -17791,6 +18213,8 @@ class NewsEntryDraft {
       final tmp23 = tmp21;
       final tmp23_0 = utf8.encode(tmp23);
       tmp25 = tmp23_0.length;
+      debugAllocation("lower string", tmp24, tmp25);
+
       final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
       final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
       tmp24_1.setAll(0, tmp23_0);
@@ -17811,6 +18235,8 @@ class NewsEntryDraft {
       final tmp33 = tmp31;
       final tmp33_0 = utf8.encode(tmp33);
       tmp35 = tmp33_0.length;
+      debugAllocation("lower string", tmp34, tmp35);
+
       final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
       final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
       tmp34_1.setAll(0, tmp33_0);
@@ -17872,6 +18298,8 @@ class NewsEntryDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -17879,6 +18307,8 @@ class NewsEntryDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -17891,6 +18321,8 @@ class NewsEntryDraft {
       final tmp11 = tmp9;
       final tmp11_0 = utf8.encode(tmp11);
       tmp13 = tmp11_0.length;
+      debugAllocation("lower string", tmp12, tmp13);
+
       final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
       final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
       tmp12_1.setAll(0, tmp11_0);
@@ -18091,8 +18523,20 @@ class Tag {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -18111,8 +18555,20 @@ class Tag {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -18165,6 +18621,8 @@ class PinDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -18191,6 +18649,8 @@ class PinDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -18226,6 +18686,8 @@ class PinDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -18286,8 +18748,20 @@ class ActerPin {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -18310,8 +18784,20 @@ class ActerPin {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -18346,8 +18832,20 @@ class ActerPin {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -18388,6 +18886,7 @@ class ActerPin {
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
       if (tmp5 > 0) {
@@ -18457,6 +18956,8 @@ class PinUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -18492,6 +18993,8 @@ class PinUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -18536,6 +19039,8 @@ class PinUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -18603,8 +19108,20 @@ class TextMessageContent {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -18626,8 +19143,20 @@ class TextMessageContent {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -18658,8 +19187,20 @@ class CalendarEvent {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -18750,8 +19291,20 @@ class MediaSource {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -18786,8 +19339,20 @@ class ThumbnailInfo {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -18865,8 +19430,20 @@ class DeviceId {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -18896,8 +19473,20 @@ class EventId {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -18927,8 +19516,20 @@ class MxcUri {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -18958,8 +19559,20 @@ class RoomId {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -18989,8 +19602,20 @@ class UserId {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -19022,8 +19647,20 @@ class RoomEventItem {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -19042,8 +19679,20 @@ class RoomEventItem {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -19074,8 +19723,20 @@ class RoomEventItem {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -19098,8 +19759,20 @@ class RoomEventItem {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -19217,8 +19890,20 @@ class RoomEventItem {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -19255,6 +19940,8 @@ class RoomEventItem {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -19312,8 +19999,20 @@ class RoomVirtualItem {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -19336,8 +20035,20 @@ class RoomVirtualItem {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -19369,8 +20080,20 @@ class RoomMessage {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -19454,8 +20177,20 @@ class TextDesc {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -19478,8 +20213,20 @@ class TextDesc {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -19510,8 +20257,20 @@ class ImageDesc {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -19549,8 +20308,20 @@ class ImageDesc {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -19667,8 +20438,20 @@ class AudioDesc {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -19706,8 +20489,20 @@ class AudioDesc {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -19770,8 +20565,20 @@ class VideoDesc {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -19809,8 +20616,20 @@ class VideoDesc {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -19881,8 +20700,20 @@ class VideoDesc {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -19967,8 +20798,20 @@ class FileDesc {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -20006,8 +20849,20 @@ class FileDesc {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -20132,8 +20987,20 @@ class TimelineDiff {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -20286,6 +21153,8 @@ class TimelineStream {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -20293,6 +21162,8 @@ class TimelineStream {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -20305,6 +21176,8 @@ class TimelineStream {
       final tmp11 = tmp9;
       final tmp11_0 = utf8.encode(tmp11);
       tmp13 = tmp11_0.length;
+      debugAllocation("lower string", tmp12, tmp13);
+
       final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
       final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
       tmp12_1.setAll(0, tmp11_0);
@@ -20373,8 +21246,20 @@ class Conversation {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -20412,6 +21297,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -20521,6 +21408,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -20556,6 +21445,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -20589,6 +21480,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -20627,6 +21520,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -20634,6 +21529,8 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -20698,6 +21595,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -20705,6 +21604,8 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -20712,6 +21613,8 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
+
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
     tmp10_1.setAll(0, tmp9_0);
@@ -20745,6 +21648,8 @@ class Conversation {
       final tmp27 = tmp25;
       final tmp27_0 = utf8.encode(tmp27);
       tmp29 = tmp27_0.length;
+      debugAllocation("lower string", tmp28, tmp29);
+
       final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
       final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
       tmp28_1.setAll(0, tmp27_0);
@@ -20797,6 +21702,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -20848,6 +21755,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -20855,6 +21764,8 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -20862,6 +21773,8 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
+
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
     tmp10_1.setAll(0, tmp9_0);
@@ -20921,6 +21834,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -20986,6 +21901,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -20993,6 +21910,8 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -21000,6 +21919,8 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
+
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
     tmp10_1.setAll(0, tmp9_0);
@@ -21040,6 +21961,8 @@ class Conversation {
       final tmp31 = tmp29;
       final tmp31_0 = utf8.encode(tmp31);
       tmp33 = tmp31_0.length;
+      debugAllocation("lower string", tmp32, tmp33);
+
       final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
       final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
       tmp32_1.setAll(0, tmp31_0);
@@ -21094,6 +22017,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -21140,6 +22065,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -21147,6 +22074,8 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -21154,6 +22083,8 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
+
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
     tmp10_1.setAll(0, tmp9_0);
@@ -21197,6 +22128,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -21226,8 +22159,20 @@ class Conversation {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -21248,6 +22193,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -21331,6 +22278,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -21338,6 +22287,8 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -21374,6 +22325,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -21439,6 +22392,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -21481,6 +22436,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -21488,6 +22445,8 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -21500,6 +22459,8 @@ class Conversation {
       final tmp11 = tmp9;
       final tmp11_0 = utf8.encode(tmp11);
       tmp13 = tmp11_0.length;
+      debugAllocation("lower string", tmp12, tmp13);
+
       final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
       final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
       tmp12_1.setAll(0, tmp11_0);
@@ -21574,6 +22535,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -21581,6 +22544,8 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -21588,6 +22553,8 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
+
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
     tmp10_1.setAll(0, tmp9_0);
@@ -21616,6 +22583,8 @@ class Conversation {
     }
     final tmp25_0 = utf8.encode(tmp25);
     tmp27 = tmp25_0.length;
+    debugAllocation("lower string", tmp26, tmp27);
+
     final ffi.Pointer<ffi.Uint8> tmp26_0 = _api.__allocate(tmp27 * 1, 1);
     final Uint8List tmp26_1 = tmp26_0.asTypedList(tmp27);
     tmp26_1.setAll(0, tmp25_0);
@@ -21628,6 +22597,8 @@ class Conversation {
       final tmp31 = tmp29;
       final tmp31_0 = utf8.encode(tmp31);
       tmp33 = tmp31_0.length;
+      debugAllocation("lower string", tmp32, tmp33);
+
       final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
       final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
       tmp32_1.setAll(0, tmp31_0);
@@ -21710,6 +22681,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -21717,6 +22690,8 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -21724,6 +22699,8 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
+
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
     tmp10_1.setAll(0, tmp9_0);
@@ -21745,6 +22722,8 @@ class Conversation {
     }
     final tmp21_0 = utf8.encode(tmp21);
     tmp23 = tmp21_0.length;
+    debugAllocation("lower string", tmp22, tmp23);
+
     final ffi.Pointer<ffi.Uint8> tmp22_0 = _api.__allocate(tmp23 * 1, 1);
     final Uint8List tmp22_1 = tmp22_0.asTypedList(tmp23);
     tmp22_1.setAll(0, tmp21_0);
@@ -21757,6 +22736,8 @@ class Conversation {
       final tmp27 = tmp25;
       final tmp27_0 = utf8.encode(tmp27);
       tmp29 = tmp27_0.length;
+      debugAllocation("lower string", tmp28, tmp29);
+
       final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
       final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
       tmp28_1.setAll(0, tmp27_0);
@@ -21851,6 +22832,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -21858,6 +22841,8 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -21865,6 +22850,8 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
+
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
     tmp10_1.setAll(0, tmp9_0);
@@ -21905,6 +22892,8 @@ class Conversation {
       final tmp31 = tmp29;
       final tmp31_0 = utf8.encode(tmp31);
       tmp33 = tmp31_0.length;
+      debugAllocation("lower string", tmp32, tmp33);
+
       final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
       final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
       tmp32_1.setAll(0, tmp31_0);
@@ -21913,6 +22902,8 @@ class Conversation {
     }
     final tmp35_0 = utf8.encode(tmp35);
     tmp37 = tmp35_0.length;
+    debugAllocation("lower string", tmp36, tmp37);
+
     final ffi.Pointer<ffi.Uint8> tmp36_0 = _api.__allocate(tmp37 * 1, 1);
     final Uint8List tmp36_1 = tmp36_0.asTypedList(tmp37);
     tmp36_1.setAll(0, tmp35_0);
@@ -21925,6 +22916,8 @@ class Conversation {
       final tmp41 = tmp39;
       final tmp41_0 = utf8.encode(tmp41);
       tmp43 = tmp41_0.length;
+      debugAllocation("lower string", tmp42, tmp43);
+
       final ffi.Pointer<ffi.Uint8> tmp42_0 = _api.__allocate(tmp43 * 1, 1);
       final Uint8List tmp42_1 = tmp42_0.asTypedList(tmp43);
       tmp42_1.setAll(0, tmp41_0);
@@ -22009,6 +23002,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -22016,6 +23011,8 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -22023,6 +23020,8 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
+
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
     tmp10_1.setAll(0, tmp9_0);
@@ -22037,6 +23036,8 @@ class Conversation {
     }
     final tmp17_0 = utf8.encode(tmp17);
     tmp19 = tmp17_0.length;
+    debugAllocation("lower string", tmp18, tmp19);
+
     final ffi.Pointer<ffi.Uint8> tmp18_0 = _api.__allocate(tmp19 * 1, 1);
     final Uint8List tmp18_1 = tmp18_0.asTypedList(tmp19);
     tmp18_1.setAll(0, tmp17_0);
@@ -22049,6 +23050,8 @@ class Conversation {
       final tmp23 = tmp21;
       final tmp23_0 = utf8.encode(tmp23);
       tmp25 = tmp23_0.length;
+      debugAllocation("lower string", tmp24, tmp25);
+
       final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
       final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
       tmp24_1.setAll(0, tmp23_0);
@@ -22110,6 +23113,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -22122,6 +23127,8 @@ class Conversation {
       final tmp7 = tmp5;
       final tmp7_0 = utf8.encode(tmp7);
       tmp9 = tmp7_0.length;
+      debugAllocation("lower string", tmp8, tmp9);
+
       final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
       final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
       tmp8_1.setAll(0, tmp7_0);
@@ -22135,6 +23142,8 @@ class Conversation {
       final tmp13 = tmp11;
       final tmp13_0 = utf8.encode(tmp13);
       tmp15 = tmp13_0.length;
+      debugAllocation("lower string", tmp14, tmp15);
+
       final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
       final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
       tmp14_1.setAll(0, tmp13_0);
@@ -22180,6 +23189,8 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -22227,6 +23238,8 @@ class CommentDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -22258,6 +23271,8 @@ class CommentDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -22265,6 +23280,8 @@ class CommentDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -22345,8 +23362,20 @@ class Comment {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -22369,8 +23398,20 @@ class Comment {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -22484,8 +23525,20 @@ class Task {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -22508,8 +23561,20 @@ class Task {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -22719,6 +23784,7 @@ class Task {
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
       if (tmp5 > 0) {
@@ -22803,6 +23869,8 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -22838,6 +23906,8 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -22941,6 +24011,8 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -22957,6 +24029,7 @@ class TaskUpdateBuilder {
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
     if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
       if (tmp9 > 0) {
@@ -22981,6 +24054,8 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -22997,6 +24072,7 @@ class TaskUpdateBuilder {
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
     if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
       if (tmp9 > 0) {
@@ -23026,6 +24102,8 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -23033,6 +24111,8 @@ class TaskUpdateBuilder {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -23052,6 +24132,7 @@ class TaskUpdateBuilder {
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
     if (tmp11 == 0) {
+      debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
       final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
       if (tmp13 > 0) {
@@ -23094,6 +24175,8 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -23110,6 +24193,7 @@ class TaskUpdateBuilder {
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
     if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
       if (tmp9 > 0) {
@@ -23134,6 +24218,8 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -23150,6 +24236,7 @@ class TaskUpdateBuilder {
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
     if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
       if (tmp9 > 0) {
@@ -23179,6 +24266,8 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -23186,6 +24275,8 @@ class TaskUpdateBuilder {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -23205,6 +24296,7 @@ class TaskUpdateBuilder {
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
     if (tmp11 == 0) {
+      debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
       final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
       if (tmp13 > 0) {
@@ -23465,6 +24557,8 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -23491,6 +24585,8 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -23567,6 +24663,8 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -23583,6 +24681,7 @@ class TaskDraft {
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
     if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
       if (tmp9 > 0) {
@@ -23607,6 +24706,8 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -23623,6 +24724,7 @@ class TaskDraft {
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
     if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
       if (tmp9 > 0) {
@@ -23652,6 +24754,8 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -23659,6 +24763,8 @@ class TaskDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -23678,6 +24784,7 @@ class TaskDraft {
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
     if (tmp11 == 0) {
+      debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
       final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
       if (tmp13 > 0) {
@@ -23711,6 +24818,8 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -23727,6 +24836,7 @@ class TaskDraft {
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
     if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
       if (tmp9 > 0) {
@@ -23751,6 +24861,8 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -23767,6 +24879,7 @@ class TaskDraft {
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
     if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
       final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
       if (tmp9 > 0) {
@@ -23796,6 +24909,8 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -23803,6 +24918,8 @@ class TaskDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -23822,6 +24939,7 @@ class TaskDraft {
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
     if (tmp11 == 0) {
+      debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
       final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
       if (tmp13 > 0) {
@@ -24005,8 +25123,20 @@ class TaskList {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -24029,8 +25159,20 @@ class TaskList {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -24069,8 +25211,20 @@ class TaskList {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -24124,8 +25278,20 @@ class TaskList {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -24194,6 +25360,7 @@ class TaskList {
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
       if (tmp5 > 0) {
@@ -24223,6 +25390,7 @@ class TaskList {
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
       if (tmp5 > 0) {
@@ -24307,6 +25475,8 @@ class TaskListDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -24333,6 +25503,8 @@ class TaskListDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -24511,6 +25683,8 @@ class TaskListUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -24537,6 +25711,8 @@ class TaskListUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -24803,8 +25979,20 @@ class SpaceRelation {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -24932,8 +26120,20 @@ class Space {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -24983,6 +26183,8 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -25044,6 +26246,8 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -25076,6 +26280,7 @@ class Space {
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
       if (tmp5 > 0) {
@@ -25142,6 +26347,7 @@ class Space {
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
       if (tmp5 > 0) {
@@ -25201,6 +26407,7 @@ class Space {
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
       if (tmp5 > 0) {
@@ -25257,6 +26464,8 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -25264,6 +26473,8 @@ class Space {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -25271,6 +26482,8 @@ class Space {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
+
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
     tmp10_1.setAll(0, tmp9_0);
@@ -25304,6 +26517,8 @@ class Space {
       final tmp27 = tmp25;
       final tmp27_0 = utf8.encode(tmp27);
       tmp29 = tmp27_0.length;
+      debugAllocation("lower string", tmp28, tmp29);
+
       final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
       final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
       tmp28_1.setAll(0, tmp27_0);
@@ -25356,6 +26571,8 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -25405,6 +26622,8 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -25412,6 +26631,8 @@ class Space {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -25419,6 +26640,8 @@ class Space {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
+
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
     tmp10_1.setAll(0, tmp9_0);
@@ -25478,6 +26701,8 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -25541,6 +26766,8 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -25548,6 +26775,8 @@ class Space {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -25555,6 +26784,8 @@ class Space {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
+
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
     tmp10_1.setAll(0, tmp9_0);
@@ -25595,6 +26826,8 @@ class Space {
       final tmp31 = tmp29;
       final tmp31_0 = utf8.encode(tmp31);
       tmp33 = tmp31_0.length;
+      debugAllocation("lower string", tmp32, tmp33);
+
       final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
       final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
       tmp32_1.setAll(0, tmp31_0);
@@ -25649,6 +26882,8 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -25693,6 +26928,8 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -25700,6 +26937,8 @@ class Space {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
@@ -25707,6 +26946,8 @@ class Space {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
+
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
     tmp10_1.setAll(0, tmp9_0);
@@ -25749,6 +26990,8 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -25864,6 +27107,8 @@ class Account {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -25916,12 +27161,15 @@ class Account {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
     tmp7 = tmp5.length;
+    debugAllocation("lower vec", tmp6, tmp7);
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5);
@@ -26010,6 +27258,8 @@ class CreateSpaceSettings {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -26036,6 +27286,8 @@ class CreateSpaceSettings {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -26062,6 +27314,8 @@ class CreateSpaceSettings {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -26180,6 +27434,7 @@ class Client {
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
       if (tmp5 > 0) {
@@ -26208,6 +27463,7 @@ class Client {
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
       if (tmp5 > 0) {
@@ -26238,6 +27494,7 @@ class Client {
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
       if (tmp5 > 0) {
@@ -26266,6 +27523,8 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -26298,6 +27557,7 @@ class Client {
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
       if (tmp5 > 0) {
@@ -26372,6 +27632,8 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -26433,6 +27695,8 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -26466,6 +27730,8 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -26656,6 +27922,8 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -26691,6 +27959,8 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -26736,6 +28006,8 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -26803,6 +28075,8 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -26862,6 +28136,8 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -26923,6 +28199,8 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -26963,6 +28241,8 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -27023,8 +28303,20 @@ class DispName {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -27160,6 +28452,7 @@ class RoomProfile {
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
       if (tmp5 > 0) {
@@ -27373,8 +28666,20 @@ class VerificationEvent {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -27397,8 +28702,20 @@ class VerificationEvent {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -27417,8 +28734,20 @@ class VerificationEvent {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -27441,8 +28770,20 @@ class VerificationEvent {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -27465,8 +28806,20 @@ class VerificationEvent {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -27562,6 +28915,7 @@ class VerificationEvent {
     final tmp6 = tmp1.arg3;
     final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
       final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
       if (tmp5 > 0) {
@@ -27745,8 +29099,20 @@ class VerificationEmoji {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -27822,8 +29188,20 @@ class ReceiptRecord {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -27842,8 +29220,20 @@ class ReceiptRecord {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
     if (tmp5 > 0) {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
@@ -27933,6 +29323,8 @@ class DeviceChangedEvent {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -27992,6 +29384,8 @@ class DeviceChangedEvent {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
     tmp2_1.setAll(0, tmp1_0);
@@ -28132,8 +29526,20 @@ class DeviceRecord {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
@@ -28156,8 +29562,20 @@ class DeviceRecord {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
     if (tmp6 > 0) {
       final ffi.Pointer<ffi.Void> tmp4_0;
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);

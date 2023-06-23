@@ -3,7 +3,7 @@ import 'package:acter/common/utils/utils.dart';
 // import 'package:acter/features/chat/providers/notifiers/receipt_notifier.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/models/joined_room/joined_room.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
+// import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
+// import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
 class ConversationCard extends ConsumerStatefulWidget {
@@ -399,22 +399,22 @@ class _TrailingWidget extends ConsumerWidget {
     if (eventItem == null) {
       return const SizedBox.shrink();
     }
-    String senderID = '';
-    types.Status? messageStatus;
+    // String senderID = '';
+    // types.Status? messageStatus;
     int ts = eventItem.originServerTs();
 
-    List<String> seenByList = ref.read(receiptProvider.notifier).getSeenByList(
-          room.getRoomId(),
-          ts,
-        );
+    // List<String> seenByList = ref.read(receiptProvider.notifier).getSeenByList(
+    //       room.getRoomId(),
+    //       ts,
+    //     );
 
-    senderID = latestMessage!.eventItem()!.sender();
+    // senderID = latestMessage!.eventItem()!.sender();
 
-    messageStatus = seenByList.isEmpty
-        ? types.Status.sent
-        : seenByList.length < activeMembers.length
-            ? types.Status.delivered
-            : types.Status.seen;
+    // messageStatus = seenByList.isEmpty
+    //     ? types.Status.sent
+    //     : seenByList.length < activeMembers.length
+    //         ? types.Status.delivered
+    //         : types.Status.seen;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -424,43 +424,43 @@ class _TrailingWidget extends ConsumerWidget {
           ),
           style: Theme.of(context).textTheme.labelMedium,
         ),
-        senderID == userId
-            ? _CustomStatusWidget(status: messageStatus)
-            : const SizedBox.shrink(),
+        // senderID == userId
+        //     ? _CustomStatusWidget(status: messageStatus)
+        //     : const SizedBox.shrink(),
       ],
     );
   }
 }
 
-class _CustomStatusWidget extends StatelessWidget {
-  const _CustomStatusWidget({
-    required this.status,
-  });
+// class _CustomStatusWidget extends StatelessWidget {
+//   const _CustomStatusWidget({
+//     required this.status,
+//   });
 
-  final types.Status status;
+//   final types.Status status;
 
-  @override
-  Widget build(BuildContext context) {
-    if (status == types.Status.delivered) {
-      return SvgPicture.asset('assets/images/deliveredIcon.svg');
-    } else if (status == types.Status.seen) {
-      return SvgPicture.asset('assets/images/seenIcon.svg');
-    } else if (status == types.Status.sending) {
-      return const Center(
-        child: SizedBox(
-          height: 10,
-          width: 10,
-          child: CircularProgressIndicator(
-            strokeWidth: 1.5,
-          ),
-        ),
-      );
-    } else {
-      return SvgPicture.asset(
-        'assets/images/sentIcon.svg',
-        width: 12,
-        height: 12,
-      );
-    }
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     if (status == types.Status.delivered) {
+//       return SvgPicture.asset('assets/images/deliveredIcon.svg');
+//     } else if (status == types.Status.seen) {
+//       return SvgPicture.asset('assets/images/seenIcon.svg');
+//     } else if (status == types.Status.sending) {
+//       return const Center(
+//         child: SizedBox(
+//           height: 10,
+//           width: 10,
+//           child: CircularProgressIndicator(
+//             strokeWidth: 1.5,
+//           ),
+//         ),
+//       );
+//     } else {
+//       return SvgPicture.asset(
+//         'assets/images/sentIcon.svg',
+//         width: 12,
+//         height: 12,
+//       );
+//     }
+//   }
+// }
