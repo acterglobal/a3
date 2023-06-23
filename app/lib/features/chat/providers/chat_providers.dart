@@ -31,7 +31,7 @@ final invitationListProvider =
 final invitationProfileProvider =
     FutureProvider.family<InvitationProfile, Invitation>(
         (ref, invitation) async {
-  UserProfile profile = invitation.getSenderProfile();
+  UserProfile profile = await invitation.getSenderProfile();
   DispName dispName = await profile.getDisplayName();
   String? roomName = await invitation.roomName();
   String roomId = invitation.roomId().toString();

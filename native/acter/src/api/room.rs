@@ -44,7 +44,6 @@ use super::{
 };
 
 pub struct Member {
-    pub(crate) client: Client,
     pub(crate) member: RoomMember,
 }
 
@@ -57,9 +56,8 @@ impl Deref for Member {
 
 impl Member {
     pub fn get_profile(&self) -> UserProfile {
-        let client = self.client.clone();
-        let user_id = self.member.user_id().to_owned();
-        UserProfile::new(client, user_id)
+        let member = self.member.clone();
+        UserProfile::from_member(member)
     }
 
     pub fn user_id(&self) -> OwnedUserId {
@@ -84,7 +82,6 @@ impl Room {
     }
 
     pub async fn active_members(&self) -> Result<Vec<Member>> {
-        let client = self.room.client();
         let room = self.room.clone();
 
         RUNTIME
@@ -94,10 +91,7 @@ impl Room {
                     .await
                     .context("No members")?
                     .into_iter()
-                    .map(|member| Member {
-                        client: client.clone(),
-                        member,
-                    })
+                    .map(|member| Member { member })
                     .collect();
                 Ok(members)
             })
@@ -105,7 +99,6 @@ impl Room {
     }
 
     pub async fn active_members_no_sync(&self) -> Result<Vec<Member>> {
-        let client = self.room.client();
         let room = self.room.clone();
 
         RUNTIME
@@ -115,10 +108,7 @@ impl Room {
                     .await
                     .context("No members")?
                     .into_iter()
-                    .map(|member| Member {
-                        client: client.clone(),
-                        member,
-                    })
+                    .map(|member| Member { member })
                     .collect();
                 Ok(members)
             })
@@ -126,7 +116,6 @@ impl Room {
     }
 
     pub async fn get_member(&self, user_id: String) -> Result<Member> {
-        let client = self.room.client();
         let room = self.room.clone();
 
         let uid = UserId::parse(user_id).context("Couldn't parse user id to get member")?;
@@ -134,10 +123,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let member = room.get_member(&uid).await?.context("User not found")?;
-                Ok(Member {
-                    client: client.clone(),
-                    member,
-                })
+                Ok(Member { member })
             })
             .await?
     }
@@ -615,7 +601,7 @@ impl Room {
             .await?
     }
 
-    pub async fn get_invitees(&self) -> Result<Vec<Account>> {
+    pub async fn get_invitees(&self) -> Result<Vec<Member>> {
         let my_client = self.room.client();
         let room = if let SdkRoom::Invited(r) = &self.room {
             r.clone()
@@ -630,16 +616,13 @@ impl Room {
                     .get_user_ids(room.room_id(), RoomMemberships::INVITE)
                     .await
                     .context("Couldn't get invited user ids from store")?;
-                let mut accounts: Vec<Account> = vec![];
+                let mut members: Vec<Member> = vec![];
                 for user_id in invited.iter() {
-                    let other_client = Client::builder()
-                        .server_name(user_id.server_name())
-                        .build()
-                        .await
-                        .context("Couldn't build matrix client")?;
-                    accounts.push(Account::new(other_client.account(), user_id.clone()));
+                    if let Some(member) = room.get_member(user_id).await? {
+                        members.push(Member { member });
+                    }
                 }
-                Ok(accounts)
+                Ok(members)
             })
             .await?
     }

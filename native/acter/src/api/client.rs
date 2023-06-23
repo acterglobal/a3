@@ -560,9 +560,12 @@ impl Client {
     }
 
     pub fn get_user_profile(&self) -> Result<UserProfile> {
-        let client = self.core.client().clone();
-        let user_id = self.user_id()?;
-        Ok(UserProfile::new(client, user_id))
+        let client = self.core.client();
+        let user_id = client
+            .user_id()
+            .context("Couldn't get user id from client")?
+            .to_owned();
+        Ok(UserProfile::from_account(client.account(), user_id))
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
