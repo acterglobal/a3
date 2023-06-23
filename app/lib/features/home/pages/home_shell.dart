@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:acter/common/dialogs/onboarding_dialog.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 // import 'package:acter/features/chat/controllers/receipt_controller.dart';

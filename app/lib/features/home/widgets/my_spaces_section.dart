@@ -66,58 +66,16 @@ class MySpacesSection extends ConsumerWidget {
                     ),
                     error: (error, stackTrace) =>
                         Text('Failed to load space due to $error'),
-                    loading: () => const CircularProgressIndicator(),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                   );
                 },
               );
             },
             error: (error, stackTrace) =>
                 Text('Failed to load spaces due to $error'),
-            loading: () => const CircularProgressIndicator(),
-          )
-
-          // ...spaces.when(
-          //   data: (spaces) => [
-          //     if (spaces.isEmpty)
-          //       ...spaces.map(
-          //         (space) {
-          //           final roomId = space.getRoomId().toString();
-          //           final profile = ref.watch(spaceProfileDataProvider(space));
-          //           return profile.when(
-          //             data: (profile) => Padding(
-          //               padding: const EdgeInsets.only(
-          //                 bottom: 10,
-          //               ),
-          //   child: ListTile(
-          //     onTap: () => context.go('/$roomId'),
-          //     title: Text(
-          //       profile.displayName ?? roomId,
-          //       style: Theme.of(context).textTheme.bodySmall,
-          //     ),
-          //     leading: ActerAvatar(
-          //       mode: DisplayMode.Space,
-          //       displayName: profile.displayName,
-          //       uniqueId: roomId,
-          //       avatar: profile.getAvatarImage(),
-          //       size: 48,
-          //     ),
-          //   ),
-          // ),
-          //             error: (error, stack) => ListTile(
-          //               title: Text('Error loading: $roomId'),
-          //               subtitle: Text('$error'),
-          //             ),
-          //             loading: () => ListTile(
-          //               title: Text(roomId),
-          //               subtitle: const Text('loading'),
-          //             ),
-          //           );
-          //         },
-          //       ),
-          //   ],
-          //   error: (error, stack) => [Text('Loading spaces failed: $error')],
-          //   loading: () => [const Text('Loading')],
-          // ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+          ),
         ],
       ),
     );
