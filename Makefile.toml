@@ -1,7 +1,7 @@
 [env]
 CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
 CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS = ["native/acter"]
-ANDROID_PLATFORM_VERSION = "28"
+ANDROID_PLATFORM_VERSION = "23"
 TARGET_PLUGIN = "app/packages/rust_sdk"
 LIB_OUT_DIR = "debug"
 TARGET_OS = "unknown"
@@ -16,7 +16,7 @@ LIB_OUT_DIR = "release"
 [tasks.setup-android]
 # set up the system for android
 script = [
-    "cargo install cargo-ndk@2.12.7",
+    "cargo install cargo-ndk@3.2.0",
 ]
 
 [tasks.setup-ios]
@@ -270,7 +270,6 @@ args = [
     "--target",
     "${ANDROID_BUILD_TARGET}",
     "build",
-    "-Zbuild-std",
 ]
 
 [tasks.android-build-release]
@@ -284,7 +283,6 @@ args = [
     "--target",
     "${ANDROID_BUILD_TARGET}",
     "build",
-    "-Zbuild-std",
     "--release"
 ]
 

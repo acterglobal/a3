@@ -1,12 +1,12 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/search/providers/spaces.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter/features/search/providers/search.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-final searchValueProvider = StateProvider<String>((ref) => '');
 
 class QuickJump extends ConsumerWidget {
   final void Function({Routes? route, bool push, String? target}) navigateTo;
@@ -36,8 +36,8 @@ class QuickJump extends ConsumerWidget {
                             .withOpacity(0.12),
                       ),
                     ),
-                    onPressed: () => {
-                      //navigateTo(route: Routes.tasks);
+                    onPressed: () {
+                      navigateTo(route: Routes.tasks);
                     },
                     icon: SvgPicture.asset(
                       'assets/images/tasks.svg',
@@ -55,8 +55,13 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () {},
-              icon: const Icon(Atlas.back_vr_thin, size: 48),
+              onPressed: () {
+                navigateTo(route: Routes.chat);
+              },
+              icon: const Icon(
+                Atlas.chats_thin,
+                size: 48,
+              ),
             ),
             IconButton(
               style: IconButton.styleFrom(
@@ -65,66 +70,13 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () {},
-              icon: const Icon(Atlas.cabin_thin, size: 48),
+              onPressed: () {
+                navigateTo(route: Routes.activities);
+              },
+              icon: const Icon(Atlas.audio_wave_thin, size: 48),
             ),
-            IconButton(
-              style: IconButton.styleFrom(
-                side: BorderSide(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-                ),
-              ),
-              onPressed: () {},
-              icon: const Icon(Atlas.dart_thin, size: 48),
-            )
           ].where((element) => element != null),
         ),
-      ),
-      ButtonBar(
-        alignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          IconButton(
-            style: IconButton.styleFrom(
-              side: BorderSide(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-              ),
-            ),
-            onPressed: () {},
-            icon: const Icon(Atlas.ear_muffs_thin, size: 48),
-          ),
-          IconButton(
-            style: IconButton.styleFrom(
-              side: BorderSide(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-              ),
-            ),
-            onPressed: () {},
-            icon: const Icon(Atlas.face_mask_thin, size: 48),
-          ),
-          IconButton(
-            style: IconButton.styleFrom(
-              side: BorderSide(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-              ),
-            ),
-            onPressed: () {},
-            icon: const Icon(Atlas.game_plan_thin, size: 48),
-          ),
-          IconButton(
-            style: IconButton.styleFrom(
-              side: BorderSide(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-              ),
-            ),
-            onPressed: () {},
-            icon: const Icon(Atlas.hair_dryer_thin, size: 48),
-          )
-        ],
       ),
     ];
   }
@@ -194,16 +146,46 @@ class QuickJump extends ConsumerWidget {
     );
   }
 
+  Widget spaces(BuildContext context, WidgetRef ref) {
+    return ref.watch(spacesFoundProvider).when(
+          loading: () => const Text('loading'),
+          error: (e, st) => Text('error: $e'),
+          data: (data) {
+            final Widget body;
+            if (data.isEmpty) {
+              body = const Text('no matching spaces found');
+            } else {
+              final List<Widget> children = data
+                  .map(
+                    (e) => IconButton(
+                      onPressed: () {
+                        navigateTo(target: e.navigationTarget);
+                      },
+                      icon: e.icon,
+                    ),
+                  )
+                  .toList();
+              body = ButtonBar(
+                alignment: MainAxisAlignment.start,
+                children: children,
+              );
+            }
+            return Column(
+              children: [
+                const Text('Spaces'),
+                body,
+              ],
+            );
+          },
+        );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final searchValue = ref.watch(searchValueProvider);
 
-    List<Widget> body = [];
-
-    if (searchValue.isNotEmpty) {
-      // FIXME: add actual search results... at least spaces maybe?
-      body.add(const SizedBox(height: 250));
-    } else {
+    List<Widget> body = [spaces(context, ref)];
+    if (searchValue.isEmpty) {
       body.add(
         const Divider(indent: 24, endIndent: 24),
       );

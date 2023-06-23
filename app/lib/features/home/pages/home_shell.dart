@@ -69,6 +69,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         ),
       );
     }
+    final hasFirstSynced = ref.watch(syncStateProvider);
     final bottomBarIdx =
         ref.watch(currentSelectedBottomBarIndexProvider(context));
 
@@ -86,6 +87,19 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           child: AdaptiveLayout(
             key: _key,
             bodyRatio: bodyRatio,
+            topNavigation: !hasFirstSynced
+                ? SlotLayout(
+                    config: <Breakpoint, SlotLayoutConfig?>{
+                      Breakpoints.smallAndUp: SlotLayout.from(
+                        key: const Key('LoadingIndictor'),
+                        builder: (BuildContext ctx) =>
+                            const LinearProgressIndicator(
+                          semanticsLabel: 'Loading first sync',
+                        ),
+                      )
+                    },
+                  )
+                : null,
             primaryNavigation: desktop
                 ? SlotLayout(
                     config: <Breakpoint, SlotLayoutConfig?>{

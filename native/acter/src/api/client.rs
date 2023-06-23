@@ -304,6 +304,7 @@ impl Client {
     }
 
     pub fn start_sync(&mut self) -> SyncState {
+        tracing::info!("starting sync");
         let state = self.state.clone();
         let me = self.clone();
         let executor = self.executor().clone();
@@ -333,6 +334,7 @@ impl Client {
         let sync_state_history = sync_state.history_loading.clone();
 
         let handle = RUNTIME.spawn(async move {
+            tracing::info!("spawning sync callback");
             let client = client.clone();
             let state = state.clone();
 
@@ -346,6 +348,7 @@ impl Client {
             client
                 .clone()
                 .sync_with_result_callback(SyncSettings::new(), |result| async {
+                    tracing::info!("received sync callback");
                     let client = client.clone();
                     let me = me.clone();
                     let executor = executor.clone();
@@ -372,11 +375,12 @@ impl Client {
                     };
 
                     device_controller.process_device_lists(&client, &response);
-                    tracing::trace!("post device controller");
+                    tracing::trace!("post decallbackvice controller");
 
                     if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
                         == Ok(true)
                     {
+                        tracing::info!("received first sync");
                         tracing::trace!(user_id=?client.user_id(), "initial synced");
                         // divide_spaces_from_convos must be called after first sync
                         let (spaces, convos) = devide_spaces_from_convos(me.clone()).await;
@@ -384,14 +388,16 @@ impl Client {
                         // load invitations after first sync
                         invitation_controller.load_invitations(&client).await;
 
-                        me.refresh_history_on_start(sync_state_history.clone())
-                            .await;
-
                         initial.store(false, Ordering::SeqCst);
+
+                        tracing::info!("issuing first sync update");
                         first_synced_arc.send(true);
                         if let Ok(mut w) = state.try_write() {
                             w.has_first_synced = true;
                         }
+
+                        me.refresh_history_on_start(sync_state_history.clone())
+                            .await;
                     } else {
                         // see if we have new spaces to catch up upon
                         let mut new_spaces = Vec::new();

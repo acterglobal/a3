@@ -16,6 +16,7 @@ import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
+import 'package:acter/features/todo/pages/todo_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/search/pages/search.dart';
 import 'package:acter/features/settings/pages/index_page.dart';
@@ -169,6 +170,17 @@ final routes = [
         },
       ),
 
+      GoRoute(
+        name: Routes.tasks.name,
+        path: Routes.tasks.route,
+        redirect: authGuardRedirect,
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: const TodoPage(),
+          );
+        },
+      ),
       GoRoute(
         name: Routes.updates.name,
         path: Routes.updates.route,
