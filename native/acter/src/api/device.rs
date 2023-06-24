@@ -38,15 +38,11 @@ impl DeviceChangedEvent {
                     .user_id()
                     .expect("guest user cannot get the verified devices");
                 let mut records: Vec<DeviceRecord> = vec![];
-                let response = client
-                    .devices()
-                    .await
-                    .context("Couldn't get device list from client")?;
+                let response = client.devices().await?;
                 for device in client
                     .encryption()
                     .get_user_devices(user_id)
-                    .await
-                    .context("Couldn't get user device list from client encryption")?
+                    .await?
                     .devices()
                 {
                     if device.is_verified() == verified {
@@ -82,9 +78,7 @@ impl DeviceChangedEvent {
                     .get_user_identity(user_id)
                     .await?
                     .context("alice should get user identity")?;
-                user.request_verification()
-                    .await
-                    .context("Couldn't request verification")?;
+                user.request_verification().await?;
                 Ok(true)
             })
             .await?
@@ -100,12 +94,10 @@ impl DeviceChangedEvent {
                 let dev = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
-                    .await
-                    .context("alice should get device")?
-                    .unwrap();
+                    .await?
+                    .context("alice should get device")?;
                 dev.request_verification_with_methods(vec![VerificationMethod::SasV1])
-                    .await
-                    .context("Couldn't request verification with methods")?;
+                    .await?;
                 Ok(true)
             })
             .await?
@@ -127,9 +119,7 @@ impl DeviceChangedEvent {
                     .get_user_identity(user_id)
                     .await?
                     .context("alice should get user identity")?;
-                user.request_verification_with_methods(values)
-                    .await
-                    .context("Couldn't request verification with methods")?;
+                user.request_verification_with_methods(values).await?;
                 Ok(true)
             })
             .await?
@@ -150,12 +140,9 @@ impl DeviceChangedEvent {
                 let dev = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
-                    .await
-                    .context("alice should get device")?
-                    .unwrap();
-                dev.request_verification_with_methods(values)
-                    .await
-                    .context("Couldn't request verification with methods")?;
+                    .await?
+                    .context("alice should get device")?;
+                dev.request_verification_with_methods(values).await?;
                 Ok(true)
             })
             .await?
@@ -182,15 +169,11 @@ impl DeviceLeftEvent {
                     .user_id()
                     .expect("guest user cannot get the deleted devices");
                 let mut records: Vec<DeviceRecord> = vec![];
-                let response = client
-                    .devices()
-                    .await
-                    .context("Couldn't get device list from client")?;
+                let response = client.devices().await?;
                 for device in client
                     .encryption()
                     .get_user_devices(user_id)
-                    .await
-                    .context("Couldn't get user devices from client encryption")?
+                    .await?
                     .devices()
                 {
                     if device.is_deleted() == deleted {

@@ -51,10 +51,7 @@ impl UserProfile {
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
-                    let url = account
-                        .get_avatar_url()
-                        .await
-                        .context("Couldn't get avatar url")?;
+                    let url = account.get_avatar_url().await?;
                     Ok(url.is_some())
                 })
                 .await?;
@@ -69,10 +66,7 @@ impl UserProfile {
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
-                    let result = account
-                        .get_avatar(MediaFormat::File)
-                        .await
-                        .context("Couldn't get avatar from account")?;
+                    let result = account.get_avatar(MediaFormat::File).await?;
                     match result {
                         Some(result) => Ok(FfiBuffer::new(result)),
                         None => Ok(FfiBuffer::new(vec![])),
@@ -83,10 +77,7 @@ impl UserProfile {
         if let Some(member) = self.member.clone() {
             return RUNTIME
                 .spawn(async move {
-                    let result = member
-                        .avatar(MediaFormat::File)
-                        .await
-                        .context("Couldn't get avatar from account")?;
+                    let result = member.avatar(MediaFormat::File).await?;
                     match result {
                         Some(result) => Ok(FfiBuffer::new(result)),
                         None => Ok(FfiBuffer::new(vec![])),
@@ -106,10 +97,7 @@ impl UserProfile {
                         width: UInt::from(width),
                         height: UInt::from(height),
                     };
-                    let result = account
-                        .get_avatar(MediaFormat::Thumbnail(size))
-                        .await
-                        .context("Couldn't get avatar from account")?;
+                    let result = account.get_avatar(MediaFormat::Thumbnail(size)).await?;
                     match result {
                         Some(result) => Ok(FfiBuffer::new(result)),
                         None => Ok(FfiBuffer::new(vec![])),
@@ -125,10 +113,7 @@ impl UserProfile {
                         width: UInt::from(width),
                         height: UInt::from(height),
                     };
-                    let result = member
-                        .avatar(MediaFormat::Thumbnail(size))
-                        .await
-                        .context("Couldn't get avatar from account")?;
+                    let result = member.avatar(MediaFormat::Thumbnail(size)).await?;
                     match result {
                         Some(result) => Ok(FfiBuffer::new(result)),
                         None => Ok(FfiBuffer::new(vec![])),
@@ -172,7 +157,7 @@ impl RoomProfile {
         let room = self
             .client
             .get_room(&self.room_id)
-            .context("couldn't get room from client")?;
+            .context("Room not found")?;
         Ok(room.avatar_url().is_some())
     }
 
@@ -180,13 +165,10 @@ impl RoomProfile {
         let room = self
             .client
             .get_room(&self.room_id)
-            .context("couldn't get room from client")?;
+            .context("Room not found")?;
         RUNTIME
             .spawn(async move {
-                let result = room
-                    .avatar(MediaFormat::File)
-                    .await
-                    .context("Couldn't get avatar from room")?;
+                let result = room.avatar(MediaFormat::File).await?;
                 match result {
                     Some(result) => Ok(FfiBuffer::new(result)),
                     None => Ok(FfiBuffer::new(vec![])),
@@ -199,7 +181,7 @@ impl RoomProfile {
         let room = self
             .client
             .get_room(&self.room_id)
-            .context("couldn't get room from client")?;
+            .context("Room not found")?;
         RUNTIME
             .spawn(async move {
                 let size = MediaThumbnailSize {
@@ -207,10 +189,7 @@ impl RoomProfile {
                     width: UInt::from(width),
                     height: UInt::from(height),
                 };
-                let result = room
-                    .avatar(MediaFormat::Thumbnail(size))
-                    .await
-                    .context("Couldn't get avatar from room")?;
+                let result = room.avatar(MediaFormat::Thumbnail(size)).await?;
                 match result {
                     Some(result) => Ok(FfiBuffer::new(result)),
                     None => Ok(FfiBuffer::new(vec![])),
@@ -223,13 +202,10 @@ impl RoomProfile {
         let room = self
             .client
             .get_room(&self.room_id)
-            .context("couldn't get room from client")?;
+            .context("Room not found")?;
         RUNTIME
             .spawn(async move {
-                let result = room
-                    .display_name()
-                    .await
-                    .context("Couldn't get display name from room")?;
+                let result = room.display_name().await?;
                 match result {
                     DisplayName::Named(name) => Ok(DispName { text: Some(name) }),
                     DisplayName::Aliased(name) => Ok(DispName { text: Some(name) }),

@@ -1,5 +1,5 @@
 use acter_core::statics::default_acter_conversation_states;
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 use derive_builder::Builder;
 use futures::channel::mpsc::{channel, Receiver, Sender};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
@@ -96,16 +96,11 @@ impl Conversation {
         RUNTIME
             .spawn(async move {
                 let mut records: Vec<ReceiptRecord> = vec![];
-                for member in room
-                    .members(RoomMemberships::ACTIVE)
-                    .await
-                    .context("Couldn't get active members from room")?
-                {
+                for member in room.members(RoomMemberships::ACTIVE).await? {
                     let user_id = member.user_id();
                     if let Some((event_id, receipt)) = room
                         .user_receipt(ReceiptType::Read, ReceiptThread::Main, user_id)
-                        .await
-                        .context("Couldn't set up user receipt")?
+                        .await?
                     {
                         let record = ReceiptRecord::new(event_id, user_id.to_owned(), receipt.ts);
                         records.push(record);
@@ -408,10 +403,7 @@ impl Client {
                     name: settings.name,
                     visibility: Visibility::Private,
                 });
-                let response = client
-                    .create_room(request)
-                    .await
-                    .context("Couldn't create room")?;
+                let response = client.create_room(request).await?;
                 Ok(response.room_id().to_owned())
             })
             .await?

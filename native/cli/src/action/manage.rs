@@ -63,8 +63,7 @@ impl Manage {
         let mut client = self.login.client().await?;
         let settings = CreateSpaceSettingsBuilder::default()
             .name(format!("{}'s onboarding space", client.user_id()?))
-            .build()
-            .context("building failed in settings of create space")?;
+            .build()?;
 
         let room_id = client.create_acter_space(Box::new(settings)).await?;
 

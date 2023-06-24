@@ -1,4 +1,4 @@
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 use eyeball_im::VectorDiff;
 use futures::{Stream, StreamExt};
 use log::info;
@@ -168,8 +168,7 @@ impl TimelineStream {
                 let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
                 timeline
                     .paginate_backwards(PaginationOptions::single_request(count))
-                    .await
-                    .context("Couldn't paginate backwards from timeline")?;
+                    .await?;
 
                 let mut is_loading_indicator = false;
                 if let Some(VectorDiff::Insert { index: 0, value }) = timeline_stream.next().await {
@@ -271,14 +270,8 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let timeline_event = room
-                    .event(&event_id)
-                    .await
-                    .context("Couldn't find event.")?;
-                let event_content = timeline_event
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
+                let timeline_event = room.event(&event_id).await?;
+                let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
 
                 let mut sent_by_me = false;
                 if let Some(user_id) = client.user_id() {

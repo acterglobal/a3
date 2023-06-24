@@ -48,12 +48,7 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client
-                    .store()
-                    .get_list(KEYS::PINS)
-                    .await
-                    .context("Couldn't get pin list from store")?
-                {
+                for mdl in client.store().get_list(KEYS::PINS).await? {
                     if let AnyActerModel::Pin(t) = mdl {
                         let room_id = t.room_id().to_owned();
                         let room = match rooms_map.entry(room_id) {
@@ -88,12 +83,7 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client
-                    .store()
-                    .get_list(KEYS::PINS)
-                    .await
-                    .context("Couldn't get pin list from store")?
-                {
+                for mdl in client.store().get_list(KEYS::PINS).await? {
                     if let AnyActerModel::Pin(pin) = mdl {
                         if !pin.is_link() {
                             continue;
@@ -134,11 +124,8 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client
-                    .store()
-                    .get_list(&format!("{room_id}::{}", KEYS::PINS))
-                    .await?
-                {
+                let k = format!("{room_id}::{}", KEYS::PINS);
+                for mdl in client.store().get_list(&k).await? {
                     if let AnyActerModel::Pin(t) = mdl {
                         pins.push(Pin {
                             client: client.clone(),
@@ -161,12 +148,8 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client
-                    .store()
-                    .get_list(&format!("{room_id}::{}", KEYS::PINS))
-                    .await
-                    .context("Couldn't get pin list from store")?
-                {
+                let k = format!("{room_id}::{}", KEYS::PINS);
+                for mdl in client.store().get_list(&k).await? {
                     if let AnyActerModel::Pin(pin) = mdl {
                         if pin.is_link() {
                             pins.push(Pin {
@@ -238,7 +221,7 @@ impl Pin {
 
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Pin(content) = client.store().get(&key).await.context("Couldn't get pin model from store")? else {
+                let AnyActerModel::Pin(content) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a pin")
                 };
                 Ok(Pin {
@@ -318,16 +301,10 @@ impl PinDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self
-            .content
-            .build()
-            .context("building failed in event content of pin")?;
+        let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room
-                    .send(content, None)
-                    .await
-                    .context("Couldn't send pin")?;
+                let resp = room.send(content, None).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -386,16 +363,10 @@ impl PinUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self
-            .content
-            .build()
-            .context("building failed in event content of pin update")?;
+        let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room
-                    .send(content, None)
-                    .await
-                    .context("Couldn't send pin update")?;
+                let resp = room.send(content, None).await?;
                 Ok(resp.event_id)
             })
             .await?

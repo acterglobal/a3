@@ -47,12 +47,7 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client
-                    .store()
-                    .get_list(KEYS::CALENDAR)
-                    .await
-                    .context("Couldn't get list from store")?
-                {
+                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
                     if let AnyActerModel::CalendarEvent(t) = mdl {
                         let room_id = t.room_id().to_owned();
                         let room = match rooms_map.entry(room_id) {
@@ -230,16 +225,10 @@ impl CalendarEventDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self
-            .inner
-            .build()
-            .context("building failed in event content of calendar event")?;
+        let inner = self.inner.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room
-                    .send(inner, None)
-                    .await
-                    .context("Couldn't send calendart event draft")?;
+                let resp = room.send(inner, None).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -283,16 +272,10 @@ impl CalendarEventUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self
-            .inner
-            .build()
-            .context("building failed in event content of calendar event update")?;
+        let inner = self.inner.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room
-                    .send(inner, None)
-                    .await
-                    .context("Couldn't send calendar event update")?;
+                let resp = room.send(inner, None).await?;
                 Ok(resp.event_id)
             })
             .await?

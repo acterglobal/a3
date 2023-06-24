@@ -52,10 +52,7 @@ impl Account {
                 } else {
                     Some(new_name.as_str())
                 };
-                account
-                    .set_display_name(name)
-                    .await
-                    .context("Couldn't set display name")?;
+                account.set_display_name(name).await?;
                 Ok(true)
             })
             .await?
@@ -68,7 +65,7 @@ impl Account {
                 let buf = account
                     .get_avatar(MediaFormat::File)
                     .await?
-                    .context("No avatar URL given")?;
+                    .unwrap_or_default();
                 Ok(FfiBuffer::new(buf))
             })
             .await?
@@ -79,10 +76,7 @@ impl Account {
         let content_type = content_type.parse::<mime::Mime>()?;
         RUNTIME
             .spawn(async move {
-                let new_url = account
-                    .upload_avatar(&content_type, data)
-                    .await
-                    .context("Couldn't upload avatar")?;
+                let new_url = account.upload_avatar(&content_type, data).await?;
                 Ok(new_url)
             })
             .await?

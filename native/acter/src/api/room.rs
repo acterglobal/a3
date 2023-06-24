@@ -89,8 +89,7 @@ impl Room {
             .spawn(async move {
                 let members = room
                     .members(RoomMemberships::ACTIVE)
-                    .await
-                    .context("No members")?
+                    .await?
                     .into_iter()
                     .map(|member| Member { member })
                     .collect();
@@ -106,8 +105,7 @@ impl Room {
             .spawn(async move {
                 let members = room
                     .members_no_sync(RoomMemberships::ACTIVE)
-                    .await
-                    .context("No members")?
+                    .await?
                     .into_iter()
                     .map(|member| Member { member })
                     .collect();
@@ -118,8 +116,7 @@ impl Room {
 
     pub async fn get_member(&self, user_id: String) -> Result<Member> {
         let room = self.room.clone();
-
-        let uid = UserId::parse(user_id).context("Couldn't parse user id to get member")?;
+        let uid = UserId::parse(user_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -163,9 +160,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                room.typing_notice(typing)
-                    .await
-                    .context("Couldn't send typing notice")?;
+                room.typing_notice(typing).await?;
                 Ok(true)
             })
             .await?
@@ -178,8 +173,7 @@ impl Room {
             bail!("Can't send read_receipt to a room we are not in")
         };
 
-        let event_id =
-            EventId::parse(event_id).context("Couldn't parse event id to read receipt")?;
+        let event_id = EventId::parse(event_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -188,8 +182,7 @@ impl Room {
                     ReceiptThread::Unthreaded,
                     event_id,
                 )
-                .await
-                .context("Couldn't send single receipt")?;
+                .await?;
                 Ok(true)
             })
             .await?
@@ -219,10 +212,7 @@ impl Room {
                 }
                 let content = RoomMessageEventContent::text_plain(message);
                 let txn_id = TransactionId::new();
-                let response = room
-                    .send(content, Some(&txn_id))
-                    .await
-                    .context("Couldn't send plain text message")?;
+                let response = room.send(content, Some(&txn_id)).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -252,10 +242,7 @@ impl Room {
                 }
                 let content = RoomMessageEventContent::text_markdown(markdown);
                 let txn_id = TransactionId::new();
-                let response = room
-                    .send(content, Some(&txn_id))
-                    .await
-                    .context("Couldn't send formatted text message")?;
+                let response = room.send(content, Some(&txn_id)).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -274,8 +261,7 @@ impl Room {
             .context("User not found")?
             .to_owned();
 
-        let event_id =
-            EventId::parse(event_id).context("Couldn't parse event id to send reaction")?;
+        let event_id = EventId::parse(event_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -289,10 +275,7 @@ impl Room {
                 let relates_to = Annotation::new(event_id, key);
                 let content = ReactionEventContent::new(relates_to);
                 let txn_id = TransactionId::new();
-                let response = room
-                    .send(content, Some(&txn_id))
-                    .await
-                    .context("Couldn't send reaction")?;
+                let response = room.send(content, Some(&txn_id)).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -339,11 +322,10 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let image_buf = std::fs::read(path).context("Couldn't read image data to send")?;
+                let image_buf = std::fs::read(path)?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, image_buf, config)
-                    .await
-                    .context("Couldn't send image attachment")?;
+                    .await?;
                 Ok(response.event_id)
             })
             .await?
@@ -357,15 +339,11 @@ impl Room {
         };
         let client = self.room.client();
 
-        let event_id =
-            EventId::parse(event_id).context("Couldn't parse event id to get image binary")?;
+        let event_id = EventId::parse(event_id)?;
 
         RUNTIME
             .spawn(async move {
-                let evt = room
-                    .event(&event_id)
-                    .await
-                    .context("Couldn't get room message")?;
+                let evt = room.event(&event_id).await?;
                 let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
                 ))) = evt.event.deserialize() else {
@@ -378,11 +356,7 @@ impl Room {
                     source: content.source.clone(),
                     format: MediaFormat::File,
                 };
-                let data = client
-                    .media()
-                    .get_media_content(&request, false)
-                    .await
-                    .context("Coudln't get media content")?;
+                let data = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(data))
             })
             .await?
@@ -424,7 +398,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let audio_buf = std::fs::read(path).context("Couldn't read audio data to send")?;
+                let audio_buf = std::fs::read(path)?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, audio_buf, config)
                     .await
@@ -442,15 +416,11 @@ impl Room {
         };
         let client = self.room.client();
 
-        let event_id =
-            EventId::parse(event_id).context("Couldn't parse event id to get audio binary")?;
+        let event_id = EventId::parse(event_id)?;
 
         RUNTIME
             .spawn(async move {
-                let evt = room
-                    .event(&event_id)
-                    .await
-                    .context("Couldn't get room message")?;
+                let evt = room.event(&event_id).await?;
                 let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
                 ))) = evt.event.deserialize() else {
@@ -463,11 +433,7 @@ impl Room {
                     source: content.source.clone(),
                     format: MediaFormat::File,
                 };
-                let data = client
-                    .media()
-                    .get_media_content(&request, false)
-                    .await
-                    .context("Coudln't get media content")?;
+                let data = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(data))
             })
             .await?
@@ -516,11 +482,10 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let video_buf = std::fs::read(path).context("Couldn't read video data to send")?;
+                let video_buf = std::fs::read(path)?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, video_buf, config)
-                    .await
-                    .context("Couldn't send attachment")?;
+                    .await?;
                 Ok(response.event_id)
             })
             .await?
@@ -534,15 +499,11 @@ impl Room {
         };
         let client = self.room.client();
 
-        let event_id =
-            EventId::parse(event_id).context("Couldn't parse event id to get video binary")?;
+        let event_id = EventId::parse(event_id)?;
 
         RUNTIME
             .spawn(async move {
-                let evt = room
-                    .event(&event_id)
-                    .await
-                    .context("Couldn't get room message")?;
+                let evt = room.event(&event_id).await?;
                 let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
                 ))) = evt.event.deserialize() else {
@@ -555,11 +516,7 @@ impl Room {
                     source: content.source.clone(),
                     format: MediaFormat::File,
                 };
-                let data = client
-                    .media()
-                    .get_media_content(&request, false)
-                    .await
-                    .context("Coudln't get media content")?;
+                let data = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(data))
             })
             .await?
@@ -599,11 +556,10 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let file_buf = std::fs::read(path).context("Couldn't read file data to send")?;
+                let file_buf = std::fs::read(path)?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, file_buf, config)
-                    .await
-                    .context("Couldn't send attachment")?;
+                    .await?;
                 Ok(response.event_id)
             })
             .await?
@@ -617,15 +573,11 @@ impl Room {
         };
         let client = self.room.client();
 
-        let event_id =
-            EventId::parse(event_id).context("Couldn't parse event id to get file binary")?;
+        let event_id = EventId::parse(event_id)?;
 
         RUNTIME
             .spawn(async move {
-                let evt = room
-                    .event(&event_id)
-                    .await
-                    .context("Couldn't get room message")?;
+                let evt = room.event(&event_id).await?;
                 let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
                 ))) = evt.event.deserialize() else {
@@ -638,11 +590,7 @@ impl Room {
                     source: content.source.clone(),
                     format: MediaFormat::File,
                 };
-                let data = client
-                    .media()
-                    .get_media_content(&request, false)
-                    .await
-                    .context("Coudln't get media content")?;
+                let data = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(data))
             })
             .await?
@@ -669,8 +617,7 @@ impl Room {
             .context("User not found")?
             .to_owned();
 
-        let user_id =
-            UserId::parse(user_id.as_str()).context("Couldn't parse user id to invite")?;
+        let user_id = UserId::parse(user_id.as_str())?;
 
         RUNTIME
             .spawn(async move {
@@ -681,9 +628,7 @@ impl Room {
                 if !member.can_invite() {
                     bail!("No permission to invite someone in this room");
                 }
-                room.invite_user_by_id(&user_id)
-                    .await
-                    .context("Couldn't invite user by id")?;
+                room.invite_user_by_id(&user_id).await?;
                 Ok(true)
             })
             .await?
@@ -698,7 +643,7 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                room.join().await.context("Join failed")?;
+                room.join().await?;
                 Ok(true)
             })
             .await?
@@ -713,7 +658,7 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                room.leave().await.context("Leave failed")?;
+                room.leave().await?;
                 Ok(true)
             })
             .await?
@@ -732,8 +677,7 @@ impl Room {
                 let invited = my_client
                     .store()
                     .get_user_ids(room.room_id(), RoomMemberships::INVITE)
-                    .await
-                    .context("Couldn't get invited user ids from store")?;
+                    .await?;
                 let mut members: Vec<Member> = vec![];
                 for user_id in invited.iter() {
                     if let Some(member) = room.get_member(user_id).await? {
@@ -753,15 +697,11 @@ impl Room {
         };
         let client = self.room.client();
 
-        let eid =
-            EventId::parse(event_id.clone()).context("Couldn't parse event id to download file")?;
+        let eid = EventId::parse(event_id.clone())?;
 
         RUNTIME
             .spawn(async move {
-                let evt = room
-                    .event(&eid)
-                    .await
-                    .context("Couldn't get room message")?;
+                let evt = room.event(&eid).await?;
                 let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
                 ))) = evt.event.deserialize() else {
@@ -800,15 +740,9 @@ impl Room {
                 };
                 let mut path = PathBuf::from(dir_path.clone());
                 path.push(name);
-                let mut file = File::create(path.clone())
-                    .context("Couldn't create file to write the fetched data")?;
-                let data = client
-                    .media()
-                    .get_media_content(&request, false)
-                    .await
-                    .context("Couldn't get media content")?;
-                file.write_all(&data)
-                    .context("Couldn't write data to file")?;
+                let mut file = File::create(path.clone())?;
+                let data = client.media().get_media_content(&request, false).await?;
+                file.write_all(&data)?;
                 let key = [
                     room.room_id().as_str().as_bytes(),
                     event_id.as_str().as_bytes(),
@@ -820,8 +754,7 @@ impl Room {
                 client
                     .store()
                     .set_custom_value(&key, path_text.as_bytes().to_vec())
-                    .await?
-                    .context("Saving the file path to storage was failed")?;
+                    .await?;
                 Ok(path_text.to_string())
             })
             .await?
@@ -835,15 +768,11 @@ impl Room {
         };
         let client = self.room.client();
 
-        let eid = EventId::parse(event_id.clone())
-            .context("Couldn't parse event id to get downloaded media path")?;
+        let eid = EventId::parse(event_id.clone())?;
 
         RUNTIME
             .spawn(async move {
-                let evt = room
-                    .event(&eid)
-                    .await
-                    .context("Couldn't get room message")?;
+                let evt = room.event(&eid).await?;
                 let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
                 ))) = evt.event.deserialize() else {
@@ -866,7 +795,7 @@ impl Room {
                     .get_custom_value(&key)
                     .await?
                     .context("Couldn't get the path of downloaded media")?;
-                let text = std::str::from_utf8(&path).context("Couldn't get string from utf8")?;
+                let text = std::str::from_utf8(&path)?;
                 Ok(text.to_string())
             })
             .await?
@@ -881,10 +810,7 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let encrypted = room
-                    .is_encrypted()
-                    .await
-                    .context("Couldn't check if room is encrypted")?;
+                let encrypted = room.is_encrypted().await?;
                 Ok(encrypted)
             })
             .await?
@@ -898,15 +824,11 @@ impl Room {
         };
         let r = self.room.clone();
 
-        let event_id =
-            EventId::parse(event_id).context("Couldn't parse event id to get message")?;
+        let event_id = EventId::parse(event_id)?;
 
         RUNTIME
             .spawn(async move {
-                let evt = room
-                    .event(&event_id)
-                    .await
-                    .context("Coudln't get room message")?;
+                let evt = room.event(&event_id).await?;
                 match evt.event.deserialize() {
                     Ok(AnyTimelineEvent::State(AnyStateEvent::PolicyRuleRoom(
                         StateEvent::Original(e),
@@ -1162,7 +1084,7 @@ impl Room {
             .context("User not found")?
             .to_owned();
 
-        let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
+        let event_id = EventId::parse(event_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -1174,15 +1096,9 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let timeline_event = room
-                    .event(&event_id)
-                    .await
-                    .context("Couldn't find event.")?;
+                let timeline_event = room.event(&event_id).await?;
 
-                let event_content = timeline_event
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
+                let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
 
                 let original_message = event_content
                     .as_original()
@@ -1194,8 +1110,7 @@ impl Room {
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
-                    .await
-                    .context("Couldn't send text reply")?;
+                    .await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1222,7 +1137,7 @@ impl Room {
         let my_id = client.user_id().context("User not found")?.to_owned();
 
         let path = PathBuf::from(uri);
-        let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
+        let event_id = EventId::parse(event_id)?;
         let content_type = mimetype.parse::<mime::Mime>()?;
         let info = assign!(ImageInfo::new(), {
             height: height.map(UInt::from),
@@ -1241,28 +1156,17 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let image_buf =
-                    std::fs::read(path).context("Couldn't read image buffer to reply")?;
+                let image_buf = std::fs::read(path)?;
 
-                let timeline_event = room
-                    .event(&event_id)
-                    .await
-                    .context("Couldn't find event.")?;
+                let timeline_event = room.event(&event_id).await?;
 
-                let event_content = timeline_event
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
+                let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
 
                 let original_message = event_content
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
 
-                let response = client
-                    .media()
-                    .upload(&content_type, image_buf)
-                    .await
-                    .context("Couldn't upload image to reply")?;
+                let response = client.media().upload(&content_type, image_buf).await?;
 
                 let image_content = ImageMessageEventContent::plain(
                     name,
@@ -1274,8 +1178,7 @@ impl Room {
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
-                    .await
-                    .context("Couldn't send image reply")?;
+                    .await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1301,7 +1204,7 @@ impl Room {
         let my_id = client.user_id().context("User not found")?.to_owned();
 
         let path = PathBuf::from(uri);
-        let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
+        let event_id = EventId::parse(event_id)?;
         let content_type = mimetype.parse::<mime::Mime>()?;
         let info = assign!(AudioInfo::new(), {
             mimetype: Some(mimetype),
@@ -1319,28 +1222,17 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let image_buf =
-                    std::fs::read(path).context("Couldn't read audio buffer to reply")?;
+                let image_buf = std::fs::read(path)?;
 
-                let timeline_event = room
-                    .event(&event_id)
-                    .await
-                    .context("Couldn't find event.")?;
+                let timeline_event = room.event(&event_id).await?;
 
-                let event_content = timeline_event
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
+                let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
 
                 let original_message = event_content
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
 
-                let response = client
-                    .media()
-                    .upload(&content_type, image_buf)
-                    .await
-                    .context("Couldn't upload audio to reply")?;
+                let response = client.media().upload(&content_type, image_buf).await?;
 
                 let audio_content = AudioMessageEventContent::plain(
                     name,
@@ -1352,8 +1244,7 @@ impl Room {
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
-                    .await
-                    .context("Couldn't send audio reply")?;
+                    .await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1382,7 +1273,7 @@ impl Room {
         let my_id = client.user_id().context("User not found")?.to_owned();
 
         let path = PathBuf::from(uri);
-        let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
+        let event_id = EventId::parse(event_id)?;
         let content_type = mimetype.parse::<mime::Mime>()?;
         let info = assign!(VideoInfo::new(), {
             duration: secs.map(|x| Duration::from_secs(x as u64)),
@@ -1403,28 +1294,17 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let video_buf =
-                    std::fs::read(path).context("Couldn't read video buffer to reply")?;
+                let video_buf = std::fs::read(path)?;
 
-                let timeline_event = room
-                    .event(&event_id)
-                    .await
-                    .context("Couldn't find event.")?;
+                let timeline_event = room.event(&event_id).await?;
 
-                let event_content = timeline_event
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
+                let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
 
                 let original_message = event_content
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
 
-                let response = client
-                    .media()
-                    .upload(&content_type, video_buf)
-                    .await
-                    .context("Couldn't upload video to reply")?;
+                let response = client.media().upload(&content_type, video_buf).await?;
 
                 let video_content = VideoMessageEventContent::plain(
                     name,
@@ -1436,8 +1316,7 @@ impl Room {
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
-                    .await
-                    .context("Couldn't send video reply")?;
+                    .await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1461,7 +1340,7 @@ impl Room {
         let my_id = client.user_id().context("User not found")?.to_owned();
 
         let path = PathBuf::from(uri);
-        let event_id = EventId::parse(event_id).context("Couldn't parse event id to reply")?;
+        let event_id = EventId::parse(event_id)?;
         let content_type = mimetype.parse::<mime::Mime>()?;
         let info = assign!(FileInfo::new(), {
             mimetype: Some(mimetype),
@@ -1478,27 +1357,17 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let file_buf = std::fs::read(path).context("Couldn't read file buffer to reply")?;
+                let file_buf = std::fs::read(path)?;
 
-                let timeline_event = room
-                    .event(&event_id)
-                    .await
-                    .context("Couldn't find event.")?;
+                let timeline_event = room.event(&event_id).await?;
 
-                let event_content = timeline_event
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
+                let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
 
                 let original_message = event_content
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
 
-                let response = client
-                    .media()
-                    .upload(&content_type, file_buf)
-                    .await
-                    .context("Couldn't upload file to reply")?;
+                let response = client.media().upload(&content_type, file_buf).await?;
 
                 let file_content = FileMessageEventContent::plain(
                     name,
@@ -1510,8 +1379,7 @@ impl Room {
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
-                    .await
-                    .context("Couldn't send file reply")?;
+                    .await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1535,7 +1403,7 @@ impl Room {
             .context("User not found")?
             .to_owned();
 
-        let event_id = EventId::parse(event_id).context("Couldn't parse event id to redact")?;
+        let event_id = EventId::parse(event_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -1548,8 +1416,7 @@ impl Room {
                 }
                 let response = room
                     .redact(&event_id, reason.as_deref(), txn_id.map(Into::into))
-                    .await
-                    .context("Couldn't redact message")?;
+                    .await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1568,8 +1435,7 @@ impl Room {
             .context("User not found")?
             .to_owned();
 
-        let user_id =
-            UserId::parse(user_id).context("Couldn't parse user id to change power level")?;
+        let user_id = UserId::parse(user_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -1582,8 +1448,7 @@ impl Room {
                 }
                 let resp = room
                     .update_power_levels(vec![(&user_id, Int::from(level))])
-                    .await
-                    .context("Couldn't change power level")?;
+                    .await?;
                 Ok(resp.event_id)
             })
             .await?
