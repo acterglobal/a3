@@ -55,7 +55,7 @@ async fn spaces_deleted() -> Result<()> {
     let second = spaces.pop().unwrap();
     let last = spaces.pop().unwrap();
 
-    let mut all_listener = user.subscribe("SPACES".to_owned());
+    let all_listener = user.subscribe("SPACES".to_owned());
     let mut first_listener = user.subscribe(format!("SPACE::{}", first.room_id()));
     let mut second_listener = user.subscribe(format!("SPACE::{}", second.room_id()));
     let mut last_listener = user.subscribe(format!("SPACE::{}", last.room_id()));
@@ -66,7 +66,7 @@ async fn spaces_deleted() -> Result<()> {
         let client = fetcher_client.clone();
         async move {
             if client.spaces().await?.len() != 2 {
-                bail!("not the right number of  spaces found");
+                bail!("not the right number of spaces found");
             } else {
                 Ok(())
             }
@@ -74,10 +74,19 @@ async fn spaces_deleted() -> Result<()> {
     })
     .await?;
 
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), move || {
+        let mut listener = all_listener.clone();
+        async move { listener.try_recv() }
+    })
+    .await?;
+
     assert_eq!(first_listener.try_recv(), Ok(()));
     assert_eq!(second_listener.try_recv(), Err(TryRecvError::Empty));
     assert_eq!(last_listener.try_recv(), Err(TryRecvError::Empty));
-    assert_eq!(all_listener.try_recv(), Ok(()));
+
+    // get a second listener
+    let all_listener = user.subscribe("SPACES".to_owned());
 
     second.leave().await?;
     let fetcher_client = user.clone();
@@ -85,7 +94,7 @@ async fn spaces_deleted() -> Result<()> {
         let client = fetcher_client.clone();
         async move {
             if client.spaces().await?.len() != 1 {
-                bail!("not the right number of  spaces found");
+                bail!("not the right number of spaces found");
             } else {
                 Ok(())
             }
@@ -93,7 +102,13 @@ async fn spaces_deleted() -> Result<()> {
     })
     .await?;
 
-    assert_eq!(all_listener.try_recv(), Ok(()));
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), move || {
+        let mut listener = all_listener.clone();
+        async move { listener.try_recv() }
+    })
+    .await?;
+
     assert_eq!(first_listener.try_recv(), Err(TryRecvError::Empty));
     assert_eq!(second_listener.try_recv(), Ok(()));
     assert_eq!(last_listener.try_recv(), Err(TryRecvError::Empty));
