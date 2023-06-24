@@ -74,10 +74,10 @@ async fn spaces_deleted() -> Result<()> {
     })
     .await?;
 
-    assert_eq!(all_listener.try_recv(), Ok(()));
     assert_eq!(first_listener.try_recv(), Ok(()));
     assert_eq!(second_listener.try_recv(), Err(TryRecvError::Empty));
     assert_eq!(last_listener.try_recv(), Err(TryRecvError::Empty));
+    assert_eq!(all_listener.try_recv(), Ok(()));
 
     second.leave().await?;
     let fetcher_client = user.clone();

@@ -443,7 +443,7 @@ impl Client {
                     } else {
                         // see if we have new spaces to catch up upon
                         let mut new_spaces = Vec::new();
-                        for (room_id, room) in response.rooms.join {
+                        for (room_id, _) in &response.rooms.join {
                             if sync_state_history.lock_mut().knows_room(&room_id) {
                                 // we are already loading this room
                                 continue;
@@ -461,6 +461,20 @@ impl Client {
                             me.refresh_history_on_way(sync_state_history.clone(), new_spaces)
                                 .await;
                         }
+                    }
+
+                    let mut changed_rooms = response
+                        .rooms
+                        .join
+                        .keys()
+                        .chain(response.rooms.leave.keys())
+                        .chain(response.rooms.invite.keys())
+                        .map(|id| format!("SPACE::{}", id))
+                        .collect::<Vec<_>>();
+
+                    if (!changed_rooms.is_empty()) {
+                        changed_rooms.push("SPACES".to_owned());
+                        me.executor().notify(changed_rooms);
                     }
 
                     if let Ok(mut w) = state.try_write() {
