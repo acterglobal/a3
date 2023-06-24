@@ -522,8 +522,8 @@ impl Client {
             .context("Room not found")
     }
 
-    pub fn subscribe(&self, key: String) -> impl Stream<Item = bool> {
-        self.executor().subscribe(key).map(|()| true)
+    pub fn subscribe(&self, key: String) -> async_broadcast::Receiver<()> {
+        self.executor().subscribe(key)
     }
 
     pub(crate) async fn wait_for(
