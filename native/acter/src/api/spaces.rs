@@ -35,7 +35,7 @@ use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
 use super::{
-    client::{devide_spaces_from_convos, Client},
+    client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
     room::Room,
     RUNTIME,
 };
@@ -537,9 +537,10 @@ impl Client {
 
     pub async fn spaces(&self) -> Result<Vec<Space>> {
         let c = self.clone();
+        let filter = SpaceFilterBuilder::default().include_left(false).build()?;
         RUNTIME
             .spawn(async move {
-                let (spaces, convos) = devide_spaces_from_convos(c).await;
+                let (spaces, convos) = devide_spaces_from_convos(c, Some(filter)).await;
                 Ok(spaces)
             })
             .await?

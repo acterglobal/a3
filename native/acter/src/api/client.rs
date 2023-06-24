@@ -5,7 +5,10 @@ use acter_core::{
 use anyhow::{Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
-use futures::{future::join_all, pin_mut, stream, Stream, StreamExt};
+use futures::{
+    future::{join_all, ready},
+    pin_mut, stream, Stream, StreamExt,
+};
 use futures_signals::signal::{
     channel, Mutable, MutableSignalCloned, Receiver, SignalExt, SignalStream,
 };
@@ -77,8 +80,43 @@ impl Deref for Client {
     }
 }
 
-pub(crate) async fn devide_spaces_from_convos(client: Client) -> (Vec<Space>, Vec<Conversation>) {
+#[derive(Debug, Builder)]
+pub struct SpaceFilter {
+    #[builder(default = "true")]
+    include_joined: bool,
+    #[builder(default = "false")]
+    include_left: bool,
+    #[builder(default = "true")]
+    include_invited: bool,
+}
+
+impl SpaceFilter {
+    pub fn should_include(&self, room: &matrix_sdk::room::Room) -> bool {
+        match room {
+            matrix_sdk::room::Room::Joined(_) => self.include_joined,
+            matrix_sdk::room::Room::Left(_) => self.include_left,
+            matrix_sdk::room::Room::Invited(_) => self.include_invited,
+        }
+    }
+}
+
+impl Default for SpaceFilter {
+    fn default() -> Self {
+        SpaceFilter {
+            include_joined: true,
+            include_left: true,
+            include_invited: true,
+        }
+    }
+}
+
+pub(crate) async fn devide_spaces_from_convos(
+    client: Client,
+    filter: Option<SpaceFilter>,
+) -> (Vec<Space>, Vec<Conversation>) {
+    let filter = filter.unwrap_or_default();
     let (spaces, convos, _) = stream::iter(client.clone().rooms().into_iter())
+        .filter(|room| ready(filter.should_include(room)))
         .fold(
             (Vec::new(), Vec::new(), client),
             async move |(mut spaces, mut conversations, client), room| {
@@ -382,8 +420,12 @@ impl Client {
                     {
                         tracing::info!("received first sync");
                         tracing::trace!(user_id=?client.user_id(), "initial synced");
+                        let filter = SpaceFilterBuilder::default()
+                            .build()
+                            .expect("Builder SpaceFilter doesn't fail");
                         // divide_spaces_from_convos must be called after first sync
-                        let (spaces, convos) = devide_spaces_from_convos(me.clone()).await;
+                        let (spaces, convos) =
+                            devide_spaces_from_convos(me.clone(), Some(filter)).await;
                         conversation_controller.load_rooms(&convos).await;
                         // load invitations after first sync
                         invitation_controller.load_invitations(&client).await;
@@ -485,9 +527,10 @@ impl Client {
 
     pub async fn conversations(&self) -> Result<Vec<Conversation>> {
         let client = self.clone();
+        let filter = SpaceFilterBuilder::default().build()?;
         RUNTIME
             .spawn(async move {
-                let (spaces, conversations) = devide_spaces_from_convos(client).await;
+                let (spaces, conversations) = devide_spaces_from_convos(client, Some(filter)).await;
                 Ok(conversations)
             })
             .await?
