@@ -53,9 +53,9 @@ async fn main() -> Result<()> {
             .send(AppUpdate::SetUsername(username.to_string()))
             .unwrap();
 
-        let dp = client.account().unwrap().display_name().await.unwrap();
+        let dp = client.account().unwrap().display_name().await.unwrap().text();
         sender
-            .send(AppUpdate::SetUsername(format!("{dp:} ({username:})")))
+            .send(AppUpdate::SetUsername(format!("{:?} ({username:})", dp)))
             .unwrap();
 
         let sync_stream = sync_state.first_synced_rx().unwrap();

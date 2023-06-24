@@ -10,11 +10,12 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         AudioDesc,
         Client,
         Conversation,
-        DispName,
         FfiBufferUint8,
         FileDesc,
         ImageDesc,
         Member,
+        OptionBuffer,
+        OptionText,
         RoomEventItem,
         RoomId,
         RoomMessage,
@@ -56,7 +57,7 @@ class ChatRoomController extends GetxController {
   List<Member> activeMembers = [];
   Map<String, String> messageTextMapMarkDown = {};
   Map<String, String> messageTextMapHtml = {};
-  final Map<String, Future<FfiBufferUint8>> _userAvatars = {};
+  final Map<String, Future<OptionBuffer>> _userAvatars = {};
   final Map<String, String> _userNames = {};
   List<Map<String, dynamic>> mentionList = [];
   StreamSubscription<TimelineDiff>? _diffSubscription;
@@ -438,7 +439,7 @@ class ChatRoomController extends GetxController {
   }
 
   Future<void> _fetchUserProfiles() async {
-    Map<String, Future<FfiBufferUint8>> avatars = {};
+    Map<String, Future<OptionBuffer>> avatars = {};
     Map<String, String> names = {};
     List<String> ids = [];
     List<Map<String, dynamic>> mentionRecords = [];
@@ -451,7 +452,7 @@ class ChatRoomController extends GetxController {
         avatars[userId] = profile.getThumbnail(62, 60);
         record['avatar'] = avatars[userId];
       }
-      DispName dispName = await profile.getDisplayName();
+      OptionText dispName = await profile.getDisplayName();
       String? name = dispName.text();
       if (name != null) {
         record['display'] = name;
@@ -473,7 +474,7 @@ class ChatRoomController extends GetxController {
     }
   }
 
-  Future<FfiBufferUint8>? getUserAvatar(String userId) {
+  Future<OptionBuffer>? getUserAvatar(String userId) {
     return _userAvatars.containsKey(userId) ? _userAvatars[userId] : null;
   }
 

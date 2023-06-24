@@ -7,7 +7,7 @@ class GroupMember extends StatelessWidget {
   final String userId;
   final String? name;
   final bool isAdmin;
-  final Future<FfiBufferUint8>? avatar;
+  final Future<OptionBuffer>? avatar;
 
   const GroupMember({
     Key? key,

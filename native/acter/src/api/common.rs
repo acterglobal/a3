@@ -7,8 +7,38 @@ use matrix_sdk::ruma::{
     OwnedUserId,
 };
 
+use super::api::FfiBuffer;
+
 pub fn duration_from_secs(secs: u64) -> Duration {
     Duration::from_secs(secs)
+}
+
+pub struct OptionText {
+    text: Option<String>,
+}
+
+impl OptionText {
+    pub(crate) fn new(text: Option<String>) -> Self {
+        OptionText { text }
+    }
+
+    pub fn text(&self) -> Option<String> {
+        self.text.clone()
+    }
+}
+
+pub struct OptionBuffer {
+    data: Option<Vec<u8>>,
+}
+
+impl OptionBuffer {
+    pub(crate) fn new(data: Option<Vec<u8>>) -> Self {
+        OptionBuffer { data }
+    }
+
+    pub fn data(&self) -> Option<FfiBuffer<u8>> {
+        self.data.clone().map(|x| FfiBuffer::new(x))
+    }
 }
 
 pub struct MediaSource {
