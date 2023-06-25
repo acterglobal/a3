@@ -13,7 +13,8 @@ class StartPage extends StatefulWidget {
 
 class _StartPageState extends State<StartPage> {
   // Variables
-  late PageController _pageController;
+  PageController _pageController = PageController(initialPage: 0);
+
   int _pageIndex = 0;
   Timer? _timer;
 
@@ -311,51 +312,77 @@ class _StartPageState extends State<StartPage> {
                     );
                   }),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 16.0),
-                  child: Text('Skip'),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ...List.generate(
-                        onBoardingPages.length,
-                        (index) => Padding(
-                          padding: const EdgeInsets.only(right: 4),
-                          child: DotIndicator(
-                            isActive: index == _pageIndex,
+            GestureDetector(
+              onTap: (){
+
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 16.0),
+                    child: Text('Skip'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ...List.generate(
+                          onBoardingPages.length,
+                          (index) => Padding(
+                            padding: const EdgeInsets.only(right: 4),
+                            child: DotIndicator(
+                              isActive: index == _pageIndex,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Row(
-                    children: const [
-                      Text('Next'),
-                      SizedBox(
-                        width: 8,
+                  GestureDetector(
+                    onTap: (){
+                      next();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Row(
+                        children: const [
+                          Text('Next'),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                          )
+                        ],
                       ),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16,
-                      )
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
       ),
     ));
+  }
+
+  void next(){
+     if (_pageController.page! < onBoardingPages.length - 1) { 
+      _pageController.nextPage(duration: Duration(seconds: 1),curve: Curves.ease,);
+      
+    } else {
+      // Handle reaching the last screen
+      // For example, you could navigate to the main part of your app
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => HomeScreen(),
+      //   ),
+      // );
+    }
   }
 }
 
