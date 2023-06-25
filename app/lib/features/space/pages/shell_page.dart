@@ -153,6 +153,7 @@ class _ShellToolbar extends ConsumerWidget {
       btn2Text: 'Yes, Leave!',
       onPressedBtn2: () async => {
         await space.leave(),
+        // refresh spaces list
         ref.invalidate(spacesProvider),
         context.pop(),
         context.goNamed(Routes.dashboard.name),

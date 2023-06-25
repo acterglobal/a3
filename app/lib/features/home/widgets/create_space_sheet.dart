@@ -6,6 +6,7 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -259,6 +260,8 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
 
     // pop off loading dialog once process finished.
     context.pop();
+    // refresh spaces list
+    ref.invalidate(spacesProvider);
     //FIXME: a way to refresh list from spaces provider?
     context.pop();
   }
