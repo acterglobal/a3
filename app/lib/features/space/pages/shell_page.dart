@@ -3,7 +3,6 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
