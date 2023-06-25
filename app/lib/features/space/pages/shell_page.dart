@@ -3,6 +3,7 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
@@ -120,7 +121,7 @@ class _ShellToolbar extends ConsumerWidget {
                 child: const Text('Settings'),
               ),
               PopupMenuItem(
-                onTap: () => _handleLeaveSpace(context, space),
+                onTap: () => _handleLeaveSpace(context, space, ref),
                 child: const Text('Leave Space'),
               ),
             ],
@@ -133,6 +134,7 @@ class _ShellToolbar extends ConsumerWidget {
   void _handleLeaveSpace(
     BuildContext context,
     Space space,
+    WidgetRef ref,
   ) {
     popUpDialog(
       context: context,
@@ -151,7 +153,9 @@ class _ShellToolbar extends ConsumerWidget {
       btn2Text: 'Yes, Leave!',
       onPressedBtn2: () async => {
         await space.leave(),
+        ref.invalidate(spacesProvider),
         context.pop(),
+        context.goNamed(Routes.dashboard.name),
       },
       btnColor: Colors.transparent,
       btn2Color: Theme.of(context).colorScheme.errorContainer,
