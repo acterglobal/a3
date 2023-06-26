@@ -5,6 +5,9 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
+import 'package:acter/features/home/widgets/my_events.dart';
+import 'package:acter/features/home/widgets/my_tasks.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -12,6 +15,10 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
+import 'dart:math';
 
 class Dashboard extends ConsumerStatefulWidget {
   const Dashboard({super.key});
@@ -46,6 +53,41 @@ class _DashboardState extends ConsumerState<Dashboard> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
+    final provider = ref.watch(featuresProvider);
+    bool isActive(f) => provider.isActive(f);
+
+    List<Widget> children = [];
+    if (isActive(LabsFeature.tasks)) {
+      children.add(const MyTasksSection(limit: 5));
+    }
+
+    if (isActive(LabsFeature.events)) {
+      children.add(const MyEventsSection());
+    }
+
+    if (children.isEmpty) {
+      children.add(const SliverToBoxAdapter(child: MySpacesSection()));
+    } else {
+      children.add(const MySpacesSection(limit: 5));
+      final widthCount = (MediaQuery.of(context).size.width ~/ 600).toInt();
+      const int minCount = 2;
+      // we have more than just the spaces screen, put them into a grid.
+      children = [
+        SliverToBoxAdapter(
+          child: SingleChildScrollView(
+            child: Container(
+              margin: const EdgeInsets.all(20),
+              child: StaggeredGrid.count(
+                crossAxisSpacing: 20,
+                axisDirection: AxisDirection.down,
+                crossAxisCount: min(widthCount, minCount),
+                children: children.toList(growable: false),
+              ),
+            ),
+          ),
+        ),
+      ];
+    }
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -135,9 +177,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                   ? const Text('Acter Dashboard')
                   : const Text('Overview'),
             ),
-            const SliverToBoxAdapter(
-              child: MySpacesSection(),
-            ),
+            ...children,
           ],
         ),
       ),

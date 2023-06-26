@@ -7,9 +7,11 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
 class MySpacesSection extends ConsumerWidget {
-  const MySpacesSection({super.key});
+  final int? limit;
+  const MySpacesSection({super.key, this.limit});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,12 +31,19 @@ class MySpacesSection extends ConsumerWidget {
               if (data.isEmpty) {
                 return const _NoSpacesWidget();
               }
+              List<Space> listing = data;
+              final total = data.length;
+              int sublist_len = data.length;
+              if (limit != null) {
+                sublist_len = limit!;
+                listing = data.sublist(0, limit);
+              }
               return ListView.builder(
                 shrinkWrap: true,
-                itemCount: data.length,
+                itemCount: listing.length,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  final roomId = data[index].getRoomId().toString();
+                  final roomId = listing[index].getRoomId().toString();
                   final spaceProfile =
                       ref.watch(spaceProfileDataProvider(data[index]));
                   return spaceProfile.when(
