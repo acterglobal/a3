@@ -443,12 +443,12 @@ impl Client {
                     } else {
                         // see if we have new spaces to catch up upon
                         let mut new_spaces = Vec::new();
-                        for (room_id, _) in &response.rooms.join {
-                            if sync_state_history.lock_mut().knows_room(&room_id) {
+                        for room_id in response.rooms.join.keys() {
+                            if sync_state_history.lock_mut().knows_room(room_id) {
                                 // we are already loading this room
                                 continue;
                             }
-                            let Some(full_room) = me.get_room(&room_id) else {
+                            let Some(full_room) = me.get_room(room_id) else {
                                 tracing::warn!("room not found. how can that be?");
                                 continue;
                             };
@@ -469,7 +469,7 @@ impl Client {
                         .keys()
                         .chain(response.rooms.leave.keys())
                         .chain(response.rooms.invite.keys())
-                        .map(|id| format!("SPACE::{}", id))
+                        .map(|id| id.to_string()) // FIXME: handle aliases, too?!?
                         .collect::<Vec<_>>();
 
                     if (!changed_rooms.is_empty()) {

@@ -56,9 +56,9 @@ async fn spaces_deleted() -> Result<()> {
     let last = spaces.pop().unwrap();
 
     let all_listener = user.subscribe("SPACES".to_owned());
-    let mut first_listener = user.subscribe(format!("SPACE::{}", first.room_id()));
-    let mut second_listener = user.subscribe(format!("SPACE::{}", second.room_id()));
-    let mut last_listener = user.subscribe(format!("SPACE::{}", last.room_id()));
+    let mut first_listener = user.subscribe(first.room_id().to_string());
+    let mut second_listener = user.subscribe(second.room_id().to_string());
+    let mut last_listener = user.subscribe(last.room_id().to_string());
 
     first.leave().await?;
     let fetcher_client = user.clone();
