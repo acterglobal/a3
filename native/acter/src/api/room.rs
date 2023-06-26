@@ -401,8 +401,7 @@ impl Room {
                 let audio_buf = std::fs::read(path)?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, audio_buf, config)
-                    .await
-                    .context("Couldn't send attachment")?;
+                    .await?;
                 Ok(response.event_id)
             })
             .await?

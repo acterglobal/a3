@@ -26,7 +26,7 @@ impl Client {
         key: String,
         timeout: Option<Box<Duration>>,
     ) -> Result<CalendarEvent> {
-        let AnyActerModel::CalendarEvent(inner) = self.wait_for(key.clone(), timeout).await.context("Couldn't wait calendar event")? else {
+        let AnyActerModel::CalendarEvent(inner) = self.wait_for(key.clone(), timeout).await? else {
             bail!("{key} is not a calendar_event");
         };
         let room = self
@@ -88,12 +88,8 @@ impl Space {
         let room_id = self.room_id().to_owned();
         RUNTIME
             .spawn(async move {
-                for mdl in client
-                    .store()
-                    .get_list(&format!("{room_id}::{}", KEYS::CALENDAR))
-                    .await
-                    .context("Couldn't get list from store")?
-                {
+                let k = format!("{room_id}::{}", KEYS::CALENDAR);
+                for mdl in client.store().get_list(&k).await? {
                     if let AnyActerModel::CalendarEvent(t) = mdl {
                         calendar_events.push(CalendarEvent {
                             client: client.clone(),
@@ -155,7 +151,7 @@ impl CalendarEvent {
 
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::CalendarEvent(inner) = client.store().get(&key).await.context("Couldn't get calendar event from store")? else {
+                let AnyActerModel::CalendarEvent(inner) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a calendar_event")
                 };
                 Ok(CalendarEvent {
