@@ -3,7 +3,6 @@ use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     StreamExt,
 };
-use log::{info, warn};
 use matrix_sdk::{
     encryption::identities::Device,
     ruma::{
@@ -15,6 +14,7 @@ use matrix_sdk::{
 };
 use std::sync::Arc;
 use tokio::sync::Mutex;
+use tracing::{error, info};
 
 use super::{client::Client, RUNTIME};
 
@@ -297,7 +297,7 @@ impl DeviceController {
                 if *user_id == *current_user_id {
                     let evt = DeviceChangedEvent::new(client);
                     if let Err(e) = self.changed_event_tx.try_send(evt) {
-                        warn!("Dropping devices changed event: {}", e);
+                        error!("Dropping devices changed event: {}", e);
                     }
                 }
             }
@@ -313,7 +313,7 @@ impl DeviceController {
                 if *user_id == *current_user_id {
                     let evt = DeviceLeftEvent::new(client);
                     if let Err(e) = self.left_event_tx.try_send(evt) {
-                        warn!("Dropping devices left event: {}", e);
+                        error!("Dropping devices left event: {}", e);
                     }
                 }
             }

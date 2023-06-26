@@ -1,7 +1,6 @@
 use anyhow::{bail, Context, Result};
 use eyeball_im::VectorDiff;
 use futures::{Stream, StreamExt};
-use log::info;
 use matrix_sdk::{
     room::Room,
     ruma::{
@@ -15,6 +14,7 @@ use matrix_sdk::{
 };
 use matrix_sdk_ui::timeline::{PaginationOptions, Timeline, TimelineItem, VirtualTimelineItem};
 use std::sync::Arc;
+use tracing::{error, info};
 
 use super::{
     message::{timeline_item_to_message, RoomMessage},
@@ -287,7 +287,7 @@ impl TimelineStream {
                     }
                 }
                 if !sent_by_me {
-                    info!("Can't edit an event not sent by own user");
+                    error!("Can't edit an event not sent by own user");
                     return Ok(false);
                 }
 

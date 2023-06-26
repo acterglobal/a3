@@ -13,6 +13,7 @@ use matrix_sdk::{
 };
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use tokio::time::sleep;
+use tracing::info;
 
 use crate::{api::register_with_token_under_config, register_under_config, sanitize_user, Client};
 
@@ -106,7 +107,7 @@ pub async fn ensure_user(
     };
 
     if let Some(token) = reg_token {
-        log::info!("Login for {username} failed: {e}. Trying to register with token instead.");
+        info!("Login for {username} failed: {e}. Trying to register with token instead.");
         register_with_token_under_config(
             config.clone(),
             user_id,
@@ -116,7 +117,7 @@ pub async fn ensure_user(
         )
         .await
     } else {
-        log::info!("Login for {username} failed: {e}. Trying to register instead.");
+        info!("Login for {username} failed: {e}. Trying to register instead.");
         register_under_config(
             config.clone(),
             user_id,

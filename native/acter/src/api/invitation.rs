@@ -1,6 +1,5 @@
 use anyhow::{Context, Result};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
-use log::{error, info};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::{Room, RoomMember},
@@ -12,6 +11,7 @@ use matrix_sdk::{
 };
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
+use tracing::{error, info};
 
 use super::{
     client::{devide_spaces_from_convos, Client},

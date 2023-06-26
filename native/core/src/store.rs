@@ -2,6 +2,7 @@ use dashmap::{mapref::one::RefMut, DashMap};
 use futures::future::{join_all, try_join_all};
 use matrix_sdk::Client;
 use std::{iter::FromIterator, sync::Arc};
+use tracing::{debug, instrument, trace, warn};
 
 use crate::{
     models::{ActerModel, AnyActerModel},
@@ -39,7 +40,7 @@ impl Store {
     }
 
     pub async fn set_raw<T: serde::Serialize>(&self, key: &str, value: &T) -> Result<()> {
-        tracing::trace!(key, "set_raw");
+        trace!(key, "set_raw");
         self.client
             .store()
             .set_custom_value(
@@ -135,12 +136,12 @@ impl Store {
         })
     }
 
-    #[tracing::instrument(skip(self))]
+    #[instrument(skip(self))]
     pub async fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyActerModel>> {
         let listing = if let Some(r) = self.indizes.get(key) {
             r.value().clone()
         } else {
-            tracing::debug!(user=?self.client.user_id(), key, "No list found");
+            debug!(user=?self.client.user_id(), key, "No list found");
             vec![]
         };
         let models = self.models.clone();
@@ -165,14 +166,14 @@ impl Store {
         join_all(models).await
     }
 
-    #[tracing::instrument(skip(self))]
+    #[instrument(skip(self))]
     pub async fn save_model_inner(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
         let key = mdl.event_id().to_string();
         let mut keys_changed = vec![key.clone()];
-        tracing::trace!(user=?self.client.user_id(), key, "saving");
+        trace!(user=?self.client.user_id(), key, "saving");
         let mut indizes = mdl.indizes();
         if let Some(prev) = self.models.insert(key.clone(), mdl) {
-            tracing::trace!(user=?self.client.user_id(), key, "previous model found");
+            trace!(user=?self.client.user_id(), key, "previous model found");
             let mut remove_idzs = Vec::new();
             for idz in prev.indizes() {
                 if let Some(idx) = indizes.iter().position(|i| i == &idz) {
@@ -190,16 +191,16 @@ impl Store {
             }
         }
         for idx in indizes.into_iter() {
-            tracing::trace!(user = ?self.client.user_id(), idx, key, exists=self.indizes.contains_key(&idx), "adding to index");
+            trace!(user = ?self.client.user_id(), idx, key, exists=self.indizes.contains_key(&idx), "adding to index");
             self.indizes
                 .entry(idx.clone())
                 .or_default()
                 .value_mut()
                 .push(key.clone());
-            tracing::trace!(user = ?self.client.user_id(), idx, key, "added to index");
+            trace!(user = ?self.client.user_id(), idx, key, "added to index");
             keys_changed.push(idx);
         }
-        tracing::trace!(user=?self.client.user_id(), key, "saved");
+        trace!(user=?self.client.user_id(), key, "saved");
         self.dirty.insert(key);
         Ok(keys_changed)
     }
@@ -232,7 +233,7 @@ impl Store {
                     )
                     .await?;
             } else {
-                tracing::warn!(key, "Inconsistency error: key is missing");
+                warn!(key, "Inconsistency error: key is missing");
             }
         }
 

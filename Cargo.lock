@@ -106,7 +106,6 @@ dependencies = [
  "anyhow",
  "env_logger",
  "futures",
- "log",
  "tempfile",
  "tokio",
  "tokio-retry",
