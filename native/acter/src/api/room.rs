@@ -1,7 +1,6 @@
 use acter_core::spaces::is_acter_space;
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
-use log::{info, warn};
 use matrix_sdk::{
     attachment::{
         AttachmentConfig, AttachmentInfo, BaseAudioInfo, BaseFileInfo, BaseImageInfo, BaseVideoInfo,
@@ -34,6 +33,7 @@ use matrix_sdk::{
 };
 use matrix_sdk_ui::timeline::RoomExt;
 use std::{fs::File, io::Write, ops::Deref, path::PathBuf, sync::Arc};
+use tracing::{error, info};
 
 use super::{
     account::Account,
@@ -1057,7 +1057,7 @@ impl Room {
                         bail!("Invalid AnyTimelineEvent::MessageLike: other");
                     }
                     Err(e) => {
-                        warn!("Error deserializing event {:?}", e);
+                        error!("Error deserializing event {:?}", e);
                         bail!("Invalid event deserialization error");
                     }
                 }

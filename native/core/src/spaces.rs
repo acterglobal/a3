@@ -15,6 +15,7 @@ use matrix_sdk::{
 };
 use serde::{Deserialize, Serialize};
 use strum::Display;
+use tracing::error;
 
 use crate::{
     client::CoreClient,
@@ -204,7 +205,7 @@ impl CoreClient {
             let ev = match raw.deserialize() {
                 Ok(e) => e,
                 Err(error) => {
-                    tracing::warn!(
+                    error!(
                         room_id = ?room.room_id(),
                         ?error,
                         "Parsing parent event failed"
@@ -261,7 +262,7 @@ impl CoreClient {
             let ev = match raw.deserialize() {
                 Ok(e) => e,
                 Err(error) => {
-                    tracing::warn!(
+                    error!(
                         room_id = ?room.room_id(),
                         ?error,
                         "Parsing parent event failed"

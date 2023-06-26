@@ -7,6 +7,7 @@ use matrix_sdk::ruma::{
 };
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
+use tracing::trace;
 
 /// ToDo Lists and Task Items management
 /// modeled after [JMAP Tasks](https://jmap.io/spec-tasks.html), extensions to
@@ -223,7 +224,7 @@ impl TaskListUpdateEventContent {
             updated = true;
         }
 
-        tracing::trace!(update = ?self, ?updated, ?task_list, "TaskList updated");
+        trace!(update = ?self, ?updated, ?task_list, "TaskList updated");
 
         Ok(updated)
     }
@@ -508,7 +509,7 @@ impl TaskUpdateEventContent {
             updated = true;
         }
 
-        tracing::trace!(update = ?self, ?updated, ?task, "Task updated");
+        trace!(update = ?self, ?updated, ?task, "Task updated");
 
         Ok(updated)
     }

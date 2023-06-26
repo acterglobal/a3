@@ -2,6 +2,7 @@ use derive_builder::Builder;
 use derive_getters::Getters;
 use matrix_sdk::ruma::events::{macros::EventContent, room::message::TextMessageEventContent};
 use serde::{Deserialize, Serialize};
+use tracing::trace;
 
 use super::{Color, Icon, Update};
 use crate::util::deserialize_some;
@@ -72,7 +73,7 @@ impl PinDisplayInfoUpdate {
             updated = true;
         }
 
-        tracing::trace!(update = ?self, ?updated, ?info, "Info updated");
+        trace!(update = ?self, ?updated, ?info, "Info updated");
 
         Ok(updated)
     }
@@ -192,7 +193,7 @@ impl PinUpdateEventContent {
             }
         }
 
-        tracing::trace!(update = ?self, ?updated, ?pin, "Pin updated");
+        trace!(update = ?self, ?updated, ?pin, "Pin updated");
 
         Ok(updated)
     }

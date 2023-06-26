@@ -3,7 +3,6 @@ use anyhow::{bail, Result};
 use derive_builder::Builder;
 use futures::channel::mpsc::{channel, Receiver, Sender};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
-use log::{info, warn};
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
@@ -31,6 +30,7 @@ use matrix_sdk::{
 };
 use std::{ops::Deref, sync::Arc};
 use tokio::sync::Mutex;
+use tracing::{error, info};
 
 use super::{
     client::Client,
@@ -247,7 +247,7 @@ impl ConversationController {
                     convos.remove(idx);
                     convos.insert(0, convo);
                     if let Err(e) = self.incoming_event_tx.try_send(msg) {
-                        warn!("Dropping ephemeral event for {}: {}", room_id, e);
+                        error!("Dropping ephemeral event for {}: {}", room_id, e);
                     }
                 } else {
                     convos.insert(0, convo);
@@ -276,7 +276,7 @@ impl ConversationController {
                 convos.remove(idx);
                 convos.insert(0, convo);
                 if let Err(e) = self.incoming_event_tx.try_send(msg) {
-                    warn!("Dropping ephemeral event for {}: {}", room_id, e);
+                    error!("Dropping ephemeral event for {}: {}", room_id, e);
                 }
             } else {
                 convos.insert(0, convo);
@@ -306,7 +306,7 @@ impl ConversationController {
                     convos.remove(idx);
                     convos.insert(0, convo);
                     if let Err(e) = self.incoming_event_tx.try_send(msg) {
-                        warn!("Dropping ephemeral event for {}: {}", room_id, e);
+                        error!("Dropping ephemeral event for {}: {}", room_id, e);
                     }
                 } else {
                     convos.insert(0, convo);
@@ -362,7 +362,7 @@ impl ConversationController {
                 convos.remove(idx);
                 convos.insert(0, convo);
                 if let Err(e) = self.incoming_event_tx.try_send(msg) {
-                    warn!("Dropping ephemeral event for {}: {}", room_id, e);
+                    error!("Dropping ephemeral event for {}: {}", room_id, e);
                 }
             } else {
                 convos.insert(0, convo);

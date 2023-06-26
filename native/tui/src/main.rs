@@ -9,6 +9,7 @@ use clap::Parser;
 use config::ActerTuiConfig;
 use futures::{future::Either, pin_mut, StreamExt};
 use std::sync::mpsc::channel;
+use tracing::{error, info, warn};
 use ui::AppUpdate;
 
 const APP_INFO: AppInfo = AppInfo {
@@ -84,17 +85,17 @@ async fn main() -> Result<()> {
                     }
                 }
                 Some(Either::Right(history)) => {
-                    tracing::info!("History updated. Done? {:}", history.is_done_loading());
+                    info!("History updated. Done? {:}", history.is_done_loading());
                     if history.is_done_loading() {
                         match client.task_lists().await {
                             Ok(task_lists) => {
                                 if task_lists.is_empty() {
-                                    tracing::warn!("No task lists found");
+                                    warn!("No task lists found");
                                 }
                                 sender.send(AppUpdate::SetTasksList(task_lists)).unwrap();
                             }
                             Err(error) => {
-                                tracing::error!(?error, "TaskList couldn't be read");
+                                error!(?error, "TaskList couldn't be read");
                             }
                         }
                     }

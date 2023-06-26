@@ -2,6 +2,7 @@ use anyhow::{bail, Result};
 use clap::Parser;
 use futures::{pin_mut, StreamExt};
 use std::{collections::HashMap, path::PathBuf};
+use tracing::info;
 
 use crate::config::LoginConfig;
 
@@ -57,9 +58,9 @@ impl ExecuteOpts {
                     if key != "main" {
                         bail!("Missing required input value {key} for {tmpl_path:?}");
                     }
-                    tracing::info!("Main user has been provided, ignoring.")
+                    info!("Main user has been provided, ignoring.")
                 } else {
-                    tracing::info!("No value provided for {key} for for {tmpl_path:?}");
+                    info!("No value provided for {key} for for {tmpl_path:?}");
                 }
             }
 

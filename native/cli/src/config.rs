@@ -3,6 +3,7 @@ use anyhow::Result;
 use clap::{crate_version, Parser};
 use dialoguer::{theme::ColorfulTheme, Password};
 use std::path::PathBuf;
+use tracing::{error, info, warn};
 
 use crate::action::Action;
 
@@ -68,7 +69,7 @@ impl LoginConfig {
     pub async fn client(&self) -> Result<Client> {
         let theme = ColorfulTheme::default();
         let username = self.login_username.clone();
-        tracing::warn!("Logging in as {}", username);
+        warn!("Logging in as {}", username);
         let base_path = format!(".local/{username}/");
 
         if self.force_login && std::path::Path::new(&base_path).exists() {
@@ -81,7 +82,7 @@ impl LoginConfig {
             .unwrap_or_else(|| PathBuf::from(format!("{base_path}/access_token.json")));
         let access_token_path = std::path::Path::new(&token_path_string);
         if access_token_path.exists() && access_token_path.is_file() {
-            tracing::info!(
+            info!(
                 "Reusing previous access token from {}",
                 token_path_string.display()
             );
@@ -114,7 +115,7 @@ impl LoginConfig {
                 Ok(token) => {
                     std::fs::write(access_token_path, token)?;
                 }
-                Err(e) => tracing::error!(error = ?e, "No access token found on client."),
+                Err(e) => error!(error = ?e, "No access token found on client."),
             }
         }
         Ok(client)

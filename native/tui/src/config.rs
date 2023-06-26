@@ -3,6 +3,7 @@ use anyhow::Result;
 use clap::Parser;
 use dialoguer::{theme::ColorfulTheme, Password};
 use std::path::PathBuf;
+use tracing::info;
 
 pub const ENV_USER: &str = "ACTER_USER";
 pub const ENV_PASSWORD: &str = "ACTER_PASSWORD";
@@ -30,7 +31,7 @@ impl LoginConfig {
     pub async fn client(&self, path: PathBuf) -> Result<Client> {
         let theme = ColorfulTheme::default();
         let username = self.login_username.clone();
-        tracing::info!("Logging in as {}", username);
+        info!("Logging in as {}", username);
         let password = match self.login_password {
             Some(ref pw) => pw.clone(),
             None => Password::with_theme(&theme)

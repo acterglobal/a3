@@ -2,6 +2,7 @@ use derive_getters::Getters;
 use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, OwnedEventId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
+use tracing::{error, trace};
 
 use super::{AnyActerModel, EventMeta};
 use crate::{
@@ -145,7 +146,7 @@ impl super::ActerModel for Comment {
 
     async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
         let belongs_to = self.belongs_to().unwrap();
-        tracing::trace!(event_id=?self.event_id(), ?belongs_to, "applying comment");
+        trace!(event_id=?self.event_id(), ?belongs_to, "applying comment");
 
         let mut managers = vec![];
         for p in belongs_to {
@@ -154,7 +155,7 @@ impl super::ActerModel for Comment {
                 .capabilities()
                 .contains(&super::Capability::Commentable)
             {
-                tracing::error!(?parent, comment = ?self, "doesn't support comments. can't apply");
+                error!(?parent, comment = ?self, "doesn't support comments. can't apply");
                 continue;
             }
 

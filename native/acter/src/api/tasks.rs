@@ -20,6 +20,7 @@ use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
 };
+use tracing::warn;
 
 use super::{client::Client, spaces::Space, RUNTIME};
 
@@ -98,7 +99,7 @@ impl Client {
                             content,
                         })
                     } else {
-                        tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
+                        warn!("Non task list model found in `tasks` index: {:?}", mdl);
                     }
                 }
                 Ok(task_lists)
@@ -147,7 +148,7 @@ impl Space {
                             content,
                         });
                     } else {
-                        tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
+                        warn!("Non task list model found in `tasks` index: {:?}", mdl);
                     }
                 }
                 Ok(task_lists)

@@ -17,6 +17,7 @@ use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
 };
+use tracing::warn;
 
 use super::{client::Client, spaces::Space, RUNTIME};
 
@@ -69,7 +70,7 @@ impl Client {
                             content: t,
                         })
                     } else {
-                        tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
+                        warn!("Non pin model found in `pins` index: {:?}", mdl);
                     }
                 }
                 Ok(pins)
@@ -107,7 +108,7 @@ impl Client {
                             content: pin,
                         })
                     } else {
-                        tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
+                        warn!("Non pin model found in `pins` index: {:?}", mdl);
                     }
                 }
                 Ok(pins)
@@ -133,7 +134,7 @@ impl Space {
                             content: t,
                         })
                     } else {
-                        tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
+                        warn!("Non pin model found in `pins` index: {:?}", mdl);
                     }
                 }
                 Ok(pins)
@@ -159,7 +160,7 @@ impl Space {
                             })
                         }
                     } else {
-                        tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
+                        warn!("Non pin model found in `pins` index: {:?}", mdl);
                     }
                 }
                 Ok(pins)

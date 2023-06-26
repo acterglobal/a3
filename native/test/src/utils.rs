@@ -6,6 +6,7 @@ use acter::{
 use acter_core::templates::Engine;
 use anyhow::Result;
 use futures::{pin_mut, StreamExt};
+use tracing::trace;
 
 pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, OwnedRoomId)> {
     let uuid = uuid::Uuid::new_v4().to_string();
@@ -60,7 +61,7 @@ pub async fn random_user_with_template(
 
     let tmpl_engine = user.template_engine(template).await?;
     let exec_stream = tmpl_engine.execute()?;
-    tracing::trace!(
+    trace!(
         total = exec_stream.total(),
         user_id = ?user.user_id()?,
         "executing template"

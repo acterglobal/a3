@@ -3,7 +3,6 @@ use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     StreamExt,
 };
-use log::{info, warn};
 use matrix_sdk::{
     config::SyncSettings,
     encryption::verification::{Verification, VerificationRequest},
@@ -45,6 +44,7 @@ use matrix_sdk::{
 };
 use std::sync::Arc;
 use tokio::sync::Mutex;
+use tracing::{error, info};
 
 use super::{client::Client, RUNTIME};
 
@@ -623,7 +623,7 @@ impl VerificationController {
                         None,
                     );
                     if let Err(e) = me.event_tx.try_send(msg) {
-                        warn!("Dropping event for {}: {}", event_id, e);
+                        error!("Dropping event for {}: {}", event_id, e);
                     }
                 }
             },
@@ -650,7 +650,7 @@ impl VerificationController {
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", event_id, e);
+                    error!("Dropping event for {}: {}", event_id, e);
                 }
             },
         );
@@ -677,7 +677,7 @@ impl VerificationController {
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", event_id, e);
+                    error!("Dropping event for {}: {}", event_id, e);
                 }
             },
         );
@@ -703,7 +703,7 @@ impl VerificationController {
                     Some(ev.content.reason.clone()),
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", event_id, e);
+                    error!("Dropping event for {}: {}", event_id, e);
                 }
             },
         );
@@ -730,7 +730,7 @@ impl VerificationController {
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", event_id, e);
+                    error!("Dropping event for {}: {}", event_id, e);
                 }
             },
         );
@@ -757,7 +757,7 @@ impl VerificationController {
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", event_id, e);
+                    error!("Dropping event for {}: {}", event_id, e);
                 }
             },
         );
@@ -785,7 +785,7 @@ impl VerificationController {
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", event_id, e);
+                    error!("Dropping event for {}: {}", event_id, e);
                 }
             },
         );
@@ -811,7 +811,7 @@ impl VerificationController {
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", event_id, e);
+                    error!("Dropping event for {}: {}", event_id, e);
                 }
             },
         );
@@ -893,7 +893,7 @@ impl VerificationController {
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", txn_id, e);
+                    error!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
@@ -920,7 +920,7 @@ impl VerificationController {
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", txn_id, e);
+                    error!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
@@ -947,7 +947,7 @@ impl VerificationController {
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", txn_id, e);
+                    error!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
@@ -973,7 +973,7 @@ impl VerificationController {
                     Some(ev.content.reason.clone()),
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", txn_id, e);
+                    error!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
@@ -1000,7 +1000,7 @@ impl VerificationController {
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", txn_id, e);
+                    error!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
@@ -1027,7 +1027,7 @@ impl VerificationController {
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", txn_id, e);
+                    error!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
@@ -1055,7 +1055,7 @@ impl VerificationController {
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", txn_id, e);
+                    error!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
@@ -1081,7 +1081,7 @@ impl VerificationController {
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", txn_id, e);
+                    error!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
@@ -1162,7 +1162,7 @@ impl VerificationController {
                     // We ignore cancellations here since there's nothing to serve.
                     RequestAction::RequestCancellation => return,
                     action => {
-                        warn!("Unknown secret request action");
+                        error!("Unknown secret request action");
                         return;
                     }
                 };

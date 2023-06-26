@@ -1,5 +1,4 @@
 use anyhow::{bail, Context, Result};
-use log::info;
 use matrix_sdk::{
     media::{MediaFormat, MediaThumbnailSize},
     room::RoomMember,

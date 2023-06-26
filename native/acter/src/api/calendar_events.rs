@@ -17,6 +17,7 @@ use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
 };
+use tracing::warn;
 
 use super::{client::Client, spaces::Space, RUNTIME};
 
@@ -68,7 +69,7 @@ impl Client {
                             inner: t,
                         })
                     } else {
-                        tracing::warn!(
+                        warn!(
                             "Non calendar_event model found in `calendar_events` index: {:?}",
                             mdl
                         );
@@ -97,7 +98,7 @@ impl Space {
                             inner: t,
                         })
                     } else {
-                        tracing::warn!(
+                        warn!(
                             "Non calendar_event model found in `calendar_events` index: {:?}",
                             mdl
                         );

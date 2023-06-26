@@ -18,7 +18,6 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use log::warn;
 use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
     event_handler::{Ctx, EventHandlerHandle},
@@ -33,9 +32,10 @@ use matrix_sdk::{
 };
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
+use tracing::{error, trace};
 
 use super::{
-    client::{devide_spaces_from_convos, Client},
+    client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
     room::Room,
     RUNTIME,
 };
@@ -112,7 +112,7 @@ impl Space {
         self.room
             .client()
             .add_event_handler_context(self.client.executor().clone());
-        tracing::trace!(room_id=?self.room.room_id(), "adding handlers");
+        trace!(room_id=?self.room.room_id(), "adding handlers");
         // FIXME: combine into one handler
 
         // Tasks
@@ -388,7 +388,7 @@ impl Space {
     pub(crate) async fn refresh_history(&self) -> Result<()> {
         let name = self.room.name();
         let room_id = self.room.room_id();
-        tracing::trace!(name, ?room_id, "refreshing history");
+        trace!(name, ?room_id, "refreshing history");
         let client = self.room.client();
         // self.room.sync_members().await.context("Couldn't sync members of room")?;
 
@@ -400,7 +400,7 @@ impl Space {
             .get_raw::<HistoryState>(&custom_storage_key)
             .await
         {
-            tracing::trace!(name, state=?h.seen, "found history state");
+            trace!(name, state=?h.seen, "found history state");
             Some(h.seen)
         } else {
             None
@@ -413,11 +413,11 @@ impl Space {
         }
 
         loop {
-            tracing::trace!(name, ?msg_options, "fetching messages");
+            trace!(name, ?msg_options, "fetching messages");
             let Messages {
                 end, chunk, state, ..
             } = self.room.messages(msg_options).await?;
-            tracing::trace!(name, ?chunk, end, "messages received");
+            trace!(name, ?chunk, end, "messages received");
 
             let has_chunks = !chunk.is_empty();
 
@@ -426,23 +426,23 @@ impl Space {
                     Ok(model) => model,
                     Err(m) => {
                         if let Ok(state_key) = msg.event.get_field::<String>("state_key") {
-                            tracing::trace!(state_key, "ignoring state event");
+                            trace!(state_key, "ignoring state event");
                             // ignore state keys
                         } else {
-                            tracing::warn!(event=?msg.event, "Model didn't parse {:}", m);
+                            error!(event=?msg.event, "Model didn't parse {:}", m);
                         }
                         continue;
                     }
                 };
                 // match event {
                 //     MessageLikeEvent::Original(o) => {
-                tracing::trace!(?room_id, user_id=?client.user_id(), ?model, "handling timeline event");
+                trace!(?room_id, user_id=?client.user_id(), ?model, "handling timeline event");
                 if let Err(e) = self.client.executor().handle(model).await {
-                    tracing::error!("Failure handling event: {:}", e);
+                    error!("Failure handling event: {:}", e);
                 }
                 //     }
                 //     MessageLikeEvent::Redacted(r) => {
-                //         tracing::trace!(redaction = ?r, "redaction ignored");
+                //         trace!(redaction = ?r, "redaction ignored");
                 //     }
                 // }
             }
@@ -461,7 +461,7 @@ impl Space {
                     .await?;
             } else {
                 // how do we want to understand this case?
-                tracing::trace!(room_id = ?self.room.room_id(), "Done loading");
+                trace!(room_id = ?self.room.room_id(), "Done loading");
                 break;
             }
 
@@ -470,7 +470,7 @@ impl Space {
                 break;
             }
         }
-        tracing::trace!(name, "history loaded");
+        trace!(name, "history loaded");
         Ok(())
     }
 
@@ -522,9 +522,10 @@ impl Client {
 
     pub async fn spaces(&self) -> Result<Vec<Space>> {
         let c = self.clone();
+        let filter = SpaceFilterBuilder::default().include_left(false).build()?;
         RUNTIME
             .spawn(async move {
-                let (spaces, convos) = devide_spaces_from_convos(c).await;
+                let (spaces, convos) = devide_spaces_from_convos(c, Some(filter)).await;
                 Ok(spaces)
             })
             .await?
