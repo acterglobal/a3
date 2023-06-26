@@ -104,6 +104,7 @@ dependencies = [
  "acter",
  "acter-core",
  "anyhow",
+ "async-broadcast",
  "env_logger",
  "futures",
  "log",
