@@ -10,7 +10,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         AudioDesc,
         Client,
         Conversation,
-        FfiBufferUint8,
         FileDesc,
         ImageDesc,
         Member,
