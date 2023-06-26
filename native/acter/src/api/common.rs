@@ -37,7 +37,7 @@ impl OptionBuffer {
     }
 
     pub fn data(&self) -> Option<FfiBuffer<u8>> {
-        self.data.clone().map(|x| FfiBuffer::new(x))
+        self.data.clone().map(FfiBuffer::new)
     }
 }
 
