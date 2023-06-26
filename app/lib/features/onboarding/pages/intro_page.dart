@@ -47,7 +47,7 @@ class _IntroPageState extends State<IntroPage> {
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.green,
-                                fontSize: 32),
+                                fontSize: 32,),
                           ),
                         ],
                       ),
@@ -112,7 +112,7 @@ class _IntroPageState extends State<IntroPage> {
                                     ],
                                   ),
                                 );
-                              }),
+                              },),
                         ),
                         GestureDetector(
                           onTap: () => context.goNamed(Routes.start.name),
@@ -127,8 +127,8 @@ class _IntroPageState extends State<IntroPage> {
                               "Let's get started",
                               style: TextStyle(
                                   color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            )),
+                                  fontWeight: FontWeight.bold,),
+                            ),),
                           ),
                         )
                       ],

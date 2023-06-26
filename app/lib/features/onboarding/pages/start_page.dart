@@ -1,8 +1,9 @@
-import 'dart:async';
 
+import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:acter/models/onBoard.dart';
+import 'package:go_router/go_router.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
@@ -16,7 +17,6 @@ class _StartPageState extends State<StartPage> {
   PageController _pageController = PageController(initialPage: 0);
 
   int _pageIndex = 0;
-  Timer? _timer;
 
   // OnBoarding content list
   final List onBoardingPages = [
@@ -48,7 +48,7 @@ class _StartPageState extends State<StartPage> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.green,
-                    fontSize: 17
+                    fontSize: 17,
                   ),
                 ),
                 TextSpan(
@@ -56,7 +56,7 @@ class _StartPageState extends State<StartPage> {
                       ' are the central point of your communities where chats, events, todos, updates, and resources are.',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 17
+                    fontSize: 17,
                   ),
                 ),
               ],
@@ -88,7 +88,7 @@ class _StartPageState extends State<StartPage> {
               ),
             ),
             TextSpan(
-                text: ' without compromise.', style: TextStyle(fontSize: 24)),
+                text: ' without compromise.', style: TextStyle(fontSize: 24),),
           ],
         ),
       ),
@@ -110,7 +110,7 @@ class _StartPageState extends State<StartPage> {
                       ' individually or acreoss endless organizations.',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 17
+                    fontSize: 17,
                   ),
                 ),
               ],
@@ -172,11 +172,11 @@ class _StartPageState extends State<StartPage> {
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.green,
-                  fontSize: 17),
+                  fontSize: 17,),
             ),
             TextSpan(
                 text: ', by separating them from casual conversations.',
-                style: TextStyle(color: Colors.white, fontSize: 17)),
+                style: TextStyle(color: Colors.white, fontSize: 17),),
           ],
         ),
       ),
@@ -198,7 +198,7 @@ class _StartPageState extends State<StartPage> {
             ),
             TextSpan(
                 text: ' - add features as needed.',
-                style: TextStyle(fontSize: 24)),
+                style: TextStyle(fontSize: 24),),
           ],
         ),
       ),
@@ -231,29 +231,13 @@ class _StartPageState extends State<StartPage> {
   @override
   void initState() {
     super.initState();
-    // Initialize page controller
     _pageController = PageController(initialPage: 0);
-    // Automatic scroll behaviour
-    // _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
-    //   if (_pageIndex < 3) {
-    //     _pageIndex++;
-    //   } else {
-    //     _pageIndex = 0;
-    //   }
-
-    //   _pageController.animateToPage(
-    //     _pageIndex,
-    //     duration: const Duration(milliseconds: 350),
-    //     curve: Curves.easeIn,
-    //   );
-    // });
+  
   }
 
   @override
   void dispose() {
-    // Dispose everything
     _pageController.dispose();
-    _timer!.cancel();
     super.dispose();
   }
 
@@ -262,7 +246,6 @@ class _StartPageState extends State<StartPage> {
     return Scaffold(
         body: Container(
       padding: const EdgeInsets.only(top: kToolbarHeight),
-      // Background gradient
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -310,12 +293,10 @@ class _StartPageState extends State<StartPage> {
                         )
                       ],
                     );
-                  }),
+                  },),
             ),
             GestureDetector(
-              onTap: (){
-
-              },
+              onTap: ()=> context.goNamed(Routes.introProfile.name),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -366,36 +347,20 @@ class _StartPageState extends State<StartPage> {
           ],
         ),
       ),
-    ));
+    ),);
   }
 
   void next(){
      if (_pageController.page! < onBoardingPages.length - 1) { 
-      _pageController.nextPage(duration: Duration(seconds: 1),curve: Curves.ease,);
+      _pageController.nextPage(duration: const Duration(seconds: 1),curve: Curves.ease,);
       
     } else {
-      // Handle reaching the last screen
-      // For example, you could navigate to the main part of your app
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => HomeScreen(),
-      //   ),
-      // );
+    
+      context.goNamed(Routes.introProfile.name);
     }
   }
 }
 
-// class OnBoardContent extends StatelessWidget {
-//   OnBoardContent({
-//     super.key,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return
-//   }
-// }
 
 // Dot indicator widget
 class DotIndicator extends StatelessWidget {

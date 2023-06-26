@@ -5,6 +5,7 @@ enum Routes {
   // --- Auth
   intro('/intro'),
   start('/start'),
+  introProfile('/introProfile'),
   authLogin('/login'),
   authRegister('/register'),
 
