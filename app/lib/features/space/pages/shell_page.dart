@@ -32,7 +32,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
   Widget build(BuildContext context) {
     // get platform of context.
     final space = ref.watch(spaceProvider(widget.spaceIdOrAlias));
-    double h = MediaQuery.of(context).size.height;
+    double h = (MediaQuery.of(context).size.height * 0.8);
     return space.when(
       data: (space) {
         final profileData = ref.watch(spaceProfileDataProvider(space));
@@ -60,7 +60,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                       _ShellHeader(widget.spaceIdOrAlias, profile),
                       const TopNavBar(),
                       SizedBox(
-                        height: h < 800 ? h * 2 : h,
+                        height: h < 300 ? h * 2 : h,
                         child: widget.child,
                       ),
                     ],

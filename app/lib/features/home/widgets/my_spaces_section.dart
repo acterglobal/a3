@@ -22,15 +22,16 @@ class MySpacesSection extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           InkWell(
-              onTap: () {
-                context.pushNamed(
-                  Routes.spaces.name,
-                );
-              },
-              child: Text(
-                'My Spaces',
-                style: Theme.of(context).textTheme.titleMedium,
-              )),
+            onTap: () {
+              context.pushNamed(
+                Routes.spaces.name,
+              );
+            },
+            child: Text(
+              'My Spaces',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
           const SizedBox(height: 10),
           spaces.when(
             data: (data) {
@@ -39,9 +40,9 @@ class MySpacesSection extends ConsumerWidget {
               }
               List<Space> listing = data;
               final total = data.length;
-              int sublist_len = data.length;
+              int sublistLen = data.length;
               if (limit != null) {
-                sublist_len = limit!;
+                sublistLen = limit!;
                 listing = data.sublist(0, limit);
               }
               return Column(
@@ -90,7 +91,7 @@ class MySpacesSection extends ConsumerWidget {
                       );
                     },
                   ),
-                  sublist_len != total
+                  sublistLen != total
                       ? Padding(
                           padding: const EdgeInsets.only(left: 30, top: 8),
                           child: OutlinedButton(

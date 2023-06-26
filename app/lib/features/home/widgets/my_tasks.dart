@@ -6,7 +6,6 @@ import 'package:acter/features/home/providers/task_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
 class MyTasksSection extends ConsumerWidget {
@@ -86,18 +85,20 @@ class MyTasksSection extends ConsumerWidget {
                             onPressed: () {
                               context.pushNamed(
                                 Routes.tasks.name,
-                                queryParams: {
+                                queryParameters: {
                                   'filter': 'mine',
                                   'status': 'open',
                                 },
                               );
                             },
-                            child: Text('see all my ${tasks.length} tasks'))
+                            child: Text('see all my ${tasks.length} tasks'),
+                          )
                         : OutlinedButton(
                             onPressed: () {
                               context.pushNamed(Routes.tasks.name);
                             },
-                            child: const Text('See all tasks')),
+                            child: const Text('See all tasks'),
+                          ),
                   ),
                 ];
               }

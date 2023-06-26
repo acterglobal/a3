@@ -3,6 +3,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:async';
 
 class QuickjumpDialog extends ConsumerWidget {
   const QuickjumpDialog({super.key});
@@ -14,13 +15,19 @@ class QuickjumpDialog extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(title: const Text('jump to')),
         body: QuickJump(
-          navigateTo: ({Routes? route, bool push = false, String? target}) {
+          navigateTo: ({
+            Routes? route,
+            bool push = false,
+            String? target,
+          }) async {
             context.pop();
             if (push) {
               if (route != null) {
-                return context.pushNamed(route.name);
+                await context.pushNamed(route.name);
+                return;
               }
-              return context.push(target!);
+              await context.push(target!);
+              return;
             } else {
               if (route != null) {
                 return context.goNamed(route.name);

@@ -1032,6 +1032,9 @@ object Space {
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
 
+    /// Whether this space is a child of the given space
+    fn is_child_space_of(room_id: string) -> Future<bool>;
+
     /// Change the avatar of the room
     /// provide the content_type as MIME, e.g. `image/jpeg`
     fn upload_avatar(content_type: string, data: Vec<u8>) -> Future<Result<MxcUri>>;

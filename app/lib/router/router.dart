@@ -16,6 +16,7 @@ import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
+import 'package:acter/features/space/pages/related_spaces_page.dart';
 import 'package:acter/features/space/pages/spaces_page.dart';
 import 'package:acter/features/todo/pages/todo_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
@@ -58,7 +59,7 @@ Future<String?> authGuardRedirect(
   // ignore: deprecated_member_use
   return state.namedLocation(
     Routes.start.name,
-    queryParams: {'next': next},
+    queryParameters: {'next': next},
   );
 }
 
@@ -94,7 +95,7 @@ final routes = [
     name: Routes.bugReport.name,
     path: Routes.bugReport.route,
     pageBuilder: (context, state) => DialogPage(
-      builder: (_) => BugReportPage(imagePath: state.queryParams['screenshot']),
+      builder: (_) => BugReportPage(imagePath: state.queryParameters['screenshot']),
     ),
   ),
   GoRoute(
@@ -331,20 +332,34 @@ final routes = [
           return NoTransitionPage(
             key: state.pageKey,
             child: SpaceShell(
-              spaceIdOrAlias: state.params['spaceId']!,
+              spaceIdOrAlias: state.pathParameters['spaceId']!,
               child: child,
             ),
           );
         },
         routes: <RouteBase>[
           GoRoute(
+            name: Routes.relatedSpaces.name,
+            path: Routes.relatedSpaces.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              print('in spaces related');
+              return NoTransitionPage(
+                key: state.pageKey,
+                child:
+                    RelatedSpacesPage(spaceIdOrAlias: state.pathParameters['spaceId']!),
+              );
+            },
+          ),
+          GoRoute(
             name: Routes.space.name,
             path: Routes.space.route,
             redirect: authGuardRedirect,
             pageBuilder: (context, state) {
+              print('in overview');
               return NoTransitionPage(
                 key: state.pageKey,
-                child: SpaceOverview(spaceIdOrAlias: state.params['spaceId']!),
+                child: SpaceOverview(spaceIdOrAlias: state.pathParameters['spaceId']!),
               );
             },
           ),
