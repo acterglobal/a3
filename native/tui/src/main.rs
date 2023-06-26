@@ -55,9 +55,8 @@ async fn main() -> Result<()> {
             .unwrap();
 
         let dp = client.account().unwrap().display_name().await.unwrap();
-        sender
-            .send(AppUpdate::SetUsername(format!("{dp:} ({username:})")))
-            .unwrap();
+        let name = format!("{:?} ({username:})", dp.text());
+        sender.send(AppUpdate::SetUsername(name)).unwrap();
 
         let sync_stream = sync_state.first_synced_rx().unwrap();
         let history_loaded = sync_state.get_history_loading_rx();

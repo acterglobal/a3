@@ -88,8 +88,7 @@ impl Space {
         let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
         engine
             .add_user("main".to_owned(), self.client.core.clone())
-            .await
-            .context("Couldn't add user to engine")?;
+            .await?;
         engine.add_ref(
             "space".to_owned(),
             "space".to_owned(),
@@ -366,11 +365,11 @@ impl Space {
             .context("Couldn't find me among room members")?;
         for state in default_acter_space_states() {
             println!("{:?}", state);
-            let event_type = state.get_field("type")?.expect("given");
+            let event_type = state.get_field("type")?.context("given")?;
             let state_key = state.get_field("state_key")?.unwrap_or_default();
             let body = state
                 .get_field::<Raw<AnyStateEventContent>>("content")?
-                .expect("body is given");
+                .context("body is given")?;
             if !member.can_send_state(StateEventType::RoomAvatar) {
                 bail!("No permission to change avatar of this room");
             }
@@ -381,10 +380,7 @@ impl Space {
                 state_key,
                 body,
             );
-            client
-                .send(request, None)
-                .await
-                .context("Couldn't send state event")?;
+            client.send(request, None).await?;
         }
         Ok(())
     }
@@ -420,11 +416,7 @@ impl Space {
             trace!(name, ?msg_options, "fetching messages");
             let Messages {
                 end, chunk, state, ..
-            } = self
-                .room
-                .messages(msg_options)
-                .await
-                .context("Couldn't get messages of room")?;
+            } = self.room.messages(msg_options).await?;
             trace!(name, ?chunk, end, "messages received");
 
             let has_chunks = !chunk.is_empty();
@@ -466,8 +458,7 @@ impl Space {
                         custom_storage_key.as_bytes(),
                         serde_json::to_vec(&HistoryState { seen })?,
                     )
-                    .await
-                    .context("Couldn't set custom value to store")?;
+                    .await?;
             } else {
                 // how do we want to understand this case?
                 trace!(room_id = ?self.room.room_id(), "Done loading");
@@ -488,10 +479,7 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let relations = c
-                    .space_relations(&room)
-                    .await
-                    .context("Couldn't get space relations of client")?;
+                let relations = c.space_relations(&room).await?;
                 Ok(relations)
             })
             .await?
@@ -526,10 +514,7 @@ impl Client {
         let c = self.core.clone();
         RUNTIME
             .spawn(async move {
-                let room_id = c
-                    .create_acter_space(Box::into_inner(settings))
-                    .await
-                    .context("Couldn't create acter space")?;
+                let room_id = c.create_acter_space(Box::into_inner(settings)).await?;
                 Ok(room_id)
             })
             .await?
@@ -549,15 +534,10 @@ impl Client {
     pub async fn get_space(&self, alias_or_id: String) -> Result<Space> {
         if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
             self.get_room(&room_id)
-                .map(|room| Space::new(self.clone(), Room { room }))
                 .context("Room not found")
+                .map(|room| Space::new(self.clone(), Room { room }))
         } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
-            for space in self
-                .spaces()
-                .await
-                .context("Couldn't get space list from client")?
-                .into_iter()
-            {
+            for space in self.spaces().await?.into_iter() {
                 if let Some(space_alias) = space.inner.room.canonical_alias() {
                     if space_alias == alias_id {
                         return Ok(space);

@@ -242,9 +242,7 @@ impl Drop for SyncState {
 
 impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
-        let core = CoreClient::new(client)
-            .await
-            .context("Couldn't create core client")?;
+        let core = CoreClient::new(client).await?;
         let cl = Client {
             core,
             state: Arc::new(RwLock::new(state)),
@@ -267,20 +265,13 @@ impl Client {
     }
 
     pub async fn template_engine(&self, template: &str) -> Result<Engine> {
-        let engine = self
-            .core
-            .template_engine(template)
-            .await
-            .context("Couldn't set up template engine")?;
+        let engine = self.core.template_engine(template).await?;
         Ok(engine)
     }
 
     async fn refresh_history_on_start(&self, history: Mutable<HistoryLoadState>) -> Result<()> {
         trace!(user_id=?self.user_id_ref(), "refreshing history");
-        let mut spaces = self
-            .spaces()
-            .await
-            .context("Couldn't get spaces from client")?;
+        let mut spaces = self.spaces().await?;
         let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
         history.lock_mut().start(space_ids);
 
@@ -564,8 +555,8 @@ impl Client {
         self.core
             .client()
             .user_id()
-            .map(|x| x.to_owned())
             .context("UserId not found. Not logged in?")
+            .map(|x| x.to_owned())
     }
 
     fn user_id_ref(&self) -> Option<&UserId> {
@@ -577,8 +568,8 @@ impl Client {
         self.core
             .client()
             .get_room(&room_id)
-            .map(|room| Room { room })
             .context("Room not found")
+            .map(|room| Room { room })
     }
 
     pub fn subscribe(&self, key: String) -> async_broadcast::Receiver<()> {
@@ -614,8 +605,9 @@ impl Client {
             .core
             .client()
             .device_id()
-            .context("No Device ID found")?;
-        Ok(device_id.to_owned())
+            .context("No Device ID found")?
+            .to_owned();
+        Ok(device_id)
     }
 
     pub fn get_user_profile(&self) -> Result<UserProfile> {

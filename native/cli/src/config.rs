@@ -1,5 +1,5 @@
 use acter::api::{login_new_client, login_with_token, Client};
-use anyhow::{Context, Result};
+use anyhow::Result;
 use clap::{crate_version, Parser};
 use dialoguer::{theme::ColorfulTheme, Password};
 use std::path::PathBuf;
@@ -86,8 +86,7 @@ impl LoginConfig {
                 "Reusing previous access token from {}",
                 token_path_string.display()
             );
-            let token = std::fs::read_to_string(access_token_path)
-                .context("reading access token file failed")?;
+            let token = std::fs::read_to_string(access_token_path)?;
             return login_with_token(base_path, token).await;
         }
 
@@ -109,13 +108,12 @@ impl LoginConfig {
             self.homeserver.clone(),
             Some(format!("acter-cli/{}", crate_version!())),
         )
-        .await
-        .context("Couldn't login new client")?;
+        .await?;
 
         if !self.dont_store_token {
             match client.restore_token().await {
                 Ok(token) => {
-                    std::fs::write(access_token_path, token).context("Couldn't write token")?;
+                    std::fs::write(access_token_path, token)?;
                 }
                 Err(e) => error!(error = ?e, "No access token found on client."),
             }

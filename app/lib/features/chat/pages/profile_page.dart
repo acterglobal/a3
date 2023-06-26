@@ -596,11 +596,12 @@ class ProfilePage extends StatelessWidget {
             child: GetBuilder<ChatRoomController>(
               id: 'user-profile-$userId',
               builder: (ChatRoomController controller) {
-                return (controller.getUserName(userId) == null)
+                String? name = controller.getUserName(userId);
+                return (name == null)
                     ? const Center(child: CircularProgressIndicator())
                     : GroupMember(
                         userId: userId,
-                        name: controller.getUserName(userId),
+                        name: name,
                         isAdmin: true,
                         avatar: controller.getUserAvatar(userId),
                       );

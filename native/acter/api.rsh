@@ -1110,13 +1110,13 @@ object Account {
     fn user_id() -> UserId;
 
     /// The display_name of the account
-    fn display_name() -> Future<Result<string>>;
+    fn display_name() -> Future<Result<OptionText>>;
 
     /// Change the display name of the account
     fn set_display_name(name: string) -> Future<Result<bool>>;
 
     /// The avatar of the client
-    fn avatar() -> Future<Result<buffer<u8>>>;
+    fn avatar() -> Future<Result<OptionBuffer>>;
 
     /// Change the avatar of the account
     /// provide the c_type as MIME, e.g. `image/jpeg`
@@ -1265,9 +1265,14 @@ object Client {
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
 }
 
-object DispName {
+object OptionText {
     /// get text
     fn text() -> Option<string>;
+}
+
+object OptionBuffer {
+    /// get text
+    fn data() -> Option<buffer<u8>>;
 }
 
 object UserProfile {
@@ -1278,13 +1283,13 @@ object UserProfile {
     fn has_avatar() -> Future<Result<bool>>;
 
     /// get the binary data of avatar
-    fn get_avatar() -> Future<Result<buffer<u8>>>;
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
 
     /// get the binary data of thumbnail
-    fn get_thumbnail(width: u32, height: u32) -> Future<Result<buffer<u8>>>;
+    fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<DispName>>;
+    fn get_display_name() -> Future<Result<OptionText>>;
 }
 
 object RoomProfile {
@@ -1292,13 +1297,13 @@ object RoomProfile {
     fn has_avatar() -> Result<bool>;
 
     /// get the binary data of avatar
-    fn get_avatar() -> Future<Result<buffer<u8>>>;
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
 
     /// get the binary data of thumbnail
-    fn get_thumbnail(width: u32, height: u32) -> Future<Result<buffer<u8>>>;
+    fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<DispName>>;
+    fn get_display_name() -> Future<Result<OptionText>>;
 }
 
 object Invitation {

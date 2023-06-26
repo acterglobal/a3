@@ -378,7 +378,7 @@ impl Engine {
         let stream = try_stream! {
             trace!(total = objects.len(), "starting execution");
             for (count, (key, fields)) in objects.into_iter().enumerate() {
-                trace!(count,  ?key, "executing");
+                trace!(count, ?key, "executing");
                 let reformatted = execute_value_template(TomlValue::Table(fields), &env, &context)
                     .map_err(|e| Error::RenderingObject(key.to_string(), e.to_string()))?;
                 let TomlValue::Table(t) = reformatted else {

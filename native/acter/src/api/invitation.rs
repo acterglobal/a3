@@ -41,13 +41,10 @@ impl Invitation {
         let room_id = self.room.room_id().to_owned();
         let room = client
             .get_invited_room(&room_id)
-            .context("Can't accept a room we are not invited")?;
+            .context("Can't get a room we are not invited")?;
         RUNTIME
             .spawn(async move {
-                let name = room
-                    .display_name()
-                    .await
-                    .context("Couldn't get display name of room")?;
+                let name = room.display_name().await?;
                 Ok(name.to_string())
             })
             .await?
@@ -76,7 +73,7 @@ impl Invitation {
         let room_id = self.room.room_id().to_owned();
         let room = client
             .get_invited_room(&room_id)
-            .context("Can't accept a room we are not invited")?;
+            .context("Can't get a room we are not invited")?;
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
@@ -111,7 +108,7 @@ impl Invitation {
         let room_id = self.room.room_id().to_owned();
         let room = client
             .get_invited_room(&room_id)
-            .context("Can't accept a room we are not invited")?;
+            .context("Can't get a room we are not invited")?;
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
@@ -200,10 +197,7 @@ impl InvitationController {
     pub async fn load_invitations(&self, client: &SdkClient) -> Result<()> {
         let mut invitations: Vec<Invitation> = vec![];
         for room in client.invited_rooms().iter() {
-            let details = room
-                .invite_details()
-                .await
-                .context("Couldn't get invitation details of room")?;
+            let details = room.invite_details().await?;
             if let Some(inviter) = details.inviter {
                 let invitation = Invitation {
                     client: client.clone(),
@@ -225,16 +219,14 @@ impl InvitationController {
         client: &SdkClient,
     ) -> Result<()> {
         // filter only event for me
-        let user_id = client.user_id().expect("You seem to be not logged in");
+        let user_id = client.user_id().context("You seem to be not logged in")?;
         if ev.state_key != *user_id {
             return Ok(());
         }
 
         info!("stripped room member event: {:?}", ev);
         let start = SystemTime::now();
-        let since_the_epoch = start
-            .duration_since(UNIX_EPOCH)
-            .context("Time went backwards")?;
+        let since_the_epoch = start.duration_since(UNIX_EPOCH)?;
 
         info!("event type: StrippedRoomMemberEvent");
         info!("membership: {:?}", ev.content.membership);
@@ -310,10 +302,7 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 // get member list of target room
-                let members = room
-                    .members(RoomMemberships::ACTIVE)
-                    .await
-                    .context("Couldn't get members of room")?;
+                let members = room.members(RoomMemberships::ACTIVE).await?;
                 let room_members = members
                     .iter()
                     .map(|x| x.user_id().to_owned())
@@ -325,10 +314,7 @@ impl Client {
                     if convo.room_id() == room_id {
                         continue;
                     }
-                    let members = convo
-                        .members(RoomMemberships::ACTIVE)
-                        .await
-                        .context("Couldn't get members of conversation")?;
+                    let members = convo.members(RoomMemberships::ACTIVE).await?;
                     for member in members {
                         let user_id = member.user_id().to_owned();
                         // exclude user that belongs to target room
