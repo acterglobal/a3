@@ -320,7 +320,7 @@ impl Client {
                     .collect::<Vec<OwnedUserId>>();
                 // iterate my rooms to get user list
                 let mut profiles: Vec<UserProfile> = vec![];
-                let (spaces, convos) = devide_spaces_from_convos(client.clone()).await;
+                let (spaces, convos) = devide_spaces_from_convos(client.clone(), None).await;
                 for convo in convos {
                     if convo.room_id() == room_id {
                         continue;
