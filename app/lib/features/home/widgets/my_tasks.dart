@@ -1,10 +1,13 @@
 import 'dart:core';
 
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/task_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 class MyTasksSection extends ConsumerWidget {
   final int limit;
@@ -13,7 +16,7 @@ class MyTasksSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tasks = ref.watch(myTasksProvider);
+    final tasks = ref.watch(myOpenTasksProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Column(
@@ -35,6 +38,7 @@ class MyTasksSection extends ConsumerWidget {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 10),
                       child: ListTile(
+                        // FIXME: should use a reusable item
                         // onTap: () => context.go('/$roomId'),
                         title: Text(
                           brief.task.title(),
@@ -69,20 +73,32 @@ class MyTasksSection extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        leading: brief.task.isDone()
-                            ? const Icon(Atlas.check_circle_thin)
-                            : const Icon(
-                                Icons.check_box_outline_blank_outlined,
-                              ),
+                        leading: const Icon(
+                          Icons.check_box_outline_blank_outlined,
+                        ),
                       ),
                     );
                   }),
-                  tasks.length > limit
-                      ? Padding(
-                          padding: const EdgeInsets.only(left: 30),
-                          child: Text('see all my ${tasks.length} tasks'),
-                        ) // FIXME: click and where?
-                      : const Text(''),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30),
+                    child: tasks.length > limit
+                        ? OutlinedButton(
+                            onPressed: () {
+                              context.pushNamed(
+                                Routes.tasks.name,
+                                queryParams: {
+                                  'filter': 'mine',
+                                  'status': 'open',
+                                },
+                              );
+                            },
+                            child: Text('see all my ${tasks.length} tasks'))
+                        : OutlinedButton(
+                            onPressed: () {
+                              context.pushNamed(Routes.tasks.name);
+                            },
+                            child: const Text('See all tasks')),
+                  ),
                 ];
               }
               return [
