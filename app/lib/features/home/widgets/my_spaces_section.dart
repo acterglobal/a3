@@ -21,10 +21,16 @@ class MySpacesSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'My Spaces',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          InkWell(
+              onTap: () {
+                context.pushNamed(
+                  Routes.spaces.name,
+                );
+              },
+              child: Text(
+                'My Spaces',
+                style: Theme.of(context).textTheme.titleMedium,
+              )),
           const SizedBox(height: 10),
           spaces.when(
             data: (data) {
@@ -38,47 +44,66 @@ class MySpacesSection extends ConsumerWidget {
                 sublist_len = limit!;
                 listing = data.sublist(0, limit);
               }
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: listing.length,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final roomId = listing[index].getRoomId().toString();
-                  final spaceProfile =
-                      ref.watch(spaceProfileDataProvider(data[index]));
-                  return spaceProfile.when(
-                    data: (profile) => Card(
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.inversePrimary,
-                          width: 1.5,
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: listing.length,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      final roomId = listing[index].getRoomId().toString();
+                      final spaceProfile =
+                          ref.watch(spaceProfileDataProvider(data[index]));
+                      return spaceProfile.when(
+                        data: (profile) => Card(
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
+                              width: 1.5,
+                            ),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          color: Theme.of(context).colorScheme.surface,
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.all(15),
+                            onTap: () => context.go('/$roomId'),
+                            title: Text(
+                              profile.displayName ?? roomId,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            leading: ActerAvatar(
+                              mode: DisplayMode.Space,
+                              displayName: profile.displayName,
+                              uniqueId: roomId,
+                              avatar: profile.getAvatarImage(),
+                              size: 48,
+                            ),
+                            trailing: const Icon(Icons.more_vert),
+                          ),
                         ),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      color: Theme.of(context).colorScheme.surface,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(15),
-                        onTap: () => context.go('/$roomId'),
-                        title: Text(
-                          profile.displayName ?? roomId,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        leading: ActerAvatar(
-                          mode: DisplayMode.Space,
-                          displayName: profile.displayName,
-                          uniqueId: roomId,
-                          avatar: profile.getAvatarImage(),
-                          size: 48,
-                        ),
-                        trailing: const Icon(Icons.more_vert),
-                      ),
-                    ),
-                    error: (error, stackTrace) =>
-                        Text('Failed to load space due to $error'),
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
-                  );
-                },
+                        error: (error, stackTrace) =>
+                            Text('Failed to load space due to $error'),
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
+                      );
+                    },
+                  ),
+                  sublist_len != total
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 30, top: 8),
+                          child: OutlinedButton(
+                            onPressed: () {
+                              context.pushNamed(
+                                Routes.spaces.name,
+                              );
+                            },
+                            child: Text('see all my $total spaces'),
+                          ),
+                        )
+                      : const Text(''),
+                ],
               );
             },
             error: (error, stackTrace) =>

@@ -120,39 +120,6 @@ class _DashboardState extends ConsumerState<Dashboard> {
                     context.go('/settings');
                   },
                 ),
-                PopupMenuButton(
-                  icon: Icon(
-                    Atlas.plus_circle,
-                    color: Theme.of(context).colorScheme.neutral5,
-                  ),
-                  iconSize: 28,
-                  color: Theme.of(context).colorScheme.surface,
-                  itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                    PopupMenuItem(
-                      onTap: () => context.goNamed(Routes.createSpace.name),
-                      child: Row(
-                        children: const <Widget>[
-                          Text('Create Space'),
-                          Spacer(),
-                          Icon(Atlas.connection),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      onTap: () => customMsgSnackbar(
-                        context,
-                        'Join space feature isn\'t implemented yet',
-                      ),
-                      child: Row(
-                        children: const <Widget>[
-                          Text('Join Space'),
-                          Spacer(),
-                          Icon(Atlas.calendar_dots),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
                 Visibility(
                   // FIXME: Only show mobile / when bottom bar shown...
                   visible: !ref.watch(clientProvider)!.isGuest(),

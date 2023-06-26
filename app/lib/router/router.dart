@@ -16,6 +16,7 @@ import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
+import 'package:acter/features/space/pages/spaces_page.dart';
 import 'package:acter/features/todo/pages/todo_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/search/pages/search.dart';
@@ -272,20 +273,6 @@ final routes = [
         pageBuilder: (context, state) {
           return NoTransitionPage(key: state.pageKey, child: const Dashboard());
         },
-        routes: <RouteBase>[
-          GoRoute(
-            parentNavigatorKey: rootNavigatorKey,
-            name: Routes.createSpace.name,
-            path: Routes.createSpace.route,
-            redirect: authGuardRedirect,
-            pageBuilder: (context, state) {
-              return NoTransitionPage(
-                key: state.pageKey,
-                child: const CreateSpacePage(),
-              );
-            },
-          )
-        ],
       ),
 
       // ---- SETTINGS
@@ -362,6 +349,30 @@ final routes = [
             },
           ),
         ],
+      ),
+
+      GoRoute(
+        name: Routes.createSpace.name,
+        path: Routes.createSpace.route,
+        redirect: authGuardRedirect,
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: const CreateSpacePage(),
+          );
+        },
+      ),
+
+      GoRoute(
+        name: Routes.spaces.name,
+        path: Routes.spaces.route,
+        redirect: authGuardRedirect,
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: const SpacesPage(),
+          );
+        },
       ),
 
       GoRoute(

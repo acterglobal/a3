@@ -18,9 +18,6 @@ enum Routes {
   activities('/activities'),
   tasks('/tasks'),
 
-  // --- dashboard
-  createSpace('create_space'),
-
   // --- chat
   chat('/chat'),
   chatroom('/chat/:spaceId([!#][^/]+)'), // !roomId, #roomName
@@ -31,6 +28,8 @@ enum Routes {
   updatesPostSearch('post_search'),
 
   // -- spaces
+  spaces('/spaces'),
+  createSpace('/spaces/create'),
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
 
   // -- settigns
