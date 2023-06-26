@@ -36,7 +36,7 @@ impl DeviceChangedEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .expect("guest user cannot get the verified devices");
+                    .context("guest user cannot get the verified devices")?;
                 let mut records: Vec<DeviceRecord> = vec![];
                 let response = client.devices().await?;
                 for device in client
@@ -72,7 +72,7 @@ impl DeviceChangedEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .expect("guest user cannot request verification");
+                    .context("guest user cannot request verification")?;
                 let user = client
                     .encryption()
                     .get_user_identity(user_id)
@@ -90,7 +90,7 @@ impl DeviceChangedEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .expect("guest user cannot request verification");
+                    .context("guest user cannot request verification")?;
                 let dev = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
@@ -113,7 +113,7 @@ impl DeviceChangedEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .expect("guest user cannot request verification");
+                    .context("guest user cannot request verification")?;
                 let user = client
                     .encryption()
                     .get_user_identity(user_id)
@@ -136,7 +136,7 @@ impl DeviceChangedEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .expect("guest user cannot request verification");
+                    .context("guest user cannot request verification")?;
                 let dev = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
@@ -167,7 +167,7 @@ impl DeviceLeftEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .expect("guest user cannot get the deleted devices");
+                    .context("guest user cannot get the deleted devices")?;
                 let mut records: Vec<DeviceRecord> = vec![];
                 let response = client.devices().await?;
                 for device in client

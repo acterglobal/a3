@@ -365,11 +365,11 @@ impl Space {
             .context("Couldn't find me among room members")?;
         for state in default_acter_space_states() {
             println!("{:?}", state);
-            let event_type = state.get_field("type")?.expect("given");
+            let event_type = state.get_field("type")?.context("given")?;
             let state_key = state.get_field("state_key")?.unwrap_or_default();
             let body = state
                 .get_field::<Raw<AnyStateEventContent>>("content")?
-                .expect("body is given");
+                .context("body is given")?;
             if !member.can_send_state(StateEventType::RoomAvatar) {
                 bail!("No permission to change avatar of this room");
             }

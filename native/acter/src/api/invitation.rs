@@ -219,7 +219,7 @@ impl InvitationController {
         client: &SdkClient,
     ) -> Result<()> {
         // filter only event for me
-        let user_id = client.user_id().expect("You seem to be not logged in");
+        let user_id = client.user_id().context("You seem to be not logged in")?;
         if ev.state_key != *user_id {
             return Ok(());
         }
