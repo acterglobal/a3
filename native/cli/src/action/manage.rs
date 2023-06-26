@@ -3,6 +3,7 @@ use anyhow::{Context, Result};
 use clap::Parser;
 use futures::StreamExt;
 use matrix_sdk::ruma::OwnedRoomId;
+use tracing::{info, warn};
 
 use crate::config::LoginConfig;
 
@@ -34,26 +35,26 @@ impl Manage {
 
     async fn run_marking_space(&self, room_id: &OwnedRoomId) -> Result<()> {
         let mut client = self.login.client().await?;
-        tracing::info!(" - Syncing -");
+        info!(" - Syncing -");
         let sync_state = client.start_sync();
 
         let mut is_synced = sync_state.first_synced_rx().context("not yet read")?;
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
-        tracing::info!(" - First Sync finished - ");
+        info!(" - First Sync finished - ");
 
         let space = client.get_space(room_id.to_string()).await?;
 
         if !space.is_space() {
-            tracing::warn!("{room_id} is not a space. quitting.");
+            warn!("{room_id} is not a space. quitting.");
             return Ok(());
         } else if space.is_acter_space().await {
-            tracing::warn!("{room_id} is already an acter space. quitting.");
+            warn!("{room_id} is already an acter space. quitting.");
             return Ok(());
         }
 
         space.set_acter_space_states().await?;
 
-        tracing::info!("States sent");
+        info!("States sent");
 
         // FIXME DO SOMETHING
         Ok(())
@@ -68,12 +69,12 @@ impl Manage {
 
         let room_id = client.create_acter_space(Box::new(settings)).await?;
 
-        tracing::info!(" - Syncing -");
+        info!(" - Syncing -");
         let sync_state = client.start_sync();
 
         let mut is_synced = sync_state.first_synced_rx().context("not yet read")?;
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
-        tracing::info!(" - First Sync finished - ");
+        info!(" - First Sync finished - ");
 
         let space = client.get_space(room_id.to_string()).await?;
 

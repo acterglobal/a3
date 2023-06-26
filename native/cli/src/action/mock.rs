@@ -10,6 +10,7 @@ use matrix_sdk::ruma::{api::client::room::Visibility, OwnedUserId};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sqlite::make_store_config;
 use std::collections::HashMap;
+use tracing::{error, info, trace};
 
 use crate::config::{ENV_DEFAULT_HOMESERVER_NAME, ENV_DEFAULT_HOMESERVER_URL, ENV_REG_TOKEN};
 
@@ -96,7 +97,7 @@ impl<'a> Mock<'a> {
         match self.users.get(&username) {
             Some(c) => Ok(c.clone()),
             None => {
-                tracing::trace!("client not found. creating for {:}", username);
+                trace!("client not found. creating for {:}", username);
 
                 let store_config = if self.opts.persist {
                     let path = sanitize(".local", &username);
@@ -209,16 +210,16 @@ impl<'a> Mock<'a> {
 
         match admin.create_acter_space(Box::new(ops_settings)).await {
             Ok(ops_id) => {
-                tracing::info!("Ops Room Id: {:?}", ops_id);
+                info!("Ops Room Id: {:?}", ops_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
                     .expect("already checked");
-                tracing::warn!("Problem creating Ops Room: {:?}", inner);
+                error!("Problem creating Ops Room: {:?}", inner);
             }
             Err(e) => {
-                tracing::error!("Creating Ops Room failed: {:?}", e);
+                error!("Creating Ops Room failed: {:?}", e);
             }
         }
 
@@ -231,16 +232,16 @@ impl<'a> Mock<'a> {
 
         match admin.create_acter_space(Box::new(promenade_settings)).await {
             Ok(promenade_room_id) => {
-                tracing::info!("Promenade Room Id: {:?}", promenade_room_id);
+                info!("Promenade Room Id: {:?}", promenade_room_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
                     .expect("already checked");
-                tracing::warn!("Problem creating Promenade Room: {:?}", inner);
+                error!("Problem creating Promenade Room: {:?}", inner);
             }
             Err(e) => {
-                tracing::error!("Creating Promenade Room failed: {:?}", e);
+                error!("Creating Promenade Room failed: {:?}", e);
             }
         }
 
@@ -253,33 +254,33 @@ impl<'a> Mock<'a> {
 
         match admin.create_acter_space(Box::new(quarks_settings)).await {
             Ok(quarks_id) => {
-                tracing::info!("Quarks Room Id: {:?}", quarks_id);
+                info!("Quarks Room Id: {:?}", quarks_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
                     .expect("already checked");
-                tracing::warn!("Problem creating Quarks Room: {:?}", inner);
+                error!("Problem creating Quarks Room: {:?}", inner);
             }
             Err(e) => {
-                tracing::error!("Creating Quarks Room failed: {:?}", e);
+                error!("Creating Quarks Room failed: {:?}", e);
             }
         }
 
-        tracing::info!("Done creating spaces");
+        info!("Done creating spaces");
         Ok(())
     }
 
     pub async fn accept_invitations(&mut self) -> Result<()> {
         for member in self.everyone().await.iter() {
-            tracing::info!("Accepting invites for {:}", member.user_id()?);
+            info!("Accepting invites for {:}", member.user_id()?);
             member.sync_once(Default::default()).await?;
             for invited in member.invited_rooms().iter() {
-                tracing::trace!("accepting {:#?}", invited);
+                trace!("accepting {:#?}", invited);
                 invited.accept_invitation().await?;
             }
         }
-        tracing::info!("Done accepting invites");
+        info!("Done accepting invites");
 
         Ok(())
     }
@@ -287,7 +288,7 @@ impl<'a> Mock<'a> {
     pub async fn sync_up(&mut self) -> Result<()> {
         for member in self.everyone().await.iter() {
             member.sync_once(Default::default()).await?;
-            tracing::info!("Synced {:}", member.user_id()?);
+            info!("Synced {:}", member.user_id()?);
         }
         Ok(())
     }
@@ -374,7 +375,7 @@ impl<'a> Mock<'a> {
             .send()
             .await?;
 
-        tracing::info!("Creating task lists and tasks done.");
+        info!("Creating task lists and tasks done.");
 
         Ok(())
     }
@@ -394,7 +395,7 @@ impl<'a> Mock<'a> {
         }))
         .await?;
 
-        tracing::info!("Encryption keys exported to .local");
+        info!("Encryption keys exported to .local");
 
         Ok(())
     }

@@ -26,6 +26,7 @@ pub use pins::{Pin, PinUpdate};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
 pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
+use tracing::{error, trace};
 
 #[cfg(test)]
 pub use test::{TestModel, TestModelBuilder, TestModelBuilderError};
@@ -88,14 +89,14 @@ pub async fn default_model_execute(
     store: &Store,
     model: AnyActerModel,
 ) -> crate::Result<Vec<String>> {
-    tracing::trace!(event_id=?model.event_id(), ?model, "handling");
+    trace!(event_id=?model.event_id(), ?model, "handling");
     let Some(belongs_to) = model.belongs_to() else {
         let event_id = model.event_id().to_string();
-        tracing::trace!(?event_id, "saving simple model");
+        trace!(?event_id, "saving simple model");
         return store.save(model).await
     };
 
-    tracing::trace!(event_id=?model.event_id(), ?belongs_to, "transitioning tree");
+    trace!(event_id=?model.event_id(), ?belongs_to, "transitioning tree");
     let mut models = transition_tree(store, belongs_to, &model).await?;
     models.push(model);
     store.save_many(models).await
@@ -120,7 +121,7 @@ pub trait ActerModel: Debug {
 
     /// handle transition from an external Item upon us
     fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
-        tracing::error!(?self, ?model, "Transition has not been implemented");
+        error!(?self, ?model, "Transition has not been implemented");
         Ok(false)
     }
 }
@@ -179,7 +180,7 @@ impl AnyActerModel {
             "global.acter.dev.calendar_event" => Ok(AnyActerModel::CalendarEvent(
                 raw.deserialize_as::<OriginalCalendarEventEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing calendar_event event failed");
+                        error!(?error, ?raw, "parsing calendar_event event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.calendar_event".to_string(),
                             msg: error.to_string(),
@@ -190,7 +191,7 @@ impl AnyActerModel {
             "global.acter.dev.calendar_event.update" => Ok(AnyActerModel::CalendarEventUpdate(
                 raw.deserialize_as::<OriginalCalendarEventUpdateEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing pin update event failed");
+                        error!(?error, ?raw, "parsing pin update event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.pin.update".to_string(),
                             msg: error.to_string(),
@@ -203,7 +204,7 @@ impl AnyActerModel {
             "global.acter.dev.tasklist" => Ok(AnyActerModel::TaskList(
                 raw.deserialize_as::<OriginalTaskListEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing task list event failed");
+                        error!(?error, ?raw, "parsing task list event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.tasklist".to_string(),
                             msg: error.to_string(),
@@ -214,7 +215,7 @@ impl AnyActerModel {
             "global.acter.dev.task" => Ok(AnyActerModel::Task(
                 raw.deserialize_as::<OriginalTaskEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing task event failed");
+                        error!(?error, ?raw, "parsing task event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.task".to_string(),
                             msg: error.to_string(),
@@ -225,7 +226,7 @@ impl AnyActerModel {
             "global.acter.dev.task.update" => Ok(AnyActerModel::TaskUpdate(
                 raw.deserialize_as::<OriginalTaskUpdateEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing task update event failed");
+                        error!(?error, ?raw, "parsing task update event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.task.update".to_string(),
                             msg: error.to_string(),
@@ -238,7 +239,7 @@ impl AnyActerModel {
             "global.acter.dev.pin" => Ok(AnyActerModel::Pin(
                 raw.deserialize_as::<OriginalPinEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing pin event failed");
+                        error!(?error, ?raw, "parsing pin event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.pin".to_string(),
                             msg: error.to_string(),
@@ -249,7 +250,7 @@ impl AnyActerModel {
             "global.acter.dev.pin.update" => Ok(AnyActerModel::PinUpdate(
                 raw.deserialize_as::<OriginalPinUpdateEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing pin update event failed");
+                        error!(?error, ?raw, "parsing pin update event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.pin.update".to_string(),
                             msg: error.to_string(),
@@ -262,7 +263,7 @@ impl AnyActerModel {
             "global.acter.dev.news" => Ok(AnyActerModel::NewsEntry(
                 raw.deserialize_as::<OriginalNewsEntryEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing news event failed");
+                        error!(?error, ?raw, "parsing news event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.news".to_string(),
                             msg: error.to_string(),
@@ -273,7 +274,7 @@ impl AnyActerModel {
             "global.acter.dev.news.update" => Ok(AnyActerModel::NewsEntryUpdate(
                 raw.deserialize_as::<OriginalNewsEntryUpdateEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing news update event failed");
+                        error!(?error, ?raw, "parsing news update event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.news.update".to_string(),
                             msg: error.to_string(),
@@ -288,7 +289,7 @@ impl AnyActerModel {
             "global.acter.dev.comment" => Ok(AnyActerModel::Comment(
                 raw.deserialize_as::<OriginalCommentEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing task update event failed");
+                        error!(?error, ?raw, "parsing task update event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.comment".to_string(),
                             msg: error.to_string(),
@@ -299,7 +300,7 @@ impl AnyActerModel {
             "global.acter.dev.comment.update" => Ok(AnyActerModel::CommentUpdate(
                 raw.deserialize_as::<OriginalCommentUpdateEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing task update event failed");
+                        error!(?error, ?raw, "parsing task update event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.comment.update".to_string(),
                             msg: error.to_string(),
@@ -310,7 +311,7 @@ impl AnyActerModel {
 
             _ => {
                 if model_type.starts_with("global.acter.") {
-                    tracing::error!(?raw, "{model_type} not implemented");
+                    error!(?raw, "{model_type} not implemented");
                 }
 
                 Err(Error::UnknownModel(Some(model_type.to_owned())))
@@ -331,7 +332,7 @@ impl AnyActerModel {
             "global.acter.dev.calendar_event" => match raw
                 .deserialize_as::<SyncCalendarEventEvent>()
                 .map_err(|error| {
-                    tracing::error!(?error, ?raw, "parsing calendar_event event failed");
+                    error!(?error, ?raw, "parsing calendar_event event failed");
                     Error::FailedToParse {
                         model_type: "global.acter.dev.calendar_event".to_string(),
                         msg: error.to_string(),
@@ -345,7 +346,7 @@ impl AnyActerModel {
             "global.acter.dev.calendar_event.update" => match raw
                 .deserialize_as::<SyncCalendarEventUpdateEvent>()
                 .map_err(|error| {
-                    tracing::error!(?error, ?raw, "parsing calendar_event update event failed");
+                    error!(?error, ?raw, "parsing calendar_event update event failed");
                     Error::FailedToParse {
                         model_type: "global.acter.dev.calendar_event.update".to_string(),
                         msg: error.to_string(),
@@ -361,7 +362,7 @@ impl AnyActerModel {
             "global.acter.dev.tasklist" => match raw
                 .deserialize_as::<SyncTaskListEvent>()
                 .map_err(|error| {
-                    tracing::error!(?error, ?raw, "parsing task list event failed");
+                    error!(?error, ?raw, "parsing task list event failed");
                     Error::FailedToParse {
                         model_type: "global.acter.dev.tasklist".to_string(),
                         msg: error.to_string(),
@@ -375,7 +376,7 @@ impl AnyActerModel {
             "global.acter.dev.task" => match raw
                 .deserialize_as::<SyncTaskEvent>()
                 .map_err(|error| {
-                    tracing::error!(?error, ?raw, "parsing task event failed");
+                    error!(?error, ?raw, "parsing task event failed");
                     Error::FailedToParse {
                         model_type: "global.acter.dev.task".to_string(),
                         msg: error.to_string(),
@@ -389,7 +390,7 @@ impl AnyActerModel {
             "global.acter.dev.task.update" => match raw
                 .deserialize_as::<SyncTaskUpdateEvent>()
                 .map_err(|error| {
-                    tracing::error!(?error, ?raw, "parsing task update event failed");
+                    error!(?error, ?raw, "parsing task update event failed");
                     Error::FailedToParse {
                         model_type: "global.acter.dev.task.update".to_string(),
                         msg: error.to_string(),
@@ -405,7 +406,7 @@ impl AnyActerModel {
             "global.acter.dev.pin" => match raw
                 .deserialize_as::<SyncPinEvent>()
                 .map_err(|error| {
-                    tracing::error!(?error, ?raw, "parsing pin event failed");
+                    error!(?error, ?raw, "parsing pin event failed");
                     Error::FailedToParse {
                         model_type: "global.acter.dev.pin".to_string(),
                         msg: error.to_string(),
@@ -419,7 +420,7 @@ impl AnyActerModel {
             "global.acter.dev.pin.update" => match raw
                 .deserialize_as::<SyncPinUpdateEvent>()
                 .map_err(|error| {
-                    tracing::error!(?error, ?raw, "parsing pin update event failed");
+                    error!(?error, ?raw, "parsing pin update event failed");
                     Error::FailedToParse {
                         model_type: "global.acter.dev.pin.update".to_string(),
                         msg: error.to_string(),
@@ -435,7 +436,7 @@ impl AnyActerModel {
             "global.acter.dev.news" => match raw
                 .deserialize_as::<SyncNewsEntryEvent>()
                 .map_err(|error| {
-                    tracing::error!(?error, ?raw, "parsing news event failed");
+                    error!(?error, ?raw, "parsing news event failed");
                     Error::FailedToParse {
                         model_type: "global.acter.dev.news".to_string(),
                         msg: error.to_string(),
@@ -449,7 +450,7 @@ impl AnyActerModel {
             "global.acter.dev.news.update" => match raw
                 .deserialize_as::<SyncNewsEntryUpdateEvent>()
                 .map_err(|error| {
-                    tracing::error!(?error, ?raw, "parsing news update event failed");
+                    error!(?error, ?raw, "parsing news update event failed");
                     Error::FailedToParse {
                         model_type: "global.acter.dev.news.update".to_string(),
                         msg: error.to_string(),
@@ -467,7 +468,7 @@ impl AnyActerModel {
             "global.acter.dev.comment" => match raw
                 .deserialize_as::<SyncCommentEvent>()
                 .map_err(|error| {
-                    tracing::error!(?error, ?raw, "parsing task update event failed");
+                    error!(?error, ?raw, "parsing task update event failed");
                     Error::FailedToParse {
                         model_type: "global.acter.dev.comment".to_string(),
                         msg: error.to_string(),
@@ -481,7 +482,7 @@ impl AnyActerModel {
             "global.acter.dev.comment.update" => match raw
                 .deserialize_as::<SyncCommentUpdateEvent>()
                 .map_err(|error| {
-                    tracing::error!(?error, ?raw, "parsing task update event failed");
+                    error!(?error, ?raw, "parsing task update event failed");
                     Error::FailedToParse {
                         model_type: "global.acter.dev.comment.update".to_string(),
                         msg: error.to_string(),
@@ -496,7 +497,7 @@ impl AnyActerModel {
             // unimplemented cases
             _ => {
                 if model_type.starts_with("global.acter.") {
-                    tracing::error!(?raw, "{model_type} not implemented");
+                    error!(?raw, "{model_type} not implemented");
                 }
 
                 Err(Error::UnknownModel(Some(model_type.to_owned())))

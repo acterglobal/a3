@@ -1,5 +1,4 @@
 use anyhow::{bail, Context, Result};
-use log::info;
 use matrix_sdk::{
     media::{MediaFormat, MediaThumbnailSize},
     room::RoomMember,
@@ -144,7 +143,6 @@ impl UserProfile {
             return RUNTIME
                 .spawn(async move {
                     let text = account.get_display_name().await?;
-                    info!("get_display_name: {:?}", text);
                     Ok(DispName { text })
                 })
                 .await?;

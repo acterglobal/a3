@@ -107,7 +107,6 @@ dependencies = [
  "async-broadcast",
  "env_logger",
  "futures",
- "log",
  "tempfile",
  "tokio",
  "tokio-retry",

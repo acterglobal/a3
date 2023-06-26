@@ -12,7 +12,6 @@ use futures::{
 use futures_signals::signal::{
     channel, Mutable, MutableSignalCloned, Receiver, SignalExt, SignalStream,
 };
-use log::info;
 use matrix_sdk::{
     config::SyncSettings,
     room::Room as SdkRoom,
@@ -31,6 +30,7 @@ use tokio::{
     sync::{Mutex, RwLock},
     task::JoinHandle,
 };
+use tracing::{error, info, trace};
 
 use super::{
     account::Account,
@@ -147,7 +147,7 @@ impl HistoryLoadState {
     }
 
     pub fn start(&mut self, known_spaces: Vec<OwnedRoomId>) {
-        tracing::trace!(?known_spaces, "Starting History loading");
+        trace!(?known_spaces, "Starting History loading");
         self.has_started = true;
         self.known_spaces.clear();
         for space in known_spaces.into_iter() {
@@ -168,7 +168,7 @@ impl HistoryLoadState {
     }
 
     pub fn set_loading(&mut self, room_id: OwnedRoomId, value: bool) -> bool {
-        tracing::trace!(?room_id, loading = value, "Setting room for loading");
+        trace!(?room_id, loading = value, "Setting room for loading");
         self.known_spaces.insert(room_id, value).unwrap_or_default()
     }
 
@@ -206,13 +206,13 @@ impl SyncState {
     }
 
     pub async fn await_has_synced_history(&self) -> Result<u32> {
-        tracing::trace!("Waiting for history to sync");
+        trace!("Waiting for history to sync");
         let signal = self.history_loading.signal_cloned().to_stream();
         pin_mut!(signal);
         while let Some(next_state) = signal.next().await {
-            tracing::trace!(?next_state, "History updated");
+            trace!(?next_state, "History updated");
             if next_state.is_done_loading() {
-                tracing::trace!(?next_state, "History sync completed");
+                trace!(?next_state, "History sync completed");
                 return Ok(next_state.total_spaces() as u32);
             }
         }
@@ -276,7 +276,7 @@ impl Client {
     }
 
     async fn refresh_history_on_start(&self, history: Mutable<HistoryLoadState>) -> Result<()> {
-        tracing::trace!(user_id=?self.user_id_ref(), "refreshing history");
+        trace!(user_id=?self.user_id_ref(), "refreshing history");
         let mut spaces = self
             .spaces()
             .await
@@ -286,7 +286,7 @@ impl Client {
 
         join_all(spaces.iter_mut().map(|space| async {
             if !space.is_acter_space().await {
-                tracing::trace!(room_id=?space.room_id(), "not an acter space");
+                trace!(room_id=?space.room_id(), "not an acter space");
                 history.lock_mut().unknow_room(&space.room_id().to_owned());
                 return;
             }
@@ -294,7 +294,7 @@ impl Client {
             space.add_handlers().await;
 
             if let Err(err) = space.refresh_history().await {
-                tracing::error!(?err, room_id=?space.room_id(), "Loading space history failed");
+                error!(?err, room_id=?space.room_id(), "Loading space history failed");
             };
             history
                 .lock_mut()
@@ -309,7 +309,7 @@ impl Client {
         history: Mutable<HistoryLoadState>,
         new_spaces: Vec<SdkRoom>,
     ) -> Result<()> {
-        tracing::trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
+        trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
 
         join_all(
             new_spaces
@@ -322,7 +322,7 @@ impl Client {
                             let room_id = space.room_id().to_owned();
                             let mut history = history.lock_mut();
                             if history.is_loading(&room_id) {
-                                tracing::trace!(room_id=?room_id, "Already loading room.");
+                                trace!(room_id=?room_id, "Already loading room.");
                                 return;
                             }
                             history.set_loading(room_id, true);
@@ -331,18 +331,20 @@ impl Client {
                         space.add_handlers().await;
 
                         if let Err(err) = space.refresh_history().await {
-                            tracing::error!(?err, room_id=?space.room_id(), "refreshing history failed");
+                            error!(?err, room_id=?space.room_id(), "refreshing history failed");
                         }
-                        history.lock_mut().set_loading(space.room_id().to_owned(), false);
+                        history
+                            .lock_mut()
+                            .set_loading(space.room_id().to_owned(), false);
                     }
-                })
+                }),
         )
         .await;
         Ok(())
     }
 
     pub fn start_sync(&mut self) -> SyncState {
-        tracing::info!("starting sync");
+        info!("starting sync");
         let state = self.state.clone();
         let me = self.clone();
         let executor = self.executor().clone();
@@ -372,7 +374,7 @@ impl Client {
         let sync_state_history = sync_state.history_loading.clone();
 
         let handle = RUNTIME.spawn(async move {
-            tracing::info!("spawning sync callback");
+            info!("spawning sync callback");
             let client = client.clone();
             let state = state.clone();
 
@@ -386,7 +388,7 @@ impl Client {
             client
                 .clone()
                 .sync_with_result_callback(SyncSettings::new(), |result| async {
-                    tracing::info!("received sync callback");
+                    info!("received sync callback");
                     let client = client.clone();
                     let me = me.clone();
                     let executor = executor.clone();
@@ -404,22 +406,22 @@ impl Client {
                         Ok(response) => response,
                         Err(err) => {
                             if let Some(RumaApiError::ClientApi(e)) = err.as_ruma_api_error() {
-                                tracing::warn!(?e, "Client error");
+                                error!(?e, "Client error");
                                 return Ok(LoopCtrl::Break);
                             }
-                            tracing::warn!(?err, "Other error, continuing");
+                            error!(?err, "Other error, continuing");
                             return Ok(LoopCtrl::Continue);
                         }
                     };
 
                     device_controller.process_device_lists(&client, &response);
-                    tracing::trace!("post decallbackvice controller");
+                    trace!("post decallbackvice controller");
 
                     if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
                         == Ok(true)
                     {
-                        tracing::info!("received first sync");
-                        tracing::trace!(user_id=?client.user_id(), "initial synced");
+                        info!("received first sync");
+                        trace!(user_id=?client.user_id(), "initial synced");
                         let filter = SpaceFilterBuilder::default()
                             .build()
                             .expect("Builder SpaceFilter doesn't fail");
@@ -432,7 +434,7 @@ impl Client {
 
                         initial.store(false, Ordering::SeqCst);
 
-                        tracing::info!("issuing first sync update");
+                        info!("issuing first sync update");
                         first_synced_arc.send(true);
                         if let Ok(mut w) = state.try_write() {
                             w.has_first_synced = true;
@@ -449,7 +451,7 @@ impl Client {
                                 continue;
                             }
                             let Some(full_room) = me.get_room(room_id) else {
-                                tracing::warn!("room not found. how can that be?");
+                                error!("room not found. how can that be?");
                                 continue;
                             };
                             if is_acter_space(&full_room).await {
@@ -480,7 +482,7 @@ impl Client {
                     if let Ok(mut w) = state.try_write() {
                         if w.should_stop_syncing {
                             w.is_syncing = false;
-                            tracing::trace!("Stopping syncing upon user request");
+                            trace!("Stopping syncing upon user request");
                             return Ok(LoopCtrl::Break);
                         }
                     }
@@ -490,7 +492,7 @@ impl Client {
                         }
                     }
 
-                    tracing::trace!("ready for the next round");
+                    trace!("ready for the next round");
                     Ok(LoopCtrl::Continue)
                 })
                 .await;
@@ -663,7 +665,7 @@ impl Client {
                 match client.logout().await {
                     Ok(resp) => Ok(true),
                     Err(e) => {
-                        info!("logout error: {:?}", e);
+                        error!("logout error: {:?}", e);
                         Ok(false)
                     }
                 }

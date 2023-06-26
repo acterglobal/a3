@@ -27,7 +27,7 @@ pub async fn new_client_config(
                     &format!("{home}_backup_{}", Local::now().to_rfc3339()),
                 );
                 tracing::warn!(
-                    "{data_path:?} already existing. Moving to backup at {backup_path:?}.",
+                    "{data_path:?} already existing. Moving to backup at {backup_path:?}."
                 );
                 std::fs::rename(&data_path, backup_path)?;
             }
@@ -105,7 +105,7 @@ pub fn init_logging(
         .chain(fern::Manual::new(path, "%Y-%m-%d_%H-%M-%S%.f.log"))
         .into_dispatch_with_arc();
 
-    if level == log::LevelFilter::Off {
+    if level == LevelFilter::Off {
         log::set_boxed_logger(Box::new(NopLogger))?;
     } else {
         log::set_boxed_logger(Box::new(dispatch.clone()))?;
