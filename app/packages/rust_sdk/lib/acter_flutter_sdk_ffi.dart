@@ -7566,7 +7566,7 @@ class Api {
     return tmp9;
   }
 
-  bool? __clientSubscribeStreamPoll(
+  void __clientSubscribeStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -7590,13 +7590,11 @@ class Api {
       tmp5,
       tmp7,
     );
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
+    final tmp10 = tmp8;
     if (tmp10 == 0) {
       return null;
     }
-    final tmp9 = tmp11 > 0;
-    return tmp9;
+    return;
   }
 
   late final _initLoggingPtr = _lookup<
@@ -16004,7 +16002,7 @@ class Api {
   )>();
   late final _clientSubscribeStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientSubscribeStreamPollReturn Function(
+          ffi.Uint8 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
@@ -16013,7 +16011,7 @@ class Api {
 
   late final _clientSubscribeStreamPoll =
       _clientSubscribeStreamPollPtr.asFunction<
-          _ClientSubscribeStreamPollReturn Function(
+          int Function(
     int,
     int,
     int,
@@ -27911,7 +27909,7 @@ class Client {
   }
 
   /// listen to updates to any model key
-  Stream<bool> subscribe(
+  Stream<void> subscribe(
     String key,
   ) {
     final tmp1 = key;
@@ -33241,13 +33239,6 @@ class _ClientIncomingMessageRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
-  external int arg1;
-}
-
-class _ClientSubscribeStreamPollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
   external int arg1;
 }
 
