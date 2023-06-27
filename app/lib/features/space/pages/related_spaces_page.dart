@@ -1,19 +1,11 @@
-import 'dart:math';
 import 'dart:core';
+import 'dart:math';
 
-import 'package:acter/features/space/providers/space_providers.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
 class ChildItem extends StatelessWidget {
   final SpaceItem space;
@@ -59,8 +51,6 @@ class RelatedSpacesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spaces = ref.watch(relatedSpaceItemsProvider(spaceIdOrAlias));
-    final widthCount = (MediaQuery.of(context).size.width ~/ 300).toInt();
-    const int minCount = 2;
     // get platform of context.
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -75,8 +65,11 @@ class RelatedSpacesPage extends ConsumerWidget {
             if (spaces.mainParent != null) {
               final space = spaces.mainParent!;
               items.add(const SliverToBoxAdapter(child: Text('Parent')));
-              items.add(SliverToBoxAdapter(
-                  child: ChildItem(key: Key(space.roomId), space: space)));
+              items.add(
+                SliverToBoxAdapter(
+                  child: ChildItem(key: Key(space.roomId), space: space),
+                ),
+              );
             }
             if (spaces.parents.isNotEmpty) {
               if (items.isEmpty) {

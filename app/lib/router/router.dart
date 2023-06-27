@@ -1,5 +1,7 @@
 import 'package:acter/common/dialogs/dialog_page.dart';
 import 'package:acter/common/dialogs/side_sheet_page.dart';
+import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/presentation/pages/activities_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
@@ -18,7 +20,6 @@ import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/space/pages/related_spaces_page.dart';
 import 'package:acter/features/space/pages/spaces_page.dart';
-import 'package:acter/features/todo/pages/todo_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/search/pages/search.dart';
 import 'package:acter/features/settings/pages/index_page.dart';
@@ -28,12 +29,10 @@ import 'package:acter/features/settings/pages/licenses_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/features/todo/pages/create_task_sidesheet.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/todo/pages/todo_page.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-// ignore: implementation_imports
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:acter/common/utils/constants.dart';
 
 Future<String?> authGuardRedirect(
   BuildContext context,
@@ -95,7 +94,9 @@ final routes = [
     name: Routes.bugReport.name,
     path: Routes.bugReport.route,
     pageBuilder: (context, state) => DialogPage(
-      builder: (_) => BugReportPage(imagePath: state.queryParameters['screenshot']),
+      builder: (BuildContext ctx) => BugReportPage(
+        imagePath: state.queryParameters['screenshot'],
+      ),
     ),
   ),
   GoRoute(
@@ -103,7 +104,7 @@ final routes = [
     name: Routes.quickJump.name,
     path: Routes.quickJump.route,
     pageBuilder: (context, state) => DialogPage(
-      builder: (_) => const QuickjumpDialog(),
+      builder: (BuildContext ctx) => const QuickjumpDialog(),
     ),
   ),
   GoRoute(
@@ -343,11 +344,12 @@ final routes = [
             path: Routes.relatedSpaces.route,
             redirect: authGuardRedirect,
             pageBuilder: (context, state) {
-              print('in spaces related');
+              debugPrint('in spaces related');
               return NoTransitionPage(
                 key: state.pageKey,
-                child:
-                    RelatedSpacesPage(spaceIdOrAlias: state.pathParameters['spaceId']!),
+                child: RelatedSpacesPage(
+                  spaceIdOrAlias: state.pathParameters['spaceId']!,
+                ),
               );
             },
           ),
@@ -356,10 +358,12 @@ final routes = [
             path: Routes.space.route,
             redirect: authGuardRedirect,
             pageBuilder: (context, state) {
-              print('in overview');
+              debugPrint('in overview');
               return NoTransitionPage(
                 key: state.pageKey,
-                child: SpaceOverview(spaceIdOrAlias: state.pathParameters['spaceId']!),
+                child: SpaceOverview(
+                  spaceIdOrAlias: state.pathParameters['spaceId']!,
+                ),
               );
             },
           ),

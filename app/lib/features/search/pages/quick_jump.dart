@@ -3,7 +3,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:async';
 
 class QuickjumpDialog extends ConsumerWidget {
   const QuickjumpDialog({super.key});
@@ -11,7 +10,7 @@ class QuickjumpDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(minWidth: 400.0),
+      constraints: const BoxConstraints(minWidth: 400),
       child: Scaffold(
         appBar: AppBar(title: const Text('jump to')),
         body: QuickJump(
