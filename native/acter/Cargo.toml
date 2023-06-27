@@ -33,7 +33,6 @@ futures-signals = "0.3.31"
 lazy_static = "1.4"
 log = "0.4"
 log-panics = "2.0.0"
-mime = "0.3.16"
 mime_guess = "2.0.4"
 parse-env-filter = "0.1.0"
 ruma = { workspace = true }

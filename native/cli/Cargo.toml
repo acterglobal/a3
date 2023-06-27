@@ -17,7 +17,6 @@ env_logger = "0.10.0"
 matrix-sdk = { workspace = true }
 matrix-sdk-base = { workspace = true }
 matrix-sdk-sqlite = { workspace = true }
-mime = "0.3.16"
 term-table = "1.3.2"
 tokio = { version = "1", features = ["full", "time"] }
 tracing = { version = "0.1.36", features = ["log"] }

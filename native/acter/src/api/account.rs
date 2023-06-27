@@ -1,10 +1,10 @@
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     media::MediaFormat,
     ruma::{OwnedMxcUri, OwnedUserId},
     Account as SdkAccount,
 };
-use std::ops::Deref;
+use std::{ops::Deref, path::PathBuf};
 
 use super::{
     api::FfiBuffer,
@@ -69,12 +69,18 @@ impl Account {
             .await?
     }
 
-    pub async fn set_avatar(&self, content_type: String, data: Vec<u8>) -> Result<OwnedMxcUri> {
+    pub async fn set_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
         let account = self.account.clone();
-        let content_type = content_type.parse::<mime::Mime>()?;
+        let path = PathBuf::from(uri);
+        let guess = mime_guess::from_path(path.clone());
+        let content_type = guess.first().context("No MIME type")?;
+        if !content_type.to_string().starts_with("image/") {
+            bail!("Account avatar accepts only image file");
+        }
         RUNTIME
             .spawn(async move {
-                let new_url = account.upload_avatar(&content_type, data).await?;
+                let buf = std::fs::read(path)?;
+                let new_url = account.upload_avatar(&content_type, buf).await?;
                 Ok(new_url)
             })
             .await?

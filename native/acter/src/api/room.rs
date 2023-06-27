@@ -1156,7 +1156,7 @@ impl Room {
                     mimetype: Some(content_type.to_string()),
                     size: UInt::new(buf.len() as u64),
                 });
-        
+
                 let timeline_event = room.event(&event_id).await?;
 
                 let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
@@ -1223,7 +1223,7 @@ impl Room {
                     duration: secs.map(|x| Duration::from_secs(x as u64)),
                     size: UInt::new(buf.len() as u64),
                 });
-        
+
                 let timeline_event = room.event(&event_id).await?;
 
                 let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
@@ -1297,7 +1297,7 @@ impl Room {
                     size: UInt::new(buf.len() as u64),
                     blurhash,
                 });
-        
+
                 let timeline_event = room.event(&event_id).await?;
 
                 let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
@@ -1359,7 +1359,7 @@ impl Room {
                     mimetype: Some(content_type.to_string()),
                     size: UInt::new(buf.len() as u64),
                 });
-        
+
                 let timeline_event = room.event(&event_id).await?;
 
                 let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;

@@ -1119,8 +1119,7 @@ object Account {
     fn avatar() -> Future<Result<OptionBuffer>>;
 
     /// Change the avatar of the account
-    /// provide the c_type as MIME, e.g. `image/jpeg`
-    fn set_avatar(c_type: string, data: Vec<u8>) -> Future<Result<MxcUri>>;
+    fn set_avatar(uri: string) -> Future<Result<MxcUri>>;
 }
 
 object SyncState {
