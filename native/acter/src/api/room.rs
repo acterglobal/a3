@@ -15,6 +15,7 @@ use matrix_sdk::{
             receipt::ReceiptThread,
             relation::Annotation,
             room::{
+                avatar::ImageInfo as AvatarImageInfo,
                 message::{
                     AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
                     ForwardThread, ImageMessageEventContent, MessageType, RoomMessageEvent,
@@ -27,7 +28,7 @@ use matrix_sdk::{
             MessageLikeEventType, StateEvent, StateEventType,
         },
         room::RoomType,
-        EventId, Int, OwnedEventId, OwnedUserId, TransactionId, UInt, UserId,
+        EventId, Int, OwnedEventId, OwnedMxcUri, OwnedUserId, TransactionId, UInt, UserId,
     },
     Client, RoomMemberships, RoomState,
 };
@@ -80,6 +81,105 @@ impl Room {
         let client = self.room.client();
         let room_id = self.room_id().to_owned();
         RoomProfile::new(client, room_id)
+    }
+
+    pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't upload avatar to a room we are not in")
+        };
+        let client = room.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
+        let path = PathBuf::from(uri);
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_state(StateEventType::RoomAvatar) {
+                    bail!("No permission to change avatar of this room");
+                }
+
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().context("MIME type should be given")?;
+                let buf = std::fs::read(path).context("File should be read")?;
+                let upload_resp = client.media().upload(&content_type, buf).await?;
+
+                let info = assign!(AvatarImageInfo::new(), {
+                    blurhash: upload_resp.blurhash,
+                    mimetype: Some(content_type.to_string()),
+                });
+                let change_resp = room
+                    .set_avatar_url(&upload_resp.content_uri, Some(info))
+                    .await?;
+                Ok(upload_resp.content_uri)
+            })
+            .await?
+    }
+
+    pub async fn remove_avatar(&self) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't remove avatar to a room we are not in")
+        };
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_state(StateEventType::RoomAvatar) {
+                    bail!("No permission to change avatar of this room");
+                }
+                let resp = room
+                    .remove_avatar()
+                    .await
+                    .context("Couldn't remove avatar from room")?;
+                Ok(resp.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_topic(&self, topic: String) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't set topic to a room we are not in")
+        };
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_state(StateEventType::RoomTopic) {
+                    bail!("No permission to change topic of this room");
+                }
+                let resp = room
+                    .set_room_topic(topic.as_str())
+                    .await
+                    .context("Couldn't set topic to the room")?;
+                Ok(resp.event_id)
+            })
+            .await?
     }
 
     pub async fn active_members(&self) -> Result<Vec<Member>> {
