@@ -5,6 +5,7 @@ import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:go_router/go_router.dart';
 
 class ChildItem extends StatelessWidget {
@@ -55,91 +56,100 @@ class RelatedSpacesPage extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: CustomScrollView(
-        slivers: spaces.when(
-          data: (spaces) {
-            final widthCount =
-                (MediaQuery.of(context).size.width ~/ 600).toInt();
-            const int minCount = 2;
-            // we have more than just the spaces screen, put them into a grid.
-            final List<Widget> items = [];
-            if (spaces.mainParent != null) {
-              final space = spaces.mainParent!;
-              items.add(const SliverToBoxAdapter(child: Text('Parent')));
-              items.add(
-                SliverToBoxAdapter(
-                  child: ChildItem(key: Key(space.roomId), space: space),
-                ),
-              );
-            }
-            if (spaces.parents.isNotEmpty) {
-              if (items.isEmpty) {
-                items.add(const SliverToBoxAdapter(child: Text('Parents')));
+        slivers: [
+          SliverToBoxAdapter(
+            child: TopNavBar(
+              spaceId: spaceIdOrAlias,
+              key: Key('$spaceIdOrAlias::topnav'),
+              selectedKey: const Key('spaces'),
+            ),
+          ),
+          ...spaces.when(
+            data: (spaces) {
+              final widthCount =
+                  (MediaQuery.of(context).size.width ~/ 600).toInt();
+              const int minCount = 2;
+              // we have more than just the spaces screen, put them into a grid.
+              final List<Widget> items = [];
+              if (spaces.mainParent != null) {
+                final space = spaces.mainParent!;
+                items.add(const SliverToBoxAdapter(child: Text('Parent')));
+                items.add(
+                  SliverToBoxAdapter(
+                    child: ChildItem(key: Key(space.roomId), space: space),
+                  ),
+                );
               }
-              items.add(
-                SliverGrid.builder(
-                  itemCount: spaces.parents.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: max(1, min(widthCount, minCount)),
-                    childAspectRatio: 6,
+              if (spaces.parents.isNotEmpty) {
+                if (items.isEmpty) {
+                  items.add(const SliverToBoxAdapter(child: Text('Parents')));
+                }
+                items.add(
+                  SliverGrid.builder(
+                    itemCount: spaces.parents.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: max(1, min(widthCount, minCount)),
+                      childAspectRatio: 6,
+                    ),
+                    itemBuilder: (context, index) {
+                      final space = spaces.parents[index];
+                      return ChildItem(key: Key(space.roomId), space: space);
+                    },
                   ),
-                  itemBuilder: (context, index) {
-                    final space = spaces.parents[index];
-                    return ChildItem(key: Key(space.roomId), space: space);
-                  },
-                ),
-              );
-            }
-            if (spaces.children.isNotEmpty) {
-              items.add(const SliverToBoxAdapter(child: Text('Subspaces')));
-              items.add(
-                SliverGrid.builder(
-                  itemCount: spaces.children.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: max(1, min(widthCount, minCount)),
-                    childAspectRatio: 6,
+                );
+              }
+              if (spaces.children.isNotEmpty) {
+                items.add(const SliverToBoxAdapter(child: Text('Subspaces')));
+                items.add(
+                  SliverGrid.builder(
+                    itemCount: spaces.children.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: max(1, min(widthCount, minCount)),
+                      childAspectRatio: 6,
+                    ),
+                    itemBuilder: (context, index) {
+                      final space = spaces.children[index];
+                      return ChildItem(key: Key(space.roomId), space: space);
+                    },
                   ),
-                  itemBuilder: (context, index) {
-                    final space = spaces.children[index];
-                    return ChildItem(key: Key(space.roomId), space: space);
-                  },
-                ),
-              );
-            }
-            if (spaces.otherRelations.isNotEmpty) {
-              items
-                  .add(const SliverToBoxAdapter(child: Text('Related Spaces')));
-              items.add(
-                SliverGrid.builder(
-                  itemCount: spaces.otherRelations.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: max(1, min(widthCount, minCount)),
-                    childAspectRatio: 6,
+                );
+              }
+              if (spaces.otherRelations.isNotEmpty) {
+                items.add(
+                    const SliverToBoxAdapter(child: Text('Related Spaces')));
+                items.add(
+                  SliverGrid.builder(
+                    itemCount: spaces.otherRelations.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: max(1, min(widthCount, minCount)),
+                      childAspectRatio: 6,
+                    ),
+                    itemBuilder: (context, index) {
+                      final space = spaces.otherRelations[index];
+                      return ChildItem(key: Key(space.roomId), space: space);
+                    },
                   ),
-                  itemBuilder: (context, index) {
-                    final space = spaces.otherRelations[index];
-                    return ChildItem(key: Key(space.roomId), space: space);
-                  },
-                ),
-              );
-            }
+                );
+              }
 
-            if (items.isEmpty) {
-              // FIXME: show something neat here
-            }
+              if (items.isEmpty) {
+                // FIXME: show something neat here
+              }
 
-            return items;
-          },
-          error: (error, stack) => [
-            SliverToBoxAdapter(
-              child: Text('Loading failed: $error'),
-            )
-          ],
-          loading: () => [
-            const SliverToBoxAdapter(
-              child: Text('Loading'),
-            )
-          ],
-        ),
+              return items;
+            },
+            error: (error, stack) => [
+              SliverToBoxAdapter(
+                child: Text('Loading failed: $error'),
+              )
+            ],
+            loading: () => [
+              const SliverToBoxAdapter(
+                child: Text('Loading'),
+              )
+            ],
+          ),
+        ],
       ),
     );
   }
