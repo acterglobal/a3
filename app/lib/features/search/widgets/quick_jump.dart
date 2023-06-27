@@ -157,17 +157,24 @@ class QuickJump extends ConsumerWidget {
             } else {
               final List<Widget> children = data
                   .map(
-                    (e) => IconButton(
+                    (e) => TextButton(
+                      child: Column(
+                        children: [
+                          e.icon,
+                          Text(e.name),
+                        ],
+                      ),
                       onPressed: () {
                         navigateTo(target: e.navigationTarget);
                       },
-                      icon: e.icon,
                     ),
                   )
                   .toList();
-              body = ButtonBar(
-                alignment: MainAxisAlignment.start,
-                children: children,
+              body = SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: children,
+                ),
               );
             }
             return Column(
