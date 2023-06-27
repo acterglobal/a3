@@ -83,15 +83,15 @@ impl Room {
         RoomProfile::new(client, room_id)
     }
 
-    pub async fn upload_avatar(&self, content_type: String, data: Vec<u8>) -> Result<OwnedMxcUri> {
+    pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't upload avatar to a room we are not in")
         };
         let client = room.client();
-        let content_type = content_type.parse::<mime::Mime>()?;
         let my_id = client.user_id().context("User not found")?.to_owned();
+        let path = PathBuf::from(uri);
 
         RUNTIME
             .spawn(async move {
@@ -102,19 +102,19 @@ impl Room {
                 if !member.can_send_state(StateEventType::RoomAvatar) {
                     bail!("No permission to change avatar of this room");
                 }
-                let upload_resp = client
-                    .media()
-                    .upload(&content_type, data)
-                    .await
-                    .context("Couldn't upload avatar")?;
+
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().context("MIME type should be given")?;
+                let buf = std::fs::read(path).context("File should be read")?;
+                let upload_resp = client.media().upload(&content_type, buf).await?;
+
                 let info = assign!(AvatarImageInfo::new(), {
                     blurhash: upload_resp.blurhash,
                     mimetype: Some(content_type.to_string()),
                 });
                 let change_resp = room
                     .set_avatar_url(&upload_resp.content_uri, Some(info))
-                    .await
-                    .context("Couldn't change avatar to room")?;
+                    .await?;
                 Ok(upload_resp.content_uri)
             })
             .await?

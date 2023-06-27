@@ -28,6 +28,7 @@ dependencies = [
  "matrix-sdk-sqlite",
  "matrix-sdk-ui",
  "mime",
+ "mime_guess",
  "oslog",
  "parse-env-filter",
  "proc-macro2",
