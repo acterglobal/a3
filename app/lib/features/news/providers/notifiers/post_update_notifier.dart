@@ -34,8 +34,6 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
           EventId eventId = await space.sendImageMessage(
             attachmentUri,
             'Untitled Image',
-            mimeType,
-            bytes.length,
             decodedImage.width,
             decodedImage.height,
             null,
@@ -56,9 +54,7 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
           EventId eventId = await space.sendAudioMessage(
             attachmentUri,
             'Untitled Audio',
-            mimeType,
             null,
-            bytes.length,
           );
           draft.addAudioSlide(
             description,
@@ -74,11 +70,9 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
           EventId eventId = await space.sendVideoMessage(
             attachmentUri,
             'Untitled Video',
-            mimeType,
             null,
             null,
             null,
-            bytes.length,
             null,
           );
           draft.addVideoSlide(
@@ -100,8 +94,6 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
         EventId eventId = await space.sendFileMessage(
           attachmentUri,
           'Untitled File',
-          mimeType ?? 'application/octet',
-          bytes.length,
         );
         draft.addFileSlide(
           description,

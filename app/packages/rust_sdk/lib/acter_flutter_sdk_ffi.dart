@@ -7566,7 +7566,7 @@ class Api {
     return tmp9;
   }
 
-  bool? __clientSubscribeStreamPoll(
+  void __clientSubscribeStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -7590,13 +7590,11 @@ class Api {
       tmp5,
       tmp7,
     );
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
+    final tmp10 = tmp8;
     if (tmp10 == 0) {
       return null;
     }
-    final tmp9 = tmp11 > 0;
-    return tmp9;
+    return;
   }
 
   late final _initLoggingPtr = _lookup<
@@ -9770,11 +9768,6 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
     ffi.Uint8,
     ffi.Uint32,
     ffi.Uint8,
@@ -9788,11 +9781,6 @@ class Api {
   late final _conversationSendImageMessage =
       _conversationSendImageMessagePtr.asFunction<
           int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -9835,11 +9823,6 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
     ffi.Uint8,
     ffi.Uint32,
   )>>("__Conversation_send_audio_message");
@@ -9847,11 +9830,6 @@ class Api {
   late final _conversationSendAudioMessage =
       _conversationSendAudioMessagePtr.asFunction<
           int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -9888,11 +9866,6 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
     ffi.Uint8,
     ffi.Uint32,
     ffi.Uint8,
@@ -9908,11 +9881,6 @@ class Api {
   late final _conversationSendVideoMessage =
       _conversationSendVideoMessagePtr.asFunction<
           int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -9957,19 +9925,11 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint32,
   )>>("__Conversation_send_file_message");
 
   late final _conversationSendFileMessage =
       _conversationSendFileMessagePtr.asFunction<
           int Function(
-    int,
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -10167,11 +10127,6 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
     ffi.Uint8,
     ffi.Uint32,
     ffi.Uint8,
@@ -10206,11 +10161,6 @@ class Api {
     int,
     int,
     int,
-    int,
-    int,
-    int,
-    int,
-    int,
   )>();
   late final _conversationSendAudioReplyPtr = _lookup<
       ffi.NativeFunction<
@@ -10222,11 +10172,6 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
     ffi.Uint8,
     ffi.Uint32,
     ffi.Int64,
@@ -10257,11 +10202,6 @@ class Api {
     int,
     int,
     int,
-    int,
-    int,
-    int,
-    int,
-    int,
   )>();
   late final _conversationSendVideoReplyPtr = _lookup<
       ffi.NativeFunction<
@@ -10273,11 +10213,6 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
     ffi.Uint8,
     ffi.Uint32,
     ffi.Uint8,
@@ -10324,11 +10259,6 @@ class Api {
     int,
     int,
     int,
-    int,
-    int,
-    int,
-    int,
-    int,
   )>();
   late final _conversationSendFileReplyPtr = _lookup<
       ffi.NativeFunction<
@@ -10344,11 +10274,6 @@ class Api {
     ffi.Uint64,
     ffi.Uint64,
     ffi.Uint8,
-    ffi.Uint32,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
@@ -10357,11 +10282,6 @@ class Api {
   late final _conversationSendFileReply =
       _conversationSendFileReplyPtr.asFunction<
           int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -12350,11 +12270,6 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
     ffi.Uint8,
     ffi.Uint32,
     ffi.Uint8,
@@ -12367,11 +12282,6 @@ class Api {
 
   late final _spaceSendImageMessage = _spaceSendImageMessagePtr.asFunction<
       int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -12414,22 +12324,12 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
     ffi.Uint8,
     ffi.Uint32,
   )>>("__Space_send_audio_message");
 
   late final _spaceSendAudioMessage = _spaceSendAudioMessagePtr.asFunction<
       int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -12466,11 +12366,6 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
     ffi.Uint8,
     ffi.Uint32,
     ffi.Uint8,
@@ -12485,11 +12380,6 @@ class Api {
 
   late final _spaceSendVideoMessage = _spaceSendVideoMessagePtr.asFunction<
       int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -12534,18 +12424,10 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint32,
   )>>("__Space_send_file_message");
 
   late final _spaceSendFileMessage = _spaceSendFileMessagePtr.asFunction<
       int Function(
-    int,
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -16004,7 +15886,7 @@ class Api {
   )>();
   late final _clientSubscribeStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientSubscribeStreamPollReturn Function(
+          ffi.Uint8 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
@@ -16013,7 +15895,7 @@ class Api {
 
   late final _clientSubscribeStreamPoll =
       _clientSubscribeStreamPollPtr.asFunction<
-          _ClientSubscribeStreamPollReturn Function(
+          int Function(
     int,
     int,
     int,
@@ -21559,19 +21441,15 @@ class Conversation {
   Future<EventId> sendImageMessage(
     String uri,
     String name,
-    String mimetype,
-    int? size,
     int? width,
     int? height,
     String? blurhash,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = mimetype;
-    final tmp13 = size;
-    final tmp17 = width;
-    final tmp21 = height;
-    final tmp25 = blurhash;
+    final tmp9 = width;
+    final tmp13 = height;
+    final tmp17 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -21580,18 +21458,13 @@ class Conversation {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
-    var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
+    var tmp21 = 0;
     var tmp22 = 0;
-    var tmp24 = 0;
-    var tmp26 = 0;
-    var tmp28 = 0;
-    var tmp29 = 0;
-    var tmp30 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -21611,15 +21484,13 @@ class Conversation {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
     if (tmp13 == null) {
       tmp14 = 0;
     } else {
@@ -21632,31 +21503,17 @@ class Conversation {
     } else {
       tmp18 = 1;
       final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      tmp24 = tmp23;
-    }
-    if (tmp25 == null) {
-      tmp26 = 0;
-    } else {
-      tmp26 = 1;
-      final tmp27 = tmp25;
-      final tmp27_0 = utf8.encode(tmp27);
-      tmp29 = tmp27_0.length;
-      debugAllocation("lower string", tmp28, tmp29);
+      final tmp19_0 = utf8.encode(tmp19);
+      tmp21 = tmp19_0.length;
+      debugAllocation("lower string", tmp20, tmp21);
 
-      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
-      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
-      tmp28_1.setAll(0, tmp27_0);
-      tmp28 = tmp28_0.address;
-      tmp30 = tmp29;
+      final ffi.Pointer<ffi.Uint8> tmp20_0 = _api.__allocate(tmp21 * 1, 1);
+      final Uint8List tmp20_1 = tmp20_0.asTypedList(tmp21);
+      tmp20_1.setAll(0, tmp19_0);
+      tmp20 = tmp20_0.address;
+      tmp22 = tmp21;
     }
-    final tmp31 = _api._conversationSendImageMessage(
+    final tmp23 = _api._conversationSendImageMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -21665,27 +21522,22 @@ class Conversation {
       tmp7,
       tmp8,
       tmp10,
-      tmp11,
       tmp12,
       tmp14,
       tmp16,
       tmp18,
       tmp20,
+      tmp21,
       tmp22,
-      tmp24,
-      tmp26,
-      tmp28,
-      tmp29,
-      tmp30,
     );
-    final tmp33 = tmp31;
-    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
-    final tmp33_1 =
-        _Box(_api, tmp33_0, "__Conversation_send_image_message_future_drop");
-    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
-    final tmp32 =
-        _nativeFuture(tmp33_1, _api.__conversationSendImageMessageFuturePoll);
-    return tmp32;
+    final tmp25 = tmp23;
+    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
+    final tmp25_1 =
+        _Box(_api, tmp25_0, "__Conversation_send_image_message_future_drop");
+    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
+    final tmp24 =
+        _nativeFuture(tmp25_1, _api.__conversationSendImageMessageFuturePoll);
+    return tmp24;
   }
 
   /// decrypted image file data
@@ -21729,15 +21581,11 @@ class Conversation {
   Future<EventId> sendAudioMessage(
     String uri,
     String name,
-    String mimetype,
     int? secs,
-    int? size,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = size;
+    final tmp9 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -21746,12 +21594,7 @@ class Conversation {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
-    var tmp11 = 0;
     var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp20 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -21771,30 +21614,14 @@ class Conversation {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
-    if (tmp13 == null) {
-      tmp14 = 0;
+    if (tmp9 == null) {
+      tmp10 = 0;
     } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
     }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    final tmp21 = _api._conversationSendAudioMessage(
+    final tmp13 = _api._conversationSendAudioMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -21803,21 +21630,16 @@ class Conversation {
       tmp7,
       tmp8,
       tmp10,
-      tmp11,
       tmp12,
-      tmp14,
-      tmp16,
-      tmp18,
-      tmp20,
     );
-    final tmp23 = tmp21;
-    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
-    final tmp23_1 =
-        _Box(_api, tmp23_0, "__Conversation_send_audio_message_future_drop");
-    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
-    final tmp22 =
-        _nativeFuture(tmp23_1, _api.__conversationSendAudioMessageFuturePoll);
-    return tmp22;
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 =
+        _Box(_api, tmp15_0, "__Conversation_send_audio_message_future_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 =
+        _nativeFuture(tmp15_1, _api.__conversationSendAudioMessageFuturePoll);
+    return tmp14;
   }
 
   /// decrypted audio buffer data
@@ -21861,21 +21683,17 @@ class Conversation {
   Future<EventId> sendVideoMessage(
     String uri,
     String name,
-    String mimetype,
     int? secs,
     int? height,
     int? width,
-    int? size,
     String? blurhash,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = height;
-    final tmp21 = width;
-    final tmp25 = size;
-    final tmp29 = blurhash;
+    final tmp9 = secs;
+    final tmp13 = height;
+    final tmp17 = width;
+    final tmp21 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -21884,7 +21702,6 @@ class Conversation {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
-    var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
@@ -21892,12 +21709,8 @@ class Conversation {
     var tmp20 = 0;
     var tmp22 = 0;
     var tmp24 = 0;
+    var tmp25 = 0;
     var tmp26 = 0;
-    var tmp28 = 0;
-    var tmp30 = 0;
-    var tmp32 = 0;
-    var tmp33 = 0;
-    var tmp34 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -21917,15 +21730,13 @@ class Conversation {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
     if (tmp13 == null) {
       tmp14 = 0;
     } else {
@@ -21945,31 +21756,17 @@ class Conversation {
     } else {
       tmp22 = 1;
       final tmp23 = tmp21;
-      tmp24 = tmp23;
-    }
-    if (tmp25 == null) {
-      tmp26 = 0;
-    } else {
-      tmp26 = 1;
-      final tmp27 = tmp25;
-      tmp28 = tmp27;
-    }
-    if (tmp29 == null) {
-      tmp30 = 0;
-    } else {
-      tmp30 = 1;
-      final tmp31 = tmp29;
-      final tmp31_0 = utf8.encode(tmp31);
-      tmp33 = tmp31_0.length;
-      debugAllocation("lower string", tmp32, tmp33);
+      final tmp23_0 = utf8.encode(tmp23);
+      tmp25 = tmp23_0.length;
+      debugAllocation("lower string", tmp24, tmp25);
 
-      final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
-      final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
-      tmp32_1.setAll(0, tmp31_0);
-      tmp32 = tmp32_0.address;
-      tmp34 = tmp33;
+      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
+      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
+      tmp24_1.setAll(0, tmp23_0);
+      tmp24 = tmp24_0.address;
+      tmp26 = tmp25;
     }
-    final tmp35 = _api._conversationSendVideoMessage(
+    final tmp27 = _api._conversationSendVideoMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -21978,7 +21775,6 @@ class Conversation {
       tmp7,
       tmp8,
       tmp10,
-      tmp11,
       tmp12,
       tmp14,
       tmp16,
@@ -21986,21 +21782,17 @@ class Conversation {
       tmp20,
       tmp22,
       tmp24,
+      tmp25,
       tmp26,
-      tmp28,
-      tmp30,
-      tmp32,
-      tmp33,
-      tmp34,
     );
-    final tmp37 = tmp35;
-    final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
-    final tmp37_1 =
-        _Box(_api, tmp37_0, "__Conversation_send_video_message_future_drop");
-    tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
-    final tmp36 =
-        _nativeFuture(tmp37_1, _api.__conversationSendVideoMessageFuturePoll);
-    return tmp36;
+    final tmp29 = tmp27;
+    final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
+    final tmp29_1 =
+        _Box(_api, tmp29_0, "__Conversation_send_video_message_future_drop");
+    tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
+    final tmp28 =
+        _nativeFuture(tmp29_1, _api.__conversationSendVideoMessageFuturePoll);
+    return tmp28;
   }
 
   /// decrypted video buffer data
@@ -22044,13 +21836,9 @@ class Conversation {
   Future<EventId> sendFileMessage(
     String uri,
     String name,
-    String mimetype,
-    int size,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = mimetype;
-    final tmp13 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -22058,10 +21846,6 @@ class Conversation {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -22081,17 +21865,7 @@ class Conversation {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
-    tmp14 = tmp13;
-    final tmp15 = _api._conversationSendFileMessage(
+    final tmp9 = _api._conversationSendFileMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -22099,19 +21873,15 @@ class Conversation {
       tmp6,
       tmp7,
       tmp8,
-      tmp10,
-      tmp11,
-      tmp12,
-      tmp14,
     );
-    final tmp17 = tmp15;
-    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
-    final tmp17_1 =
-        _Box(_api, tmp17_0, "__Conversation_send_file_message_future_drop");
-    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
-    final tmp16 =
-        _nativeFuture(tmp17_1, _api.__conversationSendFileMessageFuturePoll);
-    return tmp16;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Conversation_send_file_message_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 =
+        _nativeFuture(tmp11_1, _api.__conversationSendFileMessageFuturePoll);
+    return tmp10;
   }
 
   /// decrypted file buffer data
@@ -22494,8 +22264,6 @@ class Conversation {
   Future<EventId> sendImageReply(
     String uri,
     String name,
-    String mimetype,
-    int? size,
     int? width,
     int? height,
     String eventId,
@@ -22503,481 +22271,8 @@ class Conversation {
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = mimetype;
-    final tmp13 = size;
-    final tmp17 = width;
-    final tmp21 = height;
-    final tmp25 = eventId;
-    final tmp29 = txnId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp20 = 0;
-    var tmp22 = 0;
-    var tmp24 = 0;
-    var tmp26 = 0;
-    var tmp27 = 0;
-    var tmp28 = 0;
-    var tmp30 = 0;
-    var tmp32 = 0;
-    var tmp33 = 0;
-    var tmp34 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      tmp24 = tmp23;
-    }
-    final tmp25_0 = utf8.encode(tmp25);
-    tmp27 = tmp25_0.length;
-    debugAllocation("lower string", tmp26, tmp27);
-
-    final ffi.Pointer<ffi.Uint8> tmp26_0 = _api.__allocate(tmp27 * 1, 1);
-    final Uint8List tmp26_1 = tmp26_0.asTypedList(tmp27);
-    tmp26_1.setAll(0, tmp25_0);
-    tmp26 = tmp26_0.address;
-    tmp28 = tmp27;
-    if (tmp29 == null) {
-      tmp30 = 0;
-    } else {
-      tmp30 = 1;
-      final tmp31 = tmp29;
-      final tmp31_0 = utf8.encode(tmp31);
-      tmp33 = tmp31_0.length;
-      debugAllocation("lower string", tmp32, tmp33);
-
-      final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
-      final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
-      tmp32_1.setAll(0, tmp31_0);
-      tmp32 = tmp32_0.address;
-      tmp34 = tmp33;
-    }
-    final tmp35 = _api._conversationSendImageReply(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp11,
-      tmp12,
-      tmp14,
-      tmp16,
-      tmp18,
-      tmp20,
-      tmp22,
-      tmp24,
-      tmp26,
-      tmp27,
-      tmp28,
-      tmp30,
-      tmp32,
-      tmp33,
-      tmp34,
-    );
-    final tmp37 = tmp35;
-    final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
-    final tmp37_1 =
-        _Box(_api, tmp37_0, "__Conversation_send_image_reply_future_drop");
-    tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
-    final tmp36 =
-        _nativeFuture(tmp37_1, _api.__conversationSendImageReplyFuturePoll);
-    return tmp36;
-  }
-
-  /// send reply as audio
-  Future<EventId> sendAudioReply(
-    String uri,
-    String name,
-    String mimetype,
-    int? secs,
-    int? size,
-    String eventId,
-    String? txnId,
-  ) {
-    final tmp1 = uri;
-    final tmp5 = name;
-    final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = size;
-    final tmp21 = eventId;
-    final tmp25 = txnId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp20 = 0;
-    var tmp22 = 0;
-    var tmp23 = 0;
-    var tmp24 = 0;
-    var tmp26 = 0;
-    var tmp28 = 0;
-    var tmp29 = 0;
-    var tmp30 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    final tmp21_0 = utf8.encode(tmp21);
-    tmp23 = tmp21_0.length;
-    debugAllocation("lower string", tmp22, tmp23);
-
-    final ffi.Pointer<ffi.Uint8> tmp22_0 = _api.__allocate(tmp23 * 1, 1);
-    final Uint8List tmp22_1 = tmp22_0.asTypedList(tmp23);
-    tmp22_1.setAll(0, tmp21_0);
-    tmp22 = tmp22_0.address;
-    tmp24 = tmp23;
-    if (tmp25 == null) {
-      tmp26 = 0;
-    } else {
-      tmp26 = 1;
-      final tmp27 = tmp25;
-      final tmp27_0 = utf8.encode(tmp27);
-      tmp29 = tmp27_0.length;
-      debugAllocation("lower string", tmp28, tmp29);
-
-      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
-      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
-      tmp28_1.setAll(0, tmp27_0);
-      tmp28 = tmp28_0.address;
-      tmp30 = tmp29;
-    }
-    final tmp31 = _api._conversationSendAudioReply(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp11,
-      tmp12,
-      tmp14,
-      tmp16,
-      tmp18,
-      tmp20,
-      tmp22,
-      tmp23,
-      tmp24,
-      tmp26,
-      tmp28,
-      tmp29,
-      tmp30,
-    );
-    final tmp33 = tmp31;
-    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
-    final tmp33_1 =
-        _Box(_api, tmp33_0, "__Conversation_send_audio_reply_future_drop");
-    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
-    final tmp32 =
-        _nativeFuture(tmp33_1, _api.__conversationSendAudioReplyFuturePoll);
-    return tmp32;
-  }
-
-  /// send reply as video
-  Future<EventId> sendVideoReply(
-    String uri,
-    String name,
-    String mimetype,
-    int? secs,
-    int? width,
-    int? height,
-    int? size,
-    String? blurhash,
-    String eventId,
-    String? txnId,
-  ) {
-    final tmp1 = uri;
-    final tmp5 = name;
-    final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = width;
-    final tmp21 = height;
-    final tmp25 = size;
-    final tmp29 = blurhash;
-    final tmp35 = eventId;
-    final tmp39 = txnId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp20 = 0;
-    var tmp22 = 0;
-    var tmp24 = 0;
-    var tmp26 = 0;
-    var tmp28 = 0;
-    var tmp30 = 0;
-    var tmp32 = 0;
-    var tmp33 = 0;
-    var tmp34 = 0;
-    var tmp36 = 0;
-    var tmp37 = 0;
-    var tmp38 = 0;
-    var tmp40 = 0;
-    var tmp42 = 0;
-    var tmp43 = 0;
-    var tmp44 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      tmp24 = tmp23;
-    }
-    if (tmp25 == null) {
-      tmp26 = 0;
-    } else {
-      tmp26 = 1;
-      final tmp27 = tmp25;
-      tmp28 = tmp27;
-    }
-    if (tmp29 == null) {
-      tmp30 = 0;
-    } else {
-      tmp30 = 1;
-      final tmp31 = tmp29;
-      final tmp31_0 = utf8.encode(tmp31);
-      tmp33 = tmp31_0.length;
-      debugAllocation("lower string", tmp32, tmp33);
-
-      final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
-      final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
-      tmp32_1.setAll(0, tmp31_0);
-      tmp32 = tmp32_0.address;
-      tmp34 = tmp33;
-    }
-    final tmp35_0 = utf8.encode(tmp35);
-    tmp37 = tmp35_0.length;
-    debugAllocation("lower string", tmp36, tmp37);
-
-    final ffi.Pointer<ffi.Uint8> tmp36_0 = _api.__allocate(tmp37 * 1, 1);
-    final Uint8List tmp36_1 = tmp36_0.asTypedList(tmp37);
-    tmp36_1.setAll(0, tmp35_0);
-    tmp36 = tmp36_0.address;
-    tmp38 = tmp37;
-    if (tmp39 == null) {
-      tmp40 = 0;
-    } else {
-      tmp40 = 1;
-      final tmp41 = tmp39;
-      final tmp41_0 = utf8.encode(tmp41);
-      tmp43 = tmp41_0.length;
-      debugAllocation("lower string", tmp42, tmp43);
-
-      final ffi.Pointer<ffi.Uint8> tmp42_0 = _api.__allocate(tmp43 * 1, 1);
-      final Uint8List tmp42_1 = tmp42_0.asTypedList(tmp43);
-      tmp42_1.setAll(0, tmp41_0);
-      tmp42 = tmp42_0.address;
-      tmp44 = tmp43;
-    }
-    final tmp45 = _api._conversationSendVideoReply(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp11,
-      tmp12,
-      tmp14,
-      tmp16,
-      tmp18,
-      tmp20,
-      tmp22,
-      tmp24,
-      tmp26,
-      tmp28,
-      tmp30,
-      tmp32,
-      tmp33,
-      tmp34,
-      tmp36,
-      tmp37,
-      tmp38,
-      tmp40,
-      tmp42,
-      tmp43,
-      tmp44,
-    );
-    final tmp47 = tmp45;
-    final ffi.Pointer<ffi.Void> tmp47_0 = ffi.Pointer.fromAddress(tmp47);
-    final tmp47_1 =
-        _Box(_api, tmp47_0, "__Conversation_send_video_reply_future_drop");
-    tmp47_1._finalizer = _api._registerFinalizer(tmp47_1);
-    final tmp46 =
-        _nativeFuture(tmp47_1, _api.__conversationSendVideoReplyFuturePoll);
-    return tmp46;
-  }
-
-  /// send reply as file
-  Future<EventId> sendFileReply(
-    String uri,
-    String name,
-    String mimetype,
-    int? size,
-    String eventId,
-    String? txnId,
-  ) {
-    final tmp1 = uri;
-    final tmp5 = name;
-    final tmp9 = mimetype;
-    final tmp13 = size;
+    final tmp9 = width;
+    final tmp13 = height;
     final tmp17 = eventId;
     final tmp21 = txnId;
     var tmp0 = 0;
@@ -22988,7 +22283,6 @@ class Conversation {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
-    var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
@@ -23018,15 +22312,13 @@ class Conversation {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
     if (tmp13 == null) {
       tmp14 = 0;
     } else {
@@ -23058,7 +22350,7 @@ class Conversation {
       tmp24 = tmp24_0.address;
       tmp26 = tmp25;
     }
-    final tmp27 = _api._conversationSendFileReply(
+    final tmp27 = _api._conversationSendImageReply(
       tmp0,
       tmp2,
       tmp3,
@@ -23067,7 +22359,6 @@ class Conversation {
       tmp7,
       tmp8,
       tmp10,
-      tmp11,
       tmp12,
       tmp14,
       tmp16,
@@ -23082,11 +22373,370 @@ class Conversation {
     final tmp29 = tmp27;
     final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
     final tmp29_1 =
-        _Box(_api, tmp29_0, "__Conversation_send_file_reply_future_drop");
+        _Box(_api, tmp29_0, "__Conversation_send_image_reply_future_drop");
     tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
     final tmp28 =
-        _nativeFuture(tmp29_1, _api.__conversationSendFileReplyFuturePoll);
+        _nativeFuture(tmp29_1, _api.__conversationSendImageReplyFuturePoll);
     return tmp28;
+  }
+
+  /// send reply as audio
+  Future<EventId> sendAudioReply(
+    String uri,
+    String name,
+    int? secs,
+    String eventId,
+    String? txnId,
+  ) {
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = secs;
+    final tmp13 = eventId;
+    final tmp17 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp15 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp21 = 0;
+    var tmp22 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
+    final tmp13_0 = utf8.encode(tmp13);
+    tmp15 = tmp13_0.length;
+    debugAllocation("lower string", tmp14, tmp15);
+
+    final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
+    final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
+    tmp14_1.setAll(0, tmp13_0);
+    tmp14 = tmp14_0.address;
+    tmp16 = tmp15;
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      final tmp19_0 = utf8.encode(tmp19);
+      tmp21 = tmp19_0.length;
+      debugAllocation("lower string", tmp20, tmp21);
+
+      final ffi.Pointer<ffi.Uint8> tmp20_0 = _api.__allocate(tmp21 * 1, 1);
+      final Uint8List tmp20_1 = tmp20_0.asTypedList(tmp21);
+      tmp20_1.setAll(0, tmp19_0);
+      tmp20 = tmp20_0.address;
+      tmp22 = tmp21;
+    }
+    final tmp23 = _api._conversationSendAudioReply(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp14,
+      tmp15,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp21,
+      tmp22,
+    );
+    final tmp25 = tmp23;
+    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
+    final tmp25_1 =
+        _Box(_api, tmp25_0, "__Conversation_send_audio_reply_future_drop");
+    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
+    final tmp24 =
+        _nativeFuture(tmp25_1, _api.__conversationSendAudioReplyFuturePoll);
+    return tmp24;
+  }
+
+  /// send reply as video
+  Future<EventId> sendVideoReply(
+    String uri,
+    String name,
+    int? secs,
+    int? width,
+    int? height,
+    String? blurhash,
+    String eventId,
+    String? txnId,
+  ) {
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = secs;
+    final tmp13 = width;
+    final tmp17 = height;
+    final tmp21 = blurhash;
+    final tmp27 = eventId;
+    final tmp31 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp25 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp34 = 0;
+    var tmp35 = 0;
+    var tmp36 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      final tmp23_0 = utf8.encode(tmp23);
+      tmp25 = tmp23_0.length;
+      debugAllocation("lower string", tmp24, tmp25);
+
+      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
+      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
+      tmp24_1.setAll(0, tmp23_0);
+      tmp24 = tmp24_0.address;
+      tmp26 = tmp25;
+    }
+    final tmp27_0 = utf8.encode(tmp27);
+    tmp29 = tmp27_0.length;
+    debugAllocation("lower string", tmp28, tmp29);
+
+    final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+    final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+    tmp28_1.setAll(0, tmp27_0);
+    tmp28 = tmp28_0.address;
+    tmp30 = tmp29;
+    if (tmp31 == null) {
+      tmp32 = 0;
+    } else {
+      tmp32 = 1;
+      final tmp33 = tmp31;
+      final tmp33_0 = utf8.encode(tmp33);
+      tmp35 = tmp33_0.length;
+      debugAllocation("lower string", tmp34, tmp35);
+
+      final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
+      final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
+      tmp34_1.setAll(0, tmp33_0);
+      tmp34 = tmp34_0.address;
+      tmp36 = tmp35;
+    }
+    final tmp37 = _api._conversationSendVideoReply(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp25,
+      tmp26,
+      tmp28,
+      tmp29,
+      tmp30,
+      tmp32,
+      tmp34,
+      tmp35,
+      tmp36,
+    );
+    final tmp39 = tmp37;
+    final ffi.Pointer<ffi.Void> tmp39_0 = ffi.Pointer.fromAddress(tmp39);
+    final tmp39_1 =
+        _Box(_api, tmp39_0, "__Conversation_send_video_reply_future_drop");
+    tmp39_1._finalizer = _api._registerFinalizer(tmp39_1);
+    final tmp38 =
+        _nativeFuture(tmp39_1, _api.__conversationSendVideoReplyFuturePoll);
+    return tmp38;
+  }
+
+  /// send reply as file
+  Future<EventId> sendFileReply(
+    String uri,
+    String name,
+    String eventId,
+    String? txnId,
+  ) {
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = eventId;
+    final tmp13 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+      debugAllocation("lower string", tmp16, tmp17);
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    final tmp19 = _api._conversationSendFileReply(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+    );
+    final tmp21 = tmp19;
+    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
+    final tmp21_1 =
+        _Box(_api, tmp21_0, "__Conversation_send_file_reply_future_drop");
+    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
+    final tmp20 =
+        _nativeFuture(tmp21_1, _api.__conversationSendFileReplyFuturePoll);
+    return tmp20;
   }
 
   /// redact any message (including text/image/file and reaction)
@@ -26428,19 +26078,15 @@ class Space {
   Future<EventId> sendImageMessage(
     String uri,
     String name,
-    String mimetype,
-    int? size,
     int? width,
     int? height,
     String? blurhash,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = mimetype;
-    final tmp13 = size;
-    final tmp17 = width;
-    final tmp21 = height;
-    final tmp25 = blurhash;
+    final tmp9 = width;
+    final tmp13 = height;
+    final tmp17 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -26449,18 +26095,13 @@ class Space {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
-    var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
+    var tmp21 = 0;
     var tmp22 = 0;
-    var tmp24 = 0;
-    var tmp26 = 0;
-    var tmp28 = 0;
-    var tmp29 = 0;
-    var tmp30 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -26480,15 +26121,13 @@ class Space {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
     if (tmp13 == null) {
       tmp14 = 0;
     } else {
@@ -26501,31 +26140,17 @@ class Space {
     } else {
       tmp18 = 1;
       final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      tmp24 = tmp23;
-    }
-    if (tmp25 == null) {
-      tmp26 = 0;
-    } else {
-      tmp26 = 1;
-      final tmp27 = tmp25;
-      final tmp27_0 = utf8.encode(tmp27);
-      tmp29 = tmp27_0.length;
-      debugAllocation("lower string", tmp28, tmp29);
+      final tmp19_0 = utf8.encode(tmp19);
+      tmp21 = tmp19_0.length;
+      debugAllocation("lower string", tmp20, tmp21);
 
-      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
-      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
-      tmp28_1.setAll(0, tmp27_0);
-      tmp28 = tmp28_0.address;
-      tmp30 = tmp29;
+      final ffi.Pointer<ffi.Uint8> tmp20_0 = _api.__allocate(tmp21 * 1, 1);
+      final Uint8List tmp20_1 = tmp20_0.asTypedList(tmp21);
+      tmp20_1.setAll(0, tmp19_0);
+      tmp20 = tmp20_0.address;
+      tmp22 = tmp21;
     }
-    final tmp31 = _api._spaceSendImageMessage(
+    final tmp23 = _api._spaceSendImageMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -26534,27 +26159,22 @@ class Space {
       tmp7,
       tmp8,
       tmp10,
-      tmp11,
       tmp12,
       tmp14,
       tmp16,
       tmp18,
       tmp20,
+      tmp21,
       tmp22,
-      tmp24,
-      tmp26,
-      tmp28,
-      tmp29,
-      tmp30,
     );
-    final tmp33 = tmp31;
-    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
-    final tmp33_1 =
-        _Box(_api, tmp33_0, "__Space_send_image_message_future_drop");
-    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
-    final tmp32 =
-        _nativeFuture(tmp33_1, _api.__spaceSendImageMessageFuturePoll);
-    return tmp32;
+    final tmp25 = tmp23;
+    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
+    final tmp25_1 =
+        _Box(_api, tmp25_0, "__Space_send_image_message_future_drop");
+    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
+    final tmp24 =
+        _nativeFuture(tmp25_1, _api.__spaceSendImageMessageFuturePoll);
+    return tmp24;
   }
 
   /// decrypted image buffer data
@@ -26596,15 +26216,11 @@ class Space {
   Future<EventId> sendAudioMessage(
     String uri,
     String name,
-    String mimetype,
     int? secs,
-    int? size,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = size;
+    final tmp9 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -26613,12 +26229,7 @@ class Space {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
-    var tmp11 = 0;
     var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp20 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -26638,30 +26249,14 @@ class Space {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
-    if (tmp13 == null) {
-      tmp14 = 0;
+    if (tmp9 == null) {
+      tmp10 = 0;
     } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
     }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    final tmp21 = _api._spaceSendAudioMessage(
+    final tmp13 = _api._spaceSendAudioMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -26670,21 +26265,16 @@ class Space {
       tmp7,
       tmp8,
       tmp10,
-      tmp11,
       tmp12,
-      tmp14,
-      tmp16,
-      tmp18,
-      tmp20,
     );
-    final tmp23 = tmp21;
-    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
-    final tmp23_1 =
-        _Box(_api, tmp23_0, "__Space_send_audio_message_future_drop");
-    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
-    final tmp22 =
-        _nativeFuture(tmp23_1, _api.__spaceSendAudioMessageFuturePoll);
-    return tmp22;
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 =
+        _Box(_api, tmp15_0, "__Space_send_audio_message_future_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 =
+        _nativeFuture(tmp15_1, _api.__spaceSendAudioMessageFuturePoll);
+    return tmp14;
   }
 
   /// decrypted audio buffer data
@@ -26726,21 +26316,17 @@ class Space {
   Future<EventId> sendVideoMessage(
     String uri,
     String name,
-    String mimetype,
     int? secs,
     int? height,
     int? width,
-    int? size,
     String? blurhash,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = height;
-    final tmp21 = width;
-    final tmp25 = size;
-    final tmp29 = blurhash;
+    final tmp9 = secs;
+    final tmp13 = height;
+    final tmp17 = width;
+    final tmp21 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -26749,7 +26335,6 @@ class Space {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
-    var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
@@ -26757,12 +26342,8 @@ class Space {
     var tmp20 = 0;
     var tmp22 = 0;
     var tmp24 = 0;
+    var tmp25 = 0;
     var tmp26 = 0;
-    var tmp28 = 0;
-    var tmp30 = 0;
-    var tmp32 = 0;
-    var tmp33 = 0;
-    var tmp34 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -26782,15 +26363,13 @@ class Space {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
     if (tmp13 == null) {
       tmp14 = 0;
     } else {
@@ -26810,31 +26389,17 @@ class Space {
     } else {
       tmp22 = 1;
       final tmp23 = tmp21;
-      tmp24 = tmp23;
-    }
-    if (tmp25 == null) {
-      tmp26 = 0;
-    } else {
-      tmp26 = 1;
-      final tmp27 = tmp25;
-      tmp28 = tmp27;
-    }
-    if (tmp29 == null) {
-      tmp30 = 0;
-    } else {
-      tmp30 = 1;
-      final tmp31 = tmp29;
-      final tmp31_0 = utf8.encode(tmp31);
-      tmp33 = tmp31_0.length;
-      debugAllocation("lower string", tmp32, tmp33);
+      final tmp23_0 = utf8.encode(tmp23);
+      tmp25 = tmp23_0.length;
+      debugAllocation("lower string", tmp24, tmp25);
 
-      final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
-      final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
-      tmp32_1.setAll(0, tmp31_0);
-      tmp32 = tmp32_0.address;
-      tmp34 = tmp33;
+      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
+      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
+      tmp24_1.setAll(0, tmp23_0);
+      tmp24 = tmp24_0.address;
+      tmp26 = tmp25;
     }
-    final tmp35 = _api._spaceSendVideoMessage(
+    final tmp27 = _api._spaceSendVideoMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -26843,7 +26408,6 @@ class Space {
       tmp7,
       tmp8,
       tmp10,
-      tmp11,
       tmp12,
       tmp14,
       tmp16,
@@ -26851,21 +26415,17 @@ class Space {
       tmp20,
       tmp22,
       tmp24,
+      tmp25,
       tmp26,
-      tmp28,
-      tmp30,
-      tmp32,
-      tmp33,
-      tmp34,
     );
-    final tmp37 = tmp35;
-    final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
-    final tmp37_1 =
-        _Box(_api, tmp37_0, "__Space_send_video_message_future_drop");
-    tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
-    final tmp36 =
-        _nativeFuture(tmp37_1, _api.__spaceSendVideoMessageFuturePoll);
-    return tmp36;
+    final tmp29 = tmp27;
+    final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
+    final tmp29_1 =
+        _Box(_api, tmp29_0, "__Space_send_video_message_future_drop");
+    tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
+    final tmp28 =
+        _nativeFuture(tmp29_1, _api.__spaceSendVideoMessageFuturePoll);
+    return tmp28;
   }
 
   /// decrypted video buffer data
@@ -26907,13 +26467,9 @@ class Space {
   Future<EventId> sendFileMessage(
     String uri,
     String name,
-    String mimetype,
-    int size,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = mimetype;
-    final tmp13 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -26921,10 +26477,6 @@ class Space {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -26944,17 +26496,7 @@ class Space {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
-    tmp14 = tmp13;
-    final tmp15 = _api._spaceSendFileMessage(
+    final tmp9 = _api._spaceSendFileMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -26962,18 +26504,14 @@ class Space {
       tmp6,
       tmp7,
       tmp8,
-      tmp10,
-      tmp11,
-      tmp12,
-      tmp14,
     );
-    final tmp17 = tmp15;
-    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
-    final tmp17_1 =
-        _Box(_api, tmp17_0, "__Space_send_file_message_future_drop");
-    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
-    final tmp16 = _nativeFuture(tmp17_1, _api.__spaceSendFileMessageFuturePoll);
-    return tmp16;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Space_send_file_message_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__spaceSendFileMessageFuturePoll);
+    return tmp10;
   }
 
   /// decrypted file buffer data
@@ -27911,7 +27449,7 @@ class Client {
   }
 
   /// listen to updates to any model key
-  Stream<bool> subscribe(
+  Stream<void> subscribe(
     String key,
   ) {
     final tmp1 = key;
@@ -33241,13 +32779,6 @@ class _ClientIncomingMessageRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
-  external int arg1;
-}
-
-class _ClientSubscribeStreamPollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
   external int arg1;
 }
 

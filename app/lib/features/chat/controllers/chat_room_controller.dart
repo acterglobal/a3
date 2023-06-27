@@ -30,7 +30,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:get/get.dart';
-import 'package:mime/mime.dart';
 import 'package:open_app_file/open_app_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -551,7 +550,6 @@ class ChatRoomController extends GetxController {
       return;
     }
     String? name = file.name;
-    String? mimeType = lookupMimeType(path);
     Uint8List? bytes = file.bytes;
     if (bytes == null) {
       return;
@@ -561,8 +559,6 @@ class ChatRoomController extends GetxController {
       await _currentRoom!.sendImageReply(
         path,
         name,
-        mimeType!,
-        bytes.length,
         image.width,
         image.height,
         repliedToMessage!.id,
@@ -576,8 +572,6 @@ class ChatRoomController extends GetxController {
       await _currentRoom!.sendImageMessage(
         path,
         name,
-        mimeType!,
-        bytes.length,
         image.width,
         image.height,
         null,
@@ -598,15 +592,12 @@ class ChatRoomController extends GetxController {
       return;
     }
     String? name = result.files.single.name;
-    String? mimeType = lookupMimeType(path);
     Uint8List bytes = File(path).readAsBytesSync();
     final image = await decodeImageFromList(bytes);
     if (repliedToMessage != null) {
       await _currentRoom!.sendImageReply(
         path,
         name,
-        mimeType!,
-        bytes.length,
         image.width,
         image.height,
         repliedToMessage!.id,
@@ -620,8 +611,6 @@ class ChatRoomController extends GetxController {
       await _currentRoom!.sendImageMessage(
         path,
         name,
-        mimeType!,
-        bytes.length,
         image.width,
         image.height,
         null,
@@ -642,13 +631,10 @@ class ChatRoomController extends GetxController {
       return;
     }
     String? name = result.files.single.name;
-    String? mimeType = lookupMimeType(path);
     if (repliedToMessage != null) {
       await _currentRoom!.sendFileReply(
         path,
         name,
-        mimeType!,
-        result.files.single.size,
         repliedToMessage!.id,
         null,
       );
@@ -657,12 +643,7 @@ class ChatRoomController extends GetxController {
       showReplyView = false;
       update(['chat-input']);
     } else {
-      await _currentRoom!.sendFileMessage(
-        path,
-        name,
-        mimeType!,
-        result.files.single.size,
-      );
+      await _currentRoom!.sendFileMessage(path, name);
     }
   }
 
