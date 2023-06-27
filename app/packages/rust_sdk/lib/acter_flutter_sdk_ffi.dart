@@ -1103,11 +1103,23 @@ class Api {
 
   CreateSpaceSettings newSpaceSettings(
     String name,
+    String? topic,
+    String? avatarUri,
   ) {
     final tmp0 = name;
+    final tmp4 = topic;
+    final tmp10 = avatarUri;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp11 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp15 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
     debugAllocation("lower string", tmp1, tmp2);
@@ -1117,17 +1129,55 @@ class Api {
     tmp1_1.setAll(0, tmp0_0);
     tmp1 = tmp1_0.address;
     tmp3 = tmp2;
-    final tmp4 = _newSpaceSettings(
+    if (tmp4 == null) {
+      tmp5 = 0;
+    } else {
+      tmp5 = 1;
+      final tmp6 = tmp4;
+      final tmp6_0 = utf8.encode(tmp6);
+      tmp8 = tmp6_0.length;
+      debugAllocation("lower string", tmp7, tmp8);
+
+      final ffi.Pointer<ffi.Uint8> tmp7_0 = this.__allocate(tmp8 * 1, 1);
+      final Uint8List tmp7_1 = tmp7_0.asTypedList(tmp8);
+      tmp7_1.setAll(0, tmp6_0);
+      tmp7 = tmp7_0.address;
+      tmp9 = tmp8;
+    }
+    if (tmp10 == null) {
+      tmp11 = 0;
+    } else {
+      tmp11 = 1;
+      final tmp12 = tmp10;
+      final tmp12_0 = utf8.encode(tmp12);
+      tmp14 = tmp12_0.length;
+      debugAllocation("lower string", tmp13, tmp14);
+
+      final ffi.Pointer<ffi.Uint8> tmp13_0 = this.__allocate(tmp14 * 1, 1);
+      final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
+      tmp13_1.setAll(0, tmp12_0);
+      tmp13 = tmp13_0.address;
+      tmp15 = tmp14;
+    }
+    final tmp16 = _newSpaceSettings(
       tmp1,
       tmp2,
       tmp3,
+      tmp5,
+      tmp7,
+      tmp8,
+      tmp9,
+      tmp11,
+      tmp13,
+      tmp14,
+      tmp15,
     );
-    final tmp6 = tmp4;
-    final ffi.Pointer<ffi.Void> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-    final tmp6_1 = _Box(this, tmp6_0, "drop_box_CreateSpaceSettings");
-    tmp6_1._finalizer = this._registerFinalizer(tmp6_1);
-    final tmp5 = CreateSpaceSettings._(this, tmp6_1);
-    return tmp5;
+    final tmp18 = tmp16;
+    final ffi.Pointer<ffi.Void> tmp18_0 = ffi.Pointer.fromAddress(tmp18);
+    final tmp18_1 = _Box(this, tmp18_0, "drop_box_CreateSpaceSettings");
+    tmp18_1._finalizer = this._registerFinalizer(tmp18_1);
+    final tmp17 = CreateSpaceSettings._(this, tmp18_1);
+    return tmp17;
   }
 
   late final _allocatePtr = _lookup<
@@ -8199,10 +8249,26 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
   )>>("__new_space_settings");
 
   late final _newSpaceSettings = _newSpaceSettingsPtr.asFunction<
       int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
     int,
     int,
     int,

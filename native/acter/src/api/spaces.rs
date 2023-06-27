@@ -518,11 +518,20 @@ impl Deref for Space {
 //     }
 // }
 
-pub fn new_space_settings(name: String) -> CreateSpaceSettings {
-    CreateSpaceSettingsBuilder::default()
-        .name(name)
-        .build()
-        .unwrap()
+pub fn new_space_settings(
+    name: String,
+    topic: Option<String>,
+    avatar_uri: Option<String>,
+) -> CreateSpaceSettings {
+    let mut builder = CreateSpaceSettingsBuilder::default();
+    builder.name(name);
+    if let Some(topic) = topic {
+        builder.topic(topic);
+    }
+    if let Some(avatar_uri) = avatar_uri {
+        builder.avatar_uri(avatar_uri);
+    }
+    builder.build().unwrap()
 }
 
 impl Client {

@@ -239,24 +239,15 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       isLoader: true,
     );
     final sdk = await ref.watch(sdkProvider.future);
-    var settings = sdk.newSpaceSettings(spaceName);
+    var avatarUri = ref.read(avatarProvider);
+    var settings = sdk.newSpaceSettings(
+      spaceName,
+      description,
+      avatarUri.isNotEmpty ? avatarUri : null,
+    );
     final client = ref.read(clientProvider)!;
     var roomId = await client.createActerSpace(settings);
     debugPrint('New Space created: ${roomId.toString()}:$spaceName');
-    var space = await client.getSpace(roomId.toString());
-
-    // set topic
-    var eventId = await space.setTopic(description ?? '');
-    debugPrint('Set Space topic event: ${eventId.toString()}');
-
-    // upload avatar
-    var avatarPath = ref.watch(avatarProvider);
-    if (avatarPath.isNotEmpty) {
-      String? mimeType = lookupMimeType(avatarPath);
-      var imgBuffer = File(avatarPath).readAsBytesSync();
-      var url = await space.uploadAvatar(mimeType!, imgBuffer);
-      debugPrint('Space avatar url: ${url.toString()}');
-    }
 
     // pop off loading dialog once process finished.
     context.pop();

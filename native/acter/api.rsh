@@ -1171,7 +1171,7 @@ object CreateSpaceSettings {
     fn add_invitee(value: string);
 }
 
-fn new_space_settings(name: string) -> CreateSpaceSettings;
+fn new_space_settings(name: string, topic: Option<string>, avatar_uri: Option<string>) -> CreateSpaceSettings;
 
 /// Main entry point for `acter`.
 object Client {
