@@ -62,10 +62,10 @@ pub struct CreateSpaceSettings {
     #[builder(setter(strip_option), default)]
     alias: Option<String>,
 
-    #[builder(setter(strip_option))]
+    #[builder(setter(strip_option), default)]
     topic: Option<String>,
 
-    #[builder(setter(strip_option))]
+    #[builder(setter(strip_option), default)]
     avatar_uri: Option<String>,
 }
 
