@@ -1,13 +1,15 @@
 import 'dart:core';
+
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class RelatedSpacesCard extends ConsumerWidget {
   final String spaceId;
+
   const RelatedSpacesCard({super.key, required this.spaceId});
 
   @override

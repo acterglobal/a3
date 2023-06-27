@@ -116,7 +116,8 @@ class RelatedSpacesPage extends ConsumerWidget {
               }
               if (spaces.otherRelations.isNotEmpty) {
                 items.add(
-                    const SliverToBoxAdapter(child: Text('Related Spaces')));
+                  const SliverToBoxAdapter(child: Text('Related Spaces')),
+                );
                 items.add(
                   SliverGrid.builder(
                     itemCount: spaces.otherRelations.length,

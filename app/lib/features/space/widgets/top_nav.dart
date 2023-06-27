@@ -1,11 +1,11 @@
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/common/utils/routes.dart';
 
 class TabEntry {
   final Key key;
@@ -95,8 +95,12 @@ final tabsProvider =
 class TopNavBar extends ConsumerStatefulWidget {
   final String spaceId;
   final Key selectedKey;
-  const TopNavBar(
-      {super.key, required this.spaceId, required this.selectedKey});
+
+  const TopNavBar({
+    super.key,
+    required this.spaceId,
+    required this.selectedKey,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _TopNavBarState();
@@ -130,13 +134,12 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
         ref.watch(recentWatchScreenTabStateTestProvider(context));
     return LayoutBuilder(
       builder: (context, constraints) {
-        print(constraints.maxWidth);
         final useCols = constraints.maxWidth < (150 * tabs.length);
         int minItemWidth = useCols ? 90 : 150;
         final minTotalWidth = minItemWidth * tabs.length;
-        bool scroll_bar = false;
+        bool scrollBar = false;
         if (minTotalWidth > constraints.maxWidth) {
-          scroll_bar = true;
+          scrollBar = true;
         }
         return Container(
           width: MediaQuery.of(context).size.width,
@@ -150,11 +153,13 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: TabBar(
             controller: _tabController,
-            isScrollable: scroll_bar,
+            isScrollable: scrollBar,
             onTap: (idx) {
               final target = tabs[idx].target;
-              context
-                  .goNamed(target, pathParameters: {'spaceId': widget.spaceId});
+              context.goNamed(
+                target,
+                pathParameters: {'spaceId': widget.spaceId},
+              );
             },
             labelStyle: useCols
                 ? Theme.of(context).textTheme.labelSmall
