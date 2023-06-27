@@ -5081,7 +5081,7 @@ class Api {
     return tmp7;
   }
 
-  String? __accountDisplayNameFuturePoll(
+  OptionText? __accountDisplayNameFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -5106,8 +5106,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -5122,25 +5120,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    if (tmp14 == 0) {
-      print("returning empty string");
-      return "empty string";
-    }
-    debugAllocation("lift string", tmp13, tmp14);
-    final utf8Decoder = utf8.decoder;
-    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
-    List<int> tmp13_buf = [];
-    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp14; i++) {
-      int char = tmp13_precast.elementAt(i).value;
-      tmp13_buf.add(char);
-    }
-    final tmp7 = utf8Decoder.convert(tmp13_buf);
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionText");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionText._(this, tmp13_1);
     return tmp7;
   }
 
@@ -5187,7 +5170,7 @@ class Api {
     return tmp7;
   }
 
-  FfiBufferUint8? __accountAvatarFuturePoll(
+  OptionBuffer? __accountAvatarFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -5227,10 +5210,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionBuffer");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
+    final tmp7 = OptionBuffer._(this, tmp13_1);
     return tmp7;
   }
 
@@ -6262,7 +6244,7 @@ class Api {
     return tmp7;
   }
 
-  FfiBufferUint8? __userProfileGetAvatarFuturePoll(
+  OptionBuffer? __userProfileGetAvatarFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -6302,14 +6284,13 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionBuffer");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
+    final tmp7 = OptionBuffer._(this, tmp13_1);
     return tmp7;
   }
 
-  FfiBufferUint8? __userProfileGetThumbnailFuturePoll(
+  OptionBuffer? __userProfileGetThumbnailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -6349,14 +6330,13 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionBuffer");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
+    final tmp7 = OptionBuffer._(this, tmp13_1);
     return tmp7;
   }
 
-  DispName? __userProfileGetDisplayNameFuturePoll(
+  OptionText? __userProfileGetDisplayNameFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -6396,13 +6376,13 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_DispName");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionText");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = DispName._(this, tmp13_1);
+    final tmp7 = OptionText._(this, tmp13_1);
     return tmp7;
   }
 
-  FfiBufferUint8? __roomProfileGetAvatarFuturePoll(
+  OptionBuffer? __roomProfileGetAvatarFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -6442,14 +6422,13 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionBuffer");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
+    final tmp7 = OptionBuffer._(this, tmp13_1);
     return tmp7;
   }
 
-  FfiBufferUint8? __roomProfileGetThumbnailFuturePoll(
+  OptionBuffer? __roomProfileGetThumbnailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -6489,14 +6468,13 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionBuffer");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
+    final tmp7 = OptionBuffer._(this, tmp13_1);
     return tmp7;
   }
 
-  DispName? __roomProfileGetDisplayNameFuturePoll(
+  OptionText? __roomProfileGetDisplayNameFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -6536,9 +6514,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_DispName");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionText");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = DispName._(this, tmp13_1);
+    final tmp7 = OptionText._(this, tmp13_1);
     return tmp7;
   }
 
@@ -7978,7 +7956,7 @@ class Api {
     return tmp9;
   }
 
-  bool? __clientSubscribeStreamPoll(
+  void __clientSubscribeStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -8002,13 +7980,11 @@ class Api {
       tmp5,
       tmp7,
     );
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
+    final tmp10 = tmp8;
     if (tmp10 == 0) {
       return null;
     }
-    final tmp9 = tmp11 > 0;
-    return tmp9;
+    return;
   }
 
   late final _initLoggingPtr = _lookup<
@@ -13748,14 +13724,24 @@ class Api {
       int Function(
     int,
   )>();
-  late final _dispNameTextPtr = _lookup<
+  late final _optionTextTextPtr = _lookup<
       ffi.NativeFunction<
-          _DispNameTextReturn Function(
+          _OptionTextTextReturn Function(
     ffi.Int64,
-  )>>("__DispName_text");
+  )>>("__OptionText_text");
 
-  late final _dispNameText = _dispNameTextPtr.asFunction<
-      _DispNameTextReturn Function(
+  late final _optionTextText = _optionTextTextPtr.asFunction<
+      _OptionTextTextReturn Function(
+    int,
+  )>();
+  late final _optionBufferDataPtr = _lookup<
+      ffi.NativeFunction<
+          _OptionBufferDataReturn Function(
+    ffi.Int64,
+  )>>("__OptionBuffer_data");
+
+  late final _optionBufferData = _optionBufferDataPtr.asFunction<
+      _OptionBufferDataReturn Function(
     int,
   )>();
   late final _userProfileUserIdPtr = _lookup<
@@ -16672,7 +16658,7 @@ class Api {
   )>();
   late final _clientSubscribeStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientSubscribeStreamPollReturn Function(
+          ffi.Uint8 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
@@ -16681,7 +16667,7 @@ class Api {
 
   late final _clientSubscribeStreamPoll =
       _clientSubscribeStreamPollPtr.asFunction<
-          _ClientSubscribeStreamPollReturn Function(
+          int Function(
     int,
     int,
     int,
@@ -28010,7 +27996,7 @@ class Account {
   }
 
   /// The display_name of the account
-  Future<String> displayName() {
+  Future<OptionText> displayName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._accountDisplayName(
@@ -28058,7 +28044,7 @@ class Account {
   }
 
   /// The avatar of the client
-  Future<FfiBufferUint8> avatar() {
+  Future<OptionBuffer> avatar() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._accountAvatar(
@@ -28840,7 +28826,7 @@ class Client {
   }
 
   /// listen to updates to any model key
-  Stream<bool> subscribe(
+  Stream<void> subscribe(
     String key,
   ) {
     final tmp1 = key;
@@ -29212,17 +29198,17 @@ class Client {
   }
 }
 
-class DispName {
+class OptionText {
   final Api _api;
   final _Box _box;
 
-  DispName._(this._api, this._box);
+  OptionText._(this._api, this._box);
 
   /// get text
   String? text() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._dispNameText(
+    final tmp1 = _api._optionTextText(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -29251,6 +29237,38 @@ class DispName {
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class OptionBuffer {
+  final Api _api;
+  final _Box _box;
+
+  OptionBuffer._(this._api, this._box);
+
+  /// get text
+  FfiBufferUint8? data() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._optionBufferData(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiBuffer");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiBufferUint8._(_api, tmp4_1);
+    final tmp2 = tmp5;
     return tmp2;
   }
 
@@ -29297,7 +29315,7 @@ class UserProfile {
   }
 
   /// get the binary data of avatar
-  Future<FfiBufferUint8> getAvatar() {
+  Future<OptionBuffer> getAvatar() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._userProfileGetAvatar(
@@ -29312,7 +29330,7 @@ class UserProfile {
   }
 
   /// get the binary data of thumbnail
-  Future<FfiBufferUint8> getThumbnail(
+  Future<OptionBuffer> getThumbnail(
     int width,
     int height,
   ) {
@@ -29340,7 +29358,7 @@ class UserProfile {
   }
 
   /// get the display name
-  Future<DispName> getDisplayName() {
+  Future<OptionText> getDisplayName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._userProfileGetDisplayName(
@@ -29396,7 +29414,7 @@ class RoomProfile {
   }
 
   /// get the binary data of avatar
-  Future<FfiBufferUint8> getAvatar() {
+  Future<OptionBuffer> getAvatar() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomProfileGetAvatar(
@@ -29411,7 +29429,7 @@ class RoomProfile {
   }
 
   /// get the binary data of thumbnail
-  Future<FfiBufferUint8> getThumbnail(
+  Future<OptionBuffer> getThumbnail(
     int width,
     int height,
   ) {
@@ -29439,7 +29457,7 @@ class RoomProfile {
   }
 
   /// get the display name
-  Future<DispName> getDisplayName() {
+  Future<OptionText> getDisplayName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomProfileGetDisplayName(
@@ -31940,7 +31958,7 @@ class _ClientIncomingMessageRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _DispNameTextReturn extends ffi.Struct {
+class _OptionTextTextReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -31949,6 +31967,13 @@ class _DispNameTextReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
+}
+
+class _OptionBufferDataReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
 }
 
 class _RoomProfileHasAvatarReturn extends ffi.Struct {
@@ -33386,10 +33411,6 @@ class _AccountDisplayNameFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _AccountSetDisplayNameFuturePollReturn extends ffi.Struct {
@@ -34262,13 +34283,6 @@ class _ClientIncomingMessageRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
-  external int arg1;
-}
-
-class _ClientSubscribeStreamPollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
   external int arg1;
 }
 

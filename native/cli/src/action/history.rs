@@ -5,6 +5,7 @@ use matrix_sdk::{
     room::{Messages, MessagesOptions},
     ruma::OwnedRoomId,
 };
+use tracing::{info, trace};
 
 use crate::config::{LoginConfig, ENV_ROOM};
 
@@ -22,12 +23,12 @@ impl HistoryOpts {
     pub async fn run(&self) -> Result<()> {
         let mut client = self.login.client().await?;
 
-        tracing::info!(" - Syncing -");
+        info!(" - Syncing -");
         let sync_state = client.start_sync();
 
         let mut is_synced = sync_state.first_synced_rx().context("not yet read")?;
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
-        tracing::info!(" - First Sync finished - ");
+        info!(" - First Sync finished - ");
 
         let Some(room) = client.get_room(self.room.as_ref()) else {
             bail!("Room not found");
@@ -53,7 +54,7 @@ impl HistoryOpts {
                 msg_options = MessagesOptions::forward().from(end.as_deref());
             } else {
                 // how do we want to understand this case?
-                tracing::trace!(room_id = ?room.room_id(), "Done loading");
+                trace!(room_id = ?room.room_id(), "Done loading");
                 break;
             }
         }

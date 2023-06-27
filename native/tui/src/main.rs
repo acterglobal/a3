@@ -9,6 +9,7 @@ use clap::Parser;
 use config::ActerTuiConfig;
 use futures::{future::Either, pin_mut, StreamExt};
 use std::sync::mpsc::channel;
+use tracing::{error, info, warn};
 use ui::AppUpdate;
 
 const APP_INFO: AppInfo = AppInfo {
@@ -54,9 +55,8 @@ async fn main() -> Result<()> {
             .unwrap();
 
         let dp = client.account().unwrap().display_name().await.unwrap();
-        sender
-            .send(AppUpdate::SetUsername(format!("{dp:} ({username:})")))
-            .unwrap();
+        let name = format!("{:?} ({username:})", dp.text());
+        sender.send(AppUpdate::SetUsername(name)).unwrap();
 
         let sync_stream = sync_state.first_synced_rx().unwrap();
         let history_loaded = sync_state.get_history_loading_rx();
@@ -85,17 +85,17 @@ async fn main() -> Result<()> {
                     }
                 }
                 Some(Either::Right(history)) => {
-                    tracing::info!("History updated. Done? {:}", history.is_done_loading());
+                    info!("History updated. Done? {:}", history.is_done_loading());
                     if history.is_done_loading() {
                         match client.task_lists().await {
                             Ok(task_lists) => {
                                 if task_lists.is_empty() {
-                                    tracing::warn!("No task lists found");
+                                    warn!("No task lists found");
                                 }
                                 sender.send(AppUpdate::SetTasksList(task_lists)).unwrap();
                             }
                             Err(error) => {
-                                tracing::error!(?error, "TaskList couldn't be read");
+                                error!(?error, "TaskList couldn't be read");
                             }
                         }
                     }

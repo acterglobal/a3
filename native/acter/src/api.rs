@@ -53,8 +53,8 @@ pub use calendar_events::CalendarEvent;
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
-    duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, ReactionDesc, TextDesc,
-    ThumbnailInfo, VideoDesc,
+    duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, OptionBuffer, OptionText,
+    ReactionDesc, TextDesc, ThumbnailInfo, VideoDesc,
 };
 pub use conversation::{Conversation, CreateConversationSettingsBuilder};
 pub use core::time::Duration as EfkDuration;
@@ -63,7 +63,7 @@ pub use invitation::Invitation;
 pub use message::{RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
-pub use profile::{DispName, RoomProfile, UserProfile};
+pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
 pub use spaces::{

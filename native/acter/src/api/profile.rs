@@ -1,5 +1,4 @@
 use anyhow::{bail, Context, Result};
-use log::info;
 use matrix_sdk::{
     media::{MediaFormat, MediaThumbnailSize},
     room::RoomMember,
@@ -7,17 +6,11 @@ use matrix_sdk::{
     Account, Client, DisplayName,
 };
 
-use super::{api::FfiBuffer, RUNTIME};
-
-pub struct DispName {
-    text: Option<String>,
-}
-
-impl DispName {
-    pub fn text(&self) -> Option<String> {
-        self.text.clone()
-    }
-}
+use super::{
+    api::FfiBuffer,
+    common::{OptionBuffer, OptionText},
+    RUNTIME,
+};
 
 #[derive(Clone)]
 pub struct UserProfile {
@@ -51,10 +44,7 @@ impl UserProfile {
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
-                    let url = account
-                        .get_avatar_url()
-                        .await
-                        .context("Couldn't get avatar url")?;
+                    let url = account.get_avatar_url().await?;
                     Ok(url.is_some())
                 })
                 .await?;
@@ -65,39 +55,27 @@ impl UserProfile {
         Ok(false)
     }
 
-    pub async fn get_avatar(&self) -> Result<FfiBuffer<u8>> {
+    pub async fn get_avatar(&self) -> Result<OptionBuffer> {
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
-                    let result = account
-                        .get_avatar(MediaFormat::File)
-                        .await
-                        .context("Couldn't get avatar from account")?;
-                    match result {
-                        Some(result) => Ok(FfiBuffer::new(result)),
-                        None => Ok(FfiBuffer::new(vec![])),
-                    }
+                    let buf = account.get_avatar(MediaFormat::File).await?;
+                    Ok(OptionBuffer::new(buf))
                 })
                 .await?;
         }
         if let Some(member) = self.member.clone() {
             return RUNTIME
                 .spawn(async move {
-                    let result = member
-                        .avatar(MediaFormat::File)
-                        .await
-                        .context("Couldn't get avatar from account")?;
-                    match result {
-                        Some(result) => Ok(FfiBuffer::new(result)),
-                        None => Ok(FfiBuffer::new(vec![])),
-                    }
+                    let buf = member.avatar(MediaFormat::File).await?;
+                    Ok(OptionBuffer::new(buf))
                 })
                 .await?;
         }
-        Ok(FfiBuffer::new(vec![]))
+        Ok(OptionBuffer::new(None))
     }
 
-    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<FfiBuffer<u8>> {
+    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<OptionBuffer> {
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
@@ -106,14 +84,8 @@ impl UserProfile {
                         width: UInt::from(width),
                         height: UInt::from(height),
                     };
-                    let result = account
-                        .get_avatar(MediaFormat::Thumbnail(size))
-                        .await
-                        .context("Couldn't get avatar from account")?;
-                    match result {
-                        Some(result) => Ok(FfiBuffer::new(result)),
-                        None => Ok(FfiBuffer::new(vec![])),
-                    }
+                    let buf = account.get_avatar(MediaFormat::Thumbnail(size)).await?;
+                    Ok(OptionBuffer::new(buf))
                 })
                 .await?;
         }
@@ -125,35 +97,28 @@ impl UserProfile {
                         width: UInt::from(width),
                         height: UInt::from(height),
                     };
-                    let result = member
-                        .avatar(MediaFormat::Thumbnail(size))
-                        .await
-                        .context("Couldn't get avatar from account")?;
-                    match result {
-                        Some(result) => Ok(FfiBuffer::new(result)),
-                        None => Ok(FfiBuffer::new(vec![])),
-                    }
+                    let buf = member.avatar(MediaFormat::Thumbnail(size)).await?;
+                    Ok(OptionBuffer::new(buf))
                 })
                 .await?;
         }
-        Ok(FfiBuffer::new(vec![]))
+        Ok(OptionBuffer::new(None))
     }
 
-    pub async fn get_display_name(&self) -> Result<DispName> {
+    pub async fn get_display_name(&self) -> Result<OptionText> {
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
                     let text = account.get_display_name().await?;
-                    info!("get_display_name: {:?}", text);
-                    Ok(DispName { text })
+                    Ok(OptionText::new(text))
                 })
                 .await?;
         }
         if let Some(member) = self.member.clone() {
             let text = member.display_name().map(|x| x.to_string());
-            return Ok(DispName { text });
+            return Ok(OptionText::new(text));
         }
-        Ok(DispName { text: None })
+        Ok(OptionText::new(None))
     }
 }
 
@@ -172,34 +137,28 @@ impl RoomProfile {
         let room = self
             .client
             .get_room(&self.room_id)
-            .context("couldn't get room from client")?;
+            .context("Room not found")?;
         Ok(room.avatar_url().is_some())
     }
 
-    pub async fn get_avatar(&self) -> Result<FfiBuffer<u8>> {
+    pub async fn get_avatar(&self) -> Result<OptionBuffer> {
         let room = self
             .client
             .get_room(&self.room_id)
-            .context("couldn't get room from client")?;
+            .context("Room not found")?;
         RUNTIME
             .spawn(async move {
-                let result = room
-                    .avatar(MediaFormat::File)
-                    .await
-                    .context("Couldn't get avatar from room")?;
-                match result {
-                    Some(result) => Ok(FfiBuffer::new(result)),
-                    None => Ok(FfiBuffer::new(vec![])),
-                }
+                let buf = room.avatar(MediaFormat::File).await?;
+                Ok(OptionBuffer::new(buf))
             })
             .await?
     }
 
-    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<FfiBuffer<u8>> {
+    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<OptionBuffer> {
         let room = self
             .client
             .get_room(&self.room_id)
-            .context("couldn't get room from client")?;
+            .context("Room not found")?;
         RUNTIME
             .spawn(async move {
                 let size = MediaThumbnailSize {
@@ -207,35 +166,26 @@ impl RoomProfile {
                     width: UInt::from(width),
                     height: UInt::from(height),
                 };
-                let result = room
-                    .avatar(MediaFormat::Thumbnail(size))
-                    .await
-                    .context("Couldn't get avatar from room")?;
-                match result {
-                    Some(result) => Ok(FfiBuffer::new(result)),
-                    None => Ok(FfiBuffer::new(vec![])),
-                }
+                let buf = room.avatar(MediaFormat::Thumbnail(size)).await?;
+                Ok(OptionBuffer::new(buf))
             })
             .await?
     }
 
-    pub async fn get_display_name(&self) -> Result<DispName> {
+    pub async fn get_display_name(&self) -> Result<OptionText> {
         let room = self
             .client
             .get_room(&self.room_id)
-            .context("couldn't get room from client")?;
+            .context("Room not found")?;
         RUNTIME
             .spawn(async move {
-                let result = room
-                    .display_name()
-                    .await
-                    .context("Couldn't get display name from room")?;
+                let result = room.display_name().await?;
                 match result {
-                    DisplayName::Named(name) => Ok(DispName { text: Some(name) }),
-                    DisplayName::Aliased(name) => Ok(DispName { text: Some(name) }),
-                    DisplayName::Calculated(name) => Ok(DispName { text: Some(name) }),
-                    DisplayName::EmptyWas(name) => Ok(DispName { text: Some(name) }),
-                    DisplayName::Empty => Ok(DispName { text: None }),
+                    DisplayName::Named(name) => Ok(OptionText::new(Some(name))),
+                    DisplayName::Aliased(name) => Ok(OptionText::new(Some(name))),
+                    DisplayName::Calculated(name) => Ok(OptionText::new(Some(name))),
+                    DisplayName::EmptyWas(name) => Ok(OptionText::new(Some(name))),
+                    DisplayName::Empty => Ok(OptionText::new(None)),
                 }
             })
             .await?

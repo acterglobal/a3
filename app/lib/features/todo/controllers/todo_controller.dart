@@ -10,8 +10,8 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         Comment,
         CommentDraft,
         CommentsManager,
-        DispName,
         CreateSpaceSettings,
+        OptionText,
         RoomProfile,
         Space,
         Task,
@@ -61,11 +61,11 @@ class ToDoController extends GetxController {
     if (listTeams.isNotEmpty) {
       for (var team in listTeams) {
         RoomProfile profile = team.getProfile();
-        DispName dispName = await profile.getDisplayName();
+        OptionText displayName = await profile.getDisplayName();
         // Team avatars are yet to be implemented.
         Team item = Team(
           id: team.getRoomId().toString(),
-          name: dispName.text(),
+          name: displayName.text(),
         );
         teams.add(item);
       }
@@ -79,7 +79,7 @@ class ToDoController extends GetxController {
         await client.spaces().then((groups) => groups.toList());
     for (var group in groups) {
       RoomProfile profile = group.getProfile();
-      DispName dispName = await profile.getDisplayName();
+      OptionText dispName = await profile.getDisplayName();
       Team team = Team(
         id: group.getRoomId().toString(),
         name: dispName.text(),
@@ -177,7 +177,7 @@ class ToDoController extends GetxController {
   ) async {
     final Space space = await client.getSpace(teamId);
     final RoomProfile profile = space.getProfile();
-    final DispName dispName = await profile.getDisplayName();
+    final OptionText dispName = await profile.getDisplayName();
     final Team team = Team(
       id: space.getRoomId().toString(),
       name: dispName.text(),

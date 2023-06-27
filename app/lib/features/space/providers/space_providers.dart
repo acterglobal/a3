@@ -9,13 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 Future<ProfileData> getSpaceProfileData(Space space) async {
   // FIXME: how to get informed about updates!?!
   final profile = space.getProfile();
-  DispName name = await profile.getDisplayName();
-  final displayName = name.text();
-  if (!profile.hasAvatar()) {
-    return ProfileData(displayName, null);
-  }
+  OptionText displayName = await profile.getDisplayName();
   final avatar = await profile.getAvatar();
-  return ProfileData(displayName, avatar);
+  return ProfileData(displayName.text(), avatar.data());
 }
 
 final spaceProfileDataProvider =
