@@ -4,9 +4,10 @@ import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -172,16 +173,26 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
-                    onPressed: () => _titleInput.isNotEmpty
-                        ? _handleCreateSpace(
-                            context,
-                            _titleInput,
-                            _descriptionController.text.trim(),
-                          )
-                        : customMsgSnackbar(
-                            context,
-                            'Please enter space name',
-                          ),
+                    onPressed: () async {
+                      if (_titleInput.isEmpty) {
+                        customMsgSnackbar(
+                          context,
+                          'Please enter space name',
+                        );
+                        return;
+                      }
+                      final roomId = await _handleCreateSpace(
+                        context,
+                        _titleInput,
+                        _descriptionController.text.trim(),
+                      );
+                      context.goNamed(
+                        Routes.space.name,
+                        pathParameters: {
+                          'spaceId': roomId.toString(),
+                        },
+                      );
+                    },
                     child: const Text('Create Space'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _titleInput.isNotEmpty
@@ -224,7 +235,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     }
   }
 
-  void _handleCreateSpace(
+  Future<RoomId> _handleCreateSpace(
     BuildContext context,
     String spaceName,
     String? description,
@@ -245,14 +256,8 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       avatarUri.isNotEmpty ? avatarUri : null,
     );
     final client = ref.read(clientProvider)!;
-    var roomId = await client.createActerSpace(settings);
-    debugPrint('New Space created: ${roomId.toString()}:$spaceName');
-
-    // pop off loading dialog once process finished.
-    context.pop();
-    // refresh spaces list
-    ref.invalidate(spacesProvider);
-    //FIXME: a way to refresh list from spaces provider?
-    context.pop();
+    final roomId = await client.createActerSpace(settings);
+    Navigator.of(context, rootNavigator: true).pop();
+    return roomId;
   }
 }
