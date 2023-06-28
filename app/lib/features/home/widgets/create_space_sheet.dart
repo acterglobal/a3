@@ -7,6 +7,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -177,20 +178,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                           builder: (context, ref, child) =>
                               ref.watch(parentSpaceDetailsProvder).when(
                                     data: (space) => space != null
-                                        ? Chip(
-                                            avatar: ActerAvatar(
-                                              mode: DisplayMode.Space,
-                                              displayName: space
-                                                  .spaceProfileData.displayName,
-                                              uniqueId: space.roomId,
-                                              avatar: space.spaceProfileData
-                                                  .getAvatarImage(),
-                                              size: 24,
-                                            ),
-                                            label: Text(space.spaceProfileData
-                                                    .displayName ??
-                                                space.roomId),
-                                          )
+                                        ? SpaceChip(space: space)
                                         : Text(currentParentSpace),
                                     error: (e, s) => Text('error: $e'),
                                     loading: () => const Text('loading'),
@@ -292,7 +280,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                       ),
                       OutlinedButton(
                         onPressed: () {
-                          ref.read(selectedSpaceProvider.notifier).state = null;
+                          ref.read(parentSpaceProvider.notifier).state = null;
                           Navigator.pop(context);
                         },
                         child: const Text('Select none'),
@@ -330,7 +318,8 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                                       ? () {
                                           ref
                                               .read(
-                                                  parentSpaceProvider.notifier)
+                                                parentSpaceProvider.notifier,
+                                              )
                                               .state = roomId;
                                           Navigator.pop(context);
                                         }
