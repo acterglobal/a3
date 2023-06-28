@@ -33,7 +33,13 @@ use matrix_sdk::{
     Client, RoomMemberships, RoomState,
 };
 use matrix_sdk_ui::timeline::RoomExt;
-use std::{fs::File, io::Write, ops::Deref, path::PathBuf, sync::Arc};
+use std::{
+    fs::{File, Permissions},
+    io::Write,
+    ops::Deref,
+    path::PathBuf,
+    sync::Arc,
+};
 use tracing::{error, info};
 
 use super::{
@@ -45,6 +51,8 @@ use super::{
     RUNTIME,
 };
 
+#[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]
+#[strum(serialize_all = "PascalCase")]
 pub enum MemberPermission {
     // regular interaction
     CanSendChatMessages,
@@ -98,6 +106,13 @@ impl Member {
 
     pub fn user_id(&self) -> OwnedUserId {
         self.member.user_id().to_owned()
+    }
+
+    pub fn can_string(&self, input: String) -> bool {
+        let Ok(permission) = MemberPermission::try_from(input.as_str()) else {
+            return false;
+        };
+        self.can(permission)
     }
 
     pub fn can(&self, permission: MemberPermission) -> bool {

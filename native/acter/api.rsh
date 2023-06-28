@@ -191,7 +191,7 @@ object PinDraft {
 /// A pin object
 object ActerPin {
     /// get the title of the pin
-    fn title() -> string;
+    fn title() -> string; 
     /// get the content_text of the pin
     fn content_text() -> Option<string>;
     /// whether this pin is a link
@@ -542,6 +542,9 @@ object Conversation {
 
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;
+
+    // the Membership of myself
+    fn get_my_membership() -> Future<Result<Member>>;
 
     /// the room id
     fn get_room_id() -> RoomId;
@@ -1055,6 +1058,9 @@ object Space {
     // the members currently in the room
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
+    // the Membership of myself
+    fn get_my_membership() -> Future<Result<Member>>;
+
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
 
@@ -1124,12 +1130,30 @@ object Space {
     fn leave() -> Future<Result<bool>>;
 }
 
+enum MemberPermission {
+    CanSendChatMessages,
+    CanSendReaction,
+    CanSendSticker,
+    CanBan,
+    CanKick,
+    CanRedact,
+    CanTriggerRoomNotification,
+    CanUpdateAvatar,
+    CanSetTopic,
+    CanLinkSpaces,
+    CanSetParentSpace
+}
+
 object Member {
     /// get the user profile that contains avatar and display name
     fn get_profile() -> UserProfile;
 
     /// Full user_id
     fn user_id() -> UserId;
+
+    /// Whether this user is allowed to perform the given action
+    //fn can(permission: MemberPermission) -> bool;
+    fn can_string(permission: string) -> bool;
 }
 
 object Account {

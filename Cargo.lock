@@ -36,6 +36,7 @@ dependencies = [
  "sanitize-filename-reader-friendly",
  "serde",
  "serde_json",
+ "strum",
  "tempfile",
  "tokio",
  "tracing",

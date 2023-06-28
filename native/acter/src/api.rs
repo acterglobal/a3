@@ -65,7 +65,7 @@ pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
-pub use room::{Member, Room};
+pub use room::{Member, MemberPermission, Room};
 pub use spaces::{
     new_space_settings, CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, Space,
     SpaceRelation, SpaceRelations,

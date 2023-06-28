@@ -503,10 +503,6 @@ impl Space {
         }
         false
     }
-
-    pub async fn get_my_membership(&self) -> Result<Member> {
-        self.inner.get_my_membership().await
-    }
 }
 
 impl Deref for Space {

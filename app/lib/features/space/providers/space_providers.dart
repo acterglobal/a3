@@ -26,6 +26,12 @@ final spacesProvider = FutureProvider<List<Space>>((ref) async {
   return spaces.toList();
 });
 
+final spaceMembershipProvider =
+    FutureProvider.family<Member, String>((ref, spaceId) async {
+  final space = ref.watch(spaceProvider(spaceId)).requireValue;
+  return await space.getMyMembership();
+});
+
 class SpaceItem {
   String roomId;
   ProfileData spaceProfileData;
@@ -39,12 +45,14 @@ class SpaceItem {
 }
 
 class SpaceRelationsOverview {
+  Member? membership;
   List<SpaceItem> children;
   SpaceItem? mainParent;
   List<SpaceItem> parents;
   List<SpaceItem> otherRelations;
 
   SpaceRelationsOverview({
+    required this.membership,
     required this.children,
     required this.mainParent,
     required this.parents,
@@ -133,6 +141,7 @@ final relatedSpaceItemsProvider =
     FutureProvider.family<SpaceRelationsOverview, String>((ref, spaceId) async {
   final client = ref.watch(clientProvider)!;
   final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
+  final membership = ref.watch(spaceMembershipProvider(spaceId)).requireValue;
   List<SpaceItem> children = [];
   List<SpaceItem> otherRelated = [];
   for (final related in relatedSpaces.children()) {
@@ -198,6 +207,7 @@ final relatedSpaceItemsProvider =
     }
   }
   return SpaceRelationsOverview(
+    membership: membership,
     parents: parents,
     children: children,
     otherRelations: otherRelated,
