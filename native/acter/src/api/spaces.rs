@@ -36,7 +36,7 @@ use tracing::{error, trace};
 
 use super::{
     client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
-    room::Room,
+    room::{Member, Room},
     RUNTIME,
 };
 
@@ -502,6 +502,10 @@ impl Space {
             return e.room_id() == room_id;
         }
         false
+    }
+
+    pub async fn get_my_membership(&self) -> Result<Member> {
+        self.inner.get_my_membership().await
     }
 }
 
