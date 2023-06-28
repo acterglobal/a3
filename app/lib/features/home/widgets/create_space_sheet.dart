@@ -7,6 +7,9 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
+import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -15,6 +18,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 final titleProvider = StateProvider<String>((ref) => '');
+final parentSpaceProvider = StateProvider<String?>((ref) => null);
+final parentSpaceDetailsProvder = FutureProvider<SpaceItem?>((ref) {
+  final parentSpaceId = ref.watch(parentSpaceProvider);
+  if (parentSpaceId == null) {
+    return null;
+  }
+
+  final spaces = ref.watch(briefSpaceItemsProviderWithMembership).requireValue;
+  return spaces.firstWhere((element) => element.roomId == parentSpaceId);
+});
 
 // upload avatar path
 final avatarProvider = StateProvider.autoDispose<String>((ref) => '');
@@ -34,6 +47,8 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   @override
   Widget build(BuildContext context) {
     final _titleInput = ref.watch(titleProvider);
+    final currentParentSpace = ref.watch(parentSpaceProvider);
+    final _selectParentSpace = currentParentSpace != null;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -42,11 +57,15 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              'Create Space',
+              _selectParentSpace ? 'Create Subspace' : 'Create Space',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 15),
-            const Text('Create new space and start organizing.'),
+            Text(
+              _selectParentSpace
+                  ? 'Create a new subspace'
+                  : 'Create new space and start organizing.',
+            ),
             const SizedBox(height: 15),
             Row(
               children: <Widget>[
@@ -113,30 +132,30 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                 ),
               ],
             ),
-            const SizedBox(height: 15),
-            const Text('Wallpaper'),
-            GestureDetector(
-              onTap: () => customMsgSnackbar(
-                context,
-                'Wallpaper uploading feature isn\'t available yet',
-              ),
-              child: Container(
-                margin: const EdgeInsets.only(top: 15),
-                padding: const EdgeInsets.all(10),
-                height: 75,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Icon(
-                    Atlas.up_arrow_from_bracket_thin,
-                    color: Theme.of(context).colorScheme.neutral4,
-                  ),
-                ),
-              ),
-            ),
+            // const SizedBox(height: 15),
+            // const Text('Wallpaper'),
+            // GestureDetector(
+            //   onTap: () => customMsgSnackbar(
+            //     context,
+            //     'Wallpaper uploading feature isn\'t available yet',
+            //   ),
+            //   child: Container(
+            //     margin: const EdgeInsets.only(top: 15),
+            //     padding: const EdgeInsets.all(10),
+            //     height: 75,
+            //     decoration: BoxDecoration(
+            //       color: Theme.of(context).colorScheme.primaryContainer,
+            //       borderRadius: BorderRadius.circular(12),
+            //     ),
+            //     child: Align(
+            //       alignment: Alignment.centerLeft,
+            //       child: Icon(
+            //         Atlas.up_arrow_from_bracket_thin,
+            //         color: Theme.of(context).colorScheme.neutral4,
+            //       ),
+            //     ),
+            //   ),
+            // ),
             const SizedBox(height: 15),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,6 +168,39 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                   textInputType: TextInputType.multiline,
                   maxLines: 10,
                 ),
+                ListTile(
+                  title: _selectParentSpace
+                      ? const Text('Parent space')
+                      : const Text('No parent space selected'),
+                  trailing: _selectParentSpace
+                      ? Consumer(
+                          builder: (context, ref, child) =>
+                              ref.watch(parentSpaceDetailsProvder).when(
+                                    data: (space) => space != null
+                                        ? Chip(
+                                            avatar: ActerAvatar(
+                                              mode: DisplayMode.Space,
+                                              displayName: space
+                                                  .spaceProfileData.displayName,
+                                              uniqueId: space.roomId,
+                                              avatar: space.spaceProfileData
+                                                  .getAvatarImage(),
+                                              size: 24,
+                                            ),
+                                            label: Text(space.spaceProfileData
+                                                    .displayName ??
+                                                space.roomId),
+                                          )
+                                        : Text(currentParentSpace),
+                                    error: (e, s) => Text('error: $e'),
+                                    loading: () => const Text('loading'),
+                                  ),
+                        )
+                      : null,
+                  onTap: () {
+                    openParentSpaceDrawer(context);
+                  },
+                )
               ],
             ),
             const Spacer(),
@@ -213,6 +265,92 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void openParentSpaceDrawer(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Consumer(
+        builder: (context, ref, child) {
+          final spaces = ref.watch(briefSpaceItemsProviderWithMembership);
+          final currentSpace = ref.watch(parentSpaceProvider);
+          return SizedBox(
+            height: 250,
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Text('Select Parent space'),
+                      ),
+                      OutlinedButton(
+                        onPressed: () {
+                          ref.read(selectedSpaceProvider.notifier).state = null;
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Select none'),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: spaces.when(
+                      data: (spaces) => spaces.isEmpty
+                          ? const Text('no spaces found')
+                          : ListView.builder(
+                              padding: const EdgeInsets.all(8),
+                              itemCount: spaces.length,
+                              itemBuilder: (context, index) {
+                                final item = spaces[index];
+                                final membership = item.membership!;
+                                final profile = item.spaceProfileData;
+                                final roomId = item.roomId;
+                                final canLink =
+                                    membership.canString('CanLinkSpaces');
+                                return ListTile(
+                                  enabled: canLink,
+                                  leading: ActerAvatar(
+                                    mode: DisplayMode.Space,
+                                    displayName: profile.displayName,
+                                    uniqueId: roomId,
+                                    avatar: profile.getAvatarImage(),
+                                    size: 24,
+                                  ),
+                                  title: Text(profile.displayName ?? roomId),
+                                  trailing: currentSpace == roomId
+                                      ? const Icon(Icons.check_circle_outline)
+                                      : null,
+                                  onTap: canLink
+                                      ? () {
+                                          ref
+                                              .read(
+                                                  parentSpaceProvider.notifier)
+                                              .state = roomId;
+                                          Navigator.pop(context);
+                                        }
+                                      : null,
+                                );
+                              },
+                            ),
+                      error: (e, s) => Center(
+                        child: Text('error loading spaces: $e'),
+                      ),
+                      loading: () => const Center(
+                        child: Text('loading'),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

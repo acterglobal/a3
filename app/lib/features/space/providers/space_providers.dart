@@ -33,11 +33,13 @@ final spaceMembershipProvider =
 });
 
 class SpaceItem {
+  Member? membership;
   String roomId;
   ProfileData spaceProfileData;
   List<Member> activeMembers;
 
   SpaceItem({
+    this.membership,
     required this.roomId,
     required this.activeMembers,
     required this.spaceProfileData,
@@ -60,12 +62,32 @@ class SpaceRelationsOverview {
   });
 }
 
+final briefSpaceItemsProviderWithMembership =
+    FutureProvider<List<SpaceItem>>((ref) async {
+  final client = ref.watch(clientProvider)!;
+  // FIXME: how to get informed about updates!?!
+  final spaces = await client.spaces();
+  List<SpaceItem> items = [];
+  for (final element in spaces) {
+    final profileData =
+        await ref.watch(spaceProfileDataProvider(element).future);
+    var item = SpaceItem(
+      roomId: element.getRoomId().toString(),
+      membership: await element.getMyMembership(),
+      activeMembers: [],
+      spaceProfileData: profileData,
+    );
+    items.add(item);
+  }
+  return items;
+});
+
 final spaceItemsProvider = FutureProvider<List<SpaceItem>>((ref) async {
   final client = ref.watch(clientProvider)!;
   // FIXME: how to get informed about updates!?!
   final spaces = await client.spaces();
   List<SpaceItem> items = [];
-  spaces.toList().forEach((element) async {
+  for (final element in spaces) {
     List<Member> members =
         await element.activeMembers().then((ffiList) => ffiList.toList());
     final profileData =
@@ -76,7 +98,7 @@ final spaceItemsProvider = FutureProvider<List<SpaceItem>>((ref) async {
       spaceProfileData: profileData,
     );
     items.add(item);
-  });
+  }
   return items;
 });
 
