@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/pages/image_selection_page.dart';

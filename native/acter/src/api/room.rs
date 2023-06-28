@@ -1622,6 +1622,6 @@ impl SendAudioResult {
     }
 
     pub fn duration(&self) -> Option<Duration> {
-        self.duration.clone()
+        self.duration
     }
 }
