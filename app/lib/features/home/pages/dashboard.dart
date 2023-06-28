@@ -80,7 +80,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
               child: StaggeredGrid.count(
                 crossAxisSpacing: 20,
                 axisDirection: AxisDirection.down,
-                crossAxisCount: min(widthCount, minCount),
+                crossAxisCount: max(min(widthCount, minCount), 1),
                 children: children.toList(growable: false),
               ),
             ),

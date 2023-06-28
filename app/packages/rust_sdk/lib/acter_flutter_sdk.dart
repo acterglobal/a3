@@ -14,6 +14,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 export './acter_flutter_sdk_ffi.dart' show Client;
 
+const rustLogKey = 'RUST_LOG';
+
 const defaultServerUrl = String.fromEnvironment(
   'DEFAULT_HOMESERVER_URL',
   defaultValue: 'https://matrix.acter.global',
@@ -24,8 +26,8 @@ const defaultServerName = String.fromEnvironment(
   defaultValue: 'acter.global',
 );
 
-const logSettings = String.fromEnvironment(
-  'RUST_LOG',
+const defaultLogSetting = String.fromEnvironment(
+  rustLogKey,
   defaultValue: 'warn,acter=debug',
 );
 
@@ -247,6 +249,9 @@ class ActerSdk {
         ? ffi.Api(await _getAndroidDynLib('libacter.so'))
         : ffi.Api.load();
     String appPath = await appDir();
+
+    String logSettings =
+        (await sharedPrefs()).getString(rustLogKey) ?? defaultLogSetting;
     try {
       api.initLogging(appPath, logSettings);
     } catch (e) {
