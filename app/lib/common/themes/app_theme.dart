@@ -14,7 +14,6 @@ extension CustomColorScheme on ColorScheme {
   Color get neutral5 => const Color(0xFFB7B7B7);
   Color get neutral6 => const Color(0xFFE5E5E5);
   Color get m3Primary => const Color(0xFFD0BCFF);
-  
 }
 
 const brandColorScheme = ColorScheme.dark(
@@ -132,8 +131,13 @@ class AppTheme {
       dividerColor: const Color(0xFFDDEDFC),
       cardTheme: CardTheme(color: brandColorScheme.background, elevation: 0),
       dialogTheme: DialogTheme(
-        backgroundColor: brandColorScheme.background,
+        iconColor: const Color(0xFF67A24A),
+        backgroundColor: const Color(0xFF122D46),
         elevation: 0,
+        shape: RoundedRectangleBorder(
+          side: BorderSide.none,
+          borderRadius: BorderRadius.circular(6),
+        ),
       ),
       buttonTheme: ButtonThemeData(
         splashColor: Colors.transparent,

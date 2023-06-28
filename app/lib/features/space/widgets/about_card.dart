@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
-import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AboutCard extends ConsumerWidget {
@@ -10,8 +9,6 @@ class AboutCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final space = ref.watch(spaceProvider(spaceId));
-    final members = ref.watch(spaceMembersProvider(spaceId));
-
     return Card(
       elevation: 0,
       child: Padding(
@@ -35,33 +32,6 @@ class AboutCard extends ConsumerWidget {
               loading: () => const Text('Loading'),
             ),
             const SizedBox(height: 10),
-            ...members.when(
-              data: (members) {
-                final membersCount = members.length;
-                if (membersCount > 10) {
-                  // too many to display, means we limit to 10
-                  members = members.sublist(0, 10);
-                }
-                return [
-                  Text(
-                    'Members ($membersCount)',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 5),
-                  Wrap(
-                    direction: Axis.horizontal,
-                    spacing: -6,
-                    children: [
-                      ...members.map(
-                        (a) => MemberAvatar(member: a),
-                      )
-                    ],
-                  ),
-                ];
-              },
-              error: (error, stack) => [Text('Loading members failed: $error')],
-              loading: () => [const Text('Loading')],
-            )
           ],
         ),
       ),

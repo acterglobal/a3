@@ -86,6 +86,7 @@ dependencies = [
  "indexmap",
  "matrix-sdk",
  "matrix-sdk-base",
+ "mime_guess",
  "minijinja",
  "serde",
  "serde_json",

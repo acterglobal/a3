@@ -38,6 +38,20 @@ class SpaceItem {
   });
 }
 
+class SpaceRelationsOverview {
+  List<SpaceItem> children;
+  SpaceItem? mainParent;
+  List<SpaceItem> parents;
+  List<SpaceItem> otherRelations;
+
+  SpaceRelationsOverview({
+    required this.children,
+    required this.mainParent,
+    required this.parents,
+    required this.otherRelations,
+  });
+}
+
 final spaceItemsProvider = FutureProvider<List<SpaceItem>>((ref) async {
   final client = ref.watch(clientProvider)!;
   // FIXME: how to get informed about updates!?!
@@ -113,4 +127,80 @@ final relatedSpacesProvider =
     }
   }
   return List<Space>.from(spaces);
+});
+
+final relatedSpaceItemsProvider =
+    FutureProvider.family<SpaceRelationsOverview, String>((ref, spaceId) async {
+  final client = ref.watch(clientProvider)!;
+  final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
+  List<SpaceItem> children = [];
+  List<SpaceItem> otherRelated = [];
+  for (final related in relatedSpaces.children()) {
+    String targetType = related.targetType();
+    if (targetType != 'ChatRoom') {
+      final roomId = related.roomId().toString();
+      final space = await client.getSpace(roomId);
+
+      List<Member> members =
+          await space.activeMembers().then((ffiList) => ffiList.toList());
+      final profileData =
+          await ref.watch(spaceProfileDataProvider(space).future);
+      var item = SpaceItem(
+        roomId: space.getRoomId().toString(),
+        activeMembers: members,
+        spaceProfileData: profileData,
+      );
+      if (await space.isChildSpaceOf(spaceId)) {
+        children.add(item);
+      } else {
+        otherRelated.add(item);
+      }
+    }
+  }
+  List<SpaceItem> parents = [];
+
+  SpaceItem? mainParent;
+  final mainSpace = relatedSpaces.mainParent();
+  if (mainSpace != null) {
+    String targetType = mainSpace.targetType();
+    if (targetType != 'ChatRoom') {
+      final roomId = mainSpace.roomId().toString();
+      final space = await client.getSpace(roomId);
+
+      List<Member> members =
+          await space.activeMembers().then((ffiList) => ffiList.toList());
+      final profileData =
+          await ref.watch(spaceProfileDataProvider(space).future);
+      mainParent = SpaceItem(
+        roomId: space.getRoomId().toString(),
+        activeMembers: members,
+        spaceProfileData: profileData,
+      );
+    }
+  }
+
+  for (final related in relatedSpaces.otherParents()) {
+    String targetType = related.targetType();
+    if (targetType != 'ChatRoom') {
+      final roomId = related.roomId().toString();
+      final space = await client.getSpace(roomId);
+
+      List<Member> members =
+          await space.activeMembers().then((ffiList) => ffiList.toList());
+      final profileData =
+          await ref.watch(spaceProfileDataProvider(space).future);
+      var item = SpaceItem(
+        roomId: space.getRoomId().toString(),
+        activeMembers: members,
+        spaceProfileData: profileData,
+      );
+      parents.add(item);
+    }
+  }
+  return SpaceRelationsOverview(
+    parents: parents,
+    children: children,
+    otherRelations: otherRelated,
+    mainParent: mainParent,
+  );
 });

@@ -217,17 +217,7 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
                   onPressed: (!disableBtn && teamInputController.text.isEmpty)
                       ? null
                       : () async {
-                          if (formGlobalKey.currentState!.validate()) {
-                            setState(() {
-                              disableBtn = true;
-                            });
-                            await widget.controller
-                                .createTeam(teamInputController.text);
-                            setState(() {
-                              disableBtn = false;
-                            });
-                            Navigator.pop(ctx);
-                          }
+                          await handleSave(ctx);
                         },
                   child: Text(
                     'Save',
@@ -269,17 +259,7 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
                       ),
                     ),
                   ),
-                  onChanged: (val) {
-                    setState(() {
-                      teamInputController.text = val;
-                      teamInputController.selection =
-                          TextSelection.fromPosition(
-                        TextPosition(
-                          offset: teamInputController.text.length,
-                        ),
-                      );
-                    });
-                  },
+                  onChanged: handleTeamInputChange,
                 ),
               ),
             );
@@ -287,6 +267,32 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
         );
       },
     );
+  }
+
+  Future<void> handleSave(BuildContext context) async {
+    if (formGlobalKey.currentState!.validate()) {
+      if (mounted) {
+        setState(() => disableBtn = true);
+        await widget.controller.createTeam(
+          teamInputController.text,
+          null,
+          null,
+        );
+        setState(() => disableBtn = false);
+        Navigator.pop(context);
+      }
+    }
+  }
+
+  void handleTeamInputChange(String value) {
+    if (mounted) {
+      setState(() {
+        teamInputController.text = value;
+        teamInputController.selection = TextSelection.fromPosition(
+          TextPosition(offset: teamInputController.text.length),
+        );
+      });
+    }
   }
 }
 

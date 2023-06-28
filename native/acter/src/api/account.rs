@@ -69,7 +69,7 @@ impl Account {
             .await?
     }
 
-    pub async fn set_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
+    pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
         let account = self.account.clone();
         let path = PathBuf::from(uri);
         let guess = mime_guess::from_path(path.clone());

@@ -7,9 +7,11 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'dart:async';
 
 class QuickJump extends ConsumerWidget {
-  final void Function({Routes? route, bool push, String? target}) navigateTo;
+  final Future<void> Function({Routes? route, bool push, String? target})
+      navigateTo;
   final bool expand;
 
   const QuickJump({
@@ -26,8 +28,26 @@ class QuickJump extends ConsumerWidget {
         alignment: MainAxisAlignment.spaceEvenly,
         children: List.from(
           [
+            isActive(LabsFeature.pins)
+                ? IconButton(
+                    iconSize: 48,
+                    style: IconButton.styleFrom(
+                      side: BorderSide(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.12),
+                      ),
+                    ),
+                    onPressed: () {
+                      navigateTo(route: Routes.activities);
+                    },
+                    icon: const Icon(Atlas.pin_thin, size: 32),
+                  )
+                : null,
             isActive(LabsFeature.tasks)
                 ? IconButton(
+                    iconSize: 48,
                     style: IconButton.styleFrom(
                       side: BorderSide(
                         color: Theme.of(context)
@@ -42,13 +62,14 @@ class QuickJump extends ConsumerWidget {
                     icon: SvgPicture.asset(
                       'assets/images/tasks.svg',
                       semanticsLabel: 'tasks',
-                      width: 48,
-                      height: 48,
+                      width: 32,
+                      height: 32,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   )
                 : null,
             IconButton(
+              iconSize: 48,
               style: IconButton.styleFrom(
                 side: BorderSide(
                   color:
@@ -60,10 +81,11 @@ class QuickJump extends ConsumerWidget {
               },
               icon: const Icon(
                 Atlas.chats_thin,
-                size: 48,
+                size: 32,
               ),
             ),
             IconButton(
+              iconSize: 48,
               style: IconButton.styleFrom(
                 side: BorderSide(
                   color:
@@ -73,7 +95,7 @@ class QuickJump extends ConsumerWidget {
               onPressed: () {
                 navigateTo(route: Routes.activities);
               },
-              icon: const Icon(Atlas.audio_wave_thin, size: 48),
+              icon: const Icon(Atlas.audio_wave_thin, size: 32),
             ),
           ].where((element) => element != null),
         ),
@@ -141,6 +163,15 @@ class QuickJump extends ConsumerWidget {
                   label: const Text('Discussion'),
                 )
               : null,
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.greenAccent,
+              side: const BorderSide(width: 2, color: Colors.greenAccent),
+            ),
+            icon: const Icon(Atlas.bug_clipboard_thin),
+            label: const Text('Report bug'),
+            onPressed: () => navigateTo(route: Routes.bugReport, push: true),
+          ),
         ].where((element) => element != null),
       ),
     );
@@ -157,17 +188,24 @@ class QuickJump extends ConsumerWidget {
             } else {
               final List<Widget> children = data
                   .map(
-                    (e) => IconButton(
+                    (e) => TextButton(
+                      child: Column(
+                        children: [
+                          e.icon,
+                          Text(e.name),
+                        ],
+                      ),
                       onPressed: () {
                         navigateTo(target: e.navigationTarget);
                       },
-                      icon: e.icon,
                     ),
                   )
                   .toList();
-              body = ButtonBar(
-                alignment: MainAxisAlignment.start,
-                children: children,
+              body = SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: children,
+                ),
               );
             }
             return Column(

@@ -36,6 +36,7 @@ class ChatPage extends ConsumerWidget {
                         right: 5,
                       ),
                       child: TextFormField(
+                        autofocus: true,
                         onChanged: (value) => ref
                             .read(chatListProvider.notifier)
                             .searchRoom(value),

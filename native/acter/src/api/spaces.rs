@@ -484,6 +484,25 @@ impl Space {
             })
             .await?
     }
+
+    pub async fn is_child_space_of(&self, room_id: String) -> bool {
+        let Ok(room_id) = OwnedRoomId::try_from(room_id) else {
+            tracing::warn!("Asked for a not proper room id");
+            return false
+        };
+
+        let space_relations = match self.space_relations().await {
+            Ok(s) => s,
+            Err(error) => {
+                tracing::error!(?error, room_id=?self.room_id(), "Fetching space relation failed");
+                return false;
+            }
+        };
+        if let Some(e) = space_relations.main_parent() {
+            return e.room_id() == room_id;
+        }
+        false
+    }
 }
 
 impl Deref for Space {
@@ -499,11 +518,20 @@ impl Deref for Space {
 //     }
 // }
 
-pub fn new_space_settings(name: String) -> CreateSpaceSettings {
-    CreateSpaceSettingsBuilder::default()
-        .name(name)
-        .build()
-        .unwrap()
+pub fn new_space_settings(
+    name: String,
+    topic: Option<String>,
+    avatar_uri: Option<String>,
+) -> CreateSpaceSettings {
+    let mut builder = CreateSpaceSettingsBuilder::default();
+    builder.name(name);
+    if let Some(topic) = topic {
+        builder.topic(topic);
+    }
+    if let Some(avatar_uri) = avatar_uri {
+        builder.avatar_uri(avatar_uri);
+    }
+    builder.build().unwrap()
 }
 
 impl Client {

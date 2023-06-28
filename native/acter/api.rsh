@@ -547,8 +547,17 @@ object Conversation {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
 
+    /// Change the avatar of the room
+    fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
+
+    /// Remove the avatar of the room
+    fn remove_avatar() -> Future<Result<EventId>>;
+
     /// what is the description / topic
     fn topic() -> Option<string>;
+
+    /// set description / topic of the room
+    fn set_topic(topic: string) -> Future<Result<EventId>>;
 
     /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
@@ -1050,8 +1059,20 @@ object Space {
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
 
+    /// Whether this space is a child of the given space
+    fn is_child_space_of(room_id: string) -> Future<bool>;
+
+    /// Change the avatar of the room
+    fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
+
+    /// Remove the avatar of the room
+    fn remove_avatar() -> Future<Result<EventId>>;
+
     /// what is the description / topic
     fn topic() -> Option<string>;
+
+    /// set description / topic of the room
+    fn set_topic(topic: string) -> Future<Result<EventId>>;
 
     /// the members currently in the space
     fn active_members() -> Future<Result<Vec<Member>>>;
@@ -1123,6 +1144,12 @@ object Space {
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// join this room
+    fn join() -> Future<Result<bool>>;
+
+    /// leave this room
+    fn leave() -> Future<Result<bool>>;
 }
 
 object Member {
@@ -1147,7 +1174,7 @@ object Account {
     fn avatar() -> Future<Result<OptionBuffer>>;
 
     /// Change the avatar of the account
-    fn set_avatar(uri: string) -> Future<Result<MxcUri>>;
+    fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
 }
 
 object SyncState {
@@ -1169,7 +1196,7 @@ object CreateSpaceSettings {
     fn add_invitee(value: string);
 }
 
-fn new_space_settings(name: string) -> CreateSpaceSettings;
+fn new_space_settings(name: string, topic: Option<string>, avatar_uri: Option<string>) -> CreateSpaceSettings;
 
 /// Main entry point for `acter`.
 object Client {

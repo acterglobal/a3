@@ -12,6 +12,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         CommentsManager,
         CreateSpaceSettings,
         OptionText,
+        RoomId,
         RoomProfile,
         Space,
         Task,
@@ -45,12 +46,19 @@ class ToDoController extends GetxController {
   }
 
   /// creates team (group).
-  Future<String> createTeam(String name) async {
+  Future<String> createTeam(
+    String name,
+    String? description,
+    String? avatarUri,
+  ) async {
     final sdk = await ActerSdk.instance;
-    CreateSpaceSettings settings = sdk.newSpaceSettings(name);
-    String roomId =
-        await client.createActerSpace(settings).then((id) => id.toString());
-    return roomId;
+    CreateSpaceSettings settings = sdk.newSpaceSettings(
+      name,
+      description,
+      avatarUri,
+    );
+    RoomId roomId = await client.createActerSpace(settings);
+    return roomId.toString();
   }
 
   /// fetches teams (groups) for client.
@@ -75,8 +83,7 @@ class ToDoController extends GetxController {
 
   /// fetches todos for client.
   void getTodoList() async {
-    List<Space> groups =
-        await client.spaces().then((groups) => groups.toList());
+    List<Space> groups = (await client.spaces()).toList();
     for (var group in groups) {
       RoomProfile profile = group.getProfile();
       OptionText dispName = await profile.getDisplayName();
@@ -84,8 +91,7 @@ class ToDoController extends GetxController {
         id: group.getRoomId().toString(),
         name: dispName.text(),
       );
-      List<TaskList> taskList =
-          await group.taskLists().then((ffiList) => ffiList.toList());
+      List<TaskList> taskList = (await group.taskLists()).toList();
       for (var todo in taskList) {
         List<ToDoTask> tasks = await getTodoTasks(todo);
         ToDoList item = ToDoList(
