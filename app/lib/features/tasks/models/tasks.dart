@@ -1,5 +1,5 @@
 import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
 class TaskBrief {

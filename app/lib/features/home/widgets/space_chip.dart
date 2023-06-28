@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 
 class SpaceChip extends StatelessWidget {
   final SpaceItem space;
