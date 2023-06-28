@@ -1,6 +1,7 @@
 use acter_core::spaces::is_acter_space;
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
+use lofty::{AudioFile, Probe};
 use matrix_sdk::{
     attachment::{
         AttachmentConfig, AttachmentInfo, BaseAudioInfo, BaseFileInfo, BaseImageInfo, BaseVideoInfo,
@@ -286,7 +287,7 @@ impl Room {
         uri: String,
         name: String,
         blurhash: Option<String>,
-    ) -> Result<SendImageResponse> {
+    ) -> Result<SendImageResult> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -323,23 +324,19 @@ impl Room {
                     size: UInt::new(file_size),
                     blurhash,
                 };
-                let mut width = None;
-                let mut height = None;
                 if let Ok(size) = imagesize::size(path.to_string_lossy().to_string()) {
-                    width = Some(size.width as u64);
                     base_info.width = UInt::new(size.width as u64);
-                    height = Some(size.height as u64);
                     base_info.height = UInt::new(size.height as u64);
                 }
-                let config = AttachmentConfig::new().info(AttachmentInfo::Image(base_info));
+                let config = AttachmentConfig::new().info(AttachmentInfo::Image(base_info.clone()));
                 let response = room
                     .send_attachment(name.as_str(), &content_type, buf, config)
                     .await?;
-                Ok(SendImageResponse {
+                Ok(SendImageResult {
                     event_id: response.event_id,
                     file_size,
-                    width,
-                    height,
+                    width: base_info.width.map(|x| x.into()),
+                    height: base_info.height.map(|x| x.into()),
                 })
             })
             .await?
@@ -376,12 +373,7 @@ impl Room {
             .await?
     }
 
-    pub async fn send_audio_message(
-        &self,
-        uri: String,
-        name: String,
-        secs: Option<u32>,
-    ) -> Result<OwnedEventId> {
+    pub async fn send_audio_message(&self, uri: String, name: String) -> Result<SendAudioResult> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -410,15 +402,26 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let buf = std::fs::read(path)?;
-                let config = AttachmentConfig::new().info(AttachmentInfo::Audio(BaseAudioInfo {
-                    duration: secs.map(|x| Duration::from_secs(x as u64)),
-                    size: UInt::new(buf.len() as u64),
-                }));
+                let buf = std::fs::read(path.clone())?;
+                let file_size = buf.len() as u64;
+                let mut base_info = BaseAudioInfo {
+                    duration: None,
+                    size: UInt::new(file_size),
+                };
+                if let Ok(probe) = Probe::open(path) {
+                    if let Ok(tagged_file) = probe.read() {
+                        base_info.duration = Some(tagged_file.properties().duration());
+                    }
+                }
+                let config = AttachmentConfig::new().info(AttachmentInfo::Audio(base_info.clone()));
                 let response = room
                     .send_attachment(name.as_str(), &content_type, buf, config)
                     .await?;
-                Ok(response.event_id)
+                Ok(SendAudioResult {
+                    event_id: response.event_id,
+                    file_size,
+                    duration: base_info.duration,
+                })
             })
             .await?
     }
@@ -1478,14 +1481,14 @@ impl Deref for Room {
     }
 }
 
-pub struct SendImageResponse {
+pub struct SendImageResult {
     event_id: OwnedEventId,
     file_size: u64,
     width: Option<u64>,
     height: Option<u64>,
 }
 
-impl SendImageResponse {
+impl SendImageResult {
     pub fn event_id(&self) -> OwnedEventId {
         self.event_id.clone()
     }
@@ -1500,5 +1503,25 @@ impl SendImageResponse {
 
     pub fn height(&self) -> Option<u64> {
         self.height
+    }
+}
+
+pub struct SendAudioResult {
+    event_id: OwnedEventId,
+    file_size: u64,
+    duration: Option<Duration>,
+}
+
+impl SendAudioResult {
+    pub fn event_id(&self) -> OwnedEventId {
+        self.event_id.clone()
+    }
+
+    pub fn file_size(&self) -> u64 {
+        self.file_size
+    }
+
+    pub fn duration(&self) -> Option<Duration> {
+        self.duration.clone()
     }
 }

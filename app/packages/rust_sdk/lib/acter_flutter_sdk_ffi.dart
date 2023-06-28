@@ -2262,7 +2262,7 @@ class Api {
     return tmp7;
   }
 
-  SendImageResponse? __conversationSendImageMessageFuturePoll(
+  SendImageResult? __conversationSendImageMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2302,9 +2302,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SendImageResponse");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SendImageResult");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = SendImageResponse._(this, tmp13_1);
+    final tmp7 = SendImageResult._(this, tmp13_1);
     return tmp7;
   }
 
@@ -2355,7 +2355,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSendAudioMessageFuturePoll(
+  SendAudioResult? __conversationSendAudioMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2395,9 +2395,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SendAudioResult");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = EventId._(this, tmp13_1);
+    final tmp7 = SendAudioResult._(this, tmp13_1);
     return tmp7;
   }
 
@@ -4319,7 +4319,7 @@ class Api {
     return tmp7;
   }
 
-  SendImageResponse? __spaceSendImageMessageFuturePoll(
+  SendImageResult? __spaceSendImageMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -4359,9 +4359,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SendImageResponse");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SendImageResult");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = SendImageResponse._(this, tmp13_1);
+    final tmp7 = SendImageResult._(this, tmp13_1);
     return tmp7;
   }
 
@@ -4412,7 +4412,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __spaceSendAudioMessageFuturePoll(
+  SendAudioResult? __spaceSendAudioMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -4452,9 +4452,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SendAudioResult");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = EventId._(this, tmp13_1);
+    final tmp7 = SendAudioResult._(this, tmp13_1);
     return tmp7;
   }
 
@@ -7817,6 +7817,16 @@ class Api {
     int,
     int,
   )>();
+  late final _efkDurationAsSecsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+    ffi.Int64,
+  )>>("__EfkDuration_as_secs");
+
+  late final _efkDurationAsSecs = _efkDurationAsSecsPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _efkColorRgbaU8Ptr = _lookup<
       ffi.NativeFunction<
           _EfkColorRgbaU8Return Function(
@@ -8178,11 +8188,9 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Uint8,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Uint8,
     ffi.Uint32,
     ffi.Uint8,
     ffi.Uint32,
@@ -8216,8 +8224,6 @@ class Api {
     int,
     int,
     int,
-    int,
-    int,
   )>();
   late final _newsEntryDraftAddAudioSlidePtr = _lookup<
       ffi.NativeFunction<
@@ -8231,19 +8237,15 @@ class Api {
     ffi.Uint64,
     ffi.Uint8,
     ffi.Uint32,
-    ffi.Uint8,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Uint8,
     ffi.Uint32,
   )>>("__NewsEntryDraft_add_audio_slide");
 
   late final _newsEntryDraftAddAudioSlide =
       _newsEntryDraftAddAudioSlidePtr.asFunction<
           void Function(
-    int,
-    int,
     int,
     int,
     int,
@@ -9593,46 +9595,74 @@ class Api {
     int,
     int,
   )>();
-  late final _sendImageResponseEventIdPtr = _lookup<
+  late final _sendImageResultEventIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__SendImageResponse_event_id");
+  )>>("__SendImageResult_event_id");
 
-  late final _sendImageResponseEventId =
-      _sendImageResponseEventIdPtr.asFunction<
-          int Function(
+  late final _sendImageResultEventId = _sendImageResultEventIdPtr.asFunction<
+      int Function(
     int,
   )>();
-  late final _sendImageResponseFileSizePtr = _lookup<
+  late final _sendImageResultFileSizePtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint64 Function(
     ffi.Int64,
-  )>>("__SendImageResponse_file_size");
+  )>>("__SendImageResult_file_size");
 
-  late final _sendImageResponseFileSize =
-      _sendImageResponseFileSizePtr.asFunction<
-          int Function(
+  late final _sendImageResultFileSize = _sendImageResultFileSizePtr.asFunction<
+      int Function(
     int,
   )>();
-  late final _sendImageResponseWidthPtr = _lookup<
+  late final _sendImageResultWidthPtr = _lookup<
       ffi.NativeFunction<
-          _SendImageResponseWidthReturn Function(
+          _SendImageResultWidthReturn Function(
     ffi.Int64,
-  )>>("__SendImageResponse_width");
+  )>>("__SendImageResult_width");
 
-  late final _sendImageResponseWidth = _sendImageResponseWidthPtr.asFunction<
-      _SendImageResponseWidthReturn Function(
+  late final _sendImageResultWidth = _sendImageResultWidthPtr.asFunction<
+      _SendImageResultWidthReturn Function(
     int,
   )>();
-  late final _sendImageResponseHeightPtr = _lookup<
+  late final _sendImageResultHeightPtr = _lookup<
       ffi.NativeFunction<
-          _SendImageResponseHeightReturn Function(
+          _SendImageResultHeightReturn Function(
     ffi.Int64,
-  )>>("__SendImageResponse_height");
+  )>>("__SendImageResult_height");
 
-  late final _sendImageResponseHeight = _sendImageResponseHeightPtr.asFunction<
-      _SendImageResponseHeightReturn Function(
+  late final _sendImageResultHeight = _sendImageResultHeightPtr.asFunction<
+      _SendImageResultHeightReturn Function(
+    int,
+  )>();
+  late final _sendAudioResultEventIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__SendAudioResult_event_id");
+
+  late final _sendAudioResultEventId = _sendAudioResultEventIdPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _sendAudioResultFileSizePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+    ffi.Int64,
+  )>>("__SendAudioResult_file_size");
+
+  late final _sendAudioResultFileSize = _sendAudioResultFileSizePtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _sendAudioResultDurationPtr = _lookup<
+      ffi.NativeFunction<
+          _SendAudioResultDurationReturn Function(
+    ffi.Int64,
+  )>>("__SendAudioResult_duration");
+
+  late final _sendAudioResultDuration = _sendAudioResultDurationPtr.asFunction<
+      _SendAudioResultDurationReturn Function(
     int,
   )>();
   late final _conversationGetProfilePtr = _lookup<
@@ -9857,15 +9887,11 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
   )>>("__Conversation_send_audio_message");
 
   late final _conversationSendAudioMessage =
       _conversationSendAudioMessagePtr.asFunction<
           int Function(
-    int,
-    int,
     int,
     int,
     int,
@@ -12342,14 +12368,10 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
   )>>("__Space_send_audio_message");
 
   late final _spaceSendAudioMessage = _spaceSendAudioMessagePtr.asFunction<
       int Function(
-    int,
-    int,
     int,
     int,
     int,
@@ -16909,6 +16931,18 @@ class EfkDuration {
 
   EfkDuration._(this._api, this._box);
 
+  /// convert it into seconds
+  int asSecs() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._efkDurationAsSecs(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -17792,8 +17826,8 @@ class NewsEntryDraft {
   void addImageSlide(
     String body,
     String url,
-    String? mimetype,
-    int? size,
+    String mimetype,
+    int size,
     int? width,
     int? height,
     String? blurhash,
@@ -17801,10 +17835,10 @@ class NewsEntryDraft {
     final tmp1 = body;
     final tmp5 = url;
     final tmp9 = mimetype;
-    final tmp15 = size;
-    final tmp19 = width;
-    final tmp23 = height;
-    final tmp27 = blurhash;
+    final tmp13 = size;
+    final tmp15 = width;
+    final tmp19 = height;
+    final tmp23 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -17813,8 +17847,8 @@ class NewsEntryDraft {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
+    var tmp11 = 0;
     var tmp12 = 0;
-    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
@@ -17822,10 +17856,8 @@ class NewsEntryDraft {
     var tmp22 = 0;
     var tmp24 = 0;
     var tmp26 = 0;
+    var tmp27 = 0;
     var tmp28 = 0;
-    var tmp30 = 0;
-    var tmp31 = 0;
-    var tmp32 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -17845,21 +17877,16 @@ class NewsEntryDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
-      debugAllocation("lower string", tmp12, tmp13);
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
 
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
-    }
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    tmp14 = tmp13;
     if (tmp15 == null) {
       tmp16 = 0;
     } else {
@@ -17879,22 +17906,15 @@ class NewsEntryDraft {
     } else {
       tmp24 = 1;
       final tmp25 = tmp23;
-      tmp26 = tmp25;
-    }
-    if (tmp27 == null) {
-      tmp28 = 0;
-    } else {
-      tmp28 = 1;
-      final tmp29 = tmp27;
-      final tmp29_0 = utf8.encode(tmp29);
-      tmp31 = tmp29_0.length;
-      debugAllocation("lower string", tmp30, tmp31);
+      final tmp25_0 = utf8.encode(tmp25);
+      tmp27 = tmp25_0.length;
+      debugAllocation("lower string", tmp26, tmp27);
 
-      final ffi.Pointer<ffi.Uint8> tmp30_0 = _api.__allocate(tmp31 * 1, 1);
-      final Uint8List tmp30_1 = tmp30_0.asTypedList(tmp31);
-      tmp30_1.setAll(0, tmp29_0);
-      tmp30 = tmp30_0.address;
-      tmp32 = tmp31;
+      final ffi.Pointer<ffi.Uint8> tmp26_0 = _api.__allocate(tmp27 * 1, 1);
+      final Uint8List tmp26_1 = tmp26_0.asTypedList(tmp27);
+      tmp26_1.setAll(0, tmp25_0);
+      tmp26 = tmp26_0.address;
+      tmp28 = tmp27;
     }
     _api._newsEntryDraftAddImageSlide(
       tmp0,
@@ -17905,8 +17925,8 @@ class NewsEntryDraft {
       tmp7,
       tmp8,
       tmp10,
+      tmp11,
       tmp12,
-      tmp13,
       tmp14,
       tmp16,
       tmp18,
@@ -17914,10 +17934,8 @@ class NewsEntryDraft {
       tmp22,
       tmp24,
       tmp26,
+      tmp27,
       tmp28,
-      tmp30,
-      tmp31,
-      tmp32,
     );
     return;
   }
@@ -17927,14 +17945,14 @@ class NewsEntryDraft {
     String body,
     String url,
     int? secs,
-    String? mimetype,
-    int? size,
+    String mimetype,
+    int size,
   ) {
     final tmp1 = body;
     final tmp5 = url;
     final tmp9 = secs;
     final tmp13 = mimetype;
-    final tmp19 = size;
+    final tmp17 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -17945,11 +17963,9 @@ class NewsEntryDraft {
     var tmp10 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
+    var tmp15 = 0;
     var tmp16 = 0;
-    var tmp17 = 0;
     var tmp18 = 0;
-    var tmp20 = 0;
-    var tmp22 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -17976,28 +17992,16 @@ class NewsEntryDraft {
       final tmp11 = tmp9;
       tmp12 = tmp11;
     }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      final tmp15_0 = utf8.encode(tmp15);
-      tmp17 = tmp15_0.length;
-      debugAllocation("lower string", tmp16, tmp17);
+    final tmp13_0 = utf8.encode(tmp13);
+    tmp15 = tmp13_0.length;
+    debugAllocation("lower string", tmp14, tmp15);
 
-      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-      tmp16_1.setAll(0, tmp15_0);
-      tmp16 = tmp16_0.address;
-      tmp18 = tmp17;
-    }
-    if (tmp19 == null) {
-      tmp20 = 0;
-    } else {
-      tmp20 = 1;
-      final tmp21 = tmp19;
-      tmp22 = tmp21;
-    }
+    final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
+    final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
+    tmp14_1.setAll(0, tmp13_0);
+    tmp14 = tmp14_0.address;
+    tmp16 = tmp15;
+    tmp18 = tmp17;
     _api._newsEntryDraftAddAudioSlide(
       tmp0,
       tmp2,
@@ -18009,11 +18013,9 @@ class NewsEntryDraft {
       tmp10,
       tmp12,
       tmp14,
+      tmp15,
       tmp16,
-      tmp17,
       tmp18,
-      tmp20,
-      tmp22,
     );
     return;
   }
@@ -21105,17 +21107,17 @@ class TimelineStream {
   }
 }
 
-class SendImageResponse {
+class SendImageResult {
   final Api _api;
   final _Box _box;
 
-  SendImageResponse._(this._api, this._box);
+  SendImageResult._(this._api, this._box);
 
   /// get event id
   EventId eventId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._sendImageResponseEventId(
+    final tmp1 = _api._sendImageResultEventId(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -21130,7 +21132,7 @@ class SendImageResponse {
   int fileSize() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._sendImageResponseFileSize(
+    final tmp1 = _api._sendImageResultFileSize(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -21142,7 +21144,7 @@ class SendImageResponse {
   int? width() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._sendImageResponseWidth(
+    final tmp1 = _api._sendImageResultWidth(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -21158,7 +21160,7 @@ class SendImageResponse {
   int? height() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._sendImageResponseHeight(
+    final tmp1 = _api._sendImageResultHeight(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -21167,6 +21169,64 @@ class SendImageResponse {
       return null;
     }
     final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class SendAudioResult {
+  final Api _api;
+  final _Box _box;
+
+  SendAudioResult._(this._api, this._box);
+
+  /// get event id
+  EventId eventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._sendAudioResultEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_EventId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = EventId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// get file size
+  int fileSize() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._sendAudioResultFileSize(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// get duration
+  EfkDuration? duration() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._sendAudioResultDuration(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkDuration");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = EfkDuration._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -21521,7 +21581,7 @@ class Conversation {
   }
 
   /// send the image message to this room
-  Future<SendImageResponse> sendImageMessage(
+  Future<SendImageResult> sendImageMessage(
     String uri,
     String name,
     String? blurhash,
@@ -21635,14 +21695,12 @@ class Conversation {
   }
 
   /// send the audio message to this room
-  Future<EventId> sendAudioMessage(
+  Future<SendAudioResult> sendAudioMessage(
     String uri,
     String name,
-    int? secs,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -21650,8 +21708,6 @@ class Conversation {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -21671,14 +21727,7 @@ class Conversation {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    final tmp13 = _api._conversationSendAudioMessage(
+    final tmp9 = _api._conversationSendAudioMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -21686,17 +21735,15 @@ class Conversation {
       tmp6,
       tmp7,
       tmp8,
-      tmp10,
-      tmp12,
     );
-    final tmp15 = tmp13;
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 =
-        _Box(_api, tmp15_0, "__Conversation_send_audio_message_future_drop");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp14 =
-        _nativeFuture(tmp15_1, _api.__conversationSendAudioMessageFuturePoll);
-    return tmp14;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Conversation_send_audio_message_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 =
+        _nativeFuture(tmp11_1, _api.__conversationSendAudioMessageFuturePoll);
+    return tmp10;
   }
 
   /// decrypted audio buffer data
@@ -26106,7 +26153,7 @@ class Space {
   }
 
   /// send the image message to this room
-  Future<SendImageResponse> sendImageMessage(
+  Future<SendImageResult> sendImageMessage(
     String uri,
     String name,
     String? blurhash,
@@ -26218,14 +26265,12 @@ class Space {
   }
 
   /// send the audio message to this room
-  Future<EventId> sendAudioMessage(
+  Future<SendAudioResult> sendAudioMessage(
     String uri,
     String name,
-    int? secs,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -26233,8 +26278,6 @@ class Space {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -26254,14 +26297,7 @@ class Space {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    final tmp13 = _api._spaceSendAudioMessage(
+    final tmp9 = _api._spaceSendAudioMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -26269,17 +26305,15 @@ class Space {
       tmp6,
       tmp7,
       tmp8,
-      tmp10,
-      tmp12,
     );
-    final tmp15 = tmp13;
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 =
-        _Box(_api, tmp15_0, "__Space_send_audio_message_future_drop");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp14 =
-        _nativeFuture(tmp15_1, _api.__spaceSendAudioMessageFuturePoll);
-    return tmp14;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Space_send_audio_message_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 =
+        _nativeFuture(tmp11_1, _api.__spaceSendAudioMessageFuturePoll);
+    return tmp10;
   }
 
   /// decrypted audio buffer data
@@ -30081,17 +30115,24 @@ class _TimelineDiffValueReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _SendImageResponseWidthReturn extends ffi.Struct {
+class _SendImageResultWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
   external int arg1;
 }
 
-class _SendImageResponseHeightReturn extends ffi.Struct {
+class _SendImageResultHeightReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
+  external int arg1;
+}
+
+class _SendAudioResultDurationReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
   external int arg1;
 }
 

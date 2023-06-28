@@ -20,7 +20,10 @@ fn guest_client(basepath: string, default_homeserver_name: string, default_homes
 fn register_with_token(basepath: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: string) -> Future<Result<Client>>;
 
 /// Representing a time frame
-object EfkDuration {}
+object EfkDuration {
+    /// convert it into seconds
+    fn as_secs() -> u64;
+}
 
 fn duration_from_secs(secs: u64) -> EfkDuration;
 
@@ -124,10 +127,10 @@ object NewsEntryDraft {
     fn add_text_slide(body: string);
 
     /// create news slide for image msg
-    fn add_image_slide(body: string, url: string, mimetype: Option<string>, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>);
+    fn add_image_slide(body: string, url: string, mimetype: string, size: u32, width: Option<u32>, height: Option<u32>, blurhash: Option<string>);
 
     /// create news slide for audio msg
-    fn add_audio_slide(body: string, url: string, secs: Option<u32>, mimetype: Option<string>, size: Option<u32>);
+    fn add_audio_slide(body: string, url: string, secs: Option<u32>, mimetype: string, size: u32);
 
     /// create news slide for video msg
     fn add_video_slide(body: string, url: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, mimetype: Option<string>, size: Option<u32>, blurhash: Option<string>);
@@ -515,7 +518,7 @@ object TimelineStream {
     fn edit(new_msg: string, original_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
-object SendImageResponse {
+object SendImageResult {
     /// get event id
     fn event_id() -> EventId;
 
@@ -527,6 +530,17 @@ object SendImageResponse {
 
     /// get height
     fn height() -> Option<u64>;
+}
+
+object SendAudioResult {
+    /// get event id
+    fn event_id() -> EventId;
+
+    /// get file size
+    fn file_size() -> u64;
+
+    /// get duration
+    fn duration() -> Option<EfkDuration>;
 }
 
 object Conversation {
@@ -573,7 +587,7 @@ object Conversation {
     fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;
 
     /// send the image message to this room
-    fn send_image_message(uri: string, name: string, blurhash: Option<string>) -> Future<Result<SendImageResponse>>;
+    fn send_image_message(uri: string, name: string, blurhash: Option<string>) -> Future<Result<SendImageResult>>;
 
     /// decrypted image file data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -581,7 +595,7 @@ object Conversation {
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// send the audio message to this room
-    fn send_audio_message(uri: string, name: string, secs: Option<u32>) -> Future<Result<EventId>>;
+    fn send_audio_message(uri: string, name: string) -> Future<Result<SendAudioResult>>;
 
     /// decrypted audio buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -1079,7 +1093,7 @@ object Space {
     fn pin_draft() -> Result<PinDraft>;
 
     /// send the image message to this room
-    fn send_image_message(uri: string, name: string, blurhash: Option<string>) -> Future<Result<SendImageResponse>>;
+    fn send_image_message(uri: string, name: string, blurhash: Option<string>) -> Future<Result<SendImageResult>>;
 
     /// decrypted image buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -1087,7 +1101,7 @@ object Space {
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// send the audio message to this room
-    fn send_audio_message(uri: string, name: string, secs: Option<u32>) -> Future<Result<EventId>>;
+    fn send_audio_message(uri: string, name: string) -> Future<Result<SendAudioResult>>;
 
     /// decrypted audio buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable

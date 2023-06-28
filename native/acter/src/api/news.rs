@@ -404,8 +404,8 @@ impl NewsEntryDraft {
         &mut self,
         body: String,
         url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
+        mimetype: String,
+        size: u64,
         width: Option<u64>,
         height: Option<u64>,
         blurhash: Option<String>,
@@ -413,8 +413,8 @@ impl NewsEntryDraft {
         let info = assign!(ImageInfo::new(), {
             height: height.and_then(UInt::new),
             width: width.and_then(UInt::new),
-            mimetype,
-            size: size.and_then(UInt::new),
+            mimetype: Some(mimetype),
+            size: UInt::new(size),
             blurhash,
         });
         let url = Box::<MxcUri>::from(url.as_str());
@@ -432,13 +432,13 @@ impl NewsEntryDraft {
         body: String,
         url: String,
         secs: Option<u64>,
-        mimetype: Option<String>,
-        size: Option<u64>,
+        mimetype: String,
+        size: u64,
     ) -> &mut Self {
         let info = assign!(AudioInfo::new(), {
             duration: secs.map(|x| Duration::new(x, 0)),
-            mimetype,
-            size: size.and_then(UInt::new),
+            mimetype: Some(mimetype),
+            size: UInt::new(size),
         });
         let url = Box::<MxcUri>::from(url.as_str());
 

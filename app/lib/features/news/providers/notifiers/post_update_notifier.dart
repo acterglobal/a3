@@ -5,7 +5,13 @@ import 'dart:typed_data';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Client, EventId, NewsEntryDraft, SendImageResponse, Space;
+    show
+        Client,
+        EventId,
+        NewsEntryDraft,
+        SendAudioResult,
+        SendImageResult,
+        Space;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mime/mime.dart';
 
@@ -27,7 +33,7 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
       bool unknownType = true;
       if (mimeType != null) {
         if (mimeType.startsWith('image/')) {
-          SendImageResponse resp = await space.sendImageMessage(
+          SendImageResult resp = await space.sendImageMessage(
             attachmentUri,
             'Untitled Image',
             null,
@@ -43,19 +49,16 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
           );
           unknownType = false;
         } else if (mimeType.startsWith('audio/')) {
-          File audio = File(attachmentUri);
-          Uint8List bytes = audio.readAsBytesSync();
-          EventId eventId = await space.sendAudioMessage(
+          SendAudioResult resp = await space.sendAudioMessage(
             attachmentUri,
             'Untitled Audio',
-            null,
           );
           draft.addAudioSlide(
             description,
-            eventId.toString(),
-            null,
+            resp.eventId().toString(),
+            resp.duration()?.asSecs(),
             mimeType,
-            bytes.length,
+            resp.fileSize(),
           );
           unknownType = false;
         } else if (mimeType.startsWith('video/')) {
