@@ -43,7 +43,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
           btnText: 'Join Existing Space',
           btn2Text: 'Create New Space',
           onPressed1: () {},
-          onPressed2: () => context.goNamed(Routes.createSpace.name),
+          onPressed2: () => context.pushNamed(Routes.createSpace.name),
           canDismissable: true,
         );
       }

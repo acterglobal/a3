@@ -75,10 +75,10 @@ final chatMembersProvider =
   return members.toList();
 });
 
-final relatedChatsProvider =
-    FutureProvider.family<List<Conversation>, String>((ref, spaceId) async {
+final relatedChatsProvider = FutureProvider.autoDispose
+    .family<List<Conversation>, String>((ref, spaceId) async {
   final client = ref.watch(clientProvider)!;
-  final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
+  final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
   final chats = [];
   final children = relatedSpaces.children();
   for (final related in children) {

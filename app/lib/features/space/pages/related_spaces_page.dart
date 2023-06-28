@@ -178,7 +178,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                       color: Theme.of(context).colorScheme.surface,
                       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                         PopupMenuItem(
-                          onTap: () => context.goNamed(
+                          onTap: () => context.pushNamed(
                             Routes.createSpace.name,
                             queryParameters: {'parentSpaceId': spaceIdOrAlias},
                           ),

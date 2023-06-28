@@ -11,9 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 const fallbackSidebarIdx = 1;
 const fallbackBottomBarIdx = 0;
 
-final spaceItemsProvider =
-    FutureProvider.family<List<SidebarNavigationItem>, BuildContext>(
-        (ref, context) async {
+final spaceItemsProvider = FutureProvider.autoDispose
+    .family<List<SidebarNavigationItem>, BuildContext>((ref, context) async {
   final spaces = ref.watch(spacesProvider);
 
   return spaces.when(
@@ -89,10 +88,9 @@ final spaceItemsProvider =
 });
 
 // provider that returns a string value
-final sidebarItemsProvider =
-    Provider.family<List<SidebarNavigationItem>, BuildContext>((ref, context) {
-  AsyncValue<List<SidebarNavigationItem>> config =
-      ref.watch(spaceItemsProvider(context));
+final sidebarItemsProvider = Provider.autoDispose
+    .family<List<SidebarNavigationItem>, BuildContext>((ref, context) {
+  final config = ref.watch(spaceItemsProvider(context));
 
   final features = [
     SidebarNavigationItem(

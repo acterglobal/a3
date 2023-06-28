@@ -47,7 +47,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                   color: Theme.of(context).colorScheme.surface,
                   itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                     PopupMenuItem(
-                      onTap: () => context.goNamed(Routes.createSpace.name),
+                      onTap: () => context.pushNamed(Routes.createSpace.name),
                       child: Row(
                         children: const <Widget>[
                           Text('Create Space'),

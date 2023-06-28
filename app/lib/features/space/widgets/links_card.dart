@@ -7,9 +7,9 @@ import 'dart:core';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
 
-final pinnedLinksProvider =
-    FutureProvider.family<List<ActerPin>, String>((ref, spaceId) async {
-  final space = ref.watch(spaceProvider(spaceId)).requireValue;
+final pinnedLinksProvider = FutureProvider.autoDispose
+    .family<List<ActerPin>, String>((ref, spaceId) async {
+  final space = await ref.watch(spaceProvider(spaceId).future);
   return (await space.pinnedLinks()).toList();
 });
 

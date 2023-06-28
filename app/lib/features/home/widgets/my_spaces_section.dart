@@ -161,7 +161,7 @@ class _NoSpacesWidget extends ConsumerWidget {
         ),
         Center(
           child: ElevatedButton(
-            onPressed: () => context.goNamed(Routes.createSpace.name),
+            onPressed: () => context.pushNamed(Routes.createSpace.name),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [

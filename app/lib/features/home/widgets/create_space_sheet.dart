@@ -20,7 +20,7 @@ import 'package:go_router/go_router.dart';
 
 final titleProvider = StateProvider<String>((ref) => '');
 final parentSpaceProvider = StateProvider<String?>((ref) => null);
-final parentSpaceDetailsProvder = FutureProvider<SpaceItem?>((ref) {
+final parentSpaceDetailsProvder = FutureProvider.autoDispose<SpaceItem?>((ref) {
   final parentSpaceId = ref.watch(parentSpaceProvider);
   if (parentSpaceId == null) {
     return null;
@@ -53,7 +53,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+        margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -197,7 +197,9 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                 children: <Widget>[
                   const Spacer(),
                   ElevatedButton(
-                    onPressed: () => context.pop(),
+                    onPressed: () => context.canPop()
+                        ? context.pop()
+                        : context.goNamed(Routes.main.name),
                     child: const Text('Cancel'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.neutral,
