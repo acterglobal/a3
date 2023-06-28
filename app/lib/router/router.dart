@@ -147,7 +147,9 @@ final routes = [
             child: child,
           );
         },
-        child: const CreateSpacePage(),
+        child: CreateSpacePage(
+          initialParentsSpaceId: state.queryParameters['parentSpaceId'],
+        ),
       );
     },
   ),

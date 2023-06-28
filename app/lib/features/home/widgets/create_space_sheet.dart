@@ -20,13 +20,14 @@ import 'package:go_router/go_router.dart';
 
 final titleProvider = StateProvider<String>((ref) => '');
 final parentSpaceProvider = StateProvider<String?>((ref) => null);
-final parentSpaceDetailsProvder = FutureProvider.autoDispose<SpaceItem?>((ref) {
+final parentSpaceDetailsProvder =
+    FutureProvider.autoDispose<SpaceItem?>((ref) async {
   final parentSpaceId = ref.watch(parentSpaceProvider);
   if (parentSpaceId == null) {
     return null;
   }
 
-  final spaces = ref.watch(briefSpaceItemsProviderWithMembership).requireValue;
+  final spaces = await ref.watch(briefSpaceItemsProviderWithMembership.future);
   return spaces.firstWhere((element) => element.roomId == parentSpaceId);
 });
 
@@ -34,7 +35,8 @@ final parentSpaceDetailsProvder = FutureProvider.autoDispose<SpaceItem?>((ref) {
 final avatarProvider = StateProvider.autoDispose<String>((ref) => '');
 
 class CreateSpacePage extends ConsumerStatefulWidget {
-  const CreateSpacePage({super.key});
+  final String? initialParentsSpaceId;
+  const CreateSpacePage({super.key, this.initialParentsSpaceId});
 
   @override
   ConsumerState<CreateSpacePage> createState() =>
@@ -44,6 +46,15 @@ class CreateSpacePage extends ConsumerStatefulWidget {
 class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    Future(() {
+      ref.read(parentSpaceProvider.notifier).state =
+          widget.initialParentsSpaceId;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -170,9 +181,12 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                   maxLines: 10,
                 ),
                 ListTile(
-                  title: _selectParentSpace
-                      ? const Text('Parent space')
-                      : const Text('No parent space selected'),
+                  title: Text(
+                    _selectParentSpace
+                        ? 'Parent space'
+                        : 'No parent space selected',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   trailing: _selectParentSpace
                       ? Consumer(
                           builder: (context, ref, child) =>
@@ -280,12 +294,13 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                       const Expanded(
                         child: Text('Select Parent space'),
                       ),
-                      OutlinedButton(
+                      OutlinedButton.icon(
+                        icon: const Icon(Atlas.minus_circle_thin),
                         onPressed: () {
                           ref.read(parentSpaceProvider.notifier).state = null;
                           Navigator.pop(context);
                         },
-                        child: const Text('Select none'),
+                        label: const Text('Clear'),
                       ),
                     ],
                   ),
