@@ -1,12 +1,10 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/features/bug_report/models/bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
-import 'package:acter/features/bug_report/widgets/select_tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

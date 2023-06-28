@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 export './acter_flutter_sdk_ffi.dart' show Client;
 
-const RUST_LOG_KEY = 'RUST_LOG';
+const rustLogKey = 'RUST_LOG';
 
 const defaultServerUrl = String.fromEnvironment(
   'DEFAULT_HOMESERVER_URL',
@@ -27,7 +27,7 @@ const defaultServerName = String.fromEnvironment(
 );
 
 const defaultLogSetting = String.fromEnvironment(
-  RUST_LOG_KEY,
+  rustLogKey,
   defaultValue: 'warn,acter=debug',
 );
 
@@ -251,7 +251,7 @@ class ActerSdk {
     String appPath = await appDir();
 
     String logSettings =
-        (await sharedPrefs()).getString(RUST_LOG_KEY) ?? defaultLogSetting;
+        (await sharedPrefs()).getString(rustLogKey) ?? defaultLogSetting;
     try {
       api.initLogging(appPath, logSettings);
     } catch (e) {

@@ -91,7 +91,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
 
   Future<void> fetchRustLogSettings() async {
     final preferences = await sharedPrefs();
-    final rustLog = preferences.getString(RUST_LOG_KEY) ?? defaultLogSetting;
+    final rustLog = preferences.getString(rustLogKey) ?? defaultLogSetting;
     setState(() {
       rustLogSetting = rustLog;
     });
@@ -100,9 +100,9 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
   Future<void> setRustLogSettings(String? settings) async {
     final preferences = await sharedPrefs();
     if (settings == null || settings.isEmpty) {
-      preferences.remove(RUST_LOG_KEY);
+      preferences.remove(rustLogKey);
     } else {
-      preferences.setString(RUST_LOG_KEY, settings);
+      preferences.setString(rustLogKey, settings);
     }
     await fetchRustLogSettings();
   }
