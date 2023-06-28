@@ -5,8 +5,7 @@ import 'dart:typed_data';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Client, EventId, NewsEntryDraft, Space;
-import 'package:flutter/material.dart';
+    show Client, EventId, NewsEntryDraft, SendImageResponse, Space;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mime/mime.dart';
 
@@ -28,23 +27,18 @@ class PostUpdateNotifier extends AutoDisposeAsyncNotifier<void> {
       bool unknownType = true;
       if (mimeType != null) {
         if (mimeType.startsWith('image/')) {
-          File image = File(attachmentUri);
-          Uint8List bytes = image.readAsBytesSync();
-          var decodedImage = await decodeImageFromList(bytes);
-          EventId eventId = await space.sendImageMessage(
+          SendImageResponse resp = await space.sendImageMessage(
             attachmentUri,
             'Untitled Image',
-            decodedImage.width,
-            decodedImage.height,
             null,
           );
           draft.addImageSlide(
             description,
-            eventId.toString(),
+            resp.eventId().toString(),
             mimeType,
-            bytes.length,
-            decodedImage.width,
-            decodedImage.height,
+            resp.fileSize(),
+            resp.width(),
+            resp.height(),
             null,
           );
           unknownType = false;

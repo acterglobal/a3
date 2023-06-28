@@ -285,10 +285,8 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        width: Option<u32>,
-        height: Option<u32>,
         blurhash: Option<String>,
-    ) -> Result<OwnedEventId> {
+    ) -> Result<SendImageResponse> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -317,17 +315,32 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let buf = std::fs::read(path)?;
-                let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
-                    size: UInt::new(buf.len() as u64),
-                    blurhash: None,
-                }));
+                let buf = std::fs::read(path.clone())?;
+                let file_size = buf.len() as u64;
+                let mut base_info = BaseImageInfo {
+                    height: None,
+                    width: None,
+                    size: UInt::new(file_size),
+                    blurhash,
+                };
+                let mut width = None;
+                let mut height = None;
+                if let Ok(size) = imagesize::size(path.to_string_lossy().to_string()) {
+                    width = Some(size.width as u64);
+                    base_info.width = UInt::new(size.width as u64);
+                    height = Some(size.height as u64);
+                    base_info.height = UInt::new(size.height as u64);
+                }
+                let config = AttachmentConfig::new().info(AttachmentInfo::Image(base_info));
                 let response = room
                     .send_attachment(name.as_str(), &content_type, buf, config)
                     .await?;
-                Ok(response.event_id)
+                Ok(SendImageResponse {
+                    event_id: response.event_id,
+                    file_size,
+                    width,
+                    height,
+                })
             })
             .await?
     }
@@ -1118,8 +1131,6 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        width: Option<u32>,
-        height: Option<u32>,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -1149,13 +1160,17 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let buf = std::fs::read(path)?;
-                let info = assign!(ImageInfo::new(), {
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
+                let buf = std::fs::read(path.clone())?;
+                let mut info = assign!(ImageInfo::new(), {
+                    height: None,
+                    width: None,
                     mimetype: Some(content_type.to_string()),
                     size: UInt::new(buf.len() as u64),
                 });
+                if let Ok(size) = imagesize::size(path.to_string_lossy().to_string()) {
+                    info.width = UInt::new(size.width as u64);
+                    info.height = UInt::new(size.height as u64);
+                }
 
                 let timeline_event = room.event(&event_id).await?;
 
@@ -1460,5 +1475,30 @@ impl Deref for Room {
     type Target = SdkRoom;
     fn deref(&self) -> &SdkRoom {
         &self.room
+    }
+}
+
+pub struct SendImageResponse {
+    event_id: OwnedEventId,
+    file_size: u64,
+    width: Option<u64>,
+    height: Option<u64>,
+}
+
+impl SendImageResponse {
+    pub fn event_id(&self) -> OwnedEventId {
+        self.event_id.clone()
+    }
+
+    pub fn file_size(&self) -> u64 {
+        self.file_size
+    }
+
+    pub fn width(&self) -> Option<u64> {
+        self.width
+    }
+
+    pub fn height(&self) -> Option<u64> {
+        self.height
     }
 }

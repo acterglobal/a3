@@ -550,17 +550,10 @@ class ChatRoomController extends GetxController {
       return;
     }
     String? name = file.name;
-    Uint8List? bytes = file.bytes;
-    if (bytes == null) {
-      return;
-    }
-    final image = await decodeImageFromList(bytes);
     if (repliedToMessage != null) {
       await _currentRoom!.sendImageReply(
         path,
         name,
-        image.width,
-        image.height,
         repliedToMessage!.id,
         null,
       );
@@ -569,13 +562,7 @@ class ChatRoomController extends GetxController {
       showReplyView = false;
       update(['chat-input']);
     } else {
-      await _currentRoom!.sendImageMessage(
-        path,
-        name,
-        image.width,
-        image.height,
-        null,
-      );
+      await _currentRoom!.sendImageMessage(path, name, null);
     }
   }
 
@@ -592,14 +579,10 @@ class ChatRoomController extends GetxController {
       return;
     }
     String? name = result.files.single.name;
-    Uint8List bytes = File(path).readAsBytesSync();
-    final image = await decodeImageFromList(bytes);
     if (repliedToMessage != null) {
       await _currentRoom!.sendImageReply(
         path,
         name,
-        image.width,
-        image.height,
         repliedToMessage!.id,
         null,
       );
@@ -608,13 +591,7 @@ class ChatRoomController extends GetxController {
       showReplyView = false;
       update(['chat-input']);
     } else {
-      await _currentRoom!.sendImageMessage(
-        path,
-        name,
-        image.width,
-        image.height,
-        null,
-      );
+      await _currentRoom!.sendImageMessage(path, name, null);
     }
   }
 

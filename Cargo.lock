@@ -20,6 +20,7 @@ dependencies = [
  "ffi-gen-macro",
  "futures",
  "futures-signals",
+ "imagesize",
  "lazy_static",
  "log",
  "log-panics",
@@ -1935,6 +1936,12 @@ dependencies = [
  "unicode-bidi",
  "unicode-normalization",
 ]
+
+[[package]]
+name = "imagesize"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "029d73f573d8e8d63e6d5020011d3255b28c3ba85d6cf870a07184ed23de9284"
 
 [[package]]
 name = "imbl"

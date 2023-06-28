@@ -515,6 +515,20 @@ object TimelineStream {
     fn edit(new_msg: string, original_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
+object SendImageResponse {
+    /// get event id
+    fn event_id() -> EventId;
+
+    /// get file size
+    fn file_size() -> u64;
+
+    /// get width
+    fn width() -> Option<u64>;
+
+    /// get height
+    fn height() -> Option<u64>;
+}
+
 object Conversation {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
@@ -559,7 +573,7 @@ object Conversation {
     fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;
 
     /// send the image message to this room
-    fn send_image_message(uri: string, name: string, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> Future<Result<EventId>>;
+    fn send_image_message(uri: string, name: string, blurhash: Option<string>) -> Future<Result<SendImageResponse>>;
 
     /// decrypted image file data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -624,7 +638,7 @@ object Conversation {
     fn send_text_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as image
-    fn send_image_reply(uri: string, name: string, width: Option<u32>, height: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_image_reply(uri: string, name: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as audio
     fn send_audio_reply(uri: string, name: string, secs: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
@@ -1065,7 +1079,7 @@ object Space {
     fn pin_draft() -> Result<PinDraft>;
 
     /// send the image message to this room
-    fn send_image_message(uri: string, name: string, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> Future<Result<EventId>>;
+    fn send_image_message(uri: string, name: string, blurhash: Option<string>) -> Future<Result<SendImageResponse>>;
 
     /// decrypted image buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable

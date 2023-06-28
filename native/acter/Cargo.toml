@@ -30,6 +30,7 @@ fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", feature
 ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "leaking-no-drop" }
 futures = "0.3.17"
 futures-signals = "0.3.31"
+imagesize = "0.12"
 lazy_static = "1.4"
 log = "0.4"
 log-panics = "2.0.0"
