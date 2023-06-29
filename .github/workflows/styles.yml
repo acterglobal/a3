@@ -20,7 +20,7 @@ jobs:
       - name: Install specific toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2023-06-28
           override: true
           components: rustfmt,clippy
       - uses: Swatinem/rust-cache@v1

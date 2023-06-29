@@ -32,7 +32,7 @@ jobs:
       - name: Install specific toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2023-06-28
           override: true
           components: clippy
       - uses: Swatinem/rust-cache@v1
@@ -68,7 +68,7 @@ jobs:
       - name: Install specific toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2023-06-28
           override: true
           components: clippy
           target: ${{ matrix.target }}
@@ -107,7 +107,7 @@ jobs:
       - name: Install supported rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2023-06-28
           override: true
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
