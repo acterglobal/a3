@@ -19,7 +19,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-06-28
+          toolchain: nightly-2023-04-10
           components: clippy
           override: true
       - uses: Swatinem/rust-cache@v1
@@ -72,7 +72,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           override: true
-          toolchain: nightly-2023-06-28
+          toolchain: nightly-2023-04-10
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
       - uses: Swatinem/rust-cache@v1
