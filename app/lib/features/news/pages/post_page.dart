@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/custom_app_bar.dart';

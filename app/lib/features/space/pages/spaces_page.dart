@@ -1,4 +1,4 @@
-import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
@@ -47,7 +47,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                   color: Theme.of(context).colorScheme.surface,
                   itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                     PopupMenuItem(
-                      onTap: () => context.goNamed(Routes.createSpace.name),
+                      onTap: () => context.pushNamed(Routes.createSpace.name),
                       child: Row(
                         children: const <Widget>[
                           Text('Create Space'),

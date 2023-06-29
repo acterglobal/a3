@@ -33,7 +33,13 @@ use matrix_sdk::{
     Client, RoomMemberships, RoomState,
 };
 use matrix_sdk_ui::timeline::RoomExt;
-use std::{fs::File, io::Write, ops::Deref, path::PathBuf, sync::Arc};
+use std::{
+    fs::{File, Permissions},
+    io::Write,
+    ops::Deref,
+    path::PathBuf,
+    sync::Arc,
+};
 use tracing::{error, info};
 
 use super::{
@@ -44,6 +50,42 @@ use super::{
     stream::TimelineStream,
     RUNTIME,
 };
+
+#[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]
+#[strum(serialize_all = "PascalCase")]
+pub enum MemberPermission {
+    // regular interaction
+    CanSendChatMessages,
+    CanSendReaction,
+    CanSendSticker,
+    // moderation tools
+    CanBan,
+    CanKick,
+    CanRedact,
+    CanTriggerRoomNotification,
+    // state events
+    CanUpdateAvatar,
+    CanSetTopic,
+    CanLinkSpaces,
+    CanSetParentSpace,
+}
+
+enum PermissionTest {
+    StateEvent(StateEventType),
+    Message(MessageLikeEventType),
+}
+
+impl From<StateEventType> for PermissionTest {
+    fn from(value: StateEventType) -> Self {
+        PermissionTest::StateEvent(value)
+    }
+}
+
+impl From<MessageLikeEventType> for PermissionTest {
+    fn from(value: MessageLikeEventType) -> Self {
+        PermissionTest::Message(value)
+    }
+}
 
 pub struct Member {
     pub(crate) member: RoomMember,
@@ -65,6 +107,35 @@ impl Member {
     pub fn user_id(&self) -> OwnedUserId {
         self.member.user_id().to_owned()
     }
+
+    pub fn can_string(&self, input: String) -> bool {
+        let Ok(permission) = MemberPermission::try_from(input.as_str()) else {
+            return false;
+        };
+        self.can(permission)
+    }
+
+    pub fn can(&self, permission: MemberPermission) -> bool {
+        let tester: PermissionTest = match permission {
+            MemberPermission::CanBan => return self.member.can_ban(),
+            MemberPermission::CanRedact => return self.member.can_redact(),
+            MemberPermission::CanKick => return self.member.can_kick(),
+            MemberPermission::CanTriggerRoomNotification => {
+                return self.member.can_trigger_room_notification()
+            }
+            MemberPermission::CanSendChatMessages => MessageLikeEventType::RoomMessage.into(), // or should this check for encrypted?
+            MemberPermission::CanSendReaction => MessageLikeEventType::Reaction.into(),
+            MemberPermission::CanSendSticker => MessageLikeEventType::Sticker.into(),
+            MemberPermission::CanUpdateAvatar => StateEventType::RoomAvatar.into(),
+            MemberPermission::CanSetTopic => StateEventType::RoomTopic.into(),
+            MemberPermission::CanLinkSpaces => StateEventType::SpaceChild.into(),
+            MemberPermission::CanSetParentSpace => StateEventType::SpaceParent.into(),
+        };
+        match tester {
+            PermissionTest::Message(msg) => self.member.can_send_message(msg),
+            PermissionTest::StateEvent(state) => self.member.can_send_state(state),
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -77,6 +148,24 @@ impl Room {
         is_acter_space(&self.room).await
     }
 
+    pub async fn get_my_membership(&self) -> Result<Member> {
+        let SdkRoom::Joined(joined) = &self.room else {
+            bail!("Not a room we have joined")
+        };
+        let room = joined.clone();
+        let client = room.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                Ok(Member { member })
+            })
+            .await?
+    }
+
     pub fn get_profile(&self) -> RoomProfile {
         let client = self.room.client();
         let room_id = self.room_id().to_owned();
@@ -84,11 +173,10 @@ impl Room {
     }
 
     pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
+        let SdkRoom::Joined(joined) = &self.room else {
             bail!("Can't upload avatar to a room we are not in")
         };
+        let room = joined.clone();
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
         let path = PathBuf::from(uri);

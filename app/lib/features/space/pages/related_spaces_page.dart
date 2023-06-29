@@ -1,12 +1,16 @@
 import 'dart:core';
 import 'dart:math';
 
-import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:go_router/go_router.dart';
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:atlas_icons/atlas_icons.dart';
+import 'package:acter/common/utils/routes.dart';
 
 class ChildItem extends StatelessWidget {
   final SpaceItem space;
@@ -71,9 +75,70 @@ class RelatedSpacesPage extends ConsumerWidget {
               const int minCount = 2;
               // we have more than just the spaces screen, put them into a grid.
               final List<Widget> items = [];
+              bool checkPermission(String permission) {
+                if (spaces.membership != null) {
+                  return spaces.membership!.canString(permission);
+                }
+                return false;
+              }
+
+              final canLinkSpace = checkPermission('CanLinkSpaces');
+
+              if (spaces.parents.isNotEmpty || spaces.mainParent != null) {
+                List<Widget> children = [
+                  const Expanded(child: Text('Parents'))
+                ];
+                if (checkPermission('CanSetParentSpace')) {
+                  children.add(
+                    PopupMenuButton(
+                      icon: Icon(
+                        Atlas.plus_circle,
+                        color: Theme.of(context).colorScheme.neutral5,
+                      ),
+                      iconSize: 28,
+                      color: Theme.of(context).colorScheme.surface,
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                        PopupMenuItem(
+                          onTap: () => customMsgSnackbar(
+                            context,
+                            'Create parent space feature isn\'t implemented yet',
+                          ),
+                          child: Row(
+                            children: const <Widget>[
+                              Text('Create Parent Space'),
+                              Spacer(),
+                              Icon(Atlas.connection),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          onTap: () => customMsgSnackbar(
+                            context,
+                            'Link space feature isn\'t implemented yet',
+                          ),
+                          child: Row(
+                            children: const <Widget>[
+                              Text('Link Space as Parent'),
+                              Spacer(),
+                              Icon(Atlas.link_chain_thin),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                items.add(
+                  SliverToBoxAdapter(
+                    child: Row(
+                      children: children,
+                    ),
+                  ),
+                );
+              }
+
               if (spaces.mainParent != null) {
                 final space = spaces.mainParent!;
-                items.add(const SliverToBoxAdapter(child: Text('Parent')));
                 items.add(
                   SliverToBoxAdapter(
                     child: ChildItem(key: Key(space.roomId), space: space),
@@ -81,25 +146,77 @@ class RelatedSpacesPage extends ConsumerWidget {
                 );
               }
               if (spaces.parents.isNotEmpty) {
-                if (items.isEmpty) {
-                  items.add(const SliverToBoxAdapter(child: Text('Parents')));
+                if (spaces.parents.isNotEmpty) {
+                  items.add(
+                    SliverGrid.builder(
+                      itemCount: spaces.parents.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: max(1, min(widthCount, minCount)),
+                        childAspectRatio: 6,
+                      ),
+                      itemBuilder: (context, index) {
+                        final space = spaces.parents[index];
+                        return ChildItem(key: Key(space.roomId), space: space);
+                      },
+                    ),
+                  );
+                }
+              }
+
+              if (spaces.children.isNotEmpty || canLinkSpace) {
+                List<Widget> children = [
+                  const Expanded(child: Text('Subspaces'))
+                ];
+                if (canLinkSpace) {
+                  children.add(
+                    PopupMenuButton(
+                      icon: Icon(
+                        Atlas.plus_circle,
+                        color: Theme.of(context).colorScheme.neutral5,
+                      ),
+                      iconSize: 28,
+                      color: Theme.of(context).colorScheme.surface,
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                        PopupMenuItem(
+                          onTap: () => context.pushNamed(
+                            Routes.createSpace.name,
+                            queryParameters: {'parentSpaceId': spaceIdOrAlias},
+                          ),
+                          child: Row(
+                            children: const <Widget>[
+                              Text('Create Subspace'),
+                              Spacer(),
+                              Icon(Atlas.connection),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          onTap: () => customMsgSnackbar(
+                            context,
+                            'Link space feature isn\'t implemented yet',
+                          ),
+                          child: Row(
+                            children: const <Widget>[
+                              Text('Add existing Space'),
+                              Spacer(),
+                              Icon(Atlas.link_chain_thin),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
                 }
                 items.add(
-                  SliverGrid.builder(
-                    itemCount: spaces.parents.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: max(1, min(widthCount, minCount)),
-                      childAspectRatio: 6,
+                  SliverToBoxAdapter(
+                    child: Row(
+                      children: children,
                     ),
-                    itemBuilder: (context, index) {
-                      final space = spaces.parents[index];
-                      return ChildItem(key: Key(space.roomId), space: space);
-                    },
                   ),
                 );
               }
+
               if (spaces.children.isNotEmpty) {
-                items.add(const SliverToBoxAdapter(child: Text('Subspaces')));
                 items.add(
                   SliverGrid.builder(
                     itemCount: spaces.children.length,
@@ -114,10 +231,36 @@ class RelatedSpacesPage extends ConsumerWidget {
                   ),
                 );
               }
-              if (spaces.otherRelations.isNotEmpty) {
+
+              if (spaces.otherRelations.isNotEmpty || canLinkSpace) {
+                List<Widget> children = [
+                  const Expanded(child: Text('Recommended Spaces'))
+                ];
+                if (canLinkSpace) {
+                  children.add(
+                    IconButton(
+                      icon: Icon(
+                        Atlas.link_chain_thin,
+                        color: Theme.of(context).colorScheme.neutral5,
+                      ),
+                      iconSize: 28,
+                      color: Theme.of(context).colorScheme.surface,
+                      onPressed: () => customMsgSnackbar(
+                        context,
+                        'Link space feature isn\'t implemented yet',
+                      ),
+                    ),
+                  );
+                }
                 items.add(
-                  const SliverToBoxAdapter(child: Text('Related Spaces')),
+                  SliverToBoxAdapter(
+                    child: Row(
+                      children: children,
+                    ),
+                  ),
                 );
+              }
+              if (spaces.otherRelations.isNotEmpty) {
                 items.add(
                   SliverGrid.builder(
                     itemCount: spaces.otherRelations.length,
@@ -141,12 +284,16 @@ class RelatedSpacesPage extends ConsumerWidget {
             },
             error: (error, stack) => [
               SliverToBoxAdapter(
-                child: Text('Loading failed: $error'),
+                child: Center(
+                  child: Text('Loading failed: $error'),
+                ),
               )
             ],
             loading: () => [
               const SliverToBoxAdapter(
-                child: Text('Loading'),
+                child: Center(
+                  child: Text('Loading'),
+                ),
               )
             ],
           ),

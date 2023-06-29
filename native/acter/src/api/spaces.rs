@@ -24,19 +24,23 @@ use matrix_sdk::{
     room::{Messages, MessagesOptions, Room as SdkRoom},
     ruma::{
         api::client::state::send_state_event::v3::Request as SendStateEventRequest,
-        events::{AnyStateEventContent, MessageLikeEvent, StateEventType},
+        events::{
+            space::child::SpaceChildEventContent, AnyStateEventContent, MessageLikeEvent,
+            StateEventType,
+        },
         serde::Raw,
         OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
     },
     Client as SdkClient,
 };
+use ruma::OwnedRoomOrAliasId;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use tracing::{error, trace};
 
 use super::{
     client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
-    room::Room,
+    room::{Member, Room},
     RUNTIME,
 };
 
@@ -485,6 +489,31 @@ impl Space {
             .await?
     }
 
+    pub async fn add_child_space(&self, room_id: String) -> Result<String> {
+        let room_id = OwnedRoomId::try_from(room_id)?;
+        if !self
+            .get_my_membership()
+            .await?
+            .can(crate::MemberPermission::CanLinkSpaces)
+        {
+            bail!("You don't have permissions to add child-spaces");
+        }
+        let SdkRoom::Joined(joined) = &self.inner.room else {
+            bail!("You can't update a space you aren't part of");
+        };
+        let room = joined.clone();
+
+        let mut room_child_event = SpaceChildEventContent::new();
+        RUNTIME
+            .spawn(async move {
+                let res_id = room
+                    .send_state_event_for_key(&room_id, SpaceChildEventContent::new())
+                    .await?;
+                Ok(res_id.event_id.to_string())
+            })
+            .await?
+    }
+
     pub async fn is_child_space_of(&self, room_id: String) -> bool {
         let Ok(room_id) = OwnedRoomId::try_from(room_id) else {
             tracing::warn!("Asked for a not proper room id");
@@ -522,7 +551,8 @@ pub fn new_space_settings(
     name: String,
     topic: Option<String>,
     avatar_uri: Option<String>,
-) -> CreateSpaceSettings {
+    parent: Option<String>,
+) -> Result<CreateSpaceSettings> {
     let mut builder = CreateSpaceSettingsBuilder::default();
     builder.name(name);
     if let Some(topic) = topic {
@@ -531,7 +561,11 @@ pub fn new_space_settings(
     if let Some(avatar_uri) = avatar_uri {
         builder.avatar_uri(avatar_uri);
     }
-    builder.build().unwrap()
+    if let Some(parent) = parent {
+        let owned_parent = OwnedRoomId::try_from(parent)?;
+        builder.parent(owned_parent);
+    }
+    Ok(builder.build()?)
 }
 
 impl Client {

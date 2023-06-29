@@ -416,7 +416,7 @@ impl Client {
                     };
 
                     device_controller.process_device_lists(&client, &response);
-                    trace!("post decallbackvice controller");
+                    trace!("post device controller");
 
                     if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
                         == Ok(true)

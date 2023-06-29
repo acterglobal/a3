@@ -9,7 +9,7 @@ import 'package:acter/features/home/widgets/my_events.dart';
 import 'package:acter/features/home/widgets/my_tasks.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
@@ -43,7 +43,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
           btnText: 'Join Existing Space',
           btn2Text: 'Create New Space',
           onPressed1: () {},
-          onPressed2: () => context.goNamed(Routes.createSpace.name),
+          onPressed2: () => context.pushNamed(Routes.createSpace.name),
           canDismissable: true,
         );
       }

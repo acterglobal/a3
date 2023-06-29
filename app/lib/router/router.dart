@@ -143,6 +143,30 @@ final routes = [
       );
     },
   ),
+  GoRoute(
+    parentNavigatorKey: rootNavigatorKey,
+    name: Routes.createSpace.name,
+    path: Routes.createSpace.route,
+    pageBuilder: (context, state) {
+      return SideSheetPage(
+        key: state.pageKey,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return SlideTransition(
+            position: Tween(
+              begin: const Offset(1, 0),
+              end: const Offset(0, 0),
+            ).animate(
+              animation,
+            ),
+            child: child,
+          );
+        },
+        child: CreateSpacePage(
+          initialParentsSpaceId: state.queryParameters['parentSpaceId'],
+        ),
+      );
+    },
+  ),
 
   /// Application shell
   ShellRoute(
@@ -382,18 +406,6 @@ final routes = [
             },
           ),
         ],
-      ),
-
-      GoRoute(
-        name: Routes.createSpace.name,
-        path: Routes.createSpace.route,
-        redirect: authGuardRedirect,
-        pageBuilder: (context, state) {
-          return NoTransitionPage(
-            key: state.pageKey,
-            child: const CreateSpacePage(),
-          );
-        },
       ),
 
       GoRoute(

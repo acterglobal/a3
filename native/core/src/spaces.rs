@@ -7,7 +7,12 @@ use matrix_sdk::{
             Visibility,
         },
         assign,
-        events::{macros::EventContent, room::avatar::ImageInfo},
+        events::{
+            macros::EventContent,
+            room::avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+            space::parent::SpaceParentEventContent,
+            InitialStateEvent,
+        },
         room::RoomType,
         serde::Raw,
         OwnedRoomId, OwnedUserId, UserId,
@@ -16,7 +21,7 @@ use matrix_sdk::{
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use strum::Display;
-use tracing::{error, info};
+use tracing::error;
 
 use crate::{
     client::CoreClient,
@@ -67,6 +72,9 @@ pub struct CreateSpaceSettings {
 
     #[builder(setter(strip_option), default)]
     avatar_uri: Option<String>,
+
+    #[builder(setter(strip_option), default)]
+    parent: Option<OwnedRoomId>,
 }
 
 impl CreateSpaceSettings {
@@ -186,20 +194,18 @@ impl CoreClient {
         let content = assign!(CreationContent::new(), {
             room_type: Some(RoomType::Space),
         });
-        let initial_states = default_acter_space_states();
-        let request = assign!(CreateRoomRequest::new(), {
-            creation_content: Some(Raw::new(&content)?),
-            initial_state: initial_states,
-            is_direct: false,
-            invite: settings.invites,
-            room_alias_name: settings.alias,
-            name: settings.name,
-            visibility: settings.visibility,
-            topic: settings.topic,
-        });
-        let room = client.create_room(request).await?;
+        let CreateSpaceSettings {
+            name,
+            visibility,
+            invites,
+            alias,
+            topic,
+            avatar_uri,
+            parent,
+        } = settings;
+        let mut initial_states = default_acter_space_states();
 
-        if let Some(uri) = settings.avatar_uri {
+        if let Some(uri) = avatar_uri {
             let path = PathBuf::from(uri);
             let guess = mime_guess::from_path(path.clone());
             let content_type = guess.first().expect("MIME type should be given");
@@ -210,12 +216,29 @@ impl CoreClient {
                 blurhash: upload_resp.blurhash,
                 mimetype: Some(content_type.to_string()),
             });
-            // permission check is not needed, because user just created this room
-            let change_resp = room
-                .set_avatar_url(&upload_resp.content_uri, Some(info))
-                .await?;
-            info!("space avatar changed event: {}", change_resp.event_id);
-        }
+            let room_avatar_content = assign!(RoomAvatarEventContent::new(), { url : Some(upload_resp.content_uri), info: Some(Box::new(info)) } );
+            initial_states.push(InitialRoomAvatarEvent::new(room_avatar_content).to_raw_any());
+        };
+
+        if let Some(parent) = parent {
+            let parent_event = InitialStateEvent::<SpaceParentEventContent> {
+                content: SpaceParentEventContent::new(true),
+                state_key: parent,
+            };
+            initial_states.push(parent_event.to_raw_any());
+        };
+
+        let request = assign!(CreateRoomRequest::new(), {
+            creation_content: Some(Raw::new(&content)?),
+            initial_state: initial_states,
+            is_direct: false,
+            invite: invites,
+            room_alias_name: alias,
+            name: name,
+            visibility: visibility,
+            topic: topic,
+        });
+        let room = client.create_room(request).await?;
 
         Ok(room.room_id().to_owned())
     }

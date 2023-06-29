@@ -376,8 +376,9 @@ class ActerSdk {
     String name,
     String? description,
     String? avatarUri,
+    String? parent,
   ) {
-    return _api.newSpaceSettings(name, description, avatarUri);
+    return _api.newSpaceSettings(name, description, avatarUri, parent);
   }
 
   String rotateLogFile() {
