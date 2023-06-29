@@ -28,6 +28,18 @@ class QuickJump extends ConsumerWidget {
         alignment: MainAxisAlignment.spaceEvenly,
         children: List.from(
           [
+            IconButton(
+              icon: const Icon(Atlas.construction_tools_thin),
+              style: IconButton.styleFrom(
+                side: BorderSide(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                ),
+              ),
+              onPressed: () {
+                navigateTo(route: Routes.settings);
+              },
+            ),
             isActive(LabsFeature.pins)
                 ? IconButton(
                     iconSize: 48,
