@@ -180,6 +180,7 @@ impl HistoryLoadState {
 #[derive(Clone)]
 pub struct SyncState {
     handle: Mutable<Option<JoinHandle<()>>>,
+    history_sync_handle: Mutable<Option<JoinHandle<Result<()>>>>,
     first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
     history_loading: Mutable<HistoryLoadState>,
 }
@@ -190,6 +191,7 @@ impl SyncState {
         Self {
             first_synced_rx,
             history_loading: Default::default(),
+            history_sync_handle: Default::default(),
             handle: Default::default(),
         }
     }
@@ -269,30 +271,36 @@ impl Client {
         Ok(engine)
     }
 
-    async fn refresh_history_on_start(&self, history: Mutable<HistoryLoadState>) -> Result<()> {
-        trace!(user_id=?self.user_id_ref(), "refreshing history");
-        let mut spaces = self.spaces().await?;
-        let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
-        history.lock_mut().start(space_ids);
+    async fn refresh_history_on_start(
+        &self,
+        history: Mutable<HistoryLoadState>,
+    ) -> JoinHandle<Result<()>> {
+        let me = self.clone();
+        tokio::spawn(async move {
+            trace!(user_id=?me.user_id_ref(), "refreshing history");
+            let mut spaces = me.spaces().await?;
+            let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
+            history.lock_mut().start(space_ids);
 
-        join_all(spaces.iter_mut().map(|space| async {
-            if !space.is_acter_space().await {
-                trace!(room_id=?space.room_id(), "not an acter space");
-                history.lock_mut().unknow_room(&space.room_id().to_owned());
-                return;
-            }
+            join_all(spaces.iter_mut().map(|space| async {
+                if !space.is_acter_space().await {
+                    trace!(room_id=?space.room_id(), "not an acter space");
+                    history.lock_mut().unknow_room(&space.room_id().to_owned());
+                    return;
+                }
 
-            space.add_handlers().await;
+                space.add_handlers().await;
 
-            if let Err(err) = space.refresh_history().await {
-                error!(?err, room_id=?space.room_id(), "Loading space history failed");
-            };
-            history
-                .lock_mut()
-                .set_loading(space.room_id().to_owned(), false);
-        }))
-        .await;
-        Ok(())
+                if let Err(err) = space.refresh_history().await {
+                    error!(?err, room_id=?space.room_id(), "Loading space history failed");
+                };
+                history
+                    .lock_mut()
+                    .set_loading(space.room_id().to_owned(), false);
+            }))
+            .await;
+            Ok(())
+        })
     }
 
     async fn refresh_history_on_way(
@@ -363,6 +371,7 @@ impl Client {
         let initial_arc = Arc::new(AtomicBool::from(true));
         let sync_state = SyncState::new(first_synced_rx);
         let sync_state_history = sync_state.history_loading.clone();
+        let sync_state_history_sync_handle = sync_state.history_sync_handle.clone();
 
         let handle = RUNTIME.spawn(async move {
             info!("spawning sync callback");
@@ -374,6 +383,7 @@ impl Client {
             let mut conversation_controller = conversation_controller.clone();
 
             let sync_state_history = sync_state_history.clone();
+            let sync_state_history_sync_handle = sync_state_history_sync_handle.clone();
 
             // fetch the events that received when offline
             client
@@ -429,10 +439,12 @@ impl Client {
                         first_synced_arc.send(true);
                         if let Ok(mut w) = state.try_write() {
                             w.has_first_synced = true;
-                        }
-
-                        me.refresh_history_on_start(sync_state_history.clone())
+                        };
+                        // background and keep the handle around.
+                        let history_first_sync = me
+                            .refresh_history_on_start(sync_state_history.clone())
                             .await;
+                        sync_state_history_sync_handle.set(Some(history_first_sync));
                     } else {
                         // see if we have new spaces to catch up upon
                         let mut new_spaces = Vec::new();
