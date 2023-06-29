@@ -8,7 +8,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -283,7 +282,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
           return SizedBox(
             height: 250,
             child: Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -393,14 +392,20 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       isLoader: true,
     );
     final sdk = await ref.watch(sdkProvider.future);
+    final parentRoomId = ref.watch(parentSpaceProvider);
     var avatarUri = ref.read(avatarProvider);
     var settings = sdk.newSpaceSettings(
       spaceName,
       description,
       avatarUri.isNotEmpty ? avatarUri : null,
+      parentRoomId,
     );
     final client = ref.read(clientProvider)!;
     final roomId = await client.createActerSpace(settings);
+    if (parentRoomId != null) {
+      final space = await ref.read(spaceProvider(parentRoomId).future);
+      await space.addChildSpace(roomId.toString());
+    }
     Navigator.of(context, rootNavigator: true).pop();
     return roomId;
   }

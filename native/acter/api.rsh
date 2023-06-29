@@ -1037,6 +1037,9 @@ object Space {
     /// Whether this space is a child of the given space
     fn is_child_space_of(room_id: string) -> Future<bool>;
 
+    /// add the following as a child space
+    fn add_child_space(room_id: string) -> Future<Result<string>>;
+
     /// Change the avatar of the room
     fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
 
@@ -1193,7 +1196,7 @@ object CreateSpaceSettings {
     fn add_invitee(value: string);
 }
 
-fn new_space_settings(name: string, topic: Option<string>, avatar_uri: Option<string>) -> CreateSpaceSettings;
+fn new_space_settings(name: string, topic: Option<string>, avatar_uri: Option<string>, parent: Option<string>) -> Result<CreateSpaceSettings>;
 
 /// Main entry point for `acter`.
 object Client {

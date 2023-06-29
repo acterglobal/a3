@@ -52,11 +52,8 @@ class ToDoController extends GetxController {
     String? avatarUri,
   ) async {
     final sdk = await ActerSdk.instance;
-    CreateSpaceSettings settings = sdk.newSpaceSettings(
-      name,
-      description,
-      avatarUri,
-    );
+    CreateSpaceSettings settings =
+        sdk.newSpaceSettings(name, description, avatarUri, null);
     RoomId roomId = await client.createActerSpace(settings);
     return roomId.toString();
   }
