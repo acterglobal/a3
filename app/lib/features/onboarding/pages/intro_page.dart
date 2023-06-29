@@ -19,13 +19,25 @@ class _IntroPageState extends State<IntroPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xff121B24),
       body: Container(
-        margin: const EdgeInsets.only(top: kToolbarHeight),
+        decoration: const BoxDecoration(
+           gradient: LinearGradient(
+          colors: [
+            Color(0xff121F2B),
+            Color(0xff122334),
+            Color(0xff121315),
+            Color(0xff121315),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: [0.0, 0.6, 0.8, 1.0],
+          tileMode: TileMode.decal,
+        ),
+        ),
         child: Column(
           children: [
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 15),
+              margin: const EdgeInsets.only(top: kToolbarHeight),
               child: Column(
                 children: [
                   Container(

@@ -13,17 +13,29 @@ class _IntroProfileState extends State<IntroProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xff121B24),
       body: Container(
-        margin: const EdgeInsets.only(top: kToolbarHeight),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+          colors: [
+            Color(0xff121F2B),
+            Color(0xff122334),
+            Color(0xff121315),
+            Color(0xff121315),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: [0.0, 0.6, 0.8, 1.0],
+          tileMode: TileMode.decal,
+        ),
+        ),
         child: Column(
           children: [
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 15),
+        margin: const EdgeInsets.only(top: kToolbarHeight),
               child: Column(
                 children: [
                   Container(
-                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    margin: const EdgeInsets.symmetric(vertical: 19),
                     height: 100,
                     width: 100,
                     child: Image.asset('assets/icon/logo_foreground.png'),
@@ -61,7 +73,9 @@ class _IntroProfileState extends State<IntroProfile> {
                     child: Column(
                       children: [
                         GestureDetector(
-                          onTap: () => context.goNamed(Routes.start.name),
+                          onTap: () {
+                            //Navigate to Create Profile
+                          },
                           child: Container(
                             height: 54,
                             decoration: BoxDecoration(
@@ -93,7 +107,7 @@ class _IntroProfileState extends State<IntroProfile> {
                           height: 25,
                         ),
                         GestureDetector(
-                          onTap: () => context.goNamed(Routes.start.name),
+                          onTap: () => context.goNamed(Routes.authLogin.name),
                           child: Container(
                             height: 54,
                             decoration: BoxDecoration(
