@@ -10,12 +10,18 @@ class SearchPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return QuickJump(
-      navigateTo: ({Routes? route, bool push = false, String? target}) {
+      navigateTo: ({
+        Routes? route,
+        bool push = false,
+        String? target,
+      }) async {
         if (push) {
           if (route != null) {
-            return context.pushNamed(route.name);
+            await context.pushNamed(route.name);
+            return;
           }
-          return context.push(target!);
+          await context.push(target!);
+          return;
         } else {
           if (route != null) {
             return context.goNamed(route.name);

@@ -519,8 +519,17 @@ object Conversation {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
 
+    /// Change the avatar of the room
+    fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
+
+    /// Remove the avatar of the room
+    fn remove_avatar() -> Future<Result<EventId>>;
+
     /// what is the description / topic
     fn topic() -> Option<string>;
+
+    /// set description / topic of the room
+    fn set_topic(topic: string) -> Future<Result<EventId>>;
 
     /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
@@ -603,7 +612,7 @@ object Conversation {
     fn leave() -> Future<Result<bool>>;
 
     /// get the users that were invited to this room
-    fn get_invitees() -> Future<Result<Vec<Account>>>;
+    fn get_invitees() -> Future<Result<Vec<Member>>>;
 
     /// download media (image/audio/video/file) to specified path
     fn download_media(event_id: string, dir_path: string) -> Future<Result<string>>;
@@ -1022,8 +1031,20 @@ object Space {
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
 
+    /// Whether this space is a child of the given space
+    fn is_child_space_of(room_id: string) -> Future<bool>;
+
+    /// Change the avatar of the room
+    fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
+
+    /// Remove the avatar of the room
+    fn remove_avatar() -> Future<Result<EventId>>;
+
     /// what is the description / topic
     fn topic() -> Option<string>;
+
+    /// set description / topic of the room
+    fn set_topic(topic: string) -> Future<Result<EventId>>;
 
     /// the members currently in the space
     fn active_members() -> Future<Result<Vec<Member>>>;
@@ -1095,6 +1116,12 @@ object Space {
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// join this room
+    fn join() -> Future<Result<bool>>;
+
+    /// leave this room
+    fn leave() -> Future<Result<bool>>;
 }
 
 object Member {
@@ -1110,17 +1137,17 @@ object Account {
     fn user_id() -> UserId;
 
     /// The display_name of the account
-    fn display_name() -> Future<Result<string>>;
+    fn display_name() -> Future<Result<OptionText>>;
 
     /// Change the display name of the account
     fn set_display_name(name: string) -> Future<Result<bool>>;
 
     /// The avatar of the client
-    fn avatar() -> Future<Result<buffer<u8>>>;
+    fn avatar() -> Future<Result<OptionBuffer>>;
 
     /// Change the avatar of the account
-    /// provide the c_type as MIME, e.g. `image/jpeg`
-    fn set_avatar(c_type: string, data: Vec<u8>) -> Future<Result<MxcUri>>;
+    /// provide the content_type as MIME, e.g. `image/jpeg`
+    fn upload_avatar(content_type: string, data: Vec<u8>) -> Future<Result<MxcUri>>;
 }
 
 object SyncState {
@@ -1142,7 +1169,7 @@ object CreateSpaceSettings {
     fn add_invitee(value: string);
 }
 
-fn new_space_settings(name: string) -> CreateSpaceSettings;
+fn new_space_settings(name: string, topic: Option<string>, avatar_uri: Option<string>) -> CreateSpaceSettings;
 
 /// Main entry point for `acter`.
 object Client {
@@ -1232,7 +1259,7 @@ object Client {
     fn create_acter_space(settings: CreateSpaceSettings) -> Future<Result<RoomId>>;
 
     /// listen to updates to any model key
-    fn subscribe(key: string) -> Stream<bool>;
+    fn subscribe(key: string) -> Stream<()>;
 
     /// Fetch the Comment or use its event_id to wait for it to come down the wire
     fn wait_for_comment(key: string, timeout: Option<EfkDuration>) -> Future<Result<Comment>>;
@@ -1265,9 +1292,14 @@ object Client {
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
 }
 
-object DispName {
+object OptionText {
     /// get text
     fn text() -> Option<string>;
+}
+
+object OptionBuffer {
+    /// get text
+    fn data() -> Option<buffer<u8>>;
 }
 
 object UserProfile {
@@ -1278,13 +1310,13 @@ object UserProfile {
     fn has_avatar() -> Future<Result<bool>>;
 
     /// get the binary data of avatar
-    fn get_avatar() -> Future<Result<buffer<u8>>>;
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
 
     /// get the binary data of thumbnail
-    fn get_thumbnail(width: u32, height: u32) -> Future<Result<buffer<u8>>>;
+    fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<DispName>>;
+    fn get_display_name() -> Future<Result<OptionText>>;
 }
 
 object RoomProfile {
@@ -1292,13 +1324,13 @@ object RoomProfile {
     fn has_avatar() -> Result<bool>;
 
     /// get the binary data of avatar
-    fn get_avatar() -> Future<Result<buffer<u8>>>;
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
 
     /// get the binary data of thumbnail
-    fn get_thumbnail(width: u32, height: u32) -> Future<Result<buffer<u8>>>;
+    fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<DispName>>;
+    fn get_display_name() -> Future<Result<OptionText>>;
 }
 
 object Invitation {
@@ -1315,7 +1347,7 @@ object Invitation {
     fn sender() -> UserId;
 
     /// get the user profile that contains avatar and display name
-    fn get_sender_profile() -> UserProfile;
+    fn get_sender_profile() -> Future<Result<UserProfile>>;
 
     /// accept invitation about me to this room
     fn accept() -> Future<Result<bool>>;

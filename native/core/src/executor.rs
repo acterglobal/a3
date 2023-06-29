@@ -1,6 +1,7 @@
 use async_broadcast::{broadcast, Receiver, Sender};
 use dashmap::{mapref::entry::Entry, DashMap};
 use std::sync::Arc;
+use tracing::{error, trace, trace_span};
 
 use crate::{
     models::{ActerModel, AnyActerModel},
@@ -52,7 +53,7 @@ impl Executor {
         let mut subscribe = self.subscribe(key.clone());
         let Ok(model) = self.store.get(&key).await else {
             if let Err(e) = subscribe.recv().await {
-                tracing::error!(key, "Receiving pong faild: {e}");
+                error!(key, "Receiving pong faild: {e}");
             }
             return self.store.get(&key).await
         };
@@ -63,34 +64,34 @@ impl Executor {
     pub fn notify(&self, mut keys: Vec<String>) -> u32 {
         let mut counter = 0u32;
         keys.dedup();
-        tracing::trace!(?keys, "notify");
+        trace!(?keys, "notify");
         for key in keys {
-            let span = tracing::trace_span!("Asked to notify", key = key);
+            let span = trace_span!("Asked to notify", key = key);
             let _enter = span.enter();
             if let Entry::Occupied(o) = self.notifiers.entry(key) {
                 let v = o.get();
                 if v.is_closed() {
-                    tracing::trace!("No listeners. removing");
+                    trace!("No listeners. removing");
                     o.remove();
                     continue;
                 }
-                tracing::trace!("Broadcasting");
+                trace!("Broadcasting");
                 if let Err(error) = v.try_broadcast(()) {
-                    tracing::trace!(?error, "Notifying failed");
+                    error!(?error, "Notifying failed");
                     // we have overflow activated, this only fails because it has been closed
                     o.remove();
                 } else {
                     counter = counter.checked_add(1).unwrap_or(u32::MAX);
                 }
             } else {
-                tracing::trace!("No one to notify");
+                trace!("No one to notify");
             }
         }
         counter
     }
 
     pub async fn handle(&self, model: AnyActerModel) -> Result<()> {
-        tracing::trace!(?model, "handle");
+        trace!(?model, "handle");
         self.notify(model.execute(&self.store).await?);
         Ok(())
     }

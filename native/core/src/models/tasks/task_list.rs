@@ -2,6 +2,7 @@ use derive_getters::Getters;
 use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
+use tracing::{trace, warn};
 
 use super::{
     super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
@@ -108,13 +109,13 @@ impl ActerModel for TaskList {
             AnyActerModel::TaskListUpdate(update) => update.apply(&mut self.inner),
             AnyActerModel::Task(task) => {
                 let key = self.event_id().to_owned();
-                tracing::trace!(?key, ?task, "adding task to list");
+                trace!(?key, ?task, "adding task to list");
                 self.task_stats.tasks_count += 1;
                 self.task_stats.has_tasks = true;
                 Ok(true)
             }
             _ => {
-                tracing::warn!(?model, "Trying to transition with an unknown model");
+                warn!(?model, "Trying to transition with an unknown model");
                 Ok(false)
             }
         }

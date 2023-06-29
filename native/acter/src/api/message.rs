@@ -1,6 +1,5 @@
 use chrono::{DateTime, Utc};
 use core::time::Duration;
-use log::info;
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     room::Room,
@@ -86,6 +85,7 @@ use matrix_sdk_ui::timeline::{
     TimelineItemContent, VirtualTimelineItem,
 };
 use std::{collections::HashMap, sync::Arc};
+use tracing::info;
 
 use super::common::{AudioDesc, FileDesc, ImageDesc, ReactionDesc, TextDesc, VideoDesc};
 

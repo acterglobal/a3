@@ -4,6 +4,7 @@ use acter::api::{
 };
 use anyhow::Result;
 use tempfile::TempDir;
+use tracing::warn;
 
 use crate::utils::default_user_password;
 
@@ -28,7 +29,7 @@ async fn guest_can_login() -> Result<()> {
         )
         .await?;
     } else {
-        log::warn!("Skipping guest test. To run set env var GUEST_ACCESS=1");
+        warn!("Skipping guest test. To run set env var GUEST_ACCESS=1");
     }
     Ok(())
 }

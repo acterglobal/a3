@@ -1,8 +1,9 @@
 use acter::api::{login_new_client, login_with_token, Client};
-use anyhow::{Context, Result};
+use anyhow::Result;
 use clap::{crate_version, Parser};
 use dialoguer::{theme::ColorfulTheme, Password};
 use std::path::PathBuf;
+use tracing::{error, info, warn};
 
 use crate::action::Action;
 
@@ -68,7 +69,7 @@ impl LoginConfig {
     pub async fn client(&self) -> Result<Client> {
         let theme = ColorfulTheme::default();
         let username = self.login_username.clone();
-        tracing::warn!("Logging in as {}", username);
+        warn!("Logging in as {}", username);
         let base_path = format!(".local/{username}/");
 
         if self.force_login && std::path::Path::new(&base_path).exists() {
@@ -81,12 +82,11 @@ impl LoginConfig {
             .unwrap_or_else(|| PathBuf::from(format!("{base_path}/access_token.json")));
         let access_token_path = std::path::Path::new(&token_path_string);
         if access_token_path.exists() && access_token_path.is_file() {
-            tracing::info!(
+            info!(
                 "Reusing previous access token from {}",
                 token_path_string.display()
             );
-            let token = std::fs::read_to_string(access_token_path)
-                .context("reading access token file failed")?;
+            let token = std::fs::read_to_string(access_token_path)?;
             return login_with_token(base_path, token).await;
         }
 
@@ -108,15 +108,14 @@ impl LoginConfig {
             self.homeserver.clone(),
             Some(format!("acter-cli/{}", crate_version!())),
         )
-        .await
-        .context("Couldn't login new client")?;
+        .await?;
 
         if !self.dont_store_token {
             match client.restore_token().await {
                 Ok(token) => {
-                    std::fs::write(access_token_path, token).context("Couldn't write token")?;
+                    std::fs::write(access_token_path, token)?;
                 }
-                Err(e) => tracing::error!(error = ?e, "No access token found on client."),
+                Err(e) => error!(error = ?e, "No access token found on client."),
             }
         }
         Ok(client)

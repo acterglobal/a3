@@ -35,7 +35,7 @@ class BugReportStateNotifier extends StateNotifier<BugReport> {
     state = state.copyWith(description: description);
   }
 
-  Future<String?> report(String? screenshotPath) async {
+  Future<String> report(String? screenshotPath) async {
     ref.read(loadingProvider.notifier).update((state) => !state);
     final sdk = await ActerSdk.instance;
     String logFile = sdk.rotateLogFile();
@@ -68,16 +68,16 @@ class BugReportStateNotifier extends StateNotifier<BugReport> {
       );
     }
     var resp = await request.send();
-    if (screenshotPath != null) {
-      await File(screenshotPath).delete();
-    }
-    String? reportUrl;
     if (resp.statusCode == HttpStatus.ok) {
       Map<String, dynamic> json = jsonDecode(await resp.stream.bytesToString());
+      if (screenshotPath != null) {
+        await File(screenshotPath).delete();
+      }
       // example - https://github.com/bitfriend/acter-bugs/issues/9
-      reportUrl = json['report_url'];
+      return json['report_url'];
+    } else {
+      final String body = await resp.stream.bytesToString();
+      throw '${resp.statusCode}: $body';
     }
-    ref.read(loadingProvider.notifier).update((state) => !state);
-    return reportUrl;
   }
 }

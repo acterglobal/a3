@@ -15,7 +15,7 @@ cbindgen = []
 dart = []
 
 [build-dependencies]
-ffi-gen = { git = "https://github.com/acterglobal/ffi-gen" }
+ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "leaking-no-drop"}
 cbindgen = "0.24.3"
 
 
@@ -27,13 +27,14 @@ chrono =  "0.4"
 derive_builder = "0.10.2"
 eyeball-im = "0.2"
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
-ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen" }
+ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "leaking-no-drop" }
 futures = "0.3.17"
 futures-signals = "0.3.31"
 lazy_static = "1.4"
 log = "0.4"
 log-panics = "2.0.0"
 mime = "0.3.16"
+mime_guess = "2.0.4"
 parse-env-filter = "0.1.0"
 ruma = { workspace = true }
 sanitize-filename-reader-friendly = "2.2.1"

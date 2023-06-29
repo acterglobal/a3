@@ -18,14 +18,13 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use log::warn;
 use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
-    event_handler::Ctx,
+    event_handler::{Ctx, EventHandlerHandle},
     room::{Messages, MessagesOptions, Room as SdkRoom},
     ruma::{
-        api::client::state::send_state_event,
-        events::{AnyStateEventContent, MessageLikeEvent},
+        api::client::state::send_state_event::v3::Request as SendStateEventRequest,
+        events::{AnyStateEventContent, MessageLikeEvent, StateEventType},
         serde::Raw,
         OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
     },
@@ -33,9 +32,10 @@ use matrix_sdk::{
 };
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
+use tracing::{error, trace};
 
 use super::{
-    client::{devide_spaces_from_convos, Client},
+    client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
     room::Room,
     RUNTIME,
 };
@@ -44,6 +44,18 @@ use super::{
 pub struct Space {
     pub client: Client,
     pub(crate) inner: Room,
+    task_list_event_handle: Option<EventHandlerHandle>,
+    task_list_update_event_handle: Option<EventHandlerHandle>,
+    task_event_handle: Option<EventHandlerHandle>,
+    task_update_event_handle: Option<EventHandlerHandle>,
+    comment_event_handle: Option<EventHandlerHandle>,
+    comment_update_event_handle: Option<EventHandlerHandle>,
+    pin_event_handle: Option<EventHandlerHandle>,
+    pin_update_event_handle: Option<EventHandlerHandle>,
+    calendar_event_event_handle: Option<EventHandlerHandle>,
+    calendar_event_update_event_handle: Option<EventHandlerHandle>,
+    news_entry_event_handle: Option<EventHandlerHandle>,
+    news_entry_update_event_handle: Option<EventHandlerHandle>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -54,15 +66,29 @@ struct HistoryState {
 
 impl Space {
     pub fn new(client: Client, inner: Room) -> Self {
-        Space { client, inner }
+        Space {
+            client,
+            inner,
+            task_list_event_handle: None,
+            task_list_update_event_handle: None,
+            task_event_handle: None,
+            task_update_event_handle: None,
+            comment_event_handle: None,
+            comment_update_event_handle: None,
+            pin_event_handle: None,
+            pin_update_event_handle: None,
+            calendar_event_event_handle: None,
+            calendar_event_update_event_handle: None,
+            news_entry_event_handle: None,
+            news_entry_update_event_handle: None,
+        }
     }
 
     pub async fn create_onboarding_data(&self) -> Result<()> {
         let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
         engine
             .add_user("main".to_owned(), self.client.core.clone())
-            .await
-            .context("Couldn't add user to engine")?;
+            .await?;
         engine.add_ref(
             "space".to_owned(),
             "space".to_owned(),
@@ -82,182 +108,245 @@ impl Space {
         is_acter_space(&self.inner).await
     }
 
-    pub(crate) async fn add_handlers(&self) {
+    pub(crate) async fn add_handlers(&mut self) {
         self.room
             .client()
             .add_event_handler_context(self.client.executor().clone());
-        tracing::trace!(room_id=?self.room.room_id(), "adding handlers");
-        let room_id = self.room_id().to_owned();
+        trace!(room_id=?self.room.room_id(), "adding handlers");
         // FIXME: combine into one handler
 
         // Tasks
-        self.room.add_event_handler(
-            move |ev: SyncTaskListEvent,
-                  client: SdkClient,
-                  //  room: Room,
-                  encryption_info: Option<EncryptionInfo>,
-                  Ctx(executor): Ctx<Executor>| {
-                let room_id = room_id.clone();
-                async move {
+        let handle =
+            self.room.add_event_handler(
+                |ev: SyncTaskListEvent,
+                 room: SdkRoom,
+                 c: SdkClient,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         executor.handle(AnyActerModel::TaskList(t.into())).await;
                     }
+                },
+            );
+        self.task_list_event_handle = Some(handle);
+        let handle = self.room.add_event_handler(
+            |ev: SyncTaskListUpdateEvent,
+             room: SdkRoom,
+             c: SdkClient,
+             Ctx(executor): Ctx<Executor>| async move {
+                let room_id = room.room_id().to_owned();
+                // FIXME: handle redactions
+                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                    executor
+                        .handle(AnyActerModel::TaskListUpdate(t.into()))
+                        .await;
                 }
             },
         );
-        let room_id = self.room_id().to_owned();
-        self.room.add_event_handler(
-            move |ev: SyncTaskListUpdateEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
-                let room_id = room_id.clone();
-                async move {
-                    // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
-                        executor
-                            .handle(AnyActerModel::TaskListUpdate(t.into()))
-                            .await;
-                    }
+        self.task_list_update_event_handle = Some(handle);
+        let handle = self.room.add_event_handler(
+            |ev: SyncTaskEvent,
+             room: SdkRoom,
+             c: SdkClient,
+             Ctx(executor): Ctx<Executor>| async move {
+                let room_id = room.room_id().to_owned();
+                // FIXME: handle redactions
+                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                    executor.handle(AnyActerModel::Task(t.into())).await;
                 }
             },
         );
-        let room_id = self.room_id().to_owned();
-        self.room.add_event_handler(
-            move |ev: SyncTaskEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
-                let room_id = room_id.clone();
-                async move {
+        self.task_event_handle = Some(handle);
+        let handle =
+            self.room.add_event_handler(
+                |ev: SyncTaskUpdateEvent,
+                 room: SdkRoom,
+                 c: SdkClient,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
-                        executor.handle(AnyActerModel::Task(t.into())).await;
-                    }
-                }
-            },
-        );
-        let room_id = self.room_id().to_owned();
-        self.room.add_event_handler(
-            move |ev: SyncTaskUpdateEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
-                let room_id = room_id.clone();
-                async move {
-                    // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         executor.handle(AnyActerModel::TaskUpdate(t.into())).await;
                     }
-                }
-            },
-        );
+                },
+            );
+        self.task_update_event_handle = Some(handle);
 
         // Comments
-        let room_id = self.room_id().to_owned();
-        self.room.add_event_handler(
-            move |ev: SyncCommentEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
-                let room_id = room_id.clone();
-                async move {
+        let handle =
+            self.room.add_event_handler(
+                |ev: SyncCommentEvent,
+                 room: SdkRoom,
+                 c: SdkClient,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         executor.handle(AnyActerModel::Comment(t.into())).await;
                     }
+                },
+            );
+        self.comment_event_handle = Some(handle);
+        let handle = self.room.add_event_handler(
+            |ev: SyncCommentUpdateEvent,
+             room: SdkRoom,
+             c: SdkClient,
+             Ctx(executor): Ctx<Executor>| async move {
+                let room_id = room.room_id().to_owned();
+                // FIXME: handle redactions
+                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                    executor
+                        .handle(AnyActerModel::CommentUpdate(t.into()))
+                        .await;
                 }
             },
         );
-        let room_id = self.room_id().to_owned();
-        self.room.add_event_handler(
-            move |ev: SyncCommentUpdateEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
-                let room_id = room_id.clone();
-                async move {
-                    // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
-                        executor
-                            .handle(AnyActerModel::CommentUpdate(t.into()))
-                            .await;
-                    }
-                }
-            },
-        );
+        self.comment_update_event_handle = Some(handle);
 
         // Pins
-        let room_id = self.room_id().to_owned();
-        self.room.add_event_handler(
-            move |ev: SyncPinEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
-                let room_id = room_id.clone();
-                async move {
-                    // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
-                        executor.handle(AnyActerModel::Pin(t.into())).await;
-                    }
+        let handle = self.room.add_event_handler(
+            |ev: SyncPinEvent,
+             room: SdkRoom,
+             c: SdkClient,
+             Ctx(executor): Ctx<Executor>| async move {
+                let room_id = room.room_id().to_owned();
+                // FIXME: handle redactions
+                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                    executor.handle(AnyActerModel::Pin(t.into())).await;
                 }
             },
         );
-        let room_id = self.room_id().to_owned();
-        self.room.add_event_handler(
-            move |ev: SyncPinUpdateEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
-                let room_id = room_id.clone();
-                async move {
+        self.pin_event_handle = Some(handle);
+        let handle =
+            self.room.add_event_handler(
+                |ev: SyncPinUpdateEvent,
+                 room: SdkRoom,
+                 c: SdkClient,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         executor.handle(AnyActerModel::PinUpdate(t.into())).await;
                     }
-                }
-            },
-        );
+                },
+            );
+        self.pin_update_event_handle = Some(handle);
 
         // CalendarEvents
-        let room_id = self.room_id().to_owned();
-        self.room.add_event_handler(
-            move |ev: SyncCalendarEventEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
-                let room_id = room_id.clone();
-                async move {
-                    // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
-                        executor
-                            .handle(AnyActerModel::CalendarEvent(t.into()))
-                            .await;
-                    }
+        let handle = self.room.add_event_handler(
+            |ev: SyncCalendarEventEvent,
+             room: SdkRoom,
+             c: SdkClient,
+             Ctx(executor): Ctx<Executor>| async move {
+                let room_id = room.room_id().to_owned();
+                // FIXME: handle redactions
+                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                    executor
+                        .handle(AnyActerModel::CalendarEvent(t.into()))
+                        .await;
                 }
             },
         );
-        let room_id = self.room_id().to_owned();
-        self.room.add_event_handler(
-            move |ev: SyncCalendarEventUpdateEvent,
-                  client: SdkClient,
-                  Ctx(executor): Ctx<Executor>| {
-                let room_id = room_id.clone();
-                async move {
-                    // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
-                        executor
-                            .handle(AnyActerModel::CalendarEventUpdate(t.into()))
-                            .await;
-                    }
+        self.calendar_event_event_handle = Some(handle);
+        let handle = self.room.add_event_handler(
+            |ev: SyncCalendarEventUpdateEvent,
+             room: SdkRoom,
+             c: SdkClient,
+             Ctx(executor): Ctx<Executor>| async move {
+                let room_id = room.room_id().to_owned();
+                // FIXME: handle redactions
+                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                    executor
+                        .handle(AnyActerModel::CalendarEventUpdate(t.into()))
+                        .await;
                 }
             },
         );
+        self.calendar_event_update_event_handle = Some(handle);
 
         // NewsEntrys
-        let room_id = self.room_id().to_owned();
-        self.room.add_event_handler(
-            move |ev: SyncNewsEntryEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
-                let room_id = room_id.clone();
-                async move {
+        let handle =
+            self.room.add_event_handler(
+                |ev: SyncNewsEntryEvent,
+                 room: SdkRoom,
+                 c: SdkClient,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         executor.handle(AnyActerModel::NewsEntry(t.into())).await;
                     }
+                },
+            );
+        self.news_entry_event_handle = Some(handle);
+        let handle = self.room.add_event_handler(
+            |ev: SyncNewsEntryUpdateEvent,
+             room: SdkRoom,
+             c: SdkClient,
+             Ctx(executor): Ctx<Executor>| async move {
+                let room_id = room.room_id().to_owned();
+                // FIXME: handle redactions
+                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                    executor
+                        .handle(AnyActerModel::NewsEntryUpdate(t.into()))
+                        .await;
                 }
             },
         );
-        let room_id = self.room_id().to_owned();
-        self.room.add_event_handler(
-            move |ev: SyncNewsEntryUpdateEvent, client: SdkClient, Ctx(executor): Ctx<Executor>| {
-                let room_id = room_id.clone();
-                async move {
-                    // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
-                        executor
-                            .handle(AnyActerModel::NewsEntryUpdate(t.into()))
-                            .await;
-                    }
-                }
-            },
-        );
+        self.news_entry_update_event_handle = Some(handle);
+    }
+
+    pub(crate) fn remove_handlers(&mut self) {
+        let client = self.room.client();
+        if let Some(handle) = self.task_list_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.task_list_event_handle = None;
+        }
+        if let Some(handle) = self.task_list_update_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.task_list_update_event_handle = None;
+        }
+        if let Some(handle) = self.task_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.task_event_handle = None;
+        }
+        if let Some(handle) = self.task_update_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.task_update_event_handle = None;
+        }
+        if let Some(handle) = self.comment_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.comment_event_handle = None;
+        }
+        if let Some(handle) = self.comment_update_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.comment_update_event_handle = None;
+        }
+        if let Some(handle) = self.pin_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.pin_event_handle = None;
+        }
+        if let Some(handle) = self.pin_update_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.pin_update_event_handle = None;
+        }
+        if let Some(handle) = self.calendar_event_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.calendar_event_event_handle = None;
+        }
+        if let Some(handle) = self.calendar_event_update_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.calendar_event_update_event_handle = None;
+        }
+        if let Some(handle) = self.news_entry_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.news_entry_event_handle = None;
+        }
+        if let Some(handle) = self.news_entry_update_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.news_entry_update_event_handle = None;
+        }
     }
 
     pub fn get_room_id(&self) -> OwnedRoomId {
@@ -268,36 +357,40 @@ impl Space {
         let SdkRoom::Joined(ref joined) = self.inner.room else {
             bail!("You can't convert a space you didn't join");
         };
+        let client = joined.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
+        let member = joined
+            .get_member(&my_id)
+            .await?
+            .context("Couldn't find me among room members")?;
         for state in default_acter_space_states() {
             println!("{:?}", state);
-            let event_type = state.get_field("type")?.expect("given");
+            let event_type = state.get_field("type")?.context("given")?;
             let state_key = state.get_field("state_key")?.unwrap_or_default();
             let body = state
                 .get_field::<Raw<AnyStateEventContent>>("content")?
-                .expect("body is given");
+                .context("body is given")?;
+            if !member.can_send_state(StateEventType::RoomAvatar) {
+                bail!("No permission to change avatar of this room");
+            }
 
-            let request = send_state_event::v3::Request::new_raw(
+            let request = SendStateEventRequest::new_raw(
                 joined.room_id().to_owned(),
                 event_type,
                 state_key,
                 body,
             );
-            joined
-                .client()
-                .send(request, None)
-                .await
-                .context("Couldn't send state event")?;
+            client.send(request, None).await?;
         }
         Ok(())
     }
 
     pub(crate) async fn refresh_history(&self) -> Result<()> {
-        let name = self.inner.name();
-        let room = self.inner.clone();
-        let room_id = room.room_id();
-        tracing::trace!(name, ?room_id, "refreshing history");
-        let client = room.room.client();
-        // room.sync_members().await.context("Couldn't sync members of room")?;
+        let name = self.room.name();
+        let room_id = self.room.room_id();
+        trace!(name, ?room_id, "refreshing history");
+        let client = self.room.client();
+        // self.room.sync_members().await.context("Couldn't sync members of room")?;
 
         let custom_storage_key = format!("{room_id}::history");
 
@@ -307,7 +400,7 @@ impl Space {
             .get_raw::<HistoryState>(&custom_storage_key)
             .await
         {
-            tracing::trace!(name, state=?h.seen, "found history state");
+            trace!(name, state=?h.seen, "found history state");
             Some(h.seen)
         } else {
             None
@@ -320,14 +413,11 @@ impl Space {
         }
 
         loop {
-            tracing::trace!(name, ?msg_options, "fetching messages");
+            trace!(name, ?msg_options, "fetching messages");
             let Messages {
                 end, chunk, state, ..
-            } = room
-                .messages(msg_options)
-                .await
-                .context("Couldn't get messages of room")?;
-            tracing::trace!(name, ?chunk, end, "messages received");
+            } = self.room.messages(msg_options).await?;
+            trace!(name, ?chunk, end, "messages received");
 
             let has_chunks = !chunk.is_empty();
 
@@ -336,23 +426,23 @@ impl Space {
                     Ok(model) => model,
                     Err(m) => {
                         if let Ok(state_key) = msg.event.get_field::<String>("state_key") {
-                            tracing::trace!(state_key, "ignoring state event");
+                            trace!(state_key, "ignoring state event");
                             // ignore state keys
                         } else {
-                            tracing::warn!(event=?msg.event, "Model didn't parse {:}", m);
+                            error!(event=?msg.event, "Model didn't parse {:}", m);
                         }
                         continue;
                     }
                 };
                 // match event {
                 //     MessageLikeEvent::Original(o) => {
-                tracing::trace!(?room_id, user_id=?client.user_id(), ?model, "handling timeline event");
+                trace!(?room_id, user_id=?client.user_id(), ?model, "handling timeline event");
                 if let Err(e) = self.client.executor().handle(model).await {
-                    tracing::error!("Failure handling event: {:}", e);
+                    error!("Failure handling event: {:}", e);
                 }
                 //     }
                 //     MessageLikeEvent::Redacted(r) => {
-                //         tracing::trace!(redaction = ?r, "redaction ignored");
+                //         trace!(redaction = ?r, "redaction ignored");
                 //     }
                 // }
             }
@@ -368,11 +458,10 @@ impl Space {
                         custom_storage_key.as_bytes(),
                         serde_json::to_vec(&HistoryState { seen })?,
                     )
-                    .await
-                    .context("Couldn't set custom value to store")?;
+                    .await?;
             } else {
                 // how do we want to understand this case?
-                tracing::trace!(room_id = ?room.room_id(), "Done loading");
+                trace!(room_id = ?self.room.room_id(), "Done loading");
                 break;
             }
 
@@ -381,7 +470,7 @@ impl Space {
                 break;
             }
         }
-        tracing::trace!(name, "history loaded");
+        trace!(name, "history loaded");
         Ok(())
     }
 
@@ -390,13 +479,29 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let relations = c
-                    .space_relations(&room)
-                    .await
-                    .context("Couldn't get space relations of client")?;
+                let relations = c.space_relations(&room).await?;
                 Ok(relations)
             })
             .await?
+    }
+
+    pub async fn is_child_space_of(&self, room_id: String) -> bool {
+        let Ok(room_id) = OwnedRoomId::try_from(room_id) else {
+            tracing::warn!("Asked for a not proper room id");
+            return false
+        };
+
+        let space_relations = match self.space_relations().await {
+            Ok(s) => s,
+            Err(error) => {
+                tracing::error!(?error, room_id=?self.room_id(), "Fetching space relation failed");
+                return false;
+            }
+        };
+        if let Some(e) = space_relations.main_parent() {
+            return e.room_id() == room_id;
+        }
+        false
     }
 }
 
@@ -413,11 +518,20 @@ impl Deref for Space {
 //     }
 // }
 
-pub fn new_space_settings(name: String) -> CreateSpaceSettings {
-    CreateSpaceSettingsBuilder::default()
-        .name(name)
-        .build()
-        .unwrap()
+pub fn new_space_settings(
+    name: String,
+    topic: Option<String>,
+    avatar_uri: Option<String>,
+) -> CreateSpaceSettings {
+    let mut builder = CreateSpaceSettingsBuilder::default();
+    builder.name(name);
+    if let Some(topic) = topic {
+        builder.topic(topic);
+    }
+    if let Some(avatar_uri) = avatar_uri {
+        builder.avatar_uri(avatar_uri);
+    }
+    builder.build().unwrap()
 }
 
 impl Client {
@@ -428,10 +542,7 @@ impl Client {
         let c = self.core.clone();
         RUNTIME
             .spawn(async move {
-                let room_id = c
-                    .create_acter_space(Box::into_inner(settings))
-                    .await
-                    .context("Couldn't create acter space")?;
+                let room_id = c.create_acter_space(Box::into_inner(settings)).await?;
                 Ok(room_id)
             })
             .await?
@@ -439,9 +550,10 @@ impl Client {
 
     pub async fn spaces(&self) -> Result<Vec<Space>> {
         let c = self.clone();
+        let filter = SpaceFilterBuilder::default().include_left(false).build()?;
         RUNTIME
             .spawn(async move {
-                let (spaces, convos) = devide_spaces_from_convos(c).await;
+                let (spaces, convos) = devide_spaces_from_convos(c, Some(filter)).await;
                 Ok(spaces)
             })
             .await?
@@ -450,15 +562,10 @@ impl Client {
     pub async fn get_space(&self, alias_or_id: String) -> Result<Space> {
         if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
             self.get_room(&room_id)
-                .map(|room| Space::new(self.clone(), Room { room }))
                 .context("Room not found")
+                .map(|room| Space::new(self.clone(), Room { room }))
         } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
-            for space in self
-                .spaces()
-                .await
-                .context("Couldn't get space list from client")?
-                .into_iter()
-            {
+            for space in self.spaces().await?.into_iter() {
                 if let Some(space_alias) = space.inner.room.canonical_alias() {
                     if space_alias == alias_id {
                         return Ok(space);

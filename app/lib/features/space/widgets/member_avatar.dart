@@ -28,7 +28,7 @@ class MemberAvatar extends ConsumerWidget {
               child: ActerAvatar(
                 mode: DisplayMode.User,
                 uniqueId: member.userId().toString(),
-                size: 20,
+                size: 18,
                 avatar: data.getAvatarImage(),
                 displayName: data.displayName,
               ),

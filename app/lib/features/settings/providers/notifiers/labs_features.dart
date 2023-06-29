@@ -2,6 +2,7 @@ import 'package:acter/common/utils/feature_flagger.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'dart:convert';
 
 class SharedPrefFeaturesNotifier extends FeaturesNotifier<LabsFeature> {
@@ -14,7 +15,7 @@ class SharedPrefFeaturesNotifier extends FeaturesNotifier<LabsFeature> {
 
   void _init() async {
     debugPrint('start of init');
-    prefInstance = await SharedPreferences.getInstance();
+    prefInstance = await sharedPrefs();
     debugPrint('got instance');
     final currentData = prefInstance.getString(instanceKey) ?? '[]';
     final features = featureFlagsFromJson<LabsFeature>(

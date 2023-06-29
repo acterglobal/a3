@@ -9,7 +9,6 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
 use core::time::Duration;
-use log::info;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Joined, Room},
@@ -74,8 +73,7 @@ impl Client {
                 let mut all_news = client
                     .store()
                     .get_list(KEYS::NEWS)
-                    .await
-                    .context("Couldn't get news list from store")?
+                    .await?
                     .filter_map(|any| {
                         if let AnyActerModel::NewsEntry(t) = any {
                             Some(t)
@@ -127,8 +125,7 @@ impl Space {
                 let mut all_news = client
                     .store()
                     .get_list(&format!("{room_id}::{}", KEYS::NEWS))
-                    .await
-                    .context("Couldn't get news list from store")?
+                    .await?
                     .filter_map(|any| {
                         if let AnyActerModel::NewsEntry(t) = any {
                             Some(t)
@@ -211,11 +208,7 @@ impl NewsSlide {
         };
         RUNTIME
             .spawn(async move {
-                let buf = client
-                    .media()
-                    .get_media_content(&request, false)
-                    .await
-                    .context("Couldn't get media content")?;
+                let buf = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(buf))
             })
             .await?
@@ -239,11 +232,7 @@ impl NewsSlide {
         };
         RUNTIME
             .spawn(async move {
-                let buf = client
-                    .media()
-                    .get_media_content(&request, false)
-                    .await
-                    .context("Couldn't get media content")?;
+                let buf = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(buf))
             })
             .await?
@@ -267,11 +256,7 @@ impl NewsSlide {
         };
         RUNTIME
             .spawn(async move {
-                let buf = client
-                    .media()
-                    .get_media_content(&request, false)
-                    .await
-                    .context("Couldn't get media content")?;
+                let buf = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(buf))
             })
             .await?
@@ -295,11 +280,7 @@ impl NewsSlide {
         };
         RUNTIME
             .spawn(async move {
-                let buf = client
-                    .media()
-                    .get_media_content(&request, false)
-                    .await
-                    .context("Couldn't get media content")?;
+                let buf = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(buf))
             })
             .await?
@@ -344,7 +325,7 @@ impl NewsEntry {
 
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::NewsEntry(content) = client.store().get(&key).await.context("Couldn't get news entry from store")? else {
+                let AnyActerModel::NewsEntry(content) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a news")
                 };
                 Ok(NewsEntry {
@@ -544,17 +525,11 @@ impl NewsEntryDraft {
         self.content.slides(slides);
 
         let room = self.room.clone();
-        let content = self
-            .content
-            .build()
-            .context("building failed in event content of news entry")?;
+        let content = self.content.build()?;
 
         RUNTIME
             .spawn(async move {
-                let resp = room
-                    .send(content, None)
-                    .await
-                    .context("Couldn't send news entry")?;
+                let resp = room.send(content, None).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -603,16 +578,10 @@ impl NewsEntryUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self
-            .content
-            .build()
-            .context("building failed in event content of news event update")?;
+        let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room
-                    .send(content, None)
-                    .await
-                    .context("Couldn't send news entry update")?;
+                let resp = room.send(content, None).await?;
                 Ok(resp.event_id)
             })
             .await?

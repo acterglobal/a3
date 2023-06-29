@@ -17,6 +17,7 @@ use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
 };
+use tracing::warn;
 
 use super::{client::Client, spaces::Space, RUNTIME};
 
@@ -26,7 +27,7 @@ impl Client {
         key: String,
         timeout: Option<Box<Duration>>,
     ) -> Result<CalendarEvent> {
-        let AnyActerModel::CalendarEvent(inner) = self.wait_for(key.clone(), timeout).await.context("Couldn't wait calendar event")? else {
+        let AnyActerModel::CalendarEvent(inner) = self.wait_for(key.clone(), timeout).await? else {
             bail!("{key} is not a calendar_event");
         };
         let room = self
@@ -47,12 +48,7 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client
-                    .store()
-                    .get_list(KEYS::CALENDAR)
-                    .await
-                    .context("Couldn't get list from store")?
-                {
+                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
                     if let AnyActerModel::CalendarEvent(t) = mdl {
                         let room_id = t.room_id().to_owned();
                         let room = match rooms_map.entry(room_id) {
@@ -73,7 +69,7 @@ impl Client {
                             inner: t,
                         })
                     } else {
-                        tracing::warn!(
+                        warn!(
                             "Non calendar_event model found in `calendar_events` index: {:?}",
                             mdl
                         );
@@ -93,12 +89,8 @@ impl Space {
         let room_id = self.room_id().to_owned();
         RUNTIME
             .spawn(async move {
-                for mdl in client
-                    .store()
-                    .get_list(&format!("{room_id}::{}", KEYS::CALENDAR))
-                    .await
-                    .context("Couldn't get list from store")?
-                {
+                let k = format!("{room_id}::{}", KEYS::CALENDAR);
+                for mdl in client.store().get_list(&k).await? {
                     if let AnyActerModel::CalendarEvent(t) = mdl {
                         calendar_events.push(CalendarEvent {
                             client: client.clone(),
@@ -106,7 +98,7 @@ impl Space {
                             inner: t,
                         })
                     } else {
-                        tracing::warn!(
+                        warn!(
                             "Non calendar_event model found in `calendar_events` index: {:?}",
                             mdl
                         );
@@ -160,7 +152,7 @@ impl CalendarEvent {
 
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::CalendarEvent(inner) = client.store().get(&key).await.context("Couldn't get calendar event from store")? else {
+                let AnyActerModel::CalendarEvent(inner) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a calendar_event")
                 };
                 Ok(CalendarEvent {
@@ -230,16 +222,10 @@ impl CalendarEventDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self
-            .inner
-            .build()
-            .context("building failed in event content of calendar event")?;
+        let inner = self.inner.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room
-                    .send(inner, None)
-                    .await
-                    .context("Couldn't send calendart event draft")?;
+                let resp = room.send(inner, None).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -283,16 +269,10 @@ impl CalendarEventUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self
-            .inner
-            .build()
-            .context("building failed in event content of calendar event update")?;
+        let inner = self.inner.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room
-                    .send(inner, None)
-                    .await
-                    .context("Couldn't send calendar event update")?;
+                let resp = room.send(inner, None).await?;
                 Ok(resp.event_id)
             })
             .await?

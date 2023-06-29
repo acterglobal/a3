@@ -1,9 +1,9 @@
 use acter::api::{login_new_client, CreateConversationSettingsBuilder};
 use anyhow::Result;
 use futures::stream::StreamExt;
-use log::warn;
 use tempfile::TempDir;
 use tokio::time::{sleep, Duration};
+use tracing::error;
 
 use crate::utils::default_user_password;
 
@@ -62,7 +62,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
         sleep(Duration::from_secs(delay)).await;
         delay *= 2;
         if delay > 3600 {
-            warn!("Can't join room {} ({:?})", invited.room_id(), e);
+            error!("Can't join room {} ({:?})", invited.room_id(), e);
             break;
         }
     }

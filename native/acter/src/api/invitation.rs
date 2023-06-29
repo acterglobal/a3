@@ -1,9 +1,8 @@
 use anyhow::{Context, Result};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
-use log::{error, info};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
-    room::Room,
+    room::{Room, RoomMember},
     ruma::{
         events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
         OwnedRoomId, OwnedUserId, RoomId,
@@ -12,6 +11,7 @@ use matrix_sdk::{
 };
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
+use tracing::{error, info};
 
 use super::{
     client::{devide_spaces_from_convos, Client},
@@ -23,7 +23,7 @@ use super::{
 pub struct Invitation {
     client: SdkClient,
     origin_server_ts: Option<u64>,
-    room_id: OwnedRoomId,
+    room: Room,
     sender: OwnedUserId,
 }
 
@@ -33,21 +33,18 @@ impl Invitation {
     }
 
     pub fn room_id(&self) -> OwnedRoomId {
-        self.room_id.clone()
+        self.room.room_id().to_owned()
     }
 
     pub async fn room_name(&self) -> Result<String> {
         let client = self.client.clone();
-        let room_id = self.room_id.clone();
+        let room_id = self.room.room_id().to_owned();
         let room = client
             .get_invited_room(&room_id)
-            .context("Can't accept a room we are not invited")?;
+            .context("Can't get a room we are not invited")?;
         RUNTIME
             .spawn(async move {
-                let name = room
-                    .display_name()
-                    .await
-                    .context("Couldn't get display name of room")?;
+                let name = room.display_name().await?;
                 Ok(name.to_string())
             })
             .await?
@@ -57,18 +54,26 @@ impl Invitation {
         self.sender.clone()
     }
 
-    pub fn get_sender_profile(&self) -> UserProfile {
-        let client = self.client.clone();
-        let user_id = self.sender.clone();
-        UserProfile::new(client, user_id)
+    pub async fn get_sender_profile(&self) -> Result<UserProfile> {
+        let room = self.room.clone();
+        let sender = self.sender.clone();
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&sender)
+                    .await?
+                    .context("Couldn't get room member")?;
+                Ok(UserProfile::from_member(member))
+            })
+            .await?
     }
 
     pub async fn accept(&self) -> Result<bool> {
         let client = self.client.clone();
-        let room_id = self.room_id.clone();
+        let room_id = self.room.room_id().to_owned();
         let room = client
             .get_invited_room(&room_id)
-            .context("Can't accept a room we are not invited")?;
+            .context("Can't get a room we are not invited")?;
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
@@ -100,10 +105,10 @@ impl Invitation {
 
     pub async fn reject(&self) -> Result<bool> {
         let client = self.client.clone();
-        let room_id = self.room_id.clone();
+        let room_id = self.room.room_id().to_owned();
         let room = client
             .get_invited_room(&room_id)
-            .context("Can't accept a room we are not invited")?;
+            .context("Can't get a room we are not invited")?;
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
@@ -192,15 +197,12 @@ impl InvitationController {
     pub async fn load_invitations(&self, client: &SdkClient) -> Result<()> {
         let mut invitations: Vec<Invitation> = vec![];
         for room in client.invited_rooms().iter() {
-            let details = room
-                .invite_details()
-                .await
-                .context("Couldn't get invitation details of room")?;
+            let details = room.invite_details().await?;
             if let Some(inviter) = details.inviter {
                 let invitation = Invitation {
                     client: client.clone(),
                     origin_server_ts: None,
-                    room_id: room.room_id().to_owned(),
+                    room: Room::Invited(room.clone()),
                     sender: inviter.user_id().to_owned(),
                 };
                 invitations.push(invitation);
@@ -217,16 +219,14 @@ impl InvitationController {
         client: &SdkClient,
     ) -> Result<()> {
         // filter only event for me
-        let user_id = client.user_id().expect("You seem to be not logged in");
+        let user_id = client.user_id().context("You seem to be not logged in")?;
         if ev.state_key != *user_id {
             return Ok(());
         }
 
         info!("stripped room member event: {:?}", ev);
         let start = SystemTime::now();
-        let since_the_epoch = start
-            .duration_since(UNIX_EPOCH)
-            .context("Time went backwards")?;
+        let since_the_epoch = start.duration_since(UNIX_EPOCH)?;
 
         info!("event type: StrippedRoomMemberEvent");
         info!("membership: {:?}", ev.content.membership);
@@ -237,13 +237,13 @@ impl InvitationController {
             let invitation = Invitation {
                 client: client.clone(),
                 origin_server_ts: Some(since_the_epoch.as_millis() as u64),
-                room_id: room_id.to_owned(),
+                room: room.clone(),
                 sender: sender.to_owned(),
             };
             let mut invitations = self.invitations.lock_mut();
             if !invitations
                 .iter()
-                .any(|x| x.room_id == *room_id && x.sender == *sender)
+                .any(|x| x.room_id() == *room_id && x.sender == *sender)
             {
                 invitations.insert(0, invitation);
             }
@@ -265,14 +265,14 @@ impl InvitationController {
                     (MembershipState::Invite, MembershipState::Join) => {
                         // remove this invitation from list
                         let room_id = room.room_id().to_string();
-                        if let Some(idx) = invitations.iter().position(|x| x.room_id == room_id) {
+                        if let Some(idx) = invitations.iter().position(|x| x.room_id() == room_id) {
                             invitations.remove(idx);
                         }
                     }
                     (MembershipState::Invite, MembershipState::Leave) => {
                         // remove this invitation from list
                         let room_id = room.room_id().to_string();
-                        if let Some(idx) = invitations.iter().position(|x| x.room_id == room_id) {
+                        if let Some(idx) = invitations.iter().position(|x| x.room_id() == room_id) {
                             invitations.remove(idx);
                         }
                     }
@@ -302,25 +302,19 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 // get member list of target room
-                let members = room
-                    .members(RoomMemberships::ACTIVE)
-                    .await
-                    .context("Couldn't get members of room")?;
+                let members = room.members(RoomMemberships::ACTIVE).await?;
                 let room_members = members
                     .iter()
                     .map(|x| x.user_id().to_owned())
                     .collect::<Vec<OwnedUserId>>();
                 // iterate my rooms to get user list
                 let mut profiles: Vec<UserProfile> = vec![];
-                let (spaces, convos) = devide_spaces_from_convos(client.clone()).await;
+                let (spaces, convos) = devide_spaces_from_convos(client.clone(), None).await;
                 for convo in convos {
                     if convo.room_id() == room_id {
                         continue;
                     }
-                    let members = convo
-                        .members(RoomMemberships::ACTIVE)
-                        .await
-                        .context("Couldn't get members of conversation")?;
+                    let members = convo.members(RoomMemberships::ACTIVE).await?;
                     for member in members {
                         let user_id = member.user_id().to_owned();
                         // exclude user that belongs to target room
@@ -331,7 +325,7 @@ impl Client {
                         if profiles.iter().any(|x| x.user_id() == user_id) {
                             continue;
                         }
-                        let user_profile = UserProfile::new(client.core.client().clone(), user_id);
+                        let user_profile = UserProfile::from_member(member);
                         profiles.push(user_profile);
                     }
                 }

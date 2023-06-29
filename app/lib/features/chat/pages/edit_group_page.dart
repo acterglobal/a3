@@ -21,7 +21,7 @@ class EditGroupInfoScreen extends StatefulWidget {
 }
 
 class _EditGroupInfoState extends State<EditGroupInfoScreen> {
-  Future<FfiBufferUint8>? avatar;
+  FfiBufferUint8? avatar;
   String? displayName;
   TextEditingController nameController = TextEditingController();
   TextEditingController descController = TextEditingController();
@@ -35,14 +35,17 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
     descController.text = widget.description;
     final profile = widget.room.getProfile();
     if (profile.hasAvatar()) {
-      avatar = profile.getAvatar();
+      profile.getAvatar().then((value) {
+        FfiBufferUint8? data = value.data();
+        if (data != null && mounted) {
+          setState(() => avatar = data);
+        }
+      });
     }
     profile.getDisplayName().then((value) {
-      if (mounted) {
-        String? name = value.text();
-        if (name != null) {
-          setState(() => displayName = name);
-        }
+      String? name = value.text();
+      if (name != null && mounted) {
+        setState(() => displayName = name);
       }
     });
   }
