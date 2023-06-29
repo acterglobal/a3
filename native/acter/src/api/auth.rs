@@ -1,6 +1,5 @@
 use acter_core::RestoreToken;
 use anyhow::{bail, Context, Result};
-use log::info;
 use matrix_sdk::{
     ruma::{
         api::client::{account::register, session::login, uiaa},
@@ -8,6 +7,7 @@ use matrix_sdk::{
     },
     Client as SdkClient, ClientBuilder, Session,
 };
+use tracing::{error, info};
 
 use super::{
     client::{Client, ClientStateBuilder},
@@ -236,7 +236,7 @@ pub async fn register_under_config(
                     });
                     client.register(request).await?;
                 } else {
-                    tracing::error!(?resp, "Not a UIAA response");
+                    error!(?resp, "Not a UIAA response");
                     bail!("No a uiaa response");
                 }
             }

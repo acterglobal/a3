@@ -1,5 +1,7 @@
 import 'dart:core';
-import 'package:acter/features/space/providers/space_providers.dart';
+
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 class RelatedSpacesCard extends ConsumerWidget {
   final String spaceId;
+
   const RelatedSpacesCard({super.key, required this.spaceId});
 
   @override
@@ -20,9 +23,17 @@ class RelatedSpacesCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Related Spaces',
-              style: Theme.of(context).textTheme.titleMedium,
+            InkWell(
+              onTap: () {
+                context.pushNamed(
+                  Routes.relatedSpaces.name,
+                  pathParameters: {'spaceId': spaceId},
+                );
+              },
+              child: Text(
+                'Related Spaces',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
             ),
             const SizedBox(height: 10),
             ...spaces.when(

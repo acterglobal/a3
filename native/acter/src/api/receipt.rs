@@ -2,7 +2,6 @@ use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     StreamExt,
 };
-use log::{info, warn};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::Room,
@@ -14,6 +13,7 @@ use matrix_sdk::{
 };
 use std::sync::Arc;
 use tokio::sync::Mutex;
+use tracing::{error, info};
 
 use super::client::Client;
 
@@ -137,7 +137,7 @@ impl ReceiptController {
         }
         if !msg.is_empty() {
             if let Err(e) = self.event_tx.try_send(msg) {
-                log::warn!("Dropping ephemeral event for {}: {}", room_id, e);
+                error!("Dropping ephemeral event for {}: {}", room_id, e);
             }
         }
     }

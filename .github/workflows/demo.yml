@@ -27,11 +27,25 @@ jobs:
           # Only return if PR is not in draft state. (By default it returns PRs in any state.)
           # filterOutDraft: true
 
+      - run: echo "PR $prNumber $prTitle at $prUrl is labeled $prLabels. It should run a demo build; $contains"
+        if: steps.PR.outputs.pr_found == 'true'
+        env:
+          # Direct access to common PR properties
+          prNumber: ${{ steps.PR.outputs.number }}
+          prUrl: ${{ steps.PR.outputs.pr_url }}
+          prTitle: ${{ steps.PR.outputs.pr_title }}
+          prBody: ${{ steps.PR.outputs.pr_body }}
+          prCreatedAt: ${{ steps.PR.outputs.pr_created_at }}
+          prMergedAt: ${{ steps.PR.outputs.pr_merged_at }}
+          prClosedAt: ${{ steps.PR.outputs.pr_closed_at }}
+          prLabels: ${{ steps.PR.outputs.pr_labels }}
+          contains: ${{ contains(steps.PR.outputs.pr_labels, 'build-demo') }}
+     
   tags:
     runs-on: ubuntu-latest
     # Map a step output to a job output
     outputs:
-      tag: ${{ inputs.custom_tag || steps.tag.outputs.tag }}
+      tag: ${{ steps.tag.outputs.tag }}
       build_num: ${{ steps.build_num.outputs.build_num }}
     steps:
       - name: Get branch name
@@ -261,6 +275,6 @@ jobs:
         uses: actions/upload-artifact@v3
         
         with:
-          name: ${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}
+          name: ${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}
           retention-days: 14
-          path: ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.*
+          path: ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*

@@ -15,6 +15,7 @@ use tokio_retry::{
     Retry,
 };
 use toml::{Table, Value as TomlValue};
+use tracing::trace;
 
 pub mod filters;
 pub mod functions;
@@ -314,7 +315,7 @@ impl Engine {
     }
 
     pub fn execute(&self) -> Result<ExecutionStream, Error> {
-        tracing::trace!(name = ?self.root.name, "executing");
+        trace!(name = ?self.root.name, "executing");
 
         let env = {
             let mut env = Environment::new();
@@ -338,7 +339,7 @@ impl Engine {
             let mut default_space = None;
 
             for (name, input) in self.requested_inputs() {
-                tracing::trace!(
+                trace!(
                     name,
                     is_default = input.is_default(),
                     is_user = input.is_user(),
@@ -372,12 +373,12 @@ impl Engine {
             (default_user, default_user_name, default_space)
         };
 
-        tracing::trace!(?default_user_key, "starting stream");
+        trace!(?default_user_key, "starting stream");
 
         let stream = try_stream! {
-            tracing::trace!(total = objects.len(), "starting execution");
+            trace!(total = objects.len(), "starting execution");
             for (count, (key, fields)) in objects.into_iter().enumerate() {
-                tracing::trace!(count,  ?key, "executing");
+                trace!(count, ?key, "executing");
                 let reformatted = execute_value_template(TomlValue::Table(fields), &env, &context)
                     .map_err(|e| Error::RenderingObject(key.to_string(), e.to_string()))?;
                 let TomlValue::Table(t) = reformatted else {
@@ -451,13 +452,13 @@ impl Engine {
 
                 match obj {
                     ObjectInner::TaskList{ fields } => {
-                        tracing::trace!(?fields, "submitting task list");
+                        trace!(?fields, "submitting task list");
                         let id = room
                             .send(fields, None)
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
-                        tracing::trace!(?id, "task list created");
+                        trace!(?id, "task list created");
                         context.insert(
                             key.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "task-list".to_owned())),
@@ -465,13 +466,13 @@ impl Engine {
                         yield
                     }
                     ObjectInner::Task{ fields } => {
-                        tracing::trace!(?fields, "submitting task");
+                        trace!(?fields, "submitting task");
                         let id = room
                             .send(fields, None)
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
-                        tracing::trace!(?id, "task created");
+                        trace!(?id, "task created");
                         context.insert(
                             key.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "task".to_owned())),
@@ -479,13 +480,13 @@ impl Engine {
                         yield
                     }
                     ObjectInner::CalendarEvent{ fields } => {
-                        tracing::trace!(?fields, "submitting calendar event");
+                        trace!(?fields, "submitting calendar event");
                         let id = room
                             .send(fields, None)
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
-                        tracing::trace!(?id, "calendar event created");
+                        trace!(?id, "calendar event created");
                         context.insert(
                             key.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "calendar-event".to_owned())),
@@ -493,13 +494,13 @@ impl Engine {
                         yield
                     }
                     ObjectInner::Pin{ fields } => {
-                        tracing::trace!(?fields, "submitting pin");
+                        trace!(?fields, "submitting pin");
                         let id = room
                             .send(fields, None)
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
-                        tracing::trace!(?id, "pin created");
+                        trace!(?id, "pin created");
                         context.insert(
                             key.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "pin".to_owned())),
@@ -507,13 +508,13 @@ impl Engine {
                         yield
                     }
                     ObjectInner::NewsEntry{ fields } => {
-                        tracing::trace!(?fields, "submitting news entry");
+                        trace!(?fields, "submitting news entry");
                         let id = room
                             .send(fields, None)
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
-                        tracing::trace!(?id, "news created");
+                        trace!(?id, "news created");
                         context.insert(
                             key.to_string(),
                             Value::from_struct_object(ObjRef::new(id.to_string(), "news-entry".to_owned())),

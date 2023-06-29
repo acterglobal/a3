@@ -10,8 +10,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         Comment,
         CommentDraft,
         CommentsManager,
-        DispName,
         CreateSpaceSettings,
+        OptionText,
+        RoomId,
         RoomProfile,
         Space,
         Task,
@@ -45,12 +46,16 @@ class ToDoController extends GetxController {
   }
 
   /// creates team (group).
-  Future<String> createTeam(String name) async {
+  Future<String> createTeam(
+    String name,
+    String? description,
+    String? avatarUri,
+  ) async {
     final sdk = await ActerSdk.instance;
-    CreateSpaceSettings settings = sdk.newSpaceSettings(name);
-    String roomId =
-        await client.createActerSpace(settings).then((id) => id.toString());
-    return roomId;
+    CreateSpaceSettings settings =
+        sdk.newSpaceSettings(name, description, avatarUri, null);
+    RoomId roomId = await client.createActerSpace(settings);
+    return roomId.toString();
   }
 
   /// fetches teams (groups) for client.
@@ -61,11 +66,11 @@ class ToDoController extends GetxController {
     if (listTeams.isNotEmpty) {
       for (var team in listTeams) {
         RoomProfile profile = team.getProfile();
-        DispName dispName = await profile.getDisplayName();
+        OptionText displayName = await profile.getDisplayName();
         // Team avatars are yet to be implemented.
         Team item = Team(
           id: team.getRoomId().toString(),
-          name: dispName.text(),
+          name: displayName.text(),
         );
         teams.add(item);
       }
@@ -75,17 +80,15 @@ class ToDoController extends GetxController {
 
   /// fetches todos for client.
   void getTodoList() async {
-    List<Space> groups =
-        await client.spaces().then((groups) => groups.toList());
+    List<Space> groups = (await client.spaces()).toList();
     for (var group in groups) {
       RoomProfile profile = group.getProfile();
-      DispName dispName = await profile.getDisplayName();
+      OptionText dispName = await profile.getDisplayName();
       Team team = Team(
         id: group.getRoomId().toString(),
         name: dispName.text(),
       );
-      List<TaskList> taskList =
-          await group.taskLists().then((ffiList) => ffiList.toList());
+      List<TaskList> taskList = (await group.taskLists()).toList();
       for (var todo in taskList) {
         List<ToDoTask> tasks = await getTodoTasks(todo);
         ToDoList item = ToDoList(
@@ -177,7 +180,7 @@ class ToDoController extends GetxController {
   ) async {
     final Space space = await client.getSpace(teamId);
     final RoomProfile profile = space.getProfile();
-    final DispName dispName = await profile.getDisplayName();
+    final OptionText dispName = await profile.getDisplayName();
     final Team team = Team(
       id: space.getRoomId().toString(),
       name: dispName.text(),

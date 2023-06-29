@@ -17,7 +17,10 @@ class SpaceCard extends StatelessWidget {
     super.key,
     this.displayImage,
     this.title,
-    this.subtitle, this.username, this.displayName, this.roomId,
+    this.subtitle,
+    this.username,
+    this.displayName,
+    this.roomId,
   });
 
   @override
@@ -135,7 +138,7 @@ class SpaceCard extends StatelessWidget {
                             title!,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
-                           Text(
+                          Text(
                             subtitle!,
                             style: const TextStyle(color: Color(0xff79747E)),
                           ),

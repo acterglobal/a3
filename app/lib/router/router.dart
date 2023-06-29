@@ -1,5 +1,7 @@
 import 'package:acter/common/dialogs/dialog_page.dart';
 import 'package:acter/common/dialogs/side_sheet_page.dart';
+import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/presentation/pages/activities_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
@@ -7,15 +9,19 @@ import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/features/home/widgets/create_space_sheet.dart';
 import 'package:acter/features/news/pages/news_builder_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/news/pages/post_page.dart';
 import 'package:acter/features/news/pages/search_space_page.dart';
+import 'package:acter/features/onboarding/pages/intro_page.dart';
+import 'package:acter/features/onboarding/pages/intro_profile.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
-import 'package:acter/features/todo/pages/todo_page.dart';
+import 'package:acter/features/space/pages/related_spaces_page.dart';
+import 'package:acter/features/space/pages/spaces_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/search/pages/search.dart';
 import 'package:acter/features/settings/pages/index_page.dart';
@@ -25,12 +31,10 @@ import 'package:acter/features/settings/pages/licenses_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/features/todo/pages/create_task_sidesheet.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/todo/pages/todo_page.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-// ignore: implementation_imports
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:acter/common/utils/constants.dart';
 
 Future<String?> authGuardRedirect(
   BuildContext context,
@@ -56,22 +60,34 @@ Future<String?> authGuardRedirect(
   // ignore: deprecated_member_use
   return state.namedLocation(
     Routes.start.name,
-    queryParams: {'next': next},
+    queryParameters: {'next': next},
   );
 }
 
 final GlobalKey<NavigatorState> rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
+
 final GlobalKey<NavigatorState> shellNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'shell');
+
 final GlobalKey<NavigatorState> spaceNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'space');
 
 final routes = [
+   GoRoute(
+    name: Routes.intro.name,
+    path: Routes.intro.route,
+    builder: (context, state) => const IntroPage(),
+  ),
   GoRoute(
     name: Routes.start.name,
     path: Routes.start.route,
     builder: (context, state) => const StartPage(),
+  ),
+   GoRoute(
+    name: Routes.introProfile.name,
+    path: Routes.introProfile.route,
+    builder: (context, state) => const IntroProfile(),
   ),
   GoRoute(
     name: Routes.authLogin.name,
@@ -84,7 +100,7 @@ final routes = [
     builder: (context, state) => const RegisterPage(),
   ),
   GoRoute(
-    path: '/gallery',
+    path: '/gallery', 
     builder: (context, state) => const GalleryPage(),
   ),
   GoRoute(
@@ -92,7 +108,9 @@ final routes = [
     name: Routes.bugReport.name,
     path: Routes.bugReport.route,
     pageBuilder: (context, state) => DialogPage(
-      builder: (_) => BugReportPage(imagePath: state.queryParams['screenshot']),
+      builder: (BuildContext ctx) => BugReportPage(
+        imagePath: state.queryParameters['screenshot'],
+      ),
     ),
   ),
   GoRoute(
@@ -100,7 +118,7 @@ final routes = [
     name: Routes.quickJump.name,
     path: Routes.quickJump.route,
     pageBuilder: (context, state) => DialogPage(
-      builder: (_) => const QuickjumpDialog(),
+      builder: (BuildContext ctx) => const QuickjumpDialog(),
     ),
   ),
   GoRoute(
@@ -122,6 +140,30 @@ final routes = [
           );
         },
         child: const AddTaskActionSideSheet(),
+      );
+    },
+  ),
+  GoRoute(
+    parentNavigatorKey: rootNavigatorKey,
+    name: Routes.createSpace.name,
+    path: Routes.createSpace.route,
+    pageBuilder: (context, state) {
+      return SideSheetPage(
+        key: state.pageKey,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return SlideTransition(
+            position: Tween(
+              begin: const Offset(1, 0),
+              end: const Offset(0, 0),
+            ).animate(
+              animation,
+            ),
+            child: child,
+          );
+        },
+        child: CreateSpacePage(
+          initialParentsSpaceId: state.queryParameters['parentSpaceId'],
+        ),
       );
     },
   ),
@@ -329,24 +371,53 @@ final routes = [
           return NoTransitionPage(
             key: state.pageKey,
             child: SpaceShell(
-              spaceIdOrAlias: state.params['spaceId']!,
+              spaceIdOrAlias: state.pathParameters['spaceId']!,
               child: child,
             ),
           );
         },
         routes: <RouteBase>[
           GoRoute(
+            name: Routes.relatedSpaces.name,
+            path: Routes.relatedSpaces.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              debugPrint('in spaces related');
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: RelatedSpacesPage(
+                  spaceIdOrAlias: state.pathParameters['spaceId']!,
+                ),
+              );
+            },
+          ),
+          GoRoute(
             name: Routes.space.name,
             path: Routes.space.route,
             redirect: authGuardRedirect,
             pageBuilder: (context, state) {
+              debugPrint('in overview');
               return NoTransitionPage(
                 key: state.pageKey,
-                child: SpaceOverview(spaceIdOrAlias: state.params['spaceId']!),
+                child: SpaceOverview(
+                  spaceIdOrAlias: state.pathParameters['spaceId']!,
+                ),
               );
             },
           ),
         ],
+      ),
+
+      GoRoute(
+        name: Routes.spaces.name,
+        path: Routes.spaces.route,
+        redirect: authGuardRedirect,
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: const SpacesPage(),
+          );
+        },
       ),
 
       GoRoute(

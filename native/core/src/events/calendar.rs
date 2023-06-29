@@ -2,6 +2,7 @@ use derive_builder::Builder;
 use derive_getters::Getters;
 use matrix_sdk::ruma::events::{macros::EventContent, room::message::TextMessageEventContent};
 use serde::{Deserialize, Serialize};
+use tracing::trace;
 
 use crate::util::deserialize_some;
 
@@ -271,7 +272,7 @@ impl CalendarEventUpdateEventContent {
             updated = true;
         }
 
-        tracing::trace!(update = ?self, ?updated, ?calendar_event, "CalendarEvent updated");
+        trace!(update = ?self, ?updated, ?calendar_event, "CalendarEvent updated");
 
         Ok(updated)
     }

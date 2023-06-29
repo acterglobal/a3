@@ -5,11 +5,13 @@ use acter_core::{
 use anyhow::{Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
-use futures::{future::join_all, pin_mut, stream, Stream, StreamExt};
+use futures::{
+    future::{join_all, ready},
+    pin_mut, stream, Stream, StreamExt,
+};
 use futures_signals::signal::{
     channel, Mutable, MutableSignalCloned, Receiver, SignalExt, SignalStream,
 };
-use log::info;
 use matrix_sdk::{
     config::SyncSettings,
     room::Room as SdkRoom,
@@ -28,6 +30,7 @@ use tokio::{
     sync::{Mutex, RwLock},
     task::JoinHandle,
 };
+use tracing::{error, info, trace};
 
 use super::{
     account::Account,
@@ -77,8 +80,43 @@ impl Deref for Client {
     }
 }
 
-pub(crate) async fn devide_spaces_from_convos(client: Client) -> (Vec<Space>, Vec<Conversation>) {
+#[derive(Debug, Builder)]
+pub struct SpaceFilter {
+    #[builder(default = "true")]
+    include_joined: bool,
+    #[builder(default = "false")]
+    include_left: bool,
+    #[builder(default = "true")]
+    include_invited: bool,
+}
+
+impl SpaceFilter {
+    pub fn should_include(&self, room: &matrix_sdk::room::Room) -> bool {
+        match room {
+            matrix_sdk::room::Room::Joined(_) => self.include_joined,
+            matrix_sdk::room::Room::Left(_) => self.include_left,
+            matrix_sdk::room::Room::Invited(_) => self.include_invited,
+        }
+    }
+}
+
+impl Default for SpaceFilter {
+    fn default() -> Self {
+        SpaceFilter {
+            include_joined: true,
+            include_left: true,
+            include_invited: true,
+        }
+    }
+}
+
+pub(crate) async fn devide_spaces_from_convos(
+    client: Client,
+    filter: Option<SpaceFilter>,
+) -> (Vec<Space>, Vec<Conversation>) {
+    let filter = filter.unwrap_or_default();
     let (spaces, convos, _) = stream::iter(client.clone().rooms().into_iter())
+        .filter(|room| ready(filter.should_include(room)))
         .fold(
             (Vec::new(), Vec::new(), client),
             async move |(mut spaces, mut conversations, client), room| {
@@ -109,7 +147,7 @@ impl HistoryLoadState {
     }
 
     pub fn start(&mut self, known_spaces: Vec<OwnedRoomId>) {
-        tracing::trace!(?known_spaces, "Starting History loading");
+        trace!(?known_spaces, "Starting History loading");
         self.has_started = true;
         self.known_spaces.clear();
         for space in known_spaces.into_iter() {
@@ -130,7 +168,7 @@ impl HistoryLoadState {
     }
 
     pub fn set_loading(&mut self, room_id: OwnedRoomId, value: bool) -> bool {
-        tracing::trace!(?room_id, loading = value, "Setting room for loading");
+        trace!(?room_id, loading = value, "Setting room for loading");
         self.known_spaces.insert(room_id, value).unwrap_or_default()
     }
 
@@ -142,6 +180,7 @@ impl HistoryLoadState {
 #[derive(Clone)]
 pub struct SyncState {
     handle: Mutable<Option<JoinHandle<()>>>,
+    history_sync_handle: Mutable<Option<JoinHandle<Result<()>>>>,
     first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
     history_loading: Mutable<HistoryLoadState>,
 }
@@ -152,6 +191,7 @@ impl SyncState {
         Self {
             first_synced_rx,
             history_loading: Default::default(),
+            history_sync_handle: Default::default(),
             handle: Default::default(),
         }
     }
@@ -168,13 +208,13 @@ impl SyncState {
     }
 
     pub async fn await_has_synced_history(&self) -> Result<u32> {
-        tracing::trace!("Waiting for history to sync");
+        trace!("Waiting for history to sync");
         let signal = self.history_loading.signal_cloned().to_stream();
         pin_mut!(signal);
         while let Some(next_state) = signal.next().await {
-            tracing::trace!(?next_state, "History updated");
+            trace!(?next_state, "History updated");
             if next_state.is_done_loading() {
-                tracing::trace!(?next_state, "History sync completed");
+                trace!(?next_state, "History sync completed");
                 return Ok(next_state.total_spaces() as u32);
             }
         }
@@ -204,9 +244,7 @@ impl Drop for SyncState {
 
 impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
-        let core = CoreClient::new(client)
-            .await
-            .context("Couldn't create core client")?;
+        let core = CoreClient::new(client).await?;
         let cl = Client {
             core,
             state: Arc::new(RwLock::new(state)),
@@ -229,41 +267,40 @@ impl Client {
     }
 
     pub async fn template_engine(&self, template: &str) -> Result<Engine> {
-        let engine = self
-            .core
-            .template_engine(template)
-            .await
-            .context("Couldn't set up template engine")?;
+        let engine = self.core.template_engine(template).await?;
         Ok(engine)
     }
 
-    async fn refresh_history_on_start(&self, history: Mutable<HistoryLoadState>) -> Result<()> {
-        tracing::trace!(user_id=?self.user_id_ref(), "refreshing history");
-        let spaces = self
-            .spaces()
-            .await
-            .context("Couldn't get spaces from client")?;
-        let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
-        history.lock_mut().start(space_ids);
+    async fn refresh_history_on_start(
+        &self,
+        history: Mutable<HistoryLoadState>,
+    ) -> JoinHandle<Result<()>> {
+        let me = self.clone();
+        tokio::spawn(async move {
+            trace!(user_id=?me.user_id_ref(), "refreshing history");
+            let mut spaces = me.spaces().await?;
+            let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
+            history.lock_mut().start(space_ids);
 
-        join_all(spaces.iter().map(|space| async {
-            if !space.is_acter_space().await {
-                tracing::trace!(room_id=?space.room_id(), "not an acter space");
-                history.lock_mut().unknow_room(&space.room_id().to_owned());
-                return;
-            }
+            join_all(spaces.iter_mut().map(|space| async {
+                if !space.is_acter_space().await {
+                    trace!(room_id=?space.room_id(), "not an acter space");
+                    history.lock_mut().unknow_room(&space.room_id().to_owned());
+                    return;
+                }
 
-            space.add_handlers().await;
+                space.add_handlers().await;
 
-            if let Err(err) = space.refresh_history().await {
-                tracing::error!(?err, room_id=?space.room_id(), "Loading space history failed");
-            };
-            history
-                .lock_mut()
-                .set_loading(space.room_id().to_owned(), false);
-        }))
-        .await;
-        Ok(())
+                if let Err(err) = space.refresh_history().await {
+                    error!(?err, room_id=?space.room_id(), "Loading space history failed");
+                };
+                history
+                    .lock_mut()
+                    .set_loading(space.room_id().to_owned(), false);
+            }))
+            .await;
+            Ok(())
+        })
     }
 
     async fn refresh_history_on_way(
@@ -271,20 +308,20 @@ impl Client {
         history: Mutable<HistoryLoadState>,
         new_spaces: Vec<SdkRoom>,
     ) -> Result<()> {
-        tracing::trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
+        trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
 
         join_all(
             new_spaces
                 .into_iter()
                 .map(|room| Space::new(self.clone(), Room { room }))
-                .map(|space| {
+                .map(|mut space| {
                     let history = history.clone();
                     async move {
                         {
                             let room_id = space.room_id().to_owned();
                             let mut history = history.lock_mut();
                             if history.is_loading(&room_id) {
-                                tracing::trace!(room_id=?room_id, "Already loading room.");
+                                trace!(room_id=?room_id, "Already loading room.");
                                 return;
                             }
                             history.set_loading(room_id, true);
@@ -293,18 +330,20 @@ impl Client {
                         space.add_handlers().await;
 
                         if let Err(err) = space.refresh_history().await {
-                            tracing::error!(?err, room_id=?space.room_id(), "refreshing history failed");
+                            error!(?err, room_id=?space.room_id(), "refreshing history failed");
                         }
-                        history.lock_mut().set_loading(space.room_id().to_owned(), false);
+                        history
+                            .lock_mut()
+                            .set_loading(space.room_id().to_owned(), false);
                     }
-                })
+                }),
         )
         .await;
         Ok(())
     }
 
     pub fn start_sync(&mut self) -> SyncState {
-        tracing::info!("starting sync");
+        info!("starting sync");
         let state = self.state.clone();
         let me = self.clone();
         let executor = self.executor().clone();
@@ -332,9 +371,10 @@ impl Client {
         let initial_arc = Arc::new(AtomicBool::from(true));
         let sync_state = SyncState::new(first_synced_rx);
         let sync_state_history = sync_state.history_loading.clone();
+        let sync_state_history_sync_handle = sync_state.history_sync_handle.clone();
 
         let handle = RUNTIME.spawn(async move {
-            tracing::info!("spawning sync callback");
+            info!("spawning sync callback");
             let client = client.clone();
             let state = state.clone();
 
@@ -343,12 +383,13 @@ impl Client {
             let mut conversation_controller = conversation_controller.clone();
 
             let sync_state_history = sync_state_history.clone();
+            let sync_state_history_sync_handle = sync_state_history_sync_handle.clone();
 
             // fetch the events that received when offline
             client
                 .clone()
                 .sync_with_result_callback(SyncSettings::new(), |result| async {
-                    tracing::info!("received sync callback");
+                    info!("received sync callback");
                     let client = client.clone();
                     let me = me.clone();
                     let executor = executor.clone();
@@ -366,48 +407,54 @@ impl Client {
                         Ok(response) => response,
                         Err(err) => {
                             if let Some(RumaApiError::ClientApi(e)) = err.as_ruma_api_error() {
-                                tracing::warn!(?e, "Client error");
+                                error!(?e, "Client error");
                                 return Ok(LoopCtrl::Break);
                             }
-                            tracing::warn!(?err, "Other error, continuing");
+                            error!(?err, "Other error, continuing");
                             return Ok(LoopCtrl::Continue);
                         }
                     };
 
                     device_controller.process_device_lists(&client, &response);
-                    tracing::trace!("post decallbackvice controller");
+                    trace!("post device controller");
 
                     if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
                         == Ok(true)
                     {
-                        tracing::info!("received first sync");
-                        tracing::trace!(user_id=?client.user_id(), "initial synced");
+                        info!("received first sync");
+                        trace!(user_id=?client.user_id(), "initial synced");
+                        let filter = SpaceFilterBuilder::default()
+                            .build()
+                            .expect("Builder SpaceFilter doesn't fail");
                         // divide_spaces_from_convos must be called after first sync
-                        let (spaces, convos) = devide_spaces_from_convos(me.clone()).await;
+                        let (spaces, convos) =
+                            devide_spaces_from_convos(me.clone(), Some(filter)).await;
                         conversation_controller.load_rooms(&convos).await;
                         // load invitations after first sync
                         invitation_controller.load_invitations(&client).await;
 
                         initial.store(false, Ordering::SeqCst);
 
-                        tracing::info!("issuing first sync update");
+                        info!("issuing first sync update");
                         first_synced_arc.send(true);
                         if let Ok(mut w) = state.try_write() {
                             w.has_first_synced = true;
-                        }
-
-                        me.refresh_history_on_start(sync_state_history.clone())
+                        };
+                        // background and keep the handle around.
+                        let history_first_sync = me
+                            .refresh_history_on_start(sync_state_history.clone())
                             .await;
+                        sync_state_history_sync_handle.set(Some(history_first_sync));
                     } else {
                         // see if we have new spaces to catch up upon
                         let mut new_spaces = Vec::new();
-                        for (room_id, room) in response.rooms.join {
-                            if sync_state_history.lock_mut().knows_room(&room_id) {
+                        for room_id in response.rooms.join.keys() {
+                            if sync_state_history.lock_mut().knows_room(room_id) {
                                 // we are already loading this room
                                 continue;
                             }
-                            let Some(full_room) = me.get_room(&room_id) else {
-                                tracing::warn!("room not found. how can that be?");
+                            let Some(full_room) = me.get_room(room_id) else {
+                                error!("room not found. how can that be?");
                                 continue;
                             };
                             if is_acter_space(&full_room).await {
@@ -421,10 +468,24 @@ impl Client {
                         }
                     }
 
+                    let mut changed_rooms = response
+                        .rooms
+                        .join
+                        .keys()
+                        .chain(response.rooms.leave.keys())
+                        .chain(response.rooms.invite.keys())
+                        .map(|id| id.to_string()) // FIXME: handle aliases, too?!?
+                        .collect::<Vec<_>>();
+
+                    if (!changed_rooms.is_empty()) {
+                        changed_rooms.push("SPACES".to_owned());
+                        me.executor().notify(changed_rooms);
+                    }
+
                     if let Ok(mut w) = state.try_write() {
                         if w.should_stop_syncing {
                             w.is_syncing = false;
-                            tracing::trace!("Stopping syncing upon user request");
+                            trace!("Stopping syncing upon user request");
                             return Ok(LoopCtrl::Break);
                         }
                     }
@@ -434,7 +495,7 @@ impl Client {
                         }
                     }
 
-                    tracing::trace!("ready for the next round");
+                    trace!("ready for the next round");
                     Ok(LoopCtrl::Continue)
                 })
                 .await;
@@ -485,9 +546,10 @@ impl Client {
 
     pub async fn conversations(&self) -> Result<Vec<Conversation>> {
         let client = self.clone();
+        let filter = SpaceFilterBuilder::default().build()?;
         RUNTIME
             .spawn(async move {
-                let (spaces, conversations) = devide_spaces_from_convos(client).await;
+                let (spaces, conversations) = devide_spaces_from_convos(client, Some(filter)).await;
                 Ok(conversations)
             })
             .await?
@@ -505,8 +567,8 @@ impl Client {
         self.core
             .client()
             .user_id()
-            .map(|x| x.to_owned())
             .context("UserId not found. Not logged in?")
+            .map(|x| x.to_owned())
     }
 
     fn user_id_ref(&self) -> Option<&UserId> {
@@ -518,12 +580,12 @@ impl Client {
         self.core
             .client()
             .get_room(&room_id)
-            .map(|room| Room { room })
             .context("Room not found")
+            .map(|room| Room { room })
     }
 
-    pub fn subscribe(&self, key: String) -> impl Stream<Item = bool> {
-        self.executor().subscribe(key).map(|()| true)
+    pub fn subscribe(&self, key: String) -> async_broadcast::Receiver<()> {
+        self.executor().subscribe(key)
     }
 
     pub(crate) async fn wait_for(
@@ -555,14 +617,18 @@ impl Client {
             .core
             .client()
             .device_id()
-            .context("No Device ID found")?;
-        Ok(device_id.to_owned())
+            .context("No Device ID found")?
+            .to_owned();
+        Ok(device_id)
     }
 
     pub fn get_user_profile(&self) -> Result<UserProfile> {
-        let client = self.core.client().clone();
-        let user_id = self.user_id()?;
-        Ok(UserProfile::new(client, user_id))
+        let client = self.core.client();
+        let user_id = client
+            .user_id()
+            .context("Couldn't get user id from client")?
+            .to_owned();
+        Ok(UserProfile::from_account(client.account(), user_id))
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
@@ -603,7 +669,7 @@ impl Client {
                 match client.logout().await {
                     Ok(resp) => Ok(true),
                     Err(e) => {
-                        info!("logout error: {:?}", e);
+                        error!("logout error: {:?}", e);
                         Ok(false)
                     }
                 }

@@ -2,6 +2,7 @@ use acter_core::spaces::SpaceRelation;
 use anyhow::{Context, Result};
 use clap::Parser;
 use futures::StreamExt;
+use tracing::info;
 
 use crate::config::LoginConfig;
 
@@ -25,17 +26,17 @@ pub struct List {
 impl List {
     pub async fn run(&self) -> Result<()> {
         let mut client = self.login.client().await?;
-        tracing::info!(" - Syncing -");
+        info!(" - Syncing -");
         let sync_state = client.start_sync();
 
         let mut is_synced = sync_state.first_synced_rx().context("not yet read")?;
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
-        tracing::info!(" - First Sync finished - ");
+        info!(" - First Sync finished - ");
 
         if self.await_history_sync {
-            tracing::info!(" - Waiting for history to have synced - ");
+            info!(" - Waiting for history to have synced - ");
             sync_state.await_has_synced_history().await?;
-            tracing::info!(" - History synced - ");
+            info!(" - History synced - ");
         }
 
         println!("## Spaces:");

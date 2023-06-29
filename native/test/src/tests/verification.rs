@@ -1,8 +1,8 @@
 use acter::api::{login_new_client, VerificationEvent};
 use anyhow::Result;
 use futures::{channel::mpsc::Receiver, stream::StreamExt};
-use log::info;
 use tempfile::TempDir;
+use tracing::info;
 
 use crate::utils::default_user_password;
 

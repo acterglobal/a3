@@ -3,7 +3,9 @@ enum Routes {
   actionAddTask('/actions/addTask'),
 
   // --- Auth
+  intro('/intro'),
   start('/start'),
+  introProfile('/introProfile'),
   authLogin('/login'),
   authRegister('/register'),
 
@@ -20,7 +22,7 @@ enum Routes {
 
   // --- chat
   chat('/chat'),
-  chatroom('/chat/:spaceId([!#][^/]+)'), // !roomId, #roomName
+  chatroom(r'/chat/(?<roomId>([!#][^/]+)'), // !roomId, #roomName
 
   // --- updates
   updatesEdit('updates_edit'),
@@ -28,9 +30,12 @@ enum Routes {
   updatesPostSearch('post_search'),
 
   // -- spaces
+  spaces('/spaces'),
+  createSpace('/spaces/create'),
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
+  relatedSpaces('/:spaceId([!#][^/]+)/spaces'), // !spaceId, #spaceName
 
-  // -- settigns
+  // -- settings
   settings('/settings'),
   settingsLabs('/settings/labs'),
   info('/info'),

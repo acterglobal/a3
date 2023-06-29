@@ -7,14 +7,21 @@ use matrix_sdk::{
             Visibility,
         },
         assign,
-        events::macros::EventContent,
+        events::{
+            macros::EventContent,
+            room::avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+            space::parent::SpaceParentEventContent,
+            InitialStateEvent,
+        },
         room::RoomType,
         serde::Raw,
         OwnedRoomId, OwnedUserId, UserId,
     },
 };
 use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 use strum::Display;
+use tracing::error;
 
 use crate::{
     client::CoreClient,
@@ -59,6 +66,15 @@ pub struct CreateSpaceSettings {
 
     #[builder(setter(strip_option), default)]
     alias: Option<String>,
+
+    #[builder(setter(strip_option), default)]
+    topic: Option<String>,
+
+    #[builder(setter(strip_option), default)]
+    avatar_uri: Option<String>,
+
+    #[builder(setter(strip_option), default)]
+    parent: Option<OwnedRoomId>,
 }
 
 impl CreateSpaceSettings {
@@ -82,6 +98,14 @@ impl CreateSpaceSettings {
 
     pub fn alias(&mut self, value: String) {
         self.alias = Some(value);
+    }
+
+    pub fn topic(&mut self, value: String) {
+        self.topic = Some(value);
+    }
+
+    pub fn avatar_uri(&mut self, value: String) {
+        self.avatar_uri = Some(value);
     }
 }
 
@@ -166,25 +190,57 @@ struct SpaceParentStateEventContent {
 
 impl CoreClient {
     pub async fn create_acter_space(&self, settings: CreateSpaceSettings) -> Result<OwnedRoomId> {
-        let content = &assign!(CreationContent::new(), {
+        let client = self.client();
+        let content = assign!(CreationContent::new(), {
             room_type: Some(RoomType::Space),
         });
-        let initial_states = default_acter_space_states();
-        let room_id = self
-            .client()
-            .create_room(assign!(CreateRoomRequest::new(), {
-                creation_content: Some(Raw::new(content)?),
-                initial_state: initial_states,
-                is_direct: false,
-                invite: settings.invites,
-                room_alias_name: settings.alias,
-                name: settings.name,
-                visibility: settings.visibility,
-            }))
-            .await?
-            .room_id()
-            .to_owned();
-        Ok(room_id)
+        let CreateSpaceSettings {
+            name,
+            visibility,
+            invites,
+            alias,
+            topic,
+            avatar_uri,
+            parent,
+        } = settings;
+        let mut initial_states = default_acter_space_states();
+
+        if let Some(uri) = avatar_uri {
+            let path = PathBuf::from(uri);
+            let guess = mime_guess::from_path(path.clone());
+            let content_type = guess.first().expect("MIME type should be given");
+            let buf = std::fs::read(path).expect("File should be read");
+            let upload_resp = client.media().upload(&content_type, buf).await?;
+
+            let info = assign!(ImageInfo::new(), {
+                blurhash: upload_resp.blurhash,
+                mimetype: Some(content_type.to_string()),
+            });
+            let room_avatar_content = assign!(RoomAvatarEventContent::new(), { url : Some(upload_resp.content_uri), info: Some(Box::new(info)) } );
+            initial_states.push(InitialRoomAvatarEvent::new(room_avatar_content).to_raw_any());
+        };
+
+        if let Some(parent) = parent {
+            let parent_event = InitialStateEvent::<SpaceParentEventContent> {
+                content: SpaceParentEventContent::new(true),
+                state_key: parent,
+            };
+            initial_states.push(parent_event.to_raw_any());
+        };
+
+        let request = assign!(CreateRoomRequest::new(), {
+            creation_content: Some(Raw::new(&content)?),
+            initial_state: initial_states,
+            is_direct: false,
+            invite: invites,
+            room_alias_name: alias,
+            name: name,
+            visibility: visibility,
+            topic: topic,
+        });
+        let room = client.create_room(request).await?;
+
+        Ok(room.room_id().to_owned())
     }
 
     // calculate the space relationships in accordance with:
@@ -204,7 +260,7 @@ impl CoreClient {
             let ev = match raw.deserialize() {
                 Ok(e) => e,
                 Err(error) => {
-                    tracing::warn!(
+                    error!(
                         room_id = ?room.room_id(),
                         ?error,
                         "Parsing parent event failed"
@@ -261,7 +317,7 @@ impl CoreClient {
             let ev = match raw.deserialize() {
                 Ok(e) => e,
                 Err(error) => {
-                    tracing::warn!(
+                    error!(
                         room_id = ?room.room_id(),
                         ?error,
                         "Parsing parent event failed"

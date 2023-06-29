@@ -6,7 +6,11 @@ use matrix_sdk::{
 };
 use std::ops::Deref;
 
-use super::{api::FfiBuffer, RUNTIME};
+use super::{
+    api::FfiBuffer,
+    common::{OptionBuffer, OptionText},
+    RUNTIME,
+};
 
 #[derive(Clone, Debug)]
 pub struct Account {
@@ -30,15 +34,12 @@ impl Account {
         self.user_id.clone()
     }
 
-    pub async fn display_name(&self) -> Result<String> {
+    pub async fn display_name(&self) -> Result<OptionText> {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let display_name = account
-                    .get_display_name()
-                    .await?
-                    .context("No User ID found")?;
-                Ok(display_name)
+                let name = account.get_display_name().await?;
+                Ok(OptionText::new(name))
             })
             .await?
     }
@@ -52,37 +53,28 @@ impl Account {
                 } else {
                     Some(new_name.as_str())
                 };
-                account
-                    .set_display_name(name)
-                    .await
-                    .context("Couldn't set display name")?;
+                account.set_display_name(name).await?;
                 Ok(true)
             })
             .await?
     }
 
-    pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
+    pub async fn avatar(&self) -> Result<OptionBuffer> {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let buf = account
-                    .get_avatar(MediaFormat::File)
-                    .await?
-                    .context("No avatar URL given")?;
-                Ok(FfiBuffer::new(buf))
+                let buf = account.get_avatar(MediaFormat::File).await?;
+                Ok(OptionBuffer::new(buf))
             })
             .await?
     }
 
-    pub async fn set_avatar(&self, content_type: String, data: Vec<u8>) -> Result<OwnedMxcUri> {
+    pub async fn upload_avatar(&self, content_type: String, data: Vec<u8>) -> Result<OwnedMxcUri> {
         let account = self.account.clone();
         let content_type = content_type.parse::<mime::Mime>()?;
         RUNTIME
             .spawn(async move {
-                let new_url = account
-                    .upload_avatar(&content_type, data)
-                    .await
-                    .context("Couldn't upload avatar")?;
+                let new_url = account.upload_avatar(&content_type, data).await?;
                 Ok(new_url)
             })
             .await?

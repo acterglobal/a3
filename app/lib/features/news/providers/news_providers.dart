@@ -1,4 +1,4 @@
-import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/news/providers/notifiers/news_list_notifier.dart';
 import 'package:acter/features/news/providers/notifiers/post_update_notifier.dart';
 import 'package:acter/features/news/providers/notifiers/search_space_notifier.dart';

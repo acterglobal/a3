@@ -2,9 +2,9 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/network_notifier.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Account, Conversation, DispName, Member, UserProfile;
+    show Account, Conversation, Member, OptionText, UserProfile;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Network/Connectivity Providers
@@ -25,9 +25,9 @@ class AccountProfile {
 
 Future<ProfileData> getProfileData(Account account) async {
   // FIXME: how to get informed about updates!?!
-  final name = await account.displayName();
+  final displayName = await account.displayName();
   final avatar = await account.avatar();
-  return ProfileData(name, avatar);
+  return ProfileData(displayName.text(), avatar.data());
 }
 
 final accountProvider = FutureProvider((ref) async {
@@ -46,13 +46,12 @@ final chatProfileDataProvider =
     FutureProvider.family<ProfileData, Conversation>((ref, chat) async {
   // FIXME: how to get informed about updates!?!
   final profile = chat.getProfile();
-  final name = await profile.getDisplayName();
-  final displayName = name.text() ?? chat.getRoomId().toString();
+  final displayName = await profile.getDisplayName();
   if (!profile.hasAvatar()) {
-    return ProfileData(displayName, null);
+    return ProfileData(displayName.text(), null);
   }
   final avatar = await profile.getThumbnail(48, 48);
-  return ProfileData(displayName, avatar);
+  return ProfileData(displayName.text(), avatar.data());
 });
 
 final chatsProvider = FutureProvider<List<Conversation>>((ref) async {
@@ -76,10 +75,10 @@ final chatMembersProvider =
   return members.toList();
 });
 
-final relatedChatsProvider =
-    FutureProvider.family<List<Conversation>, String>((ref, spaceId) async {
+final relatedChatsProvider = FutureProvider.autoDispose
+    .family<List<Conversation>, String>((ref, spaceId) async {
   final client = ref.watch(clientProvider)!;
-  final relatedSpaces = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
+  final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
   final chats = [];
   final children = relatedSpaces.children();
   for (final related in children) {
@@ -96,7 +95,7 @@ final relatedChatsProvider =
 final memberProfileProvider =
     FutureProvider.family.autoDispose<ProfileData, Member>((ref, member) async {
   UserProfile profile = member.getProfile();
-  DispName dispName = await profile.getDisplayName();
+  OptionText displayName = await profile.getDisplayName();
   final avatar = await profile.getAvatar();
-  return ProfileData(dispName.text(), avatar);
+  return ProfileData(displayName.text(), avatar.data());
 });

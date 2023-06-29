@@ -136,8 +136,13 @@ class AppTheme {
       dividerColor: const Color(0xFFDDEDFC),
       cardTheme: CardTheme(color: brandColorScheme.background, elevation: 0),
       dialogTheme: DialogTheme(
-        backgroundColor: brandColorScheme.background,
+        iconColor: const Color(0xFF67A24A),
+        backgroundColor: const Color(0xFF122D46),
         elevation: 0,
+        shape: RoundedRectangleBorder(
+          side: BorderSide.none,
+          borderRadius: BorderRadius.circular(6),
+        ),
       ),
       buttonTheme: ButtonThemeData(
         splashColor: Colors.transparent,

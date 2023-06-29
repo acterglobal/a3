@@ -1,6 +1,13 @@
-import 'package:acter/features/space/providers/space_providers.dart';
-import 'package:acter/features/space/widgets/top_nav.dart';
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Space;
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -20,148 +27,42 @@ class SpaceShell extends ConsumerStatefulWidget {
 }
 
 class _SpaceShellState extends ConsumerState<SpaceShell> {
-  String _dropDownValue = 'Member';
-  List<String> dropDownItems = [
-    'Member',
-    'Admin',
-  ];
-
   @override
   Widget build(BuildContext context) {
     // get platform of context.
     final space = ref.watch(spaceProvider(widget.spaceIdOrAlias));
-    double h = MediaQuery.of(context).size.height;
+    double h = (MediaQuery.of(context).size.height * 0.8);
     return space.when(
       data: (space) {
         final profileData = ref.watch(spaceProfileDataProvider(space));
-        final canonicalParent =
-            ref.watch(canonicalParentProvider(widget.spaceIdOrAlias));
         return profileData.when(
           data: (profile) => Scaffold(
+            backgroundColor: Colors.transparent,
             body: SafeArea(
               child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 300,
-                      child: Stack(
-                        children: <Widget>[
-                          Container(
-                            height: 200,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(
-                                  // FIXME: load image from actual settings
-                                  // and add default fallback to assets
-                                  'https://images.unsplash.com/photo-1439405326854-014607f694d7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
-                                ),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: 30,
-                            top: 110,
-                            child: ActerAvatar(
-                              mode: DisplayMode.Space,
-                              displayName: profile.displayName,
-                              tooltip: TooltipStyle.None,
-                              uniqueId: space.getRoomId().toString(),
-                              avatar: profile.getAvatarImage(),
-                              size: 160,
-                            ),
-                          ),
-                          ...canonicalParent.when(
-                            data: (parent) {
-                              if (parent == null) {
-                                return [];
-                              }
-                              return [
-                                Positioned(
-                                  left: 150,
-                                  top: 250,
-                                  child: Tooltip(
-                                    message: parent.profile.displayName,
-                                    child: InkWell(
-                                      onTap: () {
-                                        final roomId = parent.space.getRoomId();
-                                        context.go('/$roomId');
-                                      },
-                                      child: ActerAvatar(
-                                        mode: DisplayMode.Space,
-                                        displayName: parent.profile.displayName,
-                                        uniqueId:
-                                            parent.space.getRoomId().toString(),
-                                        avatar: parent.profile.getAvatarImage(),
-                                        size: 40,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ];
-                            },
-                            error: (error, stackTrace) => [],
-                            loading: () => [],
-                          ),
-                          Positioned(
-                            left: 180,
-                            top: 210,
-                            child: Container(
-                              margin: const EdgeInsets.only(left: 20),
-                              child: Text(
-                                profile.displayName ?? widget.spaceIdOrAlias,
-                                style:
-                                    Theme.of(context).textTheme.headlineMedium,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            right: 40,
-                            top: 230,
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton(
-                                elevation: 0,
-                                focusColor: Colors.transparent,
-                                borderRadius: BorderRadius.circular(10),
-                                value: _dropDownValue,
-                                onChanged: (String? value) {
-                                  _dropDownValue = value!;
-                                },
-                                items: dropDownItems
-                                    .map<DropdownMenuItem<String>>(
-                                        (String item) {
-                                  return DropdownMenuItem<String>(
-                                    value: item,
-                                    child: Text(
-                                      item,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .tertiary,
-                                          ),
-                                    ),
-                                  );
-                                }).toList(),
-                                icon: Icon(
-                                  Icons.expand_more,
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.center,
+                      colors: <Color>[
+                        Theme.of(context).colorScheme.background,
+                        Theme.of(context).colorScheme.neutral,
+                      ],
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      _ShellToolbar(space),
+                      _ShellHeader(widget.spaceIdOrAlias, profile),
+                      SizedBox(
+                        height: h < 300 ? h * 2 : h,
+                        child: widget.child,
                       ),
-                    ),
-                    const TopNavBar(isDesktop: true),
-                    SizedBox(
-                      height: h < 800 ? h * 2 : h,
-                      child: widget.child,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -172,6 +73,198 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
       },
       error: (error, stack) => Text('Loading failed: $error'),
       loading: () => const Text('Loading'),
+    );
+  }
+}
+
+class _ShellToolbar extends ConsumerWidget {
+  final Space space;
+  const _ShellToolbar(this.space);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: [
+          InkWell(
+            onTap: () => context.goNamed(Routes.dashboard.name),
+            child: Icon(
+              Atlas.arrow_left,
+              color: Theme.of(context).colorScheme.neutral5,
+            ),
+          ),
+          const Spacer(),
+          PopupMenuButton(
+            icon: Icon(
+              Icons.more_vert,
+              color: Theme.of(context).colorScheme.neutral5,
+            ),
+            iconSize: 28,
+            color: Theme.of(context).colorScheme.surface,
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              PopupMenuItem(
+                onTap: () => customMsgSnackbar(
+                  context,
+                  'Edit Space is not implemented yet',
+                ),
+                child: const Text('Edit Space'),
+              ),
+              PopupMenuItem(
+                onTap: () => customMsgSnackbar(
+                  context,
+                  'Edit Space is not implemented yet',
+                ),
+                child: const Text('Settings'),
+              ),
+              PopupMenuItem(
+                onTap: () => _handleLeaveSpace(context, space, ref),
+                child: const Text('Leave Space'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleLeaveSpace(
+    BuildContext context,
+    Space space,
+    WidgetRef ref,
+  ) {
+    popUpDialog(
+      context: context,
+      title: Column(
+        children: <Widget>[
+          const Icon(Icons.person_remove_outlined),
+          const SizedBox(height: 5),
+          Text('Leave Space', style: Theme.of(context).textTheme.titleMedium),
+        ],
+      ),
+      subtitle: const Text(
+        'Are you sure you want to leave this space?',
+      ),
+      btnText: 'No, Stay!',
+      onPressedBtn: () => context.pop(),
+      btn2Text: 'Yes, Leave!',
+      onPressedBtn2: () async => {
+        await space.leave(),
+        // refresh spaces list
+        ref.invalidate(spacesProvider),
+        context.pop(),
+        context.goNamed(Routes.dashboard.name),
+      },
+      btnColor: Colors.transparent,
+      btn2Color: Theme.of(context).colorScheme.errorContainer,
+      btnBorderColor: Theme.of(context).colorScheme.success,
+    );
+  }
+}
+
+class _ShellHeader extends ConsumerWidget {
+  final String spaceId;
+  final ProfileData spaceProfile;
+  const _ShellHeader(this.spaceId, this.spaceProfile);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Row(
+        children: <Widget>[
+          Wrap(
+            direction: Axis.horizontal,
+            spacing: -20,
+            children: [
+              ActerAvatar(
+                mode: DisplayMode.Space,
+                displayName: spaceProfile.displayName,
+                tooltip: TooltipStyle.None,
+                uniqueId: spaceId,
+                avatar: spaceProfile.getAvatarImage(),
+                size: 80,
+              ),
+              canonicalParent.when(
+                data: (parent) {
+                  if (parent == null) {
+                    return const SizedBox(width: 20);
+                  }
+                  return Column(
+                    children: <Widget>[
+                      const SizedBox(height: 50),
+                      Tooltip(
+                        message: parent.profile.displayName,
+                        child: InkWell(
+                          onTap: () {
+                            final roomId = parent.space.getRoomId();
+                            context.go('/$roomId');
+                          },
+                          child: ActerAvatar(
+                            mode: DisplayMode.Space,
+                            displayName: parent.profile.displayName,
+                            uniqueId: parent.space.getRoomId().toString(),
+                            avatar: parent.profile.getAvatarImage(),
+                            size: 40,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+                error: (error, stackTrace) => Text(
+                  'Failed to load canonical parent due to $error',
+                ),
+                loading: () => const CircularProgressIndicator(),
+              ),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  spaceProfile.displayName ?? spaceId,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              Consumer(
+                builder: (context, ref, child) {
+                  final spaceMembers = ref.watch(
+                    spaceMembersProvider(spaceId),
+                  );
+                  return spaceMembers.when(
+                    data: (members) {
+                      final membersCount = members.length;
+                      if (membersCount > 5) {
+                        // too many to display, means we limit to 10
+                        members = members.sublist(0, 5);
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Wrap(
+                          direction: Axis.horizontal,
+                          spacing: -6,
+                          children: [
+                            ...members.map(
+                              (a) => MemberAvatar(member: a),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    error: (error, stack) =>
+                        Text('Loading members failed: $error'),
+                    loading: () => const CircularProgressIndicator(),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

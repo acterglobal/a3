@@ -10,9 +10,10 @@ use crossterm::{
 };
 use std::{
     io,
-    sync::mpsc::Receiver,
+    sync::mpsc::{Receiver, TryRecvError},
     time::{Duration, Instant},
 };
+use tracing::{error, info, trace};
 use tui::{
     backend::{Backend, CrosstermBackend},
     layout::{Alignment, Constraint, Direction, Layout, Rect},
@@ -107,7 +108,7 @@ impl TasksState {
         }
 
         if update {
-            tracing::trace!("refreshing upon tick");
+            trace!("refreshing upon tick");
             if let Some(t) = &self.selected.clone() {
                 self.refresh(t).await;
             }
@@ -136,19 +137,19 @@ impl TasksState {
                 };
 
                 let resp = if task.is_done() {
-                    tracing::trace!(?task, "marking undone");
+                    trace!(?task, "marking undone");
                     task.update_builder().unwrap().mark_undone().send().await
                 } else {
-                    tracing::trace!(?task, "marking done");
+                    trace!(?task, "marking done");
                     task.update_builder().unwrap().mark_done().send().await
                 };
 
                 match resp {
                     Err(error) => {
-                        tracing::error!(?task, ?error, "updating task failed");
+                        error!(?task, ?error, "updating task failed");
                     }
                     Ok(event_id) => {
-                        tracing::trace!(?task, ?event_id, "updating accepted");
+                        trace!(?task, ?event_id, "updating accepted");
                     }
                 }
             }
@@ -157,7 +158,7 @@ impl TasksState {
             .selected()
             .and_then(|idx| self.task_lists.get(idx).cloned())
         {
-            tracing::trace!(?selected, "selecting");
+            trace!(?selected, "selecting");
             self.refresh(&selected).await;
             self.selected = Some(selected.clone());
         }
@@ -330,7 +331,7 @@ impl Tool {
         if !self.is_tasks() {
             unimplemented!("What are you doing here?")
         }
-        tracing::info!(len = t.len(), "settin tasks");
+        info!(len = t.len(), "setting tasks");
         *self = Tool::Tasks(TasksState::fresh(t))
     }
 
@@ -557,8 +558,8 @@ async fn run_app<B: Backend>(
             //apply all the changes
             match rx.try_recv() {
                 Ok(update) => app.apply(update),
-                Err(std::sync::mpsc::TryRecvError::Empty) => break, // nothing else to process
-                Err(std::sync::mpsc::TryRecvError::Disconnected) => return Ok(()), // time to quit
+                Err(TryRecvError::Empty) => break, // nothing else to process
+                Err(TryRecvError::Disconnected) => return Ok(()), // time to quit
             }
         }
         if last_tick.elapsed() >= tick_rate {

@@ -20,6 +20,7 @@ use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
 };
+use tracing::warn;
 
 use super::{client::Client, spaces::Space, RUNTIME};
 
@@ -76,12 +77,7 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client
-                    .store()
-                    .get_list(KEYS::TASKS)
-                    .await
-                    .context("Couldn't get task lists from store")?
-                {
+                for mdl in client.store().get_list(KEYS::TASKS).await? {
                     #[allow(irrefutable_let_patterns)]
                     if let AnyActerModel::TaskList(content) = mdl {
                         let room_id = content.room_id().to_owned();
@@ -103,7 +99,7 @@ impl Client {
                             content,
                         })
                     } else {
-                        tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
+                        warn!("Non task list model found in `tasks` index: {:?}", mdl);
                     }
                 }
                 Ok(task_lists)
@@ -115,11 +111,7 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let mdl = client
-                    .store()
-                    .get(key.as_str())
-                    .await
-                    .context("Couldn't get task list from store")?;
+                let mdl = client.store().get(key.as_str()).await?;
 
                 let AnyActerModel::TaskList(content) = mdl else  {
                     bail!("Not a Tasklist model: {key}")
@@ -146,12 +138,8 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client
-                    .store()
-                    .get_list(&format!("{room_id}::{}", KEYS::TASKS))
-                    .await
-                    .context("Couldn't get task list from store")?
-                {
+                let k = format!("{room_id}::{}", KEYS::TASKS);
+                for mdl in client.store().get_list(&k).await? {
                     #[allow(irrefutable_let_patterns)]
                     if let AnyActerModel::TaskList(content) = mdl {
                         task_lists.push(TaskList {
@@ -160,7 +148,7 @@ impl Space {
                             content,
                         });
                     } else {
-                        tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
+                        warn!("Non task list model found in `tasks` index: {:?}", mdl);
                     }
                 }
                 Ok(task_lists)
@@ -174,11 +162,7 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let mdl = client
-                    .store()
-                    .get(key.as_str())
-                    .await
-                    .context("Couldn't get task list from store")?;
+                let mdl = client.store().get(key.as_str()).await?;
 
                 let AnyActerModel::TaskList(content) = mdl else  {
                     bail!("Not a Tasklist model: {key}")
@@ -272,16 +256,10 @@ impl TaskListDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self
-            .content
-            .build()
-            .context("building failed in event content of task list")?;
+        let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room
-                    .send(content, None)
-                    .await
-                    .context("Couldn't send task list")?;
+                let resp = room.send(content, None).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -357,12 +335,12 @@ impl TaskList {
     }
 
     pub fn space(&self) -> Space {
-        Space {
-            client: self.client.clone(),
-            inner: crate::Room {
+        Space::new(
+            self.client.clone(),
+            crate::Room {
                 room: self.room.clone(),
             },
-        }
+        )
     }
 }
 
@@ -378,7 +356,7 @@ impl TaskList {
 
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::TaskList(content) = client.store().get(&key).await.context("Couldn't get task list from store")? else {
+                let AnyActerModel::TaskList(content) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a task")
                 };
                 Ok(TaskList {
@@ -574,7 +552,7 @@ impl Task {
 
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Task(content) = client.store().get(&key).await.context("Couldn't get task from store")? else {
+                let AnyActerModel::Task(content) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a task")
                 };
                 Ok(Task {
@@ -763,16 +741,10 @@ impl TaskDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self
-            .content
-            .build()
-            .context("building failed in event content of task")?;
+        let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room
-                    .send(content, None)
-                    .await
-                    .context("Couldn't send task")?;
+                let resp = room.send(content, None).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -990,16 +962,10 @@ impl TaskUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self
-            .content
-            .build()
-            .context("building failed in event content of task update")?;
+        let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room
-                    .send(content, None)
-                    .await
-                    .context("Couldn't send task update")?;
+                let resp = room.send(content, None).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -1111,16 +1077,10 @@ impl TaskListUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let content = self
-            .content
-            .build()
-            .context("building failed in event content of task list update")?;
+        let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room
-                    .send(content, None)
-                    .await
-                    .context("Couldn't send task list update")?;
+                let resp = room.send(content, None).await?;
                 Ok(resp.event_id)
             })
             .await?
