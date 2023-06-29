@@ -30,7 +30,7 @@ import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
-import 'package:acter/features/todo/pages/create_task_sidesheet.dart';
+import 'package:acter/features/tasks/pages/create_task_sidesheet.dart';
 import 'package:acter/features/tasks/pages/tasks_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
