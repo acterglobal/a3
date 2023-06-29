@@ -1,105 +1,14 @@
-import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-
-class TabEntry {
-  final Key key;
-  final String label;
-  final String target;
-  final Widget icon;
-
-  const TabEntry({
-    required this.key,
-    required this.icon,
-    required this.label,
-    required this.target,
-  });
-}
-
-final tabsProvider =
-    Provider.family<List<TabEntry>, BuildContext>((ref, context) {
-  final features = ref.watch(featuresProvider);
-  bool isActive(f) => features.isActive(f);
-  List<TabEntry> tabs = [
-    TabEntry(
-      key: const Key('overview'),
-      label: 'Overview',
-      icon: const Icon(Atlas.layout_half_thin),
-      target: Routes.space.name,
-    ),
-  ];
-
-  if (isActive(LabsFeature.pins)) {
-    tabs.add(
-      TabEntry(
-        key: const Key('pins'),
-        label: 'Pins',
-        icon: const Icon(Atlas.pin_thin),
-        target: Routes.space.name,
-      ),
-    );
-  }
-
-  if (isActive(LabsFeature.tasks)) {
-    tabs.add(
-      TabEntry(
-        key: const Key('tasks'),
-        label: 'Tasks',
-        icon: SvgPicture.asset(
-          'assets/images/tasks.svg',
-          semanticsLabel: 'tasks',
-          width: 24,
-          height: 24,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-        target: Routes.space.name,
-      ),
-    );
-  }
-
-  if (isActive(LabsFeature.events)) {
-    tabs.add(
-      TabEntry(
-        key: const Key('events'),
-        label: 'Events',
-        icon: const Icon(Atlas.calendar_schedule_thin),
-        target: Routes.space.name,
-      ),
-    );
-  }
-
-  tabs.add(
-    TabEntry(
-      key: const Key('chat'),
-      label: 'Chat',
-      icon: const Icon(Atlas.chats_thin),
-      target: Routes.space.name,
-    ),
-  );
-  tabs.add(
-    TabEntry(
-      key: const Key('spaces'),
-      label: 'Spaces',
-      icon: const Icon(Atlas.connection_thin),
-      target: Routes.relatedSpaces.name,
-    ),
-  );
-  return tabs;
-});
+import 'package:acter/features/space/providers/space_navbar_provider.dart';
 
 class TopNavBar extends ConsumerStatefulWidget {
   final String spaceId;
-  final Key selectedKey;
 
   const TopNavBar({
     super.key,
     required this.spaceId,
-    required this.selectedKey,
   });
 
   @override
@@ -116,11 +25,10 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
     recentWatchScreenTabStateTestProvider = Provider.autoDispose
         .family<TabController, BuildContext>((ref, context) {
       final tabs = ref.watch(tabsProvider(context));
-      final selectedIndex = tabs.indexWhere((e) => e.key == widget.selectedKey);
       return TabController(
         length: tabs.length,
         vsync: this,
-        initialIndex: selectedIndex < 0 ? 0 : selectedIndex,
+        initialIndex: 0,
       );
     });
     super.initState();
@@ -132,6 +40,8 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
 
     final _tabController =
         ref.watch(recentWatchScreenTabStateTestProvider(context));
+    final selectedIndex = ref.watch(selectedTabIdxProvider(context));
+    _tabController.animateTo(selectedIndex);
     return LayoutBuilder(
       builder: (context, constraints) {
         final useCols = constraints.maxWidth < (150 * tabs.length);

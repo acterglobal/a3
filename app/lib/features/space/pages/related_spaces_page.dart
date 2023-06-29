@@ -6,7 +6,6 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
-import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:go_router/go_router.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -61,13 +60,6 @@ class RelatedSpacesPage extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       child: CustomScrollView(
         slivers: [
-          SliverToBoxAdapter(
-            child: TopNavBar(
-              spaceId: spaceIdOrAlias,
-              key: Key('$spaceIdOrAlias::topnav'),
-              selectedKey: const Key('spaces'),
-            ),
-          ),
           ...spaces.when(
             data: (spaces) {
               final widthCount =
