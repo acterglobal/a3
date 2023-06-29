@@ -1305,7 +1305,6 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        secs: Option<u32>,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -1338,9 +1337,14 @@ impl Room {
                 let buf = std::fs::read(path)?;
                 let info = assign!(AudioInfo::new(), {
                     mimetype: Some(content_type.to_string()),
-                    duration: secs.map(|x| Duration::from_secs(x as u64)),
+                    duration: None,
                     size: UInt::new(buf.len() as u64),
                 });
+                if let Ok(probe) = Probe::open(path) {
+                    if let Ok(tagged_file) = probe.read() {
+                        info.duration = Some(tagged_file.properties().duration());
+                    }
+                }
 
                 let timeline_event = room.event(&event_id).await?;
 

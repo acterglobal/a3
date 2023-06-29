@@ -664,7 +664,7 @@ object Conversation {
     fn send_image_reply(uri: string, name: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as audio
-    fn send_audio_reply(uri: string, name: string, secs: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_audio_reply(uri: string, name: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as video
     fn send_video_reply(uri: string, name: string, secs: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
