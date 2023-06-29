@@ -40,7 +40,7 @@ class PageHeaderWidget extends StatelessWidget {
                       end: FractionalOffset.bottomCenter,
                       colors: [
                         sectionColor,
-                        gradientBottom ?? Theme.of(context).canvasColor,
+                        Theme.of(context).colorScheme.surface,
                       ],
                       stops: const [0, 1],
                     ),

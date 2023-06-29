@@ -1,7 +1,7 @@
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/features/todo/widgets/task_list_card.dart';
+import 'package:acter/features/tasks/widgets/task_list_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';

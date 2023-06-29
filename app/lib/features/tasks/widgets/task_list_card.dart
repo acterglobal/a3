@@ -1,11 +1,6 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
-import 'package:atlas_icons/atlas_icons.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import 'package:acter/features/tasks/providers/tasklists.dart';
-import 'package:acter/features/todo/widgets/task_entry.dart';
+import 'package:acter/features/tasks/widgets/task_entry.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter/material.dart';
@@ -38,8 +33,9 @@ class TasksNotifier extends FamilyAsyncNotifier<TasksOverview, TaskList> {
   }
 
   @override
-  Future<TasksOverview> build(TaskList taskList) async {
+  Future<TasksOverview> build(TaskList arg) async {
     // Load initial todo list from the remote repository
+    final taskList = arg;
     final retState = _refresh(taskList);
     subscriber = taskList.subscribe();
     subscriber.forEach((element) async {
@@ -66,66 +62,70 @@ class TaskListCard extends ConsumerWidget {
     final tasks = ref.watch(tasksProvider(taskList));
     final description = taskList.descriptionText();
 
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            title: Text(
-              taskList.name(),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      child: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              title: Text(
+                taskList.name(),
+              ),
+              subtitle: description != null ? Text(description) : null,
             ),
-            subtitle: description != null ? Text(description) : null,
-          ),
-          tasks.when(
-            data: (overview) {
-              List<Widget> children = [];
-              final int total =
-                  overview.doneTasks.length + overview.openTasks.length;
+            tasks.when(
+              data: (overview) {
+                List<Widget> children = [];
+                final int total =
+                    overview.doneTasks.length + overview.openTasks.length;
 
-              if (total > 3) {
+                if (total > 3) {
+                  children.add(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        '${overview.doneTasks.length} / $total Tasks done',
+                      ),
+                    ),
+                  );
+                }
+
+                for (final task in overview.openTasks) {
+                  children.add(TaskEntry(task: task));
+                }
                 children.add(
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      '${overview.doneTasks.length} / $total Tasks done',
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    child: OutlinedButton(
+                      onPressed: () => {
+                        customMsgSnackbar(
+                          context,
+                          'Inline task creation not yet implemented',
+                        )
+                      },
+                      child: const Text('Add Task'),
                     ),
                   ),
                 );
-              }
 
-              for (final task in overview.openTasks) {
-                children.add(TaskEntry(task: task));
-              }
-              children.add(
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: OutlinedButton(
-                    onPressed: () => {
-                      customMsgSnackbar(
-                        context,
-                        'Inline task creation not yet implemented',
-                      )
-                    },
-                    child: Text('Add Task'),
-                  ),
-                ),
-              );
-
-              for (final task in overview.doneTasks) {
-                children.add(TaskEntry(task: task));
-              }
-              return Padding(
+                for (final task in overview.doneTasks) {
+                  children.add(TaskEntry(task: task));
+                }
+                return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: children,
-                  ));
-            },
-            error: (error, stack) => Text('error loading tasks: $error'),
-            loading: () => const Text('loading'),
-          )
-        ],
+                  ),
+                );
+              },
+              error: (error, stack) => Text('error loading tasks: $error'),
+              loading: () => const Text('loading'),
+            )
+          ],
+        ),
       ),
     );
   }

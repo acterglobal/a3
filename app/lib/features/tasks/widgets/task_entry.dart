@@ -1,13 +1,7 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 
 class TaskEntry extends ConsumerWidget {
@@ -52,11 +46,11 @@ class TaskEntry extends ConsumerWidget {
       horizontalTitleGap: 0,
       minVerticalPadding: 0,
       contentPadding: const EdgeInsets.all(0),
-      visualDensity: VisualDensity(horizontal: 0, vertical: -4),
+      visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
       style: ListTileTheme.of(context)
           .copyWith(
             contentPadding: const EdgeInsets.all(0),
-            visualDensity: VisualDensity(horizontal: 0, vertical: 0),
+            visualDensity: const VisualDensity(horizontal: 0, vertical: 0),
             minVerticalPadding: 0,
           )
           .style,

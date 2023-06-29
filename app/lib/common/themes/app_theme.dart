@@ -15,7 +15,7 @@ extension CustomColorScheme on ColorScheme {
   Color get neutral6 => const Color(0xFFE5E5E5);
   Color get m3Primary => const Color(0xFFD0BCFF);
 
-  Color get tasksBG => const Color(0xFF67A24A);
+  Color get tasksBG => const Color(0xFF67A200);
   Color get tasksFG => const Color(0xFFD0E4FF);
   Color get taskOverdueBG => brandColorScheme.errorContainer;
   Color get taskOverdueFG => brandColorScheme.error;
