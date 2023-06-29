@@ -4,7 +4,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'dart:core';
 
 class AsyncTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
-  late Stream<bool> subscriber;
+  late Stream<void> subscriber;
 
   Future<List<TaskList>> _refresh(Client client) async {
     final taskLists = await client.taskLists();

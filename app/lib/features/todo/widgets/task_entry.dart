@@ -4,7 +4,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:acter/features/todo/providers/tasklists.dart';
+import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter/material.dart';

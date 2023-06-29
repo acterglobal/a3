@@ -31,7 +31,7 @@ import 'package:acter/features/settings/pages/licenses_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/features/todo/pages/create_task_sidesheet.dart';
-import 'package:acter/features/todo/pages/todo_page.dart';
+import 'package:acter/features/tasks/pages/todo_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -74,7 +74,7 @@ final GlobalKey<NavigatorState> spaceNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'space');
 
 final routes = [
-   GoRoute(
+  GoRoute(
     name: Routes.intro.name,
     path: Routes.intro.route,
     builder: (context, state) => const IntroPage(),
@@ -84,7 +84,7 @@ final routes = [
     path: Routes.start.route,
     builder: (context, state) => const StartPage(),
   ),
-   GoRoute(
+  GoRoute(
     name: Routes.introProfile.name,
     path: Routes.introProfile.route,
     builder: (context, state) => const IntroProfile(),
@@ -100,7 +100,7 @@ final routes = [
     builder: (context, state) => const RegisterPage(),
   ),
   GoRoute(
-    path: '/gallery', 
+    path: '/gallery',
     builder: (context, state) => const GalleryPage(),
   ),
   GoRoute(
@@ -218,7 +218,7 @@ final routes = [
         pageBuilder: (context, state) {
           return NoTransitionPage(
             key: state.pageKey,
-            child: const TodoPage(),
+            child: const TasksPage(),
           );
         },
       ),
