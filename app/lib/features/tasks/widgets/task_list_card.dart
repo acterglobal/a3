@@ -1,3 +1,5 @@
+import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/features/tasks/widgets/task_entry.dart';
@@ -60,71 +62,89 @@ class TaskListCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tasks = ref.watch(tasksProvider(taskList));
+    final space = taskList.space();
+    final spaceInfo = ref.watch(spaceProfileDataProvider(space));
     final description = taskList.descriptionText();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: Card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListTile(
-              title: Text(
-                taskList.name(),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                leading: spaceInfo.when(
+                  data: (spaceInfo) => ActerAvatar(
+                    mode: DisplayMode.Space,
+                    displayName: spaceInfo.displayName,
+                    uniqueId: space.getRoomId().toString(),
+                    avatar: spaceInfo.getAvatarImage(),
+                    size: 24,
+                  ),
+                  loading: () => null,
+                  error: (error, stackTrace) => null,
+                ),
+                title: Text(
+                  taskList.name(),
+                ),
+                subtitle: description != null ? Text(description) : null,
               ),
-              subtitle: description != null ? Text(description) : null,
-            ),
-            tasks.when(
-              data: (overview) {
-                List<Widget> children = [];
-                final int total =
-                    overview.doneTasks.length + overview.openTasks.length;
+              tasks.when(
+                data: (overview) {
+                  List<Widget> children = [];
+                  final int total =
+                      overview.doneTasks.length + overview.openTasks.length;
 
-                if (total > 3) {
+                  if (total > 3) {
+                    children.add(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          '${overview.doneTasks.length} / $total Tasks done',
+                        ),
+                      ),
+                    );
+                  }
+
+                  for (final task in overview.openTasks) {
+                    children.add(TaskEntry(task: task));
+                  }
                   children.add(
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        '${overview.doneTasks.length} / $total Tasks done',
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
+                      child: OutlinedButton(
+                        onPressed: () => {
+                          customMsgSnackbar(
+                            context,
+                            'Inline task creation not yet implemented',
+                          )
+                        },
+                        child: const Text('Add Task'),
                       ),
                     ),
                   );
-                }
 
-                for (final task in overview.openTasks) {
-                  children.add(TaskEntry(task: task));
-                }
-                children.add(
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                    child: OutlinedButton(
-                      onPressed: () => {
-                        customMsgSnackbar(
-                          context,
-                          'Inline task creation not yet implemented',
-                        )
-                      },
-                      child: const Text('Add Task'),
+                  for (final task in overview.doneTasks) {
+                    children.add(TaskEntry(task: task));
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: children,
                     ),
-                  ),
-                );
-
-                for (final task in overview.doneTasks) {
-                  children.add(TaskEntry(task: task));
-                }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: children,
-                  ),
-                );
-              },
-              error: (error, stack) => Text('error loading tasks: $error'),
-              loading: () => const Text('loading'),
-            )
-          ],
+                  );
+                },
+                error: (error, stack) => Text('error loading tasks: $error'),
+                loading: () => const Text('loading'),
+              )
+            ],
+          ),
         ),
       ),
     );
