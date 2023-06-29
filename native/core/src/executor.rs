@@ -53,7 +53,7 @@ impl Executor {
         let mut subscribe = self.subscribe(key.clone());
         let Ok(model) = self.store.get(&key).await else {
             if let Err(e) = subscribe.recv().await {
-                error!(key, "Receiving pong faild: {e}");
+                error!(key, "Receiving pong failed: {e}");
             }
             return self.store.get(&key).await
         };
