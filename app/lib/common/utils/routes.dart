@@ -3,7 +3,9 @@ enum Routes {
   actionAddTask('/actions/addTask'),
 
   // --- Auth
+  intro('/intro'),
   start('/start'),
+  introProfile('/introProfile'),
   authLogin('/login'),
   authRegister('/register'),
 

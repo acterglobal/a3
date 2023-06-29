@@ -14,6 +14,8 @@ import 'package:acter/features/news/pages/news_builder_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/news/pages/post_page.dart';
 import 'package:acter/features/news/pages/search_space_page.dart';
+import 'package:acter/features/onboarding/pages/intro_page.dart';
+import 'package:acter/features/onboarding/pages/intro_profile.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
@@ -64,16 +66,28 @@ Future<String?> authGuardRedirect(
 
 final GlobalKey<NavigatorState> rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
+
 final GlobalKey<NavigatorState> shellNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'shell');
+
 final GlobalKey<NavigatorState> spaceNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'space');
 
 final routes = [
+   GoRoute(
+    name: Routes.intro.name,
+    path: Routes.intro.route,
+    builder: (context, state) => const IntroPage(),
+  ),
   GoRoute(
     name: Routes.start.name,
     path: Routes.start.route,
     builder: (context, state) => const StartPage(),
+  ),
+   GoRoute(
+    name: Routes.introProfile.name,
+    path: Routes.introProfile.route,
+    builder: (context, state) => const IntroProfile(),
   ),
   GoRoute(
     name: Routes.authLogin.name,
@@ -86,7 +100,7 @@ final routes = [
     builder: (context, state) => const RegisterPage(),
   ),
   GoRoute(
-    path: '/gallery',
+    path: '/gallery', 
     builder: (context, state) => const GalleryPage(),
   ),
   GoRoute(
