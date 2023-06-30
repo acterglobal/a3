@@ -2,6 +2,7 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/space/providers/pins_provider.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:go_router/go_router.dart';
 
 class SpacePinsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -39,9 +41,9 @@ class SpacePinsPage extends ConsumerWidget {
                   ),
                   iconSize: 28,
                   color: Theme.of(context).colorScheme.surface,
-                  onPressed: () => customMsgSnackbar(
-                    context,
-                    'Adding Pins not implemented yet',
+                  onPressed: () => context.pushNamed(
+                    Routes.actionAddPin.name,
+                    queryParameters: {'spaceId': spaceIdOrAlias},
                   ),
                 ),
               ],

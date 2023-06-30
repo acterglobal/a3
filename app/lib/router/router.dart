@@ -9,6 +9,7 @@ import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/features/pins/dialogs/create_pin_sheet.dart';
 import 'package:acter/features/space/dialogs/create_space_sheet.dart';
 import 'package:acter/features/news/pages/news_builder_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
@@ -147,6 +148,33 @@ List<RouteBase> makeRoutes(Ref ref) => [
           );
         },
       ),
+
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        name: Routes.actionAddPin.name,
+        path: Routes.actionAddPin.route,
+        pageBuilder: (context, state) {
+          return SideSheetPage(
+            key: state.pageKey,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: Tween(
+                  begin: const Offset(1, 0),
+                  end: const Offset(0, 0),
+                ).animate(
+                  animation,
+                ),
+                child: child,
+              );
+            },
+            child: CreatePinSheet(
+              initialSelectedSpace: state.queryParameters['spaceId'],
+            ),
+          );
+        },
+      ),
+
       GoRoute(
         parentNavigatorKey: rootNavigatorKey,
         name: Routes.createSpace.name,

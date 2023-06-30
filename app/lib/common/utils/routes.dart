@@ -1,6 +1,7 @@
 enum Routes {
   // primary & quickjump actions
   actionAddTask('/actions/addTask'),
+  actionAddPin('/actions/addPin'),
 
   // --- Auth
   intro('/intro'),
