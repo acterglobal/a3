@@ -1334,8 +1334,8 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let buf = std::fs::read(path)?;
-                let info = assign!(AudioInfo::new(), {
+                let buf = std::fs::read(path.clone())?;
+                let mut info = assign!(AudioInfo::new(), {
                     mimetype: Some(content_type.to_string()),
                     duration: None,
                     size: UInt::new(buf.len() as u64),
