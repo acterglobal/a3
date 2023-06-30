@@ -42,7 +42,7 @@ mod verification;
 pub use account::Account;
 pub use acter_core::{
     events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
-    models::{Color as EfkColor, Tag, TextMessageContent},
+    models::{Color as EfkColor, Tag, TextMessageContent, ActerModel},
 };
 pub use auth::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token,

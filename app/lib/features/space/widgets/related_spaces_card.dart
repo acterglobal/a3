@@ -26,7 +26,7 @@ class RelatedSpacesCard extends ConsumerWidget {
             InkWell(
               onTap: () {
                 context.pushNamed(
-                  Routes.relatedSpaces.name,
+                  Routes.spaceRelatedSpaces.name,
                   pathParameters: {'spaceId': spaceId},
                 );
               },

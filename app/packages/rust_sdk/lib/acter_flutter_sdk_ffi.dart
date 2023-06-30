@@ -9290,6 +9290,16 @@ class Api {
       _ActerPinColorReturn Function(
     int,
   )>();
+  late final _acterPinEventIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__ActerPin_event_id");
+
+  late final _acterPinEventId = _acterPinEventIdPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _acterPinUpdateBuilderPtr = _lookup<
       ffi.NativeFunction<
           _ActerPinUpdateBuilderReturn Function(
@@ -19885,6 +19895,21 @@ class ActerPin {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = EfkColor._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// the unique event ID
+  EventId eventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_EventId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = EventId._(_api, tmp3_1);
     return tmp2;
   }
 
