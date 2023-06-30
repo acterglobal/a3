@@ -39,7 +39,7 @@ final tabsProvider =
         key: const Key('pins'),
         label: 'Pins',
         icon: const Icon(Atlas.pin_thin),
-        target: Routes.space.name,
+        target: Routes.spacePins.name,
       ),
     );
   }
@@ -85,7 +85,7 @@ final tabsProvider =
       key: const Key('spaces'),
       label: 'Spaces',
       icon: const Icon(Atlas.connection_thin),
-      target: Routes.relatedSpaces.name,
+      target: Routes.spaceRelatedSpaces.name,
     ),
   );
   return tabs;

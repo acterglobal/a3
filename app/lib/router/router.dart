@@ -20,6 +20,7 @@ import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
+import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/related_spaces_page.dart';
 import 'package:acter/features/space/pages/spaces_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
@@ -391,11 +392,10 @@ List<RouteBase> makeRoutes(Ref ref) => [
             },
             routes: <RouteBase>[
               GoRoute(
-                name: Routes.relatedSpaces.name,
-                path: Routes.relatedSpaces.route,
+                name: Routes.spaceRelatedSpaces.name,
+                path: Routes.spaceRelatedSpaces.route,
                 redirect: authGuardRedirect,
                 pageBuilder: (context, state) {
-                  debugPrint('in spaces related');
                   ref
                       .read(selectedTabKeyProvider.notifier)
                       .switchTo(const Key('spaces'));
@@ -408,11 +408,26 @@ List<RouteBase> makeRoutes(Ref ref) => [
                 },
               ),
               GoRoute(
+                name: Routes.spacePins.name,
+                path: Routes.spacePins.route,
+                redirect: authGuardRedirect,
+                pageBuilder: (context, state) {
+                  ref
+                      .read(selectedTabKeyProvider.notifier)
+                      .switchTo(const Key('pins'));
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: SpacePinsPage(
+                      spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
                 name: Routes.space.name,
                 path: Routes.space.route,
                 redirect: authGuardRedirect,
                 pageBuilder: (context, state) {
-                  debugPrint('in overview');
                   ref
                       .read(selectedTabKeyProvider.notifier)
                       .switchTo(const Key('overview'));
