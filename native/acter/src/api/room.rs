@@ -1,6 +1,7 @@
 use acter_core::spaces::is_acter_space;
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
+#[cfg(feature = "audio-meta")]
 use lofty::{AudioFile, Probe};
 use matrix_sdk::{
     attachment::{
@@ -424,6 +425,7 @@ impl Room {
                     size: UInt::new(file_size),
                     blurhash,
                 };
+                #[cfg(feature = "image-meta")]
                 if let Ok(size) = imagesize::size(path.to_string_lossy().to_string()) {
                     base_info.width = UInt::new(size.width as u64);
                     base_info.height = UInt::new(size.height as u64);
@@ -508,6 +510,7 @@ impl Room {
                     duration: None,
                     size: UInt::new(file_size),
                 };
+                #[cfg(feature = "audio-meta")]
                 if let Ok(probe) = Probe::open(path) {
                     if let Ok(tagged_file) = probe.read() {
                         base_info.duration = Some(tagged_file.properties().duration());
@@ -1270,6 +1273,7 @@ impl Room {
                     mimetype: Some(content_type.to_string()),
                     size: UInt::new(buf.len() as u64),
                 });
+                #[cfg(feature = "image-meta")]
                 if let Ok(size) = imagesize::size(path.to_string_lossy().to_string()) {
                     info.width = UInt::new(size.width as u64);
                     info.height = UInt::new(size.height as u64);
@@ -1340,6 +1344,7 @@ impl Room {
                     duration: None,
                     size: UInt::new(buf.len() as u64),
                 });
+                #[cfg(feature = "audio-meta")]
                 if let Ok(probe) = Probe::open(path) {
                     if let Ok(tagged_file) = probe.read() {
                         info.duration = Some(tagged_file.properties().duration());

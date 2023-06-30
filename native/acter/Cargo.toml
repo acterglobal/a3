@@ -13,11 +13,12 @@ default = ["dart"]
 testing = ["dep:matrix-sdk-base"]
 cbindgen = []
 dart = []
+image-meta = ["dep:imagesize"]
+audio-meta = ["dep:lofty", "dep:lofty_attr"]
 
 [build-dependencies]
 ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "leaking-no-drop"}
 cbindgen = "0.24.3"
-
 
 [dependencies]
 anyhow = "1.0.51"
@@ -30,10 +31,10 @@ fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", feature
 ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "leaking-no-drop" }
 futures = "0.3.17"
 futures-signals = "0.3.31"
-imagesize = "0.12"
+imagesize = { version = "0.12", optional = true }
 lazy_static = "1.4"
-lofty = "0.12"
-lofty_attr = "0.6"
+lofty = { version = "0.12", optional = true }
+lofty_attr = { version = "0.6", optional = true }
 log = "0.4"
 log-panics = "2.0.0"
 mime_guess = "2.0.4"
