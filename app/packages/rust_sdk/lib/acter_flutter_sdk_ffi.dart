@@ -10724,8 +10724,6 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
@@ -10738,8 +10736,6 @@ class Api {
   late final _conversationSendAudioReply =
       _conversationSendAudioReplyPtr.asFunction<
           int Function(
-    int,
-    int,
     int,
     int,
     int,
@@ -23257,15 +23253,13 @@ class Conversation {
   Future<EventId> sendAudioReply(
     String uri,
     String name,
-    int? secs,
     String eventId,
     String? txnId,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = secs;
-    final tmp13 = eventId;
-    final tmp17 = txnId;
+    final tmp9 = eventId;
+    final tmp13 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -23274,14 +23268,12 @@ class Conversation {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
+    var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
-    var tmp15 = 0;
     var tmp16 = 0;
+    var tmp17 = 0;
     var tmp18 = 0;
-    var tmp20 = 0;
-    var tmp21 = 0;
-    var tmp22 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -23301,38 +23293,31 @@ class Conversation {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    final tmp13_0 = utf8.encode(tmp13);
-    tmp15 = tmp13_0.length;
-    debugAllocation("lower string", tmp14, tmp15);
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+    debugAllocation("lower string", tmp10, tmp11);
 
-    final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
-    final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
-    tmp14_1.setAll(0, tmp13_0);
-    tmp14 = tmp14_0.address;
-    tmp16 = tmp15;
-    if (tmp17 == null) {
-      tmp18 = 0;
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
     } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      final tmp19_0 = utf8.encode(tmp19);
-      tmp21 = tmp19_0.length;
-      debugAllocation("lower string", tmp20, tmp21);
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+      debugAllocation("lower string", tmp16, tmp17);
 
-      final ffi.Pointer<ffi.Uint8> tmp20_0 = _api.__allocate(tmp21 * 1, 1);
-      final Uint8List tmp20_1 = tmp20_0.asTypedList(tmp21);
-      tmp20_1.setAll(0, tmp19_0);
-      tmp20 = tmp20_0.address;
-      tmp22 = tmp21;
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
     }
-    final tmp23 = _api._conversationSendAudioReply(
+    final tmp19 = _api._conversationSendAudioReply(
       tmp0,
       tmp2,
       tmp3,
@@ -23341,23 +23326,21 @@ class Conversation {
       tmp7,
       tmp8,
       tmp10,
+      tmp11,
       tmp12,
       tmp14,
-      tmp15,
       tmp16,
+      tmp17,
       tmp18,
-      tmp20,
-      tmp21,
-      tmp22,
     );
-    final tmp25 = tmp23;
-    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
-    final tmp25_1 =
-        _Box(_api, tmp25_0, "__Conversation_send_audio_reply_future_drop");
-    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
-    final tmp24 =
-        _nativeFuture(tmp25_1, _api.__conversationSendAudioReplyFuturePoll);
-    return tmp24;
+    final tmp21 = tmp19;
+    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
+    final tmp21_1 =
+        _Box(_api, tmp21_0, "__Conversation_send_audio_reply_future_drop");
+    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
+    final tmp20 =
+        _nativeFuture(tmp21_1, _api.__conversationSendAudioReplyFuturePoll);
+    return tmp20;
   }
 
   /// send reply as video
