@@ -11,6 +11,7 @@ class SideSheet extends StatelessWidget {
   final String cancelActionTitle;
   final String? closeButtonTooltip;
   final String? backButtonTooltip;
+  final List<Widget>? actions;
 
   final void Function()? confirmActionOnPressed;
   final void Function()? cancelActionOnPressed;
@@ -19,6 +20,7 @@ class SideSheet extends StatelessWidget {
     super.key,
     required this.header,
     required this.body,
+    this.actions,
     this.addBackIconButton = false,
     this.addActions = false,
     this.addDivider = false,
@@ -117,23 +119,25 @@ class SideSheet extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(24.0, 16, 24, 24),
           child: Row(
-            children: [
-              FilledButton(
-                onPressed: confirmActionOnPressed,
-                child: Text(confirmActionTitle),
-              ),
-              const SizedBox(width: 12),
-              OutlinedButton(
-                onPressed: () {
-                  if (cancelActionOnPressed == null) {
-                    Navigator.pop(context);
-                  } else {
-                    cancelActionOnPressed!();
-                  }
-                },
-                child: Text(cancelActionTitle),
-              ),
-            ],
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: actions ??
+                [
+                  FilledButton(
+                    onPressed: confirmActionOnPressed,
+                    child: Text(confirmActionTitle),
+                  ),
+                  const SizedBox(width: 12),
+                  OutlinedButton(
+                    onPressed: () {
+                      if (cancelActionOnPressed == null) {
+                        Navigator.pop(context);
+                      } else {
+                        cancelActionOnPressed!();
+                      }
+                    },
+                    child: Text(cancelActionTitle),
+                  ),
+                ],
           ),
         ),
       ],

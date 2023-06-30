@@ -6,6 +6,7 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
+import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -60,18 +61,14 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     final _titleInput = ref.watch(titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
     final _selectParentSpace = currentParentSpace != null;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
+    return SideSheet(
+      header: _selectParentSpace ? 'Create Subspace' : 'Create Space',
+      addActions: true,
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              _selectParentSpace ? 'Create Subspace' : 'Create Space',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 15),
             Text(
               _selectParentSpace
                   ? 'Create a new subspace'
@@ -204,71 +201,62 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                 )
               ],
             ),
-            const Spacer(),
-            Expanded(
-              child: Row(
-                children: <Widget>[
-                  const Spacer(),
-                  ElevatedButton(
-                    onPressed: () => context.canPop()
-                        ? context.pop()
-                        : context.goNamed(Routes.main.name),
-                    child: const Text('Cancel'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.neutral,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      side: BorderSide(
-                        color: Theme.of(context).colorScheme.success,
-                      ),
-                      foregroundColor: Theme.of(context).colorScheme.neutral6,
-                      textStyle: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (_titleInput.isEmpty) {
-                        customMsgSnackbar(
-                          context,
-                          'Please enter space name',
-                        );
-                        return;
-                      }
-                      final roomId = await _handleCreateSpace(
-                        context,
-                        _titleInput,
-                        _descriptionController.text.trim(),
-                      );
-                      context.goNamed(
-                        Routes.space.name,
-                        pathParameters: {
-                          'spaceId': roomId.toString(),
-                        },
-                      );
-                    },
-                    child: const Text('Create Space'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _titleInput.isNotEmpty
-                          ? Theme.of(context).colorScheme.success
-                          : Theme.of(context)
-                              .colorScheme
-                              .success
-                              .withOpacity(0.6),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      foregroundColor: Theme.of(context).colorScheme.neutral6,
-                      textStyle: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
+      actions: [
+        ElevatedButton(
+          onPressed: () => context.canPop()
+              ? context.pop()
+              : context.goNamed(Routes.main.name),
+          child: const Text('Cancel'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.neutral,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6),
+            ),
+            side: BorderSide(
+              color: Theme.of(context).colorScheme.success,
+            ),
+            foregroundColor: Theme.of(context).colorScheme.neutral6,
+            textStyle: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
+        const SizedBox(width: 10),
+        ElevatedButton(
+          onPressed: () async {
+            if (_titleInput.isEmpty) {
+              customMsgSnackbar(
+                context,
+                'Please enter space name',
+              );
+              return;
+            }
+            final roomId = await _handleCreateSpace(
+              context,
+              _titleInput,
+              _descriptionController.text.trim(),
+            );
+            context.goNamed(
+              Routes.space.name,
+              pathParameters: {
+                'spaceId': roomId.toString(),
+              },
+            );
+          },
+          child: const Text('Create Space'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _titleInput.isNotEmpty
+                ? Theme.of(context).colorScheme.success
+                : Theme.of(context).colorScheme.success.withOpacity(0.6),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6),
+            ),
+            foregroundColor: Theme.of(context).colorScheme.neutral6,
+            textStyle: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
+      ],
     );
   }
 
