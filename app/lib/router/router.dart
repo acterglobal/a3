@@ -9,7 +9,7 @@ import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
-import 'package:acter/features/home/widgets/create_space_sheet.dart';
+import 'package:acter/features/space/dialogs/create_space_sheet.dart';
 import 'package:acter/features/news/pages/news_builder_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/news/pages/post_page.dart';
