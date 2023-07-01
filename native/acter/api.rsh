@@ -203,6 +203,12 @@ object ActerPin {
     // The room this Pin belongs to
     //fn team() -> Room;
 
+    /// the unique event ID
+    //fn event_id() -> EventId;
+    fn event_id_str() -> string;
+    /// the room/space this item belongs to
+    fn room_id_str() -> string;
+
     /// make a builder for updating the pin
     fn update_builder() -> Result<PinUpdateBuilder>;
 
@@ -1302,6 +1308,9 @@ object Client {
 
     /// Get the Pins for the client
     fn pins() -> Future<Result<Vec<ActerPin>>>;
+
+    /// Get a specific Pin for the client
+    fn pin(pin_id: string) -> Future<Result<ActerPin>>;
 
     /// Fetch the Tasklist or use its event_id to wait for it to come down the wire
     fn wait_for_task_list(key: string, timeout: Option<EfkDuration>) -> Future<Result<TaskList>>;

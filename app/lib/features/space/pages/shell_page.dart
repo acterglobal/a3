@@ -3,6 +3,7 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -57,6 +58,10 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                     children: <Widget>[
                       _ShellToolbar(space),
                       _ShellHeader(widget.spaceIdOrAlias, profile),
+                      TopNavBar(
+                        spaceId: widget.spaceIdOrAlias,
+                        key: Key('${widget.spaceIdOrAlias}::top-nav'),
+                      ),
                       SizedBox(
                         height: h < 300 ? h * 2 : h,
                         child: widget.child,

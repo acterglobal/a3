@@ -1,17 +1,10 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:core';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
-
-final pinnedLinksProvider = FutureProvider.autoDispose
-    .family<List<ActerPin>, String>((ref, spaceId) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
-  return (await space.pinnedLinks()).toList();
-});
 
 class LinksCard extends ConsumerWidget {
   final String spaceId;

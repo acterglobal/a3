@@ -9,6 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
 
+import 'package:go_router/go_router.dart';
+
 class QuickJump extends ConsumerWidget {
   final Future<void> Function({Routes? route, bool push, String? target})
       navigateTo;
@@ -52,7 +54,7 @@ class QuickJump extends ConsumerWidget {
                       ),
                     ),
                     onPressed: () {
-                      navigateTo(route: Routes.activities);
+                      navigateTo(route: Routes.pins);
                     },
                     icon: const Icon(Atlas.pin_thin, size: 32),
                   )
@@ -118,8 +120,10 @@ class QuickJump extends ConsumerWidget {
   Widget quickActions(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(featuresProvider);
     bool isActive(f) => provider.isActive(f);
-    return ButtonBar(
-      alignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      spacing: 8,
+      runSpacing: 10,
       children: List.from(
         [
           isActive(LabsFeature.tasks)
@@ -134,6 +138,19 @@ class QuickJump extends ConsumerWidget {
                   },
                   icon: const Icon(Atlas.plus_circle_thin),
                   label: const Text('Task'),
+                )
+              : null,
+          isActive(LabsFeature.pins)
+              ? OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.purple,
+                    side: const BorderSide(width: 2, color: Colors.purple),
+                  ),
+                  onPressed: () {
+                    context.pushNamed(Routes.actionAddPin.name);
+                  },
+                  icon: const Icon(Atlas.plus_circle_thin),
+                  label: const Text('Pin'),
                 )
               : null,
           isActive(LabsFeature.events)
