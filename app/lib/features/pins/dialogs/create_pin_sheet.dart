@@ -225,7 +225,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 pinDraft.url(ref.read(linkProvider));
               }
               final pinId = await pinDraft.send();
-              print("$pinId");
               context.pop();
             }
           },

@@ -26,7 +26,7 @@ class _PinListItemState extends ConsumerState<PinListItem> {
     final pin = widget.pin;
     final isLink = pin.isLink();
 
-    onTap() async {
+    void onTap() async {
       if (isLink) {
         final target = pin.url()!;
         final Uri? url = Uri.tryParse(target);
@@ -40,16 +40,26 @@ class _PinListItemState extends ConsumerState<PinListItem> {
         }
       } else {
         setState(() {
-          expanded != expanded;
+          expanded = !expanded;
         });
       }
     }
 
-    ;
+    List<Widget> content = [];
+    if (expanded) {
+      content.add(
+        Padding(
+          padding: const EdgeInsetsDirectional.all(8),
+          child: Text(pin.contentText() ?? ''),
+        ),
+      );
+    }
+
     return Card(
       child: InkWell(
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             ListTile(
               // key: Key(pin.eventId().toString()), // FIXME: causes crashes in ffigen
@@ -57,7 +67,13 @@ class _PinListItemState extends ConsumerState<PinListItem> {
                   Icon(isLink ? Atlas.link_chain_thin : Atlas.document_thin),
               title: Text(pin.title()),
               onTap: onTap,
+              trailing: isLink
+                  ? null
+                  : (expanded
+                      ? Icon(Icons.chevron_left_sharp)
+                      : Icon(Icons.chevron_right_sharp)),
             ),
+            ...content,
           ],
         ),
         onTap: onTap,
