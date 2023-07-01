@@ -1,3 +1,5 @@
+import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -7,7 +9,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 class PinListItem extends ConsumerStatefulWidget {
   final ActerPin pin;
-  const PinListItem({super.key, required this.pin});
+  final bool showSpace;
+  const PinListItem({
+    super.key,
+    required this.pin,
+    this.showSpace = false,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _PinListItemState();
@@ -25,6 +32,7 @@ class _PinListItemState extends ConsumerState<PinListItem> {
   Widget build(BuildContext context) {
     final pin = widget.pin;
     final isLink = pin.isLink();
+    final spaceId = pin.roomIdStr();
 
     void onTap() async {
       if (isLink) {
@@ -59,19 +67,21 @@ class _PinListItemState extends ConsumerState<PinListItem> {
       child: InkWell(
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             ListTile(
-              // key: Key(pin.eventId().toString()), // FIXME: causes crashes in ffigen
+              key: Key(pin.eventIdStr()), // FIXME: causes crashes in ffigen
               leading:
                   Icon(isLink ? Atlas.link_chain_thin : Atlas.document_thin),
               title: Text(pin.title()),
+              subtitle: widget.showSpace ? SpaceChip(spaceId: spaceId) : null,
               onTap: onTap,
               trailing: isLink
                   ? null
                   : (expanded
-                      ? Icon(Icons.chevron_left_sharp)
-                      : Icon(Icons.chevron_right_sharp)),
+                      ? const Icon(Icons.chevron_left_sharp)
+                      : const Icon(Icons.chevron_right_sharp)),
             ),
             ...content,
           ],

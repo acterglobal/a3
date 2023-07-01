@@ -204,7 +204,10 @@ object ActerPin {
     //fn team() -> Room;
 
     /// the unique event ID
-    fn event_id() -> EventId;
+    //fn event_id() -> EventId;
+    fn event_id_str() -> string;
+    /// the room/space this item belongs to
+    fn room_id_str() -> string;
 
     /// make a builder for updating the pin
     fn update_builder() -> Result<PinUpdateBuilder>;

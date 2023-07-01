@@ -75,6 +75,18 @@ final briefSpaceItemsProviderWithMembership =
   return items;
 });
 
+final briefSpaceItemProvider =
+    FutureProvider.autoDispose.family<SpaceItem?, String>((ref, spaceId) async {
+  final space = await ref.watch(spaceProvider(spaceId).future);
+  final profileData = await ref.watch(spaceProfileDataProvider(space).future);
+  return SpaceItem(
+    roomId: space.getRoomId().toString(),
+    membership: null,
+    activeMembers: [],
+    spaceProfileData: profileData,
+  );
+});
+
 final spaceItemsProvider =
     FutureProvider.autoDispose<List<SpaceItem>>((ref) async {
   final spaces = await ref.watch(spacesProvider.future);

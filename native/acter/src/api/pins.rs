@@ -211,6 +211,14 @@ impl Pin {
             .as_ref()
             .and_then(|t| t.section.clone())
     }
+
+    pub fn event_id_str(&self) -> String {
+        self.content.event_id().to_string()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.content.room_id().to_string()
+    }
 }
 
 /// Custom functions

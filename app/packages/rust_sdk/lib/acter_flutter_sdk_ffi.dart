@@ -9290,14 +9290,24 @@ class Api {
       _ActerPinColorReturn Function(
     int,
   )>();
-  late final _acterPinEventIdPtr = _lookup<
+  late final _acterPinEventIdStrPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _ActerPinEventIdStrReturn Function(
     ffi.Int64,
-  )>>("__ActerPin_event_id");
+  )>>("__ActerPin_event_id_str");
 
-  late final _acterPinEventId = _acterPinEventIdPtr.asFunction<
-      int Function(
+  late final _acterPinEventIdStr = _acterPinEventIdStrPtr.asFunction<
+      _ActerPinEventIdStrReturn Function(
+    int,
+  )>();
+  late final _acterPinRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinRoomIdStrReturn Function(
+    ffi.Int64,
+  )>>("__ActerPin_room_id_str");
+
+  late final _acterPinRoomIdStr = _acterPinRoomIdStrPtr.asFunction<
+      _ActerPinRoomIdStrReturn Function(
     int,
   )>();
   late final _acterPinUpdateBuilderPtr = _lookup<
@@ -19899,17 +19909,66 @@ class ActerPin {
   }
 
   /// the unique event ID
-  EventId eventId() {
+  String eventIdStr() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._acterPinEventId(
+    final tmp1 = _api._acterPinEventIdStr(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_EventId");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = EventId._(_api, tmp3_1);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the room/space this item belongs to
+  String roomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -31499,6 +31558,24 @@ class _ActerPinColorReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
+}
+
+class _ActerPinEventIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _ActerPinRoomIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _ActerPinUpdateBuilderReturn extends ffi.Struct {
