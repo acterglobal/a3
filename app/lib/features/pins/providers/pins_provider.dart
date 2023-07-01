@@ -63,3 +63,27 @@ final pinsProvider =
     AsyncNotifierProvider.autoDispose<AsyncPinsNotifier, List<ActerPin>>(
   () => AsyncPinsNotifier(),
 );
+
+class AsyncPinNotifier
+    extends AutoDisposeFamilyAsyncNotifier<ActerPin, String> {
+  late Stream<void> _listener;
+  Future<ActerPin> _getPin() async {
+    final client = ref.watch(clientProvider)!;
+    return await client.pin(arg); // this might throw internally
+  }
+
+  @override
+  Future<ActerPin> build(String arg) async {
+    final client = ref.watch(clientProvider)!;
+    _listener = client.subscribe(arg); // stay up to date
+    _listener.forEach((_e) async {
+      state = await AsyncValue.guard(() => _getPin());
+    });
+    return _getPin();
+  }
+}
+
+final pinProvider = AsyncNotifierProvider.autoDispose
+    .family<AsyncPinNotifier, ActerPin, String>(
+  () => AsyncPinNotifier(),
+);

@@ -6,6 +6,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:acter/common/utils/routes.dart';
 
 class PinListItem extends ConsumerStatefulWidget {
   final ActerPin pin;
@@ -21,8 +22,6 @@ class PinListItem extends ConsumerStatefulWidget {
 }
 
 class _PinListItemState extends ConsumerState<PinListItem> {
-  bool expanded = false;
-
   @override
   void initState() {
     super.initState();
@@ -31,8 +30,13 @@ class _PinListItemState extends ConsumerState<PinListItem> {
   @override
   Widget build(BuildContext context) {
     final pin = widget.pin;
+    final pinId = pin.eventIdStr();
     final isLink = pin.isLink();
     final spaceId = pin.roomIdStr();
+
+    void openItem() async {
+      context.pushNamed(Routes.pin.name, pathParameters: {'pinId': pinId});
+    }
 
     void onTap() async {
       if (isLink) {
@@ -47,20 +51,8 @@ class _PinListItemState extends ConsumerState<PinListItem> {
           !await launchUrl(url);
         }
       } else {
-        setState(() {
-          expanded = !expanded;
-        });
+        openItem();
       }
-    }
-
-    List<Widget> content = [];
-    if (expanded) {
-      content.add(
-        Padding(
-          padding: const EdgeInsetsDirectional.all(8),
-          child: Text(pin.contentText() ?? ''),
-        ),
-      );
     }
 
     return Card(
@@ -77,16 +69,17 @@ class _PinListItemState extends ConsumerState<PinListItem> {
               title: Text(pin.title()),
               subtitle: widget.showSpace ? SpaceChip(spaceId: spaceId) : null,
               onTap: onTap,
-              trailing: isLink
-                  ? null
-                  : (expanded
-                      ? const Icon(Icons.chevron_left_sharp)
-                      : const Icon(Icons.chevron_right_sharp)),
+              trailing: IconButton(
+                icon: isLink
+                    ? const Icon(Icons.open_in_full_sharp)
+                    : const Icon(Icons.chevron_right_sharp),
+                onPressed: openItem,
+              ),
             ),
-            ...content,
           ],
         ),
         onTap: onTap,
+        onLongPress: openItem,
       ),
     );
   }

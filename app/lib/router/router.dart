@@ -11,6 +11,7 @@ import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/pins/dialogs/create_pin_sheet.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
+import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/space/dialogs/create_space_sheet.dart';
 import 'package:acter/features/news/pages/news_builder_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
@@ -264,6 +265,20 @@ List<RouteBase> makeRoutes(Ref ref) => [
               return NoTransitionPage(
                 key: state.pageKey,
                 child: const PinsPage(),
+              );
+            },
+          ),
+
+          GoRoute(
+            name: Routes.pin.name,
+            path: Routes.pin.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: PinPage(
+                  pinId: state.pathParameters['pinId']!,
+                ),
               );
             },
           ),

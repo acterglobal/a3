@@ -1309,6 +1309,9 @@ object Client {
     /// Get the Pins for the client
     fn pins() -> Future<Result<Vec<ActerPin>>>;
 
+    /// Get a specific Pin for the client
+    fn pin(pin_id: string) -> Future<Result<ActerPin>>;
+
     /// Fetch the Tasklist or use its event_id to wait for it to come down the wire
     fn wait_for_task_list(key: string, timeout: Option<EfkDuration>) -> Future<Result<TaskList>>;
 

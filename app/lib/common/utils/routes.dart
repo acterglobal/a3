@@ -20,7 +20,6 @@ enum Routes {
   search('/search'),
   activities('/activities'),
   tasks('/tasks'),
-  pins('/pins'),
 
   // --- chat
   chat('/chat'),
@@ -37,6 +36,11 @@ enum Routes {
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
   spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
+
+  // -- pins
+
+  pins('/pins'),
+  pin('/pins/:pinId'),
 
   // -- settings
   settings('/settings'),

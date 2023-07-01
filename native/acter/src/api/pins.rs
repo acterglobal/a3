@@ -78,6 +78,25 @@ impl Client {
             .await?
     }
 
+    pub async fn pin(&self, pin_id: String) -> Result<Pin> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let AnyActerModel::Pin(t) = client.store().get(&pin_id).await? else {
+                    bail!("Ping not found");
+                };
+                let room = client
+                    .get_room(t.room_id())
+                    .context("Room of pin not found")?;
+                Ok(Pin {
+                    client: client,
+                    room,
+                    content: t,
+                })
+            })
+            .await?
+    }
+
     pub async fn pinned_links(&self) -> Result<Vec<Pin>> {
         let mut pins = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();

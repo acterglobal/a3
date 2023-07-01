@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
-import 'package:acter/features/space/providers/pins_provider.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
