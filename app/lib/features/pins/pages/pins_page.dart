@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/themes/app_theme.dart';
 
 class PinsPage extends ConsumerWidget {
   const PinsPage({super.key});
@@ -33,6 +36,17 @@ class PinsPage extends ConsumerWidget {
                     'Pin filtering not yet implemented',
                   );
                 },
+              ),
+              IconButton(
+                icon: Icon(
+                  Atlas.plus_circle_thin,
+                  color: Theme.of(context).colorScheme.neutral5,
+                ),
+                iconSize: 28,
+                color: Theme.of(context).colorScheme.surface,
+                onPressed: () => context.pushNamed(
+                  Routes.actionAddPin.name,
+                ),
               ),
             ],
             expandedContent: const Text(
