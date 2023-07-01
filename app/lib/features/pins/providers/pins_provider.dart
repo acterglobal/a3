@@ -69,7 +69,12 @@ class AsyncPinNotifier
   late Stream<void> _listener;
   Future<ActerPin> _getPin() async {
     final client = ref.watch(clientProvider)!;
-    return await client.pin(arg); // this might throw internally
+    try {
+      return await client.pin(arg);
+    } catch (e) {
+      return await client.waitForPin(arg, null);
+    }
+    // this might throw internally
   }
 
   @override

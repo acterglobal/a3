@@ -1,15 +1,8 @@
-import 'dart:io';
-
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
-import 'package:acter/common/providers/sdk_provider.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,7 +37,6 @@ class CreatePinSheet extends ConsumerStatefulWidget {
 
 class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _typeController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -73,39 +65,41 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Row(children: [
-                  DropdownMenu<String>(
-                    initialSelection: 'link',
-                    controller: _typeController,
-                    label: const Text('Type'),
-                    dropdownMenuEntries: const [
-                      DropdownMenuEntry(label: 'Link', value: 'link'),
-                      DropdownMenuEntry(label: 'Text', value: 'text'),
-                    ],
-                    onSelected: (String? typus) {
-                      if (typus != null) {
-                        print("selected $typus");
-                        ref.read(selectedTypeProvider.notifier).state = typus;
-                      }
-                    },
-                  ),
-                  Expanded(
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: 'Your title',
-                        labelText: 'Title',
-                      ),
-                      controller: _titleController,
-                      onChanged: (String? value) {
-                        ref.read(titleProvider.notifier).state = value ?? '';
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  children: [
+                    DropdownMenu<String>(
+                      initialSelection: 'link',
+                      controller: _typeController,
+                      label: const Text('Type'),
+                      dropdownMenuEntries: const [
+                        DropdownMenuEntry(label: 'Link', value: 'link'),
+                        DropdownMenuEntry(label: 'Text', value: 'text'),
+                      ],
+                      onSelected: (String? typus) {
+                        if (typus != null) {
+                          ref.read(selectedTypeProvider.notifier).state = typus;
+                        }
                       },
-                      validator: (value) => (value != null && value.isNotEmpty)
-                          ? null
-                          : 'Please enter a title',
                     ),
-                  ),
-                ]),
+                    Expanded(
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: 'Your title',
+                          labelText: 'Title',
+                        ),
+                        controller: _titleController,
+                        onChanged: (String? value) {
+                          ref.read(titleProvider.notifier).state = value ?? '';
+                        },
+                        validator: (value) =>
+                            (value != null && value.isNotEmpty)
+                                ? null
+                                : 'Please enter a title',
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Consumer(
                 builder: ((context, ref, child) {
@@ -225,7 +219,10 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 pinDraft.url(ref.read(linkProvider));
               }
               final pinId = await pinDraft.send();
-              context.pop();
+              context.goNamed(
+                Routes.pin.name,
+                pathParameters: {'pinId': pinId.toString()},
+              );
             }
           },
           child: const Text('Create Pin'),
@@ -242,41 +239,5 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
         ),
       ],
     );
-  }
-
-  void _handleTitleChange(String? value) {
-    ref.read(titleProvider.notifier).update((state) => value!);
-  }
-
-  Future<RoomId> _handleCreateSpace(
-    BuildContext context,
-    String spaceName,
-    String? description,
-  ) async {
-    popUpDialog(
-      context: context,
-      title: Text(
-        'Creating Space',
-        style: Theme.of(context).textTheme.titleSmall,
-      ),
-      isLoader: true,
-    );
-    final sdk = await ref.watch(sdkProvider.future);
-    final parentRoomId = ref.watch(selectedSpaceIdProvider);
-    var uri = ref.read(linkProvider);
-    var settings = sdk.newSpaceSettings(
-      spaceName,
-      description,
-      uri.isNotEmpty ? uri : null,
-      parentRoomId,
-    );
-    final client = ref.read(clientProvider)!;
-    final roomId = await client.createActerSpace(settings);
-    if (parentRoomId != null) {
-      final space = await ref.read(spaceProvider(parentRoomId).future);
-      await space.addChildSpace(roomId.toString());
-    }
-    Navigator.of(context, rootNavigator: true).pop();
-    return roomId;
   }
 }

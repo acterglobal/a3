@@ -75,15 +75,15 @@ class PinPage extends ConsumerWidget {
                       children: [
                         ListTile(
                           key: Key(pin
-                              .eventIdStr()), // FIXME: causes crashes in ffigen
+                              .eventIdStr(),), // FIXME: causes crashes in ffigen
                           leading: Icon(isLink
                               ? Atlas.link_chain_thin
-                              : Atlas.document_thin),
+                              : Atlas.document_thin,),
                           title: Text(pin.title()),
                           subtitle: SpaceChip(spaceId: spaceId),
                         ),
                         Padding(
-                            padding: const EdgeInsets.all(8), child: content),
+                            padding: const EdgeInsets.all(8), child: content,),
                       ],
                     ),
                   ),

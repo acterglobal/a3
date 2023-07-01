@@ -89,7 +89,7 @@ impl Client {
                     .get_room(t.room_id())
                     .context("Room of pin not found")?;
                 Ok(Pin {
-                    client: client,
+                    client,
                     room,
                     content: t,
                 })
