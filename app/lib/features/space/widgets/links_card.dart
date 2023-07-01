@@ -1,6 +1,6 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/features/space/providers/pins_provider.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:core';
 import 'package:url_launcher/url_launcher.dart';

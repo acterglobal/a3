@@ -40,3 +40,55 @@ final pinnedLinksProvider = FutureProvider.autoDispose
   final pins = await ref.watch(spacePinsProvider(space).future);
   return pins.where((element) => element.isLink()).toList();
 });
+
+class AsyncPinsNotifier extends AutoDisposeAsyncNotifier<List<ActerPin>> {
+  late Stream<void> _listener;
+  Future<List<ActerPin>> _getPins() async {
+    final client = ref.watch(clientProvider)!;
+    return (await client.pins()).toList(); // this might throw internally
+  }
+
+  @override
+  Future<List<ActerPin>> build() async {
+    final client = ref.watch(clientProvider)!;
+    _listener = client.subscribe('PINS'); // stay up to date
+    _listener.forEach((_e) async {
+      state = await AsyncValue.guard(() => _getPins());
+    });
+    return _getPins();
+  }
+}
+
+final pinsProvider =
+    AsyncNotifierProvider.autoDispose<AsyncPinsNotifier, List<ActerPin>>(
+  () => AsyncPinsNotifier(),
+);
+
+class AsyncPinNotifier
+    extends AutoDisposeFamilyAsyncNotifier<ActerPin, String> {
+  late Stream<void> _listener;
+  Future<ActerPin> _getPin() async {
+    final client = ref.watch(clientProvider)!;
+    try {
+      return await client.pin(arg);
+    } catch (e) {
+      return await client.waitForPin(arg, null);
+    }
+    // this might throw internally
+  }
+
+  @override
+  Future<ActerPin> build(String arg) async {
+    final client = ref.watch(clientProvider)!;
+    _listener = client.subscribe(arg); // stay up to date
+    _listener.forEach((_e) async {
+      state = await AsyncValue.guard(() => _getPin());
+    });
+    return _getPin();
+  }
+}
+
+final pinProvider = AsyncNotifierProvider.autoDispose
+    .family<AsyncPinNotifier, ActerPin, String>(
+  () => AsyncPinNotifier(),
+);

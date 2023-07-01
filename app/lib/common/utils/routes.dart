@@ -1,6 +1,7 @@
 enum Routes {
   // primary & quickjump actions
   actionAddTask('/actions/addTask'),
+  actionAddPin('/actions/addPin'),
 
   // --- Auth
   intro('/intro'),
@@ -35,6 +36,11 @@ enum Routes {
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
   spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
+
+  // -- pins
+
+  pins('/pins'),
+  pin('/pins/:pinId'),
 
   // -- settings
   settings('/settings'),
