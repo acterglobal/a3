@@ -20,6 +20,7 @@ enum Routes {
   search('/search'),
   activities('/activities'),
   tasks('/tasks'),
+  pins('/pins'),
 
   // --- chat
   chat('/chat'),

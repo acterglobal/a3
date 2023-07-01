@@ -54,7 +54,7 @@ class QuickJump extends ConsumerWidget {
                       ),
                     ),
                     onPressed: () {
-                      navigateTo(route: Routes.activities);
+                      navigateTo(route: Routes.pins);
                     },
                     icon: const Icon(Atlas.pin_thin, size: 32),
                   )
