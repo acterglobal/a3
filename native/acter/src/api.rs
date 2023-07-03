@@ -19,6 +19,7 @@ lazy_static! {
 }
 
 mod account;
+mod attachments;
 mod auth;
 mod calendar_events;
 mod client;
@@ -44,6 +45,7 @@ pub use acter_core::{
     events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
     models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},
 };
+pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token,
     login_with_token_under_config, make_client_config, register_under_config, register_with_token,

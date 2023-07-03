@@ -1811,6 +1811,98 @@ class Api {
     return tmp7;
   }
 
+  CommentsManager? __acterPinCommentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _acterPinCommentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_CommentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = CommentsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
+  AttachmentsManager? __acterPinAttachmentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _acterPinAttachmentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = AttachmentsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
   EventId? __pinUpdateBuilderSendFuturePoll(
     int boxed,
     int postCobject,
@@ -3757,6 +3849,287 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListComment");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp14 = FfiListComment._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  EventId? __attachmentDraftSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentDraftSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiBufferUint8? __attachmentImageBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentImageBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiBufferUint8? __attachmentAudioBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentAudioBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiBufferUint8? __attachmentVideoBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentVideoBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiBufferUint8? __attachmentFileBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentFileBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiListAttachment? __attachmentsManagerAttachmentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentsManagerAttachmentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListAttachment");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListAttachment._(this, tmp13_1);
     final tmp7 = tmp14;
     return tmp7;
   }
@@ -9386,6 +9759,26 @@ class Api {
       int Function(
     int,
   )>();
+  late final _acterPinCommentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__ActerPin_comments");
+
+  late final _acterPinComments = _acterPinCommentsPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _acterPinAttachmentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__ActerPin_attachments");
+
+  late final _acterPinAttachments = _acterPinAttachmentsPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _pinUpdateBuilderTitlePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -11347,6 +11740,341 @@ class Api {
   late final _commentsManagerCommentDraft =
       _commentsManagerCommentDraftPtr.asFunction<
           int Function(
+    int,
+  )>();
+  late final _attachmentDraftSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__AttachmentDraft_send");
+
+  late final _attachmentDraftSend = _attachmentDraftSendPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _attachmentSenderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Attachment_sender");
+
+  late final _attachmentSender = _attachmentSenderPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _attachmentOriginServerTsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+    ffi.Int64,
+  )>>("__Attachment_origin_server_ts");
+
+  late final _attachmentOriginServerTs =
+      _attachmentOriginServerTsPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _attachmentImageDescPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentImageDescReturn Function(
+    ffi.Int64,
+  )>>("__Attachment_image_desc");
+
+  late final _attachmentImageDesc = _attachmentImageDescPtr.asFunction<
+      _AttachmentImageDescReturn Function(
+    int,
+  )>();
+  late final _attachmentImageBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Attachment_image_binary");
+
+  late final _attachmentImageBinary = _attachmentImageBinaryPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _attachmentAudioDescPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentAudioDescReturn Function(
+    ffi.Int64,
+  )>>("__Attachment_audio_desc");
+
+  late final _attachmentAudioDesc = _attachmentAudioDescPtr.asFunction<
+      _AttachmentAudioDescReturn Function(
+    int,
+  )>();
+  late final _attachmentAudioBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Attachment_audio_binary");
+
+  late final _attachmentAudioBinary = _attachmentAudioBinaryPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _attachmentVideoDescPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentVideoDescReturn Function(
+    ffi.Int64,
+  )>>("__Attachment_video_desc");
+
+  late final _attachmentVideoDesc = _attachmentVideoDescPtr.asFunction<
+      _AttachmentVideoDescReturn Function(
+    int,
+  )>();
+  late final _attachmentVideoBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Attachment_video_binary");
+
+  late final _attachmentVideoBinary = _attachmentVideoBinaryPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _attachmentFileDescPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentFileDescReturn Function(
+    ffi.Int64,
+  )>>("__Attachment_file_desc");
+
+  late final _attachmentFileDesc = _attachmentFileDescPtr.asFunction<
+      _AttachmentFileDescReturn Function(
+    int,
+  )>();
+  late final _attachmentFileBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Attachment_file_binary");
+
+  late final _attachmentFileBinary = _attachmentFileBinaryPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _attachmentsManagerAttachmentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__AttachmentsManager_attachments");
+
+  late final _attachmentsManagerAttachments =
+      _attachmentsManagerAttachmentsPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _attachmentsManagerHasAttachmentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__AttachmentsManager_has_attachments");
+
+  late final _attachmentsManagerHasAttachments =
+      _attachmentsManagerHasAttachmentsPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _attachmentsManagerAttachmentsCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+    ffi.Int64,
+  )>>("__AttachmentsManager_attachments_count");
+
+  late final _attachmentsManagerAttachmentsCount =
+      _attachmentsManagerAttachmentsCountPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _attachmentsManagerAttachmentDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__AttachmentsManager_attachment_draft");
+
+  late final _attachmentsManagerAttachmentDraft =
+      _attachmentsManagerAttachmentDraftPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _attachmentsManagerImageAttachmentDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__AttachmentsManager_image_attachment_draft");
+
+  late final _attachmentsManagerImageAttachmentDraft =
+      _attachmentsManagerImageAttachmentDraftPtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentsManagerAudioAttachmentDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+  )>>("__AttachmentsManager_audio_attachment_draft");
+
+  late final _attachmentsManagerAudioAttachmentDraft =
+      _attachmentsManagerAudioAttachmentDraftPtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentsManagerVideoAttachmentDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__AttachmentsManager_video_attachment_draft");
+
+  late final _attachmentsManagerVideoAttachmentDraft =
+      _attachmentsManagerVideoAttachmentDraftPtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentsManagerFileAttachmentDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+  )>>("__AttachmentsManager_file_attachment_draft");
+
+  late final _attachmentsManagerFileAttachmentDraft =
+      _attachmentsManagerFileAttachmentDraftPtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
     int,
   )>();
   late final _taskTitlePtr = _lookup<
@@ -14934,6 +15662,36 @@ class Api {
     int,
     int,
   )>();
+  late final _acterPinCommentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinCommentsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__ActerPin_comments_future_poll");
+
+  late final _acterPinCommentsFuturePoll =
+      _acterPinCommentsFuturePollPtr.asFunction<
+          _ActerPinCommentsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _acterPinAttachmentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinAttachmentsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__ActerPin_attachments_future_poll");
+
+  late final _acterPinAttachmentsFuturePoll =
+      _acterPinAttachmentsFuturePollPtr.asFunction<
+          _ActerPinAttachmentsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _pinUpdateBuilderSendFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _PinUpdateBuilderSendFuturePollReturn Function(
@@ -15560,6 +16318,96 @@ class Api {
   late final _commentsManagerCommentsFuturePoll =
       _commentsManagerCommentsFuturePollPtr.asFunction<
           _CommentsManagerCommentsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentDraftSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentDraftSendFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__AttachmentDraft_send_future_poll");
+
+  late final _attachmentDraftSendFuturePoll =
+      _attachmentDraftSendFuturePollPtr.asFunction<
+          _AttachmentDraftSendFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentImageBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentImageBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Attachment_image_binary_future_poll");
+
+  late final _attachmentImageBinaryFuturePoll =
+      _attachmentImageBinaryFuturePollPtr.asFunction<
+          _AttachmentImageBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentAudioBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentAudioBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Attachment_audio_binary_future_poll");
+
+  late final _attachmentAudioBinaryFuturePoll =
+      _attachmentAudioBinaryFuturePollPtr.asFunction<
+          _AttachmentAudioBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentVideoBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentVideoBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Attachment_video_binary_future_poll");
+
+  late final _attachmentVideoBinaryFuturePoll =
+      _attachmentVideoBinaryFuturePollPtr.asFunction<
+          _AttachmentVideoBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentFileBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentFileBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Attachment_file_binary_future_poll");
+
+  late final _attachmentFileBinaryFuturePoll =
+      _attachmentFileBinaryFuturePollPtr.asFunction<
+          _AttachmentFileBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentsManagerAttachmentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerAttachmentsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__AttachmentsManager_attachments_future_poll");
+
+  late final _attachmentsManagerAttachmentsFuturePoll =
+      _attachmentsManagerAttachmentsFuturePollPtr.asFunction<
+          _AttachmentsManagerAttachmentsFuturePollReturn Function(
     int,
     int,
     int,
@@ -17173,6 +18021,55 @@ class Api {
 
   late final _ffiListActerPinInsert =
       _ffiListActerPinInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListAttachment createFfiListAttachment() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListAttachmentCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListAttachment");
+    return FfiListAttachment._(this, list_box);
+  }
+
+  late final _ffiListAttachmentCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListAttachmentCreate");
+
+  late final _ffiListAttachmentCreate =
+      _ffiListAttachmentCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListAttachmentLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListAttachmentLen");
+
+  late final _ffiListAttachmentLen =
+      _ffiListAttachmentLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListAttachmentElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListAttachmentElementAt");
+
+  late final _ffiListAttachmentElementAt =
+      _ffiListAttachmentElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListAttachmentRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListAttachmentRemove");
+
+  late final _ffiListAttachmentRemove =
+      _ffiListAttachmentRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListAttachmentAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListAttachmentAdd");
+
+  late final _ffiListAttachmentAdd =
+      _ffiListAttachmentAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListAttachmentInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListAttachmentInsert");
+
+  late final _ffiListAttachmentInsert =
+      _ffiListAttachmentInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListCalendarEvent createFfiListCalendarEvent() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListCalendarEventCreate());
@@ -20104,6 +21001,35 @@ class ActerPin {
     final tmp3_1 = _Box(_api, tmp3_0, "__ActerPin_refresh_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__acterPinRefreshFuturePoll);
+    return tmp2;
+  }
+
+  Future<CommentsManager> comments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinComments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__ActerPin_comments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__acterPinCommentsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the attachments manager for this pin
+  Future<AttachmentsManager> attachments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinAttachments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__ActerPin_attachments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__acterPinAttachmentsFuturePoll);
     return tmp2;
   }
 
@@ -24777,6 +25703,756 @@ class CommentsManager {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = CommentDraft._(_api, tmp3_1);
     return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class AttachmentDraft {
+  final Api _api;
+  final _Box _box;
+
+  AttachmentDraft._(this._api, this._box);
+
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentDraftSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__AttachmentDraft_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentDraftSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class Attachment {
+  final Api _api;
+  final _Box _box;
+
+  Attachment._(this._api, this._box);
+
+  /// Who send this attachment
+  UserId sender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentSender(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// When was this attachment acknowledged by the server
+  int originServerTs() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentOriginServerTs(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// if this is an image, hand over the description
+  ImageDesc? imageDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentImageDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ImageDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = ImageDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is an image, hand over the data
+  Future<FfiBufferUint8> imageBinary() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentImageBinary(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_image_binary_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentImageBinaryFuturePoll);
+    return tmp2;
+  }
+
+  /// if this is an audio, hand over the description
+  AudioDesc? audioDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentAudioDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_AudioDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = AudioDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is an audio, hand over the data
+  Future<FfiBufferUint8> audioBinary() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentAudioBinary(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_audio_binary_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentAudioBinaryFuturePoll);
+    return tmp2;
+  }
+
+  /// if this is a video, hand over the description
+  VideoDesc? videoDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentVideoDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_VideoDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = VideoDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is a video, hand over the data
+  Future<FfiBufferUint8> videoBinary() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentVideoBinary(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_video_binary_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentVideoBinaryFuturePoll);
+    return tmp2;
+  }
+
+  /// if this is a file, hand over the description
+  FileDesc? fileDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentFileDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FileDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = FileDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is a file, hand over the data
+  Future<FfiBufferUint8> fileBinary() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentFileBinary(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_file_binary_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentFileBinaryFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// Reference to the attachments section of a particular item
+class AttachmentsManager {
+  final Api _api;
+  final _Box _box;
+
+  AttachmentsManager._(this._api, this._box);
+
+  /// Get the list of attachments (in arrival order)
+  Future<FfiListAttachment> attachments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerAttachments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__AttachmentsManager_attachments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__attachmentsManagerAttachmentsFuturePoll);
+    return tmp2;
+  }
+
+  /// Does this item have any attachments?
+  bool hasAttachments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerHasAttachments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// How many attachments does this item have
+  int attachmentsCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerAttachmentsCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// draft a new attachment for this item
+  AttachmentDraft attachmentDraft() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerAttachmentDraft(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_AttachmentDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = AttachmentDraft._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// create news slide for image msg
+  AttachmentDraft imageAttachmentDraft(
+    String body,
+    String url,
+    String? mimetype,
+    int? size,
+    int? width,
+    int? height,
+    String? blurhash,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = width;
+    final tmp23 = height;
+    final tmp27 = blurhash;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp31 = 0;
+    var tmp32 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+      debugAllocation("lower string", tmp12, tmp13);
+
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      tmp22 = tmp21;
+    }
+    if (tmp23 == null) {
+      tmp24 = 0;
+    } else {
+      tmp24 = 1;
+      final tmp25 = tmp23;
+      tmp26 = tmp25;
+    }
+    if (tmp27 == null) {
+      tmp28 = 0;
+    } else {
+      tmp28 = 1;
+      final tmp29 = tmp27;
+      final tmp29_0 = utf8.encode(tmp29);
+      tmp31 = tmp29_0.length;
+      debugAllocation("lower string", tmp30, tmp31);
+
+      final ffi.Pointer<ffi.Uint8> tmp30_0 = _api.__allocate(tmp31 * 1, 1);
+      final Uint8List tmp30_1 = tmp30_0.asTypedList(tmp31);
+      tmp30_1.setAll(0, tmp29_0);
+      tmp30 = tmp30_0.address;
+      tmp32 = tmp31;
+    }
+    final tmp33 = _api._attachmentsManagerImageAttachmentDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp30,
+      tmp31,
+      tmp32,
+    );
+    final tmp35 = tmp33;
+    final ffi.Pointer<ffi.Void> tmp35_0 = ffi.Pointer.fromAddress(tmp35);
+    final tmp35_1 = _Box(_api, tmp35_0, "drop_box_AttachmentDraft");
+    tmp35_1._finalizer = _api._registerFinalizer(tmp35_1);
+    final tmp34 = AttachmentDraft._(_api, tmp35_1);
+    return tmp34;
+  }
+
+  /// create news slide for audio msg
+  AttachmentDraft audioAttachmentDraft(
+    String body,
+    String url,
+    int? secs,
+    String? mimetype,
+    int? size,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = secs;
+    final tmp13 = mimetype;
+    final tmp19 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+      debugAllocation("lower string", tmp16, tmp17);
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      tmp22 = tmp21;
+    }
+    final tmp23 = _api._attachmentsManagerAudioAttachmentDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+      tmp20,
+      tmp22,
+    );
+    final tmp25 = tmp23;
+    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
+    final tmp25_1 = _Box(_api, tmp25_0, "drop_box_AttachmentDraft");
+    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
+    final tmp24 = AttachmentDraft._(_api, tmp25_1);
+    return tmp24;
+  }
+
+  /// create news slide for video msg
+  AttachmentDraft videoAttachmentDraft(
+    String body,
+    String url,
+    int? secs,
+    int? height,
+    int? width,
+    String? mimetype,
+    int? size,
+    String? blurhash,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = secs;
+    final tmp13 = height;
+    final tmp17 = width;
+    final tmp21 = mimetype;
+    final tmp27 = size;
+    final tmp31 = blurhash;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp25 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp34 = 0;
+    var tmp35 = 0;
+    var tmp36 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      final tmp23_0 = utf8.encode(tmp23);
+      tmp25 = tmp23_0.length;
+      debugAllocation("lower string", tmp24, tmp25);
+
+      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
+      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
+      tmp24_1.setAll(0, tmp23_0);
+      tmp24 = tmp24_0.address;
+      tmp26 = tmp25;
+    }
+    if (tmp27 == null) {
+      tmp28 = 0;
+    } else {
+      tmp28 = 1;
+      final tmp29 = tmp27;
+      tmp30 = tmp29;
+    }
+    if (tmp31 == null) {
+      tmp32 = 0;
+    } else {
+      tmp32 = 1;
+      final tmp33 = tmp31;
+      final tmp33_0 = utf8.encode(tmp33);
+      tmp35 = tmp33_0.length;
+      debugAllocation("lower string", tmp34, tmp35);
+
+      final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
+      final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
+      tmp34_1.setAll(0, tmp33_0);
+      tmp34 = tmp34_0.address;
+      tmp36 = tmp35;
+    }
+    final tmp37 = _api._attachmentsManagerVideoAttachmentDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp25,
+      tmp26,
+      tmp28,
+      tmp30,
+      tmp32,
+      tmp34,
+      tmp35,
+      tmp36,
+    );
+    final tmp39 = tmp37;
+    final ffi.Pointer<ffi.Void> tmp39_0 = ffi.Pointer.fromAddress(tmp39);
+    final tmp39_1 = _Box(_api, tmp39_0, "drop_box_AttachmentDraft");
+    tmp39_1._finalizer = _api._registerFinalizer(tmp39_1);
+    final tmp38 = AttachmentDraft._(_api, tmp39_1);
+    return tmp38;
+  }
+
+  /// create news slide for file msg
+  AttachmentDraft fileAttachmentDraft(
+    String body,
+    String url,
+    String? mimetype,
+    int? size,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    debugAllocation("lower string", tmp6, tmp7);
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+      debugAllocation("lower string", tmp12, tmp13);
+
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    final tmp19 = _api._attachmentsManagerFileAttachmentDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp18,
+    );
+    final tmp21 = tmp19;
+    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
+    final tmp21_1 = _Box(_api, tmp21_0, "drop_box_AttachmentDraft");
+    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
+    final tmp20 = AttachmentDraft._(_api, tmp21_1);
+    return tmp20;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -32256,6 +33932,34 @@ class _CommentContentFormattedReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _AttachmentImageDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _AttachmentAudioDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _AttachmentVideoDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _AttachmentFileDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _TaskTitleReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -33043,6 +34747,36 @@ class _ActerPinRefreshFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ActerPinCommentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ActerPinAttachmentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _PinUpdateBuilderSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -33667,6 +35401,96 @@ class _CommentDraftSendFuturePollReturn extends ffi.Struct {
 }
 
 class _CommentsManagerCommentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentDraftSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentImageBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentAudioBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentVideoBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentFileBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentsManagerAttachmentsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -35142,6 +36966,66 @@ class FfiListActerPin extends Iterable<ActerPin>
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, ActerPin element) {
     _api._ffiListActerPinInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListAttachment extends Iterable<Attachment>
+    implements CustomIterable<Attachment> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListAttachment._(this._api, this._box);
+
+  @override
+  Iterator<Attachment> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListAttachmentLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  Attachment elementAt(int index) {
+    final address = _api._ffiListAttachmentElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return Attachment._(_api, reference);
+  }
+
+  Attachment operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  Attachment remove(int index) {
+    final address = _api._ffiListAttachmentRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Attachment");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return Attachment._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(Attachment element) {
+    _api._ffiListAttachmentAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, Attachment element) {
+    _api._ffiListAttachmentInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 
