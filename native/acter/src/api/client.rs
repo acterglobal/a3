@@ -439,6 +439,7 @@ impl Client {
                             return Ok(LoopCtrl::Continue);
                         }
                     };
+                    trace!(target: "acter::sync_response::full", "sync response: {:#?}", response);
 
                     device_controller.process_device_lists(&client, &response);
                     trace!("post device controller");
