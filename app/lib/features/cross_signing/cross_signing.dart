@@ -1,13 +1,8 @@
 import 'dart:async';
-import 'dart:io' show Platform;
+import 'dart:io';
 
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show
-        Client,
-        DeviceChangedEvent,
-        FfiListVerificationEmoji,
-        VerificationEvent;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -47,8 +42,8 @@ class CrossSigning {
   Client client;
   bool acceptingRequest = false;
   bool waitForMatch = false;
-  late StreamSubscription<DeviceChangedEvent>? _deviceSubscription;
-  late StreamSubscription<VerificationEvent>? _verificationSubscription;
+  late StreamSubscription<DeviceChangedEvent>? _deviceChangedPoller;
+  late StreamSubscription<VerificationEvent>? _verificationPoller;
   final Map<String, VerifEvent> _eventMap = {};
   bool _mounted = true;
   bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
@@ -60,12 +55,12 @@ class CrossSigning {
 
   void dispose() {
     _mounted = false;
-    _deviceSubscription?.cancel();
-    _verificationSubscription?.cancel();
+    _deviceChangedPoller?.cancel();
+    _verificationPoller?.cancel();
   }
 
   void _installDeviceEvent() {
-    _deviceSubscription = client.deviceChangedEventRx()?.listen((event) async {
+    _deviceChangedPoller = client.deviceChangedEventRx()?.listen((event) async {
       var records = await event.deviceRecords(false);
       for (var record in records) {
         debugPrint('found device id: ' + record.deviceId().toString());
@@ -78,12 +73,8 @@ class CrossSigning {
         ListTile(
           leading:
               isDesktop ? const Icon(Atlas.laptop) : const Icon(Atlas.phone),
-          title: const Text(
-            'New Session Alert',
-          ),
-          subtitle: const Text(
-            'Tap to review and verify!',
-          ),
+          title: const Text('New Session Alert'),
+          subtitle: const Text('Tap to review and verify!'),
         ),
         duration: const Duration(seconds: 1),
       );
@@ -106,7 +97,7 @@ class CrossSigning {
   }
 
   void _installVerificationEvent() {
-    _verificationSubscription = client.verificationEventRx()?.listen((event) {
+    _verificationPoller = client.verificationEventRx()?.listen((event) {
       String eventType = event.eventType();
       debugPrint(eventType);
       switch (eventType) {
@@ -483,9 +474,7 @@ class CrossSigning {
         Flexible(
           flex: 1,
           child: Center(
-            child: Text(
-              AppLocalizations.of(context)!.pleaseWait,
-            ),
+            child: Text(AppLocalizations.of(context)!.pleaseWait),
           ),
         ),
         const Spacer(flex: 1),
@@ -621,9 +610,7 @@ class CrossSigning {
             flex: 2,
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: Text(
-                event.reason()!,
-              ),
+              child: Text(event.reason()!),
             ),
           ),
           const Spacer(flex: 1),
@@ -976,9 +963,7 @@ class CrossSigning {
                       : const Icon(Atlas.phone),
                 ),
                 const SizedBox(width: 5),
-                Text(
-                  AppLocalizations.of(context)!.sasVerified,
-                ),
+                Text(AppLocalizations.of(context)!.sasVerified),
               ],
             ),
           ),
