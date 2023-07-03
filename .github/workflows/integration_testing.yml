@@ -30,6 +30,7 @@ jobs:
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
+          installer: poetry
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
@@ -107,6 +108,7 @@ jobs:
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
+          installer: poetry
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
@@ -198,6 +200,7 @@ jobs:
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
+          installer: poetry
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
@@ -288,6 +291,7 @@ jobs:
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
+          installer: poetry
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
