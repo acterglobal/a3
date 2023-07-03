@@ -4,6 +4,7 @@ pub use acter_core::spaces::{
 };
 use acter_core::{
     events::{
+        attachments::{SyncAttachmentEvent, SyncAttachmentUpdateEvent},
         calendar::{SyncCalendarEventEvent, SyncCalendarEventUpdateEvent},
         comments::{SyncCommentEvent, SyncCommentUpdateEvent},
         news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
@@ -48,18 +49,7 @@ use super::{
 pub struct Space {
     pub client: Client,
     pub(crate) inner: Room,
-    task_list_event_handle: Option<EventHandlerHandle>,
-    task_list_update_event_handle: Option<EventHandlerHandle>,
-    task_event_handle: Option<EventHandlerHandle>,
-    task_update_event_handle: Option<EventHandlerHandle>,
-    comment_event_handle: Option<EventHandlerHandle>,
-    comment_update_event_handle: Option<EventHandlerHandle>,
-    pin_event_handle: Option<EventHandlerHandle>,
-    pin_update_event_handle: Option<EventHandlerHandle>,
-    calendar_event_event_handle: Option<EventHandlerHandle>,
-    calendar_event_update_event_handle: Option<EventHandlerHandle>,
-    news_entry_event_handle: Option<EventHandlerHandle>,
-    news_entry_update_event_handle: Option<EventHandlerHandle>,
+    handles: Vec<EventHandlerHandle>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -73,18 +63,7 @@ impl Space {
         Space {
             client,
             inner,
-            task_list_event_handle: None,
-            task_list_update_event_handle: None,
-            task_event_handle: None,
-            task_update_event_handle: None,
-            comment_event_handle: None,
-            comment_update_event_handle: None,
-            pin_event_handle: None,
-            pin_update_event_handle: None,
-            calendar_event_event_handle: None,
-            calendar_event_update_event_handle: None,
-            news_entry_event_handle: None,
-            news_entry_update_event_handle: None,
+            handles: Default::default(),
         }
     }
 
@@ -120,7 +99,7 @@ impl Space {
         // FIXME: combine into one handler
 
         // Tasks
-        let handle =
+        self.handles.push(
             self.room.add_event_handler(
                 |ev: SyncTaskListEvent,
                  room: SdkRoom,
@@ -132,9 +111,10 @@ impl Space {
                         executor.handle(AnyActerModel::TaskList(t.into())).await;
                     }
                 },
-            );
-        self.task_list_event_handle = Some(handle);
-        let handle = self.room.add_event_handler(
+            ),
+        );
+
+        self.handles.push(self.room.add_event_handler(
             |ev: SyncTaskListUpdateEvent,
              room: SdkRoom,
              c: SdkClient,
@@ -147,9 +127,9 @@ impl Space {
                         .await;
                 }
             },
-        );
-        self.task_list_update_event_handle = Some(handle);
-        let handle = self.room.add_event_handler(
+        ));
+
+        self.handles.push( self.room.add_event_handler(
             |ev: SyncTaskEvent,
              room: SdkRoom,
              c: SdkClient,
@@ -160,9 +140,10 @@ impl Space {
                     executor.handle(AnyActerModel::Task(t.into())).await;
                 }
             },
-        );
-        self.task_event_handle = Some(handle);
-        let handle =
+        )
+    );
+
+        self.handles.push(
             self.room.add_event_handler(
                 |ev: SyncTaskUpdateEvent,
                  room: SdkRoom,
@@ -174,11 +155,11 @@ impl Space {
                         executor.handle(AnyActerModel::TaskUpdate(t.into())).await;
                     }
                 },
-            );
-        self.task_update_event_handle = Some(handle);
+            ),
+        );
 
         // Comments
-        let handle =
+        self.handles.push(
             self.room.add_event_handler(
                 |ev: SyncCommentEvent,
                  room: SdkRoom,
@@ -190,9 +171,10 @@ impl Space {
                         executor.handle(AnyActerModel::Comment(t.into())).await;
                     }
                 },
-            );
-        self.comment_event_handle = Some(handle);
-        let handle = self.room.add_event_handler(
+            ),
+        );
+
+        self.handles.push(self.room.add_event_handler(
             |ev: SyncCommentUpdateEvent,
              room: SdkRoom,
              c: SdkClient,
@@ -205,11 +187,41 @@ impl Space {
                         .await;
                 }
             },
+        ));
+
+        // Attachments
+        self.handles.push(
+            self.room.add_event_handler(
+                |ev: SyncAttachmentEvent,
+                 room: SdkRoom,
+                 c: SdkClient,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        executor.handle(AnyActerModel::Attachment(t.into())).await;
+                    }
+                },
+            ),
         );
-        self.comment_update_event_handle = Some(handle);
+
+        self.handles.push(self.room.add_event_handler(
+            |ev: SyncAttachmentUpdateEvent,
+             room: SdkRoom,
+             c: SdkClient,
+             Ctx(executor): Ctx<Executor>| async move {
+                let room_id = room.room_id().to_owned();
+                // FIXME: handle redactions
+                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                    executor
+                        .handle(AnyActerModel::AttachmentUpdate(t.into()))
+                        .await;
+                }
+            },
+        ));
 
         // Pins
-        let handle = self.room.add_event_handler(
+        self.handles.push( self.room.add_event_handler(
             |ev: SyncPinEvent,
              room: SdkRoom,
              c: SdkClient,
@@ -220,9 +232,10 @@ impl Space {
                     executor.handle(AnyActerModel::Pin(t.into())).await;
                 }
             },
-        );
-        self.pin_event_handle = Some(handle);
-        let handle =
+        )
+    );
+
+        self.handles.push(
             self.room.add_event_handler(
                 |ev: SyncPinUpdateEvent,
                  room: SdkRoom,
@@ -234,11 +247,11 @@ impl Space {
                         executor.handle(AnyActerModel::PinUpdate(t.into())).await;
                     }
                 },
-            );
-        self.pin_update_event_handle = Some(handle);
+            ),
+        );
 
         // CalendarEvents
-        let handle = self.room.add_event_handler(
+        self.handles.push(self.room.add_event_handler(
             |ev: SyncCalendarEventEvent,
              room: SdkRoom,
              c: SdkClient,
@@ -251,9 +264,9 @@ impl Space {
                         .await;
                 }
             },
-        );
-        self.calendar_event_event_handle = Some(handle);
-        let handle = self.room.add_event_handler(
+        ));
+
+        self.handles.push(self.room.add_event_handler(
             |ev: SyncCalendarEventUpdateEvent,
              room: SdkRoom,
              c: SdkClient,
@@ -266,11 +279,10 @@ impl Space {
                         .await;
                 }
             },
-        );
-        self.calendar_event_update_event_handle = Some(handle);
+        ));
 
         // NewsEntrys
-        let handle =
+        self.handles.push(
             self.room.add_event_handler(
                 |ev: SyncNewsEntryEvent,
                  room: SdkRoom,
@@ -282,9 +294,10 @@ impl Space {
                         executor.handle(AnyActerModel::NewsEntry(t.into())).await;
                     }
                 },
-            );
-        self.news_entry_event_handle = Some(handle);
-        let handle = self.room.add_event_handler(
+            ),
+        );
+
+        self.handles.push(self.room.add_event_handler(
             |ev: SyncNewsEntryUpdateEvent,
              room: SdkRoom,
              c: SdkClient,
@@ -297,60 +310,11 @@ impl Space {
                         .await;
                 }
             },
-        );
-        self.news_entry_update_event_handle = Some(handle);
+        ));
     }
 
     pub(crate) fn remove_handlers(&mut self) {
-        let client = self.room.client();
-        if let Some(handle) = self.task_list_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.task_list_event_handle = None;
-        }
-        if let Some(handle) = self.task_list_update_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.task_list_update_event_handle = None;
-        }
-        if let Some(handle) = self.task_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.task_event_handle = None;
-        }
-        if let Some(handle) = self.task_update_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.task_update_event_handle = None;
-        }
-        if let Some(handle) = self.comment_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.comment_event_handle = None;
-        }
-        if let Some(handle) = self.comment_update_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.comment_update_event_handle = None;
-        }
-        if let Some(handle) = self.pin_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.pin_event_handle = None;
-        }
-        if let Some(handle) = self.pin_update_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.pin_update_event_handle = None;
-        }
-        if let Some(handle) = self.calendar_event_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.calendar_event_event_handle = None;
-        }
-        if let Some(handle) = self.calendar_event_update_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.calendar_event_update_event_handle = None;
-        }
-        if let Some(handle) = self.news_entry_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.news_entry_event_handle = None;
-        }
-        if let Some(handle) = self.news_entry_update_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.news_entry_update_event_handle = None;
-        }
+        self.handles.clear();
     }
 
     pub fn get_room_id(&self) -> OwnedRoomId {

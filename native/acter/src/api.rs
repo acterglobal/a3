@@ -19,6 +19,7 @@ lazy_static! {
 }
 
 mod account;
+mod attachments;
 mod auth;
 mod calendar_events;
 mod client;
@@ -52,6 +53,7 @@ pub use auth::{
 pub use calendar_events::CalendarEvent;
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
+pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use common::{
     duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, OptionBuffer, OptionText,
     ReactionDesc, TextDesc, ThumbnailInfo, VideoDesc,

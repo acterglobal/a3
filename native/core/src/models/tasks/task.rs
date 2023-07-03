@@ -66,7 +66,7 @@ impl ActerModel for Task {
     }
 
     fn capabilities(&self) -> &[Capability] {
-        &[Capability::Commentable]
+        &[Capability::Commentable, Capability::HasAttachments]
     }
 
     async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
