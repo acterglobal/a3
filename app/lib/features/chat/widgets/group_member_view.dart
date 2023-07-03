@@ -23,7 +23,11 @@ class GroupMember extends StatelessWidget {
         ActerAvatar(
           mode: DisplayMode.User,
           uniqueId: userId,
-          size: 16,
+          size: profile != null
+              ? profile!.getAvatarImage() != null
+                  ? 16
+                  : 32
+              : 32,
           displayName: profile!.displayName ?? '',
           avatar: profile?.getAvatarImage(),
         ),

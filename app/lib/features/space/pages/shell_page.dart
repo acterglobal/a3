@@ -244,7 +244,7 @@ class _ShellHeader extends ConsumerWidget {
                     data: (members) {
                       final membersCount = members.length;
                       if (membersCount > 5) {
-                        // too many to display, means we limit to 10
+                        // too many to display, means we limit to 5
                         members = members.sublist(0, 5);
                       }
                       return Padding(
@@ -256,6 +256,14 @@ class _ShellHeader extends ConsumerWidget {
                             ...members.map(
                               (a) => MemberAvatar(member: a),
                             ),
+                            if (membersCount > 5)
+                              CircleAvatar(
+                                child: Text(
+                                  '+${membersCount - 5}',
+                                  textAlign: TextAlign.center,
+                                  textScaleFactor: 0.8,
+                                ),
+                              )
                           ],
                         ),
                       );
