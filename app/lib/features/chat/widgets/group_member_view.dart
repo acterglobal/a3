@@ -1,20 +1,18 @@
+import 'package:acter/common/models/profile_data.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class GroupMember extends StatelessWidget {
   final String userId;
-  final String? name;
   final bool isAdmin;
-  final Future<OptionBuffer>? avatar;
+  final ProfileData? profile;
 
   const GroupMember({
     Key? key,
     required this.userId,
-    this.name,
     required this.isAdmin,
-    this.avatar,
+    this.profile,
   }) : super(key: key);
 
   @override
@@ -26,14 +24,15 @@ class GroupMember extends StatelessWidget {
           mode: DisplayMode.User,
           uniqueId: userId,
           size: 16,
-          displayName: name,
+          displayName: profile!.displayName ?? '',
+          avatar: profile?.getAvatarImage(),
         ),
         Expanded(
           // fit: FlexFit.loose,
           child: Padding(
             padding: const EdgeInsets.only(left: 12.0),
             child: Text(
-              name ?? AppLocalizations.of(context)!.noName,
+              profile!.displayName ?? AppLocalizations.of(context)!.noName,
               style: const TextStyle(color: Colors.white, fontSize: 16),
             ),
           ),
