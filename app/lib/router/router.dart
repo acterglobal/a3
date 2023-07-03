@@ -23,6 +23,7 @@ import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
+import 'package:acter/features/space/dialogs/edit_space_sheet.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/related_spaces_page.dart';
 import 'package:acter/features/space/pages/spaces_page.dart';
@@ -38,6 +39,7 @@ import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/todo/pages/create_task_sidesheet.dart';
 import 'package:acter/features/todo/pages/todo_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod/riverpod.dart';
@@ -198,6 +200,31 @@ List<RouteBase> makeRoutes(Ref ref) => [
             },
             child: CreateSpacePage(
               initialParentsSpaceId: state.queryParameters['parentSpaceId'],
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        name: Routes.editSpace.name,
+        path: Routes.editSpace.route,
+        pageBuilder: (context, state) {
+          return SideSheetPage(
+            key: state.pageKey,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: Tween(
+                  begin: const Offset(1, 0),
+                  end: const Offset(0, 0),
+                ).animate(
+                  animation,
+                ),
+                child: child,
+              );
+            },
+            child: EditSpacePage(
+              space: state.extra as Space,
             ),
           );
         },
