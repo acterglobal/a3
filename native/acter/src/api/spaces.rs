@@ -18,6 +18,7 @@ use acter_core::{
     templates::Engine,
 };
 use anyhow::{bail, Context, Result};
+use async_broadcast::Receiver;
 use futures::stream::StreamExt;
 use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
@@ -58,39 +59,8 @@ struct HistoryState {
     seen: String,
 }
 
+// internal API
 impl Space {
-    pub fn new(client: Client, inner: Room) -> Self {
-        Space {
-            client,
-            inner,
-            handles: Default::default(),
-        }
-    }
-
-    pub async fn create_onboarding_data(&self) -> Result<()> {
-        let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
-        engine
-            .add_user("main".to_owned(), self.client.core.clone())
-            .await?;
-        engine.add_ref(
-            "space".to_owned(),
-            "space".to_owned(),
-            self.room.room_id().to_string(),
-        )?;
-
-        let mut executer = engine.execute()?;
-        while let Some(i) = executer.next().await {
-            i?
-        }
-
-        Ok(())
-    }
-
-    // for only cli run_marking_space, not api.rsh
-    pub async fn is_acter_space(&self) -> bool {
-        is_acter_space(&self.inner).await
-    }
-
     pub(crate) async fn add_handlers(&mut self) {
         self.room
             .client()
@@ -318,43 +288,6 @@ impl Space {
             self.client.remove_event_handler(handle);
         }
     }
-
-    pub fn get_room_id(&self) -> OwnedRoomId {
-        self.room_id().to_owned()
-    }
-
-    pub async fn set_acter_space_states(&self) -> Result<()> {
-        let SdkRoom::Joined(ref joined) = self.inner.room else {
-            bail!("You can't convert a space you didn't join");
-        };
-        let client = joined.client();
-        let my_id = client.user_id().context("User not found")?.to_owned();
-        let member = joined
-            .get_member(&my_id)
-            .await?
-            .context("Couldn't find me among room members")?;
-        for state in default_acter_space_states() {
-            println!("{:?}", state);
-            let event_type = state.get_field("type")?.context("given")?;
-            let state_key = state.get_field("state_key")?.unwrap_or_default();
-            let body = state
-                .get_field::<Raw<AnyStateEventContent>>("content")?
-                .context("body is given")?;
-            if !member.can_send_state(StateEventType::RoomAvatar) {
-                bail!("No permission to change avatar of this room");
-            }
-
-            let request = SendStateEventRequest::new_raw(
-                joined.room_id().to_owned(),
-                event_type,
-                state_key,
-                body,
-            );
-            client.send(request, None).await?;
-        }
-        Ok(())
-    }
-
     pub(crate) async fn refresh_history(&self) -> Result<()> {
         let name = self.room.name();
         let room_id = self.room.room_id();
@@ -441,6 +374,82 @@ impl Space {
             }
         }
         trace!(name, "history loaded");
+        Ok(())
+    }
+}
+
+// External API
+
+impl Space {
+    pub fn new(client: Client, inner: Room) -> Self {
+        Space {
+            client,
+            inner,
+            handles: Default::default(),
+        }
+    }
+
+    pub async fn create_onboarding_data(&self) -> Result<()> {
+        let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
+        engine
+            .add_user("main".to_owned(), self.client.core.clone())
+            .await?;
+        engine.add_ref(
+            "space".to_owned(),
+            "space".to_owned(),
+            self.room.room_id().to_string(),
+        )?;
+
+        let mut executer = engine.execute()?;
+        while let Some(i) = executer.next().await {
+            i?
+        }
+
+        Ok(())
+    }
+
+    pub fn subscribe(&self) -> Receiver<()> {
+        self.client.subscribe(format!("{}", self.room_id()))
+    }
+
+    // for only cli run_marking_space, not api.rsh
+    pub async fn is_acter_space(&self) -> bool {
+        is_acter_space(&self.inner).await
+    }
+
+    pub fn get_room_id(&self) -> OwnedRoomId {
+        self.room_id().to_owned()
+    }
+
+    pub async fn set_acter_space_states(&self) -> Result<()> {
+        let SdkRoom::Joined(ref joined) = self.inner.room else {
+            bail!("You can't convert a space you didn't join");
+        };
+        let client = joined.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
+        let member = joined
+            .get_member(&my_id)
+            .await?
+            .context("Couldn't find me among room members")?;
+        for state in default_acter_space_states() {
+            println!("{:?}", state);
+            let event_type = state.get_field("type")?.context("given")?;
+            let state_key = state.get_field("state_key")?.unwrap_or_default();
+            let body = state
+                .get_field::<Raw<AnyStateEventContent>>("content")?
+                .context("body is given")?;
+            if !member.can_send_state(StateEventType::RoomAvatar) {
+                bail!("No permission to change avatar of this room");
+            }
+
+            let request = SendStateEventRequest::new_raw(
+                joined.room_id().to_owned(),
+                event_type,
+                state_key,
+                body,
+            );
+            client.send(request, None).await?;
+        }
         Ok(())
     }
 
