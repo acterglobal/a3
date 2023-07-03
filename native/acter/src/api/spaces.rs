@@ -314,7 +314,9 @@ impl Space {
     }
 
     pub(crate) fn remove_handlers(&mut self) {
-        self.handles.clear();
+        for handle in self.handles.drain(..) {
+            self.client.remove_event_handler(handle);
+        }
     }
 
     pub fn get_room_id(&self) -> OwnedRoomId {
