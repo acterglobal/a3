@@ -45,6 +45,7 @@ pub use acter_core::{
     events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
     models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},
 };
+pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token,
     login_with_token_under_config, make_client_config, register_under_config, register_with_token,
@@ -53,7 +54,6 @@ pub use auth::{
 pub use calendar_events::CalendarEvent;
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
-pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use common::{
     duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, OptionBuffer, OptionText,
     ReactionDesc, TextDesc, ThumbnailInfo, VideoDesc,
