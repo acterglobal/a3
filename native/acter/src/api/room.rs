@@ -270,6 +270,37 @@ impl Room {
             .await?
     }
 
+    pub async fn set_name(&self, name: Option<String>) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't set name to a room we are not in")
+        };
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_state(StateEventType::RoomName) {
+                    bail!("No permission to change name of this room");
+                }
+                let resp = room
+                    .set_name(name)
+                    .await
+                    .context("Couldn't set name to the room")?;
+                Ok(resp.event_id)
+            })
+            .await?
+    }
+
     pub async fn active_members(&self) -> Result<Vec<Member>> {
         let room = self.room.clone();
 
