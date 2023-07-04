@@ -193,38 +193,41 @@ class PublicSpaceItem extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ListTile(
-            leading: withInfo.when(
-              data: (data) => data != null
-                  ? ActerAvatar(
-                      mode: DisplayMode.Space,
-                      uniqueId: space.roomIdStr(),
-                      size: 48,
-                      displayName: data.spaceProfileData.displayName,
-                      avatar: data.spaceProfileData.hasAvatar()
-                          ? data.spaceProfileData.getAvatarImage()
-                          : null,
-                    )
-                  : fallbackAvatar(),
-              error: (e, a) => Text('loading failed: $e'),
-              loading: fallbackAvatar,
-            ),
-            title: Text(space.name() ?? 'no display name'),
-            subtitle: Text('${space.numJoinedMembers()} Members'),
-            trailing: withInfo.when(
-              data: (data) => data != null
-                  ? const Chip(label: Text('member'))
-                  : space.joinRuleStr() == 'Public'
-                      ? OutlinedButton(
-                          onPressed: () {},
-                          child: const Text('join'),
-                        )
-                      : OutlinedButton(
-                          onPressed: () {},
-                          child: const Text('request to join'),
-                        ),
-              error: (e, s) => Text('error loading membership: $e'),
-              loading: () => const Text('loading'),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: ListTile(
+              leading: withInfo.when(
+                data: (data) => data != null
+                    ? ActerAvatar(
+                        mode: DisplayMode.Space,
+                        uniqueId: space.roomIdStr(),
+                        size: 48,
+                        displayName: data.spaceProfileData.displayName,
+                        avatar: data.spaceProfileData.hasAvatar()
+                            ? data.spaceProfileData.getAvatarImage()
+                            : null,
+                      )
+                    : fallbackAvatar(),
+                error: (e, a) => Text('loading failed: $e'),
+                loading: fallbackAvatar,
+              ),
+              title: Text(space.name() ?? 'no display name'),
+              subtitle: Text('${space.numJoinedMembers()} Members'),
+              trailing: withInfo.when(
+                data: (data) => data != null
+                    ? const Chip(label: Text('member'))
+                    : space.joinRuleStr() == 'Public'
+                        ? OutlinedButton(
+                            onPressed: () {},
+                            child: const Text('join'),
+                          )
+                        : OutlinedButton(
+                            onPressed: () {},
+                            child: const Text('request to join'),
+                          ),
+                error: (e, s) => Text('error loading membership: $e'),
+                loading: () => const Text('loading'),
+              ),
             ),
           ),
           Padding(
@@ -337,6 +340,50 @@ class _JoinSpacePageState extends ConsumerState<JoinSpacePage> {
                     ),
                   ],
                 ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                child: Consumer(builder: (context, ref, child) {
+                  final searchVal = ref.watch(searchValueProvider);
+                  if (searchVal != null && searchVal.isNotEmpty) {
+                    final aliased = RegExp(r'https://matrix.to/#/(?<alias>#.+)')
+                        .firstMatch(searchVal);
+                    if (aliased != null) {
+                      return Card(
+                        child: ListTile(
+                          title: Text(aliased.namedGroup('alias')!),
+                          subtitle: Text('directy join'),
+                          trailing: OutlinedButton.icon(
+                            onPressed: () {},
+                            icon: Icon(Atlas.entrance_thin),
+                            label: Text('Try to join'),
+                          ),
+                        ),
+                      );
+                    }
+
+                    final id = RegExp(r'https://matrix.to/#/(?<id>!.+)\?')
+                        .firstMatch(searchVal);
+                    if (id != null) {
+                      return Card(
+                        child: ListTile(
+                          title: Text(id.namedGroup('id')!),
+                          subtitle: Text('directy join'),
+                          trailing: OutlinedButton.icon(
+                            onPressed: () {},
+                            icon: Icon(Atlas.entrance_thin),
+                            label: Text('Try to join'),
+                          ),
+                        ),
+                      );
+                    }
+                  }
+
+                  return SizedBox(height: 0);
+                }),
               ),
             ),
             RiverPagedBuilder<Next?, PublicSearchResultItem>.autoDispose(
