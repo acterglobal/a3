@@ -242,18 +242,44 @@ class _JoinSpacePageState extends ConsumerState<JoinSpacePage> {
             RiverPagedBuilder<Next?, PublicSearchResultItem>.autoDispose(
               firstPageKey: const Next(isStart: true),
               provider: publicSearchProvider,
-              itemBuilder: (context, item, index) => ListTile(
-                leading: ActerAvatar(
-                  mode: DisplayMode.Space,
-                  uniqueId: item.roomIdStr(),
-                  displayName: item.name(),
+              itemBuilder: (context, item, index) => Card(
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                    width: 1.5,
+                  ),
+                  borderRadius: BorderRadius.circular(6),
                 ),
-                title: Text(item.name() ?? 'no display name'),
+                color: Theme.of(context).colorScheme.surface,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                      leading: ActerAvatar(
+                        mode: DisplayMode.Space,
+                        uniqueId: item.roomIdStr(),
+                        displayName: item.name(),
+                      ),
+                      title: Text(item.name() ?? 'no display name'),
+                      subtitle: Text('${item.numJoinedMembers()} Members'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 20,
+                        top: 2,
+                        bottom: 2,
+                      ),
+                      child: Text('${item.topic()}'),
+                    ),
+                  ],
+                ),
               ),
               pagedBuilder: (controller, builder) => PagedSliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: max(1, min(widthCount, minCount)),
-                  childAspectRatio: 6,
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 800,
+                  childAspectRatio: 3,
                 ),
                 pagingController: controller,
                 builderDelegate: builder,
