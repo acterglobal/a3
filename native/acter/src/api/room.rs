@@ -346,7 +346,10 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let member = room.get_member(&uid).await?.context("User not found")?;
+                let member = room
+                    .get_member(&uid)
+                    .await?
+                    .context("Couldn't find him among room members")?;
                 Ok(Member { member })
             })
             .await?
