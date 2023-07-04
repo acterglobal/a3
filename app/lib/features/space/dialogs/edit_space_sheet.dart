@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart' as nav;
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -21,8 +21,8 @@ final editTopicProvider = StateProvider.autoDispose<String>((ref) => '');
 final editAvatarProvider = StateProvider.autoDispose<String>((ref) => '');
 
 class EditSpacePage extends ConsumerStatefulWidget {
-  final Space space;
-  const EditSpacePage({super.key, required this.space});
+  final String spaceId;
+  const EditSpacePage({super.key, required this.spaceId});
 
   @override
   ConsumerState<EditSpacePage> createState() => _EditSpacePageConsumerState();
@@ -40,19 +40,16 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // apply existing data to fields
   void editSpaceData() async {
-    final profileData =
-        await ref.read(spaceProfileDataProvider(widget.space).future);
+    final space = ref.read(spaceProvider(widget.spaceId)).requireValue;
+    final profileData = await ref.read(spaceProfileDataProvider(space).future);
 
     ref
         .read(editTitleProvider.notifier)
         .update((state) => profileData.displayName ?? '');
-    ref
-        .read(editTopicProvider.notifier)
-        .update((state) => widget.space.topic() ?? '');
+    ref.read(editTopicProvider.notifier).update((state) => space.topic() ?? '');
 
     if (profileData.hasAvatar()) {
-      final spaceId = widget.space.getRoomId().toString();
-      File imageFile = await File('$spaceId.jpg')
+      File imageFile = await File('${widget.spaceId}.jpg')
           .writeAsBytes(profileData.avatar!.asTypedList());
       ref.read(editAvatarProvider.notifier).update((state) => imageFile.path);
     }
@@ -315,11 +312,9 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // permission check
   Future<bool> permissionCheck() async {
-    var member = await widget.space.getMyMembership();
-    bool p1 = member.canString('CanSetTopic');
-    bool p2 = member.canString('CanUpdateAvatar');
-    // all or none case
-    return p1 && p2;
+    var space = await ref.watch(spaceProvider(widget.spaceId).future);
+    var membership = await space.getMyMembership();
+    return membership.canString('CanSetTopic');
   }
 
   // update space handler
@@ -333,10 +328,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       isLoader: true,
     );
 
+    var space = await ref.watch(spaceProvider(widget.spaceId).future);
     // update space name
     String title = ref.read(editTitleProvider);
     try {
-      var eventId = await widget.space.setName(title);
+      var eventId = await space.setName(title);
       debugPrint('Space update event: $eventId');
     } catch (e) {
       debugPrint('$e');
@@ -346,18 +342,18 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     // update space avatar
     String avatarUri = ref.read(editAvatarProvider);
     if (avatarUri.isNotEmpty) {
-      var eventId = await widget.space.uploadAvatar(avatarUri);
+      var eventId = await space.uploadAvatar(avatarUri);
       debugPrint('Avatar update event: ${eventId.toString()}');
     } else {
-      var eventId = await widget.space.removeAvatar();
+      var eventId = await space.removeAvatar();
       debugPrint('Avatar removed event: ${eventId.toString()}');
     }
 
     //update space topic
     String topic = ref.read(editTopicProvider);
-    var eventId = await widget.space.setTopic(topic);
+    var eventId = await space.setTopic(topic);
     debugPrint('topic update event: $eventId');
 
-    return widget.space.getRoomId();
+    return space.getRoomId();
   }
 }
