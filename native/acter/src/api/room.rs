@@ -151,12 +151,15 @@ impl Room {
     }
 
     pub async fn get_my_membership(&self) -> Result<Member> {
-        let SdkRoom::Joined(joined) = &self.room else {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
             bail!("Not a room we have joined")
         };
-        let room = joined.clone();
+
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
+
         RUNTIME
             .spawn(async move {
                 let member = room
@@ -175,10 +178,12 @@ impl Room {
     }
 
     pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
-        let SdkRoom::Joined(joined) = &self.room else {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
             bail!("Can't upload avatar to a room we are not in")
         };
-        let room = joined.clone();
+
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
         let path = PathBuf::from(uri);
