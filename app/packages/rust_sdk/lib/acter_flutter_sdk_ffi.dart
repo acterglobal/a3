@@ -33076,6 +33076,7 @@ enum MemberPermissionTag {
   CanKick,
   CanRedact,
   CanTriggerRoomNotification,
+  CanSetName,
   CanUpdateAvatar,
   CanSetTopic,
   CanLinkSpaces,
@@ -33121,18 +33122,22 @@ class MemberPermission {
 
         break;
       case 7:
-        this._tag = MemberPermissionTag.CanUpdateAvatar;
+        this._tag = MemberPermissionTag.CanSetName;
 
         break;
       case 8:
-        this._tag = MemberPermissionTag.CanSetTopic;
+        this._tag = MemberPermissionTag.CanUpdateAvatar;
 
         break;
       case 9:
-        this._tag = MemberPermissionTag.CanLinkSpaces;
+        this._tag = MemberPermissionTag.CanSetTopic;
 
         break;
       case 10:
+        this._tag = MemberPermissionTag.CanLinkSpaces;
+
+        break;
+      case 11:
         this._tag = MemberPermissionTag.CanSetParentSpace;
 
         break;

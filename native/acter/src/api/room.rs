@@ -64,6 +64,7 @@ pub enum MemberPermission {
     CanRedact,
     CanTriggerRoomNotification,
     // state events
+    CanSetName,
     CanUpdateAvatar,
     CanSetTopic,
     CanLinkSpaces,
@@ -126,6 +127,7 @@ impl Member {
             MemberPermission::CanSendChatMessages => MessageLikeEventType::RoomMessage.into(), // or should this check for encrypted?
             MemberPermission::CanSendReaction => MessageLikeEventType::Reaction.into(),
             MemberPermission::CanSendSticker => MessageLikeEventType::Sticker.into(),
+            MemberPermission::CanSetName => StateEventType::RoomName.into(),
             MemberPermission::CanUpdateAvatar => StateEventType::RoomAvatar.into(),
             MemberPermission::CanSetTopic => StateEventType::RoomTopic.into(),
             MemberPermission::CanLinkSpaces => StateEventType::SpaceChild.into(),
