@@ -1,19 +1,13 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/main.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:go_router/go_router.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-
-import 'dart:math';
 
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
@@ -156,6 +150,82 @@ final publicSearchProvider = StateNotifierProvider.autoDispose<
   return PublicSearchNotifier(ref);
 });
 
+class PublicSpaceItem extends ConsumerWidget {
+  final PublicSearchResultItem space;
+  const PublicSpaceItem({super.key, required this.space});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final withInfo = ref.watch(maybeSpaceInfoProvider(space.roomIdStr()));
+
+    ActerAvatar fallbackAvatar() => ActerAvatar(
+          mode: DisplayMode.Space,
+          uniqueId: space.roomIdStr(),
+          displayName: space.name(),
+        );
+
+    return Card(
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.inversePrimary,
+          width: 1.5,
+        ),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      color: Theme.of(context).colorScheme.surface,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            leading: withInfo.when(
+              data: (data) => data != null
+                  ? ActerAvatar(
+                      mode: DisplayMode.Space,
+                      uniqueId: space.roomIdStr(),
+                      size: 48,
+                      displayName: data.spaceProfileData.displayName,
+                      avatar: data.spaceProfileData.hasAvatar()
+                          ? data.spaceProfileData.getAvatarImage()
+                          : null,
+                    )
+                  : fallbackAvatar(),
+              error: (e, a) => Text('loading failed: $e'),
+              loading: fallbackAvatar,
+            ),
+            title: Text(space.name() ?? 'no display name'),
+            subtitle: Text('${space.numJoinedMembers()} Members'),
+            trailing: withInfo.when(
+              data: (data) => data != null
+                  ? const Chip(label: Text('member'))
+                  : space.joinRuleStr() == 'Public'
+                      ? OutlinedButton(
+                          onPressed: () {},
+                          child: const Text('join'),
+                        )
+                      : OutlinedButton(
+                          onPressed: () {},
+                          child: const Text('request to join'),
+                        ),
+              error: (e, s) => Text('error loading membership: $e'),
+              loading: () => const Text('loading'),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 20,
+              top: 2,
+              bottom: 2,
+            ),
+            child: Text('${space.topic()}'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class JoinSpacePage extends ConsumerStatefulWidget {
   const JoinSpacePage({super.key});
 
@@ -242,40 +312,8 @@ class _JoinSpacePageState extends ConsumerState<JoinSpacePage> {
             RiverPagedBuilder<Next?, PublicSearchResultItem>.autoDispose(
               firstPageKey: const Next(isStart: true),
               provider: publicSearchProvider,
-              itemBuilder: (context, item, index) => Card(
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                    color: Theme.of(context).colorScheme.inversePrimary,
-                    width: 1.5,
-                  ),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                color: Theme.of(context).colorScheme.surface,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ListTile(
-                      leading: ActerAvatar(
-                        mode: DisplayMode.Space,
-                        uniqueId: item.roomIdStr(),
-                        displayName: item.name(),
-                      ),
-                      title: Text(item.name() ?? 'no display name'),
-                      subtitle: Text('${item.numJoinedMembers()} Members'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 20,
-                        top: 2,
-                        bottom: 2,
-                      ),
-                      child: Text('${item.topic()}'),
-                    ),
-                  ],
-                ),
-              ),
+              itemBuilder: (context, item, index) =>
+                  PublicSpaceItem(space: item),
               pagedBuilder: (controller, builder) => PagedSliverGrid(
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 800,

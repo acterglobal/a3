@@ -21,10 +21,31 @@ final spaceProvider =
   () => AsyncSpaceNotifier(),
 );
 
+final maybeSpaceProvider = AsyncNotifierProvider.autoDispose
+    .family<AsyncMaybeSpaceNotifier, Space?, String>(
+  () => AsyncMaybeSpaceNotifier(),
+);
+
 final spaceMembershipProvider =
     FutureProvider.autoDispose.family<Member, String>((ref, spaceId) async {
   final space = await ref.watch(spaceProvider(spaceId).future);
   return await space.getMyMembership();
+});
+
+final maybeSpaceInfoProvider =
+    FutureProvider.autoDispose.family<SpaceItem?, String>((ref, spaceId) async {
+  final space = await ref.watch(maybeSpaceProvider(spaceId).future);
+  if (space == null) {
+    // we are doing a cheeky on here and assume that means, we aren't a member
+    return null;
+  }
+  final profileData = await ref.watch(spaceProfileDataProvider(space).future);
+  return SpaceItem(
+    roomId: space.getRoomId().toString(),
+    membership: await space.getMyMembership(),
+    activeMembers: [],
+    spaceProfileData: profileData,
+  );
 });
 
 class SpaceItem {
