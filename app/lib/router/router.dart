@@ -27,6 +27,7 @@ import 'package:acter/features/space/dialogs/edit_space_sheet.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/related_spaces_page.dart';
 import 'package:acter/features/space/pages/spaces_page.dart';
+import 'package:acter/features/space/pages/join_space.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/search/pages/search.dart';
 import 'package:acter/features/settings/pages/index_page.dart';
@@ -525,6 +526,18 @@ List<RouteBase> makeRoutes(Ref ref) => [
           ),
 
           GoRoute(
+            name: Routes.joinSpace.name,
+            path: Routes.joinSpace.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const JoinSpacePage(),
+              );
+            },
+          ),
+
+          GoRoute(
             name: Routes.spaces.name,
             path: Routes.spaces.route,
             redirect: authGuardRedirect,
@@ -535,7 +548,6 @@ List<RouteBase> makeRoutes(Ref ref) => [
               );
             },
           ),
-
           GoRoute(
             name: Routes.main.name,
             path: Routes.main.route,

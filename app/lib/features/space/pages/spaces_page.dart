@@ -57,10 +57,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                       ),
                     ),
                     PopupMenuItem(
-                      onTap: () => customMsgSnackbar(
-                        context,
-                        'Join space feature isn\'t implemented yet',
-                      ),
+                      onTap: () => context.pushNamed(Routes.joinSpace.name),
                       child: Row(
                         children: const <Widget>[
                           Text('Join Space'),
