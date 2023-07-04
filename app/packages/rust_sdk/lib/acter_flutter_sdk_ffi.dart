@@ -6129,6 +6129,52 @@ class Api {
     return tmp7;
   }
 
+  PublicSearchResult? __clientPublicSpacesFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientPublicSpacesFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_PublicSearchResult");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = PublicSearchResult._(this, tmp13_1);
+    return tmp7;
+  }
+
   Space? __clientGetSpaceFuturePoll(
     int boxed,
     int postCobject,
@@ -14419,6 +14465,160 @@ class Api {
     int,
     int,
   )>();
+  late final _publicSearchResultItemNamePtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemNameReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_name");
+
+  late final _publicSearchResultItemName =
+      _publicSearchResultItemNamePtr.asFunction<
+          _PublicSearchResultItemNameReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultItemTopicPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemTopicReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_topic");
+
+  late final _publicSearchResultItemTopic =
+      _publicSearchResultItemTopicPtr.asFunction<
+          _PublicSearchResultItemTopicReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultItemWorldReadablePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_world_readable");
+
+  late final _publicSearchResultItemWorldReadable =
+      _publicSearchResultItemWorldReadablePtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _publicSearchResultItemGuestCanJoinPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_guest_can_join");
+
+  late final _publicSearchResultItemGuestCanJoin =
+      _publicSearchResultItemGuestCanJoinPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _publicSearchResultItemCanonicalAliasStrPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemCanonicalAliasStrReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_canonical_alias_str");
+
+  late final _publicSearchResultItemCanonicalAliasStr =
+      _publicSearchResultItemCanonicalAliasStrPtr.asFunction<
+          _PublicSearchResultItemCanonicalAliasStrReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultItemNumJoinedMembersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_num_joined_members");
+
+  late final _publicSearchResultItemNumJoinedMembers =
+      _publicSearchResultItemNumJoinedMembersPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _publicSearchResultItemRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemRoomIdStrReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_room_id_str");
+
+  late final _publicSearchResultItemRoomIdStr =
+      _publicSearchResultItemRoomIdStrPtr.asFunction<
+          _PublicSearchResultItemRoomIdStrReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultItemAvatarUrlStrPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemAvatarUrlStrReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_avatar_url_str");
+
+  late final _publicSearchResultItemAvatarUrlStr =
+      _publicSearchResultItemAvatarUrlStrPtr.asFunction<
+          _PublicSearchResultItemAvatarUrlStrReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultItemJoinRuleStrPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemJoinRuleStrReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_join_rule_str");
+
+  late final _publicSearchResultItemJoinRuleStr =
+      _publicSearchResultItemJoinRuleStrPtr.asFunction<
+          _PublicSearchResultItemJoinRuleStrReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultItemRoomTypeStrPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemRoomTypeStrReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_room_type_str");
+
+  late final _publicSearchResultItemRoomTypeStr =
+      _publicSearchResultItemRoomTypeStrPtr.asFunction<
+          _PublicSearchResultItemRoomTypeStrReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultNextBatchPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultNextBatchReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResult_next_batch");
+
+  late final _publicSearchResultNextBatch =
+      _publicSearchResultNextBatchPtr.asFunction<
+          _PublicSearchResultNextBatchReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultPrevBatchPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultPrevBatchReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResult_prev_batch");
+
+  late final _publicSearchResultPrevBatch =
+      _publicSearchResultPrevBatchPtr.asFunction<
+          _PublicSearchResultPrevBatchReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultTotalRoomCountEstimatePtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultTotalRoomCountEstimateReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResult_total_room_count_estimate");
+
+  late final _publicSearchResultTotalRoomCountEstimate =
+      _publicSearchResultTotalRoomCountEstimatePtr.asFunction<
+          _PublicSearchResultTotalRoomCountEstimateReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultChunksPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__PublicSearchResult_chunks");
+
+  late final _publicSearchResultChunks =
+      _publicSearchResultChunksPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _clientStartSyncPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -14563,6 +14763,40 @@ class Api {
 
   late final _clientSpaces = _clientSpacesPtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _clientPublicSpacesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_public_spaces");
+
+  late final _clientPublicSpaces = _clientPublicSpacesPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
     int,
   )>();
   late final _clientGetSpacePtr = _lookup<
@@ -17109,6 +17343,21 @@ class Api {
     int,
     int,
   )>();
+  late final _clientPublicSpacesFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientPublicSpacesFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_public_spaces_future_poll");
+
+  late final _clientPublicSpacesFuturePoll =
+      _clientPublicSpacesFuturePollPtr.asFunction<
+          _ClientPublicSpacesFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _clientGetSpaceFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientGetSpaceFuturePollReturn Function(
@@ -18638,6 +18887,60 @@ class Api {
 
   late final _ffiListObjRefInsert =
       _ffiListObjRefInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListPublicSearchResultItem createFfiListPublicSearchResultItem() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListPublicSearchResultItemCreate());
+    final list_box =
+        _Box(this, list_ptr, "drop_box_FfiListPublicSearchResultItem");
+    return FfiListPublicSearchResultItem._(this, list_box);
+  }
+
+  late final _ffiListPublicSearchResultItemCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListPublicSearchResultItemCreate");
+
+  late final _ffiListPublicSearchResultItemCreate =
+      _ffiListPublicSearchResultItemCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListPublicSearchResultItemLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListPublicSearchResultItemLen");
+
+  late final _ffiListPublicSearchResultItemLen =
+      _ffiListPublicSearchResultItemLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListPublicSearchResultItemElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListPublicSearchResultItemElementAt");
+
+  late final _ffiListPublicSearchResultItemElementAt =
+      _ffiListPublicSearchResultItemElementAtPtr
+          .asFunction<int Function(int, int)>();
+
+  late final _ffiListPublicSearchResultItemRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListPublicSearchResultItemRemove");
+
+  late final _ffiListPublicSearchResultItemRemove =
+      _ffiListPublicSearchResultItemRemovePtr
+          .asFunction<int Function(int, int)>();
+
+  late final _ffiListPublicSearchResultItemAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListPublicSearchResultItemAdd");
+
+  late final _ffiListPublicSearchResultItemAdd =
+      _ffiListPublicSearchResultItemAddPtr
+          .asFunction<void Function(int, int)>();
+
+  late final _ffiListPublicSearchResultItemInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListPublicSearchResultItemInsert");
+
+  late final _ffiListPublicSearchResultItemInsert =
+      _ffiListPublicSearchResultItemInsertPtr
+          .asFunction<void Function(int, int, int)>();
   FfiListReceiptRecord createFfiListReceiptRecord() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListReceiptRecordCreate());
@@ -30628,6 +30931,400 @@ class CreateSpaceSettings {
   }
 }
 
+class PublicSearchResultItem {
+  final Api _api;
+  final _Box _box;
+
+  PublicSearchResultItem._(this._api, this._box);
+
+  String? name() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? topic() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemTopic(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  bool worldReadable() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemWorldReadable(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  bool guestCanJoin() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemGuestCanJoin(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  String? canonicalAliasStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemCanonicalAliasStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int numJoinedMembers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemNumJoinedMembers(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  String roomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? avatarUrlStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemAvatarUrlStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String joinRuleStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemJoinRuleStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String roomTypeStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemRoomTypeStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class PublicSearchResult {
+  final Api _api;
+  final _Box _box;
+
+  PublicSearchResult._(this._api, this._box);
+
+  /// to be used for the next `since`
+  String? nextBatch() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultNextBatch(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// to get the previous page
+  String? prevBatch() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultPrevBatch(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// an estimated total of matches
+  int? totalRoomCountEstimate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultTotalRoomCountEstimate(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// get the chunk of items in this response
+  FfiListPublicSearchResultItem chunks() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultChunks(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListPublicSearchResultItem");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListPublicSearchResultItem._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// Main entry point for `acter`.
 class Client {
   final Api _api;
@@ -30909,6 +31606,97 @@ class Client {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__clientSpacesFuturePoll);
     return tmp2;
+  }
+
+  /// search the public directory for spaces
+  Future<PublicSearchResult> publicSpaces(
+    String? searchTerm,
+    String? server,
+    String? since,
+  ) {
+    final tmp1 = searchTerm;
+    final tmp7 = server;
+    final tmp13 = since;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+      debugAllocation("lower string", tmp4, tmp5);
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
+      debugAllocation("lower string", tmp10, tmp11);
+
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+      debugAllocation("lower string", tmp16, tmp17);
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    final tmp19 = _api._clientPublicSpaces(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+    );
+    final tmp21 = tmp19;
+    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
+    final tmp21_1 = _Box(_api, tmp21_0, "__Client_public_spaces_future_drop");
+    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
+    final tmp20 = _nativeFuture(tmp21_1, _api.__clientPublicSpacesFuturePoll);
+    return tmp20;
   }
 
   /// Get the following space the user is part of by
@@ -34427,6 +35215,106 @@ class _SyncStateFirstSyncedRxReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _PublicSearchResultItemNameReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _PublicSearchResultItemTopicReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _PublicSearchResultItemCanonicalAliasStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _PublicSearchResultItemRoomIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _PublicSearchResultItemAvatarUrlStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _PublicSearchResultItemJoinRuleStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _PublicSearchResultItemRoomTypeStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _PublicSearchResultNextBatchReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _PublicSearchResultPrevBatchReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _PublicSearchResultTotalRoomCountEstimateReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
 class _ClientAccountReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -36269,6 +37157,21 @@ class _ClientSpacesFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientPublicSpacesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ClientGetSpaceFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -37761,6 +38664,70 @@ class FfiListObjRef extends Iterable<ObjRef> implements CustomIterable<ObjRef> {
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, ObjRef element) {
     _api._ffiListObjRefInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListPublicSearchResultItem extends Iterable<PublicSearchResultItem>
+    implements CustomIterable<PublicSearchResultItem> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListPublicSearchResultItem._(this._api, this._box);
+
+  @override
+  Iterator<PublicSearchResultItem> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListPublicSearchResultItemLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  PublicSearchResultItem elementAt(int index) {
+    final address =
+        _api._ffiListPublicSearchResultItemElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return PublicSearchResultItem._(_api, reference);
+  }
+
+  PublicSearchResultItem operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  PublicSearchResultItem remove(int index) {
+    final address =
+        _api._ffiListPublicSearchResultItemRemove(_box.borrow(), index);
+    final reference = _Box(_api, ffi.Pointer.fromAddress(address),
+        "drop_box_PublicSearchResultItem");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return PublicSearchResultItem._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(PublicSearchResultItem element) {
+    _api._ffiListPublicSearchResultItemAdd(
+        _box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, PublicSearchResultItem element) {
+    _api._ffiListPublicSearchResultItemInsert(
+        _box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

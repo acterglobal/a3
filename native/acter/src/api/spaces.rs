@@ -35,7 +35,7 @@ use matrix_sdk::{
     },
     Client as SdkClient,
 };
-use ruma::OwnedRoomOrAliasId;
+use ruma::{assign, OwnedRoomOrAliasId, OwnedServerName};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use tracing::{error, trace};
@@ -43,6 +43,7 @@ use tracing::{error, trace};
 use super::{
     client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
     room::{Member, Room},
+    search::PublicSearchResult,
     RUNTIME,
 };
 
@@ -543,6 +544,7 @@ pub fn new_space_settings(
     Ok(builder.build()?)
 }
 
+// External API
 impl Client {
     pub async fn create_acter_space(
         &self,
@@ -555,6 +557,21 @@ impl Client {
                 Ok(room_id)
             })
             .await?
+    }
+
+    pub async fn public_spaces(
+        &self,
+        search_term: Option<String>,
+        server: Option<String>,
+        since: Option<String>,
+    ) -> Result<PublicSearchResult> {
+        self.search_public(
+            search_term,
+            server,
+            since,
+            Some(ruma::directory::RoomTypeFilter::Space),
+        )
+        .await
     }
 
     pub async fn spaces(&self) -> Result<Vec<Space>> {
