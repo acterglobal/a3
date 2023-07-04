@@ -1,113 +1,143 @@
 import 'dart:io';
 
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
-import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/home/providers/navigation.dart';
-import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/home/providers/navigation.dart' as nav;
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/features/space/dialogs/space_selector_sheet.dart';
 
-final titleProvider = StateProvider<String>((ref) => '');
-final parentSpaceProvider = StateProvider<String?>((ref) => null);
-final parentSpaceDetailsProvider =
-    FutureProvider.autoDispose<SpaceItem?>((ref) async {
-  final parentSpaceId = ref.watch(parentSpaceProvider);
-  if (parentSpaceId == null) {
-    return null;
-  }
-
-  final spaces = await ref.watch(briefSpaceItemsProviderWithMembership.future);
-  return spaces.firstWhere((element) => element.roomId == parentSpaceId);
-});
+final editTitleProvider = StateProvider.autoDispose<String>((ref) => '');
+final editDescriptionProvider = StateProvider.autoDispose<String>((ref) => '');
 
 // upload avatar path
-final avatarProvider = StateProvider.autoDispose<String>((ref) => '');
+final editAvatarProvider = StateProvider.autoDispose<String>((ref) => '');
 
-class CreateSpacePage extends ConsumerStatefulWidget {
-  final String? initialParentsSpaceId;
-  const CreateSpacePage({super.key, this.initialParentsSpaceId});
+class EditSpacePage extends ConsumerStatefulWidget {
+  final Space space;
+  const EditSpacePage({super.key, required this.space});
 
   @override
-  ConsumerState<CreateSpacePage> createState() =>
-      _CreateSpacePageConsumerState();
+  ConsumerState<EditSpacePage> createState() => _EditSpacePageConsumerState();
 }
 
-class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
+class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    Future(() {
-      ref.read(parentSpaceProvider.notifier).state =
-          widget.initialParentsSpaceId;
-    });
+    editSpaceData();
+  }
+
+  // apply existing data to fields
+  void editSpaceData() async {
+    final profileData =
+        await ref.read(spaceProfileDataProvider(widget.space).future);
+
+    ref
+        .read(editTitleProvider.notifier)
+        .update((state) => profileData.displayName ?? '');
+    ref
+        .read(editDescriptionProvider.notifier)
+        .update((state) => widget.space.topic() ?? '');
+    if (profileData.hasAvatar()) {
+      final spaceId = widget.space.getRoomId().toString();
+      File imageFile = await File('$spaceId.jpg')
+          .writeAsBytes(profileData.avatar!.asTypedList());
+      ref.read(editAvatarProvider.notifier).update((state) => imageFile.path);
+    }
+
+    _titleController.text = ref.read(editTitleProvider);
+    _descriptionController.text = ref.read(editDescriptionProvider);
   }
 
   @override
   Widget build(BuildContext context) {
-    final _titleInput = ref.watch(titleProvider);
-    final currentParentSpace = ref.watch(parentSpaceProvider);
-    final _selectParentSpace = currentParentSpace != null;
+    final _titleInput = ref.watch(editTitleProvider);
     return SideSheet(
-      header: _selectParentSpace ? 'Create Subspace' : 'Create Space',
+      header: 'Edit Space',
       addActions: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              _selectParentSpace
-                  ? 'Create a new subspace'
-                  : 'Create new space and start organizing.',
+            const Text(
+              'Here you can change the space details',
             ),
             const SizedBox(height: 15),
             Row(
               children: <Widget>[
                 Column(
                   children: <Widget>[
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 5),
-                      child: Text('Avatar'),
+                    Row(
+                      children: <Widget>[
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 5),
+                          child: Text('Avatar'),
+                        ),
+                        const SizedBox(width: 5),
+                        ref.watch(editAvatarProvider).isNotEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 5),
+                                child: GestureDetector(
+                                  onTap: () => ref
+                                      .read(editAvatarProvider.notifier)
+                                      .update((state) => ''),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .neutral4,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.close,
+                                      size: 14,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ],
                     ),
                     Consumer(
                       builder: (context, ref, child) {
-                        final _avatarUpload = ref.watch(avatarProvider);
+                        final _avatarUpload = ref.watch(editAvatarProvider);
                         return GestureDetector(
                           onTap: _handleAvatarUpload,
                           child: Container(
                             height: 75,
                             width: 75,
                             decoration: BoxDecoration(
+                              image: _avatarUpload.isNotEmpty
+                                  ? DecorationImage(
+                                      image: FileImage(File(_avatarUpload)),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
                               color: Theme.of(context)
                                   .colorScheme
                                   .primaryContainer,
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            child: _avatarUpload.isNotEmpty
-                                ? Image.file(
-                                    File(_avatarUpload),
-                                    fit: BoxFit.cover,
-                                  )
-                                : Icon(
+                            child: _avatarUpload.isEmpty
+                                ? Icon(
                                     Atlas.up_arrow_from_bracket_thin,
                                     color:
                                         Theme.of(context).colorScheme.neutral4,
-                                  ),
+                                  )
+                                : null,
                           ),
                         );
                       },
@@ -176,37 +206,8 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                   hintText: 'Description',
                   textInputType: TextInputType.multiline,
                   maxLines: 10,
+                  onInputChanged: _handleDescriptionChange,
                 ),
-                ListTile(
-                  title: Text(
-                    _selectParentSpace
-                        ? 'Parent space'
-                        : 'No parent space selected',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  trailing: _selectParentSpace
-                      ? Consumer(
-                          builder: (context, ref, child) =>
-                              ref.watch(parentSpaceDetailsProvider).when(
-                                    data: (space) => space != null
-                                        ? SpaceChip(space: space)
-                                        : Text(currentParentSpace),
-                                    error: (e, s) => Text('error: $e'),
-                                    loading: () => const Text('loading'),
-                                  ),
-                        )
-                      : null,
-                  onTap: () async {
-                    final currentSpaceId = ref.read(parentSpaceProvider);
-                    final newSelectedSpaceId = await selectSpaceDrawer(
-                      context: context,
-                      currentSpaceId: currentSpaceId,
-                      title: const Text('Select parent space'),
-                    );
-                    ref.read(parentSpaceProvider.notifier).state =
-                        newSelectedSpaceId;
-                  },
-                )
               ],
             ),
           ],
@@ -240,15 +241,11 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
               );
               return;
             }
-            final roomId = await _handleCreateSpace(
-              context,
-              _titleInput,
-              _descriptionController.text.trim(),
-            );
+            final roomId = await _handleUpdateSpace(context);
+            debugPrint('Space Updated: $roomId');
             // refresh spaces and side bar
             ref.invalidate(spacesProvider);
-            ref.invalidate(sidebarItemsProvider);
-
+            ref.invalidate(nav.spaceItemsProvider);
             context.goNamed(
               Routes.space.name,
               pathParameters: {
@@ -256,7 +253,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
               },
             );
           },
-          child: const Text('Create Space'),
+          child: const Text('Save changes'),
           style: ElevatedButton.styleFrom(
             backgroundColor: _titleInput.isNotEmpty
                 ? Theme.of(context).colorScheme.success
@@ -273,7 +270,11 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   }
 
   void _handleTitleChange(String? value) {
-    ref.read(titleProvider.notifier).update((state) => value!);
+    ref.read(editTitleProvider.notifier).update((state) => value!);
+  }
+
+  void _handleDescriptionChange(String? value) {
+    ref.read(editDescriptionProvider.notifier).update((state) => value!);
   }
 
   void _handleAvatarUpload() async {
@@ -284,41 +285,31 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     if (result != null) {
       File file = File(result.files.single.path!);
       String filepath = file.path;
-      ref.read(avatarProvider.notifier).update((state) => filepath);
+      ref.read(editAvatarProvider.notifier).update((state) => filepath);
     } else {
       // user cancelled the picker
     }
   }
 
-  Future<RoomId> _handleCreateSpace(
-    BuildContext context,
-    String spaceName,
-    String? description,
-  ) async {
+  Future<RoomId> _handleUpdateSpace(BuildContext context) async {
     popUpDialog(
       context: context,
       title: Text(
-        'Creating Space',
+        'Updating Space',
         style: Theme.of(context).textTheme.titleSmall,
       ),
       isLoader: true,
     );
-    final sdk = await ref.watch(sdkProvider.future);
-    final parentRoomId = ref.watch(parentSpaceProvider);
-    var avatarUri = ref.read(avatarProvider);
-    var settings = sdk.newSpaceSettings(
-      spaceName,
-      description,
-      avatarUri.isNotEmpty ? avatarUri : null,
-      parentRoomId,
-    );
-    final client = ref.read(clientProvider)!;
-    final roomId = await client.createActerSpace(settings);
-    if (parentRoomId != null) {
-      final space = await ref.read(spaceProvider(parentRoomId).future);
-      await space.addChildSpace(roomId.toString());
+    var avatarUri = ref.read(editAvatarProvider);
+    var description = ref.read(editDescriptionProvider);
+    if (avatarUri.isNotEmpty) {
+      var eventId = await widget.space.uploadAvatar(avatarUri);
+      debugPrint('Avatar Updated: ${eventId.toString()}');
+    } else {
+      var eventId = await widget.space.removeAvatar();
+      debugPrint('Avatar removed event: ${eventId.toString()}');
     }
-    Navigator.of(context, rootNavigator: true).pop();
-    return roomId;
+    widget.space.setTopic(description);
+    return widget.space.getRoomId();
   }
 }
