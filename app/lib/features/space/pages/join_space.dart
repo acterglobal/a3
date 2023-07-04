@@ -17,14 +17,21 @@ import 'dart:math';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
-class PublicSearchState extends PagedState<String?, PublicSearchResultItem> {
+class Next {
+  final bool isStart;
+  final String? next;
+
+  const Next({this.isStart = false, this.next});
+}
+
+class PublicSearchState extends PagedState<Next?, PublicSearchResultItem> {
   // We can extends [PagedState] to add custom parameters to our state
 
   const PublicSearchState({
     List<PublicSearchResultItem>? records,
     String? error,
-    String? nextPageKey,
-    List<String?>? previousPageKeys,
+    Next? nextPageKey = const Next(isStart: true),
+    List<Next?>? previousPageKeys,
   }) : super(records: records, error: error, nextPageKey: nextPageKey);
 
   @override
@@ -32,41 +39,49 @@ class PublicSearchState extends PagedState<String?, PublicSearchResultItem> {
     List<PublicSearchResultItem>? records,
     dynamic error,
     dynamic nextPageKey,
-    List<String?>? previousPageKeys,
+    List<Next?>? previousPageKeys,
   }) {
     final sup = super.copyWith(
-        records: records,
-        error: error,
-        nextPageKey: nextPageKey,
-        previousPageKeys: previousPageKeys);
+      records: records,
+      error: error,
+      nextPageKey: nextPageKey,
+      previousPageKeys: previousPageKeys,
+    );
     return PublicSearchState(
-        records: sup.records,
-        error: sup.error,
-        nextPageKey: sup.nextPageKey,
-        previousPageKeys: sup.previousPageKeys);
+      records: sup.records,
+      error: sup.error,
+      nextPageKey: sup.nextPageKey,
+      previousPageKeys: sup.previousPageKeys,
+    );
   }
 }
 
 class PublicSearchNotifier extends StateNotifier<PublicSearchState>
-    with
-        PagedNotifierMixin<String?, PublicSearchResultItem, PublicSearchState> {
+    with PagedNotifierMixin<Next?, PublicSearchResultItem, PublicSearchState> {
   PublicSearchNotifier(this.ref) : super(const PublicSearchState());
 
   final Ref ref;
 
   @override
-  Future<List<PublicSearchResultItem>?> load(String? page, int limit) async {
+  Future<List<PublicSearchResultItem>?> load(Next? page, int limit) async {
     if (page == null) {
-      // nothing else to load:
       return null;
     }
-    final client = ref.watch(clientProvider)!;
-    final res = await client.publicSpaces(null, null, page);
-    final entries = res.chunks();
 
+    final pageReq = page.next ?? '';
+    final client = ref.watch(clientProvider)!;
+    final res = await client.publicSpaces(null, null, pageReq);
+    final entries = res.chunks();
+    final next = res.nextBatch();
+    Next? finalPageKey;
+    if (next != null) {
+      // we are not at the end
+      finalPageKey = Next(next: next);
+    }
     state = state.copyWith(
-      records: [...(state.records ?? []), ...entries],
-      nextPageKey: res.nextBatch(),
+      records:
+          page.isStart ? [...entries] : [...(state.records ?? []), ...entries],
+      nextPageKey: finalPageKey,
     );
 
     return null;
@@ -74,7 +89,7 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchState>
 }
 
 final publicSearchProvider = StateNotifierProvider<PublicSearchNotifier,
-    PagedState<String?, PublicSearchResultItem>>(
+    PagedState<Next?, PublicSearchResultItem>>(
   (ref) => PublicSearchNotifier(ref),
 );
 
@@ -88,7 +103,10 @@ class JoinSpacePage extends ConsumerStatefulWidget {
 class _JoinSpacePageState extends ConsumerState<JoinSpacePage> {
   @override
   Widget build(BuildContext context) {
+    final widthCount = (MediaQuery.of(context).size.width ~/ 600).toInt();
+    const int minCount = 2;
     return Scaffold(
+      appBar: AppBar(title: Text('Join Space')),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -100,8 +118,8 @@ class _JoinSpacePageState extends ConsumerState<JoinSpacePage> {
             ],
           ),
         ),
-        child: RiverPagedBuilder<String?, PublicSearchResultItem>(
-          firstPageKey: '',
+        child: RiverPagedBuilder<Next?, PublicSearchResultItem>(
+          firstPageKey: const Next(isStart: true),
           provider: publicSearchProvider,
           itemBuilder: (context, item, index) => ListTile(
             leading: ActerAvatar(
@@ -111,8 +129,14 @@ class _JoinSpacePageState extends ConsumerState<JoinSpacePage> {
             ),
             title: Text(item.name() ?? 'no display name'),
           ),
-          pagedBuilder: (controller, builder) => PagedListView(
-              pagingController: controller, builderDelegate: builder),
+          pagedBuilder: (controller, builder) => PagedGridView(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: max(1, min(widthCount, minCount)),
+              childAspectRatio: 6,
+            ),
+            pagingController: controller,
+            builderDelegate: builder,
+          ),
         ),
       ),
     );
