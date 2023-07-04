@@ -20,7 +20,7 @@ final editTopicProvider = StateProvider.autoDispose<String>((ref) => '');
 final editAvatarProvider = StateProvider.autoDispose<String>((ref) => '');
 
 class EditSpacePage extends ConsumerStatefulWidget {
-  final String spaceId;
+  final String? spaceId;
   const EditSpacePage({super.key, required this.spaceId});
 
   @override
@@ -39,7 +39,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // apply existing data to fields
   void editSpaceData() async {
-    final space = ref.read(spaceProvider(widget.spaceId)).requireValue;
+    final space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
     final profileData = await ref.read(spaceProfileDataProvider(space).future);
 
     ref
@@ -306,7 +306,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // permission check
   Future<bool> permissionCheck() async {
-    var space = await ref.watch(spaceProvider(widget.spaceId).future);
+    var space = await ref.watch(spaceProvider(widget.spaceId!).future);
     var membership = await space.getMyMembership();
     return membership.canString('CanSetTopic');
   }
@@ -322,7 +322,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       isLoader: true,
     );
 
-    var space = await ref.watch(spaceProvider(widget.spaceId).future);
+    var space = await ref.watch(spaceProvider(widget.spaceId!).future);
     // update space name
     String title = ref.read(editTitleProvider);
     try {
