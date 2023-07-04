@@ -8,7 +8,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -245,10 +244,6 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
               _titleInput,
               _descriptionController.text.trim(),
             );
-            // refresh spaces and side bar
-            ref.invalidate(spacesProvider);
-            ref.invalidate(sidebarItemsProvider);
-
             context.goNamed(
               Routes.space.name,
               pathParameters: {

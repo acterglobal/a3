@@ -7,7 +7,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
-import 'package:acter/features/home/providers/navigation.dart' as nav;
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -260,11 +259,6 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
             }
             final roomId = await _handleUpdateSpace(context);
             debugPrint('Space Updated: $roomId');
-            // refresh spaces and side bar
-            ref.invalidate(spacesProvider);
-            ref.invalidate(nav.spaceItemsProvider);
-            ref.invalidate(spaceProvider);
-
             context.goNamed(
               Routes.space.name,
               pathParameters: {
