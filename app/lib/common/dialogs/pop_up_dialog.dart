@@ -39,7 +39,9 @@ void popUpDialog({
                   : Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: btnText != null && btn2Text != null
+                            ? MainAxisAlignment.spaceEvenly
+                            : MainAxisAlignment.center,
                         children: <Widget>[
                           btnText != null
                               ? ElevatedButton(

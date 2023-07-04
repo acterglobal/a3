@@ -39,7 +39,6 @@ import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/todo/pages/create_task_sidesheet.dart';
 import 'package:acter/features/todo/pages/todo_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod/riverpod.dart';
@@ -224,7 +223,7 @@ List<RouteBase> makeRoutes(Ref ref) => [
               );
             },
             child: EditSpacePage(
-              space: state.extra as Space,
+              spaceId: state.extra as String,
             ),
           );
         },
