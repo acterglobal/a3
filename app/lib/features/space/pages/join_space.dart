@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -250,10 +251,7 @@ class JoinSpacePage extends ConsumerStatefulWidget {
 class _JoinSpacePageState extends ConsumerState<JoinSpacePage> {
   @override
   Widget build(BuildContext context) {
-    final widthCount = (MediaQuery.of(context).size.width ~/ 600).toInt();
-    final searchValue = ref.watch(searchValueProvider);
     final _searchTextCtrl = ref.watch(searchController);
-    const int minCount = 2;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -302,15 +300,13 @@ class _JoinSpacePageState extends ConsumerState<JoinSpacePage> {
                           final controller =
                               ref.watch(serverTypeAheadController);
                           final val = ref.watch(serverTypeAheadProvider);
-                          final menuItems = [
-                            const DropdownMenuEntry(
-                              label: 'Acter',
-                              value: 'acter.global',
-                            ),
-                            const DropdownMenuEntry(
-                              label: 'Matrix.org',
-                              value: 'matrix.org',
-                            ),
+                          final List<DropdownMenuEntry<String>> menuItems = [
+                            ...defaultServers.map(
+                              (e) => DropdownMenuEntry(
+                                label: e.name ?? e.value,
+                                value: e.value,
+                              ),
+                            )
                           ];
 
                           if (val != null && val.isNotEmpty) {

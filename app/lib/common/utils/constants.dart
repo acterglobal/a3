@@ -49,6 +49,13 @@ const giphyKey = String.fromEnvironment(
   defaultValue: 'C4dMA7Q19nqEGdpfj82T8ssbOeZIylD4',
 );
 
+const defaultServersStr = String.fromEnvironment(
+  'DEFAULT_SEARCH_SERVER',
+  defaultValue: 'acter.global=Acter.global,matrix.org=Matrix.org',
+);
+
+final defaultServers = parseServers(defaultServersStr);
+
 const List<TargetPlatform> desktopPlatforms = [
   TargetPlatform.macOS,
   TargetPlatform.linux,
@@ -57,3 +64,25 @@ const List<TargetPlatform> desktopPlatforms = [
 
 // hide bottom nav at locations.
 const List<String> hideNavLocations = ['/updates/post', '/updates/edit'];
+
+class ServerEntry {
+  final String value;
+  final String? name;
+  const ServerEntry({required this.value, this.name});
+}
+
+List<ServerEntry> parseServers(String listing) {
+  final List<ServerEntry> found = [];
+  final separated = listing.split(',');
+  for (final e in separated) {
+    final entries = e.split('=');
+    if (entries.length == 1) {
+      found.add(ServerEntry(value: entries[0]));
+    } else if (entries.length == 2) {
+      found.add(ServerEntry(value: entries[0], name: entries[1]));
+    } else {
+      continue;
+    }
+  }
+  return found;
+}
