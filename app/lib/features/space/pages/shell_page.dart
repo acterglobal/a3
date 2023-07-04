@@ -56,7 +56,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      _ShellToolbar(space),
+                      _ShellToolbar(space, widget.spaceIdOrAlias),
                       _ShellHeader(widget.spaceIdOrAlias, profile),
                       TopNavBar(
                         spaceId: widget.spaceIdOrAlias,
@@ -84,7 +84,8 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
 
 class _ShellToolbar extends ConsumerWidget {
   final Space space;
-  const _ShellToolbar(this.space);
+  final String spaceId;
+  const _ShellToolbar(this.space, this.spaceId);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -109,9 +110,10 @@ class _ShellToolbar extends ConsumerWidget {
             color: Theme.of(context).colorScheme.surface,
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
               PopupMenuItem(
-                onTap: () => customMsgSnackbar(
-                  context,
-                  'Edit Space is not implemented yet',
+                onTap: () => context.pushNamed(
+                  Routes.editSpace.name,
+                  pathParameters: {'spaceId': spaceId},
+                  queryParameters: {'spaceId': spaceId},
                 ),
                 child: const Text('Edit Space'),
               ),

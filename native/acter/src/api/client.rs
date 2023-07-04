@@ -14,8 +14,12 @@ use futures_signals::signal::{
 };
 use matrix_sdk::{
     config::SyncSettings,
+    media::{MediaFormat, MediaRequest},
     room::Room as SdkRoom,
-    ruma::{device_id, OwnedDeviceId, OwnedRoomId, OwnedUserId, RoomId, UserId},
+    ruma::{
+        device_id, events::room::MediaSource, OwnedDeviceId, OwnedRoomId, OwnedUserId, RoomId,
+        UserId,
+    },
     Client as SdkClient, LoopCtrl, RumaApiError,
 };
 use std::{
@@ -34,6 +38,7 @@ use tracing::{error, info, trace};
 
 use super::{
     account::Account,
+    api::FfiBuffer,
     conversation::{Conversation, ConversationController},
     device::DeviceController,
     invitation::InvitationController,
@@ -45,6 +50,7 @@ use super::{
     verification::VerificationController,
     RUNTIME,
 };
+use crate::FileDesc;
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
@@ -242,35 +248,8 @@ impl Drop for SyncState {
     }
 }
 
+// internal API
 impl Client {
-    pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
-        let core = CoreClient::new(client).await?;
-        let cl = Client {
-            core,
-            state: Arc::new(RwLock::new(state)),
-            invitation_controller: InvitationController::new(),
-            verification_controller: VerificationController::new(),
-            device_controller: DeviceController::new(),
-            typing_controller: TypingController::new(),
-            receipt_controller: ReceiptController::new(),
-            conversation_controller: ConversationController::new(),
-        };
-        Ok(cl)
-    }
-
-    pub fn store(&self) -> &Store {
-        self.core.store()
-    }
-
-    pub fn executor(&self) -> &Executor {
-        self.core.executor()
-    }
-
-    pub async fn template_engine(&self, template: &str) -> Result<Engine> {
-        let engine = self.core.template_engine(template).await?;
-        Ok(engine)
-    }
-
     async fn refresh_history_on_start(
         &self,
         history: Mutable<HistoryLoadState>,
@@ -340,6 +319,52 @@ impl Client {
         )
         .await;
         Ok(())
+    }
+
+    pub(crate) async fn source_binary(&self, source: MediaSource) -> Result<FfiBuffer<u8>> {
+        // any variable in self can't be called directly in spawn
+        let client = self.clone();
+        let request = MediaRequest {
+            source,
+            format: MediaFormat::File,
+        };
+        RUNTIME
+            .spawn(async move {
+                let buf = client.media().get_media_content(&request, false).await?;
+                Ok(FfiBuffer::new(buf))
+            })
+            .await?
+    }
+}
+
+// external API
+impl Client {
+    pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
+        let core = CoreClient::new(client).await?;
+        let cl = Client {
+            core,
+            state: Arc::new(RwLock::new(state)),
+            invitation_controller: InvitationController::new(),
+            verification_controller: VerificationController::new(),
+            device_controller: DeviceController::new(),
+            typing_controller: TypingController::new(),
+            receipt_controller: ReceiptController::new(),
+            conversation_controller: ConversationController::new(),
+        };
+        Ok(cl)
+    }
+
+    pub fn store(&self) -> &Store {
+        self.core.store()
+    }
+
+    pub fn executor(&self) -> &Executor {
+        self.core.executor()
+    }
+
+    pub async fn template_engine(&self, template: &str) -> Result<Engine> {
+        let engine = self.core.template_engine(template).await?;
+        Ok(engine)
     }
 
     pub fn start_sync(&mut self) -> SyncState {
@@ -414,6 +439,7 @@ impl Client {
                             return Ok(LoopCtrl::Continue);
                         }
                     };
+                    trace!(target: "acter::sync_response::full", "sync response: {:#?}", response);
 
                     device_controller.process_device_lists(&client, &response);
                     trace!("post device controller");

@@ -219,7 +219,10 @@ object ActerPin {
     fn refresh() -> Future<Result<ActerPin>>;
 
     // get the comments manager for this pin
-    // fn comments() -> Future<Result<CommentsManager>>;
+    fn comments() -> Future<Result<CommentsManager>>;
+
+    /// get the attachments manager for this pin
+    fn attachments() -> Future<Result<AttachmentsManager>>;
 }
 
 object PinUpdateBuilder {
@@ -700,6 +703,71 @@ object CommentsManager {
     fn comment_draft() -> CommentDraft;
 }
 
+
+object AttachmentDraft {
+
+    // fire this attachment over - the event_id is the confirmation
+    // from the server.
+    fn send() -> Future<Result<EventId>>;
+}
+
+object Attachment {
+    /// Who send this attachment
+    fn sender() -> UserId;
+    /// When was this attachment acknowledged by the server
+    fn origin_server_ts() -> u64;
+    
+    /// if this is an image, hand over the description
+    fn image_desc() -> Option<ImageDesc>;
+    /// if this is an image, hand over the data
+    fn image_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is an audio, hand over the description
+    fn audio_desc() -> Option<AudioDesc>;
+    /// if this is an audio, hand over the data
+    fn audio_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is a video, hand over the description
+    fn video_desc() -> Option<VideoDesc>;
+    /// if this is a video, hand over the data
+    fn video_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is a file, hand over the description
+    fn file_desc() -> Option<FileDesc>;
+    /// if this is a file, hand over the data
+    fn file_binary() -> Future<Result<buffer<u8>>>;
+    
+}
+
+/// Reference to the attachments section of a particular item
+object AttachmentsManager {
+    /// Get the list of attachments (in arrival order)
+    fn attachments() -> Future<Result<Vec<Attachment>>>;
+
+    /// Does this item have any attachments?
+    fn has_attachments() -> bool;
+
+    /// How many attachments does this item have
+    fn attachments_count() -> u32;
+
+    /// draft a new attachment for this item
+    fn attachment_draft() -> AttachmentDraft;
+
+    /// create news slide for image msg
+    fn image_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> AttachmentDraft;
+
+    /// create news slide for audio msg
+    fn audio_attachment_draft(body: string, url: string, secs: Option<u32>, mimetype: Option<string>, size: Option<u32>) -> AttachmentDraft;
+
+    /// create news slide for video msg
+    fn video_attachment_draft(body: string, url: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, mimetype: Option<string>, size: Option<u32>, blurhash: Option<string>) -> AttachmentDraft;
+
+    /// create news slide for file msg
+    fn file_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u32>) -> AttachmentDraft;
+
+}
+
+
 object Task {
     /// the name of this task
     fn title() -> string;
@@ -1057,6 +1125,9 @@ object Space {
 
     /// set description / topic of the room
     fn set_topic(topic: string) -> Future<Result<EventId>>;
+
+    /// set name of the room
+    fn set_name(name: Option<string>) -> Future<Result<EventId>>;
 
     /// the members currently in the space
     fn active_members() -> Future<Result<Vec<Member>>>;

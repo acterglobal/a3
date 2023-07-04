@@ -33,6 +33,7 @@ enum Routes {
   // -- spaces
   spaces('/spaces'),
   createSpace('/spaces/create'),
+  editSpace('/:spaceId([!#][^/]+)/edit'),
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
   spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),
   spacePins('/:spaceId([!#][^/]+)/pins'),

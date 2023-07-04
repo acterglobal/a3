@@ -291,6 +291,21 @@ impl Pin {
             })
             .await?
     }
+
+    pub async fn attachments(&self) -> Result<crate::AttachmentsManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.content.event_id().to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::AttachmentsManager::from_store_and_event_id(client.store(), &event_id)
+                        .await;
+                Ok(crate::AttachmentsManager::new(client, room, inner))
+            })
+            .await?
+    }
 }
 
 #[derive(Clone)]
