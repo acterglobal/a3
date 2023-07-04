@@ -377,7 +377,7 @@ async fn update_topic() -> Result<()> {
     let listener = space.subscribe();
     let space_id = space.room_id().to_string();
 
-    // set name
+    // set topic
 
     let _event_id = space.set_topic("New topic".to_owned()).await?;
 
