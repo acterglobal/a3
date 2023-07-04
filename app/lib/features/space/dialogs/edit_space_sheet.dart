@@ -31,7 +31,6 @@ class EditSpacePage extends ConsumerStatefulWidget {
 class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _topicController = TextEditingController();
-  late Map<String, bool> permissions;
 
   @override
   void initState() {
