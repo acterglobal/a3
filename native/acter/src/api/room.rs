@@ -64,6 +64,7 @@ pub enum MemberPermission {
     CanRedact,
     CanTriggerRoomNotification,
     // state events
+    CanSetName,
     CanUpdateAvatar,
     CanSetTopic,
     CanLinkSpaces,
@@ -126,6 +127,7 @@ impl Member {
             MemberPermission::CanSendChatMessages => MessageLikeEventType::RoomMessage.into(), // or should this check for encrypted?
             MemberPermission::CanSendReaction => MessageLikeEventType::Reaction.into(),
             MemberPermission::CanSendSticker => MessageLikeEventType::Sticker.into(),
+            MemberPermission::CanSetName => StateEventType::RoomName.into(),
             MemberPermission::CanUpdateAvatar => StateEventType::RoomAvatar.into(),
             MemberPermission::CanSetTopic => StateEventType::RoomTopic.into(),
             MemberPermission::CanLinkSpaces => StateEventType::SpaceChild.into(),
@@ -149,12 +151,15 @@ impl Room {
     }
 
     pub async fn get_my_membership(&self) -> Result<Member> {
-        let SdkRoom::Joined(joined) = &self.room else {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
             bail!("Not a room we have joined")
         };
-        let room = joined.clone();
+
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
+
         RUNTIME
             .spawn(async move {
                 let member = room
@@ -173,10 +178,12 @@ impl Room {
     }
 
     pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
-        let SdkRoom::Joined(joined) = &self.room else {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
             bail!("Can't upload avatar to a room we are not in")
         };
-        let room = joined.clone();
+
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
         let path = PathBuf::from(uri);
@@ -339,7 +346,10 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let member = room.get_member(&uid).await?.context("User not found")?;
+                let member = room
+                    .get_member(&uid)
+                    .await?
+                    .context("Couldn't find him among room members")?;
                 Ok(Member { member })
             })
             .await?
