@@ -59,6 +59,19 @@ class PublicSearchState extends PagedState<Next?, PublicSearchResultItem> {
   }
 }
 
+final serverTypeAheadController =
+    Provider.autoDispose<TextEditingController>((ref) {
+  final controller = TextEditingController();
+  controller.addListener(() {
+    ref.read(serverTypeAheadProvider.notifier).state = controller.text;
+  });
+  ref.onDispose(() {
+    controller.dispose();
+    ref.read(serverTypeAheadProvider.notifier).state = null;
+  });
+  return controller;
+});
+
 final searchController = Provider.autoDispose<TextEditingController>((ref) {
   final controller = TextEditingController();
   ref.onDispose(() {
@@ -69,6 +82,7 @@ final searchController = Provider.autoDispose<TextEditingController>((ref) {
 });
 
 final searchValueProvider = StateProvider<String?>((ref) => null);
+final serverTypeAheadProvider = StateProvider<String?>((ref) => null);
 final selectedServerProvider = StateProvider<String?>((ref) => null);
 
 class PublicSearchNotifier extends StateNotifier<PublicSearchState>
@@ -102,7 +116,7 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchState>
   void refresh(searchValue, server) {
     final nextPageKey = Next(isStart: true);
     state = state.copyWith(
-      records: null,
+      records: [],
       nextPageKey: nextPageKey,
       searchValue: searchValue,
       server: server,
@@ -283,25 +297,45 @@ class _JoinSpacePageState extends ConsumerState<JoinSpacePage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 5),
-                      child: DropdownMenu<String>(
-                        initialSelection:
-                            ref.read(selectedServerProvider.notifier).state,
-                        label: const Text('Server'),
-                        dropdownMenuEntries: const [
-                          DropdownMenuEntry(
-                            label: 'Acter',
-                            value: 'acter.global',
-                          ),
-                          DropdownMenuEntry(
-                            label: 'Matrix.org',
-                            value: 'matrix.org',
-                          ),
-                        ],
-                        onSelected: (String? typus) {
-                          if (typus != null) {
-                            ref.read(selectedServerProvider.notifier).state =
-                                typus;
+                      child: Consumer(
+                        builder: (context, ref, child) {
+                          final controller =
+                              ref.watch(serverTypeAheadController);
+                          final val = ref.watch(serverTypeAheadProvider);
+                          final menuItems = [
+                            const DropdownMenuEntry(
+                              label: 'Acter',
+                              value: 'acter.global',
+                            ),
+                            const DropdownMenuEntry(
+                              label: 'Matrix.org',
+                              value: 'matrix.org',
+                            ),
+                          ];
+
+                          if (val != null && val.isNotEmpty) {
+                            menuItems.add(
+                              DropdownMenuEntry(
+                                leadingIcon: const Icon(Atlas.plus_circle_thin),
+                                label: val,
+                                value: val,
+                              ),
+                            );
                           }
+                          return DropdownMenu<String>(
+                            controller: controller,
+                            initialSelection:
+                                ref.read(selectedServerProvider.notifier).state,
+                            label: const Text('Server'),
+                            dropdownMenuEntries: menuItems,
+                            onSelected: (String? typus) {
+                              if (typus != null) {
+                                ref
+                                    .read(selectedServerProvider.notifier)
+                                    .state = typus;
+                              }
+                            },
+                          );
                         },
                       ),
                     ),
