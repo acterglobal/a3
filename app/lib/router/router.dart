@@ -223,7 +223,7 @@ List<RouteBase> makeRoutes(Ref ref) => [
               );
             },
             child: EditSpacePage(
-              spaceId: state.extra as String,
+              spaceId: state.queryParameters['spaceId'],
             ),
           );
         },
