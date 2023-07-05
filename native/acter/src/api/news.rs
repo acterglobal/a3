@@ -201,17 +201,7 @@ impl NewsSlide {
     pub async fn image_binary(&self) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         let content = self.inner.content().image().context("Not an image")?;
-        let client = self.client.clone();
-        let request = MediaRequest {
-            source: content.source,
-            format: MediaFormat::File,
-        };
-        RUNTIME
-            .spawn(async move {
-                let buf = client.media().get_media_content(&request, false).await?;
-                Ok(FfiBuffer::new(buf))
-            })
-            .await?
+        self.client.source_binary(content.source).await
     }
 
     pub fn audio_desc(&self) -> Option<AudioDesc> {
@@ -225,17 +215,7 @@ impl NewsSlide {
     pub async fn audio_binary(&self) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         let content = self.inner.content().audio().context("Not an audio")?;
-        let client = self.client.clone();
-        let request = MediaRequest {
-            source: content.source.clone(),
-            format: MediaFormat::File,
-        };
-        RUNTIME
-            .spawn(async move {
-                let buf = client.media().get_media_content(&request, false).await?;
-                Ok(FfiBuffer::new(buf))
-            })
-            .await?
+        self.client.source_binary(content.source).await
     }
 
     pub fn video_desc(&self) -> Option<VideoDesc> {
@@ -249,17 +229,7 @@ impl NewsSlide {
     pub async fn video_binary(&self) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         let content = self.inner.content().video().context("Not a video")?;
-        let client = self.client.clone();
-        let request = MediaRequest {
-            source: content.source.clone(),
-            format: MediaFormat::File,
-        };
-        RUNTIME
-            .spawn(async move {
-                let buf = client.media().get_media_content(&request, false).await?;
-                Ok(FfiBuffer::new(buf))
-            })
-            .await?
+        self.client.source_binary(content.source).await
     }
 
     pub fn file_desc(&self) -> Option<FileDesc> {
@@ -273,17 +243,7 @@ impl NewsSlide {
     pub async fn file_binary(&self) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         let content = self.inner.content().file().context("Not a file")?;
-        let client = self.client.clone();
-        let request = MediaRequest {
-            source: content.source.clone(),
-            format: MediaFormat::File,
-        };
-        RUNTIME
-            .spawn(async move {
-                let buf = client.media().get_media_content(&request, false).await?;
-                Ok(FfiBuffer::new(buf))
-            })
-            .await?
+        self.client.source_binary(content.source).await
     }
 }
 
