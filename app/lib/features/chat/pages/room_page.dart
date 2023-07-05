@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -125,7 +124,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           mode: DisplayMode.User,
           uniqueId: userId,
           displayName: profile != null ? profile.displayName ?? '' : null,
-          avatar: profile != null ? profile.getAvatarImage() : null,
+          avatar: profile?.getAvatarImage(),
           size: 50,
         ),
       ),
