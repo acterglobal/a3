@@ -126,6 +126,18 @@ class QuickJump extends ConsumerWidget {
       runSpacing: 10,
       children: List.from(
         [
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.amber,
+              side: const BorderSide(width: 2, color: Colors.amber),
+            ),
+            onPressed: () {
+              navigateTo(route: Routes.updatesEdit, push: true);
+              debugPrint('News');
+            },
+            icon: const Icon(Atlas.plus_circle_thin),
+            label: const Text('News'),
+          ),
           isActive(LabsFeature.tasks)
               ? OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(

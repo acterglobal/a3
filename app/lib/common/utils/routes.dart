@@ -26,7 +26,7 @@ enum Routes {
   chatroom(r'/chat/(?<roomId>([!#][^/]+)'), // !roomId, #roomName
 
   // --- updates
-  updatesEdit('updates_edit'),
+  updatesEdit('/updates/edit'),
   updatesPost('updates_post'),
   updatesPostSearch('post_search'),
 

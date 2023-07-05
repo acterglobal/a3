@@ -3,7 +3,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:stories_editor/stories_editor.dart';
+// import 'package:stories_editor/stories_editor.dart';
 
 class NewsBuilderPage extends ConsumerStatefulWidget {
   const NewsBuilderPage({super.key});
@@ -16,18 +16,19 @@ class NewsBuilderPage extends ConsumerStatefulWidget {
 class _NewsBuilderPageState extends ConsumerState<NewsBuilderPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          child: StoriesEditor(
-            giphyKey: giphyKey,
-            onDone: (uri) {
-              debugPrint('Post URI:$uri');
-              context.pushNamed(Routes.updatesPost.name, extra: uri);
-            },
-            middleBottomWidget: const BottomWidget(),
-            onDoneButtonStyle: const DoneButton(),
-          ),
+          child: Text('none'),
+          // StoriesEditor(
+          //   giphyKey: giphyKey,
+          //   onDone: (uri) {
+          //     debugPrint('Post URI:$uri');
+          //     context.pushNamed(Routes.updatesPost.name, extra: uri);
+          //   },
+          //   middleBottomWidget: const BottomWidget(),
+          //   onDoneButtonStyle: const DoneButton(),
+          // ),
         ),
       ),
     );

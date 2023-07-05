@@ -33,9 +33,10 @@ dependencies:
   # UI
   flutter_adaptive_scaffold: ^0.1.0
   atlas_icons: ^0.0.12
-  stories_editor:
-    git:
-      url: https://github.com/acterglobal/flutter_stories_editor.git
+  # stories_editor:
+  #   path: "../../flutter_stories_editor"
+    # git:
+    #   url: https://github.com/acterglobal/flutter_stories_editor.git
   multiavatar: ^0.1.5
   flutter_chat_ui:
     git:
@@ -49,6 +50,8 @@ dependencies:
   colorize_text_avatar: ^1.0.2
   html_editor_enhanced: ^2.5.1
   implicitly_animated_reorderable_list_2: ^0.5.0
+  image_picker: ^1.0.0
+  cross_file_image: ^1.0.0
   overlay_support: ^2.1.0
   flutter_keyboard_visibility: ^5.4.0
   expandable_text: ^2.3.0
