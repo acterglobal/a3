@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:sprintf/sprintf.dart';
 
@@ -140,14 +141,13 @@ class CrossSigning {
       stage: 'm.key.verification.request',
     );
     acceptingRequest = false;
-    Get.bottomSheet(
-      StatefulBuilder(
-        builder: (context, setState) => Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: _buildOnRequest(context, event, flowId, setState),
+    showModalBottomSheet(
+      context: rootNavigatorKey.currentContext!,
+      builder: (BuildContext context) => Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
         ),
+        child: _buildOnRequest(context, event, flowId),
       ),
       isDismissible: false,
     );
@@ -157,7 +157,6 @@ class CrossSigning {
     BuildContext context,
     VerificationEvent event,
     String flowId,
-    Function setState,
   ) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -188,7 +187,7 @@ class CrossSigning {
                     onPressed: () async {
                       // cancel verification request from other device
                       await event.cancelVerificationRequest();
-                      Get.back();
+                      rootNavigatorKey.currentContext?.pop();
                       _eventMap.remove(flowId);
                     },
                     color: Colors.white,
@@ -213,17 +212,16 @@ class CrossSigning {
           child: Icon(Atlas.lock_keyhole),
         ),
         const Spacer(flex: 1),
-        Flexible(flex: 1, child: _buildBodyOnRequest(context, event, setState)),
+        Flexible(
+          flex: 1,
+          child: _buildBodyOnRequest(context, event),
+        ),
         const Spacer(flex: 1),
       ],
     );
   }
 
-  Widget _buildBodyOnRequest(
-    BuildContext context,
-    VerificationEvent event,
-    Function setState,
-  ) {
+  Widget _buildBodyOnRequest(BuildContext context, VerificationEvent event) {
     if (acceptingRequest) {
       return const CircularProgressIndicator();
     }
@@ -232,12 +230,12 @@ class CrossSigning {
       Theme.of(context).colorScheme.success,
       () async {
         if (_mounted) {
-          setState(() => acceptingRequest = true);
+          acceptingRequest = true;
         }
         // accept verification request from other device
         await event.acceptVerificationRequest();
         // go to onReady status
-        Get.back();
+        rootNavigatorKey.currentContext?.pop();
         Future.delayed(const Duration(milliseconds: 500), () {
           _onKeyVerificationReady(event, true);
         });
@@ -260,14 +258,13 @@ class CrossSigning {
         stage: 'm.key.verification.ready',
       );
     }
-    Get.bottomSheet(
-      StatefulBuilder(
-        builder: (context, setState) => Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: _buildOnReady(context, event, flowId),
+    showModalBottomSheet(
+      context: rootNavigatorKey.currentContext!,
+      builder: (BuildContext context) => Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
         ),
+        child: _buildOnReady(context, event, flowId),
       ),
       isDismissible: false,
     );
@@ -309,7 +306,7 @@ class CrossSigning {
                       // cancel the current verification
                       await event.cancelVerificationRequest();
                       // finish verification
-                      Get.back();
+                      rootNavigatorKey.currentContext?.pop();
                       _eventMap.remove(flowId);
                     },
                     color: Colors.white,
@@ -390,8 +387,8 @@ class CrossSigning {
   }
 
   void _onKeyVerificationStart(VerificationEvent event) {
-    if (Get.isBottomSheetOpen == true) {
-      Get.back();
+    if (rootNavigatorKey.currentContext?.canPop() == true) {
+      rootNavigatorKey.currentContext?.pop();
     }
     String? flowId = event.flowId();
     if (flowId == null) {
@@ -402,14 +399,13 @@ class CrossSigning {
       return;
     }
     _eventMap[flowId]?.stage = 'm.key.verification.start';
-    Get.bottomSheet(
-      StatefulBuilder(
-        builder: (context, setState) => Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: _buildOnStart(context, event, flowId),
+    showModalBottomSheet(
+      context: rootNavigatorKey.currentContext!,
+      builder: (BuildContext context) => Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
         ),
+        child: _buildOnStart(context, event, flowId),
       ),
       isDismissible: false,
     );
@@ -483,22 +479,21 @@ class CrossSigning {
   }
 
   void _onKeyVerificationCancel(VerificationEvent event, bool manual) {
-    if (Get.isBottomSheetOpen == true) {
-      Get.back();
+    if (rootNavigatorKey.currentContext?.canPop() == true) {
+      rootNavigatorKey.currentContext?.pop();
     }
     String? flowId = event.flowId();
     if (flowId == null) {
       return;
     }
     _eventMap[flowId]?.stage = 'm.key.verification.cancel';
-    Get.bottomSheet(
-      StatefulBuilder(
-        builder: (context, setState) => Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: _buildOnCancel(context, event, flowId, manual),
+    showModalBottomSheet(
+      context: rootNavigatorKey.currentContext!,
+      builder: (BuildContext context) => Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
         ),
+        child: _buildOnCancel(context, event, flowId, manual),
       ),
     );
   }
@@ -563,7 +558,7 @@ class CrossSigning {
                 Theme.of(context).colorScheme.success,
                 () {
                   // finish verification
-                  Get.back();
+                  rootNavigatorKey.currentContext?.pop();
                   _eventMap.remove(flowId);
                 },
                 const TextStyle(),
@@ -623,7 +618,7 @@ class CrossSigning {
                 Theme.of(context).colorScheme.success,
                 () {
                   // finish verification
-                  Get.back();
+                  rootNavigatorKey.currentContext?.pop();
                   _eventMap.remove(flowId);
                 },
                 const TextStyle(),
@@ -637,23 +632,23 @@ class CrossSigning {
   }
 
   void _onKeyVerificationAccept(VerificationEvent event) {
-    if (Get.isBottomSheetOpen == true) {
-      Get.back();
+    if (rootNavigatorKey.currentContext?.canPop() == true) {
+      rootNavigatorKey.currentContext?.pop();
     }
     String? flowId = event.flowId();
     if (flowId == null) {
       return;
     }
     _eventMap[flowId]?.stage = 'm.key.verification.accept';
-    Get.bottomSheet(
-      StatefulBuilder(
-        builder: (context, setState) => Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: _buildOnAccept(context, event, flowId),
+    showModalBottomSheet(
+      context: rootNavigatorKey.currentContext!,
+      builder: (BuildContext context) => Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
         ),
+        child: _buildOnAccept(context, event, flowId),
       ),
+      isDismissible: false,
     );
   }
 
@@ -716,8 +711,8 @@ class CrossSigning {
   }
 
   void _onKeyVerificationKey(VerificationEvent event) {
-    if (Get.isBottomSheetOpen == true) {
-      Get.back();
+    if (rootNavigatorKey.currentContext?.canPop() == true) {
+      rootNavigatorKey.currentContext?.pop();
     }
     String? flowId = event.flowId();
     if (flowId == null) {
@@ -725,14 +720,13 @@ class CrossSigning {
     }
     _eventMap[flowId]?.stage = 'm.key.verification.key';
     event.getVerificationEmoji().then((emoji) {
-      Get.bottomSheet(
-        StatefulBuilder(
-          builder: (context, setState) => Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: _buildOnKey(context, event, flowId, emoji, setState),
+      showModalBottomSheet(
+        context: rootNavigatorKey.currentContext!,
+        builder: (BuildContext context) => Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
           ),
+          child: _buildOnKey(context, event, flowId, emoji),
         ),
         isDismissible: false,
       );
@@ -744,7 +738,6 @@ class CrossSigning {
     VerificationEvent event,
     String flowId,
     FfiListVerificationEmoji emoji,
-    Function setState,
   ) {
     List<int> emojiCodes = emoji.map((e) => e.symbol()).toList();
     List<String> emojiDescriptions = emoji.map((e) => e.description()).toList();
@@ -836,18 +829,14 @@ class CrossSigning {
         const Spacer(flex: 1),
         Expanded(
           flex: isDesktop ? 1 : 2,
-          child: _buildBodyOnKey(context, event, setState),
+          child: _buildBodyOnKey(context, event),
         ),
         const Spacer(flex: 1),
       ],
     );
   }
 
-  Widget _buildBodyOnKey(
-    BuildContext context,
-    VerificationEvent event,
-    Function setState,
-  ) {
+  Widget _buildBodyOnKey(BuildContext context, VerificationEvent event) {
     if (waitForMatch) {
       return Center(
         child: Padding(
@@ -874,7 +863,7 @@ class CrossSigning {
               // mismatch sas verification
               await event.mismatchSasVerification();
               // go to onCancel status
-              Get.back();
+              rootNavigatorKey.currentContext?.pop();
               _onKeyVerificationCancel(event, true);
             },
             const TextStyle(),
@@ -889,16 +878,16 @@ class CrossSigning {
             Theme.of(context).colorScheme.success,
             () async {
               if (_mounted) {
-                setState(() => waitForMatch = true);
+                waitForMatch = true;
               }
               // confirm sas verification
               await event.confirmSasVerification();
               // close dialog
               if (_mounted) {
-                setState(() => waitForMatch = false);
+                waitForMatch = false;
               }
               // go to onMac status
-              Get.back();
+              rootNavigatorKey.currentContext?.pop();
               _onKeyVerificationMac(event);
             },
             const TextStyle(),
@@ -920,22 +909,21 @@ class CrossSigning {
   }
 
   void _onKeyVerificationDone(VerificationEvent event) {
-    if (Get.isBottomSheetOpen == true) {
-      Get.back();
+    if (rootNavigatorKey.currentContext?.canPop() == true) {
+      rootNavigatorKey.currentContext?.pop();
     }
     String? flowId = event.flowId();
     if (flowId == null) {
       return;
     }
     _eventMap[flowId]?.stage = 'm.key.verification.done';
-    Get.bottomSheet(
-      StatefulBuilder(
-        builder: (context, setState) => Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: _buildOnDone(context, event, flowId),
+    showModalBottomSheet(
+      context: rootNavigatorKey.currentContext!,
+      builder: (BuildContext context) => Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
         ),
+        child: _buildOnDone(context, event, flowId),
       ),
       isDismissible: false,
     );
@@ -999,7 +987,7 @@ class CrossSigning {
                 Theme.of(context).colorScheme.success,
                 () {
                   // finish verification
-                  Get.back();
+                  rootNavigatorKey.currentContext?.pop();
                   _eventMap.remove(flowId);
                 },
                 const TextStyle(),
