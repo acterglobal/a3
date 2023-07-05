@@ -15,8 +15,6 @@ class NewsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider)!;
-    final account = ref.watch(accountProfileProvider);
     final bool isDesktop =
         desktopPlatforms.contains(Theme.of(context).platform);
     return Scaffold(
@@ -24,52 +22,6 @@ class NewsPage extends ConsumerWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        leading: MediaQuery.of(context).size.width < 600
-            ? !client.isGuest()
-                ? account.when(
-                    data: (data) => Container(
-                      alignment: Alignment.topLeft,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.neutral6,
-                        ),
-                        shape: BoxShape.circle,
-                      ),
-                      margin: const EdgeInsets.only(left: 10, top: 8),
-                      child: ActerAvatar(
-                        mode: DisplayMode.User,
-                        uniqueId: client.userId().toString(),
-                        avatar: data.profile.getAvatarImage(),
-                        size: 36,
-                      ),
-                    ),
-                    error: (error, stackTrace) =>
-                        Text('Failed to load due to $error'),
-                    loading: () => const CircularProgressIndicator(),
-                  )
-                : GestureDetector(
-                    onTap: () => context.go('/login'),
-                    child: Container(
-                      alignment: Alignment.topLeft,
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.neutral6,
-                          width: 2,
-                        ),
-                        shape: BoxShape.circle,
-                      ),
-                      child: ActerAvatar(
-                        mode: DisplayMode.User,
-                        uniqueId: client.userId().toString(),
-                        size: 36,
-                      ),
-                    ),
-                  )
-            : const SizedBox.shrink(),
         centerTitle: true,
         actions: <Widget>[
           Visibility(
