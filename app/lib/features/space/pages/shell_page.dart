@@ -2,6 +2,7 @@ import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -31,8 +32,9 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
   @override
   Widget build(BuildContext context) {
     // get platform of context.
+    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
+    final h = MediaQuery.of(context).size.height;
     final space = ref.watch(spaceProvider(widget.spaceIdOrAlias));
-    double h = (MediaQuery.of(context).size.height * 0.8);
     return space.when(
       data: (space) {
         final profileData = ref.watch(spaceProfileDataProvider(space));
@@ -40,34 +42,31 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
           data: (profile) => Scaffold(
             backgroundColor: Colors.transparent,
             body: SafeArea(
-              child: SingleChildScrollView(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.center,
-                      colors: <Color>[
-                        Theme.of(context).colorScheme.background,
-                        Theme.of(context).colorScheme.neutral,
-                      ],
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      _ShellToolbar(space, widget.spaceIdOrAlias),
-                      _ShellHeader(widget.spaceIdOrAlias, profile),
-                      TopNavBar(
-                        spaceId: widget.spaceIdOrAlias,
-                        key: Key('${widget.spaceIdOrAlias}::top-nav'),
-                      ),
-                      SizedBox(
-                        height: h < 300 ? h * 2 : h,
-                        child: widget.child,
-                      ),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.center,
+                    colors: <Color>[
+                      Theme.of(context).colorScheme.background,
+                      Theme.of(context).colorScheme.neutral,
                     ],
                   ),
+                ),
+                child: ListView(
+                  shrinkWrap: true,
+                  children: <Widget>[
+                    _ShellToolbar(space, widget.spaceIdOrAlias),
+                    _ShellHeader(widget.spaceIdOrAlias, profile),
+                    TopNavBar(
+                      spaceId: widget.spaceIdOrAlias,
+                      key: Key('${widget.spaceIdOrAlias}::top-nav'),
+                    ),
+                    SizedBox(
+                      height: !isDesktop ? h * 2 : h,
+                      child: widget.child,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -246,7 +245,7 @@ class _ShellHeader extends ConsumerWidget {
                     data: (members) {
                       final membersCount = members.length;
                       if (membersCount > 5) {
-                        // too many to display, means we limit to 10
+                        // too many to display, means we limit to 5
                         members = members.sublist(0, 5);
                       }
                       return Padding(
@@ -258,6 +257,14 @@ class _ShellHeader extends ConsumerWidget {
                             ...members.map(
                               (a) => MemberAvatar(member: a),
                             ),
+                            if (membersCount > 5)
+                              CircleAvatar(
+                                child: Text(
+                                  '+${membersCount - 5}',
+                                  textAlign: TextAlign.center,
+                                  textScaleFactor: 0.8,
+                                ),
+                              )
                           ],
                         ),
                       );
