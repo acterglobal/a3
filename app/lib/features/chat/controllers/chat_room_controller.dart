@@ -478,7 +478,7 @@ class ChatRoomController extends GetxController {
     if (_userProfiles.containsKey(userId)) {
       return _userProfiles[userId];
     }
-    return const ProfileData('', null);
+    return ProfileData('', null);
   }
 
   //preview message link

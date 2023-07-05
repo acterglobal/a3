@@ -43,6 +43,30 @@ class AsyncSpaceNotifier extends AutoDisposeFamilyAsyncNotifier<Space, String> {
   }
 }
 
+class AsyncMaybeSpaceNotifier
+    extends AutoDisposeFamilyAsyncNotifier<Space?, String> {
+  late Stream<void> _listener;
+  Future<Space?> _getSpace() async {
+    final client = ref.watch(clientProvider)!;
+    try {
+      return await client.getSpace(arg);
+    } catch (e) {
+      // we sneakly suggest that means we don't have access.
+      return null;
+    }
+  }
+
+  @override
+  Future<Space?> build(String arg) async {
+    final client = ref.watch(clientProvider)!;
+    _listener = client.subscribe(arg);
+    _listener.forEach((_e) async {
+      state = await AsyncValue.guard(() => _getSpace());
+    });
+    return _getSpace();
+  }
+}
+
 class AsyncSpacesNotifier extends AutoDisposeAsyncNotifier<List<Space>> {
   late Stream<void> _listener;
   Future<List<Space>> _getSpaces() async {
