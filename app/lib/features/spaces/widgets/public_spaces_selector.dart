@@ -398,8 +398,8 @@ class PublicSpaceSelector extends ConsumerWidget {
                   }
 
                   final id = RegExp(
-                          r'https://matrix.to/#/(?<id>![^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?')
-                      .firstMatch(searchVal);
+                    r'https://matrix.to/#/(?<id>![^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
+                  ).firstMatch(searchVal);
                   if (canMatchId && id != null) {
                     final targetId = id.namedGroup('id')!;
                     final List<String> servers = [
