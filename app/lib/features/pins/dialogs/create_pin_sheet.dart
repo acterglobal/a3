@@ -9,19 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 
-final selectedSpaceIdProvider = StateProvider<String?>((ref) => null);
-final selectedSpaceDetailsProvider =
-    FutureProvider.autoDispose<SpaceItem?>((ref) async {
-  final selectedSpaceId = ref.watch(selectedSpaceIdProvider);
-  if (selectedSpaceId == null) {
-    return null;
-  }
-
-  final spaces = await ref.watch(briefSpaceItemsProviderWithMembership.future);
-  return spaces.firstWhere((element) => element.roomId == selectedSpaceId);
-});
-
-// upload avatar path
+// interface data providers
 final titleProvider = StateProvider<String>((ref) => '');
 final selectedTypeProvider = StateProvider.autoDispose<String>((ref) => 'link');
 final textProvider = StateProvider.autoDispose<String>((ref) => '');
