@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/spaces/widgets/public_spaces_selector.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -30,11 +29,41 @@ class JoinSpacePage extends ConsumerWidget {
         ),
         child: PublicSpaceSelector(
           autofocus: true,
+          canMatchAlias: true,
+          canMatchId: true,
+          onSelectedMatch: ({alias, roomId, required servers}) => onUnknown(
+            context,
+            ref,
+            alias,
+            roomId,
+            servers,
+          ),
           onSelected: (searchResult, searchServerName, space) =>
               onSelectedKnown(
-                  context, ref, searchResult, searchServerName, space,),
+            context,
+            ref,
+            searchResult,
+            searchServerName,
+            space,
+          ),
         ),
       ),
+    );
+  }
+
+  void onUnknown(
+    BuildContext context,
+    WidgetRef ref,
+    String? roomId,
+    String? alias,
+    List<String> serverNames,
+  ) async {
+    await join(
+      context,
+      ref,
+      'Trying to join ${alias ?? roomId}',
+      (alias ?? roomId)!,
+      serverNames.first,
     );
   }
 
@@ -63,36 +92,57 @@ class JoinSpacePage extends ConsumerWidget {
       );
       return;
     }
+    await join(
+      context,
+      ref,
+      'Trying to join ${spaceSearchResult.name()}',
+      spaceSearchResult.roomIdStr(),
+      searchServer,
+    );
+  }
 
+  Future<void> join(
+    BuildContext context,
+    WidgetRef ref,
+    String displayMsg,
+    String roomIdOrAlias,
+    String? server,
+  ) async {
     popUpDialog(
       context: context,
       title: Text(
-        'Joining Space "${spaceSearchResult.name()} (${spaceSearchResult.roomIdStr()})"',
+        displayMsg,
         style: Theme.of(context).textTheme.titleSmall,
       ),
       isLoader: true,
     );
-    final sdk = ref.read(sdkProvider);
     final client = ref.read(clientProvider)!;
     try {
       final newSpace = await client.joinSpace(
-        spaceSearchResult.roomIdStr(),
-        searchServer,
+        roomIdOrAlias,
+        server,
       );
       Navigator.of(context, rootNavigator: true).pop();
-      context.goNamed(Routes.space.name, pathParameters: {
-        'spaceId': newSpace.getRoomIdStr(),
-      },);
+      context.goNamed(
+        Routes.space.name,
+        pathParameters: {
+          'spaceId': newSpace.getRoomIdStr(),
+        },
+      );
     } catch (err) {
       Navigator.of(context, rootNavigator: true).pop();
 
       popUpDialog(
         context: context,
         title: Text(
-          'Joining Space "${spaceSearchResult.name()} (${spaceSearchResult.roomIdStr()}) failed: $err"',
+          '$displayMsg failed: \n $err"',
           style: Theme.of(context).textTheme.titleSmall,
         ),
         isLoader: false,
+        btnText: 'Close',
+        onPressedBtn: () {
+          Navigator.of(context, rootNavigator: true).pop();
+        },
       );
     }
   }

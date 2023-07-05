@@ -17,6 +17,12 @@ typedef OnSelectedFn = void Function(
   SpaceItem? spaceInfo,
 );
 
+typedef OnSelectedMatchFn = void Function({
+  String? roomId,
+  String? alias,
+  required List<String> servers,
+});
+
 typedef OnSelectedInnerFn = void Function(
   PublicSearchResultItem spaceSearchResult,
   SpaceItem? spaceInfo,
@@ -272,11 +278,18 @@ class PublicSpaceSelector extends ConsumerWidget {
   final Widget? title;
   final bool autofocus;
   final OnSelectedFn onSelected;
-  const PublicSpaceSelector(
-      {super.key,
-      this.title,
-      this.autofocus = false,
-      required this.onSelected,});
+  final OnSelectedMatchFn? onSelectedMatch;
+  final bool canMatchAlias;
+  final bool canMatchId;
+  const PublicSpaceSelector({
+    super.key,
+    this.title,
+    this.autofocus = false,
+    required this.onSelected,
+    this.onSelectedMatch,
+    this.canMatchAlias = false,
+    this.canMatchId = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -359,14 +372,21 @@ class PublicSpaceSelector extends ConsumerWidget {
             child: Consumer(
               builder: (context, ref, child) {
                 final searchVal = ref.watch(searchValueProvider);
-                if (searchVal != null && searchVal.isNotEmpty) {
-                  final aliased = RegExp(r'https://matrix.to/#/(?<alias>#.+)')
-                      .firstMatch(searchVal);
-                  if (aliased != null) {
+                if (onSelectedMatch != null &&
+                    searchVal != null &&
+                    searchVal.isNotEmpty) {
+                  final aliased =
+                      RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)')
+                          .firstMatch(searchVal);
+                  if (canMatchAlias && aliased != null) {
+                    final alias = aliased.namedGroup('alias')!;
+                    final server = aliased.namedGroup('server')!;
                     return Card(
                       child: ListTile(
-                        title: Text(aliased.namedGroup('alias')!),
-                        subtitle: const Text('join directly'),
+                        onTap: () =>
+                            onSelectedMatch!(alias: alias, servers: [server]),
+                        title: Text(alias),
+                        subtitle: Text('on $server'),
                         trailing: OutlinedButton.icon(
                           onPressed: () {},
                           icon: const Icon(Atlas.entrance_thin),
@@ -376,13 +396,26 @@ class PublicSpaceSelector extends ConsumerWidget {
                     );
                   }
 
-                  final id = RegExp(r'https://matrix.to/#/(?<id>!.+)\?')
+                  final id = RegExp(
+                          r'https://matrix.to/#/(?<id>![^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?')
                       .firstMatch(searchVal);
-                  if (id != null) {
+                  if (canMatchId && id != null) {
+                    final targetId = id.namedGroup('id')!;
+                    final List<String> servers = [
+                      id.namedGroup('server_name') ?? '',
+                      id.namedGroup('server_name2') ?? '',
+                      id.namedGroup('server_name3') ?? ''
+                    ].where((e) => e.isNotEmpty).toList();
                     return Card(
                       child: ListTile(
-                        title: Text(id.namedGroup('id')!),
-                        subtitle: const Text('join directly'),
+                        onTap: () => onSelectedMatch!(
+                          roomId: targetId,
+                          servers: servers,
+                        ),
+                        title: Text(targetId),
+                        subtitle: servers.isNotEmpty
+                            ? Text('via ${servers.join(', ')}')
+                            : null,
                         trailing: OutlinedButton.icon(
                           onPressed: () {},
                           icon: const Icon(Atlas.entrance_thin),
