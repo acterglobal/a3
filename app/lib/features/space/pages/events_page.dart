@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/events_provider.dart';
+import 'package:acter/features/events/widgets/events_item.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +21,7 @@ class SpaceEventsPage extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: CustomScrollView(
+        physics: const NeverScrollableScrollPhysics(),
         slivers: <Widget>[
           SliverToBoxAdapter(
             child: Row(
@@ -35,7 +38,10 @@ class SpaceEventsPage extends ConsumerWidget {
                   ),
                   iconSize: 28,
                   color: Theme.of(context).colorScheme.surface,
-                  onPressed: () => {},
+                  onPressed: () => context.pushNamed(
+                    Routes.createEvent.name,
+                    queryParameters: {'spaceId': spaceIdOrAlias},
+                  ),
                 ),
               ],
             ),
@@ -60,10 +66,8 @@ class SpaceEventsPage extends ConsumerWidget {
                   crossAxisCount: max(1, min(widthCount, minCount)),
                   childAspectRatio: 4,
                 ),
-                itemBuilder: (context, index) {
-                  final event = events[index];
-                  return const SizedBox();
-                },
+                itemBuilder: (context, index) =>
+                    EventItem(event: events[index]),
               );
             },
             error: (error, stackTrace) => SliverToBoxAdapter(

@@ -45,6 +45,9 @@ enum Routes {
   pins('/pins'),
   pin('/pins/:pinId'),
 
+  // -- events
+  createEvent('/events/create'),
+
   // -- settings
   settings('/settings'),
   settingsLabs('/settings/labs'),
