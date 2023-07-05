@@ -73,6 +73,7 @@ final spaceItemsProvider = FutureProvider.autoDispose
               displayName: info.displayName,
               mode: DisplayMode.Space,
               avatar: info.getAvatarImage(),
+              size: 48,
             ),
             label: Text(
               info.displayName ?? roomId,

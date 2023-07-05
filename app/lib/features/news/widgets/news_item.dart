@@ -37,37 +37,34 @@ class _NewsItemState extends State<NewsItem> {
       Theme.of(context).colorScheme.primary,
     );
     return Stack(
-      alignment: Alignment.bottomRight,
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            slideWidget(slideType, slide),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.78,
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-              child: Text(
-                slide.text(),
-                softWrap: true,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: fgColor,
-                  shadows: [
-                    Shadow(
-                      color: bgColor,
-                      offset: const Offset(1, 1),
-                      blurRadius: 1,
-                    ),
-                  ],
+        slideWidget(slideType, slide),
+        Container(
+          width: MediaQuery.of(context).size.width * 0.8,
+          padding: const EdgeInsets.all(8),
+          alignment: const Alignment(-0.95, 0.5),
+          child: Text(
+            slide.text(),
+            softWrap: true,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: fgColor,
+              shadows: [
+                Shadow(
+                  color: bgColor,
+                  offset: const Offset(1, 1),
+                  blurRadius: 1,
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
-        NewsSideBar(
-          client: widget.client,
-          news: widget.news,
-          index: widget.index,
+        Align(
+          alignment: Alignment.bottomRight,
+          child: NewsSideBar(
+            client: widget.client,
+            news: widget.news,
+            index: widget.index,
+          ),
         ),
       ],
     );
@@ -76,13 +73,8 @@ class _NewsItemState extends State<NewsItem> {
   Widget slideWidget(String slideType, NewsSlide slide) {
     switch (slideType) {
       case 'image':
-        return Center(
-          child: SizedBox.square(
-            dimension: 346,
-            child: ImageSlide(
-              slide: slide,
-            ),
-          ),
+        return ImageSlide(
+          slide: slide,
         );
       case 'text':
         return const SizedBox();
@@ -129,42 +121,20 @@ class _ImageSlideState extends State<ImageSlide> {
       future: newsImage.then((value) => value.asTypedList()),
       builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
         if (snapshot.hasData) {
-          return _ImageWidget(
-            image: snapshot.data,
-            imageDesc: imageDesc,
+          return Container(
+            foregroundDecoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: MemoryImage(
+                  Uint8List.fromList(snapshot.data!),
+                ),
+              ),
+            ),
           );
         } else {
           return const Center(child: Text('Loading image'));
         }
       },
-    );
-  }
-}
-
-class _ImageWidget extends StatelessWidget {
-  const _ImageWidget({
-    required this.image,
-    required this.imageDesc,
-  });
-
-  final List<int>? image;
-  final ImageDesc? imageDesc;
-
-  @override
-  Widget build(BuildContext context) {
-    // Size size = WidgetsBinding.instance.window.physicalSize;
-    if (image == null) {
-      return const SizedBox.shrink();
-    }
-
-    // return Image.memory(Uint8List.fromList(image), fit: BoxFit.cover);
-    return FittedBox(
-      fit: BoxFit.contain,
-      child: Image.memory(
-        Uint8List.fromList(image!),
-        height: imageDesc!.height()!.toDouble(),
-        width: imageDesc!.width()!.toDouble(),
-      ),
     );
   }
 }

@@ -114,7 +114,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   }
 
   Widget avatarBuilder(String userId) {
-    // var avtr = roomController.getUserAvatar(userId);
+    var profile = roomController.getUserProfile(userId);
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: SizedBox(
@@ -123,7 +123,8 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
         child: ActerAvatar(
           mode: DisplayMode.User,
           uniqueId: userId,
-          displayName: roomController.getUserName(userId),
+          displayName: profile != null ? profile.displayName ?? '' : null,
+          avatar: profile?.getAvatarImage(),
           size: 50,
         ),
       ),

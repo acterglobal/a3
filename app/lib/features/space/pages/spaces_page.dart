@@ -84,7 +84,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                   itemCount: spaces.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: max(1, min(widthCount, minCount)),
-                    childAspectRatio: 6,
+                    childAspectRatio: 4,
                   ),
                   itemBuilder: (context, index) {
                     final space = spaces[index];
