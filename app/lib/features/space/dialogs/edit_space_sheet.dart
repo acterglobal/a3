@@ -13,6 +13,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 
 final editTitleProvider = StateProvider.autoDispose<String>((ref) => '');
 final editTopicProvider = StateProvider.autoDispose<String>((ref) => '');
@@ -48,8 +49,14 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     ref.read(editTopicProvider.notifier).update((state) => space.topic() ?? '');
 
     if (profileData.hasAvatar()) {
-      File imageFile = await File('${widget.spaceId}.jpg')
-          .writeAsBytes(profileData.avatar!.asTypedList());
+      Directory appDocDirectory = await getApplicationDocumentsDirectory();
+      Directory(appDocDirectory.path + '/' + 'dir')
+          .create(recursive: true)
+          .then((Directory directory) {});
+
+      File imageFile =
+          await File('${appDocDirectory.path}/${widget.spaceId}.jpg')
+              .writeAsBytes(profileData.avatar!.asTypedList());
       ref.read(editAvatarProvider.notifier).update((state) => imageFile.path);
     }
 
