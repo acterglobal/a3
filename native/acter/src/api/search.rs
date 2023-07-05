@@ -73,7 +73,7 @@ impl PublicSearchResultItem {
         self.chunk.canonical_alias.as_ref().map(|a| a.to_string())
     }
     pub fn num_joined_members(&self) -> u64 {
-        self.chunk.num_joined_members.clone().into()
+        self.chunk.num_joined_members.into()
     }
     pub fn room_id(&self) -> OwnedRoomId {
         self.chunk.room_id.clone()
@@ -121,7 +121,7 @@ impl PublicSearchResult {
         self.resp.prev_batch.clone()
     }
     pub fn total_room_count_estimate(&self) -> Option<u64> {
-        self.resp.total_room_count_estimate.clone().map(Into::into)
+        self.resp.total_room_count_estimate.map(Into::into)
     }
     pub fn chunks(&self) -> Vec<PublicSearchResultItem> {
         self.resp
@@ -156,7 +156,7 @@ impl Client {
                 let server = if let Some(name) = server { Some(OwnedServerName::try_from(name.as_str())?) } else { None };
                 let request = assign!(ruma::api::client::directory::get_public_rooms_filtered::v3::Request::new(), { since, filter, server, room_network});
                 let resp = c.public_rooms_filtered(request).await?;
-                return Ok(PublicSearchResult { resp })
+                Ok(PublicSearchResult { resp })
             })
             .await?
     }

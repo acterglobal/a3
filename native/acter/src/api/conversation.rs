@@ -91,6 +91,10 @@ impl Conversation {
         self.room_id().to_owned()
     }
 
+    pub fn get_room_id_str(&self) -> String {
+        self.room_id().to_string()
+    }
+
     pub async fn user_receipts(&self) -> Result<Vec<ReceiptRecord>> {
         let room = self.room.clone();
         RUNTIME
@@ -407,6 +411,23 @@ impl Client {
                 Ok(response.room_id().to_owned())
             })
             .await?
+    }
+
+    pub async fn join_conversation(
+        &self,
+        room_id_or_alias: String,
+        server_name: Option<String>,
+    ) -> Result<Conversation> {
+        let room = self
+            .join_room(
+                room_id_or_alias,
+                server_name.map(|s| vec![s]).unwrap_or_default(),
+            )
+            .await?;
+        Ok(Conversation {
+            latest_message: None,
+            inner: room,
+        })
     }
 
     pub async fn conversation(&self, name_or_id: String) -> Result<Conversation> {

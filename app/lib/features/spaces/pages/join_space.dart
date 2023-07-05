@@ -1,260 +1,21 @@
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/spaces/widgets/public_spaces_selector.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/routes.dart';
-import 'package:acter_avatar/acter_avatar.dart';
-import 'package:atlas_icons/atlas_icons.dart';
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:go_router/go_router.dart';
 
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
-
-class Next {
-  final bool isStart;
-  final String? next;
-
-  const Next({this.isStart = false, this.next});
-}
-
-class PublicSearchState extends PagedState<Next?, PublicSearchResultItem> {
-  // We can extends [PagedState] to add custom parameters to our state
-  final String? server;
-  final String? searchValue;
-
-  const PublicSearchState({
-    List<PublicSearchResultItem>? records,
-    String? error,
-    Next? nextPageKey = const Next(isStart: true),
-    List<Next?>? previousPageKeys,
-    this.server,
-    this.searchValue,
-  }) : super(records: records, error: error, nextPageKey: nextPageKey);
-
-  @override
-  PublicSearchState copyWith({
-    List<PublicSearchResultItem>? records,
-    dynamic error,
-    dynamic nextPageKey,
-    String? server,
-    String? searchValue,
-    List<Next?>? previousPageKeys,
-  }) {
-    final sup = super.copyWith(
-      records: records,
-      error: error,
-      nextPageKey: nextPageKey,
-      previousPageKeys: previousPageKeys,
-    );
-    return PublicSearchState(
-      records: sup.records,
-      error: sup.error,
-      nextPageKey: sup.nextPageKey,
-      previousPageKeys: sup.previousPageKeys,
-      server: server,
-      searchValue: searchValue,
-    );
-  }
-}
-
-final serverTypeAheadController =
-    Provider.autoDispose<TextEditingController>((ref) {
-  final controller = TextEditingController();
-  controller.addListener(() {
-    ref.read(serverTypeAheadProvider.notifier).state = controller.text;
-  });
-  ref.onDispose(() {
-    controller.dispose();
-    ref.read(serverTypeAheadProvider.notifier).state = null;
-  });
-  return controller;
-});
-
-final searchController = Provider.autoDispose<TextEditingController>((ref) {
-  final controller = TextEditingController();
-  ref.onDispose(() {
-    controller.dispose();
-    ref.read(searchValueProvider.notifier).state = null;
-  });
-  return controller;
-});
-
-final searchValueProvider = StateProvider<String?>((ref) => null);
-final serverTypeAheadProvider = StateProvider<String?>((ref) => null);
-final selectedServerProvider = StateProvider<String?>((ref) => null);
-
-class PublicSearchNotifier extends StateNotifier<PublicSearchState>
-    with PagedNotifierMixin<Next?, PublicSearchResultItem, PublicSearchState> {
-  PublicSearchNotifier(this.ref) : super(const PublicSearchState()) {
-    setup();
-  }
-
-  final Ref ref;
-
-  void setup() {
-    ref.watch(searchValueProvider.notifier).addListener((state) {
-      readData();
-    });
-    ref.watch(selectedServerProvider.notifier).addListener((state) {
-      readData();
-    });
-  }
-
-  void readData() async {
-    try {
-      await ref.debounce(const Duration(milliseconds: 300));
-      final newSearchValue = ref.read(searchValueProvider);
-      final newSelectedSever = ref.read(selectedServerProvider);
-      refresh(newSearchValue, newSelectedSever);
-    } catch (e) {
-      // we do not care.
-    }
-  }
-
-  void refresh(searchValue, server) {
-    final nextPageKey = Next(isStart: true);
-    state = state.copyWith(
-      records: [],
-      nextPageKey: nextPageKey,
-      searchValue: searchValue,
-      server: server,
-    );
-    load(nextPageKey, 30);
-  }
-
-  @override
-  Future<List<PublicSearchResultItem>?> load(Next? page, int limit) async {
-    if (page == null) {
-      return null;
-    }
-
-    final pageReq = page.next ?? '';
-    final client = ref.watch(clientProvider)!;
-    final searchValue = state.searchValue;
-    final server = state.server;
-    try {
-      final res = await client.publicSpaces(searchValue, server, pageReq);
-      final entries = res.chunks();
-      final next = res.nextBatch();
-      Next? finalPageKey;
-      if (next != null) {
-        // we are not at the end
-        finalPageKey = Next(next: next);
-      }
-      state = state.copyWith(
-        records: page.isStart
-            ? [...entries]
-            : [...(state.records ?? []), ...entries],
-        nextPageKey: finalPageKey,
-        searchValue: searchValue,
-        server: server,
-      );
-    } catch (e) {
-      state = state.copyWith(error: e.toString());
-    }
-
-    return null;
-  }
-}
-
-final publicSearchProvider = StateNotifierProvider.autoDispose<
-    PublicSearchNotifier, PagedState<Next?, PublicSearchResultItem>>((ref) {
-  return PublicSearchNotifier(ref);
-});
-
-class PublicSpaceItem extends ConsumerWidget {
-  final PublicSearchResultItem space;
-  const PublicSpaceItem({super.key, required this.space});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final withInfo = ref.watch(maybeSpaceInfoProvider(space.roomIdStr()));
-
-    ActerAvatar fallbackAvatar() => ActerAvatar(
-          mode: DisplayMode.Space,
-          uniqueId: space.roomIdStr(),
-          displayName: space.name(),
-        );
-
-    return Card(
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.inversePrimary,
-          width: 1.5,
-        ),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      color: Theme.of(context).colorScheme.surface,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            child: ListTile(
-              leading: withInfo.when(
-                data: (data) => data != null
-                    ? ActerAvatar(
-                        mode: DisplayMode.Space,
-                        uniqueId: space.roomIdStr(),
-                        size: 48,
-                        displayName: data.spaceProfileData.displayName,
-                        avatar: data.spaceProfileData.hasAvatar()
-                            ? data.spaceProfileData.getAvatarImage()
-                            : null,
-                      )
-                    : fallbackAvatar(),
-                error: (e, a) => Text('loading failed: $e'),
-                loading: fallbackAvatar,
-              ),
-              title: Text(space.name() ?? 'no display name'),
-              subtitle: Text('${space.numJoinedMembers()} Members'),
-              trailing: withInfo.when(
-                data: (data) => data != null
-                    ? const Chip(label: Text('member'))
-                    : space.joinRuleStr() == 'Public'
-                        ? OutlinedButton(
-                            onPressed: () {},
-                            child: const Text('join'),
-                          )
-                        : OutlinedButton(
-                            onPressed: () {},
-                            child: const Text('request to join'),
-                          ),
-                error: (e, s) => Text('error loading membership: $e'),
-                loading: () => const Text('loading'),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 20,
-              top: 2,
-              bottom: 2,
-            ),
-            child: Text('${space.topic()}'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class JoinSpacePage extends ConsumerStatefulWidget {
+class JoinSpacePage extends ConsumerWidget {
   const JoinSpacePage({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _JoinSpacePageState();
-}
-
-class _JoinSpacePageState extends ConsumerState<JoinSpacePage> {
-  @override
-  Widget build(BuildContext context) {
-    final _searchTextCtrl = ref.watch(searchController);
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -267,142 +28,72 @@ class _JoinSpacePageState extends ConsumerState<JoinSpacePage> {
             ],
           ),
         ),
-        child: CustomScrollView(
-          slivers: [
-            const SliverAppBar(
-              title: Text('Join space'),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _searchTextCtrl,
-                        autofocus: true,
-                        decoration: const InputDecoration(
-                          prefixIcon: Icon(
-                            Atlas.magnifying_glass_thin,
-                            color: Colors.white,
-                          ),
-                          labelText: 'search space',
-                        ),
-                        onChanged: (String value) async {
-                          ref.read(searchValueProvider.notifier).state = value;
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 5),
-                      child: Consumer(
-                        builder: (context, ref, child) {
-                          final controller =
-                              ref.watch(serverTypeAheadController);
-                          final val = ref.watch(serverTypeAheadProvider);
-                          final List<DropdownMenuEntry<String>> menuItems = [
-                            ...defaultServers.map(
-                              (e) => DropdownMenuEntry(
-                                label: e.name ?? e.value,
-                                value: e.value,
-                              ),
-                            )
-                          ];
-
-                          if (val != null && val.isNotEmpty) {
-                            menuItems.add(
-                              DropdownMenuEntry(
-                                leadingIcon: const Icon(Atlas.plus_circle_thin),
-                                label: val,
-                                value: val,
-                              ),
-                            );
-                          }
-                          return DropdownMenu<String>(
-                            controller: controller,
-                            initialSelection:
-                                ref.read(selectedServerProvider.notifier).state,
-                            label: const Text('Server'),
-                            dropdownMenuEntries: menuItems,
-                            onSelected: (String? typus) {
-                              if (typus != null) {
-                                ref
-                                    .read(selectedServerProvider.notifier)
-                                    .state = typus;
-                              }
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                child: Consumer(builder: (context, ref, child) {
-                  final searchVal = ref.watch(searchValueProvider);
-                  if (searchVal != null && searchVal.isNotEmpty) {
-                    final aliased = RegExp(r'https://matrix.to/#/(?<alias>#.+)')
-                        .firstMatch(searchVal);
-                    if (aliased != null) {
-                      return Card(
-                        child: ListTile(
-                          title: Text(aliased.namedGroup('alias')!),
-                          subtitle: Text('directy join'),
-                          trailing: OutlinedButton.icon(
-                            onPressed: () {},
-                            icon: Icon(Atlas.entrance_thin),
-                            label: Text('Try to join'),
-                          ),
-                        ),
-                      );
-                    }
-
-                    final id = RegExp(r'https://matrix.to/#/(?<id>!.+)\?')
-                        .firstMatch(searchVal);
-                    if (id != null) {
-                      return Card(
-                        child: ListTile(
-                          title: Text(id.namedGroup('id')!),
-                          subtitle: Text('directy join'),
-                          trailing: OutlinedButton.icon(
-                            onPressed: () {},
-                            icon: Icon(Atlas.entrance_thin),
-                            label: Text('Try to join'),
-                          ),
-                        ),
-                      );
-                    }
-                  }
-
-                  return SizedBox(height: 0);
-                }),
-              ),
-            ),
-            RiverPagedBuilder<Next?, PublicSearchResultItem>.autoDispose(
-              firstPageKey: const Next(isStart: true),
-              provider: publicSearchProvider,
-              itemBuilder: (context, item, index) =>
-                  PublicSpaceItem(space: item),
-              pagedBuilder: (controller, builder) => PagedSliverGrid(
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 800,
-                  childAspectRatio: 3,
-                ),
-                pagingController: controller,
-                builderDelegate: builder,
-              ),
-            ),
-          ],
+        child: PublicSpaceSelector(
+          autofocus: true,
+          onSelected: (searchResult, searchServerName, space) =>
+              onSelectedKnown(
+                  context, ref, searchResult, searchServerName, space,),
         ),
       ),
     );
+  }
+
+  void onSelectedKnown(
+    BuildContext context,
+    WidgetRef ref,
+    PublicSearchResultItem spaceSearchResult,
+    String? searchServer,
+    SpaceItem? spaceInfo,
+  ) async {
+    if (spaceInfo != null) {
+      // we know the space, user just wants to enter it
+      context.goNamed(
+        Routes.space.name,
+        pathParameters: {'spaceId': spaceInfo.roomId},
+      );
+      return;
+    }
+
+    // we don't know the space yet, the user wants to join.
+    final joinRule = spaceSearchResult.joinRuleStr();
+    if (joinRule != 'Public') {
+      customMsgSnackbar(
+        context,
+        'Join Rule "$joinRule" not supported yet. Sorry',
+      );
+      return;
+    }
+
+    popUpDialog(
+      context: context,
+      title: Text(
+        'Joining Space "${spaceSearchResult.name()} (${spaceSearchResult.roomIdStr()})"',
+        style: Theme.of(context).textTheme.titleSmall,
+      ),
+      isLoader: true,
+    );
+    final sdk = ref.read(sdkProvider);
+    final client = ref.read(clientProvider)!;
+    try {
+      final newSpace = await client.joinSpace(
+        spaceSearchResult.roomIdStr(),
+        searchServer,
+      );
+      Navigator.of(context, rootNavigator: true).pop();
+      context.goNamed(Routes.space.name, pathParameters: {
+        'spaceId': newSpace.getRoomIdStr(),
+      },);
+    } catch (err) {
+      Navigator.of(context, rootNavigator: true).pop();
+
+      popUpDialog(
+        context: context,
+        title: Text(
+          'Joining Space "${spaceSearchResult.name()} (${spaceSearchResult.roomIdStr()}) failed: $err"',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        isLoader: false,
+      );
+    }
   }
 }

@@ -558,6 +558,9 @@ object Conversation {
     /// the room id
     fn get_room_id() -> RoomId;
 
+    /// the room id as str
+    fn get_room_id_str() -> string;
+
     /// Activate typing notice for this room
     /// The typing notice remains active for 4s. It can be deactivate at any
     /// point by setting typing to false. If this method is called while the
@@ -1135,6 +1138,9 @@ object Space {
     /// the room id
     fn get_room_id() -> RoomId;
 
+    /// the room id as str
+    fn get_room_id_str() -> string;
+
     // the members currently in the room
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
@@ -1352,6 +1358,12 @@ object Client {
 
     /// The spaces the user is part of
     fn spaces() -> Future<Result<Vec<Space>>>;
+
+    /// attempt to join a space
+    fn join_space(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Space>>;
+
+    /// attempt to join a room
+    fn join_conversation(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Conversation>>;
 
     /// search the public directory for spaces
     fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;

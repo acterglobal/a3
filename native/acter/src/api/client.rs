@@ -16,11 +16,11 @@ use matrix_sdk::{
     config::SyncSettings,
     media::{MediaFormat, MediaRequest},
     room::Room as SdkRoom,
-    ruma::{
-        device_id, events::room::MediaSource, OwnedDeviceId, OwnedRoomId, OwnedUserId, RoomId,
-        UserId,
-    },
     Client as SdkClient, LoopCtrl, RumaApiError,
+};
+use ruma::{
+    device_id, events::room::MediaSource, OwnedDeviceId, OwnedRoomId, OwnedRoomOrAliasId,
+    OwnedServerName, OwnedUserId, RoomId, UserId,
 };
 use std::{
     collections::BTreeMap,
@@ -332,6 +332,29 @@ impl Client {
             .spawn(async move {
                 let buf = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(buf))
+            })
+            .await?
+    }
+
+    pub(crate) async fn join_room(
+        &self,
+        room_id_or_alias: String,
+        server_names: Vec<String>,
+    ) -> Result<Room> {
+        let alias = OwnedRoomOrAliasId::try_from(room_id_or_alias)?;
+        let server_names: Vec<OwnedServerName> = server_names
+            .into_iter()
+            .map(OwnedServerName::try_from)
+            .collect::<Result<Vec<OwnedServerName>, ruma::IdParseError>>()?;
+        let c = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let joined = c
+                    .join_room_by_id_or_alias(alias.as_ref(), server_names.as_slice())
+                    .await?;
+                Ok(Room {
+                    room: joined.into(),
+                })
             })
             .await?
     }

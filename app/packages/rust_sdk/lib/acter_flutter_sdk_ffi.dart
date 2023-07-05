@@ -6129,6 +6129,98 @@ class Api {
     return tmp7;
   }
 
+  Space? __clientJoinSpaceFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientJoinSpaceFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Space");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Space._(this, tmp13_1);
+    return tmp7;
+  }
+
+  Conversation? __clientJoinConversationFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientJoinConversationFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Conversation");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Conversation._(this, tmp13_1);
+    return tmp7;
+  }
+
   PublicSearchResult? __clientPublicSpacesFuturePoll(
     int boxed,
     int postCobject,
@@ -10937,6 +11029,17 @@ class Api {
       int Function(
     int,
   )>();
+  late final _conversationGetRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationGetRoomIdStrReturn Function(
+    ffi.Int64,
+  )>>("__Conversation_get_room_id_str");
+
+  late final _conversationGetRoomIdStr =
+      _conversationGetRoomIdStrPtr.asFunction<
+          _ConversationGetRoomIdStrReturn Function(
+    int,
+  )>();
   late final _conversationTypingNoticePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -13906,6 +14009,16 @@ class Api {
       int Function(
     int,
   )>();
+  late final _spaceGetRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceGetRoomIdStrReturn Function(
+    ffi.Int64,
+  )>>("__Space_get_room_id_str");
+
+  late final _spaceGetRoomIdStr = _spaceGetRoomIdStrPtr.asFunction<
+      _SpaceGetRoomIdStrReturn Function(
+    int,
+  )>();
   late final _spaceGetMemberPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -14763,6 +14876,54 @@ class Api {
 
   late final _clientSpaces = _clientSpacesPtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _clientJoinSpacePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_join_space");
+
+  late final _clientJoinSpace = _clientJoinSpacePtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientJoinConversationPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_join_conversation");
+
+  late final _clientJoinConversation = _clientJoinConversationPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
     int,
   )>();
   late final _clientPublicSpacesPtr = _lookup<
@@ -17339,6 +17500,36 @@ class Api {
 
   late final _clientSpacesFuturePoll = _clientSpacesFuturePollPtr.asFunction<
       _ClientSpacesFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientJoinSpaceFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientJoinSpaceFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_join_space_future_poll");
+
+  late final _clientJoinSpaceFuturePoll =
+      _clientJoinSpaceFuturePollPtr.asFunction<
+          _ClientJoinSpaceFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientJoinConversationFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientJoinConversationFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_join_conversation_future_poll");
+
+  late final _clientJoinConversationFuturePoll =
+      _clientJoinConversationFuturePollPtr.asFunction<
+          _ClientJoinConversationFuturePollReturn Function(
     int,
     int,
     int,
@@ -23952,6 +24143,38 @@ class Conversation {
     return tmp2;
   }
 
+  /// the room id as str
+  String getRoomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._conversationGetRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// Activate typing notice for this room
   /// The typing notice remains active for 4s. It can be deactivate at any
   /// point by setting typing to false. If this method is called while the
@@ -29693,6 +29916,38 @@ class Space {
     return tmp2;
   }
 
+  /// the room id as str
+  String getRoomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceGetRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   Future<Member> getMember(
     String userId,
   ) {
@@ -31606,6 +31861,124 @@ class Client {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__clientSpacesFuturePoll);
     return tmp2;
+  }
+
+  /// attempt to join a space
+  Future<Space> joinSpace(
+    String roomIdOrAlias,
+    String? serverName,
+  ) {
+    final tmp1 = roomIdOrAlias;
+    final tmp5 = serverName;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      final tmp7_0 = utf8.encode(tmp7);
+      tmp9 = tmp7_0.length;
+      debugAllocation("lower string", tmp8, tmp9);
+
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
+      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
+      tmp8_1.setAll(0, tmp7_0);
+      tmp8 = tmp8_0.address;
+      tmp10 = tmp9;
+    }
+    final tmp11 = _api._clientJoinSpace(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+      tmp9,
+      tmp10,
+    );
+    final tmp13 = tmp11;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(_api, tmp13_0, "__Client_join_space_future_drop");
+    tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
+    final tmp12 = _nativeFuture(tmp13_1, _api.__clientJoinSpaceFuturePoll);
+    return tmp12;
+  }
+
+  /// attempt to join a room
+  Future<Conversation> joinConversation(
+    String roomIdOrAlias,
+    String? serverName,
+  ) {
+    final tmp1 = roomIdOrAlias;
+    final tmp5 = serverName;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    debugAllocation("lower string", tmp2, tmp3);
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      final tmp7_0 = utf8.encode(tmp7);
+      tmp9 = tmp7_0.length;
+      debugAllocation("lower string", tmp8, tmp9);
+
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
+      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
+      tmp8_1.setAll(0, tmp7_0);
+      tmp8 = tmp8_0.address;
+      tmp10 = tmp9;
+    }
+    final tmp11 = _api._clientJoinConversation(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+      tmp9,
+      tmp10,
+    );
+    final tmp13 = tmp11;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 =
+        _Box(_api, tmp13_0, "__Client_join_conversation_future_drop");
+    tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
+    final tmp12 =
+        _nativeFuture(tmp13_1, _api.__clientJoinConversationFuturePoll);
+    return tmp12;
   }
 
   /// search the public directory for spaces
@@ -34815,6 +35188,15 @@ class _ConversationLatestMessageReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _ConversationGetRoomIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _ConversationRoomTypeReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -35172,6 +35554,15 @@ class _SpaceTopicReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
+}
+
+class _SpaceGetRoomIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _SpaceTaskListDraftReturn extends ffi.Struct {
@@ -37148,6 +37539,36 @@ class _ClientConversationsFuturePollReturn extends ffi.Struct {
 }
 
 class _ClientSpacesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientJoinSpaceFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientJoinConversationFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
