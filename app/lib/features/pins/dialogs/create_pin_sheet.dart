@@ -7,7 +7,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/features/space/dialogs/space_selector_sheet.dart';
+import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 
 final selectedSpaceIdProvider = StateProvider<String?>((ref) => null);
 final selectedSpaceDetailsProvider =

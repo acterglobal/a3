@@ -12,7 +12,7 @@ import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/pins/dialogs/create_pin_sheet.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
-import 'package:acter/features/space/dialogs/create_space_sheet.dart';
+import 'package:acter/features/spaces/dialogs/create_space_sheet.dart';
 import 'package:acter/features/news/pages/news_builder_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/news/pages/post_page.dart';
