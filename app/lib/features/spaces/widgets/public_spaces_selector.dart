@@ -388,7 +388,8 @@ class PublicSpaceSelector extends ConsumerWidget {
                         title: Text(alias),
                         subtitle: Text('on $server'),
                         trailing: OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () =>
+                              onSelectedMatch!(alias: alias, servers: [server]),
                           icon: const Icon(Atlas.entrance_thin),
                           label: const Text('Try to join'),
                         ),
@@ -417,7 +418,10 @@ class PublicSpaceSelector extends ConsumerWidget {
                             ? Text('via ${servers.join(', ')}')
                             : null,
                         trailing: OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () => onSelectedMatch!(
+                            roomId: targetId,
+                            servers: servers,
+                          ),
                           icon: const Icon(Atlas.entrance_thin),
                           label: const Text('Try to join'),
                         ),
