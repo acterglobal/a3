@@ -1,69 +1,87 @@
 import 'dart:typed_data';
 
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NewsItem extends StatefulWidget {
+class NewsItem extends ConsumerWidget {
   final Client client;
   final NewsEntry news;
   final int index;
 
   const NewsItem({
-    Key? key,
+    super.key,
     required this.client,
     required this.news,
     required this.index,
-  }) : super(key: key);
+  });
 
   @override
-  State<NewsItem> createState() => _NewsItemState();
-}
-
-class _NewsItemState extends State<NewsItem> {
-  @override
-  Widget build(BuildContext context) {
-    var slide = widget.news.getSlide(0)!;
+  Widget build(BuildContext context, WidgetRef ref) {
+    var slide = news.getSlide(0)!;
     var slideType = slide.typeStr();
+    final roomId = news.roomId().toString();
+    final space = ref.watch(briefSpaceItemProvider(roomId));
 
     // else
     var bgColor = convertColor(
-      widget.news.colors()?.background(),
+      news.colors()?.background(),
       Theme.of(context).colorScheme.secondary,
     );
     var fgColor = convertColor(
-      widget.news.colors()?.color(),
+      news.colors()?.color(),
       Theme.of(context).colorScheme.primary,
     );
     return Stack(
       children: [
         slideWidget(slideType, slide),
-        Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          padding: const EdgeInsets.all(8),
-          alignment: const Alignment(-0.95, 0.5),
-          child: Text(
-            slide.text(),
-            softWrap: true,
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              color: fgColor,
-              shadows: [
-                Shadow(
-                  color: bgColor,
-                  offset: const Offset(1, 1),
-                  blurRadius: 1,
+        Padding(
+          padding: const EdgeInsets.only(left: 8, right: 80, bottom: 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              InkWell(
+                onTap: () {
+                  context.goNamed(
+                    Routes.space.name,
+                    pathParameters: {'spaceId': roomId},
+                  );
+                },
+                child: space.when(
+                  data: (space) =>
+                      Text(space!.spaceProfileData.displayName ?? roomId),
+                  error: (e, st) => Text('Error loading space: $e'),
+                  loading: () => Text(roomId),
                 ),
-              ],
-            ),
+              ),
+              Text(
+                slide.text(),
+                softWrap: true,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: fgColor,
+                  shadows: [
+                    Shadow(
+                      color: bgColor,
+                      offset: const Offset(1, 1),
+                      blurRadius: 0,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
         Align(
           alignment: Alignment.bottomRight,
           child: NewsSideBar(
-            client: widget.client,
-            news: widget.news,
-            index: widget.index,
+            news: news,
+            index: index,
           ),
         ),
       ],

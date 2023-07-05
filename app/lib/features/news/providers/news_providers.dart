@@ -6,8 +6,8 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final newsListProvider =
-    StateNotifierProvider<NewsListStateNotifier, AsyncValue<List<NewsEntry>>>(
-  (ref) => NewsListStateNotifier(ref),
+    AsyncNotifierProvider.autoDispose<AsyncNewsListNotifier, List<NewsEntry>>(
+  () => AsyncNewsListNotifier(),
 );
 
 final postUpdateProvider =
