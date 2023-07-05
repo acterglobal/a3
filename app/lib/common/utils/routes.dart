@@ -37,6 +37,7 @@ enum Routes {
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
   spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
+  spaceEvents('/:spaceId([!#][^/]+)/events'),
 
   // -- pins
 

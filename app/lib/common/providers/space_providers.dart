@@ -119,11 +119,11 @@ final spaceRelationsProvider = FutureProvider.autoDispose
   return await space.spaceRelations();
 });
 
-final spaceEventsProvider = FutureProvider.autoDispose
-    .family<List<CalendarEvent>, String>((ref, spaceId) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
-  return (await space.calendarEvents()).toList();
-});
+// final spaceEventsProvider = FutureProvider.autoDispose
+//     .family<List<CalendarEvent>, String>((ref, spaceId) async {
+//   final space = await ref.watch(spaceProvider(spaceId).future);
+//   return (await space.calendarEvents()).toList();
+// });
 
 final canonicalParentProvider = FutureProvider.autoDispose
     .family<SpaceWithProfileData?, String>((ref, spaceId) async {

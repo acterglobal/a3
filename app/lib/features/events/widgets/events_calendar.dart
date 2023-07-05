@@ -52,13 +52,11 @@ class EventsCalendar extends ConsumerWidget {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
   final AsyncValue<List<CalendarEvent>> events;
-
   EventsCalendar({super.key, required this.events});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Wrap(
       children: [
         Text(
           'Events',

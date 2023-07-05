@@ -24,6 +24,7 @@ import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/space/dialogs/edit_space_sheet.dart';
+import 'package:acter/features/space/pages/events_page.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/related_spaces_page.dart';
 import 'package:acter/features/space/pages/spaces_page.dart';
@@ -499,6 +500,22 @@ List<RouteBase> makeRoutes(Ref ref) => [
                   return NoTransitionPage(
                     key: state.pageKey,
                     child: SpacePinsPage(
+                      spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
+                name: Routes.spaceEvents.name,
+                path: Routes.spaceEvents.route,
+                redirect: authGuardRedirect,
+                pageBuilder: (context, state) {
+                  ref
+                      .read(selectedTabKeyProvider.notifier)
+                      .switchTo(const Key('events'));
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: SpaceEventsPage(
                       spaceIdOrAlias: state.pathParameters['spaceId']!,
                     ),
                   );
