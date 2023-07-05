@@ -10,6 +10,6 @@ final clientProvider = StateNotifierProvider<ClientNotifier, Client?>((ref) {
 
 final syncStateProvider = StateNotifierProvider<SyncNotifier, bool>((ref) {
   final client = ref.watch(clientProvider);
-  final crossSigning = CrossSigning(client: client!);
+  final _ = CrossSigning(client: client!);
   return SyncNotifier(client);
 });
