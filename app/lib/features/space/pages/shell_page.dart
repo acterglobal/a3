@@ -113,7 +113,7 @@ class _ShellToolbar extends ConsumerWidget {
                 onTap: () => context.pushNamed(
                   Routes.editSpace.name,
                   pathParameters: {'spaceId': spaceId},
-                  extra: space,
+                  queryParameters: {'spaceId': spaceId},
                 ),
                 child: const Text('Edit Space'),
               ),

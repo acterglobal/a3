@@ -1,13 +1,12 @@
 import 'dart:io';
 
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/features/home/providers/navigation.dart' as nav;
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -16,14 +15,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 final editTitleProvider = StateProvider.autoDispose<String>((ref) => '');
-final editDescriptionProvider = StateProvider.autoDispose<String>((ref) => '');
-
+final editTopicProvider = StateProvider.autoDispose<String>((ref) => '');
 // upload avatar path
 final editAvatarProvider = StateProvider.autoDispose<String>((ref) => '');
 
 class EditSpacePage extends ConsumerStatefulWidget {
-  final Space space;
-  const EditSpacePage({super.key, required this.space});
+  final String? spaceId;
+  const EditSpacePage({super.key, required this.spaceId});
 
   @override
   ConsumerState<EditSpacePage> createState() => _EditSpacePageConsumerState();
@@ -31,7 +29,7 @@ class EditSpacePage extends ConsumerStatefulWidget {
 
 class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _topicController = TextEditingController();
 
   @override
   void initState() {
@@ -41,24 +39,22 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // apply existing data to fields
   void editSpaceData() async {
-    final profileData =
-        await ref.read(spaceProfileDataProvider(widget.space).future);
+    final space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
+    final profileData = await ref.read(spaceProfileDataProvider(space).future);
 
     ref
         .read(editTitleProvider.notifier)
         .update((state) => profileData.displayName ?? '');
-    ref
-        .read(editDescriptionProvider.notifier)
-        .update((state) => widget.space.topic() ?? '');
+    ref.read(editTopicProvider.notifier).update((state) => space.topic() ?? '');
+
     if (profileData.hasAvatar()) {
-      final spaceId = widget.space.getRoomId().toString();
-      File imageFile = await File('$spaceId.jpg')
+      File imageFile = await File('${widget.spaceId}.jpg')
           .writeAsBytes(profileData.avatar!.asTypedList());
       ref.read(editAvatarProvider.notifier).update((state) => imageFile.path);
     }
 
     _titleController.text = ref.read(editTitleProvider);
-    _descriptionController.text = ref.read(editDescriptionProvider);
+    _topicController.text = ref.read(editTopicProvider);
   }
 
   @override
@@ -202,11 +198,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                 const Text('About'),
                 const SizedBox(height: 15),
                 InputTextField(
-                  controller: _descriptionController,
+                  controller: _topicController,
                   hintText: 'Description',
                   textInputType: TextInputType.multiline,
                   maxLines: 10,
-                  onInputChanged: _handleDescriptionChange,
+                  onInputChanged: _handleTopicChange,
                 ),
               ],
             ),
@@ -241,11 +237,28 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
               );
               return;
             }
+            // check permissions before updating space
+            bool havePermission = await permissionCheck();
+            if (!havePermission) {
+              popUpDialog(
+                context: context,
+                title: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    Atlas.block_prohibited,
+                    size: 28,
+                    color: Theme.of(context).colorScheme.onError,
+                  ),
+                ),
+                subtitle: const Text('Cannot edit space with no permissions'),
+                btn2Text: 'Okay',
+                onPressedBtn2: () => context.pop(),
+                btn2Color: Theme.of(context).colorScheme.success,
+              );
+              return;
+            }
             final roomId = await _handleUpdateSpace(context);
             debugPrint('Space Updated: $roomId');
-            // refresh spaces and side bar
-            ref.invalidate(spacesProvider);
-            ref.invalidate(nav.spaceItemsProvider);
             context.goNamed(
               Routes.space.name,
               pathParameters: {
@@ -273,8 +286,8 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     ref.read(editTitleProvider.notifier).update((state) => value!);
   }
 
-  void _handleDescriptionChange(String? value) {
-    ref.read(editDescriptionProvider.notifier).update((state) => value!);
+  void _handleTopicChange(String? value) {
+    ref.read(editTopicProvider.notifier).update((state) => value!);
   }
 
   void _handleAvatarUpload() async {
@@ -291,6 +304,14 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     }
   }
 
+  // permission check
+  Future<bool> permissionCheck() async {
+    var space = await ref.watch(spaceProvider(widget.spaceId!).future);
+    var membership = await space.getMyMembership();
+    return membership.canString('CanSetTopic');
+  }
+
+  // update space handler
   Future<RoomId> _handleUpdateSpace(BuildContext context) async {
     popUpDialog(
       context: context,
@@ -300,16 +321,33 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       ),
       isLoader: true,
     );
-    var avatarUri = ref.read(editAvatarProvider);
-    var description = ref.read(editDescriptionProvider);
+
+    var space = await ref.watch(spaceProvider(widget.spaceId!).future);
+    // update space name
+    String title = ref.read(editTitleProvider);
+    try {
+      var eventId = await space.setName(title);
+      debugPrint('Space update event: $eventId');
+    } catch (e) {
+      debugPrint('$e');
+      rethrow;
+    }
+
+    // update space avatar
+    String avatarUri = ref.read(editAvatarProvider);
     if (avatarUri.isNotEmpty) {
-      var eventId = await widget.space.uploadAvatar(avatarUri);
-      debugPrint('Avatar Updated: ${eventId.toString()}');
+      var eventId = await space.uploadAvatar(avatarUri);
+      debugPrint('Avatar update event: ${eventId.toString()}');
     } else {
-      var eventId = await widget.space.removeAvatar();
+      var eventId = await space.removeAvatar();
       debugPrint('Avatar removed event: ${eventId.toString()}');
     }
-    widget.space.setTopic(description);
-    return widget.space.getRoomId();
+
+    //update space topic
+    String topic = ref.read(editTopicProvider);
+    var eventId = await space.setTopic(topic);
+    debugPrint('topic update event: $eventId');
+
+    return space.getRoomId();
   }
 }

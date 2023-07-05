@@ -1218,6 +1218,7 @@ enum MemberPermission {
     CanKick,
     CanRedact,
     CanTriggerRoomNotification,
+    CanSetName,
     CanUpdateAvatar,
     CanSetTopic,
     CanLinkSpaces,
