@@ -558,6 +558,9 @@ object Conversation {
     /// the room id
     fn get_room_id() -> RoomId;
 
+    /// the room id as str
+    fn get_room_id_str() -> string;
+
     /// Activate typing notice for this room
     /// The typing notice remains active for 4s. It can be deactivate at any
     /// point by setting typing to false. If this method is called while the
@@ -1135,6 +1138,9 @@ object Space {
     /// the room id
     fn get_room_id() -> RoomId;
 
+    /// the room id as str
+    fn get_room_id_str() -> string;
+
     // the members currently in the room
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
@@ -1274,6 +1280,36 @@ object CreateSpaceSettings {
     fn add_invitee(value: string);
 }
 
+object PublicSearchResultItem {
+    fn name() -> Option<string>;
+    fn topic() -> Option<string>;
+    fn world_readable() -> bool;
+    fn guest_can_join() -> bool;
+    // fn canonical_alias() -> Option<OwnedRoomAliasId>;
+    fn canonical_alias_str() -> Option<string>;
+    fn num_joined_members() -> u64;
+    // fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
+    // fn avatar_url() -> Option<OwnedMxcUri>;
+    fn avatar_url_str() -> Option<string>;
+    // fn join_rule() -> PublicRoomJoinRule;
+    fn join_rule_str() -> string;
+    // fn room_type() -> Option<RoomType>;
+    fn room_type_str() -> string;
+
+}
+
+object PublicSearchResult {
+    /// to be used for the next `since`
+    fn next_batch() -> Option<string>;
+    /// to get the previous page
+    fn prev_batch() -> Option<string>;
+    /// an estimated total of matches
+    fn total_room_count_estimate() -> Option<u64>;
+    /// get the chunk of items in this response
+    fn chunks() -> Vec<PublicSearchResultItem>;
+}
+
 fn new_space_settings(name: string, topic: Option<string>, avatar_uri: Option<string>, parent: Option<string>) -> Result<CreateSpaceSettings>;
 
 /// Main entry point for `acter`.
@@ -1322,6 +1358,15 @@ object Client {
 
     /// The spaces the user is part of
     fn spaces() -> Future<Result<Vec<Space>>>;
+
+    /// attempt to join a space
+    fn join_space(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Space>>;
+
+    /// attempt to join a room
+    fn join_conversation(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Conversation>>;
+
+    /// search the public directory for spaces
+    fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
 
     /// Get the following space the user is part of by
     /// roomId or room alias;

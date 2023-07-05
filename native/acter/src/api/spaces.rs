@@ -35,14 +35,17 @@ use matrix_sdk::{
     },
     Client as SdkClient,
 };
-use ruma::OwnedRoomOrAliasId;
+use ruma::assign;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use tracing::{error, trace};
 
+use crate::Conversation;
+
 use super::{
     client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
     room::{Member, Room},
+    search::PublicSearchResult,
     RUNTIME,
 };
 
@@ -421,6 +424,10 @@ impl Space {
         self.room_id().to_owned()
     }
 
+    pub fn get_room_id_str(&self) -> String {
+        self.room_id().to_string()
+    }
+
     pub async fn set_acter_space_states(&self) -> Result<()> {
         let SdkRoom::Joined(ref joined) = self.inner.room else {
             bail!("You can't convert a space you didn't join");
@@ -543,6 +550,7 @@ pub fn new_space_settings(
     Ok(builder.build()?)
 }
 
+// External API
 impl Client {
     pub async fn create_acter_space(
         &self,
@@ -555,6 +563,38 @@ impl Client {
                 Ok(room_id)
             })
             .await?
+    }
+
+    pub async fn join_space(
+        &self,
+        room_id_or_alias: String,
+        server_name: Option<String>,
+    ) -> Result<Space> {
+        let room = self
+            .join_room(
+                room_id_or_alias,
+                server_name.map(|s| vec![s]).unwrap_or_default(),
+            )
+            .await?;
+        Ok(Space {
+            client: self.clone(),
+            inner: room,
+            handles: Default::default(),
+        })
+    }
+    pub async fn public_spaces(
+        &self,
+        search_term: Option<String>,
+        server: Option<String>,
+        since: Option<String>,
+    ) -> Result<PublicSearchResult> {
+        self.search_public(
+            search_term,
+            server,
+            since,
+            Some(ruma::directory::RoomTypeFilter::Space),
+        )
+        .await
     }
 
     pub async fn spaces(&self) -> Result<Vec<Space>> {

@@ -113,6 +113,8 @@ dependencies:
   mockito: ^5.0.0
   image_picker_for_web: ^2.1.11
   flutter_onboarding_slider: ^1.0.9
+  riverpod_infinite_scroll: ^1.0.9
+  infinite_scroll_pagination: ^3.2.0
 
 dev_dependencies:
   flutter_test:

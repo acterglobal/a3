@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -57,10 +56,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                       ),
                     ),
                     PopupMenuItem(
-                      onTap: () => customMsgSnackbar(
-                        context,
-                        'Join space feature isn\'t implemented yet',
-                      ),
+                      onTap: () => context.pushNamed(Routes.joinSpace.name),
                       child: Row(
                         children: const <Widget>[
                           Text('Join Space'),
