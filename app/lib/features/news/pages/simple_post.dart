@@ -31,8 +31,7 @@ final selectedSpaceDetailsProvider =
 
 // upload avatar path
 final selectedImageProvider = StateProvider<XFile?>((ref) => null);
-final textProvider = StateProvider.autoDispose<String>((ref) => '');
-final linkProvider = StateProvider.autoDispose<String>((ref) => '');
+final textProvider = StateProvider<String>((ref) => '');
 
 class SimpleNewsPost extends ConsumerStatefulWidget {
   const SimpleNewsPost({super.key});
@@ -250,6 +249,9 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
 
               try {
                 await draft.send();
+                // reset fields
+                ref.read(textProvider.notifier).state = '';
+                ref.read(selectedImageProvider.notifier).state = null;
                 // close both
                 Navigator.of(context, rootNavigator: true).pop();
                 Navigator.of(context, rootNavigator: true).pop();

@@ -31,7 +31,7 @@ class NewsItem extends ConsumerWidget {
     // else
     var bgColor = convertColor(
       news.colors()?.background(),
-      Theme.of(context).colorScheme.secondary,
+      Theme.of(context).colorScheme.background,
     );
     var fgColor = convertColor(
       news.colors()?.color(),
@@ -108,12 +108,16 @@ class NewsItem extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.only(left: 8, right: 80, bottom: 8),
                 child: Card(
-                  child: Text(
-                    slide.text(),
-                    softWrap: true,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: fgColor,
-                        ),
+                  color: bgColor,
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      slide.text(),
+                      softWrap: true,
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: fgColor,
+                          ),
+                    ),
                   ),
                 ),
               ),
