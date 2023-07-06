@@ -98,7 +98,7 @@ pub struct NewsSlide {
 impl NewsSlide {
     pub fn new_text(body: String) -> Self {
         NewsSlide {
-            content: NewsContent::Text(TextMessageEventContent::plain(body)),
+            content: NewsContent::Text(TextMessageEventContent::markdown(body)),
             references: vec![],
         }
     }
