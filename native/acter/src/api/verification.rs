@@ -667,6 +667,7 @@ async fn request_verification_handler(
             }
             VerificationRequestState::Transitioned { verification } => match verification {
                 Verification::SasV1(s) => {
+                    // from then on, accept_sas_verification takes over
                     break;
                 }
             },
@@ -954,6 +955,7 @@ impl VerificationController {
                     if let Err(e) = me.event_tx.try_send(msg) {
                         error!("Dropping event for {}: {}", ev.event_id.clone(), e);
                     }
+                    // from then on, accept_verification_request takes over
                 }
             },
         );
