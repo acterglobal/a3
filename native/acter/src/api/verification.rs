@@ -404,7 +404,6 @@ impl VerificationEvent {
                         .await
                     {
                         if let Some(items) = sas.emoji() {
-                            info!("got valid emoji by event id");
                             let sequence = items
                                 .iter()
                                 .map(|e| VerificationEmoji {
@@ -414,7 +413,6 @@ impl VerificationEvent {
                                 .collect::<Vec<VerificationEmoji>>();
                             return Ok(sequence);
                         } else {
-                            info!("got empty emoji by event id");
                             return Ok(vec![]);
                         }
                     }
@@ -425,7 +423,6 @@ impl VerificationEvent {
                         .await
                     {
                         if let Some(items) = sas.emoji() {
-                            info!("got valid emoji by transaction id");
                             let sequence = items
                                 .iter()
                                 .map(|e| VerificationEmoji {
@@ -435,7 +432,6 @@ impl VerificationEvent {
                                 .collect::<Vec<VerificationEmoji>>();
                             return Ok(sequence);
                         } else {
-                            info!("got empty emoji by transaction id");
                             return Ok(vec![]);
                         }
                     }
@@ -589,7 +585,6 @@ async fn request_verification_handler(
     let mut stream = request.changes();
 
     while let Some(state) = stream.next().await {
-        info!("{:?}", state);
         match state {
             VerificationRequestState::Created { our_methods } => {
                 let device_id = client.device_id().expect("Device not found");
