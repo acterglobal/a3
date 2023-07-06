@@ -673,9 +673,6 @@ async fn request_verification_handler(
             }
             VerificationRequestState::Transitioned { verification } => match verification {
                 Verification::SasV1(s) => {
-                    tokio::spawn(sas_verification_handler(
-                        client, controller, s, event_id, txn_id, sender,
-                    ));
                     break;
                 }
             },
