@@ -16,7 +16,7 @@ class AsyncSpaceEventsNotifier
   Future<List<CalendarEvent>> build(Space arg) async {
     final client = ref.watch(clientProvider)!;
     final spaceId = arg.getRoomId();
-    _listener = client.subscribe('$spaceId::EVENTS'); // stay up to date
+    _listener = client.subscribe('$spaceId::CALENDAR'); // stay up to date
     _listener.forEach((_e) async {
       state = await AsyncValue.guard(() => _getEvents());
     });

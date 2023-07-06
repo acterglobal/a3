@@ -1,4 +1,4 @@
-import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
@@ -9,9 +9,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
+import 'package:intl/intl.dart';
 
 // interface data providers
-final titleProvider = StateProvider<String>((ref) => '');
+final _titleProvider = StateProvider<String>((ref) => '');
+final _dateProvider = StateProvider<DateTime>((ref) => DateTime.now());
+final _startTimeProvider = StateProvider<TimeOfDay>((ref) => TimeOfDay.now());
+final _endTimeProvider = StateProvider(
+  (ref) => TimeOfDay(
+    hour: TimeOfDay.now().hour + 1,
+    minute: TimeOfDay.now().minute,
+  ),
+);
 
 class CreateEventSheet extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
@@ -25,6 +34,9 @@ class CreateEventSheet extends ConsumerStatefulWidget {
 class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _startTimeController = TextEditingController();
+  final TextEditingController _endTimeController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
 
   @override
@@ -38,7 +50,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final _titleInput = ref.watch(titleProvider);
+    final _titleInput = ref.watch(_titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
     final _selectParentSpace = currentParentSpace != null;
     return SideSheet(
@@ -79,10 +91,29 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                         padding: EdgeInsets.only(bottom: 5),
                         child: Text('Date'),
                       ),
-                      InputTextField(
-                        hintText: 'Select Date',
-                        textInputType: TextInputType.multiline,
-                        onInputChanged: _handleTitleChange,
+                      InkWell(
+                        focusColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        onTap: () => _selectDate(context),
+                        child: TextFormField(
+                          enabled: false,
+                          controller: _dateController,
+                          keyboardType: TextInputType.datetime,
+                          style: Theme.of(context).textTheme.labelLarge,
+                          decoration: InputDecoration(
+                            fillColor:
+                                Theme.of(context).colorScheme.primaryContainer,
+                            filled: true,
+                            hintText: 'Select Date',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -94,12 +125,67 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                     children: <Widget>[
                       const Padding(
                         padding: EdgeInsets.only(bottom: 5),
-                        child: Text('Time'),
+                        child: Text('Start Time'),
                       ),
-                      InputTextField(
-                        hintText: 'Select Time',
-                        textInputType: TextInputType.multiline,
-                        onInputChanged: _handleTitleChange,
+                      InkWell(
+                        focusColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        onTap: () => _selectStartTime(context),
+                        child: TextFormField(
+                          enabled: false,
+                          controller: _startTimeController,
+                          keyboardType: TextInputType.datetime,
+                          style: Theme.of(context).textTheme.labelLarge,
+                          decoration: InputDecoration(
+                            fillColor:
+                                Theme.of(context).colorScheme.primaryContainer,
+                            filled: true,
+                            hintText: 'Select Time',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 5),
+                        child: Text('End Time'),
+                      ),
+                      InkWell(
+                        focusColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        onTap: () => _selectEndTime(context),
+                        child: TextFormField(
+                          enabled: false,
+                          controller: _endTimeController,
+                          keyboardType: TextInputType.datetime,
+                          style: Theme.of(context).textTheme.labelLarge,
+                          decoration: InputDecoration(
+                            fillColor:
+                                Theme.of(context).colorScheme.primaryContainer,
+                            filled: true,
+                            hintText: 'Select Time',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -122,9 +208,9 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                 const Text('Link'),
                 const SizedBox(height: 15),
                 InputTextField(
-                  controller: _descriptionController,
-                  hintText: 'Insert a link',
-                  textInputType: TextInputType.multiline,
+                  controller: _linkController,
+                  hintText: 'https://',
+                  textInputType: TextInputType.url,
                   maxLines: 1,
                 ),
                 const SizedBox(height: 15),
@@ -183,13 +269,9 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
         ElevatedButton(
           onPressed: () async {
             if (_titleInput.isEmpty) {
-              customMsgSnackbar(
-                context,
-                'Please enter event name',
-              );
               return;
             }
-            return;
+            _handleCreateEvent(context);
           },
           child: const Text('Create Event'),
           style: ElevatedButton.styleFrom(
@@ -208,6 +290,80 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   }
 
   void _handleTitleChange(String? value) {
-    ref.read(titleProvider.notifier).update((state) => value!);
+    ref.read(_titleProvider.notifier).update((state) => value!);
+  }
+
+  void _handleCreateEvent(BuildContext context) async {
+    popUpDialog(
+      context: context,
+      title: const Text('Creating Event'),
+      isLoader: true,
+    );
+    // pre fill values if user doesn't set date time.
+    if (_dateController.text.isEmpty) {
+      _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
+    }
+    if (_startTimeController.text.isEmpty) {
+      var _hour = ref.read(_startTimeProvider).hour.toString();
+      var _minute = ref.read(_startTimeProvider).minute.toString();
+      var _time = _hour + ' : ' + _minute;
+      _startTimeController.text = _time;
+    }
+    if (_endTimeController.text.isEmpty) {
+      var _hour = ref.read(_startTimeProvider).hour.toString();
+      var _minute = ref.read(_startTimeProvider).minute.toString();
+      var _time = _hour + ' : ' + _minute;
+      _endTimeController.text = _time;
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: ref.read(_dateProvider),
+      initialDatePickerMode: DatePickerMode.day,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      ref.read(_dateProvider.notifier).update((state) => picked);
+      _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
+    }
+  }
+
+  Future<void> _selectStartTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: ref.read(_startTimeProvider),
+    );
+    if (picked != null) {
+      ref.read(_startTimeProvider.notifier).update((state) => picked);
+
+      var _hour = ref.read(_startTimeProvider).hour.toString();
+      var _minute = ref.read(_startTimeProvider).minute.toString();
+      var _time = _hour + ' : ' + _minute;
+      _startTimeController.text = _time;
+      // _timeController.text = formatDate(
+      //     DateTime(2019, 08, 1, ref.read(_timeProvider).hour, ref.read(_timeProvider).minute),
+      //     [hh, ':', nn, " ", am]).toString();
+    }
+  }
+
+  Future<void> _selectEndTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: ref.read(_endTimeProvider),
+    );
+    if (picked != null) {
+      ref.read(_endTimeProvider.notifier).update((state) => picked);
+
+      var _hour = ref.read(_startTimeProvider).hour.toString();
+      var _minute = ref.read(_startTimeProvider).minute.toString();
+      var _time = _hour + ' : ' + _minute;
+      _endTimeController.text = _time;
+      // _timeController.text = formatDate(
+      //     DateTime(2019, 08, 1, ref.read(_timeProvider).hour, ref.read(_timeProvider).minute),
+      //     [hh, ':', nn, " ", am]).toString();
+    }
   }
 }
