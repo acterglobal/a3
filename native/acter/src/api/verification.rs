@@ -408,7 +408,7 @@ impl VerificationEvent {
                             let sequence = items
                                 .iter()
                                 .map(|e| VerificationEmoji {
-                                    symbol: e.symbol.chars().next().unwrap() as u32,
+                                    symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
                                     description: e.description.to_string(),
                                 })
                                 .collect::<Vec<VerificationEmoji>>();
@@ -429,7 +429,7 @@ impl VerificationEvent {
                             let sequence = items
                                 .iter()
                                 .map(|e| VerificationEmoji {
-                                    symbol: e.symbol.chars().next().unwrap() as u32,
+                                    symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
                                     description: e.description.to_string(),
                                 })
                                 .collect::<Vec<VerificationEmoji>>();
