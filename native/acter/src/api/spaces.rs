@@ -37,7 +37,7 @@ use matrix_sdk::{
 };
 use ruma::assign;
 use serde::{Deserialize, Serialize};
-use std::ops::Deref;
+use std::{ops::Deref, thread::JoinHandle};
 use tracing::{error, trace};
 
 use crate::Conversation;
@@ -53,7 +53,6 @@ use super::{
 pub struct Space {
     pub client: Client,
     pub(crate) inner: Room,
-    handles: Vec<EventHandlerHandle>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -64,233 +63,234 @@ struct HistoryState {
 
 // internal API
 impl Space {
-    pub(crate) async fn add_handlers(&mut self) {
+    pub(crate) async fn setup_handles(&self) -> Vec<EventHandlerHandle> {
         self.room
             .client()
             .add_event_handler_context(self.client.executor().clone());
-        trace!(room_id=?self.room.room_id(), "adding handlers");
+        trace!(room_id=?self.room.room_id(), "adding handles");
         // FIXME: combine into one handler
-
         // Tasks
-        self.handles.push(
+        vec![
             self.room.add_event_handler(
                 |ev: SyncTaskListEvent,
-                 room: SdkRoom,
-                 c: SdkClient,
-                 Ctx(executor): Ctx<Executor>| async move {
+                    room: SdkRoom,
+                    c: SdkClient,
+                    Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        executor.handle(AnyActerModel::TaskList(t.into())).await;
+                        if let Err(error) = executor.handle(AnyActerModel::TaskList(t.into())).await {
+                            error!(?error, "execution failed");
+                        }
                     }
                 },
             ),
-        );
+            self.room.add_event_handler(
+                |ev: SyncTaskListUpdateEvent,
+                room: SdkRoom,
+                c: SdkClient,
+                Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor
+                            .handle(AnyActerModel::TaskListUpdate(t.into()))
+                            .await {
+                                error!(?error, "execution failed");
 
-        self.handles.push(self.room.add_event_handler(
-            |ev: SyncTaskListUpdateEvent,
-             room: SdkRoom,
-             c: SdkClient,
-             Ctx(executor): Ctx<Executor>| async move {
-                let room_id = room.room_id().to_owned();
-                // FIXME: handle redactions
-                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                    executor
-                        .handle(AnyActerModel::TaskListUpdate(t.into()))
-                        .await;
-                }
-            },
-        ));
-
-        self.handles.push( self.room.add_event_handler(
-            |ev: SyncTaskEvent,
-             room: SdkRoom,
-             c: SdkClient,
-             Ctx(executor): Ctx<Executor>| async move {
-                let room_id = room.room_id().to_owned();
-                // FIXME: handle redactions
-                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                    executor.handle(AnyActerModel::Task(t.into())).await;
-                }
-            },
-        )
-    );
-
-        self.handles.push(
+                            }
+                    }
+                },
+            ),
+            self.room.add_event_handler(
+                |ev: SyncTaskEvent,
+                room: SdkRoom,
+                c: SdkClient,
+                Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor.handle(AnyActerModel::Task(t.into())).await {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
             self.room.add_event_handler(
                 |ev: SyncTaskUpdateEvent,
-                 room: SdkRoom,
-                 c: SdkClient,
-                 Ctx(executor): Ctx<Executor>| async move {
+                    room: SdkRoom,
+                    c: SdkClient,
+                    Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        executor.handle(AnyActerModel::TaskUpdate(t.into())).await;
+                        if let Err(error) = executor.handle(AnyActerModel::TaskUpdate(t.into())).await {
+                            error!(?error, "execution failed");
+                        }
                     }
                 },
             ),
-        );
-
-        // Comments
-        self.handles.push(
+            // Comments
             self.room.add_event_handler(
                 |ev: SyncCommentEvent,
-                 room: SdkRoom,
-                 c: SdkClient,
-                 Ctx(executor): Ctx<Executor>| async move {
+                    room: SdkRoom,
+                    c: SdkClient,
+                    Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        executor.handle(AnyActerModel::Comment(t.into())).await;
+                        if let Err(error) = executor.handle(AnyActerModel::Comment(t.into())).await {
+                            error!(?error, "execution failed");
+                        }
                     }
                 },
             ),
-        );
+            self.room.add_event_handler(
+                |ev: SyncCommentUpdateEvent,
+                room: SdkRoom,
+                c: SdkClient,
+                Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor
+                            .handle(AnyActerModel::CommentUpdate(t.into()))
+                            .await  {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
 
-        self.handles.push(self.room.add_event_handler(
-            |ev: SyncCommentUpdateEvent,
-             room: SdkRoom,
-             c: SdkClient,
-             Ctx(executor): Ctx<Executor>| async move {
-                let room_id = room.room_id().to_owned();
-                // FIXME: handle redactions
-                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                    executor
-                        .handle(AnyActerModel::CommentUpdate(t.into()))
-                        .await;
-                }
-            },
-        ));
-
-        // Attachments
-        self.handles.push(
+            // Attachments
             self.room.add_event_handler(
                 |ev: SyncAttachmentEvent,
-                 room: SdkRoom,
-                 c: SdkClient,
-                 Ctx(executor): Ctx<Executor>| async move {
+                    room: SdkRoom,
+                    c: SdkClient,
+                    Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        executor.handle(AnyActerModel::Attachment(t.into())).await;
+                        if let Err(error) = executor.handle(AnyActerModel::Attachment(t.into())).await {
+                            error!(?error, "execution failed");
+                        }
                     }
                 },
             ),
-        );
+            self.room.add_event_handler(
+                |ev: SyncAttachmentUpdateEvent,
+                room: SdkRoom,
+                c: SdkClient,
+                Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor
+                            .handle(AnyActerModel::AttachmentUpdate(t.into()))
+                            .await  {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
 
-        self.handles.push(self.room.add_event_handler(
-            |ev: SyncAttachmentUpdateEvent,
-             room: SdkRoom,
-             c: SdkClient,
-             Ctx(executor): Ctx<Executor>| async move {
-                let room_id = room.room_id().to_owned();
-                // FIXME: handle redactions
-                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                    executor
-                        .handle(AnyActerModel::AttachmentUpdate(t.into()))
-                        .await;
-                }
-            },
-        ));
-
-        // Pins
-        self.handles.push( self.room.add_event_handler(
-            |ev: SyncPinEvent,
-             room: SdkRoom,
-             c: SdkClient,
-             Ctx(executor): Ctx<Executor>| async move {
-                let room_id = room.room_id().to_owned();
-                // FIXME: handle redactions
-                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                    executor.handle(AnyActerModel::Pin(t.into())).await;
-                }
-            },
-        )
-    );
-
-        self.handles.push(
+            // Pin
+            self.room.add_event_handler(
+                |ev: SyncPinEvent,
+                room: SdkRoom,
+                c: SdkClient,
+                Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor.handle(AnyActerModel::Pin(t.into())).await {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
             self.room.add_event_handler(
                 |ev: SyncPinUpdateEvent,
-                 room: SdkRoom,
-                 c: SdkClient,
-                 Ctx(executor): Ctx<Executor>| async move {
+                    room: SdkRoom,
+                    c: SdkClient,
+                    Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        executor.handle(AnyActerModel::PinUpdate(t.into())).await;
+                        if let Err(error) = executor.handle(AnyActerModel::PinUpdate(t.into())).await {
+                            error!(?error, "execution failed");
+                        }
                     }
                 },
             ),
-        );
 
-        // CalendarEvents
-        self.handles.push(self.room.add_event_handler(
-            |ev: SyncCalendarEventEvent,
-             room: SdkRoom,
-             c: SdkClient,
-             Ctx(executor): Ctx<Executor>| async move {
-                let room_id = room.room_id().to_owned();
-                // FIXME: handle redactions
-                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                    executor
-                        .handle(AnyActerModel::CalendarEvent(t.into()))
-                        .await;
-                }
-            },
-        ));
+            // CalendarEvents
+            self.room.add_event_handler(
+                |ev: SyncCalendarEventEvent,
+                room: SdkRoom,
+                c: SdkClient,
+                Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor
+                            .handle(AnyActerModel::CalendarEvent(t.into()))
+                            .await  {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
+            self.room.add_event_handler(
+                |ev: SyncCalendarEventUpdateEvent,
+                room: SdkRoom,
+                c: SdkClient,
+                Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor
+                            .handle(AnyActerModel::CalendarEventUpdate(t.into()))
+                            .await  {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
 
-        self.handles.push(self.room.add_event_handler(
-            |ev: SyncCalendarEventUpdateEvent,
-             room: SdkRoom,
-             c: SdkClient,
-             Ctx(executor): Ctx<Executor>| async move {
-                let room_id = room.room_id().to_owned();
-                // FIXME: handle redactions
-                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                    executor
-                        .handle(AnyActerModel::CalendarEventUpdate(t.into()))
-                        .await;
-                }
-            },
-        ));
-
-        // NewsEntrys
-        self.handles.push(
+            // NewsEntrys
             self.room.add_event_handler(
                 |ev: SyncNewsEntryEvent,
-                 room: SdkRoom,
-                 c: SdkClient,
-                 Ctx(executor): Ctx<Executor>| async move {
+                    room: SdkRoom,
+                    c: SdkClient,
+                    Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        executor.handle(AnyActerModel::NewsEntry(t.into())).await;
+                        if let Err(error) = executor.handle(AnyActerModel::NewsEntry(t.into())).await {
+                            error!(?error, "execution failed");
+                        }
                     }
                 },
             ),
-        );
-
-        self.handles.push(self.room.add_event_handler(
+            self.room.add_event_handler(
             |ev: SyncNewsEntryUpdateEvent,
-             room: SdkRoom,
-             c: SdkClient,
-             Ctx(executor): Ctx<Executor>| async move {
+                room: SdkRoom,
+                c: SdkClient,
+                Ctx(executor): Ctx<Executor>| async move {
                 let room_id = room.room_id().to_owned();
                 // FIXME: handle redactions
                 if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                    executor
+                    if let Err(error) = executor
                         .handle(AnyActerModel::NewsEntryUpdate(t.into()))
-                        .await;
+                        .await  {
+                            error!(?error, "execution failed");
+                        }
                 }
-            },
-        ));
+            })
+        ]
     }
 
-    pub(crate) fn remove_handlers(&mut self) {
-        for handle in self.handles.drain(..) {
-            self.client.remove_event_handler(handle);
-        }
-    }
     pub(crate) async fn refresh_history(&self) -> Result<()> {
         let name = self.room.name();
         let room_id = self.room.room_id();
@@ -385,11 +385,7 @@ impl Space {
 
 impl Space {
     pub fn new(client: Client, inner: Room) -> Self {
-        Space {
-            client,
-            inner,
-            handles: Default::default(),
-        }
+        Space { client, inner }
     }
 
     pub async fn create_onboarding_data(&self) -> Result<()> {
@@ -579,7 +575,6 @@ impl Client {
         Ok(Space {
             client: self.clone(),
             inner: room,
-            handles: Default::default(),
         })
     }
     pub async fn public_spaces(
