@@ -84,7 +84,7 @@ impl Client {
                         }
                     })
                     .collect::<Vec<models::NewsEntry>>();
-                all_news.reverse();
+                all_news.sort_by(|a, b| b.meta.origin_server_ts.cmp(&a.meta.origin_server_ts));
 
                 for content in all_news {
                     if count == 0 {

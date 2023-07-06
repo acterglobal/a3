@@ -13,7 +13,7 @@ static NEWS_KEY: &str = KEYS::NEWS;
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct NewsEntry {
     inner: NewsEntryEventContent,
-    meta: EventMeta,
+    pub meta: EventMeta,
 }
 
 impl Deref for NewsEntry {
