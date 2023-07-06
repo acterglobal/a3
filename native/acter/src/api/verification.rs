@@ -13,19 +13,8 @@ use matrix_sdk::{
         events::{
             forwarded_room_key::ToDeviceForwardedRoomKeyEvent,
             key::verification::{
-                accept::{
-                    OriginalSyncKeyVerificationAcceptEvent, ToDeviceKeyVerificationAcceptEvent,
-                },
-                cancel::{
-                    CancelCode, OriginalSyncKeyVerificationCancelEvent,
-                    ToDeviceKeyVerificationCancelEvent,
-                },
-                done::{OriginalSyncKeyVerificationDoneEvent, ToDeviceKeyVerificationDoneEvent},
-                key::{OriginalSyncKeyVerificationKeyEvent, ToDeviceKeyVerificationKeyEvent},
-                mac::{OriginalSyncKeyVerificationMacEvent, ToDeviceKeyVerificationMacEvent},
-                ready::{OriginalSyncKeyVerificationReadyEvent, ToDeviceKeyVerificationReadyEvent},
+                cancel::CancelCode,
                 request::ToDeviceKeyVerificationRequestEvent,
-                start::{OriginalSyncKeyVerificationStartEvent, ToDeviceKeyVerificationStartEvent},
                 VerificationMethod,
             },
             room::{
@@ -921,22 +910,8 @@ pub(crate) struct VerificationController {
     event_tx: Sender<VerificationEvent>,
     event_rx: Arc<Mutex<Option<Receiver<VerificationEvent>>>>,
     sync_key_verification_request_handle: Option<EventHandlerHandle>,
-    // sync_key_verification_ready_handle: Option<EventHandlerHandle>,
-    // sync_key_verification_start_handle: Option<EventHandlerHandle>,
-    // sync_key_verification_cancel_handle: Option<EventHandlerHandle>,
-    // sync_key_verification_accept_handle: Option<EventHandlerHandle>,
-    // sync_key_verification_key_handle: Option<EventHandlerHandle>,
-    // sync_key_verification_mac_handle: Option<EventHandlerHandle>,
-    // sync_key_verification_done_handle: Option<EventHandlerHandle>,
     sync_room_encrypted_handle: Option<EventHandlerHandle>,
     to_device_key_verification_request_handle: Option<EventHandlerHandle>,
-    // to_device_key_verification_ready_handle: Option<EventHandlerHandle>,
-    // to_device_key_verification_start_handle: Option<EventHandlerHandle>,
-    // to_device_key_verification_cancel_handle: Option<EventHandlerHandle>,
-    // to_device_key_verification_accept_handle: Option<EventHandlerHandle>,
-    // to_device_key_verification_key_handle: Option<EventHandlerHandle>,
-    // to_device_key_verification_mac_handle: Option<EventHandlerHandle>,
-    // to_device_key_verification_done_handle: Option<EventHandlerHandle>,
     to_device_room_encrypted_handle: Option<EventHandlerHandle>,
     to_device_room_key_handle: Option<EventHandlerHandle>,
     to_device_room_key_request_handle: Option<EventHandlerHandle>,
@@ -952,22 +927,8 @@ impl VerificationController {
             event_tx: tx,
             event_rx: Arc::new(Mutex::new(Some(rx))),
             sync_key_verification_request_handle: None,
-            // sync_key_verification_ready_handle: None,
-            // sync_key_verification_start_handle: None,
-            // sync_key_verification_cancel_handle: None,
-            // sync_key_verification_accept_handle: None,
-            // sync_key_verification_key_handle: None,
-            // sync_key_verification_mac_handle: None,
-            // sync_key_verification_done_handle: None,
             sync_room_encrypted_handle: None,
             to_device_key_verification_request_handle: None,
-            // to_device_key_verification_ready_handle: None,
-            // to_device_key_verification_start_handle: None,
-            // to_device_key_verification_cancel_handle: None,
-            // to_device_key_verification_accept_handle: None,
-            // to_device_key_verification_key_handle: None,
-            // to_device_key_verification_mac_handle: None,
-            // to_device_key_verification_done_handle: None,
             to_device_room_encrypted_handle: None,
             to_device_room_key_handle: None,
             to_device_room_key_request_handle: None,
@@ -1007,193 +968,6 @@ impl VerificationController {
         );
         self.sync_key_verification_request_handle = Some(handle);
 
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: OriginalSyncKeyVerificationReadyEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let event_id = ev.content.relates_to.event_id;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             Some(event_id.clone()),
-        //             None,
-        //             ev.sender.clone(),
-        //             Some(ev.content.from_device.clone()),
-        //             None,
-        //             None,
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping event for {}: {}", event_id, e);
-        //         }
-        //     },
-        // );
-        // self.sync_key_verification_ready_handle = Some(handle);
-
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: OriginalSyncKeyVerificationStartEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let event_id = ev.content.relates_to.event_id;
-        //         let method = ev.content.method;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             Some(event_id.clone()),
-        //             None,
-        //             ev.sender.clone(),
-        //             Some(ev.content.from_device.clone()),
-        //             None,
-        //             None,
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping event for {}: {}", event_id, e);
-        //         }
-        //     },
-        // );
-        // self.sync_key_verification_start_handle = Some(handle);
-
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: OriginalSyncKeyVerificationCancelEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let event_id = ev.content.relates_to.event_id;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             Some(event_id.clone()),
-        //             None,
-        //             ev.sender.clone(),
-        //             None,
-        //             Some(ev.content.code.clone()),
-        //             Some(ev.content.reason.clone()),
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping event for {}: {}", event_id, e);
-        //         }
-        //     },
-        // );
-        // self.sync_key_verification_cancel_handle = Some(handle);
-
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: OriginalSyncKeyVerificationAcceptEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let event_id = ev.content.relates_to.event_id;
-        //         let method = ev.content.method;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             Some(event_id.clone()),
-        //             None,
-        //             ev.sender.clone(),
-        //             None,
-        //             None,
-        //             None,
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping event for {}: {}", event_id, e);
-        //         }
-        //     },
-        // );
-        // self.sync_key_verification_accept_handle = Some(handle);
-
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: OriginalSyncKeyVerificationKeyEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let event_id = ev.content.relates_to.event_id;
-        //         let key = ev.content.key;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             Some(event_id.clone()),
-        //             None,
-        //             ev.sender.clone(),
-        //             None,
-        //             None,
-        //             None,
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping event for {}: {}", event_id, e);
-        //         }
-        //     },
-        // );
-        // self.sync_key_verification_key_handle = Some(handle);
-
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: OriginalSyncKeyVerificationMacEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let event_id = ev.content.relates_to.event_id;
-        //         let mac = ev.content.mac;
-        //         let keys = ev.content.keys;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             Some(event_id.clone()),
-        //             None,
-        //             ev.sender.clone(),
-        //             None,
-        //             None,
-        //             None,
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping event for {}: {}", event_id, e);
-        //         }
-        //     },
-        // );
-        // self.sync_key_verification_mac_handle = Some(handle);
-
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: OriginalSyncKeyVerificationDoneEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let event_id = ev.content.relates_to.event_id;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             Some(event_id.clone()),
-        //             None,
-        //             ev.sender.clone(),
-        //             None,
-        //             None,
-        //             None,
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping event for {}: {}", event_id, e);
-        //         }
-        //     },
-        // );
-        // self.sync_key_verification_done_handle = Some(handle);
-
         client.add_event_handler_context(self.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncRoomEncryptedEvent,
@@ -1212,34 +986,6 @@ impl VerificationController {
             client.remove_event_handler(handle);
             self.sync_key_verification_request_handle = None;
         }
-        // if let Some(handle) = self.sync_key_verification_ready_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.sync_key_verification_ready_handle = None;
-        // }
-        // if let Some(handle) = self.sync_key_verification_start_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.sync_key_verification_start_handle = None;
-        // }
-        // if let Some(handle) = self.sync_key_verification_cancel_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.sync_key_verification_cancel_handle = None;
-        // }
-        // if let Some(handle) = self.sync_key_verification_accept_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.sync_key_verification_accept_handle = None;
-        // }
-        // if let Some(handle) = self.sync_key_verification_key_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.sync_key_verification_key_handle = None;
-        // }
-        // if let Some(handle) = self.sync_key_verification_mac_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.sync_key_verification_mac_handle = None;
-        // }
-        // if let Some(handle) = self.sync_key_verification_done_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.sync_key_verification_done_handle = None;
-        // }
         if let Some(handle) = self.sync_room_encrypted_handle.clone() {
             client.remove_event_handler(handle);
             self.sync_room_encrypted_handle = None;
@@ -1274,194 +1020,6 @@ impl VerificationController {
             },
         );
         self.to_device_key_verification_request_handle = Some(handle);
-
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: ToDeviceKeyVerificationReadyEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let txn_id = ev.content.transaction_id;
-        //         let methods = ev.content.methods;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             None,
-        //             Some(txn_id.clone()),
-        //             ev.sender.clone(),
-        //             Some(ev.content.from_device.clone()),
-        //             None,
-        //             None,
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping transaction for {}: {}", txn_id, e);
-        //         }
-        //     },
-        // );
-        // self.to_device_key_verification_ready_handle = Some(handle);
-
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: ToDeviceKeyVerificationStartEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let txn_id = ev.content.transaction_id;
-        //         let method = ev.content.method;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             None,
-        //             Some(txn_id.clone()),
-        //             ev.sender.clone(),
-        //             Some(ev.content.from_device.clone()),
-        //             None,
-        //             None,
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping transaction for {}: {}", txn_id, e);
-        //         }
-        //     },
-        // );
-        // self.to_device_key_verification_start_handle = Some(handle);
-
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: ToDeviceKeyVerificationCancelEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let txn_id = ev.content.transaction_id;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             None,
-        //             Some(txn_id.clone()),
-        //             ev.sender.clone(),
-        //             None,
-        //             Some(ev.content.code.clone()),
-        //             Some(ev.content.reason.clone()),
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping transaction for {}: {}", txn_id, e);
-        //         }
-        //     },
-        // );
-        // self.to_device_key_verification_cancel_handle = Some(handle);
-
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: ToDeviceKeyVerificationAcceptEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let txn_id = ev.content.transaction_id;
-        //         let method = ev.content.method;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             None,
-        //             Some(txn_id.clone()),
-        //             ev.sender.clone(),
-        //             None,
-        //             None,
-        //             None,
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping transaction for {}: {}", txn_id, e);
-        //         }
-        //     },
-        // );
-        // self.to_device_key_verification_accept_handle = Some(handle);
-
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: ToDeviceKeyVerificationKeyEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let txn_id = ev.content.transaction_id;
-        //         let key = ev.content.key;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             None,
-        //             Some(txn_id.clone()),
-        //             ev.sender.clone(),
-        //             None,
-        //             None,
-        //             None,
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping transaction for {}: {}", txn_id, e);
-        //         }
-        //     },
-        // );
-        // self.to_device_key_verification_key_handle = Some(handle);
-
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: ToDeviceKeyVerificationMacEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let txn_id = ev.content.transaction_id;
-        //         let mac = ev.content.mac;
-        //         let keys = ev.content.keys;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             None,
-        //             Some(txn_id.clone()),
-        //             ev.sender.clone(),
-        //             None,
-        //             None,
-        //             None,
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping transaction for {}: {}", txn_id, e);
-        //         }
-        //     },
-        // );
-        // self.to_device_key_verification_mac_handle = Some(handle);
-
-        // client.add_event_handler_context(self.clone());
-        // let handle = client.add_event_handler(
-        //     |ev: ToDeviceKeyVerificationDoneEvent,
-        //      c: SdkClient,
-        //      Ctx(mut me): Ctx<VerificationController>| async move {
-        //         let device_id = c.device_id().expect("guest user cannot get device id");
-        //         let event_type = ev.content.event_type();
-        //         info!("{} got {}", device_id, event_type);
-        //         let txn_id = ev.content.transaction_id;
-        //         let msg = VerificationEvent::new(
-        //             &c,
-        //             event_type.to_string(),
-        //             None,
-        //             Some(txn_id.clone()),
-        //             ev.sender.clone(),
-        //             None,
-        //             None,
-        //             None,
-        //         );
-        //         if let Err(e) = me.event_tx.try_send(msg) {
-        //             error!("Dropping transaction for {}: {}", txn_id, e);
-        //         }
-        //     },
-        // );
-        // self.to_device_key_verification_done_handle = Some(handle);
 
         client.add_event_handler_context(self.clone());
         let handle = client.add_event_handler(
@@ -1560,34 +1118,6 @@ impl VerificationController {
             client.remove_event_handler(handle);
             self.to_device_key_verification_request_handle = None;
         }
-        // if let Some(handle) = self.to_device_key_verification_ready_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.to_device_key_verification_ready_handle = None;
-        // }
-        // if let Some(handle) = self.to_device_key_verification_start_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.to_device_key_verification_start_handle = None;
-        // }
-        // if let Some(handle) = self.to_device_key_verification_cancel_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.to_device_key_verification_cancel_handle = None;
-        // }
-        // if let Some(handle) = self.to_device_key_verification_accept_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.to_device_key_verification_accept_handle = None;
-        // }
-        // if let Some(handle) = self.to_device_key_verification_key_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.to_device_key_verification_key_handle = None;
-        // }
-        // if let Some(handle) = self.to_device_key_verification_mac_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.to_device_key_verification_mac_handle = None;
-        // }
-        // if let Some(handle) = self.to_device_key_verification_done_handle.clone() {
-        //     client.remove_event_handler(handle);
-        //     self.to_device_key_verification_done_handle = None;
-        // }
         if let Some(handle) = self.to_device_room_encrypted_handle.clone() {
             client.remove_event_handler(handle);
             self.to_device_room_encrypted_handle = None;
