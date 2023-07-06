@@ -87,12 +87,12 @@ impl NewsContent {
 pub struct NewsSlide {
     /// A slide must contain some news-worthy content
     #[serde(flatten)]
-    content: NewsContent,
+    pub content: NewsContent,
 
     /// A slide may optionally contain references to other items
     #[builder(default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    references: Vec<ObjRef>,
+    pub references: Vec<ObjRef>,
 }
 
 impl NewsSlide {

@@ -223,18 +223,9 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                   if (mimeType.startsWith('image/')) {
                     Uint8List bytes = await file.readAsBytes();
                     var decodedImage = await decodeImageFromList(bytes);
-                    EventId eventId = await space.sendImageMessage(
-                      file.path,
-                      file.name,
-                      mimeType,
-                      bytes.length,
-                      decodedImage.width,
-                      decodedImage.height,
-                      null,
-                    );
-                    draft.addImageSlide(
+                    await draft.addImageSlide(
                       caption,
-                      eventId.toString(),
+                      file.path,
                       mimeType,
                       bytes.length,
                       decodedImage.width,

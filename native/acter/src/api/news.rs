@@ -9,6 +9,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
 use core::time::Duration;
+use futures::io::Cursor;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Joined, Room},
@@ -28,6 +29,7 @@ use matrix_sdk::{
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
+    path::PathBuf,
 };
 
 use super::{
@@ -359,32 +361,62 @@ impl NewsEntryDraft {
         self
     }
 
-    #[allow(clippy::too_many_arguments)]
-    pub fn add_image_slide(
+    pub async fn add_image_slide(
         &mut self,
         body: String,
-        url: String,
-        mimetype: Option<String>,
+        uri: String,
+        mimetype: String,
         size: Option<u64>,
         width: Option<u64>,
         height: Option<u64>,
         blurhash: Option<String>,
-    ) -> &mut Self {
-        let info = assign!(ImageInfo::new(), {
+    ) -> Result<bool> {
+        let client = self.client.clone();
+        let is_encrypted = self.room.is_encrypted().await?;
+
+        let path = PathBuf::from(uri);
+        let mime_type = mimetype.parse::<mime::Mime>()?;
+        let mut image_content = if is_encrypted {
+            let encrypted_file = RUNTIME
+                .spawn(async move {
+                    let mut reader = std::fs::File::open(path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&mime_type, &mut reader)
+                        .await?;
+                    anyhow::Ok(encrypted_file)
+                })
+                .await??;
+            ImageMessageEventContent::encrypted(body, encrypted_file)
+        } else {
+            RUNTIME
+                .spawn(async move {
+                    let data = std::fs::read(path)?;
+                    let upload_resp = client.media().upload(&mime_type, data).await?;
+                    anyhow::Ok(ImageMessageEventContent::plain(
+                        body,
+                        upload_resp.content_uri,
+                        None,
+                    ))
+                })
+                .await??
+        };
+        image_content.info = Some(Box::new(assign!(ImageInfo::new(), {
             height: height.and_then(UInt::new),
             width: width.and_then(UInt::new),
-            mimetype,
+            mimetype: Some(mimetype),
             size: size.and_then(UInt::new),
             blurhash,
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
+        })));
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_image(body, (*url).to_owned(), Some(Box::new(info))),
+            inner: news::NewsSlide {
+                content: news::NewsContent::Image(image_content),
+                references: Default::default(),
+            },
         });
-        self
+        Ok(true)
     }
 
     pub fn add_audio_slide(

@@ -1598,6 +1598,49 @@ class Api {
     return tmp7;
   }
 
+  bool? __newsEntryDraftAddImageSlideFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryDraftAddImageSlideFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   EventId? __newsEntryDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -9398,7 +9441,7 @@ class Api {
   )>();
   late final _newsEntryDraftAddImageSlidePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
+          ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
@@ -9406,7 +9449,6 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Uint8,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
@@ -9424,8 +9466,7 @@ class Api {
 
   late final _newsEntryDraftAddImageSlide =
       _newsEntryDraftAddImageSlidePtr.asFunction<
-          void Function(
-    int,
+          int Function(
     int,
     int,
     int,
@@ -16028,6 +16069,21 @@ class Api {
     int,
     int,
   )>();
+  late final _newsEntryDraftAddImageSlideFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryDraftAddImageSlideFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__NewsEntryDraft_add_image_slide_future_poll");
+
+  late final _newsEntryDraftAddImageSlideFuturePoll =
+      _newsEntryDraftAddImageSlideFuturePollPtr.asFunction<
+          _NewsEntryDraftAddImageSlideFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _newsEntryDraftSendFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _NewsEntryDraftSendFuturePollReturn Function(
@@ -20428,10 +20484,10 @@ class NewsEntryDraft {
   }
 
   /// create news slide for image msg
-  void addImageSlide(
+  Future<bool> addImageSlide(
     String body,
     String url,
-    String? mimetype,
+    String mimetype,
     int? size,
     int? width,
     int? height,
@@ -20440,10 +20496,10 @@ class NewsEntryDraft {
     final tmp1 = body;
     final tmp5 = url;
     final tmp9 = mimetype;
-    final tmp15 = size;
-    final tmp19 = width;
-    final tmp23 = height;
-    final tmp27 = blurhash;
+    final tmp13 = size;
+    final tmp17 = width;
+    final tmp21 = height;
+    final tmp25 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -20452,8 +20508,8 @@ class NewsEntryDraft {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
+    var tmp11 = 0;
     var tmp12 = 0;
-    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
@@ -20462,9 +20518,8 @@ class NewsEntryDraft {
     var tmp24 = 0;
     var tmp26 = 0;
     var tmp28 = 0;
+    var tmp29 = 0;
     var tmp30 = 0;
-    var tmp31 = 0;
-    var tmp32 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -20482,56 +20537,50 @@ class NewsEntryDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
-    }
-    if (tmp15 == null) {
-      tmp16 = 0;
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
     } else {
-      tmp16 = 1;
-      final tmp17 = tmp15;
-      tmp18 = tmp17;
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
     }
-    if (tmp19 == null) {
-      tmp20 = 0;
+    if (tmp17 == null) {
+      tmp18 = 0;
     } else {
-      tmp20 = 1;
-      final tmp21 = tmp19;
-      tmp22 = tmp21;
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
     }
-    if (tmp23 == null) {
-      tmp24 = 0;
+    if (tmp21 == null) {
+      tmp22 = 0;
     } else {
-      tmp24 = 1;
-      final tmp25 = tmp23;
-      tmp26 = tmp25;
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
     }
-    if (tmp27 == null) {
-      tmp28 = 0;
+    if (tmp25 == null) {
+      tmp26 = 0;
     } else {
-      tmp28 = 1;
-      final tmp29 = tmp27;
-      final tmp29_0 = utf8.encode(tmp29);
-      tmp31 = tmp29_0.length;
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      final tmp27_0 = utf8.encode(tmp27);
+      tmp29 = tmp27_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp30_0 = _api.__allocate(tmp31 * 1, 1);
-      final Uint8List tmp30_1 = tmp30_0.asTypedList(tmp31);
-      tmp30_1.setAll(0, tmp29_0);
-      tmp30 = tmp30_0.address;
-      tmp32 = tmp31;
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+      tmp28_1.setAll(0, tmp27_0);
+      tmp28 = tmp28_0.address;
+      tmp30 = tmp29;
     }
-    _api._newsEntryDraftAddImageSlide(
+    final tmp31 = _api._newsEntryDraftAddImageSlide(
       tmp0,
       tmp2,
       tmp3,
@@ -20540,8 +20589,8 @@ class NewsEntryDraft {
       tmp7,
       tmp8,
       tmp10,
+      tmp11,
       tmp12,
-      tmp13,
       tmp14,
       tmp16,
       tmp18,
@@ -20550,11 +20599,17 @@ class NewsEntryDraft {
       tmp24,
       tmp26,
       tmp28,
+      tmp29,
       tmp30,
-      tmp31,
-      tmp32,
     );
-    return;
+    final tmp33 = tmp31;
+    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
+    final tmp33_1 =
+        _Box(_api, tmp33_0, "__NewsEntryDraft_add_image_slide_future_drop");
+    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
+    final tmp32 =
+        _nativeFuture(tmp33_1, _api.__newsEntryDraftAddImageSlideFuturePoll);
+    return tmp32;
   }
 
   /// create news slide for audio msg
@@ -35792,6 +35847,21 @@ class _NewsSlideFileBinaryFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Int64()
+  external int arg5;
+}
+
+class _NewsEntryDraftAddImageSlideFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 
