@@ -351,9 +351,10 @@ impl Client {
             source,
             format: MediaFormat::File,
         };
+        trace!(?request, "tasked to get source binary");
         RUNTIME
             .spawn(async move {
-                let buf = client.media().get_media_content(&request, false).await?;
+                let buf = client.media().get_media_content(&request, true).await?;
                 Ok(FfiBuffer::new(buf))
             })
             .await?
