@@ -13,8 +13,7 @@ use matrix_sdk::{
         events::{
             forwarded_room_key::ToDeviceForwardedRoomKeyEvent,
             key::verification::{
-                cancel::CancelCode,
-                request::ToDeviceKeyVerificationRequestEvent,
+                cancel::CancelCode, request::ToDeviceKeyVerificationRequestEvent,
                 VerificationMethod,
             },
             room::{
@@ -409,7 +408,7 @@ impl VerificationEvent {
                             let sequence = items
                                 .iter()
                                 .map(|e| VerificationEmoji {
-                                    symbol: e.symbol.chars().nth(0).unwrap() as u32,
+                                    symbol: e.symbol.chars().next().unwrap() as u32,
                                     description: e.description.to_string(),
                                 })
                                 .collect::<Vec<VerificationEmoji>>();
@@ -430,7 +429,7 @@ impl VerificationEvent {
                             let sequence = items
                                 .iter()
                                 .map(|e| VerificationEmoji {
-                                    symbol: e.symbol.chars().nth(0).unwrap() as u32,
+                                    symbol: e.symbol.chars().next().unwrap() as u32,
                                     description: e.description.to_string(),
                                 })
                                 .collect::<Vec<VerificationEmoji>>();
