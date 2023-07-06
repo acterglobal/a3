@@ -1,7 +1,7 @@
 use dashmap::{mapref::one::RefMut, DashMap};
 use futures::future::{join_all, try_join_all};
 use matrix_sdk::Client;
-use std::iter::FromIterator;
+use std::{iter::FromIterator, sync::Arc};
 use tracing::{debug, instrument, trace, warn};
 
 use crate::{
@@ -13,9 +13,9 @@ use crate::{
 pub struct Store {
     client: Client,
     fresh: bool,
-    models: dashmap::DashMap<String, AnyActerModel>,
-    indizes: dashmap::DashMap<String, Vec<String>>,
-    dirty: dashmap::DashSet<String>,
+    models: Arc<dashmap::DashMap<String, AnyActerModel>>,
+    indizes: Arc<dashmap::DashMap<String, Vec<String>>>,
+    dirty: Arc<dashmap::DashSet<String>>,
 }
 
 static ALL_MODELS_KEY: &str = "ACTER::ALL";
@@ -130,8 +130,8 @@ impl Store {
         Ok(Store {
             fresh: false,
             client,
-            indizes,
-            models,
+            indizes: Arc::new(indizes),
+            models: Arc::new(models),
             dirty: Default::default(),
         })
     }
