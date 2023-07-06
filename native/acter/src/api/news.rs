@@ -174,6 +174,16 @@ impl NewsSlide {
         self.inner.content().type_str()
     }
 
+    pub fn has_formatted_text(&self) -> bool {
+        matches!(
+            self.inner.content(),
+            NewsContent::Text(TextMessageEventContent {
+                formatted: Some(_),
+                ..
+            })
+        )
+    }
+
     pub fn text(&self) -> String {
         match self.inner.content() {
             NewsContent::Image(ImageMessageEventContent { body, .. }) => body.clone(),

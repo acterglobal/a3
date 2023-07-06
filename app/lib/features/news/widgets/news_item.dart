@@ -8,6 +8,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 
 class NewsItem extends ConsumerWidget {
   final Client client;
@@ -111,13 +112,22 @@ class NewsItem extends ConsumerWidget {
                   color: bgColor,
                   child: Padding(
                     padding: EdgeInsets.all(20),
-                    child: Text(
-                      slide.text(),
-                      softWrap: true,
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: fgColor,
+                    child: slide.hasFormattedText()
+                        ? Html(
+                            data: slide.text(),
+                            defaultTextStyle:
+                                Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                      color: fgColor,
+                                    ),
+                          )
+                        : Text(
+                            slide.text(),
+                            softWrap: true,
+                            style:
+                                Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                      color: fgColor,
+                                    ),
                           ),
-                    ),
                   ),
                 ),
               ),

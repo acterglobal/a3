@@ -9260,6 +9260,17 @@ class Api {
       _NewsSlideTypeStrReturn Function(
     int,
   )>();
+  late final _newsSlideHasFormattedTextPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__NewsSlide_has_formatted_text");
+
+  late final _newsSlideHasFormattedText =
+      _newsSlideHasFormattedTextPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _newsSlideTextPtr = _lookup<
       ffi.NativeFunction<
           _NewsSlideTextReturn Function(
@@ -20151,6 +20162,18 @@ class NewsSlide {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// whether this text-slide has a formatted html body
+  bool hasFormattedText() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSlideHasFormattedText(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 
