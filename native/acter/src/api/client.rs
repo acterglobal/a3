@@ -189,7 +189,7 @@ type RoomHandlers = Arc<Mutex<HashMap<OwnedRoomId, Vec<EventHandlerHandle>>>>;
 #[derive(Clone)]
 pub struct SyncState {
     handle: Mutable<Option<JoinHandle<()>>>,
-    history_sync_handle: Mutable<Option<JoinHandle<Result<()>>>>,
+    first_sync_task: Mutable<Option<JoinHandle<Result<()>>>>,
     first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
     history_loading: Mutable<HistoryLoadState>,
     room_handles: RoomHandlers,
@@ -201,7 +201,7 @@ impl SyncState {
         Self {
             first_synced_rx,
             history_loading: Default::default(),
-            history_sync_handle: Default::default(),
+            first_sync_task: Default::default(),
             handle: Default::default(),
             room_handles: Default::default(),
         }
@@ -215,10 +215,12 @@ impl SyncState {
     }
 
     // FIXE: This is not save. History state is copied and thus not all known_spaces are tracked
+    // for only tui, not api.rsh
     pub fn get_history_loading_rx(&self) -> SignalStream<MutableSignalCloned<HistoryLoadState>> {
         self.history_loading.signal_cloned().to_stream()
     }
 
+    // for only cli and integration tests, not api.rsh
     pub async fn await_has_synced_history(&self) -> Result<u32> {
         trace!("Waiting for history to sync");
         let signal = self.history_loading.signal_cloned().to_stream();
@@ -231,14 +233,6 @@ impl SyncState {
             }
         }
         unimplemented!("We never reach this state")
-    }
-
-    pub fn is_running(&self) -> bool {
-        if let Some(handle) = self.handle.lock_ref().as_ref() {
-            !handle.is_finished()
-        } else {
-            false
-        }
     }
 
     pub fn cancel(&self) {
@@ -256,7 +250,7 @@ impl Drop for SyncState {
 
 // internal API
 impl Client {
-    async fn refresh_history_on_start(
+    fn refresh_history_on_start(
         &self,
         history: Mutable<HistoryLoadState>,
         room_handles: RoomHandlers,
@@ -442,8 +436,8 @@ impl Client {
 
         let initial_arc = Arc::new(AtomicBool::from(true));
         let sync_state = SyncState::new(first_synced_rx);
-        let sync_state_history = sync_state.history_loading.clone();
-        let sync_state_history_sync_handle = sync_state.history_sync_handle.clone();
+        let history_loading = sync_state.history_loading.clone();
+        let first_sync_task = sync_state.first_sync_task.clone();
         let room_handles = sync_state.room_handles.clone();
 
         let handle = RUNTIME.spawn(async move {
@@ -455,8 +449,8 @@ impl Client {
             let mut device_controller = device_controller.clone();
             let mut conversation_controller = conversation_controller.clone();
 
-            let sync_state_history = sync_state_history.clone();
-            let sync_state_history_sync_handle = sync_state_history_sync_handle.clone();
+            let history_loading = history_loading.clone();
+            let first_sync_task = first_sync_task.clone();
             let room_handles = room_handles.clone();
 
             // fetch the events that received when offline
@@ -474,7 +468,7 @@ impl Client {
                     let mut conversation_controller = conversation_controller.clone();
 
                     let first_synced_arc = first_synced_arc.clone();
-                    let sync_state_history = sync_state_history.clone();
+                    let history_loading = history_loading.clone();
                     let initial = initial_arc.clone();
 
                     let response = match result {
@@ -516,15 +510,14 @@ impl Client {
                             w.has_first_synced = true;
                         };
                         // background and keep the handle around.
-                        let history_first_sync = me
-                            .refresh_history_on_start(sync_state_history.clone(), room_handles.clone())
-                            .await;
-                        sync_state_history_sync_handle.set(Some(history_first_sync));
+                        let history_first_sync =
+                            me.refresh_history_on_start(history_loading.clone(), room_handles.clone());
+                        first_sync_task.set(Some(history_first_sync)); // keep task in global variable to avoid too early free of temporary varible in release build
                     } else {
                         // see if we have new spaces to catch up upon
                         let mut new_spaces = Vec::new();
                         for room_id in response.rooms.join.keys() {
-                            if sync_state_history.lock_mut().knows_room(room_id) {
+                            if history_loading.lock_mut().knows_room(room_id) {
                                 // we are already loading this room
                                 continue;
                             }
@@ -538,7 +531,7 @@ impl Client {
                         }
 
                         if !new_spaces.is_empty() {
-                            me.refresh_history_on_way(sync_state_history.clone(), room_handles.clone(), new_spaces)
+                            me.refresh_history_on_way(history_loading.clone(), room_handles.clone(), new_spaces)
                                 .await;
                         }
                     }
@@ -550,7 +543,7 @@ impl Client {
                         .chain(response.rooms.leave.keys())
                         .chain(response.rooms.invite.keys())
                         .map(|id| id.to_string()) // FIXME: handle aliases, too?!?
-                        .collect::<Vec<_>>();
+                        .collect::<Vec<String>>();
 
                     if (!changed_rooms.is_empty()) {
                         changed_rooms.push("SPACES".to_owned());
