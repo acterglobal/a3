@@ -156,6 +156,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                     final newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
                       currentSpaceId: currentSpaceId,
+                      canCheck: 'CanPostNews',
                       title: const Text('Select space'),
                     );
                     ref.read(selectedSpaceIdProvider.notifier).state =

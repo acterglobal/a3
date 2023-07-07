@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/search/providers/spaces.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/search/providers/search.dart';
@@ -119,6 +120,9 @@ class QuickJump extends ConsumerWidget {
 
   Widget quickActions(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(featuresProvider);
+    final canPostNews =
+        ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
+            false;
     bool isActive(f) => provider.isActive(f);
     return Wrap(
       alignment: WrapAlignment.spaceBetween,
@@ -126,18 +130,20 @@ class QuickJump extends ConsumerWidget {
       runSpacing: 10,
       children: List.from(
         [
-          OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.amber,
-              side: const BorderSide(width: 2, color: Colors.amber),
-            ),
-            onPressed: () {
-              navigateTo(route: Routes.actionAddUpdate, push: true);
-              debugPrint('News');
-            },
-            icon: const Icon(Atlas.plus_circle_thin),
-            label: const Text('News'),
-          ),
+          canPostNews
+              ? OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.amber,
+                    side: const BorderSide(width: 2, color: Colors.amber),
+                  ),
+                  onPressed: () {
+                    navigateTo(route: Routes.actionAddUpdate, push: true);
+                    debugPrint('News');
+                  },
+                  icon: const Icon(Atlas.plus_circle_thin),
+                  label: const Text('News'),
+                )
+              : null,
           isActive(LabsFeature.tasks)
               ? OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(

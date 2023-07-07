@@ -1223,6 +1223,7 @@ enum MemberPermission {
     CanSendChatMessages,
     CanSendReaction,
     CanSendSticker,
+    CanPostNews,
     CanBan,
     CanKick,
     CanRedact,
