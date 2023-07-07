@@ -175,6 +175,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                     final newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
                       currentSpaceId: currentSpaceId,
+                      canCheck: 'CanPostPin',
                       title: const Text('Select parent space'),
                     );
                     ref.read(selectedSpaceIdProvider.notifier).state =

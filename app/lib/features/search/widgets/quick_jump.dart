@@ -119,11 +119,14 @@ class QuickJump extends ConsumerWidget {
   }
 
   Widget quickActions(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(featuresProvider);
+    final features = ref.watch(featuresProvider);
+    bool isActive(f) => features.isActive(f);
     final canPostNews =
         ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
             false;
-    bool isActive(f) => provider.isActive(f);
+    final canPostPin = isActive(LabsFeature.pins) &&
+        (ref.watch(hasSpaceWithPermissionProvider('CanPostPin')).valueOrNull ??
+            false);
     return Wrap(
       alignment: WrapAlignment.spaceBetween,
       spacing: 8,
@@ -158,7 +161,7 @@ class QuickJump extends ConsumerWidget {
                   label: const Text('Task'),
                 )
               : null,
-          isActive(LabsFeature.pins)
+          canPostPin
               ? OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.purple,

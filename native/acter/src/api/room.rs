@@ -1,5 +1,8 @@
 use acter_core::{
-    events::news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
+    events::{
+        news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
+        pins::PinEventContent,
+    },
     spaces::is_acter_space,
 };
 use anyhow::{bail, Context, Result};
@@ -64,6 +67,7 @@ pub enum MemberPermission {
     CanSendSticker,
     // Acter Specific actions
     CanPostNews,
+    CanPostPin,
     // moderation tools
     CanBan,
     CanKick,
@@ -141,6 +145,9 @@ impl Member {
             // Acter specific
             MemberPermission::CanPostNews => PermissionTest::Message(MessageLikeEventType::from(
                 <NewsEntryEventContent as StaticEventContent>::TYPE,
+            )),
+            MemberPermission::CanPostPin => PermissionTest::Message(MessageLikeEventType::from(
+                <PinEventContent as StaticEventContent>::TYPE,
             )),
         };
         match tester {
