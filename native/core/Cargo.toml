@@ -42,7 +42,7 @@ toml = { version = "0.7.2", optional = true, features = ["preserve_order"] }
 [dependencies.matrix-sdk]
 workspace = true
 default-features = false
-features = ["rustls-tls"]
+features = ["rustls-tls", "markdown"]
 
 [dev-dependencies]
 anyhow = "1.0.69"
