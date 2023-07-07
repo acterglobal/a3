@@ -72,10 +72,18 @@ class AuthStateNotifier extends StateNotifier<bool> {
 
   void logout(BuildContext context) async {
     final sdk = await ref.watch(sdkProvider.future);
-    await sdk.logout();
-    ref.read(isLoggedInProvider.notifier).update((state) => !state);
+    final stillHasClient = await sdk.logout();
+    if (stillHasClient) {
+      print('Still has clients, dropping back to other');
+      ref.read(isLoggedInProvider.notifier).update((state) => true);
+      ref.read(clientProvider.notifier).state = sdk.currentClient;
+      context.goNamed(Routes.main.name);
+    } else {
+      print('No clients left, redir to onboarding');
+      ref.read(isLoggedInProvider.notifier).update((state) => false);
+      ref.invalidate(clientProvider);
+      context.goNamed(Routes.main.name);
+    }
     // return to guest client.
-    ref.read(clientProvider.notifier).state = sdk.currentClient;
-    context.goNamed(Routes.main.name);
   }
 }

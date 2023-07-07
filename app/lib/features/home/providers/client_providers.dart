@@ -9,5 +9,5 @@ final clientProvider = StateNotifierProvider<ClientNotifier, Client?>(
 
 final syncStateProvider = StateNotifierProvider<SyncNotifier, bool>((ref) {
   final client = ref.watch(clientProvider);
-  return SyncNotifier(client!);
+  return SyncNotifier(client!, ref);
 });

@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,12 +8,13 @@ import 'package:get/get.dart';
 class SyncNotifier extends StateNotifier<bool> {
   late SyncState syncState;
   late Stream<bool>? syncPoller;
+  late Ref ref;
 
-  SyncNotifier(Client client) : super(false) {
-    startSync(client);
+  SyncNotifier(Client client, Ref ref) : super(false) {
+    startSync(client, ref);
   }
 
-  Future<void> startSync(Client client) async {
+  Future<void> startSync(Client client, Ref ref) async {
     Get.put(ChatRoomController(client: client));
     // Get.put(ReceiptController(client: state!));
     // on release we have a really weird behavior, where, if we schedule
@@ -25,6 +27,7 @@ class SyncNotifier extends StateNotifier<bool> {
     syncPoller!.listen((event) {
       if (event) {
         state = true;
+        ref.invalidate(spacesProvider);
       }
     });
   }

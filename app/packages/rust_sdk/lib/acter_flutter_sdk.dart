@@ -146,10 +146,11 @@ class ActerSdk {
 
   Future<void> _persistSessions() async {
     List<String> sessions = [];
-    for (var c in _clients) {
+    for (final c in _clients) {
       String token = await c.restoreToken();
       sessions.add(token);
     }
+    print("setting sessions: $sessions");
     SharedPreferences prefs = await sharedPrefs();
     await prefs.setStringList(_sessionKey, sessions);
     await prefs.setInt('$_sessionKey::currentClientIdx', _index);
@@ -317,10 +318,11 @@ class ActerSdk {
     return client;
   }
 
-  Future<void> logout() async {
+  Future<bool> logout() async {
     // remove current client from list
-    var client = _clients.removeAt(_index);
+    final client = _clients.removeAt(_index);
     _index = _index > 0 ? _index - 1 : 0;
+    print("Remainig clients $_clients");
     await _persistSessions();
     unawaited(
       client.logout().catchError((e) {
@@ -332,6 +334,7 @@ class ActerSdk {
         return e is int;
       }),
     ); // Explicitly-ignored fire-and-forget.
+    return _clients.isNotEmpty;
   }
 
   Future<ffi.Client> register(

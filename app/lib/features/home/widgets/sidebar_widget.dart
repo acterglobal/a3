@@ -1,4 +1,3 @@
-import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -84,30 +83,6 @@ class SidebarWidget extends ConsumerWidget {
                       softWrap: false,
                     )
                   ],
-                ),
-              ),
-            ),
-            const Divider(indent: 18, endIndent: 18),
-            Visibility(
-              visible: !isGuest,
-              child: InkWell(
-                key: Keys.logoutBtn,
-                onTap: () => confirmationDialog(context, ref),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: Column(
-                    children: [
-                      const Icon(Atlas.exit_thin),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5),
-                        child: Text(
-                          AppLocalizations.of(context)!.logOut,
-                          style: Theme.of(context).textTheme.labelSmall,
-                          softWrap: false,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),

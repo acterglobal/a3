@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 
 // Can be extended to be reusable dialog as riverpod states get added.
 // Ref can be used to read any provider which are declared.
-void confirmationDialog(BuildContext context, WidgetRef ref) {
+void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
   showDialog(
     context: context,
     builder: (BuildContext ctx) {
