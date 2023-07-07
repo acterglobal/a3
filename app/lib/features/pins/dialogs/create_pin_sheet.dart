@@ -1,3 +1,5 @@
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
@@ -23,9 +25,9 @@ final selectedSpaceDetailsProvider =
 
 // upload avatar path
 final titleProvider = StateProvider<String>((ref) => '');
-final selectedTypeProvider = StateProvider.autoDispose<String>((ref) => 'link');
-final textProvider = StateProvider.autoDispose<String>((ref) => '');
-final linkProvider = StateProvider.autoDispose<String>((ref) => '');
+final selectedTypeProvider = StateProvider<String>((ref) => 'link');
+final textProvider = StateProvider<String>((ref) => '');
+final linkProvider = StateProvider<String>((ref) => '');
 
 class CreatePinSheet extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
@@ -209,20 +211,36 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
         ElevatedButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
-              final spaceId = ref.read(selectedSpaceIdProvider);
-              final space = await ref.watch(spaceProvider(spaceId!).future);
-              final pinDraft = space.pinDraft();
-              pinDraft.title(ref.read(titleProvider));
-              if (ref.read(selectedTypeProvider) == 'text') {
-                pinDraft.contentText(ref.read(textProvider));
-              } else {
-                pinDraft.url(ref.read(linkProvider));
-              }
-              final pinId = await pinDraft.send();
-              context.goNamed(
-                Routes.pin.name,
-                pathParameters: {'pinId': pinId.toString()},
+              popUpDialog(
+                context: context,
+                title: Text(
+                  'Posting Pin',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                isLoader: true,
               );
+              try {
+                final spaceId = ref.read(selectedSpaceIdProvider);
+                final space = await ref.watch(spaceProvider(spaceId!).future);
+                final pinDraft = space.pinDraft();
+                pinDraft.title(ref.read(titleProvider));
+                if (ref.read(selectedTypeProvider) == 'text') {
+                  pinDraft.contentMarkdown(ref.read(textProvider));
+                } else {
+                  pinDraft.url(ref.read(linkProvider));
+                }
+                final pinId = await pinDraft.send();
+                // reset providers
+                ref.read(titleProvider.notifier).state = '';
+                ref.read(textProvider.notifier).state = '';
+                Navigator.of(context, rootNavigator: true).pop();
+                context.goNamed(
+                  Routes.pin.name,
+                  pathParameters: {'pinId': pinId.toString()},
+                );
+              } catch (e) {
+                customMsgSnackbar(context, 'Failed to pin: $e');
+              }
             }
           },
           child: const Text('Create Pin'),
