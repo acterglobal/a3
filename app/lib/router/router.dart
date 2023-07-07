@@ -13,11 +13,8 @@ import 'package:acter/features/pins/dialogs/create_pin_sheet.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/spaces/dialogs/create_space_sheet.dart';
-import 'package:acter/features/news/pages/news_builder_page.dart';
 import 'package:acter/features/news/pages/simple_post.dart';
 import 'package:acter/features/news/pages/news_page.dart';
-import 'package:acter/features/news/pages/post_page.dart';
-import 'package:acter/features/news/pages/search_space_page.dart';
 import 'package:acter/features/onboarding/pages/intro_page.dart';
 import 'package:acter/features/onboarding/pages/intro_profile.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
@@ -208,8 +205,8 @@ List<RouteBase> makeRoutes(Ref ref) => [
 
       GoRoute(
         parentNavigatorKey: rootNavigatorKey,
-        name: Routes.updatesEdit.name,
-        path: Routes.updatesEdit.route,
+        name: Routes.actionAddUpdate.name,
+        path: Routes.actionAddUpdate.route,
         pageBuilder: (context, state) {
           return SideSheetPage(
             key: state.pageKey,
@@ -344,51 +341,6 @@ List<RouteBase> makeRoutes(Ref ref) => [
                 child: const NewsPage(),
               );
             },
-            routes: <RouteBase>[
-              // hide bottom nav for nested pages, use rootNavigatorKey
-              // GoRoute(
-              //   parentNavigatorKey: rootNavigatorKey,
-              //   name: Routes.updatesEdit.name,
-              //   path: Routes.updatesEdit.route,
-              //   redirect: authGuardRedirect,
-              //   pageBuilder: (context, state) {
-              //     return NoTransitionPage(
-              //       key: state.pageKey,
-              //       child: PostPage(
-              //         attachmentUri: state.extra as String?,
-              //       ),
-              //     );
-              //   },
-              // ),
-              GoRoute(
-                parentNavigatorKey: rootNavigatorKey,
-                name: Routes.updatesPost.name,
-                path: Routes.updatesPost.route,
-                redirect: authGuardRedirect,
-                pageBuilder: (context, state) {
-                  return NoTransitionPage(
-                    key: state.pageKey,
-                    child: PostPage(
-                      attachmentUri: state.extra as String?,
-                    ),
-                  );
-                },
-                routes: <RouteBase>[
-                  GoRoute(
-                    parentNavigatorKey: rootNavigatorKey,
-                    name: Routes.updatesPostSearch.name,
-                    path: Routes.updatesPostSearch.route,
-                    redirect: authGuardRedirect,
-                    pageBuilder: (context, state) {
-                      return NoTransitionPage(
-                        key: state.pageKey,
-                        child: const SearchSpacePage(),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ],
           ),
 
           GoRoute(

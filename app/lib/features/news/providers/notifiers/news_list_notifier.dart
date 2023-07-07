@@ -10,6 +10,7 @@ class AsyncNewsListNotifier extends AutoDisposeAsyncNotifier<List<NewsEntry>> {
     final client = ref.read(clientProvider)!;
     _listener = client.subscribe('news');
     _listener.forEach((_e) async {
+      print(" --- - - ----------------- new subscribe received");
       state = await AsyncValue.guard(() => _fetchNews());
     });
     return await _fetchNews();

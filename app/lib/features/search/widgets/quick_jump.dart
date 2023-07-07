@@ -132,7 +132,7 @@ class QuickJump extends ConsumerWidget {
               side: const BorderSide(width: 2, color: Colors.amber),
             ),
             onPressed: () {
-              navigateTo(route: Routes.updatesEdit, push: true);
+              navigateTo(route: Routes.actionAddUpdate, push: true);
               debugPrint('News');
             },
             icon: const Icon(Atlas.plus_circle_thin),

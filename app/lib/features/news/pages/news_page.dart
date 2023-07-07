@@ -26,7 +26,7 @@ class NewsPage extends ConsumerWidget {
             child: IconButton(
               /// [GoRouter] use context.push() for preserving states
               /// of previous route and context.go() for vice versa.
-              onPressed: () => context.pushNamed(Routes.updatesEdit.name),
+              onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
               icon: Icon(
                 Atlas.plus_circle_thin,
                 color: Theme.of(context).colorScheme.neutral5,
