@@ -29,11 +29,12 @@ Widget elevatedButton(
   );
 }
 
-class VerifEvent {
+class VerificationProcess {
   bool verifyingThisDev;
   String stage;
+  String? finishedMsg;
 
-  VerifEvent({
+  VerificationProcess({
     required this.verifyingThisDev,
     required this.stage,
   });
@@ -45,7 +46,7 @@ class CrossSigning {
   bool waitForMatch = false;
   late StreamSubscription<DeviceChangedEvent>? _deviceChangedPoller;
   late StreamSubscription<VerificationEvent>? _verificationPoller;
-  final Map<String, VerifEvent> _eventMap = {};
+  final Map<String, VerificationProcess> _processMap = {};
   bool _mounted = true;
   bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
@@ -88,7 +89,7 @@ class CrossSigning {
     // on this event, `New device` popup must not appear.
     // thus skip this event.
     bool result = true;
-    _eventMap.forEach((key, value) {
+    _processMap.forEach((key, value) {
       if (value.stage == 'm.key.verification.mac') {
         result = false;
         return;
@@ -132,11 +133,11 @@ class CrossSigning {
 
   void _onKeyVerificationRequest(VerificationEvent event) {
     String? flowId = event.flowId();
-    if (flowId == null || _eventMap.containsKey(flowId)) {
+    if (flowId == null || _processMap.containsKey(flowId)) {
       return;
     }
     // this case is bob side
-    _eventMap[flowId] = VerifEvent(
+    _processMap[flowId] = VerificationProcess(
       verifyingThisDev: true,
       stage: 'm.key.verification.request',
     );
@@ -185,10 +186,13 @@ class CrossSigning {
                   child: IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () async {
+                      rootNavigatorKey.currentContext?.pop();
                       // cancel verification request from other device
                       await event.cancelVerificationRequest();
-                      rootNavigatorKey.currentContext?.pop();
-                      _eventMap.remove(flowId);
+                      // finish verification
+                      _processMap[flowId]?.finishedMsg =
+                          'You cancelled verification.';
+                      _onKeyVerificationCancel(event, true);
                     },
                     color: Colors.white,
                   ),
@@ -232,10 +236,10 @@ class CrossSigning {
         if (_mounted) {
           acceptingRequest = true;
         }
+        rootNavigatorKey.currentContext?.pop();
         // accept verification request from other device
         await event.acceptVerificationRequest();
         // go to onReady status
-        rootNavigatorKey.currentContext?.pop();
         Future.delayed(const Duration(milliseconds: 500), () {
           _onKeyVerificationReady(event, true);
         });
@@ -250,10 +254,10 @@ class CrossSigning {
       return;
     }
     if (manual) {
-      _eventMap[flowId]!.stage = 'm.key.verification.ready';
+      _processMap[flowId]!.stage = 'm.key.verification.ready';
     } else {
       // this device is alice side
-      _eventMap[flowId] = VerifEvent(
+      _processMap[flowId] = VerificationProcess(
         verifyingThisDev: false,
         stage: 'm.key.verification.ready',
       );
@@ -293,7 +297,7 @@ class CrossSigning {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  _eventMap[flowId]!.verifyingThisDev
+                  _processMap[flowId]!.verifyingThisDev
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
                 ),
@@ -303,11 +307,12 @@ class CrossSigning {
                   child: IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () async {
-                      // cancel the current verification
-                      await event.cancelVerificationRequest();
-                      // finish verification
                       rootNavigatorKey.currentContext?.pop();
-                      _eventMap.remove(flowId);
+                      // cancel the current verification
+                      _processMap[flowId]?.finishedMsg =
+                          'You cancelled verification.';
+                      await event
+                          .cancelVerificationRequest(); // occurs cancel event
                     },
                     color: Colors.white,
                   ),
@@ -394,11 +399,11 @@ class CrossSigning {
     if (flowId == null) {
       return;
     }
-    if (_eventMap[flowId]?.stage != 'm.key.verification.request' &&
-        _eventMap[flowId]?.stage != 'm.key.verification.ready') {
+    if (_processMap[flowId]?.stage != 'm.key.verification.request' &&
+        _processMap[flowId]?.stage != 'm.key.verification.ready') {
       return;
     }
-    _eventMap[flowId]?.stage = 'm.key.verification.start';
+    _processMap[flowId]?.stage = 'm.key.verification.start';
     showModalBottomSheet(
       context: rootNavigatorKey.currentContext!,
       builder: (BuildContext context) => Container(
@@ -436,7 +441,7 @@ class CrossSigning {
               ),
               const SizedBox(width: 5),
               Text(
-                _eventMap[flowId]?.verifyingThisDev == true
+                _processMap[flowId]?.verifyingThisDev == true
                     ? AppLocalizations.of(context)!.verifyThisSession
                     : AppLocalizations.of(context)!.verifySession,
               ),
@@ -446,10 +451,9 @@ class CrossSigning {
                 child: IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () async {
-                    // cancel sas verification
-                    await event.cancelSasVerification();
-                    // go to onCancel status
-                    _onKeyVerificationCancel(event, true);
+                    _processMap[flowId]?.finishedMsg =
+                        'You declined verification.';
+                    await event.cancelSasVerification(); // occurs cancel event
                   },
                   color: Colors.white,
                 ),
@@ -486,7 +490,7 @@ class CrossSigning {
     if (flowId == null) {
       return;
     }
-    _eventMap[flowId]?.stage = 'm.key.verification.cancel';
+    _processMap[flowId]?.stage = 'm.key.verification.cancel';
     showModalBottomSheet(
       context: rootNavigatorKey.currentContext!,
       builder: (BuildContext context) => Container(
@@ -498,12 +502,24 @@ class CrossSigning {
     );
   }
 
+  String _getCancelledMsg(BuildContext context, String flowId) {
+    VerificationProcess? process = _processMap[flowId];
+    if (process == null) {
+      return 'No messages';
+    }
+    if (process.finishedMsg != null) {
+      return process.finishedMsg!;
+    }
+    return AppLocalizations.of(context)!.verificationConclusionCompromised;
+  }
+
   Widget _buildOnCancel(
     BuildContext context,
     VerificationEvent event,
     String flowId,
     bool manual,
   ) {
+    debugPrint('_buildOnCancel manual: $manual');
     if (manual) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -523,7 +539,7 @@ class CrossSigning {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    _eventMap[flowId]?.verifyingThisDev == true
+                    _processMap[flowId]?.verifyingThisDev == true
                         ? AppLocalizations.of(context)!.verifyThisSession
                         : AppLocalizations.of(context)!.verifySession,
                   ),
@@ -543,7 +559,7 @@ class CrossSigning {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Text(
-                AppLocalizations.of(context)!.verificationConclusionCompromised,
+                _getCancelledMsg(context, flowId),
                 softWrap: false,
               ),
             ),
@@ -557,9 +573,9 @@ class CrossSigning {
                 AppLocalizations.of(context)!.sasGotIt,
                 Theme.of(context).colorScheme.success,
                 () {
-                  // finish verification
                   rootNavigatorKey.currentContext?.pop();
-                  _eventMap.remove(flowId);
+                  // finish verification
+                  _processMap.remove(flowId);
                 },
                 const TextStyle(),
               ),
@@ -587,7 +603,7 @@ class CrossSigning {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    _eventMap[flowId]?.verifyingThisDev == true
+                    _processMap[flowId]?.verifyingThisDev == true
                         ? AppLocalizations.of(context)!.verifyThisSession
                         : AppLocalizations.of(context)!.verifySession,
                   ),
@@ -605,7 +621,7 @@ class CrossSigning {
             flex: 2,
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: Text(event.reason()!),
+              child: Text(_getCancelledMsg(context, flowId)),
             ),
           ),
           const Spacer(flex: 1),
@@ -617,9 +633,9 @@ class CrossSigning {
                 AppLocalizations.of(context)!.sasGotIt,
                 Theme.of(context).colorScheme.success,
                 () {
-                  // finish verification
                   rootNavigatorKey.currentContext?.pop();
-                  _eventMap.remove(flowId);
+                  // finish verification
+                  _processMap.remove(flowId);
                 },
                 const TextStyle(),
               ),
@@ -639,7 +655,7 @@ class CrossSigning {
     if (flowId == null) {
       return;
     }
-    _eventMap[flowId]?.stage = 'm.key.verification.accept';
+    _processMap[flowId]?.stage = 'm.key.verification.accept';
     showModalBottomSheet(
       context: rootNavigatorKey.currentContext!,
       builder: (BuildContext context) => Container(
@@ -675,7 +691,7 @@ class CrossSigning {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  _eventMap[flowId]?.verifyingThisDev == true
+                  _processMap[flowId]?.verifyingThisDev == true
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
                 ),
@@ -718,7 +734,7 @@ class CrossSigning {
     if (flowId == null) {
       return;
     }
-    _eventMap[flowId]?.stage = 'm.key.verification.key';
+    _processMap[flowId]?.stage = 'm.key.verification.key';
     event.getVerificationEmoji().then((emoji) {
       showModalBottomSheet(
         context: rootNavigatorKey.currentContext!,
@@ -759,7 +775,7 @@ class CrossSigning {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  _eventMap[flowId]?.verifyingThisDev == true
+                  _processMap[flowId]?.verifyingThisDev == true
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
                 ),
@@ -769,10 +785,10 @@ class CrossSigning {
                   child: IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () async {
-                      // cancel key verification
-                      await event.cancelVerificationKey();
-                      // go to onCancel status
-                      _onKeyVerificationCancel(event, true);
+                      _processMap[flowId]?.finishedMsg =
+                          'You declined verification';
+                      await event
+                          .cancelVerificationRequest(); // occurs cancel event
                     },
                     color: Colors.white,
                   ),
@@ -860,11 +876,11 @@ class CrossSigning {
             AppLocalizations.of(context)!.verificationSasDoNotMatch,
             Theme.of(context).colorScheme.success,
             () async {
+              rootNavigatorKey.currentContext?.pop();
               // mismatch sas verification
               await event.mismatchSasVerification();
-              // go to onCancel status
-              rootNavigatorKey.currentContext?.pop();
-              _onKeyVerificationCancel(event, true);
+              _processMap[event.flowId()]?.finishedMsg =
+                  'You mismatched verification.';
             },
             const TextStyle(),
           ),
@@ -880,15 +896,16 @@ class CrossSigning {
               if (_mounted) {
                 waitForMatch = true;
               }
+              rootNavigatorKey.currentContext?.pop();
               // confirm sas verification
-              await event.confirmSasVerification();
+              bool isDone = await event.confirmSasVerification();
+              _processMap[event.flowId()]?.finishedMsg = isDone
+                  ? 'You confirmed verification.'
+                  : 'Verification was not done.';
               // close dialog
               if (_mounted) {
                 waitForMatch = false;
               }
-              // go to onMac status
-              rootNavigatorKey.currentContext?.pop();
-              _onKeyVerificationMac(event);
             },
             const TextStyle(),
           ),
@@ -902,7 +919,7 @@ class CrossSigning {
     if (flowId == null) {
       return;
     }
-    _eventMap[flowId]?.stage = 'm.key.verification.mac';
+    _processMap[flowId]?.stage = 'm.key.verification.mac';
     Future.delayed(const Duration(milliseconds: 500), () async {
       await event.reviewVerificationMac();
     });
@@ -916,7 +933,7 @@ class CrossSigning {
     if (flowId == null) {
       return;
     }
-    _eventMap[flowId]?.stage = 'm.key.verification.done';
+    _processMap[flowId]?.stage = 'm.key.verification.done';
     showModalBottomSheet(
       context: rootNavigatorKey.currentContext!,
       builder: (BuildContext context) => Container(
@@ -927,6 +944,20 @@ class CrossSigning {
       ),
       isDismissible: false,
     );
+  }
+
+  String _getDoneMsg(BuildContext context, String flowId) {
+    VerificationProcess? process = _processMap[flowId];
+    if (process == null) {
+      return 'No messages';
+    }
+    if (process.finishedMsg != null) {
+      return process.finishedMsg!;
+    }
+    if (process.verifyingThisDev) {
+      return AppLocalizations.of(context)!.verificationConclusionOkSelfNotice;
+    }
+    return AppLocalizations.of(context)!.verificationConclusionOkDone;
   }
 
   Widget _buildOnDone(
@@ -963,10 +994,7 @@ class CrossSigning {
               horizontal: 20,
             ),
             child: Text(
-              _eventMap[flowId]!.verifyingThisDev
-                  ? AppLocalizations.of(context)!
-                      .verificationConclusionOkSelfNotice
-                  : AppLocalizations.of(context)!.verificationConclusionOkDone,
+              _getDoneMsg(context, flowId),
               textAlign: TextAlign.center,
             ),
           ),
@@ -986,9 +1014,9 @@ class CrossSigning {
                 AppLocalizations.of(context)!.sasGotIt,
                 Theme.of(context).colorScheme.success,
                 () {
-                  // finish verification
                   rootNavigatorKey.currentContext?.pop();
-                  _eventMap.remove(flowId);
+                  // finish verification
+                  _processMap.remove(flowId);
                 },
                 const TextStyle(),
               ),

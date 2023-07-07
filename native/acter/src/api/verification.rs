@@ -357,39 +357,6 @@ impl VerificationEvent {
             .await?
     }
 
-    pub async fn cancel_verification_key(&self) -> Result<bool> {
-        let client = self.client.clone();
-        let sender = self.sender.clone();
-        let event_id = self.event_id.clone();
-        let txn_id = self.txn_id.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(event_id) = event_id {
-                    if let Some(Verification::SasV1(sas)) = client
-                        .encryption()
-                        .get_verification(&sender, event_id.as_str())
-                        .await
-                    {
-                        sas.cancel().await?;
-                        return Ok(true);
-                    }
-                } else if let Some(txn_id) = txn_id {
-                    if let Some(Verification::SasV1(sas)) = client
-                        .encryption()
-                        .get_verification(&sender, txn_id.as_str())
-                        .await
-                    {
-                        sas.cancel().await?;
-                        return Ok(true);
-                    }
-                }
-                // request may be timed out
-                info!("Could not get verification object");
-                Ok(false)
-            })
-            .await?
-    }
-
     pub async fn get_verification_emoji(&self) -> Result<Vec<VerificationEmoji>> {
         let client = self.client.clone();
         let sender = self.sender.clone();
@@ -558,7 +525,7 @@ impl VerificationEmoji {
 }
 
 async fn request_verification_handler(
-    mut client: SdkClient,
+    client: SdkClient,
     mut controller: VerificationController,
     request: VerificationRequest,
     event_id: Option<OwnedEventId>,
@@ -726,7 +693,7 @@ async fn request_verification_handler(
 }
 
 async fn sas_verification_handler(
-    mut client: SdkClient,
+    client: SdkClient,
     mut controller: VerificationController,
     sas: SasVerification,
     event_id: Option<OwnedEventId>,
