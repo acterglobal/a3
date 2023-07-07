@@ -371,6 +371,7 @@ impl NewsEntryDraft {
         self
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn add_image_slide(
         &mut self,
         body: String,

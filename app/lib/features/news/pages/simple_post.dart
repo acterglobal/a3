@@ -9,13 +9,11 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:cross_file_image/cross_file_image.dart';
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:mime/mime.dart';
-import 'dart:io';
 import 'dart:typed_data';
 
 final selectedSpaceIdProvider = StateProvider<String?>((ref) => null);

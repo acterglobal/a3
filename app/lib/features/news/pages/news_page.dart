@@ -20,7 +20,7 @@ class NewsPage extends ConsumerWidget {
         ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
             false;
 
-    print("can post news $canPostNews");
+    print('can post news $canPostNews');
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(

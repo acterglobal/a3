@@ -111,7 +111,7 @@ class NewsItem extends ConsumerWidget {
                 child: Card(
                   color: bgColor,
                   child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     child: slide.hasFormattedText()
                         ? Html(
                             data: slide.text(),

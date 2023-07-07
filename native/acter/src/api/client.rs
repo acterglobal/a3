@@ -323,7 +323,6 @@ impl Client {
                                 warn!(room_id=?space.room_id(), "handles overwritten. Might cause issues?!?");
                             }
                         }
-        
 
                         if let Err(err) = space.refresh_history().await {
                             error!(?err, room_id=?space.room_id(), "refreshing history failed");
@@ -510,8 +509,10 @@ impl Client {
                             w.has_first_synced = true;
                         };
                         // background and keep the handle around.
-                        let history_first_sync =
-                            me.refresh_history_on_start(history_loading.clone(), room_handles.clone());
+                        let history_first_sync = me.refresh_history_on_start(
+                            history_loading.clone(),
+                            room_handles.clone(),
+                        );
                         first_sync_task.set(Some(history_first_sync)); // keep task in global variable to avoid too early free of temporary varible in release build
                     } else {
                         // see if we have new spaces to catch up upon
@@ -531,8 +532,12 @@ impl Client {
                         }
 
                         if !new_spaces.is_empty() {
-                            me.refresh_history_on_way(history_loading.clone(), room_handles.clone(), new_spaces)
-                                .await;
+                            me.refresh_history_on_way(
+                                history_loading.clone(),
+                                room_handles.clone(),
+                                new_spaces,
+                            )
+                            .await;
                         }
                     }
 

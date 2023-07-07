@@ -13,14 +13,14 @@ class AsyncNewsListNotifier extends AutoDisposeAsyncNotifier<List<NewsEntry>> {
     final client = ref.watch(clientProvider)!;
     _listener = client.subscribe('news');
     _sub = _listener.listen((_e) async {
-      print(" --- - - ----------------- new subscribe received");
+      print(' --- - - ----------------- new subscribe received');
       state = await AsyncValue.guard(() => _fetchNews());
     });
     return await _fetchNews();
   }
 
   Future<List<NewsEntry>> _fetchNews() async {
-    print(" -------      refreshing news");
+    print(' -------      refreshing news');
     final client = ref.watch(clientProvider);
     var entries = await client!.latestNewsEntries(25).then((v) => v.toList());
     return entries;
