@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -113,8 +115,8 @@ class NewsItem extends ConsumerWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: slide.hasFormattedText()
-                        ? Html(
-                            data: slide.text(),
+                        ? RenderHtml(
+                            text: slide.text(),
                             defaultTextStyle:
                                 Theme.of(context).textTheme.bodyLarge!.copyWith(
                                       color: fgColor,
