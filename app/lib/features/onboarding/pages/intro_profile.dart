@@ -16,22 +16,22 @@ class _IntroProfileState extends State<IntroProfile> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-          colors: [
-            Color(0xff121F2B),
-            Color(0xff122334),
-            Color(0xff121315),
-            Color(0xff121315),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: [0.0, 0.6, 0.8, 1.0],
-          tileMode: TileMode.decal,
-        ),
+            colors: [
+              Color(0xff121F2B),
+              Color(0xff122334),
+              Color(0xff121315),
+              Color(0xff121315),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.0, 0.6, 0.8, 1.0],
+            tileMode: TileMode.decal,
+          ),
         ),
         child: Column(
           children: [
             Container(
-        margin: const EdgeInsets.only(top: kToolbarHeight),
+              margin: const EdgeInsets.only(top: kToolbarHeight),
               child: Column(
                 children: [
                   Container(
@@ -45,37 +45,37 @@ class _IntroProfileState extends State<IntroProfile> {
                     child: Column(
                       children: [
                         Container(
-                            margin: const EdgeInsets.symmetric(vertical: 10),
-                            child: const Text(
-                              'Acter',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 32),
-                            ),),
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Text(
+                            'Acter',
+                            style: TextStyle(color: Colors.white, fontSize: 32),
+                          ),
+                        ),
                         Container(
-                            margin: const EdgeInsets.symmetric(vertical: 10),
-                            child: const Text(
-                              'Ready to start organizing and collaborating in safe space ?',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16),
-                            ),),
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Text(
+                            'Ready to start organizing and collaborating in safe space ?',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                        ),
                         Container(
-                            margin: const EdgeInsets.symmetric(vertical: 10),
-                            child: const Text(
-                              'Log in or create a new profile and start organizing! ?',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16),
-                            ),),
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Text(
+                            'Log in or create a new profile and start organizing! ?',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 10),
                     child: Column(
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            //Navigate to Create Profile
-                          },
+                          onTap: () =>
+                              context.pushNamed(Routes.authRegister.name),
                           child: Container(
                             height: 54,
                             decoration: BoxDecoration(
@@ -88,8 +88,9 @@ class _IntroProfileState extends State<IntroProfile> {
                                 Text(
                                   'Create Profile',
                                   style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,),
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -107,18 +108,20 @@ class _IntroProfileState extends State<IntroProfile> {
                           height: 25,
                         ),
                         GestureDetector(
-                          onTap: () => context.goNamed(Routes.authLogin.name),
+                          onTap: () => context.pushNamed(Routes.authLogin.name),
                           child: Container(
                             height: 54,
                             decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.white),),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.white),
+                            ),
                             child: const Center(
                               child: Text(
                                 'Log in',
                                 style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,),
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
