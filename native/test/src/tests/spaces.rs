@@ -237,3 +237,182 @@ async fn create_subspace() -> Result<()> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn update_name() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, _sync_state, _engine) = random_user_with_template("space-edit-", TMPL).await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.spaces().await?.len() != 1 {
+                bail!("not all spaces found");
+            } else {
+                Ok(())
+            }
+        }
+    })
+    .await?;
+
+    let mut spaces = user.spaces().await?;
+
+    assert_eq!(spaces.len(), 1);
+
+    let space = spaces.pop().unwrap();
+    let listener = space.subscribe();
+    let space_id = space.room_id().to_string();
+
+    // set name
+
+    let _event_id = space.set_name(Some("New Name".to_owned())).await?;
+
+    let fetcher_client = user.clone();
+    let space_id_clone = space_id.clone();
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        let space_id = space_id_clone.clone();
+        async move {
+            if client.get_space(space_id).await?.name() == Some("New Name".to_owned()) {
+                Ok(())
+            } else {
+                bail!("Name not set")
+            }
+        }
+    })
+    .await?;
+
+    // and we've seen the update
+
+    Retry::spawn(retry_strategy.clone(), move || {
+        let mut listener = listener.clone();
+        async move {
+            loop {
+                let res = listener.try_recv();
+                if matches!(res, Err(TryRecvError::Overflowed(_))) {
+                    // this was an overflow reporting, try again
+                    continue;
+                }
+                return res;
+            }
+        }
+    })
+    .await?;
+
+    // FIXME: name resetting seems to be broken on the synapse side. Getting a server error.
+
+    // // fresh listener
+    // let listener = space.subscribe();
+
+    // // reset name to None
+
+    // let _event_id = space.set_name(None).await?;
+
+    // let fetcher_client = user.clone();
+    // let space_id_clone = space_id.clone();
+    // let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    // Retry::spawn(retry_strategy.clone(), move || {
+    //     let client = fetcher_client.clone();
+    //     let space_id = space_id_clone.clone();
+    //     async move {
+    //         if client.get_space(space_id).await?.name().is_none() {
+    //             Ok(())
+    //         } else {
+    //             bail!("Name not set")
+    //         }
+    //     }
+    // })
+    // .await?;
+
+    // // and we've seen the update
+
+    // Retry::spawn(retry_strategy.clone(), move || {
+    //     let mut listener = listener.clone();
+    //     async move {
+    //         loop {
+    //             let res = listener.try_recv();
+    //             if matches!(res, Err(TryRecvError::Overflowed(_))) {
+    //                 // this was an overflow reporting, try again
+    //                 continue;
+    //             }
+    //             return res;
+    //         }
+    //     }
+    // })
+    // .await?;
+
+    Ok(())
+}
+
+#[tokio::test]
+#[ignore = "topic updating seems broken"]
+async fn update_topic() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, _sync_state, _engine) = random_user_with_template("space-edit-", TMPL).await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.spaces().await?.len() != 1 {
+                bail!("not all spaces found");
+            } else {
+                Ok(())
+            }
+        }
+    })
+    .await?;
+
+    let mut spaces = user.spaces().await?;
+
+    assert_eq!(spaces.len(), 1);
+
+    let space = spaces.pop().unwrap();
+    let listener = space.subscribe();
+    let space_id = space.room_id().to_string();
+
+    // set topic
+
+    let _event_id = space.set_topic("New topic".to_owned()).await?;
+
+    let fetcher_client = user.clone();
+    let space_id_clone = space_id.clone();
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        let space_id = space_id_clone.clone();
+        async move {
+            if client.get_space(space_id).await?.topic() == Some("New topic".to_owned()) {
+                Ok(())
+            } else {
+                bail!("Topic not set")
+            }
+        }
+    })
+    .await?;
+
+    // and we've seen the update
+
+    Retry::spawn(retry_strategy.clone(), move || {
+        let mut listener = listener.clone();
+        async move {
+            loop {
+                let res = listener.try_recv();
+                if matches!(res, Err(TryRecvError::Overflowed(_))) {
+                    // this was an overflow reporting, try again
+                    continue;
+                }
+                return res;
+            }
+        }
+    })
+    .await?;
+
+    Ok(())
+}

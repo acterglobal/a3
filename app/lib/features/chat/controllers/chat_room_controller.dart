@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/pages/image_selection_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -13,7 +14,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         FileDesc,
         ImageDesc,
         Member,
-        OptionBuffer,
         OptionText,
         RoomEventItem,
         RoomId,
@@ -56,8 +56,7 @@ class ChatRoomController extends GetxController {
   List<Member> activeMembers = [];
   Map<String, String> messageTextMapMarkDown = {};
   Map<String, String> messageTextMapHtml = {};
-  final Map<String, Future<OptionBuffer>> _userAvatars = {};
-  final Map<String, String> _userNames = {};
+  final Map<String, ProfileData> _userProfiles = {};
   List<Map<String, dynamic>> mentionList = [];
   StreamSubscription<TimelineDiff>? _diffSubscription;
   StreamSubscription<RoomMessage>? _messageSubscription;
@@ -438,8 +437,7 @@ class ChatRoomController extends GetxController {
   }
 
   Future<void> _fetchUserProfiles() async {
-    Map<String, Future<OptionBuffer>> avatars = {};
-    Map<String, String> names = {};
+    Map<String, ProfileData> userProfiles = {};
     List<String> ids = [];
     List<Map<String, dynamic>> mentionRecords = [];
     for (int i = 0; i < activeMembers.length; i++) {
@@ -448,37 +446,39 @@ class ChatRoomController extends GetxController {
       UserProfile profile = activeMembers[i].getProfile();
       Map<String, dynamic> record = {};
       if (await profile.hasAvatar()) {
-        avatars[userId] = profile.getThumbnail(62, 60);
-        record['avatar'] = avatars[userId];
+        var userAvatar = await profile
+            .getThumbnail(62, 60)
+            .then((optionBuffer) => optionBuffer.data()!);
+        var userName = await profile
+            .getDisplayName()
+            .then((optionBuffer) => optionBuffer.text());
+        userProfiles[userId] = ProfileData(userName, userAvatar);
+        record['avatar'] = userProfiles[userId];
       }
       OptionText dispName = await profile.getDisplayName();
       String? name = dispName.text();
       if (name != null) {
         record['display'] = name;
-        names[userId] = name;
       }
       record['link'] = userId;
       mentionRecords.add(record);
       if (i % 3 == 0 || i == activeMembers.length - 1) {
-        _userAvatars.addAll(avatars);
-        _userNames.addAll(names);
+        _userProfiles.addAll(userProfiles);
         mentionList.addAll(mentionRecords);
         mentionRecords.clear();
         update(['chat-input']);
         update(ids);
-        avatars.clear();
-        names.clear();
+        userProfiles.clear();
         ids.clear();
       }
     }
   }
 
-  Future<OptionBuffer>? getUserAvatar(String userId) {
-    return _userAvatars.containsKey(userId) ? _userAvatars[userId] : null;
-  }
-
-  String? getUserName(String userId) {
-    return _userNames.containsKey(userId) ? _userNames[userId] : null;
+  ProfileData? getUserProfile(String userId) {
+    if (_userProfiles.containsKey(userId)) {
+      return _userProfiles[userId];
+    }
+    return ProfileData('', null);
   }
 
   //preview message link

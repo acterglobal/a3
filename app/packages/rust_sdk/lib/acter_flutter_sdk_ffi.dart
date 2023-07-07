@@ -97,7 +97,6 @@ class _Box {
       throw StateError("can't drop moved value");
     }
     _dropped = true;
-    print("would drop box. won't drop");
     return;
     _api._unregisterFinalizer(this);
     _drop(ffi.Pointer.fromAddress(0), _ptr);
@@ -551,7 +550,6 @@ class Api {
     var tmp7 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
-    debugAllocation("lower string", tmp1, tmp2);
 
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
@@ -560,7 +558,6 @@ class Api {
     tmp3 = tmp2;
     final tmp4_0 = utf8.encode(tmp4);
     tmp6 = tmp4_0.length;
-    debugAllocation("lower string", tmp5, tmp6);
 
     final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
     final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
@@ -616,9 +613,8 @@ class Api {
     }
     if (tmp7 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp6, tmp7);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp6_ptr = ffi.Pointer.fromAddress(tmp6);
     List<int> tmp6_buf = [];
@@ -651,7 +647,6 @@ class Api {
     var tmp7 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
-    debugAllocation("lower string", tmp1, tmp2);
 
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
@@ -660,7 +655,6 @@ class Api {
     tmp3 = tmp2;
     final tmp4_0 = utf8.encode(tmp4);
     tmp6 = tmp4_0.length;
-    debugAllocation("lower string", tmp5, tmp6);
 
     final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
     final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
@@ -729,7 +723,6 @@ class Api {
     var tmp25 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
-    debugAllocation("lower string", tmp1, tmp2);
 
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
@@ -738,7 +731,6 @@ class Api {
     tmp3 = tmp2;
     final tmp4_0 = utf8.encode(tmp4);
     tmp6 = tmp4_0.length;
-    debugAllocation("lower string", tmp5, tmp6);
 
     final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
     final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
@@ -747,7 +739,6 @@ class Api {
     tmp7 = tmp6;
     final tmp8_0 = utf8.encode(tmp8);
     tmp10 = tmp8_0.length;
-    debugAllocation("lower string", tmp9, tmp10);
 
     final ffi.Pointer<ffi.Uint8> tmp9_0 = this.__allocate(tmp10 * 1, 1);
     final Uint8List tmp9_1 = tmp9_0.asTypedList(tmp10);
@@ -756,7 +747,6 @@ class Api {
     tmp11 = tmp10;
     final tmp12_0 = utf8.encode(tmp12);
     tmp14 = tmp12_0.length;
-    debugAllocation("lower string", tmp13, tmp14);
 
     final ffi.Pointer<ffi.Uint8> tmp13_0 = this.__allocate(tmp14 * 1, 1);
     final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
@@ -765,7 +755,6 @@ class Api {
     tmp15 = tmp14;
     final tmp16_0 = utf8.encode(tmp16);
     tmp18 = tmp16_0.length;
-    debugAllocation("lower string", tmp17, tmp18);
 
     final ffi.Pointer<ffi.Uint8> tmp17_0 = this.__allocate(tmp18 * 1, 1);
     final Uint8List tmp17_1 = tmp17_0.asTypedList(tmp18);
@@ -779,7 +768,6 @@ class Api {
       final tmp22 = tmp20;
       final tmp22_0 = utf8.encode(tmp22);
       tmp24 = tmp22_0.length;
-      debugAllocation("lower string", tmp23, tmp24);
 
       final ffi.Pointer<ffi.Uint8> tmp23_0 = this.__allocate(tmp24 * 1, 1);
       final Uint8List tmp23_1 = tmp23_0.asTypedList(tmp24);
@@ -831,7 +819,6 @@ class Api {
     var tmp7 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
-    debugAllocation("lower string", tmp1, tmp2);
 
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
@@ -840,7 +827,6 @@ class Api {
     tmp3 = tmp2;
     final tmp4_0 = utf8.encode(tmp4);
     tmp6 = tmp4_0.length;
-    debugAllocation("lower string", tmp5, tmp6);
 
     final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
     final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
@@ -889,7 +875,6 @@ class Api {
     var tmp17 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
-    debugAllocation("lower string", tmp1, tmp2);
 
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
@@ -898,7 +883,6 @@ class Api {
     tmp3 = tmp2;
     final tmp4_0 = utf8.encode(tmp4);
     tmp6 = tmp4_0.length;
-    debugAllocation("lower string", tmp5, tmp6);
 
     final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
     final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
@@ -907,7 +891,6 @@ class Api {
     tmp7 = tmp6;
     final tmp8_0 = utf8.encode(tmp8);
     tmp10 = tmp8_0.length;
-    debugAllocation("lower string", tmp9, tmp10);
 
     final ffi.Pointer<ffi.Uint8> tmp9_0 = this.__allocate(tmp10 * 1, 1);
     final Uint8List tmp9_1 = tmp9_0.asTypedList(tmp10);
@@ -921,7 +904,6 @@ class Api {
       final tmp14 = tmp12;
       final tmp14_0 = utf8.encode(tmp14);
       tmp16 = tmp14_0.length;
-      debugAllocation("lower string", tmp15, tmp16);
 
       final ffi.Pointer<ffi.Uint8> tmp15_0 = this.__allocate(tmp16 * 1, 1);
       final Uint8List tmp15_1 = tmp15_0.asTypedList(tmp16);
@@ -992,7 +974,6 @@ class Api {
     var tmp27 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
-    debugAllocation("lower string", tmp1, tmp2);
 
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
@@ -1001,7 +982,6 @@ class Api {
     tmp3 = tmp2;
     final tmp4_0 = utf8.encode(tmp4);
     tmp6 = tmp4_0.length;
-    debugAllocation("lower string", tmp5, tmp6);
 
     final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
     final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
@@ -1010,7 +990,6 @@ class Api {
     tmp7 = tmp6;
     final tmp8_0 = utf8.encode(tmp8);
     tmp10 = tmp8_0.length;
-    debugAllocation("lower string", tmp9, tmp10);
 
     final ffi.Pointer<ffi.Uint8> tmp9_0 = this.__allocate(tmp10 * 1, 1);
     final Uint8List tmp9_1 = tmp9_0.asTypedList(tmp10);
@@ -1019,7 +998,6 @@ class Api {
     tmp11 = tmp10;
     final tmp12_0 = utf8.encode(tmp12);
     tmp14 = tmp12_0.length;
-    debugAllocation("lower string", tmp13, tmp14);
 
     final ffi.Pointer<ffi.Uint8> tmp13_0 = this.__allocate(tmp14 * 1, 1);
     final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
@@ -1028,7 +1006,6 @@ class Api {
     tmp15 = tmp14;
     final tmp16_0 = utf8.encode(tmp16);
     tmp18 = tmp16_0.length;
-    debugAllocation("lower string", tmp17, tmp18);
 
     final ffi.Pointer<ffi.Uint8> tmp17_0 = this.__allocate(tmp18 * 1, 1);
     final Uint8List tmp17_1 = tmp17_0.asTypedList(tmp18);
@@ -1037,7 +1014,6 @@ class Api {
     tmp19 = tmp18;
     final tmp20_0 = utf8.encode(tmp20);
     tmp22 = tmp20_0.length;
-    debugAllocation("lower string", tmp21, tmp22);
 
     final ffi.Pointer<ffi.Uint8> tmp21_0 = this.__allocate(tmp22 * 1, 1);
     final Uint8List tmp21_1 = tmp21_0.asTypedList(tmp22);
@@ -1046,7 +1022,6 @@ class Api {
     tmp23 = tmp22;
     final tmp24_0 = utf8.encode(tmp24);
     tmp26 = tmp24_0.length;
-    debugAllocation("lower string", tmp25, tmp26);
 
     final ffi.Pointer<ffi.Uint8> tmp25_0 = this.__allocate(tmp26 * 1, 1);
     final Uint8List tmp25_1 = tmp25_0.asTypedList(tmp26);
@@ -1128,7 +1103,6 @@ class Api {
     var tmp21 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
-    debugAllocation("lower string", tmp1, tmp2);
 
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
     final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
@@ -1142,7 +1116,6 @@ class Api {
       final tmp6 = tmp4;
       final tmp6_0 = utf8.encode(tmp6);
       tmp8 = tmp6_0.length;
-      debugAllocation("lower string", tmp7, tmp8);
 
       final ffi.Pointer<ffi.Uint8> tmp7_0 = this.__allocate(tmp8 * 1, 1);
       final Uint8List tmp7_1 = tmp7_0.asTypedList(tmp8);
@@ -1157,7 +1130,6 @@ class Api {
       final tmp12 = tmp10;
       final tmp12_0 = utf8.encode(tmp12);
       tmp14 = tmp12_0.length;
-      debugAllocation("lower string", tmp13, tmp14);
 
       final ffi.Pointer<ffi.Uint8> tmp13_0 = this.__allocate(tmp14 * 1, 1);
       final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
@@ -1172,7 +1144,6 @@ class Api {
       final tmp18 = tmp16;
       final tmp18_0 = utf8.encode(tmp18);
       tmp20 = tmp18_0.length;
-      debugAllocation("lower string", tmp19, tmp20);
 
       final ffi.Pointer<ffi.Uint8> tmp19_0 = this.__allocate(tmp20 * 1, 1);
       final Uint8List tmp19_1 = tmp19_0.asTypedList(tmp20);
@@ -1627,6 +1598,49 @@ class Api {
     return tmp7;
   }
 
+  bool? __newsEntryDraftAddImageSlideFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryDraftAddImageSlideFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   EventId? __newsEntryDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -1808,6 +1822,98 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_ActerPin");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = ActerPin._(this, tmp13_1);
+    return tmp7;
+  }
+
+  CommentsManager? __acterPinCommentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _acterPinCommentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_CommentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = CommentsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
+  AttachmentsManager? __acterPinAttachmentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _acterPinAttachmentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = AttachmentsManager._(this, tmp13_1);
     return tmp7;
   }
 
@@ -3127,9 +3233,8 @@ class Api {
     }
     if (tmp14 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp13, tmp14);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
     List<int> tmp13_buf = [];
@@ -3190,9 +3295,8 @@ class Api {
     }
     if (tmp14 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp13, tmp14);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
     List<int> tmp13_buf = [];
@@ -3761,6 +3865,287 @@ class Api {
     return tmp7;
   }
 
+  EventId? __attachmentDraftSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentDraftSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiBufferUint8? __attachmentImageBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentImageBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiBufferUint8? __attachmentAudioBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentAudioBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiBufferUint8? __attachmentVideoBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentVideoBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiBufferUint8? __attachmentFileBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentFileBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiListAttachment? __attachmentsManagerAttachmentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentsManagerAttachmentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListAttachment");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListAttachment._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   Task? __taskRefreshFuturePoll(
     int boxed,
     int postCobject,
@@ -4247,9 +4632,8 @@ class Api {
     }
     if (tmp14 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp13, tmp14);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
     List<int> tmp13_buf = [];
@@ -4374,6 +4758,52 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _spaceSetTopicFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetNameFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetNameFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -5550,9 +5980,8 @@ class Api {
     }
     if (tmp14 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp13, tmp14);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
     List<int> tmp13_buf = [];
@@ -5707,6 +6136,144 @@ class Api {
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp14 = FfiListSpace._(this, tmp13_1);
     final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  Space? __clientJoinSpaceFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientJoinSpaceFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Space");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Space._(this, tmp13_1);
+    return tmp7;
+  }
+
+  Conversation? __clientJoinConversationFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientJoinConversationFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Conversation");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Conversation._(this, tmp13_1);
+    return tmp7;
+  }
+
+  PublicSearchResult? __clientPublicSpacesFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientPublicSpacesFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_PublicSearchResult");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = PublicSearchResult._(this, tmp13_1);
     return tmp7;
   }
 
@@ -6854,9 +7421,8 @@ class Api {
     }
     if (tmp14 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp13, tmp14);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
     List<int> tmp13_buf = [];
@@ -7280,49 +7846,6 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _verificationEventSendVerificationKeyFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
-  bool? __verificationEventCancelVerificationKeyFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _verificationEventCancelVerificationKeyFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -8694,6 +9217,17 @@ class Api {
       _NewsSlideTypeStrReturn Function(
     int,
   )>();
+  late final _newsSlideHasFormattedTextPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__NewsSlide_has_formatted_text");
+
+  late final _newsSlideHasFormattedText =
+      _newsSlideHasFormattedTextPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _newsSlideTextPtr = _lookup<
       ffi.NativeFunction<
           _NewsSlideTextReturn Function(
@@ -8875,7 +9409,7 @@ class Api {
   )>();
   late final _newsEntryDraftAddImageSlidePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
+          ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
@@ -8883,7 +9417,6 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Uint8,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
@@ -8901,8 +9434,7 @@ class Api {
 
   late final _newsEntryDraftAddImageSlide =
       _newsEntryDraftAddImageSlidePtr.asFunction<
-          void Function(
-    int,
+          int Function(
     int,
     int,
     int,
@@ -9383,6 +9915,26 @@ class Api {
   )>>("__ActerPin_refresh");
 
   late final _acterPinRefresh = _acterPinRefreshPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _acterPinCommentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__ActerPin_comments");
+
+  late final _acterPinComments = _acterPinCommentsPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _acterPinAttachmentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__ActerPin_attachments");
+
+  late final _acterPinAttachments = _acterPinAttachmentsPtr.asFunction<
       int Function(
     int,
   )>();
@@ -10452,6 +11004,17 @@ class Api {
       int Function(
     int,
   )>();
+  late final _conversationGetRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationGetRoomIdStrReturn Function(
+    ffi.Int64,
+  )>>("__Conversation_get_room_id_str");
+
+  late final _conversationGetRoomIdStr =
+      _conversationGetRoomIdStrPtr.asFunction<
+          _ConversationGetRoomIdStrReturn Function(
+    int,
+  )>();
   late final _conversationTypingNoticePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -11347,6 +11910,341 @@ class Api {
   late final _commentsManagerCommentDraft =
       _commentsManagerCommentDraftPtr.asFunction<
           int Function(
+    int,
+  )>();
+  late final _attachmentDraftSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__AttachmentDraft_send");
+
+  late final _attachmentDraftSend = _attachmentDraftSendPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _attachmentSenderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Attachment_sender");
+
+  late final _attachmentSender = _attachmentSenderPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _attachmentOriginServerTsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+    ffi.Int64,
+  )>>("__Attachment_origin_server_ts");
+
+  late final _attachmentOriginServerTs =
+      _attachmentOriginServerTsPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _attachmentImageDescPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentImageDescReturn Function(
+    ffi.Int64,
+  )>>("__Attachment_image_desc");
+
+  late final _attachmentImageDesc = _attachmentImageDescPtr.asFunction<
+      _AttachmentImageDescReturn Function(
+    int,
+  )>();
+  late final _attachmentImageBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Attachment_image_binary");
+
+  late final _attachmentImageBinary = _attachmentImageBinaryPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _attachmentAudioDescPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentAudioDescReturn Function(
+    ffi.Int64,
+  )>>("__Attachment_audio_desc");
+
+  late final _attachmentAudioDesc = _attachmentAudioDescPtr.asFunction<
+      _AttachmentAudioDescReturn Function(
+    int,
+  )>();
+  late final _attachmentAudioBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Attachment_audio_binary");
+
+  late final _attachmentAudioBinary = _attachmentAudioBinaryPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _attachmentVideoDescPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentVideoDescReturn Function(
+    ffi.Int64,
+  )>>("__Attachment_video_desc");
+
+  late final _attachmentVideoDesc = _attachmentVideoDescPtr.asFunction<
+      _AttachmentVideoDescReturn Function(
+    int,
+  )>();
+  late final _attachmentVideoBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Attachment_video_binary");
+
+  late final _attachmentVideoBinary = _attachmentVideoBinaryPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _attachmentFileDescPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentFileDescReturn Function(
+    ffi.Int64,
+  )>>("__Attachment_file_desc");
+
+  late final _attachmentFileDesc = _attachmentFileDescPtr.asFunction<
+      _AttachmentFileDescReturn Function(
+    int,
+  )>();
+  late final _attachmentFileBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Attachment_file_binary");
+
+  late final _attachmentFileBinary = _attachmentFileBinaryPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _attachmentsManagerAttachmentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__AttachmentsManager_attachments");
+
+  late final _attachmentsManagerAttachments =
+      _attachmentsManagerAttachmentsPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _attachmentsManagerHasAttachmentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__AttachmentsManager_has_attachments");
+
+  late final _attachmentsManagerHasAttachments =
+      _attachmentsManagerHasAttachmentsPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _attachmentsManagerAttachmentsCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+    ffi.Int64,
+  )>>("__AttachmentsManager_attachments_count");
+
+  late final _attachmentsManagerAttachmentsCount =
+      _attachmentsManagerAttachmentsCountPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _attachmentsManagerAttachmentDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__AttachmentsManager_attachment_draft");
+
+  late final _attachmentsManagerAttachmentDraft =
+      _attachmentsManagerAttachmentDraftPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _attachmentsManagerImageAttachmentDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__AttachmentsManager_image_attachment_draft");
+
+  late final _attachmentsManagerImageAttachmentDraft =
+      _attachmentsManagerImageAttachmentDraftPtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentsManagerAudioAttachmentDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+  )>>("__AttachmentsManager_audio_attachment_draft");
+
+  late final _attachmentsManagerAudioAttachmentDraft =
+      _attachmentsManagerAudioAttachmentDraftPtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentsManagerVideoAttachmentDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__AttachmentsManager_video_attachment_draft");
+
+  late final _attachmentsManagerVideoAttachmentDraft =
+      _attachmentsManagerVideoAttachmentDraftPtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentsManagerFileAttachmentDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+  )>>("__AttachmentsManager_file_attachment_draft");
+
+  late final _attachmentsManagerFileAttachmentDraft =
+      _attachmentsManagerFileAttachmentDraftPtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
     int,
   )>();
   late final _taskTitlePtr = _lookup<
@@ -13048,6 +13946,24 @@ class Api {
     int,
     int,
   )>();
+  late final _spaceSetNamePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Space_set_name");
+
+  late final _spaceSetName = _spaceSetNamePtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _spaceActiveMembersPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -13066,6 +13982,16 @@ class Api {
 
   late final _spaceGetRoomId = _spaceGetRoomIdPtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _spaceGetRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceGetRoomIdStrReturn Function(
+    ffi.Int64,
+  )>>("__Space_get_room_id_str");
+
+  late final _spaceGetRoomIdStr = _spaceGetRoomIdStrPtr.asFunction<
+      _SpaceGetRoomIdStrReturn Function(
     int,
   )>();
   late final _spaceGetMemberPtr = _lookup<
@@ -13627,6 +14553,160 @@ class Api {
     int,
     int,
   )>();
+  late final _publicSearchResultItemNamePtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemNameReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_name");
+
+  late final _publicSearchResultItemName =
+      _publicSearchResultItemNamePtr.asFunction<
+          _PublicSearchResultItemNameReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultItemTopicPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemTopicReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_topic");
+
+  late final _publicSearchResultItemTopic =
+      _publicSearchResultItemTopicPtr.asFunction<
+          _PublicSearchResultItemTopicReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultItemWorldReadablePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_world_readable");
+
+  late final _publicSearchResultItemWorldReadable =
+      _publicSearchResultItemWorldReadablePtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _publicSearchResultItemGuestCanJoinPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_guest_can_join");
+
+  late final _publicSearchResultItemGuestCanJoin =
+      _publicSearchResultItemGuestCanJoinPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _publicSearchResultItemCanonicalAliasStrPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemCanonicalAliasStrReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_canonical_alias_str");
+
+  late final _publicSearchResultItemCanonicalAliasStr =
+      _publicSearchResultItemCanonicalAliasStrPtr.asFunction<
+          _PublicSearchResultItemCanonicalAliasStrReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultItemNumJoinedMembersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_num_joined_members");
+
+  late final _publicSearchResultItemNumJoinedMembers =
+      _publicSearchResultItemNumJoinedMembersPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _publicSearchResultItemRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemRoomIdStrReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_room_id_str");
+
+  late final _publicSearchResultItemRoomIdStr =
+      _publicSearchResultItemRoomIdStrPtr.asFunction<
+          _PublicSearchResultItemRoomIdStrReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultItemAvatarUrlStrPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemAvatarUrlStrReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_avatar_url_str");
+
+  late final _publicSearchResultItemAvatarUrlStr =
+      _publicSearchResultItemAvatarUrlStrPtr.asFunction<
+          _PublicSearchResultItemAvatarUrlStrReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultItemJoinRuleStrPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemJoinRuleStrReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_join_rule_str");
+
+  late final _publicSearchResultItemJoinRuleStr =
+      _publicSearchResultItemJoinRuleStrPtr.asFunction<
+          _PublicSearchResultItemJoinRuleStrReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultItemRoomTypeStrPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemRoomTypeStrReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResultItem_room_type_str");
+
+  late final _publicSearchResultItemRoomTypeStr =
+      _publicSearchResultItemRoomTypeStrPtr.asFunction<
+          _PublicSearchResultItemRoomTypeStrReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultNextBatchPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultNextBatchReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResult_next_batch");
+
+  late final _publicSearchResultNextBatch =
+      _publicSearchResultNextBatchPtr.asFunction<
+          _PublicSearchResultNextBatchReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultPrevBatchPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultPrevBatchReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResult_prev_batch");
+
+  late final _publicSearchResultPrevBatch =
+      _publicSearchResultPrevBatchPtr.asFunction<
+          _PublicSearchResultPrevBatchReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultTotalRoomCountEstimatePtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultTotalRoomCountEstimateReturn Function(
+    ffi.Int64,
+  )>>("__PublicSearchResult_total_room_count_estimate");
+
+  late final _publicSearchResultTotalRoomCountEstimate =
+      _publicSearchResultTotalRoomCountEstimatePtr.asFunction<
+          _PublicSearchResultTotalRoomCountEstimateReturn Function(
+    int,
+  )>();
+  late final _publicSearchResultChunksPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__PublicSearchResult_chunks");
+
+  late final _publicSearchResultChunks =
+      _publicSearchResultChunksPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _clientStartSyncPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -13771,6 +14851,88 @@ class Api {
 
   late final _clientSpaces = _clientSpacesPtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _clientJoinSpacePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_join_space");
+
+  late final _clientJoinSpace = _clientJoinSpacePtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientJoinConversationPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_join_conversation");
+
+  late final _clientJoinConversation = _clientJoinConversationPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientPublicSpacesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_public_spaces");
+
+  late final _clientPublicSpaces = _clientPublicSpacesPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
     int,
   )>();
   late final _clientGetSpacePtr = _lookup<
@@ -14451,17 +15613,6 @@ class Api {
           int Function(
     int,
   )>();
-  late final _verificationEventCancelVerificationKeyPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__VerificationEvent_cancel_verification_key");
-
-  late final _verificationEventCancelVerificationKey =
-      _verificationEventCancelVerificationKeyPtr.asFunction<
-          int Function(
-    int,
-  )>();
   late final _verificationEventGetVerificationEmojiPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -14875,6 +16026,21 @@ class Api {
     int,
     int,
   )>();
+  late final _newsEntryDraftAddImageSlideFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryDraftAddImageSlideFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__NewsEntryDraft_add_image_slide_future_poll");
+
+  late final _newsEntryDraftAddImageSlideFuturePoll =
+      _newsEntryDraftAddImageSlideFuturePollPtr.asFunction<
+          _NewsEntryDraftAddImageSlideFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _newsEntryDraftSendFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _NewsEntryDraftSendFuturePollReturn Function(
@@ -14930,6 +16096,36 @@ class Api {
   late final _acterPinRefreshFuturePoll =
       _acterPinRefreshFuturePollPtr.asFunction<
           _ActerPinRefreshFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _acterPinCommentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinCommentsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__ActerPin_comments_future_poll");
+
+  late final _acterPinCommentsFuturePoll =
+      _acterPinCommentsFuturePollPtr.asFunction<
+          _ActerPinCommentsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _acterPinAttachmentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinAttachmentsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__ActerPin_attachments_future_poll");
+
+  late final _acterPinAttachmentsFuturePoll =
+      _acterPinAttachmentsFuturePollPtr.asFunction<
+          _ActerPinAttachmentsFuturePollReturn Function(
     int,
     int,
     int,
@@ -15564,6 +16760,96 @@ class Api {
     int,
     int,
   )>();
+  late final _attachmentDraftSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentDraftSendFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__AttachmentDraft_send_future_poll");
+
+  late final _attachmentDraftSendFuturePoll =
+      _attachmentDraftSendFuturePollPtr.asFunction<
+          _AttachmentDraftSendFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentImageBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentImageBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Attachment_image_binary_future_poll");
+
+  late final _attachmentImageBinaryFuturePoll =
+      _attachmentImageBinaryFuturePollPtr.asFunction<
+          _AttachmentImageBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentAudioBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentAudioBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Attachment_audio_binary_future_poll");
+
+  late final _attachmentAudioBinaryFuturePoll =
+      _attachmentAudioBinaryFuturePollPtr.asFunction<
+          _AttachmentAudioBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentVideoBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentVideoBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Attachment_video_binary_future_poll");
+
+  late final _attachmentVideoBinaryFuturePoll =
+      _attachmentVideoBinaryFuturePollPtr.asFunction<
+          _AttachmentVideoBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentFileBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentFileBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Attachment_file_binary_future_poll");
+
+  late final _attachmentFileBinaryFuturePoll =
+      _attachmentFileBinaryFuturePollPtr.asFunction<
+          _AttachmentFileBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentsManagerAttachmentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerAttachmentsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__AttachmentsManager_attachments_future_poll");
+
+  late final _attachmentsManagerAttachmentsFuturePoll =
+      _attachmentsManagerAttachmentsFuturePollPtr.asFunction<
+          _AttachmentsManagerAttachmentsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _taskRefreshFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TaskRefreshFuturePollReturn Function(
@@ -15765,6 +17051,20 @@ class Api {
 
   late final _spaceSetTopicFuturePoll = _spaceSetTopicFuturePollPtr.asFunction<
       _SpaceSetTopicFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _spaceSetNameFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceSetNameFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Space_set_name_future_poll");
+
+  late final _spaceSetNameFuturePoll = _spaceSetNameFuturePollPtr.asFunction<
+      _SpaceSetNameFuturePollReturn Function(
     int,
     int,
     int,
@@ -16179,6 +17479,51 @@ class Api {
 
   late final _clientSpacesFuturePoll = _clientSpacesFuturePollPtr.asFunction<
       _ClientSpacesFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientJoinSpaceFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientJoinSpaceFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_join_space_future_poll");
+
+  late final _clientJoinSpaceFuturePoll =
+      _clientJoinSpaceFuturePollPtr.asFunction<
+          _ClientJoinSpaceFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientJoinConversationFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientJoinConversationFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_join_conversation_future_poll");
+
+  late final _clientJoinConversationFuturePoll =
+      _clientJoinConversationFuturePollPtr.asFunction<
+          _ClientJoinConversationFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientPublicSpacesFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientPublicSpacesFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_public_spaces_future_poll");
+
+  late final _clientPublicSpacesFuturePoll =
+      _clientPublicSpacesFuturePollPtr.asFunction<
+          _ClientPublicSpacesFuturePollReturn Function(
     int,
     int,
     int,
@@ -16709,21 +18054,6 @@ class Api {
     int,
     int,
   )>();
-  late final _verificationEventCancelVerificationKeyFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventCancelVerificationKeyFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__VerificationEvent_cancel_verification_key_future_poll");
-
-  late final _verificationEventCancelVerificationKeyFuturePoll =
-      _verificationEventCancelVerificationKeyFuturePollPtr.asFunction<
-          _VerificationEventCancelVerificationKeyFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
   late final _verificationEventGetVerificationEmojiFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _VerificationEventGetVerificationEmojiFuturePollReturn Function(
@@ -17173,6 +18503,55 @@ class Api {
 
   late final _ffiListActerPinInsert =
       _ffiListActerPinInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListAttachment createFfiListAttachment() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListAttachmentCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListAttachment");
+    return FfiListAttachment._(this, list_box);
+  }
+
+  late final _ffiListAttachmentCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListAttachmentCreate");
+
+  late final _ffiListAttachmentCreate =
+      _ffiListAttachmentCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListAttachmentLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListAttachmentLen");
+
+  late final _ffiListAttachmentLen =
+      _ffiListAttachmentLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListAttachmentElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListAttachmentElementAt");
+
+  late final _ffiListAttachmentElementAt =
+      _ffiListAttachmentElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListAttachmentRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListAttachmentRemove");
+
+  late final _ffiListAttachmentRemove =
+      _ffiListAttachmentRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListAttachmentAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListAttachmentAdd");
+
+  late final _ffiListAttachmentAdd =
+      _ffiListAttachmentAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListAttachmentInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListAttachmentInsert");
+
+  late final _ffiListAttachmentInsert =
+      _ffiListAttachmentInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListCalendarEvent createFfiListCalendarEvent() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListCalendarEventCreate());
@@ -17663,6 +19042,60 @@ class Api {
 
   late final _ffiListObjRefInsert =
       _ffiListObjRefInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListPublicSearchResultItem createFfiListPublicSearchResultItem() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListPublicSearchResultItemCreate());
+    final list_box =
+        _Box(this, list_ptr, "drop_box_FfiListPublicSearchResultItem");
+    return FfiListPublicSearchResultItem._(this, list_box);
+  }
+
+  late final _ffiListPublicSearchResultItemCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListPublicSearchResultItemCreate");
+
+  late final _ffiListPublicSearchResultItemCreate =
+      _ffiListPublicSearchResultItemCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListPublicSearchResultItemLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListPublicSearchResultItemLen");
+
+  late final _ffiListPublicSearchResultItemLen =
+      _ffiListPublicSearchResultItemLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListPublicSearchResultItemElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListPublicSearchResultItemElementAt");
+
+  late final _ffiListPublicSearchResultItemElementAt =
+      _ffiListPublicSearchResultItemElementAtPtr
+          .asFunction<int Function(int, int)>();
+
+  late final _ffiListPublicSearchResultItemRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListPublicSearchResultItemRemove");
+
+  late final _ffiListPublicSearchResultItemRemove =
+      _ffiListPublicSearchResultItemRemovePtr
+          .asFunction<int Function(int, int)>();
+
+  late final _ffiListPublicSearchResultItemAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListPublicSearchResultItemAdd");
+
+  late final _ffiListPublicSearchResultItemAdd =
+      _ffiListPublicSearchResultItemAddPtr
+          .asFunction<void Function(int, int)>();
+
+  late final _ffiListPublicSearchResultItemInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListPublicSearchResultItemInsert");
+
+  late final _ffiListPublicSearchResultItemInsert =
+      _ffiListPublicSearchResultItemInsertPtr
+          .asFunction<void Function(int, int, int)>();
   FfiListReceiptRecord createFfiListReceiptRecord() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListReceiptRecordCreate());
@@ -18196,9 +19629,8 @@ class UtcDateTime {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -18227,9 +19659,8 @@ class UtcDateTime {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -18286,9 +19717,8 @@ class RefDetails {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -18322,9 +19752,8 @@ class RefDetails {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -18354,9 +19783,8 @@ class RefDetails {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -18386,9 +19814,8 @@ class RefDetails {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -18422,9 +19849,8 @@ class RefDetails {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -18458,9 +19884,8 @@ class RefDetails {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -18494,9 +19919,8 @@ class RefDetails {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -18543,9 +19967,8 @@ class ObjRef {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -18654,9 +20077,8 @@ class NewsSlide {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -18674,6 +20096,18 @@ class NewsSlide {
     return tmp2;
   }
 
+  /// whether this text-slide has a formatted html body
+  bool hasFormattedText() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSlideHasFormattedText(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
   /// the textual content of this slide
   String text() {
     var tmp0 = 0;
@@ -18686,9 +20120,8 @@ class NewsSlide {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -18989,7 +20422,6 @@ class NewsEntryDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -19006,10 +20438,10 @@ class NewsEntryDraft {
   }
 
   /// create news slide for image msg
-  void addImageSlide(
+  Future<bool> addImageSlide(
     String body,
     String url,
-    String? mimetype,
+    String mimetype,
     int? size,
     int? width,
     int? height,
@@ -19018,10 +20450,10 @@ class NewsEntryDraft {
     final tmp1 = body;
     final tmp5 = url;
     final tmp9 = mimetype;
-    final tmp15 = size;
-    final tmp19 = width;
-    final tmp23 = height;
-    final tmp27 = blurhash;
+    final tmp13 = size;
+    final tmp17 = width;
+    final tmp21 = height;
+    final tmp25 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -19030,8 +20462,8 @@ class NewsEntryDraft {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
+    var tmp11 = 0;
     var tmp12 = 0;
-    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
@@ -19040,13 +20472,11 @@ class NewsEntryDraft {
     var tmp24 = 0;
     var tmp26 = 0;
     var tmp28 = 0;
+    var tmp29 = 0;
     var tmp30 = 0;
-    var tmp31 = 0;
-    var tmp32 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -19055,65 +20485,56 @@ class NewsEntryDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
-      debugAllocation("lower string", tmp12, tmp13);
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
-    }
-    if (tmp15 == null) {
-      tmp16 = 0;
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
     } else {
-      tmp16 = 1;
-      final tmp17 = tmp15;
-      tmp18 = tmp17;
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
     }
-    if (tmp19 == null) {
-      tmp20 = 0;
+    if (tmp17 == null) {
+      tmp18 = 0;
     } else {
-      tmp20 = 1;
-      final tmp21 = tmp19;
-      tmp22 = tmp21;
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
     }
-    if (tmp23 == null) {
-      tmp24 = 0;
+    if (tmp21 == null) {
+      tmp22 = 0;
     } else {
-      tmp24 = 1;
-      final tmp25 = tmp23;
-      tmp26 = tmp25;
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
     }
-    if (tmp27 == null) {
-      tmp28 = 0;
+    if (tmp25 == null) {
+      tmp26 = 0;
     } else {
-      tmp28 = 1;
-      final tmp29 = tmp27;
-      final tmp29_0 = utf8.encode(tmp29);
-      tmp31 = tmp29_0.length;
-      debugAllocation("lower string", tmp30, tmp31);
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      final tmp27_0 = utf8.encode(tmp27);
+      tmp29 = tmp27_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp30_0 = _api.__allocate(tmp31 * 1, 1);
-      final Uint8List tmp30_1 = tmp30_0.asTypedList(tmp31);
-      tmp30_1.setAll(0, tmp29_0);
-      tmp30 = tmp30_0.address;
-      tmp32 = tmp31;
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+      tmp28_1.setAll(0, tmp27_0);
+      tmp28 = tmp28_0.address;
+      tmp30 = tmp29;
     }
-    _api._newsEntryDraftAddImageSlide(
+    final tmp31 = _api._newsEntryDraftAddImageSlide(
       tmp0,
       tmp2,
       tmp3,
@@ -19122,8 +20543,8 @@ class NewsEntryDraft {
       tmp7,
       tmp8,
       tmp10,
+      tmp11,
       tmp12,
-      tmp13,
       tmp14,
       tmp16,
       tmp18,
@@ -19132,11 +20553,17 @@ class NewsEntryDraft {
       tmp24,
       tmp26,
       tmp28,
+      tmp29,
       tmp30,
-      tmp31,
-      tmp32,
     );
-    return;
+    final tmp33 = tmp31;
+    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
+    final tmp33_1 =
+        _Box(_api, tmp33_0, "__NewsEntryDraft_add_image_slide_future_drop");
+    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
+    final tmp32 =
+        _nativeFuture(tmp33_1, _api.__newsEntryDraftAddImageSlideFuturePoll);
+    return tmp32;
   }
 
   /// create news slide for audio msg
@@ -19170,7 +20597,6 @@ class NewsEntryDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -19179,7 +20605,6 @@ class NewsEntryDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -19200,7 +20625,6 @@ class NewsEntryDraft {
       final tmp15 = tmp13;
       final tmp15_0 = utf8.encode(tmp15);
       tmp17 = tmp15_0.length;
-      debugAllocation("lower string", tmp16, tmp17);
 
       final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
       final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
@@ -19280,7 +20704,6 @@ class NewsEntryDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -19289,7 +20712,6 @@ class NewsEntryDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -19324,7 +20746,6 @@ class NewsEntryDraft {
       final tmp23 = tmp21;
       final tmp23_0 = utf8.encode(tmp23);
       tmp25 = tmp23_0.length;
-      debugAllocation("lower string", tmp24, tmp25);
 
       final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
       final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
@@ -19346,7 +20767,6 @@ class NewsEntryDraft {
       final tmp33 = tmp31;
       final tmp33_0 = utf8.encode(tmp33);
       tmp35 = tmp33_0.length;
-      debugAllocation("lower string", tmp34, tmp35);
 
       final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
       final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
@@ -19409,7 +20829,6 @@ class NewsEntryDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -19418,7 +20837,6 @@ class NewsEntryDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -19432,7 +20850,6 @@ class NewsEntryDraft {
       final tmp11 = tmp9;
       final tmp11_0 = utf8.encode(tmp11);
       tmp13 = tmp11_0.length;
-      debugAllocation("lower string", tmp12, tmp13);
 
       final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
       final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
@@ -19636,9 +21053,8 @@ class Tag {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -19668,9 +21084,8 @@ class Tag {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -19732,7 +21147,6 @@ class PinDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -19760,7 +21174,6 @@ class PinDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -19797,7 +21210,6 @@ class PinDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -19861,9 +21273,8 @@ class ActerPin {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -19897,9 +21308,8 @@ class ActerPin {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -19945,9 +21355,8 @@ class ActerPin {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -19996,9 +21405,8 @@ class ActerPin {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -20028,9 +21436,8 @@ class ActerPin {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -20107,6 +21514,35 @@ class ActerPin {
     return tmp2;
   }
 
+  Future<CommentsManager> comments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinComments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__ActerPin_comments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__acterPinCommentsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the attachments manager for this pin
+  Future<AttachmentsManager> attachments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinAttachments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__ActerPin_attachments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__acterPinAttachmentsFuturePoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -20131,7 +21567,6 @@ class PinUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -20168,7 +21603,6 @@ class PinUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -20214,7 +21648,6 @@ class PinUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -20285,9 +21718,8 @@ class TextMessageContent {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -20320,9 +21752,8 @@ class TextMessageContent {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -20364,9 +21795,8 @@ class CalendarEvent {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -20468,9 +21898,8 @@ class MediaSource {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -20516,9 +21945,8 @@ class ThumbnailInfo {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -20607,9 +22035,8 @@ class DeviceId {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -20650,9 +22077,8 @@ class EventId {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -20693,9 +22119,8 @@ class MxcUri {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -20736,9 +22161,8 @@ class RoomId {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -20779,9 +22203,8 @@ class UserId {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -20824,9 +22247,8 @@ class RoomEventItem {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -20856,9 +22278,8 @@ class RoomEventItem {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -20900,9 +22321,8 @@ class RoomEventItem {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -20936,9 +22356,8 @@ class RoomEventItem {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -21067,9 +22486,8 @@ class RoomEventItem {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -21115,7 +22533,6 @@ class RoomEventItem {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -21176,9 +22593,8 @@ class RoomVirtualItem {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -21212,9 +22628,8 @@ class RoomVirtualItem {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -21257,9 +22672,8 @@ class RoomMessage {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -21354,9 +22768,8 @@ class TextDesc {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -21390,9 +22803,8 @@ class TextDesc {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -21434,9 +22846,8 @@ class ImageDesc {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -21485,9 +22896,8 @@ class ImageDesc {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -21615,9 +23025,8 @@ class AudioDesc {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -21666,9 +23075,8 @@ class AudioDesc {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -21742,9 +23150,8 @@ class VideoDesc {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -21793,9 +23200,8 @@ class VideoDesc {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -21877,9 +23283,8 @@ class VideoDesc {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -21975,9 +23380,8 @@ class FileDesc {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -22026,9 +23430,8 @@ class FileDesc {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -22164,9 +23567,8 @@ class TimelineDiff {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -22328,7 +23730,6 @@ class TimelineStream {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -22337,7 +23738,6 @@ class TimelineStream {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -22351,7 +23751,6 @@ class TimelineStream {
       final tmp11 = tmp9;
       final tmp11_0 = utf8.encode(tmp11);
       tmp13 = tmp11_0.length;
-      debugAllocation("lower string", tmp12, tmp13);
 
       final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
       final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
@@ -22419,7 +23818,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -22475,9 +23873,8 @@ class Conversation {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -22507,7 +23904,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -22557,7 +23953,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -22645,6 +24040,37 @@ class Conversation {
     return tmp2;
   }
 
+  /// the room id as str
+  String getRoomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._conversationGetRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// Activate typing notice for this room
   /// The typing notice remains active for 4s. It can be deactivate at any
   /// point by setting typing to false. If this method is called while the
@@ -22684,7 +24110,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -22721,7 +24146,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -22756,7 +24180,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -22796,7 +24219,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -22805,7 +24227,6 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -22871,7 +24292,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -22880,7 +24300,6 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -22889,7 +24308,6 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
 
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
@@ -22924,7 +24342,6 @@ class Conversation {
       final tmp27 = tmp25;
       final tmp27_0 = utf8.encode(tmp27);
       tmp29 = tmp27_0.length;
-      debugAllocation("lower string", tmp28, tmp29);
 
       final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
       final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
@@ -22978,7 +24395,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23031,7 +24447,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23040,7 +24455,6 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -23049,7 +24463,6 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
 
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
@@ -23110,7 +24523,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23177,7 +24589,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23186,7 +24597,6 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -23195,7 +24605,6 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
 
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
@@ -23237,7 +24646,6 @@ class Conversation {
       final tmp31 = tmp29;
       final tmp31_0 = utf8.encode(tmp31);
       tmp33 = tmp31_0.length;
-      debugAllocation("lower string", tmp32, tmp33);
 
       final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
       final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
@@ -23293,7 +24701,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23341,7 +24748,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23350,7 +24756,6 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -23359,7 +24764,6 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
 
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
@@ -23404,7 +24808,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23437,9 +24840,8 @@ class Conversation {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -23469,7 +24871,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23554,7 +24955,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23563,7 +24963,6 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -23601,7 +25000,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23668,7 +25066,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23712,7 +25109,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23721,7 +25117,6 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -23735,7 +25130,6 @@ class Conversation {
       final tmp11 = tmp9;
       final tmp11_0 = utf8.encode(tmp11);
       tmp13 = tmp11_0.length;
-      debugAllocation("lower string", tmp12, tmp13);
 
       final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
       final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
@@ -23811,7 +25205,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23820,7 +25213,6 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -23829,7 +25221,6 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
 
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
@@ -23859,7 +25250,6 @@ class Conversation {
     }
     final tmp25_0 = utf8.encode(tmp25);
     tmp27 = tmp25_0.length;
-    debugAllocation("lower string", tmp26, tmp27);
 
     final ffi.Pointer<ffi.Uint8> tmp26_0 = _api.__allocate(tmp27 * 1, 1);
     final Uint8List tmp26_1 = tmp26_0.asTypedList(tmp27);
@@ -23873,7 +25263,6 @@ class Conversation {
       final tmp31 = tmp29;
       final tmp31_0 = utf8.encode(tmp31);
       tmp33 = tmp31_0.length;
-      debugAllocation("lower string", tmp32, tmp33);
 
       final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
       final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
@@ -23957,7 +25346,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -23966,7 +25354,6 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -23975,7 +25362,6 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
 
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
@@ -23998,7 +25384,6 @@ class Conversation {
     }
     final tmp21_0 = utf8.encode(tmp21);
     tmp23 = tmp21_0.length;
-    debugAllocation("lower string", tmp22, tmp23);
 
     final ffi.Pointer<ffi.Uint8> tmp22_0 = _api.__allocate(tmp23 * 1, 1);
     final Uint8List tmp22_1 = tmp22_0.asTypedList(tmp23);
@@ -24012,7 +25397,6 @@ class Conversation {
       final tmp27 = tmp25;
       final tmp27_0 = utf8.encode(tmp27);
       tmp29 = tmp27_0.length;
-      debugAllocation("lower string", tmp28, tmp29);
 
       final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
       final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
@@ -24108,7 +25492,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -24117,7 +25500,6 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -24126,7 +25508,6 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
 
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
@@ -24168,7 +25549,6 @@ class Conversation {
       final tmp31 = tmp29;
       final tmp31_0 = utf8.encode(tmp31);
       tmp33 = tmp31_0.length;
-      debugAllocation("lower string", tmp32, tmp33);
 
       final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
       final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
@@ -24178,7 +25558,6 @@ class Conversation {
     }
     final tmp35_0 = utf8.encode(tmp35);
     tmp37 = tmp35_0.length;
-    debugAllocation("lower string", tmp36, tmp37);
 
     final ffi.Pointer<ffi.Uint8> tmp36_0 = _api.__allocate(tmp37 * 1, 1);
     final Uint8List tmp36_1 = tmp36_0.asTypedList(tmp37);
@@ -24192,7 +25571,6 @@ class Conversation {
       final tmp41 = tmp39;
       final tmp41_0 = utf8.encode(tmp41);
       tmp43 = tmp41_0.length;
-      debugAllocation("lower string", tmp42, tmp43);
 
       final ffi.Pointer<ffi.Uint8> tmp42_0 = _api.__allocate(tmp43 * 1, 1);
       final Uint8List tmp42_1 = tmp42_0.asTypedList(tmp43);
@@ -24278,7 +25656,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -24287,7 +25664,6 @@ class Conversation {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -24296,7 +25672,6 @@ class Conversation {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
 
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
@@ -24312,7 +25687,6 @@ class Conversation {
     }
     final tmp17_0 = utf8.encode(tmp17);
     tmp19 = tmp17_0.length;
-    debugAllocation("lower string", tmp18, tmp19);
 
     final ffi.Pointer<ffi.Uint8> tmp18_0 = _api.__allocate(tmp19 * 1, 1);
     final Uint8List tmp18_1 = tmp18_0.asTypedList(tmp19);
@@ -24326,7 +25700,6 @@ class Conversation {
       final tmp23 = tmp21;
       final tmp23_0 = utf8.encode(tmp23);
       tmp25 = tmp23_0.length;
-      debugAllocation("lower string", tmp24, tmp25);
 
       final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
       final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
@@ -24389,7 +25762,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -24403,7 +25775,6 @@ class Conversation {
       final tmp7 = tmp5;
       final tmp7_0 = utf8.encode(tmp7);
       tmp9 = tmp7_0.length;
-      debugAllocation("lower string", tmp8, tmp9);
 
       final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
       final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
@@ -24418,7 +25789,6 @@ class Conversation {
       final tmp13 = tmp11;
       final tmp13_0 = utf8.encode(tmp13);
       tmp15 = tmp13_0.length;
-      debugAllocation("lower string", tmp14, tmp15);
 
       final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
       final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
@@ -24465,7 +25835,6 @@ class Conversation {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -24514,7 +25883,6 @@ class CommentDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -24547,7 +25915,6 @@ class CommentDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -24556,7 +25923,6 @@ class CommentDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -24640,9 +26006,8 @@ class Comment {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -24676,9 +26041,8 @@ class Comment {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -24785,6 +26149,742 @@ class CommentsManager {
   }
 }
 
+class AttachmentDraft {
+  final Api _api;
+  final _Box _box;
+
+  AttachmentDraft._(this._api, this._box);
+
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentDraftSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__AttachmentDraft_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentDraftSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class Attachment {
+  final Api _api;
+  final _Box _box;
+
+  Attachment._(this._api, this._box);
+
+  /// Who send this attachment
+  UserId sender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentSender(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// When was this attachment acknowledged by the server
+  int originServerTs() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentOriginServerTs(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// if this is an image, hand over the description
+  ImageDesc? imageDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentImageDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ImageDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = ImageDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is an image, hand over the data
+  Future<FfiBufferUint8> imageBinary() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentImageBinary(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_image_binary_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentImageBinaryFuturePoll);
+    return tmp2;
+  }
+
+  /// if this is an audio, hand over the description
+  AudioDesc? audioDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentAudioDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_AudioDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = AudioDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is an audio, hand over the data
+  Future<FfiBufferUint8> audioBinary() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentAudioBinary(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_audio_binary_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentAudioBinaryFuturePoll);
+    return tmp2;
+  }
+
+  /// if this is a video, hand over the description
+  VideoDesc? videoDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentVideoDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_VideoDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = VideoDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is a video, hand over the data
+  Future<FfiBufferUint8> videoBinary() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentVideoBinary(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_video_binary_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentVideoBinaryFuturePoll);
+    return tmp2;
+  }
+
+  /// if this is a file, hand over the description
+  FileDesc? fileDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentFileDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FileDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = FileDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is a file, hand over the data
+  Future<FfiBufferUint8> fileBinary() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentFileBinary(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_file_binary_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentFileBinaryFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// Reference to the attachments section of a particular item
+class AttachmentsManager {
+  final Api _api;
+  final _Box _box;
+
+  AttachmentsManager._(this._api, this._box);
+
+  /// Get the list of attachments (in arrival order)
+  Future<FfiListAttachment> attachments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerAttachments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__AttachmentsManager_attachments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__attachmentsManagerAttachmentsFuturePoll);
+    return tmp2;
+  }
+
+  /// Does this item have any attachments?
+  bool hasAttachments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerHasAttachments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// How many attachments does this item have
+  int attachmentsCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerAttachmentsCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// draft a new attachment for this item
+  AttachmentDraft attachmentDraft() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerAttachmentDraft(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_AttachmentDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = AttachmentDraft._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// create news slide for image msg
+  AttachmentDraft imageAttachmentDraft(
+    String body,
+    String url,
+    String? mimetype,
+    int? size,
+    int? width,
+    int? height,
+    String? blurhash,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = width;
+    final tmp23 = height;
+    final tmp27 = blurhash;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp31 = 0;
+    var tmp32 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      tmp22 = tmp21;
+    }
+    if (tmp23 == null) {
+      tmp24 = 0;
+    } else {
+      tmp24 = 1;
+      final tmp25 = tmp23;
+      tmp26 = tmp25;
+    }
+    if (tmp27 == null) {
+      tmp28 = 0;
+    } else {
+      tmp28 = 1;
+      final tmp29 = tmp27;
+      final tmp29_0 = utf8.encode(tmp29);
+      tmp31 = tmp29_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp30_0 = _api.__allocate(tmp31 * 1, 1);
+      final Uint8List tmp30_1 = tmp30_0.asTypedList(tmp31);
+      tmp30_1.setAll(0, tmp29_0);
+      tmp30 = tmp30_0.address;
+      tmp32 = tmp31;
+    }
+    final tmp33 = _api._attachmentsManagerImageAttachmentDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp30,
+      tmp31,
+      tmp32,
+    );
+    final tmp35 = tmp33;
+    final ffi.Pointer<ffi.Void> tmp35_0 = ffi.Pointer.fromAddress(tmp35);
+    final tmp35_1 = _Box(_api, tmp35_0, "drop_box_AttachmentDraft");
+    tmp35_1._finalizer = _api._registerFinalizer(tmp35_1);
+    final tmp34 = AttachmentDraft._(_api, tmp35_1);
+    return tmp34;
+  }
+
+  /// create news slide for audio msg
+  AttachmentDraft audioAttachmentDraft(
+    String body,
+    String url,
+    int? secs,
+    String? mimetype,
+    int? size,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = secs;
+    final tmp13 = mimetype;
+    final tmp19 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      tmp22 = tmp21;
+    }
+    final tmp23 = _api._attachmentsManagerAudioAttachmentDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+      tmp20,
+      tmp22,
+    );
+    final tmp25 = tmp23;
+    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
+    final tmp25_1 = _Box(_api, tmp25_0, "drop_box_AttachmentDraft");
+    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
+    final tmp24 = AttachmentDraft._(_api, tmp25_1);
+    return tmp24;
+  }
+
+  /// create news slide for video msg
+  AttachmentDraft videoAttachmentDraft(
+    String body,
+    String url,
+    int? secs,
+    int? height,
+    int? width,
+    String? mimetype,
+    int? size,
+    String? blurhash,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = secs;
+    final tmp13 = height;
+    final tmp17 = width;
+    final tmp21 = mimetype;
+    final tmp27 = size;
+    final tmp31 = blurhash;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp25 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp34 = 0;
+    var tmp35 = 0;
+    var tmp36 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      final tmp23_0 = utf8.encode(tmp23);
+      tmp25 = tmp23_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
+      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
+      tmp24_1.setAll(0, tmp23_0);
+      tmp24 = tmp24_0.address;
+      tmp26 = tmp25;
+    }
+    if (tmp27 == null) {
+      tmp28 = 0;
+    } else {
+      tmp28 = 1;
+      final tmp29 = tmp27;
+      tmp30 = tmp29;
+    }
+    if (tmp31 == null) {
+      tmp32 = 0;
+    } else {
+      tmp32 = 1;
+      final tmp33 = tmp31;
+      final tmp33_0 = utf8.encode(tmp33);
+      tmp35 = tmp33_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
+      final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
+      tmp34_1.setAll(0, tmp33_0);
+      tmp34 = tmp34_0.address;
+      tmp36 = tmp35;
+    }
+    final tmp37 = _api._attachmentsManagerVideoAttachmentDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp25,
+      tmp26,
+      tmp28,
+      tmp30,
+      tmp32,
+      tmp34,
+      tmp35,
+      tmp36,
+    );
+    final tmp39 = tmp37;
+    final ffi.Pointer<ffi.Void> tmp39_0 = ffi.Pointer.fromAddress(tmp39);
+    final tmp39_1 = _Box(_api, tmp39_0, "drop_box_AttachmentDraft");
+    tmp39_1._finalizer = _api._registerFinalizer(tmp39_1);
+    final tmp38 = AttachmentDraft._(_api, tmp39_1);
+    return tmp38;
+  }
+
+  /// create news slide for file msg
+  AttachmentDraft fileAttachmentDraft(
+    String body,
+    String url,
+    String? mimetype,
+    int? size,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    final tmp19 = _api._attachmentsManagerFileAttachmentDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp18,
+    );
+    final tmp21 = tmp19;
+    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
+    final tmp21_1 = _Box(_api, tmp21_0, "drop_box_AttachmentDraft");
+    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
+    final tmp20 = AttachmentDraft._(_api, tmp21_1);
+    return tmp20;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class Task {
   final Api _api;
   final _Box _box;
@@ -24803,9 +26903,8 @@ class Task {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -24839,9 +26938,8 @@ class Task {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -25145,7 +27243,6 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -25182,7 +27279,6 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -25287,7 +27383,6 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -25330,7 +27425,6 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -25378,7 +27472,6 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -25387,7 +27480,6 @@ class TaskUpdateBuilder {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -25451,7 +27543,6 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -25494,7 +27585,6 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -25542,7 +27632,6 @@ class TaskUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -25551,7 +27640,6 @@ class TaskUpdateBuilder {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -25833,7 +27921,6 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -25861,7 +27948,6 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -25939,7 +28025,6 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -25982,7 +28067,6 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -26030,7 +28114,6 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -26039,7 +28122,6 @@ class TaskDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -26094,7 +28176,6 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -26137,7 +28218,6 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -26185,7 +28265,6 @@ class TaskDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -26194,7 +28273,6 @@ class TaskDraft {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -26401,9 +28479,8 @@ class TaskList {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -26437,9 +28514,8 @@ class TaskList {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -26489,9 +28565,8 @@ class TaskList {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -26556,9 +28631,8 @@ class TaskList {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -26751,7 +28825,6 @@ class TaskListDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -26779,7 +28852,6 @@ class TaskListDraft {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -26959,7 +29031,6 @@ class TaskListUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -26987,7 +29058,6 @@ class TaskListUpdateBuilder {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -27257,9 +29327,8 @@ class SpaceRelation {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -27394,7 +29463,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -27427,7 +29495,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -27460,7 +29527,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -27512,9 +29578,8 @@ class Space {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -27544,7 +29609,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -27563,6 +29627,46 @@ class Space {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__spaceSetTopicFuturePoll);
     return tmp6;
+  }
+
+  /// set name of the room
+  Future<EventId> setName(
+    String? name,
+  ) {
+    final tmp1 = name;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    final tmp7 = _api._spaceSetName(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+    );
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "__Space_set_name_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__spaceSetNameFuturePoll);
+    return tmp8;
   }
 
   /// the members currently in the space
@@ -27595,6 +29699,37 @@ class Space {
     return tmp2;
   }
 
+  /// the room id as str
+  String getRoomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceGetRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   Future<Member> getMember(
     String userId,
   ) {
@@ -27606,7 +29741,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -27683,7 +29817,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -27901,7 +30034,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -27910,7 +30042,6 @@ class Space {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -27919,7 +30050,6 @@ class Space {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
 
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
@@ -27954,7 +30084,6 @@ class Space {
       final tmp27 = tmp25;
       final tmp27_0 = utf8.encode(tmp27);
       tmp29 = tmp27_0.length;
-      debugAllocation("lower string", tmp28, tmp29);
 
       final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
       final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
@@ -28008,7 +30137,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -28059,7 +30187,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -28068,7 +30195,6 @@ class Space {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -28077,7 +30203,6 @@ class Space {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
 
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
@@ -28138,7 +30263,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -28203,7 +30327,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -28212,7 +30335,6 @@ class Space {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -28221,7 +30343,6 @@ class Space {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
 
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
@@ -28263,7 +30384,6 @@ class Space {
       final tmp31 = tmp29;
       final tmp31_0 = utf8.encode(tmp31);
       tmp33 = tmp31_0.length;
-      debugAllocation("lower string", tmp32, tmp33);
 
       final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
       final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
@@ -28319,7 +30439,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -28365,7 +30484,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -28374,7 +30492,6 @@ class Space {
     tmp4 = tmp3;
     final tmp5_0 = utf8.encode(tmp5);
     tmp7 = tmp5_0.length;
-    debugAllocation("lower string", tmp6, tmp7);
 
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
@@ -28383,7 +30500,6 @@ class Space {
     tmp8 = tmp7;
     final tmp9_0 = utf8.encode(tmp9);
     tmp11 = tmp9_0.length;
-    debugAllocation("lower string", tmp10, tmp11);
 
     final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
     final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
@@ -28427,7 +30543,6 @@ class Space {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -28532,7 +30647,6 @@ class Member {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -28604,7 +30718,6 @@ class Account {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -28658,7 +30771,6 @@ class Account {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -28666,7 +30778,6 @@ class Account {
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
     tmp7 = tmp5.length;
-    debugAllocation("lower vec", tmp6, tmp7);
     final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
     final tmp6_1 = tmp6_0.asTypedList(tmp7);
     tmp6_1.setAll(0, tmp5);
@@ -28755,7 +30866,6 @@ class CreateSpaceSettings {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -28783,7 +30893,6 @@ class CreateSpaceSettings {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -28811,7 +30920,6 @@ class CreateSpaceSettings {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -28825,6 +30933,391 @@ class CreateSpaceSettings {
       tmp4,
     );
     return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class PublicSearchResultItem {
+  final Api _api;
+  final _Box _box;
+
+  PublicSearchResultItem._(this._api, this._box);
+
+  String? name() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? topic() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemTopic(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  bool worldReadable() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemWorldReadable(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  bool guestCanJoin() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemGuestCanJoin(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  String? canonicalAliasStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemCanonicalAliasStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int numJoinedMembers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemNumJoinedMembers(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  String roomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? avatarUrlStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemAvatarUrlStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String joinRuleStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemJoinRuleStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String roomTypeStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemRoomTypeStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class PublicSearchResult {
+  final Api _api;
+  final _Box _box;
+
+  PublicSearchResult._(this._api, this._box);
+
+  /// to be used for the next `since`
+  String? nextBatch() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultNextBatch(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// to get the previous page
+  String? prevBatch() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultPrevBatch(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// an estimated total of matches
+  int? totalRoomCountEstimate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultTotalRoomCountEstimate(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// get the chunk of items in this response
+  FfiListPublicSearchResultItem chunks() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultChunks(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListPublicSearchResultItem");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListPublicSearchResultItem._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -29020,7 +31513,6 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -29116,6 +31608,208 @@ class Client {
     return tmp2;
   }
 
+  /// attempt to join a space
+  Future<Space> joinSpace(
+    String roomIdOrAlias,
+    String? serverName,
+  ) {
+    final tmp1 = roomIdOrAlias;
+    final tmp5 = serverName;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      final tmp7_0 = utf8.encode(tmp7);
+      tmp9 = tmp7_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
+      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
+      tmp8_1.setAll(0, tmp7_0);
+      tmp8 = tmp8_0.address;
+      tmp10 = tmp9;
+    }
+    final tmp11 = _api._clientJoinSpace(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+      tmp9,
+      tmp10,
+    );
+    final tmp13 = tmp11;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(_api, tmp13_0, "__Client_join_space_future_drop");
+    tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
+    final tmp12 = _nativeFuture(tmp13_1, _api.__clientJoinSpaceFuturePoll);
+    return tmp12;
+  }
+
+  /// attempt to join a room
+  Future<Conversation> joinConversation(
+    String roomIdOrAlias,
+    String? serverName,
+  ) {
+    final tmp1 = roomIdOrAlias;
+    final tmp5 = serverName;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      final tmp7_0 = utf8.encode(tmp7);
+      tmp9 = tmp7_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
+      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
+      tmp8_1.setAll(0, tmp7_0);
+      tmp8 = tmp8_0.address;
+      tmp10 = tmp9;
+    }
+    final tmp11 = _api._clientJoinConversation(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+      tmp9,
+      tmp10,
+    );
+    final tmp13 = tmp11;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 =
+        _Box(_api, tmp13_0, "__Client_join_conversation_future_drop");
+    tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
+    final tmp12 =
+        _nativeFuture(tmp13_1, _api.__clientJoinConversationFuturePoll);
+    return tmp12;
+  }
+
+  /// search the public directory for spaces
+  Future<PublicSearchResult> publicSpaces(
+    String? searchTerm,
+    String? server,
+    String? since,
+  ) {
+    final tmp1 = searchTerm;
+    final tmp7 = server;
+    final tmp13 = since;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    final tmp19 = _api._clientPublicSpaces(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+    );
+    final tmp21 = tmp19;
+    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
+    final tmp21_1 = _Box(_api, tmp21_0, "__Client_public_spaces_future_drop");
+    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
+    final tmp20 = _nativeFuture(tmp21_1, _api.__clientPublicSpacesFuturePoll);
+    return tmp20;
+  }
+
   /// Get the following space the user is part of by
   /// roomId or room alias;
   Future<Space> getSpace(
@@ -29129,7 +31823,6 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -29192,7 +31885,6 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -29227,7 +31919,6 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -29419,7 +32110,6 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -29456,7 +32146,6 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -29503,7 +32192,6 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -29572,7 +32260,6 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -29629,7 +32316,6 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -29666,7 +32352,6 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -29729,7 +32414,6 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -29771,7 +32455,6 @@ class Client {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -29835,9 +32518,8 @@ class OptionText {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -30232,9 +32914,8 @@ class VerificationEvent {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -30268,9 +32949,8 @@ class VerificationEvent {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -30300,9 +32980,8 @@ class VerificationEvent {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -30336,9 +33015,8 @@ class VerificationEvent {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -30372,9 +33050,8 @@ class VerificationEvent {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -30544,23 +33221,6 @@ class VerificationEvent {
     return tmp2;
   }
 
-  /// Alice cancels the verification key from Bob and vice versa
-  Future<bool> cancelVerificationKey() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventCancelVerificationKey(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
-        "__VerificationEvent_cancel_verification_key_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__verificationEventCancelVerificationKeyFuturePoll);
-    return tmp2;
-  }
-
   /// Alice gets the verification emoji from Bob and vice versa
   Future<FfiListVerificationEmoji> getVerificationEmoji() {
     var tmp0 = 0;
@@ -30665,9 +33325,8 @@ class VerificationEmoji {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -30754,9 +33413,8 @@ class ReceiptRecord {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -30786,9 +33444,8 @@ class ReceiptRecord {
     final tmp5 = tmp1.arg2;
     if (tmp4 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp3, tmp4);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
     List<int> tmp3_buf = [];
@@ -30887,7 +33544,6 @@ class DeviceChangedEvent {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -30948,7 +33604,6 @@ class DeviceChangedEvent {
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
-    debugAllocation("lower string", tmp2, tmp3);
 
     final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
     final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
@@ -31092,9 +33747,8 @@ class DeviceRecord {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -31128,9 +33782,8 @@ class DeviceRecord {
     }
     if (tmp5 == 0) {
       print("returning empty string");
-      return "empty string";
+      return "";
     }
-    debugAllocation("lift string", tmp4, tmp5);
     final utf8Decoder = utf8.decoder;
     final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
     List<int> tmp4_buf = [];
@@ -31277,10 +33930,12 @@ enum MemberPermissionTag {
   CanSendChatMessages,
   CanSendReaction,
   CanSendSticker,
+  CanPostNews,
   CanBan,
   CanKick,
   CanRedact,
   CanTriggerRoomNotification,
+  CanSetName,
   CanUpdateAvatar,
   CanSetTopic,
   CanLinkSpaces,
@@ -31310,34 +33965,42 @@ class MemberPermission {
 
         break;
       case 3:
-        this._tag = MemberPermissionTag.CanBan;
+        this._tag = MemberPermissionTag.CanPostNews;
 
         break;
       case 4:
-        this._tag = MemberPermissionTag.CanKick;
+        this._tag = MemberPermissionTag.CanBan;
 
         break;
       case 5:
-        this._tag = MemberPermissionTag.CanRedact;
+        this._tag = MemberPermissionTag.CanKick;
 
         break;
       case 6:
-        this._tag = MemberPermissionTag.CanTriggerRoomNotification;
+        this._tag = MemberPermissionTag.CanRedact;
 
         break;
       case 7:
-        this._tag = MemberPermissionTag.CanUpdateAvatar;
+        this._tag = MemberPermissionTag.CanTriggerRoomNotification;
 
         break;
       case 8:
-        this._tag = MemberPermissionTag.CanSetTopic;
+        this._tag = MemberPermissionTag.CanSetName;
 
         break;
       case 9:
-        this._tag = MemberPermissionTag.CanLinkSpaces;
+        this._tag = MemberPermissionTag.CanUpdateAvatar;
 
         break;
       case 10:
+        this._tag = MemberPermissionTag.CanSetTopic;
+
+        break;
+      case 11:
+        this._tag = MemberPermissionTag.CanLinkSpaces;
+
+        break;
+      case 12:
         this._tag = MemberPermissionTag.CanSetParentSpace;
 
         break;
@@ -32227,6 +34890,15 @@ class _ConversationLatestMessageReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _ConversationGetRoomIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _ConversationRoomTypeReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -32254,6 +34926,34 @@ class _CommentContentFormattedReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
+}
+
+class _AttachmentImageDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _AttachmentAudioDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _AttachmentVideoDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _AttachmentFileDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
 }
 
 class _TaskTitleReturn extends ffi.Struct {
@@ -32558,6 +35258,15 @@ class _SpaceTopicReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _SpaceGetRoomIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _SpaceTaskListDraftReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -32601,6 +35310,106 @@ class _SyncStateFirstSyncedRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
+  external int arg1;
+}
+
+class _PublicSearchResultItemNameReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _PublicSearchResultItemTopicReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _PublicSearchResultItemCanonicalAliasStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _PublicSearchResultItemRoomIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _PublicSearchResultItemAvatarUrlStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _PublicSearchResultItemJoinRuleStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _PublicSearchResultItemRoomTypeStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _PublicSearchResultNextBatchReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _PublicSearchResultPrevBatchReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _PublicSearchResultTotalRoomCountEstimateReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -32983,6 +35792,21 @@ class _NewsSlideFileBinaryFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _NewsEntryDraftAddImageSlideFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _NewsEntryDraftSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -33029,6 +35853,36 @@ class _PinDraftSendFuturePollReturn extends ffi.Struct {
 }
 
 class _ActerPinRefreshFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ActerPinCommentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ActerPinAttachmentsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -33681,6 +36535,96 @@ class _CommentsManagerCommentsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _AttachmentDraftSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentImageBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentAudioBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentVideoBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentFileBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentsManagerAttachmentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _TaskRefreshFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -33873,6 +36817,21 @@ class _SpaceRemoveAvatarFuturePollReturn extends ffi.Struct {
 }
 
 class _SpaceSetTopicFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceSetNameFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -34297,6 +37256,51 @@ class _ClientConversationsFuturePollReturn extends ffi.Struct {
 }
 
 class _ClientSpacesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientJoinSpaceFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientJoinConversationFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientPublicSpacesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -34846,22 +37850,6 @@ class _VerificationEventSendVerificationKeyFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _VerificationEventCancelVerificationKeyFuturePollReturn
-    extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
 class _VerificationEventGetVerificationEmojiFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
@@ -35142,6 +38130,66 @@ class FfiListActerPin extends Iterable<ActerPin>
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, ActerPin element) {
     _api._ffiListActerPinInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListAttachment extends Iterable<Attachment>
+    implements CustomIterable<Attachment> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListAttachment._(this._api, this._box);
+
+  @override
+  Iterator<Attachment> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListAttachmentLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  Attachment elementAt(int index) {
+    final address = _api._ffiListAttachmentElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return Attachment._(_api, reference);
+  }
+
+  Attachment operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  Attachment remove(int index) {
+    final address = _api._ffiListAttachmentRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Attachment");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return Attachment._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(Attachment element) {
+    _api._ffiListAttachmentAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, Attachment element) {
+    _api._ffiListAttachmentInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 
@@ -35743,6 +38791,70 @@ class FfiListObjRef extends Iterable<ObjRef> implements CustomIterable<ObjRef> {
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, ObjRef element) {
     _api._ffiListObjRefInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListPublicSearchResultItem extends Iterable<PublicSearchResultItem>
+    implements CustomIterable<PublicSearchResultItem> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListPublicSearchResultItem._(this._api, this._box);
+
+  @override
+  Iterator<PublicSearchResultItem> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListPublicSearchResultItemLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  PublicSearchResultItem elementAt(int index) {
+    final address =
+        _api._ffiListPublicSearchResultItemElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return PublicSearchResultItem._(_api, reference);
+  }
+
+  PublicSearchResultItem operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  PublicSearchResultItem remove(int index) {
+    final address =
+        _api._ffiListPublicSearchResultItemRemove(_box.borrow(), index);
+    final reference = _Box(_api, ffi.Pointer.fromAddress(address),
+        "drop_box_PublicSearchResultItem");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return PublicSearchResultItem._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(PublicSearchResultItem element) {
+    _api._ffiListPublicSearchResultItemAdd(
+        _box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, PublicSearchResultItem element) {
+    _api._ffiListPublicSearchResultItemInsert(
+        _box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

@@ -1,4 +1,7 @@
-use acter_core::spaces::is_acter_space;
+use acter_core::{
+    events::news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
+    spaces::is_acter_space,
+};
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use matrix_sdk::{
@@ -33,6 +36,7 @@ use matrix_sdk::{
     Client, RoomMemberships, RoomState,
 };
 use matrix_sdk_ui::timeline::RoomExt;
+use ruma::events::{EventContent, StaticEventContent};
 use std::{
     fs::{File, Permissions},
     io::Write,
@@ -58,12 +62,15 @@ pub enum MemberPermission {
     CanSendChatMessages,
     CanSendReaction,
     CanSendSticker,
+    // Acter Specific actions
+    CanPostNews,
     // moderation tools
     CanBan,
     CanKick,
     CanRedact,
     CanTriggerRoomNotification,
     // state events
+    CanSetName,
     CanUpdateAvatar,
     CanSetTopic,
     CanLinkSpaces,
@@ -126,10 +133,15 @@ impl Member {
             MemberPermission::CanSendChatMessages => MessageLikeEventType::RoomMessage.into(), // or should this check for encrypted?
             MemberPermission::CanSendReaction => MessageLikeEventType::Reaction.into(),
             MemberPermission::CanSendSticker => MessageLikeEventType::Sticker.into(),
+            MemberPermission::CanSetName => StateEventType::RoomName.into(),
             MemberPermission::CanUpdateAvatar => StateEventType::RoomAvatar.into(),
             MemberPermission::CanSetTopic => StateEventType::RoomTopic.into(),
             MemberPermission::CanLinkSpaces => StateEventType::SpaceChild.into(),
             MemberPermission::CanSetParentSpace => StateEventType::SpaceParent.into(),
+            // Acter specific
+            MemberPermission::CanPostNews => PermissionTest::Message(MessageLikeEventType::from(
+                <NewsEntryEventContent as StaticEventContent>::TYPE,
+            )),
         };
         match tester {
             PermissionTest::Message(msg) => self.member.can_send_message(msg),
@@ -149,12 +161,15 @@ impl Room {
     }
 
     pub async fn get_my_membership(&self) -> Result<Member> {
-        let SdkRoom::Joined(joined) = &self.room else {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
             bail!("Not a room we have joined")
         };
-        let room = joined.clone();
+
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
+
         RUNTIME
             .spawn(async move {
                 let member = room
@@ -173,10 +188,12 @@ impl Room {
     }
 
     pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
-        let SdkRoom::Joined(joined) = &self.room else {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
             bail!("Can't upload avatar to a room we are not in")
         };
-        let room = joined.clone();
+
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
         let path = PathBuf::from(uri);
@@ -270,6 +287,37 @@ impl Room {
             .await?
     }
 
+    pub async fn set_name(&self, name: Option<String>) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't set name to a room we are not in")
+        };
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_state(StateEventType::RoomName) {
+                    bail!("No permission to change name of this room");
+                }
+                let resp = room
+                    .set_name(name)
+                    .await
+                    .context("Couldn't set name to the room")?;
+                Ok(resp.event_id)
+            })
+            .await?
+    }
+
     pub async fn active_members(&self) -> Result<Vec<Member>> {
         let room = self.room.clone();
 
@@ -308,7 +356,10 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let member = room.get_member(&uid).await?.context("User not found")?;
+                let member = room
+                    .get_member(&uid)
+                    .await?
+                    .context("Couldn't find him among room members")?;
                 Ok(Member { member })
             })
             .await?

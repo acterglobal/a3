@@ -76,6 +76,9 @@ object Colorize {
 object NewsSlide {
     /// the content of this slide
     fn type_str() -> string;
+
+    /// whether this text-slide has a formatted html body
+    fn has_formatted_text() -> bool;
     /// the textual content of this slide
     fn text() -> string;
     /// the references linked in this slide
@@ -124,7 +127,7 @@ object NewsEntryDraft {
     fn add_text_slide(body: string);
 
     /// create news slide for image msg
-    fn add_image_slide(body: string, url: string, mimetype: Option<string>, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>);
+    fn add_image_slide(body: string, url: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> Future<Result<bool>>;
 
     /// create news slide for audio msg
     fn add_audio_slide(body: string, url: string, secs: Option<u32>, mimetype: Option<string>, size: Option<u32>);
@@ -219,7 +222,10 @@ object ActerPin {
     fn refresh() -> Future<Result<ActerPin>>;
 
     // get the comments manager for this pin
-    // fn comments() -> Future<Result<CommentsManager>>;
+    fn comments() -> Future<Result<CommentsManager>>;
+
+    /// get the attachments manager for this pin
+    fn attachments() -> Future<Result<AttachmentsManager>>;
 }
 
 object PinUpdateBuilder {
@@ -555,6 +561,9 @@ object Conversation {
     /// the room id
     fn get_room_id() -> RoomId;
 
+    /// the room id as str
+    fn get_room_id_str() -> string;
+
     /// Activate typing notice for this room
     /// The typing notice remains active for 4s. It can be deactivate at any
     /// point by setting typing to false. If this method is called while the
@@ -699,6 +708,71 @@ object CommentsManager {
     /// draft a new comment for this item
     fn comment_draft() -> CommentDraft;
 }
+
+
+object AttachmentDraft {
+
+    // fire this attachment over - the event_id is the confirmation
+    // from the server.
+    fn send() -> Future<Result<EventId>>;
+}
+
+object Attachment {
+    /// Who send this attachment
+    fn sender() -> UserId;
+    /// When was this attachment acknowledged by the server
+    fn origin_server_ts() -> u64;
+    
+    /// if this is an image, hand over the description
+    fn image_desc() -> Option<ImageDesc>;
+    /// if this is an image, hand over the data
+    fn image_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is an audio, hand over the description
+    fn audio_desc() -> Option<AudioDesc>;
+    /// if this is an audio, hand over the data
+    fn audio_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is a video, hand over the description
+    fn video_desc() -> Option<VideoDesc>;
+    /// if this is a video, hand over the data
+    fn video_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is a file, hand over the description
+    fn file_desc() -> Option<FileDesc>;
+    /// if this is a file, hand over the data
+    fn file_binary() -> Future<Result<buffer<u8>>>;
+    
+}
+
+/// Reference to the attachments section of a particular item
+object AttachmentsManager {
+    /// Get the list of attachments (in arrival order)
+    fn attachments() -> Future<Result<Vec<Attachment>>>;
+
+    /// Does this item have any attachments?
+    fn has_attachments() -> bool;
+
+    /// How many attachments does this item have
+    fn attachments_count() -> u32;
+
+    /// draft a new attachment for this item
+    fn attachment_draft() -> AttachmentDraft;
+
+    /// create news slide for image msg
+    fn image_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> AttachmentDraft;
+
+    /// create news slide for audio msg
+    fn audio_attachment_draft(body: string, url: string, secs: Option<u32>, mimetype: Option<string>, size: Option<u32>) -> AttachmentDraft;
+
+    /// create news slide for video msg
+    fn video_attachment_draft(body: string, url: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, mimetype: Option<string>, size: Option<u32>, blurhash: Option<string>) -> AttachmentDraft;
+
+    /// create news slide for file msg
+    fn file_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u32>) -> AttachmentDraft;
+
+}
+
 
 object Task {
     /// the name of this task
@@ -1058,11 +1132,17 @@ object Space {
     /// set description / topic of the room
     fn set_topic(topic: string) -> Future<Result<EventId>>;
 
+    /// set name of the room
+    fn set_name(name: Option<string>) -> Future<Result<EventId>>;
+
     /// the members currently in the space
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     /// the room id
     fn get_room_id() -> RoomId;
+
+    /// the room id as str
+    fn get_room_id_str() -> string;
 
     // the members currently in the room
     fn get_member(user_id: string) -> Future<Result<Member>>;
@@ -1143,10 +1223,12 @@ enum MemberPermission {
     CanSendChatMessages,
     CanSendReaction,
     CanSendSticker,
+    CanPostNews,
     CanBan,
     CanKick,
     CanRedact,
     CanTriggerRoomNotification,
+    CanSetName,
     CanUpdateAvatar,
     CanSetTopic,
     CanLinkSpaces,
@@ -1202,6 +1284,36 @@ object CreateSpaceSettings {
     fn add_invitee(value: string);
 }
 
+object PublicSearchResultItem {
+    fn name() -> Option<string>;
+    fn topic() -> Option<string>;
+    fn world_readable() -> bool;
+    fn guest_can_join() -> bool;
+    // fn canonical_alias() -> Option<OwnedRoomAliasId>;
+    fn canonical_alias_str() -> Option<string>;
+    fn num_joined_members() -> u64;
+    // fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
+    // fn avatar_url() -> Option<OwnedMxcUri>;
+    fn avatar_url_str() -> Option<string>;
+    // fn join_rule() -> PublicRoomJoinRule;
+    fn join_rule_str() -> string;
+    // fn room_type() -> Option<RoomType>;
+    fn room_type_str() -> string;
+
+}
+
+object PublicSearchResult {
+    /// to be used for the next `since`
+    fn next_batch() -> Option<string>;
+    /// to get the previous page
+    fn prev_batch() -> Option<string>;
+    /// an estimated total of matches
+    fn total_room_count_estimate() -> Option<u64>;
+    /// get the chunk of items in this response
+    fn chunks() -> Vec<PublicSearchResultItem>;
+}
+
 fn new_space_settings(name: string, topic: Option<string>, avatar_uri: Option<string>, parent: Option<string>) -> Result<CreateSpaceSettings>;
 
 /// Main entry point for `acter`.
@@ -1250,6 +1362,15 @@ object Client {
 
     /// The spaces the user is part of
     fn spaces() -> Future<Result<Vec<Space>>>;
+
+    /// attempt to join a space
+    fn join_space(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Space>>;
+
+    /// attempt to join a room
+    fn join_conversation(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Conversation>>;
+
+    /// search the public directory for spaces
+    fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
 
     /// Get the following space the user is part of by
     /// roomId or room alias;
@@ -1431,9 +1552,6 @@ object VerificationEvent {
 
     /// Alice sends the verification key to Bob and vice versa
     fn send_verification_key() -> Future<Result<bool>>;
-
-    /// Alice cancels the verification key from Bob and vice versa
-    fn cancel_verification_key() -> Future<Result<bool>>;
 
     /// Alice gets the verification emoji from Bob and vice versa
     fn get_verification_emoji() -> Future<Result<Vec<VerificationEmoji>>>;

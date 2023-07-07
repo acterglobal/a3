@@ -57,7 +57,10 @@ impl super::ActerModel for Pin {
     }
 
     fn capabilities(&self) -> &[super::Capability] {
-        &[super::Capability::Commentable]
+        &[
+            super::Capability::Commentable,
+            super::Capability::HasAttachments,
+        ]
     }
 
     async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {

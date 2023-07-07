@@ -1,3 +1,4 @@
+pub mod attachments;
 pub mod calendar;
 pub mod comments;
 mod common;

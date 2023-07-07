@@ -114,7 +114,7 @@ impl Store {
             vec![]
         };
 
-        let indizes = Arc::new(DashMap::new());
+        let indizes = DashMap::new();
         let mut models_sources = Vec::new();
         for m in models_vec {
             let key = m.event_id().to_string();
@@ -125,13 +125,13 @@ impl Store {
             models_sources.push((key, m));
         }
 
-        let models = Arc::new(DashMap::from_iter(models_sources));
+        let models = DashMap::from_iter(models_sources);
 
         Ok(Store {
             fresh: false,
             client,
-            indizes,
-            models,
+            indizes: Arc::new(indizes),
+            models: Arc::new(models),
             dirty: Default::default(),
         })
     }
@@ -200,7 +200,7 @@ impl Store {
             trace!(user = ?self.client.user_id(), idx, key, "added to index");
             keys_changed.push(idx);
         }
-        trace!(user=?self.client.user_id(), key, "saved");
+        trace!(user=?self.client.user_id(), key, ?keys_changed, "saved");
         self.dirty.insert(key);
         Ok(keys_changed)
     }
@@ -221,14 +221,24 @@ impl Store {
     }
 
     pub async fn sync(&self) -> Result<()> {
-        for idx in self.dirty.iter() {
-            let key = idx.key();
-            if let Some(r) = self.models.get(key) {
+        trace!("sync");
+        let client_store = self.client.store();
+        let dirty = {
+            let keys = self
+                .dirty
+                .iter()
+                .map(|k| k.key().to_owned())
+                .collect::<Vec<String>>();
+            self.dirty.clear(); // no lock, not good!
+            keys
+        };
+        for key in dirty {
+            if let Some(r) = self.models.get(&key) {
+                trace!(?key, "syncing");
                 // FIXME: parallize
-                self.client
-                    .store()
+                client_store
                     .set_custom_value(
-                        format!("acter:{key:}").as_bytes(),
+                        format!("acter:{key}").as_bytes(),
                         serde_json::to_vec(r.value())?,
                     )
                     .await?;
@@ -237,16 +247,17 @@ impl Store {
             }
         }
 
-        self.dirty.clear();
+        trace!("syncing all models");
         let model_keys = self
             .models
             .iter()
             .map(|v| v.key().clone())
             .collect::<Vec<String>>();
-        self.client
-            .store()
+        client_store
             .set_custom_value(ALL_MODELS_KEY.as_bytes(), serde_json::to_vec(&model_keys)?)
             .await?;
+
+        trace!("sync done");
 
         Ok(())
     }
