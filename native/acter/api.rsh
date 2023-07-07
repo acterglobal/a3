@@ -273,6 +273,20 @@ object CalendarEvent {
     fn show_without_time() -> bool;
     /// locations
     // fn locations() -> Vec<Location>;
+    /// event id
+    fn event_id() -> EventId;
+}
+
+object CalendarEventDraft {
+    /// set the title for this calendar event
+    fn title(title: string);
+
+    /// set the description for this calendar event
+    fn description_text(text: string);
+    fn unset_description();
+
+    /// create this calendar event
+    fn send() -> Future<Result<EventId>>;
 }
 
 object MediaSource {
@@ -1151,6 +1165,9 @@ object Space {
 
     /// get all calendar events
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
+
+    /// create calendart event draft
+    fn calendar_event_draft() -> Result<CalendarEventDraft>;
 
     /// create news draft
     fn news_draft() -> Result<NewsEntryDraft>;

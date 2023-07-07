@@ -141,6 +141,10 @@ impl CalendarEvent {
     pub fn icon(&self) -> Option<Icon> {
         self.inner.icon.clone()
     }
+
+    pub fn event_id(&self) -> OwnedEventId {
+        self.inner.event_id().to_owned()
+    }
 }
 
 /// Custom functions

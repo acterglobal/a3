@@ -52,7 +52,7 @@ pub use auth::{
     login_with_token_under_config, make_client_config, register_under_config, register_with_token,
     register_with_token_under_config, sanitize_user,
 };
-pub use calendar_events::CalendarEvent;
+pub use calendar_events::{CalendarEvent, CalendarEventDraft};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
