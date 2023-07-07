@@ -265,7 +265,7 @@ impl CalendarEventUpdateBuilder {
         self
     }
 
-    pub fn description_update(&mut self) -> &mut Self {
+    pub fn unset_description_update(&mut self) -> &mut Self {
         self.inner
             .description(None::<Option<TextMessageEventContent>>);
         self
