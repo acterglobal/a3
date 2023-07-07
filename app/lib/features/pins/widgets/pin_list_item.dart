@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,7 +6,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:go_router/go_router.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class PinListItem extends ConsumerStatefulWidget {
   final ActerPin pin;
@@ -40,15 +40,7 @@ class _PinListItemState extends ConsumerState<PinListItem> {
     void onTap() async {
       if (isLink) {
         final target = pin.url()!;
-        final Uri? url = Uri.tryParse(target);
-        if (url == null) {
-          debugPrint('Opening internally: $url');
-          // not a valid URL, try local routing
-          context.go(target);
-        } else {
-          debugPrint('Opening external URL: $url');
-          !await launchUrl(url);
-        }
+        await openLink(target, context);
       } else {
         openItem();
       }

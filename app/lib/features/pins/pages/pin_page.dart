@@ -1,5 +1,7 @@
 import 'dart:core';
 
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
@@ -7,8 +9,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class PinPage extends ConsumerWidget {
   final String pinId;
@@ -50,19 +50,15 @@ class PinPage extends ConsumerWidget {
                   label: Text(pin.url() ?? ''),
                   onPressed: () async {
                     final target = pin.url()!;
-                    final Uri? url = Uri.tryParse(target);
-                    if (url == null) {
-                      debugPrint('Opening internally: $url');
-                      // not a valid URL, try local routing
-                      context.go(target);
-                    } else {
-                      debugPrint('Opening external URL: $url');
-                      !await launchUrl(url);
-                    }
+                    await openLink(target, context);
                   },
                 );
               } else {
-                content = Text(pin.contentText() ?? '');
+                if (pin.hasFormattedText()) {
+                  content = RenderHtml(text: pin.contentFormatted() ?? '');
+                } else {
+                  content = Text(pin.contentText() ?? '');
+                }
               }
 
               return SliverToBoxAdapter(

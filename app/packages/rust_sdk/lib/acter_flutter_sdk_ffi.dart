@@ -9772,6 +9772,22 @@ class Api {
     int,
     int,
   )>();
+  late final _pinDraftContentMarkdownPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__PinDraft_content_markdown");
+
+  late final _pinDraftContentMarkdown = _pinDraftContentMarkdownPtr.asFunction<
+      void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _pinDraftUnsetContentPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -9836,6 +9852,28 @@ class Api {
 
   late final _acterPinContentText = _acterPinContentTextPtr.asFunction<
       _ActerPinContentTextReturn Function(
+    int,
+  )>();
+  late final _acterPinContentFormattedPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinContentFormattedReturn Function(
+    ffi.Int64,
+  )>>("__ActerPin_content_formatted");
+
+  late final _acterPinContentFormatted =
+      _acterPinContentFormattedPtr.asFunction<
+          _ActerPinContentFormattedReturn Function(
+    int,
+  )>();
+  late final _acterPinHasFormattedTextPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__ActerPin_has_formatted_text");
+
+  late final _acterPinHasFormattedText =
+      _acterPinHasFormattedTextPtr.asFunction<
+          int Function(
     int,
   )>();
   late final _acterPinIsLinkPtr = _lookup<
@@ -21189,6 +21227,33 @@ class PinDraft {
     return;
   }
 
+  /// set the content of the pin through markdown
+  void contentMarkdown(
+    String text,
+  ) {
+    final tmp1 = text;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._pinDraftContentMarkdown(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
   void unsetContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -21324,6 +21389,53 @@ class ActerPin {
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// get the formatted content of the pin
+  String? contentFormatted() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinContentFormatted(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Whether the inner text is coming as formatted
+  bool hasFormattedText() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinHasFormattedText(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 
@@ -33931,6 +34043,7 @@ enum MemberPermissionTag {
   CanSendReaction,
   CanSendSticker,
   CanPostNews,
+  CanPostPin,
   CanBan,
   CanKick,
   CanRedact,
@@ -33969,38 +34082,42 @@ class MemberPermission {
 
         break;
       case 4:
-        this._tag = MemberPermissionTag.CanBan;
+        this._tag = MemberPermissionTag.CanPostPin;
 
         break;
       case 5:
-        this._tag = MemberPermissionTag.CanKick;
+        this._tag = MemberPermissionTag.CanBan;
 
         break;
       case 6:
-        this._tag = MemberPermissionTag.CanRedact;
+        this._tag = MemberPermissionTag.CanKick;
 
         break;
       case 7:
-        this._tag = MemberPermissionTag.CanTriggerRoomNotification;
+        this._tag = MemberPermissionTag.CanRedact;
 
         break;
       case 8:
-        this._tag = MemberPermissionTag.CanSetName;
+        this._tag = MemberPermissionTag.CanTriggerRoomNotification;
 
         break;
       case 9:
-        this._tag = MemberPermissionTag.CanUpdateAvatar;
+        this._tag = MemberPermissionTag.CanSetName;
 
         break;
       case 10:
-        this._tag = MemberPermissionTag.CanSetTopic;
+        this._tag = MemberPermissionTag.CanUpdateAvatar;
 
         break;
       case 11:
-        this._tag = MemberPermissionTag.CanLinkSpaces;
+        this._tag = MemberPermissionTag.CanSetTopic;
 
         break;
       case 12:
+        this._tag = MemberPermissionTag.CanLinkSpaces;
+
+        break;
+      case 13:
         this._tag = MemberPermissionTag.CanSetParentSpace;
 
         break;
@@ -34304,6 +34421,17 @@ class _ActerPinTitleReturn extends ffi.Struct {
 }
 
 class _ActerPinContentTextReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _ActerPinContentFormattedReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

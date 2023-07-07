@@ -180,6 +180,8 @@ object PinDraft {
 
     /// set the content for this pin
     fn content_text(text: string);
+    /// set the content of the pin through markdown
+    fn content_markdown(text: string);
     fn unset_content();
 
     /// set the url for this pin
@@ -197,6 +199,10 @@ object ActerPin {
     fn title() -> string; 
     /// get the content_text of the pin
     fn content_text() -> Option<string>;
+    /// get the formatted content of the pin
+    fn content_formatted() -> Option<string>;
+    /// Whether the inner text is coming as formatted
+    fn has_formatted_text() -> bool;
     /// whether this pin is a link
     fn is_link() -> bool;
     /// get the link content
@@ -1224,6 +1230,7 @@ enum MemberPermission {
     CanSendReaction,
     CanSendSticker,
     CanPostNews,
+    CanPostPin,
     CanBan,
     CanKick,
     CanRedact,
