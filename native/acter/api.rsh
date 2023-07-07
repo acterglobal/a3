@@ -76,6 +76,9 @@ object Colorize {
 object NewsSlide {
     /// the content of this slide
     fn type_str() -> string;
+
+    /// whether this text-slide has a formatted html body
+    fn has_formatted_text() -> bool;
     /// the textual content of this slide
     fn text() -> string;
     /// the references linked in this slide
@@ -124,7 +127,7 @@ object NewsEntryDraft {
     fn add_text_slide(body: string);
 
     /// create news slide for image msg
-    fn add_image_slide(body: string, url: string, mimetype: Option<string>, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>);
+    fn add_image_slide(body: string, url: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> Future<Result<bool>>;
 
     /// create news slide for audio msg
     fn add_audio_slide(body: string, url: string, secs: Option<u32>, mimetype: Option<string>, size: Option<u32>);
@@ -1220,6 +1223,7 @@ enum MemberPermission {
     CanSendChatMessages,
     CanSendReaction,
     CanSendSticker,
+    CanPostNews,
     CanBan,
     CanKick,
     CanRedact,

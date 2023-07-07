@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PinListItem extends ConsumerStatefulWidget {
   final ActerPin pin;
