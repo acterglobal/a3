@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -10,7 +9,6 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_matrix_html/flutter_html.dart';
 
 class NewsItem extends ConsumerWidget {
   final Client client;
