@@ -1,4 +1,5 @@
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
@@ -255,6 +256,8 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 // close both
                 Navigator.of(context, rootNavigator: true).pop();
                 Navigator.of(context, rootNavigator: true).pop();
+                // FIXME due to #718. well lets at least try forcing a refresh upon route.
+                ref.invalidate(newsListProvider);
               } catch (err) {
                 Navigator.of(context, rootNavigator: true).pop();
                 popUpDialog(
