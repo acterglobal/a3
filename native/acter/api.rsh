@@ -267,7 +267,7 @@ object CalendarEvent {
     fn description() -> Option<TextMessageContent>;
     /// When the event starts
     fn utc_start() -> UtcDateTime;
-    /// When the event end
+    /// When the event ends
     fn utc_end() -> UtcDateTime;
     /// whether to show the time or just the dates
     fn show_without_time() -> bool;
@@ -284,6 +284,20 @@ object CalendarEventDraft {
     /// set the description for this calendar event
     fn description_text(text: string);
     fn unset_description();
+
+    /// set the utc_start for this calendar event in rfc3339 format
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
+    /// set the utc_start for this calendar event in rfc2822 format
+    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
+    /// set the utc_start for this calendar event in custom format
+    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
+
+    /// set the utc_end for this calendar event in rfc3339 format
+    fn utc_end_from_rfc3339(utc_end: string) -> Result<()>;
+    /// set the utc_end for this calendar event in rfc2822 format
+    fn utc_end_from_rfc2822(utc_end: string)-> Result<()>;
+    /// set the utc_end for this calendar event in custom format
+    fn utc_end_from_format(utc_end: string, format: string)-> Result<()>;
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
