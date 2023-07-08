@@ -27,19 +27,24 @@ impl Client {
         key: String,
         timeout: Option<Box<Duration>>,
     ) -> Result<CalendarEvent> {
-        let AnyActerModel::CalendarEvent(inner) = self.wait_for(key.clone(), timeout).await? else {
-            bail!("{key} is not a calendar_event");
-        };
-        let room = self
-            .core
-            .client()
-            .get_room(inner.room_id())
-            .context("Room not found")?;
-        Ok(CalendarEvent {
-            client: self.clone(),
-            room,
-            inner,
-        })
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let AnyActerModel::CalendarEvent(inner) = me.wait_for(key.clone(), timeout).await? else {
+                    bail!("{key} is not a calendar_event");
+                };
+                let room = me
+                    .core
+                    .client()
+                    .get_room(inner.room_id())
+                    .context("Room not found")?;
+                Ok(CalendarEvent {
+                    client: me.clone(),
+                    room,
+                    inner,
+                })
+            })
+            .await?
     }
 
     pub async fn calendar_events(&self) -> Result<Vec<CalendarEvent>> {
