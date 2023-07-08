@@ -96,11 +96,11 @@ impl Space {
             .spawn(async move {
                 let k = format!("{room_id}::{}", KEYS::CALENDAR);
                 for mdl in client.store().get_list(&k).await? {
-                    if let AnyActerModel::CalendarEvent(t) = mdl {
+                    if let AnyActerModel::CalendarEvent(inner) = mdl {
                         calendar_events.push(CalendarEvent {
                             client: client.clone(),
                             room: room.clone(),
-                            inner: t,
+                            inner,
                         })
                     } else {
                         warn!(
@@ -219,8 +219,8 @@ impl CalendarEventDraft {
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
-        self.inner
-            .description(Some(TextMessageEventContent::plain(body)));
+        let desc = TextMessageEventContent::plain(body);
+        self.inner.description(Some(desc));
         self
     }
 
@@ -260,8 +260,8 @@ impl CalendarEventUpdateBuilder {
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
-        self.inner
-            .description(Some(Some(TextMessageEventContent::plain(body))));
+        let desc = TextMessageEventContent::plain(body);
+        self.inner.description(Some(Some(desc)));
         self
     }
 
