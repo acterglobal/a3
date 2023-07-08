@@ -31,7 +31,6 @@ dependencies = [
  "mime_guess",
  "oslog",
  "parse-env-filter",
- "proc-macro2 1.0.55",
  "ruma",
  "sanitize-filename-reader-friendly",
  "serde",
