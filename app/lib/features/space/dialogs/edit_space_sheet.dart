@@ -36,11 +36,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   @override
   void initState() {
     super.initState();
-    editSpaceData();
+    _editSpaceData();
   }
 
   // apply existing data to fields
-  void editSpaceData() async {
+  void _editSpaceData() async {
     final space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
     final profileData = await ref.read(spaceProfileDataProvider(space).future);
 

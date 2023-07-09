@@ -7,6 +7,7 @@ import 'package:acter/features/activities/presentation/pages/activities_page.dar
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/events/dialogs/create_event_sheet.dart';
+import 'package:acter/features/events/dialogs/edit_event_sheet.dart';
 import 'package:acter/features/events/pages/event_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
@@ -201,6 +202,32 @@ List<RouteBase> makeRoutes(Ref ref) => [
             },
             child: CreateEventSheet(
               initialSelectedSpace: state.queryParameters['spaceId'],
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        name: Routes.editCalendarEvent.name,
+        path: Routes.editCalendarEvent.route,
+        pageBuilder: (context, state) {
+          return SideSheetPage(
+            key: state.pageKey,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: Tween(
+                  begin: const Offset(1, 0),
+                  end: const Offset(0, 0),
+                ).animate(
+                  animation,
+                ),
+                child: child,
+              );
+            },
+            child: EditEventSheet(
+              calendarId: state.pathParameters['calendarId'],
             ),
           );
         },

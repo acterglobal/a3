@@ -1,11 +1,12 @@
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/events/providers/events_provider.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class CalendarEventPage extends ConsumerWidget {
   final String calendarId;
@@ -21,14 +22,23 @@ class CalendarEventPage extends ConsumerWidget {
             title: event.hasValue ? event.value!.title() : 'Loading Event',
             sectionColor: Colors.blue.shade200,
             actions: [
-              IconButton(
-                icon: const Icon(Atlas.pencil_edit_thin),
-                onPressed: () {
-                  customMsgSnackbar(
-                    context,
-                    'Event edit not yet implemented',
-                  );
-                },
+              PopupMenuButton(
+                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                  PopupMenuItem(
+                    onTap: () => context.pushNamed(
+                      Routes.editCalendarEvent.name,
+                      pathParameters: {'calendarId': calendarId},
+                    ),
+                    child: const Text('Edit Event'),
+                  ),
+                  PopupMenuItem(
+                    onTap: () => customMsgSnackbar(
+                      context,
+                      'Delete Event is not implemented yet',
+                    ),
+                    child: const Text('Delete Event'),
+                  ),
+                ],
               ),
             ],
           ),

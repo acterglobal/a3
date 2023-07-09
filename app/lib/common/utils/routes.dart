@@ -44,6 +44,7 @@ enum Routes {
   // -- events
   createEvent('/events/create'),
   calendarEvent('/events/:calendarId'),
+  editCalendarEvent('/events/:calendarId/edit'),
 
   // -- settings
   settings('/settings'),

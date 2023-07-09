@@ -284,6 +284,29 @@ object CalendarEvent {
     // fn locations() -> Vec<Location>;
     /// event id
     fn event_id() -> EventId;
+    /// update builder
+    fn update_builder() -> Result<CalendarEventUpdateBuilder>;
+}
+
+object CalendarEventUpdateBuilder{
+    /// set title of the event>
+    fn title(title: string);
+    /// set description text
+    fn description_text(body: string);
+    /// set utc start in rfc3339 string
+    fn utc_start_from_rfc3339(utc_start: string);
+    /// set utc start in rfc2822 string
+    fn utc_start_from_rfc2822(utc_start: string);
+    /// set utc start in custom format
+    fn utc_start_from_format(utc_start: string, format: string);
+    /// set utc end in rfc3339 string
+    fn utc_end_from_rfc3339(utc_end: string);
+    /// set utc end in rfc2822 string
+    fn utc_end_from_rfc2822(utc_end: string);
+    /// set utc end in custom format
+    fn utc_end_from_format(utc_end: string, format: string);
+    /// send builder update
+    fn send() -> Future<Result<EventId>>;
 }
 
 object CalendarEventDraft {
