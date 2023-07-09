@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:acter/common/dialogs/logout_confirmation.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 // import 'package:acter/features/chat/controllers/receipt_controller.dart';
@@ -126,8 +128,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                           ),
                         )
                       : OutlinedButton(
-                          onPressed: () => context.goNamed(Routes.intro.name),
-                          child: Text('Clear db and login'),
+                          onPressed: () =>
+                              logoutConfirmationDialog(context, ref),
+                          child: Text('Clear db and re-login'),
                         ),
                 ],
               ),

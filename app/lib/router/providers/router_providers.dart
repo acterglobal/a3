@@ -6,12 +6,11 @@ import 'package:go_router/go_router.dart';
 // ignore: implementation_imports
 import 'package:go_router/src/information_provider.dart';
 
-final routerNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<RouterNotifier, void>(() {
+final routerNotifierProvider = AsyncNotifierProvider<RouterNotifier, void>(() {
   return RouterNotifier();
 });
 
-final goRouterProvider = Provider.autoDispose<GoRouter>((ref) {
+final goRouterProvider = Provider<GoRouter>((ref) {
   final notifier = ref.watch(routerNotifierProvider.notifier);
   return GoRouter(
     errorBuilder: (context, state) => ErrorPage(routerState: state),
@@ -24,11 +23,11 @@ final goRouterProvider = Provider.autoDispose<GoRouter>((ref) {
 });
 
 final routeInformationProvider =
-    ChangeNotifierProvider.autoDispose<GoRouteInformationProvider>((ref) {
+    ChangeNotifierProvider<GoRouteInformationProvider>((ref) {
   final router = ref.watch(goRouterProvider);
   return router.routeInformationProvider;
 });
 
-final currentRoutingLocation = Provider.autoDispose<String>((ref) {
+final currentRoutingLocation = Provider<String>((ref) {
   return ref.watch(routeInformationProvider).value.location ?? '/';
 });

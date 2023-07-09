@@ -12,14 +12,29 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
     builder: (BuildContext ctx) {
       return AlertDialog(
         title: Text(AppLocalizations.of(context)!.logOut),
-        content: const Text('Are you sure you want to log out?'),
+        content: RichText(
+          textAlign: TextAlign.left,
+          text: const TextSpan(
+            text: 'Attention',
+            style: TextStyle(color: Colors.white, fontSize: 32),
+            children: <TextSpan>[
+              TextSpan(
+                text:
+                    'Logging out removes the local data, including encryption keys. If this is your last signed-in device you might no be able to decrypt any previous content.',
+              ),
+              TextSpan(text: 'Are you sure you want to log out?'),
+            ],
+          ),
+        ),
         actions: <Widget>[
           TextButton(
             onPressed: () => ctx.pop(),
             child: const Text('No'),
           ),
           TextButton(
-            onPressed: () => ref.read(authStateProvider.notifier).logout(ctx),
+            onPressed: () async {
+              await ref.read(authStateProvider.notifier).logout(ctx);
+            },
             child: const Text('Yes'),
           ),
         ],
