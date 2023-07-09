@@ -3,10 +3,12 @@ import 'dart:math';
 import 'dart:async';
 
 import 'package:acter/common/utils/constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:riverpod/riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// An extension on [Ref] with helpful methods to add a debounce.
 extension RefDebounceExtension on Ref {
@@ -24,6 +26,19 @@ extension RefDebounceExtension on Ref {
       }
     });
     return completer.future;
+  }
+}
+
+Future<bool> openLink(String target, BuildContext context) async {
+  final Uri? url = Uri.tryParse(target);
+  if (url == null || !url.hasAuthority) {
+    debugPrint('Opening internally: $url');
+    // not a valid URL, try local routing
+    await context.push(target);
+    return true;
+  } else {
+    debugPrint('Opening external URL: $url');
+    return await launchUrl(url);
   }
 }
 

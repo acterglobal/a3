@@ -76,6 +76,9 @@ object Colorize {
 object NewsSlide {
     /// the content of this slide
     fn type_str() -> string;
+
+    /// whether this text-slide has a formatted html body
+    fn has_formatted_text() -> bool;
     /// the textual content of this slide
     fn text() -> string;
     /// the references linked in this slide
@@ -124,7 +127,7 @@ object NewsEntryDraft {
     fn add_text_slide(body: string);
 
     /// create news slide for image msg
-    fn add_image_slide(body: string, url: string, mimetype: Option<string>, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>);
+    fn add_image_slide(body: string, url: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> Future<Result<bool>>;
 
     /// create news slide for audio msg
     fn add_audio_slide(body: string, url: string, secs: Option<u32>, mimetype: Option<string>, size: Option<u32>);
@@ -177,6 +180,8 @@ object PinDraft {
 
     /// set the content for this pin
     fn content_text(text: string);
+    /// set the content of the pin through markdown
+    fn content_markdown(text: string);
     fn unset_content();
 
     /// set the url for this pin
@@ -194,6 +199,10 @@ object ActerPin {
     fn title() -> string; 
     /// get the content_text of the pin
     fn content_text() -> Option<string>;
+    /// get the formatted content of the pin
+    fn content_formatted() -> Option<string>;
+    /// Whether the inner text is coming as formatted
+    fn has_formatted_text() -> bool;
     /// whether this pin is a link
     fn is_link() -> bool;
     /// get the link content
@@ -1220,6 +1229,8 @@ enum MemberPermission {
     CanSendChatMessages,
     CanSendReaction,
     CanSendSticker,
+    CanPostNews,
+    CanPostPin,
     CanBan,
     CanKick,
     CanRedact,

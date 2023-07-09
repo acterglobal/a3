@@ -14,6 +14,7 @@ use futures_signals::signal::{
 };
 use matrix_sdk::{
     config::SyncSettings,
+    event_handler::{Ctx, EventHandlerHandle},
     media::{MediaFormat, MediaRequest},
     room::Room as SdkRoom,
     Client as SdkClient, LoopCtrl, RumaApiError,
@@ -23,7 +24,7 @@ use ruma::{
     OwnedServerName, OwnedUserId, RoomId, UserId,
 };
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, HashMap},
     ops::Deref,
     sync::{
         atomic::{AtomicBool, Ordering},
@@ -34,7 +35,7 @@ use tokio::{
     sync::{Mutex, RwLock},
     task::JoinHandle,
 };
-use tracing::{error, info, trace};
+use tracing::{error, info, trace, warn};
 
 use super::{
     account::Account,
@@ -183,12 +184,15 @@ impl HistoryLoadState {
     }
 }
 
+type RoomHandlers = Arc<Mutex<HashMap<OwnedRoomId, Vec<EventHandlerHandle>>>>;
+
 #[derive(Clone)]
 pub struct SyncState {
     handle: Mutable<Option<JoinHandle<()>>>,
     first_sync_task: Mutable<Option<JoinHandle<Result<()>>>>,
     first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
     history_loading: Mutable<HistoryLoadState>,
+    room_handles: RoomHandlers,
 }
 
 impl SyncState {
@@ -199,6 +203,7 @@ impl SyncState {
             history_loading: Default::default(),
             first_sync_task: Default::default(),
             handle: Default::default(),
+            room_handles: Default::default(),
         }
     }
 
@@ -209,6 +214,7 @@ impl SyncState {
         }
     }
 
+    // FIXE: This is not save. History state is copied and thus not all known_spaces are tracked
     // for only tui, not api.rsh
     pub fn get_history_loading_rx(&self) -> SignalStream<MutableSignalCloned<HistoryLoadState>> {
         self.history_loading.signal_cloned().to_stream()
@@ -247,6 +253,7 @@ impl Client {
     fn refresh_history_on_start(
         &self,
         history: Mutable<HistoryLoadState>,
+        room_handles: RoomHandlers,
     ) -> JoinHandle<Result<()>> {
         let me = self.clone();
         tokio::spawn(async move {
@@ -262,7 +269,13 @@ impl Client {
                     return;
                 }
 
-                space.add_handlers().await;
+                let space_handles = space.setup_handles().await;
+                {
+                    let mut handles = room_handles.lock().await;
+                    if let Some(h) = handles.insert(space.room_id().to_owned(), space_handles) {
+                        warn!(room_id=?space.room_id(), "handles overwritten. Might cause issues?!?");
+                    }
+                }
 
                 if let Err(err) = space.refresh_history().await {
                     error!(?err, room_id=?space.room_id(), "Loading space history failed");
@@ -279,6 +292,7 @@ impl Client {
     async fn refresh_history_on_way(
         &self,
         history: Mutable<HistoryLoadState>,
+        room_handles: RoomHandlers,
         new_spaces: Vec<SdkRoom>,
     ) -> Result<()> {
         trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
@@ -289,6 +303,7 @@ impl Client {
                 .map(|room| Space::new(self.clone(), Room { room }))
                 .map(|mut space| {
                     let history = history.clone();
+                    let room_handles = room_handles.clone();
                     async move {
                         {
                             let room_id = space.room_id().to_owned();
@@ -300,7 +315,14 @@ impl Client {
                             history.set_loading(room_id, true);
                         }
 
-                        space.add_handlers().await;
+
+                        let space_handles = space.setup_handles().await;
+                        {
+                            let mut handles = room_handles.lock().await;
+                            if let Some(h) = handles.insert(space.room_id().to_owned(), space_handles) {
+                                warn!(room_id=?space.room_id(), "handles overwritten. Might cause issues?!?");
+                            }
+                        }
 
                         if let Err(err) = space.refresh_history().await {
                             error!(?err, room_id=?space.room_id(), "refreshing history failed");
@@ -322,9 +344,10 @@ impl Client {
             source,
             format: MediaFormat::File,
         };
+        trace!(?request, "tasked to get source binary");
         RUNTIME
             .spawn(async move {
-                let buf = client.media().get_media_content(&request, false).await?;
+                let buf = client.media().get_media_content(&request, true).await?;
                 Ok(FfiBuffer::new(buf))
             })
             .await?
@@ -414,6 +437,7 @@ impl Client {
         let sync_state = SyncState::new(first_synced_rx);
         let history_loading = sync_state.history_loading.clone();
         let first_sync_task = sync_state.first_sync_task.clone();
+        let room_handles = sync_state.room_handles.clone();
 
         let handle = RUNTIME.spawn(async move {
             info!("spawning sync callback");
@@ -426,6 +450,7 @@ impl Client {
 
             let history_loading = history_loading.clone();
             let first_sync_task = first_sync_task.clone();
+            let room_handles = room_handles.clone();
 
             // fetch the events that received when offline
             client
@@ -484,8 +509,10 @@ impl Client {
                             w.has_first_synced = true;
                         };
                         // background and keep the handle around.
-                        let history_first_sync =
-                            me.refresh_history_on_start(history_loading.clone());
+                        let history_first_sync = me.refresh_history_on_start(
+                            history_loading.clone(),
+                            room_handles.clone(),
+                        );
                         first_sync_task.set(Some(history_first_sync)); // keep task in global variable to avoid too early free of temporary varible in release build
                     } else {
                         // see if we have new spaces to catch up upon
@@ -505,8 +532,12 @@ impl Client {
                         }
 
                         if !new_spaces.is_empty() {
-                            me.refresh_history_on_way(history_loading.clone(), new_spaces)
-                                .await;
+                            me.refresh_history_on_way(
+                                history_loading.clone(),
+                                room_handles.clone(),
+                                new_spaces,
+                            )
+                            .await;
                         }
                     }
 

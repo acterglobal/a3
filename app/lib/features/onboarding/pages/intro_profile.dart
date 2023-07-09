@@ -38,7 +38,7 @@ class _IntroProfileState extends State<IntroProfile> {
                     margin: const EdgeInsets.symmetric(vertical: 19),
                     height: 100,
                     width: 100,
-                    child: Image.asset('assets/icon/logo_foreground.png'),
+                    child: Image.asset('asspets/icon/logo_foreground.png'),
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 30),
