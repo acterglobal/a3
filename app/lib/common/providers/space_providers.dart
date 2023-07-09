@@ -58,6 +58,36 @@ final maybeSpaceInfoProvider =
   );
 });
 
+/// gives current context space id
+final selectedSpaceIdProvider = StateProvider<String?>((ref) => null);
+
+/// gives current context space details based on id, will throw null if id is null
+final selectedSpaceDetailsProvider =
+    FutureProvider.autoDispose<SpaceItem?>((ref) async {
+  final selectedSpaceId = ref.watch(selectedSpaceIdProvider);
+  if (selectedSpaceId == null) {
+    return null;
+  }
+
+  final spaces = await ref.watch(briefSpaceItemsProviderWithMembership.future);
+  return spaces.firstWhere((element) => element.roomId == selectedSpaceId);
+});
+
+// gives current context parent space id
+final parentSpaceProvider = StateProvider<String?>((ref) => null);
+
+/// gives current context parent space details based on id, will throw null if id is null
+final parentSpaceDetailsProvider =
+    FutureProvider.autoDispose<SpaceItem?>((ref) async {
+  final parentSpaceId = ref.watch(parentSpaceProvider);
+  if (parentSpaceId == null) {
+    return null;
+  }
+
+  final spaces = await ref.watch(briefSpaceItemsProviderWithMembership.future);
+  return spaces.firstWhere((element) => element.roomId == parentSpaceId);
+});
+
 class SpaceItem {
   Member? membership;
   String roomId;
@@ -177,14 +207,6 @@ final spaceRelationsProvider = FutureProvider.autoDispose
     .family<SpaceRelations, String>((ref, spaceId) async {
   final space = await ref.watch(spaceProvider(spaceId).future);
   return await space.spaceRelations();
-});
-
-/// Get the events of the space. Errors if the space isn't found. Stays up
-/// to date with underlying client data if a space was found.
-final spaceEventsProvider = FutureProvider.autoDispose
-    .family<List<CalendarEvent>, String>((ref, spaceId) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
-  return (await space.calendarEvents()).toList();
 });
 
 /// Get the canonical parent of the space. Errors if the space isn't found. Stays up

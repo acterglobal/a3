@@ -67,7 +67,7 @@ final tabsProvider =
         key: const Key('events'),
         label: 'Events',
         icon: const Icon(Atlas.calendar_schedule_thin),
-        target: Routes.space.name,
+        target: Routes.spaceEvents.name,
       ),
     );
   }

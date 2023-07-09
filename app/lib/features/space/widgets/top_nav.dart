@@ -22,6 +22,7 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
 
   @override
   void initState() {
+    super.initState();
     recentWatchScreenTabStateTestProvider = Provider.autoDispose
         .family<TabController, BuildContext>((ref, context) {
       final tabs = ref.watch(tabsProvider(context));
@@ -31,7 +32,6 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
         initialIndex: 0,
       );
     });
-    super.initState();
   }
 
   @override

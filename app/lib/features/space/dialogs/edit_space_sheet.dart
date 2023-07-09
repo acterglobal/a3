@@ -15,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 
+// interface data providers
 final editTitleProvider = StateProvider.autoDispose<String>((ref) => '');
 final editTopicProvider = StateProvider.autoDispose<String>((ref) => '');
 // upload avatar path
@@ -35,11 +36,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   @override
   void initState() {
     super.initState();
-    editSpaceData();
+    _editSpaceData();
   }
 
   // apply existing data to fields
-  void editSpaceData() async {
+  void _editSpaceData() async {
     final space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
     final profileData = await ref.read(spaceProfileDataProvider(space).future);
 

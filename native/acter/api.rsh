@@ -24,7 +24,6 @@ object EfkDuration {}
 
 fn duration_from_secs(secs: u64) -> EfkDuration;
 
-
 /// Representing a color
 object EfkColor {
     /// as rgba in u8
@@ -70,7 +69,6 @@ object Colorize {
     /// Background color
     fn background() -> Option<EfkColor>;
 }
-
 
 /// A single Slide of a NewsEntry
 object NewsSlide {
@@ -170,7 +168,7 @@ object Tag {
     /// dash-cased-ascii-version for usage in hashtags (no `#` at the front)
     fn hash_tag() -> string;
     /// if given, the specific color for this tag
-    fn color() -> Option<EfkColor>; 
+    fn color() -> Option<EfkColor>;
 }
 
 /// Draft a Pin
@@ -188,15 +186,14 @@ object PinDraft {
     fn url(text: string);
     fn unset_url();
 
-    // fire this pin over - the event_id is the confirmation
-    // from the server.
+    /// fire this pin over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
 }
 
 /// A pin object
 object ActerPin {
     /// get the title of the pin
-    fn title() -> string; 
+    fn title() -> string;
     /// get the content_text of the pin
     fn content_text() -> Option<string>;
     /// get the formatted content of the pin
@@ -209,7 +206,7 @@ object ActerPin {
     fn url() -> Option<string>;
     /// get the link color settings
     fn color() -> Option<EfkColor>;
-    // The room this Pin belongs to
+    /// The room this Pin belongs to
     //fn team() -> Room;
 
     /// the unique event ID
@@ -221,13 +218,13 @@ object ActerPin {
     /// make a builder for updating the pin
     fn update_builder() -> Result<PinUpdateBuilder>;
 
-    // get informed about changes to this pin
+    /// get informed about changes to this pin
     fn subscribe() -> Stream<()>;
 
     /// replace the current pin with one with the latest state
     fn refresh() -> Future<Result<ActerPin>>;
 
-    // get the comments manager for this pin
+    /// get the comments manager for this pin
     fn comments() -> Future<Result<CommentsManager>>;
 
     /// get the attachments manager for this pin
@@ -249,8 +246,7 @@ object PinUpdateBuilder {
     fn unset_url();
     fn unset_url_update();
 
-    // fire this update over - the event_id is the confirmation
-    // from the server.
+    /// fire this update over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
 }
 
@@ -259,16 +255,14 @@ object PinUpdateBuilder {
 //    Virtual
 // }
 
-
 // object Location {
-//    /// "physical" or "virtual" 
+//    /// "physical" or "virtual"
 //    fn location_type() -> string;
 //    fn name() -> Option<string>;
 //    fn description() -> Option<TextMessageContent>;
 //    fn coordinates() -> Option<string>;
 //    fn uri() -> Option<string>;
 //}
-
 
 object TextMessageContent {
     fn body() -> string;
@@ -279,15 +273,66 @@ object CalendarEvent {
     /// the title of the event
     fn title() -> string;
     /// description text
-    fn description() -> Option<TextMessageContent>; 
+    fn description() -> Option<TextMessageContent>;
     /// When the event starts
     fn utc_start() -> UtcDateTime;
-    /// When the event end
+    /// When the event ends
     fn utc_end() -> UtcDateTime;
     /// whether to show the time or just the dates
     fn show_without_time() -> bool;
-    // locations
+    /// locations
     // fn locations() -> Vec<Location>;
+    /// event id
+    fn event_id() -> EventId;
+    /// update builder
+    fn update_builder() -> Result<CalendarEventUpdateBuilder>;
+}
+
+object CalendarEventUpdateBuilder{
+    /// set title of the event>
+    fn title(title: string);
+    /// set description text
+    fn description_text(body: string);
+    /// set utc start in rfc3339 string
+    fn utc_start_from_rfc3339(utc_start: string);
+    /// set utc start in rfc2822 string
+    fn utc_start_from_rfc2822(utc_start: string);
+    /// set utc start in custom format
+    fn utc_start_from_format(utc_start: string, format: string);
+    /// set utc end in rfc3339 string
+    fn utc_end_from_rfc3339(utc_end: string);
+    /// set utc end in rfc2822 string
+    fn utc_end_from_rfc2822(utc_end: string);
+    /// set utc end in custom format
+    fn utc_end_from_format(utc_end: string, format: string);
+    /// send builder update
+    fn send() -> Future<Result<EventId>>;
+}
+
+object CalendarEventDraft {
+    /// set the title for this calendar event
+    fn title(title: string);
+
+    /// set the description for this calendar event
+    fn description_text(text: string);
+    fn unset_description();
+
+    /// set the utc_start for this calendar event in rfc3339 format
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
+    /// set the utc_start for this calendar event in rfc2822 format
+    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
+    /// set the utc_start for this calendar event in custom format
+    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
+
+    /// set the utc_end for this calendar event in rfc3339 format
+    fn utc_end_from_rfc3339(utc_end: string) -> Result<()>;
+    /// set the utc_end for this calendar event in rfc2822 format
+    fn utc_end_from_rfc2822(utc_end: string)-> Result<()>;
+    /// set the utc_end for this calendar event in custom format
+    fn utc_end_from_format(utc_end: string, format: string)-> Result<()>;
+
+    /// create this calendar event
+    fn send() -> Future<Result<EventId>>;
 }
 
 object MediaSource {
@@ -561,7 +606,7 @@ object Conversation {
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;
 
-    // the Membership of myself
+    /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;
 
     /// the room id
@@ -682,8 +727,7 @@ object CommentDraft {
     /// set the content to a formatted body of html_body, where body is the tag-stripped version
     fn content_formatted(body: string, html_body: string);
 
-    // fire this comment over - the event_id is the confirmation
-    // from the server.
+    /// fire this comment over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
 }
 
@@ -715,11 +759,8 @@ object CommentsManager {
     fn comment_draft() -> CommentDraft;
 }
 
-
 object AttachmentDraft {
-
-    // fire this attachment over - the event_id is the confirmation
-    // from the server.
+    /// fire this attachment over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
 }
 
@@ -728,7 +769,7 @@ object Attachment {
     fn sender() -> UserId;
     /// When was this attachment acknowledged by the server
     fn origin_server_ts() -> u64;
-    
+
     /// if this is an image, hand over the description
     fn image_desc() -> Option<ImageDesc>;
     /// if this is an image, hand over the data
@@ -748,7 +789,6 @@ object Attachment {
     fn file_desc() -> Option<FileDesc>;
     /// if this is a file, hand over the data
     fn file_binary() -> Future<Result<buffer<u8>>>;
-    
 }
 
 /// Reference to the attachments section of a particular item
@@ -776,9 +816,7 @@ object AttachmentsManager {
 
     /// create news slide for file msg
     fn file_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u32>) -> AttachmentDraft;
-
 }
-
 
 object Task {
     /// the name of this task
@@ -834,7 +872,7 @@ object Task {
     /// make a builder for updating the task
     fn update_builder() -> Result<TaskUpdateBuilder>;
 
-    // get informed about changes to this task
+    /// get informed about changes to this task
     fn subscribe() -> Stream<()>;
 
     /// replace the current task with one with the latest state
@@ -990,7 +1028,7 @@ object TaskList {
 
     /// Has this been colored in?
     fn color() -> Option<EfkColor>;
-    
+
     /// Does this have any special time zone
     fn time_zone() -> Option<string>;
 
@@ -1009,7 +1047,7 @@ object TaskList {
     /// make a builder for updating the task list
     fn update_builder() -> Result<TaskListUpdateBuilder>;
 
-    // get informed about changes to this task
+    /// get informed about changes to this task
     fn subscribe() -> Stream<()>;
 
     /// replace the current task with one with the latest state
@@ -1150,10 +1188,10 @@ object Space {
     /// the room id as str
     fn get_room_id_str() -> string;
 
-    // the members currently in the room
+    /// the members currently in the room
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
-    // the Membership of myself
+    /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;
 
     /// whether this room is encrypted one
@@ -1173,6 +1211,9 @@ object Space {
 
     /// get all calendar events
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
+
+    /// create calendart event draft
+    fn calendar_event_draft() -> Result<CalendarEventDraft>;
 
     /// create news draft
     fn news_draft() -> Result<NewsEntryDraft>;
@@ -1307,7 +1348,6 @@ object PublicSearchResultItem {
     fn join_rule_str() -> string;
     // fn room_type() -> Option<RoomType>;
     fn room_type_str() -> string;
-
 }
 
 object PublicSearchResult {
@@ -1348,7 +1388,7 @@ object Client {
     /// return the account of the logged in user, if given
     fn account() -> Result<Account>;
 
-    // The device_id of the client
+    /// The device_id of the client
     fn device_id() -> Result<DeviceId>;
 
     /// The user_id of the client
@@ -1454,6 +1494,12 @@ object Client {
 
     /// get all calendar events
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
+
+    /// Get a specific Calendar Event for the client
+    fn calendar_event(calendar_id: string) -> Future<Result<CalendarEvent>>;
+
+    /// Fetch the calendar event or use its event_id to wait for it to come down the wire
+    fn wait_for_calendar_event(key: string, timeout: Option<EfkDuration>) -> Future<Result<CalendarEvent>>;
 }
 
 object OptionText {

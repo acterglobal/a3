@@ -7,12 +7,14 @@ class InputTextField extends StatefulWidget {
   final int? maxLines;
   final void Function(String?)? onInputChanged;
   final String? validatorString;
+  final bool? readOnly;
   const InputTextField({
     required this.hintText,
     required this.textInputType,
     this.controller,
     this.maxLines,
     this.validatorString,
+    this.readOnly,
     this.onInputChanged,
     super.key,
   });
@@ -26,6 +28,7 @@ class _InputTextFieldState extends State<InputTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      readOnly: widget.readOnly ?? false,
       controller: widget.controller ?? _controller,
       maxLines: widget.maxLines ?? 1,
       keyboardType: widget.textInputType,
