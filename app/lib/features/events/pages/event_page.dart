@@ -60,7 +60,9 @@ class CalendarEventPage extends ConsumerWidget {
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Date and Time: ${formatDt(calendarEvent)}'),
+                              Text(
+                                'Date and Time: ${formatDt(calendarEvent)}\tUTC GMT(+0)',
+                              ),
                               const SizedBox(height: 15),
                               Text(
                                 'Description: ${calendarEvent.description()!.body()}',
