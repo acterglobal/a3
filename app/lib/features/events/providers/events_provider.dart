@@ -28,3 +28,32 @@ final spaceEventsProvider = AsyncNotifierProvider.autoDispose
     .family<AsyncSpaceEventsNotifier, List<CalendarEvent>, Space>(
   () => AsyncSpaceEventsNotifier(),
 );
+
+class AsyncCalendarEventNotifier
+    extends AutoDisposeFamilyAsyncNotifier<CalendarEvent, String> {
+  late Stream<void> _listener;
+  Future<CalendarEvent> _getCalendarEvent() async {
+    final client = ref.watch(clientProvider)!;
+    try {
+      return await client.calendarEvent(arg);
+    } catch (e) {
+      return await client.waitForCalendarEvent(arg, null);
+    }
+    // this might throw internally
+  }
+
+  @override
+  Future<CalendarEvent> build(String arg) async {
+    final client = ref.watch(clientProvider)!;
+    _listener = client.subscribe(arg); // stay up to date
+    _listener.forEach((_e) async {
+      state = await AsyncValue.guard(() => _getCalendarEvent());
+    });
+    return _getCalendarEvent();
+  }
+}
+
+final calendarEventProvider = AsyncNotifierProvider.autoDispose
+    .family<AsyncCalendarEventNotifier, CalendarEvent, String>(
+  () => AsyncCalendarEventNotifier(),
+);

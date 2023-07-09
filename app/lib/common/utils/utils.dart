@@ -31,7 +31,6 @@ extension RefDebounceExtension on Ref {
   }
 }
 
-
 DateTime kFirstDay = DateTime.utc(2010, 10, 16);
 DateTime kLastDay = DateTime.utc(2050, 12, 31);
 
@@ -46,7 +45,7 @@ List<CalendarEvent> eventsForDay(List<CalendarEvent> events, DateTime day) {
 
 String formatDt(CalendarEvent e) {
   final start = toDartDatetime(e.utcStart());
-  final end = toDartDatetime(e.utcStart());
+  final end = toDartDatetime(e.utcEnd());
   if (e.showWithoutTime()) {
     final startFmt = DateFormat.yMMMd().format(start);
     if (start.difference(end).inDays == 0) {
@@ -66,6 +65,8 @@ String formatDt(CalendarEvent e) {
       final endFmt = DateFormat.yMMMd().format(end);
       return '$startFmt $startTimeFmt - $endFmt $endTimeFmt';
     }
+  }
+}
 
 Future<bool> openLink(String target, BuildContext context) async {
   final Uri? url = Uri.tryParse(target);

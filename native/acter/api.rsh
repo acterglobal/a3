@@ -1472,6 +1472,9 @@ object Client {
     /// get all calendar events
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
 
+    /// Get a specific Calendar Event for the client
+    fn calendar_event(calendar_id: string) -> Future<Result<CalendarEvent>>;
+
     /// Fetch the calendar event or use its event_id to wait for it to come down the wire
     fn wait_for_calendar_event(key: string, timeout: Option<EfkDuration>) -> Future<Result<CalendarEvent>>;
 }

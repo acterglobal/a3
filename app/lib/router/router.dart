@@ -7,6 +7,7 @@ import 'package:acter/features/activities/presentation/pages/activities_page.dar
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/events/dialogs/create_event_sheet.dart';
+import 'package:acter/features/events/pages/event_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
@@ -359,6 +360,21 @@ List<RouteBase> makeRoutes(Ref ref) => [
               );
             },
           ),
+
+          GoRoute(
+            name: Routes.calendarEvent.name,
+            path: Routes.calendarEvent.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: CalendarEventPage(
+                  calendarId: state.pathParameters['calendarId']!,
+                ),
+              );
+            },
+          ),
+
           GoRoute(
             name: Routes.updates.name,
             path: Routes.updates.route,

@@ -1,7 +1,9 @@
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class EventItem extends StatelessWidget {
   final CalendarEvent event;
@@ -15,7 +17,10 @@ class EventItem extends StatelessWidget {
         subtitle: Text(
           formatDt(event),
         ),
-        onTap: () => {},
+        onTap: () => context.pushNamed(
+          Routes.calendarEvent.name,
+          pathParameters: {'calendarId': event.eventId().toString()},
+        ),
       ),
     );
   }

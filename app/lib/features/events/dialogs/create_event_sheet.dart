@@ -1,4 +1,5 @@
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
@@ -304,16 +305,55 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
     }
     if (_startTimeController.text.isEmpty) {
-      var _hour = ref.read(_startTimeProvider).hour.toString();
-      var _minute = ref.read(_startTimeProvider).minute.toString();
-      var _time = _hour + ' : ' + _minute;
+      var _time = ref.read(_startTimeProvider).format(context);
       _startTimeController.text = _time;
     }
     if (_endTimeController.text.isEmpty) {
-      var _hour = ref.read(_startTimeProvider).hour.toString();
-      var _minute = ref.read(_startTimeProvider).minute.toString();
-      var _time = _hour + ' : ' + _minute;
+      var _time = ref.read(_endTimeProvider).format(context);
       _endTimeController.text = _time;
+    }
+    try {
+      final space =
+          await ref.read(spaceProvider(widget.initialSelectedSpace!).future);
+      final calendarEventDraft = space.calendarEventDraft();
+
+      calendarEventDraft.title(ref.read(_titleProvider));
+      calendarEventDraft.descriptionText(_descriptionController.text.trim());
+
+      // convert selected date time to utc and RFC3339 format
+      final _date = ref.read(_dateProvider);
+      final _startTime = ref.read(_startTimeProvider);
+      final utcStartDateTime = DateTime(
+        _date.year,
+        _date.month,
+        _date.day,
+        _startTime.hour,
+        _startTime.minute,
+      ).toUtc();
+      calendarEventDraft
+          .utcStartFromRfc3339(utcStartDateTime.toIso8601String());
+
+      final _endTime = ref.read(_endTimeProvider);
+      final utcEndDateTime = DateTime(
+        _date.year,
+        _date.month,
+        _date.day,
+        _endTime.hour,
+        _endTime.minute,
+      ).toUtc();
+      calendarEventDraft.utcEndFromRfc3339(utcEndDateTime.toIso8601String());
+
+      final eventId = await calendarEventDraft.send();
+      debugPrint('Created Calendar Event: ${eventId.toString()}');
+      context.pop();
+      context.pop();
+      context.pushNamed(
+        Routes.calendarEvent.name,
+        pathParameters: {'calendarId': eventId.toString()},
+      );
+    } catch (e) {
+      context.pop();
+      customMsgSnackbar(context, 'Some error occured $e');
     }
   }
 
@@ -338,14 +378,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     );
     if (picked != null) {
       ref.read(_startTimeProvider.notifier).update((state) => picked);
-
-      var _hour = ref.read(_startTimeProvider).hour.toString();
-      var _minute = ref.read(_startTimeProvider).minute.toString();
-      var _time = _hour + ' : ' + _minute;
+      var _time = ref.read(_startTimeProvider).format(context);
       _startTimeController.text = _time;
-      // _timeController.text = formatDate(
-      //     DateTime(2019, 08, 1, ref.read(_timeProvider).hour, ref.read(_timeProvider).minute),
-      //     [hh, ':', nn, " ", am]).toString();
     }
   }
 
@@ -357,13 +391,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     if (picked != null) {
       ref.read(_endTimeProvider.notifier).update((state) => picked);
 
-      var _hour = ref.read(_startTimeProvider).hour.toString();
-      var _minute = ref.read(_startTimeProvider).minute.toString();
-      var _time = _hour + ' : ' + _minute;
+      var _time = ref.read(_endTimeProvider).format(context);
       _endTimeController.text = _time;
-      // _timeController.text = formatDate(
-      //     DateTime(2019, 08, 1, ref.read(_timeProvider).hour, ref.read(_timeProvider).minute),
-      //     [hh, ':', nn, " ", am]).toString();
     }
   }
 }

@@ -48,6 +48,25 @@ impl Client {
             .await?
     }
 
+    pub async fn calendar_event(&self, calendar_id: String) -> Result<CalendarEvent> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let AnyActerModel::CalendarEvent(inner) = client.store().get(&calendar_id).await? else {
+                    bail!("Calendar event not found");
+                };
+                let room = client
+                    .get_room(inner.room_id())
+                    .context("Room of calendar event not found")?;
+                Ok(CalendarEvent {
+                    client,
+                    room,
+                    inner,
+                })
+            })
+            .await?
+    }
+
     pub async fn calendar_events(&self) -> Result<Vec<CalendarEvent>> {
         let mut calendar_events = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();

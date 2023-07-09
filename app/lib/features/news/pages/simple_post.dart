@@ -1,5 +1,6 @@
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
+import 'package:cross_file_image/cross_file_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
@@ -7,12 +8,11 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
-import 'package:cross_file_image/cross_file_image.dart';
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'dart:typed_data';
 
