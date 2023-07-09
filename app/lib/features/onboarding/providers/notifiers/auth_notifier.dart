@@ -50,23 +50,22 @@ class AuthStateNotifier extends StateNotifier<bool> {
     }
   }
 
-  Future<void> register(
+  Future<String?> register(
     String username,
     String password,
     String displayName,
     String token,
     BuildContext context,
   ) async {
-    state = true;
     final sdk = await ref.watch(sdkProvider.future);
     try {
       final client = await sdk.register(username, password, displayName, token);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
-      state = false;
       context.goNamed(Routes.main.name);
+      return null;
     } catch (e) {
-      state = false;
+      return e.toString();
     }
   }
 
