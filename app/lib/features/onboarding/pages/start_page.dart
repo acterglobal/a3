@@ -263,21 +263,22 @@ class _StartPageState extends State<StartPage> {
             tileMode: TileMode.decal,
           ),
         ),
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Column(
-            children: [
-              Expanded(
-                child: PageView.builder(
-                  onPageChanged: (index) {
-                    setState(() {
-                      _pageIndex = index;
-                    });
-                  },
-                  itemCount: onBoardingPages.length,
-                  controller: _pageController,
-                  itemBuilder: (context, index) {
-                    return Column(
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView.builder(
+                onPageChanged: (index) {
+                  setState(() {
+                    _pageIndex = index;
+                  });
+                },
+                itemCount: onBoardingPages.length,
+                controller: _pageController,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const SizedBox(
@@ -295,12 +296,16 @@ class _StartPageState extends State<StartPage> {
                           height: 20,
                         )
                       ],
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
-              GestureDetector(
-                onTap: () => context.goNamed(Routes.introProfile.name),
+            ),
+            GestureDetector(
+              onTap: () => context.goNamed(Routes.introProfile.name),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -348,8 +353,8 @@ class _StartPageState extends State<StartPage> {
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -13,11 +13,10 @@ class AuthStateNotifier extends StateNotifier<bool> {
   final Ref ref;
   AuthStateNotifier(this.ref) : super(false);
 
-  Future<void> login(
+  Future<String?> login(
     String username,
     String password,
   ) async {
-    state = true;
     final sdk = await ref.watch(sdkProvider.future);
     try {
       final client = await sdk.login(username, password);
@@ -26,10 +25,10 @@ class AuthStateNotifier extends StateNotifier<bool> {
       // inject chat dependencies once actual client is logged in.
       Get.replace(ChatRoomController(client: client));
       // Get.replace(ReceiptController(client: client));
-      state = false;
+      return null;
     } catch (e) {
       debugPrint('$e');
-      state = false;
+      return e.toString();
     }
   }
 

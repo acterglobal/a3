@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -31,35 +32,23 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
-  void validateLogin(BuildContext context) {
-    final isLoggedIn = ref.watch(isLoggedInProvider);
-
-    if (isLoggedIn) {
-      context.goNamed(Routes.main.name);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          key: LoginPageKeys.snackbarFailed,
-          backgroundColor: Theme.of(context).colorScheme.error,
-          content: Text(AppLocalizations.of(context)!.loginFailed),
-          duration: const Duration(seconds: 4),
-        ),
-      );
-    }
-  }
-
-  Future<void> handleSubmit() async {
+  Future<void> handleSubmit(BuildContext context) async {
     if (formKey.currentState!.validate()) {
-      var network = ref.read(networkAwareProvider);
+      final network = ref.read(networkAwareProvider);
       if (!inCI && network == NetworkStatus.Off) {
         showNoInternetNotification();
       } else {
-        var notifier = ref.read(authStateProvider.notifier);
-        await notifier.login(
+        final notifier = ref.read(authStateProvider.notifier);
+        final login_success = await notifier.login(
           username.text,
           password.text,
         );
-        validateLogin(context);
+        if (login_success == null) {
+          // no message means, login was successful.
+          context.goNamed(Routes.main.name);
+        } else {
+          customMsgSnackbar(context, login_success);
+        }
       }
     }
   }
@@ -71,6 +60,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       title: AppBar(
         title: Text(AppLocalizations.of(context)!.logIn),
       ),
+      insetPadding: EdgeInsets.all(0),
       children: [
         Form(
           key: formKey,
@@ -118,7 +108,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ? const CircularProgressIndicator()
                   : CustomButton(
                       key: LoginPageKeys.submitBtn,
-                      onPressed: handleSubmit,
+                      onPressed: () => handleSubmit(context),
                       title: AppLocalizations.of(context)!.logIn,
                     ),
               const SizedBox(height: 40),
