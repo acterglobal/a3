@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/search/providers/spaces.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/search/providers/search.dart';
@@ -118,14 +119,34 @@ class QuickJump extends ConsumerWidget {
   }
 
   Widget quickActions(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(featuresProvider);
-    bool isActive(f) => provider.isActive(f);
+    final features = ref.watch(featuresProvider);
+    bool isActive(f) => features.isActive(f);
+    final canPostNews =
+        ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
+            false;
+    final canPostPin = isActive(LabsFeature.pins) &&
+        (ref.watch(hasSpaceWithPermissionProvider('CanPostPin')).valueOrNull ??
+            false);
     return Wrap(
       alignment: WrapAlignment.spaceBetween,
       spacing: 8,
       runSpacing: 10,
       children: List.from(
         [
+          canPostNews
+              ? OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.amber,
+                    side: const BorderSide(width: 2, color: Colors.amber),
+                  ),
+                  onPressed: () {
+                    navigateTo(route: Routes.actionAddUpdate, push: true);
+                    debugPrint('News');
+                  },
+                  icon: const Icon(Atlas.plus_circle_thin),
+                  label: const Text('News'),
+                )
+              : null,
           isActive(LabsFeature.tasks)
               ? OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
@@ -140,7 +161,7 @@ class QuickJump extends ConsumerWidget {
                   label: const Text('Task'),
                 )
               : null,
-          isActive(LabsFeature.pins)
+          canPostPin
               ? OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.purple,

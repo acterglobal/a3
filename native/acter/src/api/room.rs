@@ -1,4 +1,10 @@
-use acter_core::spaces::is_acter_space;
+use acter_core::{
+    events::{
+        news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
+        pins::PinEventContent,
+    },
+    spaces::is_acter_space,
+};
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use matrix_sdk::{
@@ -33,6 +39,7 @@ use matrix_sdk::{
     Client, RoomMemberships, RoomState,
 };
 use matrix_sdk_ui::timeline::RoomExt;
+use ruma::events::{EventContent, StaticEventContent};
 use std::{
     fs::{File, Permissions},
     io::Write,
@@ -58,6 +65,9 @@ pub enum MemberPermission {
     CanSendChatMessages,
     CanSendReaction,
     CanSendSticker,
+    // Acter Specific actions
+    CanPostNews,
+    CanPostPin,
     // moderation tools
     CanBan,
     CanKick,
@@ -132,6 +142,13 @@ impl Member {
             MemberPermission::CanSetTopic => StateEventType::RoomTopic.into(),
             MemberPermission::CanLinkSpaces => StateEventType::SpaceChild.into(),
             MemberPermission::CanSetParentSpace => StateEventType::SpaceParent.into(),
+            // Acter specific
+            MemberPermission::CanPostNews => PermissionTest::Message(MessageLikeEventType::from(
+                <NewsEntryEventContent as StaticEventContent>::TYPE,
+            )),
+            MemberPermission::CanPostPin => PermissionTest::Message(MessageLikeEventType::from(
+                <PinEventContent as StaticEventContent>::TYPE,
+            )),
         };
         match tester {
             PermissionTest::Message(msg) => self.member.can_send_message(msg),

@@ -91,8 +91,10 @@ impl Executor {
     }
 
     pub async fn handle(&self, model: AnyActerModel) -> Result<()> {
-        trace!(?model, "handle");
+        let event_id = model.event_id().to_string();
+        trace!(?event_id, ?model, "handle");
         self.notify(model.execute(&self.store).await?);
+        trace!(?event_id, "handling done");
         Ok(())
     }
 }

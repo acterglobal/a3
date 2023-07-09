@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<String?> selectSpaceDrawer({
   required BuildContext context,
+  String canCheck = 'CanLinkSpaces',
   String? currentSpaceId,
   Widget? title,
 }) async {
@@ -50,8 +51,7 @@ Future<String?> selectSpaceDrawer({
                               final membership = item.membership!;
                               final profile = item.spaceProfileData;
                               final roomId = item.roomId;
-                              final canLink =
-                                  membership.canString('CanLinkSpaces');
+                              final canLink = membership.canString(canCheck);
                               return ListTile(
                                 enabled: canLink,
                                 leading: ActerAvatar(

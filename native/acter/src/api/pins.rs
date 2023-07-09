@@ -208,6 +208,23 @@ impl Pin {
         self.content.title.clone()
     }
 
+    pub fn has_formatted_text(&self) -> bool {
+        matches!(
+            self.content.content(),
+            Some(TextMessageEventContent {
+                formatted: Some(_),
+                ..
+            })
+        )
+    }
+
+    pub fn content_formatted(&self) -> Option<String> {
+        self.content
+            .content
+            .as_ref()
+            .and_then(|t| t.formatted.as_ref().map(|f| f.body.clone()))
+    }
+
     pub fn content_text(&self) -> Option<String> {
         self.content.content.as_ref().map(|t| t.body.clone())
     }
@@ -324,6 +341,12 @@ impl PinDraft {
     pub fn content_text(&mut self, body: String) -> &mut Self {
         self.content
             .content(Some(TextMessageEventContent::plain(body)));
+        self
+    }
+
+    pub fn content_markdown(&mut self, body: String) -> &mut Self {
+        self.content
+            .content(Some(TextMessageEventContent::markdown(body)));
         self
     }
 

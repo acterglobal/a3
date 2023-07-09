@@ -118,6 +118,20 @@ class SpaceRelationsOverview {
   });
 }
 
+/// Whether the user has at least one space, where they have the requested permission
+final hasSpaceWithPermissionProvider =
+    FutureProvider.family.autoDispose<bool, String>((ref, permission) async {
+  final spaces = await ref.watch(spacesProvider.future);
+  for (final element in spaces) {
+    final membership = await element.getMyMembership();
+    if (membership.canString(permission)) {
+      return true;
+    }
+  }
+  // none found
+  return false;
+});
+
 /// Get the list of known spaces as SpaceItem filled in brief form
 /// (only spaceProfileData, no activeMembers) but with user membership attached.
 /// Stays up to date with underlying client info
@@ -243,7 +257,7 @@ final relatedSpaceItemsProvider = FutureProvider.autoDispose
     .family<SpaceRelationsOverview, String>((ref, spaceId) async {
   final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
   final membership = await ref.watch(spaceMembershipProvider(spaceId).future);
-  List<SpaceItem> children = [];
+  final List<SpaceItem> children = [];
   List<SpaceItem> otherRelated = [];
   for (final related in relatedSpaces.children()) {
     String targetType = related.targetType();

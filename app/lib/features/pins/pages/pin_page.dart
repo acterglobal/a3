@@ -1,14 +1,14 @@
 import 'dart:core';
 
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:go_router/go_router.dart';
 
 class PinPage extends ConsumerWidget {
   final String pinId;
@@ -50,19 +50,15 @@ class PinPage extends ConsumerWidget {
                   label: Text(pin.url() ?? ''),
                   onPressed: () async {
                     final target = pin.url()!;
-                    final Uri? url = Uri.tryParse(target);
-                    if (url == null) {
-                      debugPrint('Opening internally: $url');
-                      // not a valid URL, try local routing
-                      context.go(target);
-                    } else {
-                      debugPrint('Opening external URL: $url');
-                      !await launchUrl(url);
-                    }
+                    await openLink(target, context);
                   },
                 );
               } else {
-                content = Text(pin.contentText() ?? '');
+                if (pin.hasFormattedText()) {
+                  content = RenderHtml(text: pin.contentFormatted() ?? '');
+                } else {
+                  content = Text(pin.contentText() ?? '');
+                }
               }
 
               return SliverToBoxAdapter(
@@ -74,16 +70,21 @@ class PinPage extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ListTile(
-                          key: Key(pin
-                              .eventIdStr(),), // FIXME: causes crashes in ffigen
-                          leading: Icon(isLink
-                              ? Atlas.link_chain_thin
-                              : Atlas.document_thin,),
+                          key: Key(
+                            pin.eventIdStr(),
+                          ), // FIXME: causes crashes in ffigen
+                          leading: Icon(
+                            isLink
+                                ? Atlas.link_chain_thin
+                                : Atlas.document_thin,
+                          ),
                           title: Text(pin.title()),
                           subtitle: SpaceChip(spaceId: spaceId),
                         ),
                         Padding(
-                            padding: const EdgeInsets.all(8), child: content,),
+                          padding: const EdgeInsets.all(8),
+                          child: content,
+                        ),
                       ],
                     ),
                   ),
