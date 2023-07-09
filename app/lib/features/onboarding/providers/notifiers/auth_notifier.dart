@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -76,12 +77,15 @@ class AuthStateNotifier extends StateNotifier<bool> {
     if (stillHasClient) {
       print('Still has clients, dropping back to other');
       ref.read(isLoggedInProvider.notifier).update((state) => true);
+      ref.invalidate(clientProvider);
+      ref.invalidate(spacesProvider);
       ref.read(clientProvider.notifier).state = sdk.currentClient;
       context.goNamed(Routes.main.name);
     } else {
       print('No clients left, redir to onboarding');
       ref.read(isLoggedInProvider.notifier).update((state) => false);
       ref.invalidate(clientProvider);
+      ref.invalidate(spacesProvider);
       context.goNamed(Routes.main.name);
     }
     // return to guest client.

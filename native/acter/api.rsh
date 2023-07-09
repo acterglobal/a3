@@ -1274,7 +1274,9 @@ object Account {
 
 object SyncState {
     /// Get event handler of first synchronization on every launch
-    fn first_synced_rx() -> Option<Stream<bool>>;
+    fn first_synced_rx() -> Stream<bool>;
+    /// When the sync stopped with an error, this will trigger
+    fn sync_error_rx() -> Stream<string>;
 
     /// stop the sync loop
     fn cancel();

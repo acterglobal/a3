@@ -13,6 +13,8 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
@@ -68,7 +70,78 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         ),
       );
     }
-    final hasFirstSynced = ref.watch(syncStateProvider);
+    final syncState = ref.watch(syncStateProvider);
+    final hasFirstSynced = !syncState.syncing;
+    final errorMsg = syncState.errorMsg;
+
+    if (errorMsg != null) {
+      final softLogout = errorMsg == 'SoftLogout';
+      if (softLogout || errorMsg == 'Unauthorized') {
+        // We have a special case
+        return Scaffold(
+          body: Container(
+            margin: const EdgeInsets.only(top: kToolbarHeight),
+            child: Center(
+              child: Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 15),
+                    height: 100,
+                    width: 100,
+                    child: SvgPicture.asset(
+                        'assets/images/undraw_access_denied_re_awnf.svg'),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 15),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: const TextSpan(
+                        text: 'Access',
+                        style: TextStyle(color: Colors.white, fontSize: 32),
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: ' Denied',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red,
+                              fontSize: 32,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 15),
+                    child: const Text(
+                      'Your session has been terminated by the server, you need to log in again',
+                    ),
+                  ),
+                  softLogout
+                      ? OutlinedButton(
+                          // FIXME: not yet properly supported
+                          onPressed: () => context.goNamed(Routes.intro.name),
+                          child: const Text(
+                            'Login again',
+                          ),
+                        )
+                      : OutlinedButton(
+                          onPressed: () => context.goNamed(Routes.intro.name),
+                          child: Text('Clear db and login'),
+                        ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+      return Scaffold(
+        body: Center(
+          child: Text(errorMsg),
+        ),
+      );
+    }
+
     final bottomBarIdx =
         ref.watch(currentSelectedBottomBarIndexProvider(context));
 

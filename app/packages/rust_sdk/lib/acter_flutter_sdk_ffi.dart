@@ -8480,6 +8480,58 @@ class Api {
     return tmp9;
   }
 
+  String? __syncStateSyncErrorRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _syncStateSyncErrorRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    final tmp12 = tmp8.arg2;
+    final tmp13 = tmp8.arg3;
+    if (tmp10 == 0) {
+      return null;
+    }
+    if (tmp12 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp11_ptr = ffi.Pointer.fromAddress(tmp11);
+    List<int> tmp11_buf = [];
+    final tmp11_precast = tmp11_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp12; i++) {
+      int char = tmp11_precast.elementAt(i).value;
+      tmp11_buf.add(char);
+    }
+    final tmp9 = utf8Decoder.convert(tmp11_buf);
+    if (tmp13 > 0) {
+      final ffi.Pointer<ffi.Void> tmp11_0;
+      tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+      this.__deallocate(tmp11_0, tmp13 * 1, 1);
+    }
+    return tmp9;
+  }
+
   FfiListConversation? __clientConversationsRxStreamPoll(
     int boxed,
     int postCobject,
@@ -14522,12 +14574,22 @@ class Api {
   )>();
   late final _syncStateFirstSyncedRxPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateFirstSyncedRxReturn Function(
+          ffi.Int64 Function(
     ffi.Int64,
   )>>("__SyncState_first_synced_rx");
 
   late final _syncStateFirstSyncedRx = _syncStateFirstSyncedRxPtr.asFunction<
-      _SyncStateFirstSyncedRxReturn Function(
+      int Function(
+    int,
+  )>();
+  late final _syncStateSyncErrorRxPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__SyncState_sync_error_rx");
+
+  late final _syncStateSyncErrorRx = _syncStateSyncErrorRxPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _syncStateCancelPtr = _lookup<
@@ -18334,6 +18396,23 @@ class Api {
   late final _syncStateFirstSyncedRxStreamPoll =
       _syncStateFirstSyncedRxStreamPollPtr.asFunction<
           _SyncStateFirstSyncedRxStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _syncStateSyncErrorRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _SyncStateSyncErrorRxStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__SyncState_sync_error_rx_stream_poll");
+
+  late final _syncStateSyncErrorRxStreamPoll =
+      _syncStateSyncErrorRxStreamPollPtr.asFunction<
+          _SyncStateSyncErrorRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -30925,22 +31004,33 @@ class SyncState {
   SyncState._(this._api, this._box);
 
   /// Get event handler of first synchronization on every launch
-  Stream<bool>? firstSyncedRx() {
+  Stream<bool> firstSyncedRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._syncStateFirstSyncedRx(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 =
-        _Box(_api, tmp4_0, "__SyncState_first_synced_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = _nativeStream(tmp4_1, _api.__syncStateFirstSyncedRxStreamPoll);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__SyncState_first_synced_rx_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__syncStateFirstSyncedRxStreamPoll);
+    return tmp2;
+  }
+
+  /// When the sync stopped with an error, this will trigger
+  Stream<String> syncErrorRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._syncStateSyncErrorRx(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__SyncState_sync_error_rx_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__syncStateSyncErrorRxStreamPoll);
     return tmp2;
   }
 
@@ -35434,13 +35524,6 @@ class _SpacePinDraftReturn extends ffi.Struct {
   external int arg4;
 }
 
-class _SyncStateFirstSyncedRxReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
 class _PublicSearchResultItemNameReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -38148,6 +38231,17 @@ class _SyncStateFirstSyncedRxStreamPollReturn extends ffi.Struct {
   external int arg0;
   @ffi.Uint8()
   external int arg1;
+}
+
+class _SyncStateSyncErrorRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class _ClientConversationsRxStreamPollReturn extends ffi.Struct {

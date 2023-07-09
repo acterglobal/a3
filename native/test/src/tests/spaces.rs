@@ -1,6 +1,6 @@
 use acter::new_space_settings;
 use anyhow::{bail, Result};
-use async_broadcast::TryRecvError;
+use tokio::sync::broadcast::TryRecvError;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,

@@ -3,7 +3,6 @@ use acter_core::{
     models::{self, ActerModel, AnyActerModel, Color},
 };
 use anyhow::{bail, Context, Result};
-use async_broadcast::Receiver;
 use core::time::Duration;
 use matrix_sdk::room::{Joined, Room};
 use ruma::{
@@ -18,6 +17,7 @@ use ruma::{
     MxcUri, OwnedEventId, OwnedUserId, UInt,
 };
 use std::ops::Deref;
+use tokio::sync::broadcast::Receiver;
 
 use super::{api::FfiBuffer, client::Client, RUNTIME};
 
@@ -353,7 +353,7 @@ impl AttachmentsManager {
         })
     }
 
-    pub fn subscribe(&self) -> Receiver<()> {
-        self.client.executor().subscribe(self.inner.update_key())
+    pub fn subscribe(&self) -> impl tokio_stream::Stream<Item = ()> {
+        self.client.subscribe(self.inner.update_key())
     }
 }

@@ -7,7 +7,6 @@ use acter_core::{
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
-use async_broadcast::Receiver;
 use core::time::Duration;
 use matrix_sdk::{
     room::{Joined, Room},
@@ -17,6 +16,7 @@ use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
 };
+use tokio::sync::broadcast::Receiver;
 use tracing::warn;
 
 use super::{client::Client, spaces::Space, RUNTIME};
@@ -175,9 +175,9 @@ impl CalendarEvent {
         })
     }
 
-    pub fn subscribe(&self) -> Receiver<()> {
+    pub fn subscribe(&self) -> impl tokio_stream::Stream<Item = ()> {
         let key = self.inner.event_id().to_string();
-        self.client.executor().subscribe(key)
+        self.client.subscribe(key)
     }
 
     pub async fn comments(&self) -> Result<crate::CommentsManager> {

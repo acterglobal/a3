@@ -9,7 +9,6 @@ dependencies = [
  "acter-core",
  "android_logger",
  "anyhow",
- "async-broadcast",
  "async-stream",
  "cbindgen",
  "chrono",
@@ -38,6 +37,7 @@ dependencies = [
  "strum",
  "tempfile",
  "tokio",
+ "tokio-stream",
  "tracing",
  "tracing-android",
  "tracing-wasm",
@@ -70,7 +70,6 @@ name = "acter-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "async-broadcast",
  "async-recursion",
  "async-stream",
  "chrono",

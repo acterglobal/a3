@@ -150,7 +150,7 @@ class ActerSdk {
       String token = await c.restoreToken();
       sessions.add(token);
     }
-    print("setting sessions: $sessions");
+    print('setting sessions: $sessions');
     SharedPreferences prefs = await sharedPrefs();
     await prefs.setStringList(_sessionKey, sessions);
     await prefs.setInt('$_sessionKey::currentClientIdx', _index);
@@ -322,7 +322,7 @@ class ActerSdk {
     // remove current client from list
     final client = _clients.removeAt(_index);
     _index = _index > 0 ? _index - 1 : 0;
-    print("Remainig clients $_clients");
+    print('Remainig clients $_clients');
     await _persistSessions();
     unawaited(
       client.logout().catchError((e) {

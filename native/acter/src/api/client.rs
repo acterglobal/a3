@@ -9,9 +9,7 @@ use futures::{
     future::{join_all, ready},
     pin_mut, stream, Stream, StreamExt,
 };
-use futures_signals::signal::{
-    channel, Mutable, MutableSignalCloned, Receiver, SignalExt, SignalStream,
-};
+use futures_signals::signal::{channel, Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
     config::SyncSettings,
     event_handler::{Ctx, EventHandlerHandle},
@@ -20,8 +18,8 @@ use matrix_sdk::{
     Client as SdkClient, LoopCtrl, RumaApiError,
 };
 use ruma::{
-    device_id, events::room::MediaSource, OwnedDeviceId, OwnedRoomId, OwnedRoomOrAliasId,
-    OwnedServerName, OwnedUserId, RoomId, UserId,
+    api::client::error::ErrorKind, device_id, events::room::MediaSource, OwnedDeviceId,
+    OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomId, UserId,
 };
 use std::{
     collections::{BTreeMap, HashMap},
@@ -32,9 +30,10 @@ use std::{
     },
 };
 use tokio::{
-    sync::{Mutex, RwLock},
+    sync::{broadcast, Mutex, RwLock},
     task::JoinHandle,
 };
+use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
 use super::{
@@ -187,19 +186,64 @@ impl HistoryLoadState {
 type RoomHandlers = Arc<Mutex<HashMap<OwnedRoomId, Vec<EventHandlerHandle>>>>;
 
 #[derive(Clone)]
+pub enum SyncError {
+    Unauthorized { soft_logout: bool },
+    Other { msg: Option<String> },
+    DeserializationFailed,
+}
+
+impl From<&ruma::api::client::Error> for SyncError {
+    fn from(value: &ruma::api::client::Error) -> Self {
+        match &value.body {
+            ruma::api::client::error::ErrorBody::Standard {
+                kind: ErrorKind::UnknownToken { soft_logout },
+                ..
+            } => SyncError::Unauthorized {
+                soft_logout: soft_logout.clone(),
+            },
+            ruma::api::client::error::ErrorBody::Standard { ref message, .. } => SyncError::Other {
+                msg: Some(message.clone()),
+            },
+            ruma::api::client::error::ErrorBody::Json(_) => SyncError::Other { msg: None },
+            ruma::api::client::error::ErrorBody::NotJson { .. } => SyncError::DeserializationFailed,
+        }
+    }
+}
+
+impl SyncError {
+    fn ffi_string(&self) -> String {
+        match &self {
+            SyncError::Unauthorized { soft_logout } => {
+                if *soft_logout {
+                    "SoftLogout".to_owned()
+                } else {
+                    "Unauthorized".to_owned()
+                }
+            }
+            SyncError::DeserializationFailed => "DeserializationFailed".to_owned(),
+            SyncError::Other { msg } => msg.clone().unwrap_or("Other".to_owned()),
+        }
+    }
+}
+
+#[derive(Clone)]
 pub struct SyncState {
     handle: Mutable<Option<JoinHandle<()>>>,
     first_sync_task: Mutable<Option<JoinHandle<Result<()>>>>,
-    first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
+    first_synced_rx: Arc<broadcast::Receiver<bool>>,
+    sync_error: Arc<broadcast::Receiver<SyncError>>,
     history_loading: Mutable<HistoryLoadState>,
     room_handles: RoomHandlers,
 }
 
 impl SyncState {
-    pub fn new(first_synced_rx: Receiver<bool>) -> Self {
-        let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
+    pub fn new(
+        first_synced_rx: broadcast::Receiver<bool>,
+        sync_error: broadcast::Receiver<SyncError>,
+    ) -> Self {
         Self {
-            first_synced_rx,
+            first_synced_rx: Arc::new(first_synced_rx),
+            sync_error: Arc::new(sync_error),
             history_loading: Default::default(),
             first_sync_task: Default::default(),
             handle: Default::default(),
@@ -207,11 +251,17 @@ impl SyncState {
         }
     }
 
-    pub fn first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
-        match self.first_synced_rx.try_lock() {
-            Ok(mut l) => l.take().map(|t| t.to_stream()),
-            Err(e) => None,
-        }
+    pub fn first_synced_rx(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.first_synced_rx.resubscribe()).map(|o| o.unwrap_or_default())
+    }
+
+    pub fn sync_error_rx_typed(&self) -> BroadcastStream<SyncError> {
+        BroadcastStream::new(self.sync_error.resubscribe())
+    }
+
+    pub fn sync_error_rx(&self) -> impl Stream<Item = String> {
+        self.sync_error_rx_typed()
+            .map(|o| o.map(|f| f.ffi_string()).unwrap_or_default())
     }
 
     // FIXE: This is not save. History state is copied and thus not all known_spaces are tracked
@@ -430,11 +480,14 @@ impl Client {
         let mut device_controller = self.device_controller.clone();
         let mut conversation_controller = self.conversation_controller.clone();
 
-        let (first_synced_tx, first_synced_rx) = channel(false);
+        let (first_synced_tx, first_synced_rx) = broadcast::channel(1);
         let first_synced_arc = Arc::new(first_synced_tx);
 
+        let (sync_error_tx, sync_error_rx) = broadcast::channel(1);
+        let sync_error_arc = Arc::new(sync_error_tx);
+
         let initial_arc = Arc::new(AtomicBool::from(true));
-        let sync_state = SyncState::new(first_synced_rx);
+        let sync_state = SyncState::new(first_synced_rx, sync_error_rx);
         let history_loading = sync_state.history_loading.clone();
         let first_sync_task = sync_state.first_sync_task.clone();
         let room_handles = sync_state.room_handles.clone();
@@ -467,6 +520,7 @@ impl Client {
                     let mut conversation_controller = conversation_controller.clone();
 
                     let first_synced_arc = first_synced_arc.clone();
+                    let sync_error_arc = sync_error_arc.clone();
                     let history_loading = history_loading.clone();
                     let initial = initial_arc.clone();
 
@@ -475,6 +529,7 @@ impl Client {
                         Err(err) => {
                             if let Some(RumaApiError::ClientApi(e)) = err.as_ruma_api_error() {
                                 error!(?e, "Client error");
+                                sync_error_arc.send(e.into());
                                 return Ok(LoopCtrl::Break);
                             }
                             error!(?err, "Other error, continuing");
@@ -657,8 +712,8 @@ impl Client {
             .map(|room| Room { room })
     }
 
-    pub fn subscribe(&self, key: String) -> async_broadcast::Receiver<()> {
-        self.executor().subscribe(key)
+    pub fn subscribe(&self, key: String) -> impl Stream<Item = ()> {
+        BroadcastStream::new(self.executor().subscribe(key)).map(|f| f.unwrap_or_default())
     }
 
     pub(crate) async fn wait_for(

@@ -70,7 +70,9 @@ class _IntroProfileState extends State<IntroProfile> {
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 10),
+                      horizontal: 30,
+                      vertical: 10,
+                    ),
                     child: Column(
                       children: [
                         GestureDetector(

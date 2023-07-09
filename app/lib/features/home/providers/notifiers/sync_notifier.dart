@@ -4,13 +4,21 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
+class LocalSyncState {
+  final bool syncing;
+  final String? errorMsg;
+
+  const LocalSyncState(this.syncing, {this.errorMsg});
+}
+
 // ignore_for_file: avoid_print
-class SyncNotifier extends StateNotifier<bool> {
+class SyncNotifier extends StateNotifier<LocalSyncState> {
   late SyncState syncState;
   late Stream<bool>? syncPoller;
+  late Stream<bool>? errorPoller;
   late Ref ref;
 
-  SyncNotifier(Client client, Ref ref) : super(false) {
+  SyncNotifier(Client client, Ref ref) : super(const LocalSyncState(true)) {
     startSync(client, ref);
   }
 
@@ -24,11 +32,17 @@ class SyncNotifier extends StateNotifier<bool> {
     await Future.delayed(const Duration(milliseconds: 1500));
     syncState = client.startSync();
     final syncPoller = syncState.firstSyncedRx();
-    syncPoller!.listen((event) {
+    syncPoller.listen((event) {
       if (event) {
-        state = true;
+        state = const LocalSyncState(false);
         ref.invalidate(spacesProvider);
       }
+    });
+
+    final errorPoller = syncState.syncErrorRx();
+    errorPoller.listen((error) {
+      state = LocalSyncState(false, errorMsg: error);
+      ref.invalidate(spacesProvider);
     });
   }
 }
