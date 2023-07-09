@@ -202,9 +202,9 @@ impl AnyActerModel {
             "global.acter.dev.calendar_event.update" => Ok(AnyActerModel::CalendarEventUpdate(
                 raw.deserialize_as::<OriginalCalendarEventUpdateEvent>()
                     .map_err(|error| {
-                        error!(?error, ?raw, "parsing pin update event failed");
+                        error!(?error, ?raw, "parsing calendar_event update event failed");
                         Error::FailedToParse {
-                            model_type: "global.acter.dev.pin.update".to_string(),
+                            model_type: "global.acter.dev.calendar_event.update".to_string(),
                             msg: error.to_string(),
                         }
                     })?
