@@ -61,7 +61,7 @@ class CalendarEventPage extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Date and Time: ${formatDt(calendarEvent)}\tUTC GMT(+0)',
+                                'Date and Time: ${formatDt(calendarEvent)}',
                               ),
                               const SizedBox(height: 15),
                               Text(

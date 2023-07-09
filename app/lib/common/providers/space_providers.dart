@@ -209,12 +209,6 @@ final spaceRelationsProvider = FutureProvider.autoDispose
   return await space.spaceRelations();
 });
 
-// final spaceEventsProvider = FutureProvider.autoDispose
-//     .family<List<CalendarEvent>, String>((ref, spaceId) async {
-//   final space = await ref.watch(spaceProvider(spaceId).future);
-//   return (await space.calendarEvents()).toList();
-// });
-
 /// Get the canonical parent of the space. Errors if the space isn't found. Stays up
 /// to date with underlying client data if a space was found.
 final canonicalParentProvider = FutureProvider.autoDispose

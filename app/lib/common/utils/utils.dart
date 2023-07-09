@@ -44,8 +44,8 @@ List<CalendarEvent> eventsForDay(List<CalendarEvent> events, DateTime day) {
 }
 
 String formatDt(CalendarEvent e) {
-  final start = toDartDatetime(e.utcStart());
-  final end = toDartDatetime(e.utcEnd());
+  final start = toDartDatetime(e.utcStart()).toLocal();
+  final end = toDartDatetime(e.utcEnd()).toLocal();
   if (e.showWithoutTime()) {
     final startFmt = DateFormat.yMMMd().format(start);
     if (start.difference(end).inDays == 0) {
@@ -56,8 +56,8 @@ String formatDt(CalendarEvent e) {
     }
   } else {
     final startFmt = DateFormat.yMMMd().format(start);
-    final startTimeFmt = DateFormat.Hm().format(start);
-    final endTimeFmt = DateFormat.Hm().format(end);
+    final startTimeFmt = DateFormat('hh:mm a').format(start);
+    final endTimeFmt = DateFormat('hh:mm a').format(end);
 
     if (start.difference(end).inDays == 0) {
       return '$startFmt $startTimeFmt - $endTimeFmt';

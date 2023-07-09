@@ -39,7 +39,7 @@ class EventsCalendar extends ConsumerWidget {
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     subtitle: Text(
-                      formatDt(e) + '\t UTC (GMT+0)',
+                      formatDt(e),
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                   ),

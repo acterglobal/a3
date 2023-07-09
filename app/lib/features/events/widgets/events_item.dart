@@ -15,7 +15,7 @@ class EventItem extends StatelessWidget {
       child: ListTile(
         title: Text(event.title()),
         subtitle: Text(
-          formatDt(event) + '\tUTC (GMT+0)',
+          formatDt(event),
         ),
         onTap: () => context.pushNamed(
           Routes.calendarEvent.name,
