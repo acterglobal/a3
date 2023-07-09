@@ -19,6 +19,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'dart:math';
+import 'dart:async';
 
 class Dashboard extends ConsumerStatefulWidget {
   const Dashboard({super.key});
@@ -36,6 +37,16 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
   void _checkIfSpacesPresent() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      final syncState = ref.watch(syncStateProvider);
+      final hasFirstSynced = !syncState.syncing;
+      if (!hasFirstSynced) {
+        Future.delayed(
+          const Duration(milliseconds: 250),
+          () => _checkIfSpacesPresent(),
+        );
+        // we are still syncing, check again later
+        return;
+      }
       final spaces = await ref.watch(spacesProvider.future);
       if (spaces.isEmpty) {
         onBoardingDialog(
