@@ -14,10 +14,11 @@ class InvitationListNotifier extends Notifier<List<Invitation>> {
     final client = ref.watch(clientProvider)!;
     _listener = client.invitationsRx();
     _sub = _listener.listen((ev) {
-      final as_list = ev.toList();
+      final asList = ev.toList();
       debugPrint(
-          ' --- - - ----------------- new invitations received ${ev.length}');
-      state = as_list;
+        ' --- - - ----------------- new invitations received ${asList.length}',
+      );
+      state = asList;
     });
     return [];
   }

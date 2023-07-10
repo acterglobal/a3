@@ -93,7 +93,7 @@ final spaceItemsProvider = FutureProvider.autoDispose
 final activitiesIconProvider = Provider.family<Widget, BuildContext>(
   (ref, context) {
     final activites = ref.watch(hasActivitiesProvider);
-    final baseIcon = Icon(Atlas.audio_wave_thin);
+    const baseIcon = Icon(Atlas.audio_wave_thin);
     switch (activites) {
       case HasActivities.important:
         return Badge(

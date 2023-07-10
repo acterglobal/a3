@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';

@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
@@ -50,16 +49,18 @@ class ActivitiesPage extends ConsumerWidget {
 
     // nothing else to show, show a nice info
     if (children.isEmpty) {
-      children.add(SliverToBoxAdapter(
-        child: SizedBox(
-          height: 400,
-          child: Center(
-            child: SvgPicture.asset(
-              'assets/images/undraw_project_completed_re_jr7u.svg',
+      children.add(
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 400,
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/images/undraw_project_completed_re_jr7u.svg',
+              ),
             ),
           ),
         ),
-      ));
+      );
     }
     return Scaffold(
       body: CustomScrollView(
