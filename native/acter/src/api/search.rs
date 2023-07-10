@@ -18,7 +18,6 @@ use acter_core::{
     templates::Engine,
 };
 use anyhow::{bail, Context, Result};
-use async_broadcast::Receiver;
 use futures::stream::StreamExt;
 use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
@@ -41,6 +40,7 @@ use ruma::{
 };
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
+use tokio::sync::broadcast::Receiver;
 use tracing::{error, trace};
 
 use super::{

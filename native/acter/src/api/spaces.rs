@@ -18,7 +18,6 @@ use acter_core::{
     templates::Engine,
 };
 use anyhow::{bail, Context, Result};
-use async_broadcast::Receiver;
 use futures::stream::StreamExt;
 use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
@@ -38,6 +37,7 @@ use matrix_sdk::{
 use ruma::assign;
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, thread::JoinHandle};
+use tokio::sync::broadcast::Receiver;
 use tracing::{error, trace};
 
 use crate::Conversation;
@@ -407,7 +407,12 @@ impl Space {
         Ok(())
     }
 
-    pub fn subscribe(&self) -> Receiver<()> {
+    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = ()> {
+        tokio_stream::wrappers::BroadcastStream::new(self.subscribe())
+            .map(|f| f.unwrap_or_default())
+    }
+
+    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
         self.client.subscribe(format!("{}", self.room_id()))
     }
 

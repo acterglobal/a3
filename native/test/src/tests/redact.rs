@@ -10,7 +10,7 @@ async fn message_redaction() -> Result<()> {
 
     let (mut user, room_id) = random_user_with_random_space("message_redaction").await?;
     let syncer = user.start_sync();
-    let mut synced = syncer.first_synced_rx().expect("not yet read");
+    let mut synced = syncer.first_synced_rx();
     while synced.next().await != Some(true) {} // let's wait for it to have synced
 
     let space = user

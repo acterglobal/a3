@@ -7,9 +7,8 @@ use acter_core::{
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
-use async_broadcast::Receiver;
 use core::time::Duration;
-use futures::io::Cursor;
+use futures::{io::Cursor, stream::StreamExt};
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Joined, Room},
@@ -31,6 +30,7 @@ use std::{
     ops::Deref,
     path::PathBuf,
 };
+use tokio::sync::broadcast::Receiver;
 use tracing::trace;
 
 use super::{
@@ -321,9 +321,14 @@ impl NewsEntry {
         })
     }
 
-    pub fn subscribe(&self) -> Receiver<()> {
+    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = ()> {
+        tokio_stream::wrappers::BroadcastStream::new(self.subscribe())
+            .map(|f| f.unwrap_or_default())
+    }
+
+    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
         let key = self.content.event_id().to_string();
-        self.client.executor().subscribe(key)
+        self.client.subscribe(key)
     }
 
     pub async fn comments(&self) -> Result<crate::CommentsManager> {

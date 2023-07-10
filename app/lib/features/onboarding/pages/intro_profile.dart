@@ -38,7 +38,7 @@ class _IntroProfileState extends State<IntroProfile> {
                     margin: const EdgeInsets.symmetric(vertical: 19),
                     height: 100,
                     width: 100,
-                    child: Image.asset('asspets/icon/logo_foreground.png'),
+                    child: Image.asset('assets/icon/logo_foreground.png'),
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 30),
@@ -70,13 +70,14 @@ class _IntroProfileState extends State<IntroProfile> {
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 10,),
+                      horizontal: 30,
+                      vertical: 10,
+                    ),
                     child: Column(
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            //Navigate to Create Profile
-                          },
+                          onTap: () =>
+                              context.pushNamed(Routes.authRegister.name),
                           child: Container(
                             height: 54,
                             decoration: BoxDecoration(
@@ -109,7 +110,7 @@ class _IntroProfileState extends State<IntroProfile> {
                           height: 25,
                         ),
                         GestureDetector(
-                          onTap: () => context.goNamed(Routes.authLogin.name),
+                          onTap: () => context.pushNamed(Routes.authLogin.name),
                           child: Container(
                             height: 54,
                             decoration: BoxDecoration(

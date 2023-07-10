@@ -1,7 +1,6 @@
 #![allow(dead_code)]
 use acter::{Conversation, HistoryLoadState, Space, Task, TaskList};
 use anyhow::Result;
-use async_broadcast::Receiver as Subscription;
 use clap::crate_version;
 use crossterm::{
     event::{self, DisableMouseCapture, Event, KeyCode, KeyEvent},
@@ -13,6 +12,7 @@ use std::{
     sync::mpsc::{Receiver, TryRecvError},
     time::{Duration, Instant},
 };
+use tokio::sync::broadcast::Receiver as Subscription;
 use tracing::{error, info, trace};
 use tui::{
     backend::{Backend, CrosstermBackend},
@@ -54,7 +54,7 @@ struct ChatStats {
     notifications: u32,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Debug, Default)]
 struct TasksState {
     task_lists_list_state: ListState,
     tasks_list_state: ListState,
@@ -284,7 +284,7 @@ impl TasksState {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 enum Tool {
     News,
     Tasks(TasksState),
@@ -335,8 +335,8 @@ impl Tool {
         *self = Tool::Tasks(TasksState::fresh(t))
     }
 
-    fn all() -> [Self; 3] {
-        [
+    fn all() -> Vec<Self> {
+        vec![
             Tool::Tasks(Default::default()),
             Tool::News,
             Tool::Chat(None),
@@ -382,7 +382,7 @@ impl App {
             Widget::Tools
         };
         App {
-            tools: Tool::all().to_vec(),
+            tools: Tool::all(),
             index: 0,
             logs_fullscreen,
             selected_widget,

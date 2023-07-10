@@ -64,12 +64,12 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // sync both up to ensure they've seen the other device
     let mut alice_device_changed_rx = alice.device_changed_event_rx().unwrap();
     let syncer = alice.start_sync();
-    let mut first_synced = syncer.first_synced_rx().expect("not yet read");
+    let mut first_synced = syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let mut alice_rx = alice.verification_event_rx().unwrap();
 
     let syncer = bob.start_sync();
-    let mut first_synced = syncer.first_synced_rx().expect("not yet read");
+    let mut first_synced = syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let mut bob_rx = bob.verification_event_rx().unwrap();
 

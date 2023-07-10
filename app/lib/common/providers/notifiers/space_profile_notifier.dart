@@ -17,7 +17,7 @@ class AsyncSpaceProfileDataNotifier
   @override
   Future<ProfileData> build(Space arg) async {
     final client = ref.watch(clientProvider)!;
-    _listener = client.subscribe(arg.getRoomId().toString());
+    _listener = client.subscribeStream(arg.getRoomId().toString());
     _listener.forEach((_e) async {
       state = await AsyncValue.guard(() => _getSpaceProfileData());
     });
@@ -35,7 +35,7 @@ class AsyncSpaceNotifier extends AutoDisposeFamilyAsyncNotifier<Space, String> {
   @override
   Future<Space> build(String arg) async {
     final client = ref.watch(clientProvider)!;
-    _listener = client.subscribe(arg);
+    _listener = client.subscribeStream(arg);
     _listener.forEach((_e) async {
       state = await AsyncValue.guard(() => _getSpace());
     });
@@ -59,7 +59,7 @@ class AsyncMaybeSpaceNotifier
   @override
   Future<Space?> build(String arg) async {
     final client = ref.watch(clientProvider)!;
-    _listener = client.subscribe(arg);
+    _listener = client.subscribeStream(arg);
     _listener.forEach((_e) async {
       state = await AsyncValue.guard(() => _getSpace());
     });
@@ -78,7 +78,7 @@ class AsyncSpacesNotifier extends AutoDisposeAsyncNotifier<List<Space>> {
   @override
   Future<List<Space>> build() async {
     final client = ref.watch(clientProvider)!;
-    _listener = client.subscribe('SPACES');
+    _listener = client.subscribeStream('SPACES');
     _listener.forEach((_e) async {
       state = await AsyncValue.guard(() => _getSpaces());
     });

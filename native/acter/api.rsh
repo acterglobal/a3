@@ -219,7 +219,7 @@ object ActerPin {
     fn update_builder() -> Result<PinUpdateBuilder>;
 
     /// get informed about changes to this pin
-    fn subscribe() -> Stream<()>;
+    fn subscribe_stream() -> Stream<()>;
 
     /// replace the current pin with one with the latest state
     fn refresh() -> Future<Result<ActerPin>>;
@@ -873,7 +873,7 @@ object Task {
     fn update_builder() -> Result<TaskUpdateBuilder>;
 
     /// get informed about changes to this task
-    fn subscribe() -> Stream<()>;
+    fn subscribe_stream() -> Stream<()>;
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<Task>>;
@@ -1048,7 +1048,7 @@ object TaskList {
     fn update_builder() -> Result<TaskListUpdateBuilder>;
 
     /// get informed about changes to this task
-    fn subscribe() -> Stream<()>;
+    fn subscribe_stream() -> Stream<()>;
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<TaskList>>;
@@ -1315,7 +1315,9 @@ object Account {
 
 object SyncState {
     /// Get event handler of first synchronization on every launch
-    fn first_synced_rx() -> Option<Stream<bool>>;
+    fn first_synced_rx() -> Stream<bool>;
+    /// When the sync stopped with an error, this will trigger
+    fn sync_error_rx() -> Stream<string>;
 
     /// stop the sync loop
     fn cancel();
@@ -1460,7 +1462,7 @@ object Client {
     fn create_acter_space(settings: CreateSpaceSettings) -> Future<Result<RoomId>>;
 
     /// listen to updates to any model key
-    fn subscribe(key: string) -> Stream<()>;
+    fn subscribe_stream(key: string) -> Stream<()>;
 
     /// Fetch the Comment or use its event_id to wait for it to come down the wire
     fn wait_for_comment(key: string, timeout: Option<EfkDuration>) -> Future<Result<Comment>>;
