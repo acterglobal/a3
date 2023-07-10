@@ -14,6 +14,10 @@ extension CustomColorScheme on ColorScheme {
   Color get neutral5 => const Color(0xFFB7B7B7);
   Color get neutral6 => const Color(0xFFE5E5E5);
   Color get m3Primary => const Color(0xFFD0BCFF);
+
+  Color get badgeUnread => const Color(0xFF67A24A);
+  Color get badgeImportant => const Color(0xFFFFC333);
+  Color get badgeUrgent => const Color(0xFF93000A);
 }
 
 const brandColorScheme = ColorScheme.dark(

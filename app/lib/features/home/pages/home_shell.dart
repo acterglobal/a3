@@ -89,7 +89,8 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                     height: 100,
                     width: 100,
                     child: SvgPicture.asset(
-                        'assets/images/undraw_access_denied_re_awnf.svg',),
+                      'assets/images/undraw_access_denied_re_awnf.svg',
+                    ),
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 15),
@@ -143,6 +144,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       );
     }
 
+    final bottomBarNav = ref.watch(bottomBarNavProvider(context));
     final bottomBarIdx =
         ref.watch(currentSelectedBottomBarIndexProvider(context));
 
