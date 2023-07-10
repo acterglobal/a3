@@ -1,4 +1,4 @@
-import 'package:acter/features/chat/models/invitation_profile.dart';
+import 'package:acter/common/models/invitation_profile.dart';
 import 'package:acter/features/activities/providers/notifiers/invitation_list_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

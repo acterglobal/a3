@@ -1,3 +1,5 @@
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 // import 'package:acter/features/chat/pages/room_page.dart';
@@ -60,22 +62,18 @@ class InvitationCard extends ConsumerWidget {
                   // Accept Invitation Button
                   ElevatedButton(
                     onPressed: () async {
-                      // if (await invitation.accept() == true) {
-                      //   final joinedRooms = ref.watch(joinedRoomListProvider);
-                      //   for (var room in joinedRooms) {
-                      //     if (room.conversation.getRoomId() ==
-                      //         invitation.roomId()) {
-                      //       Navigator.push(
-                      //         context,
-                      //         MaterialPageRoute(
-                      //           builder: (context) => RoomPage(
-                      //             conversation: room.conversation,
-                      //           ),
-                      //         ),
-                      //       );
-                      //     }
-                      //   }
-                      // }
+                      popUpDialog(
+                        context: context,
+                        title: Text(
+                          'Joining',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        isLoader: true,
+                      );
+                      if (await invitation.accept() != true) {
+                        customMsgSnackbar(context, 'Failed to join.');
+                      } // FIXME: route there? But we don't know if room or space ... :(
+                      Navigator.of(context, rootNavigator: true).pop();
                     },
                     child: Text(AppLocalizations.of(context)!.accept),
                     style: ButtonStyle(
