@@ -75,21 +75,7 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
       _convosSubscription?.cancel();
     });
     // start listener streams
-    _invitationsStream();
     _typingEventStream();
-  }
-
-  // Invitations stream
-  void _invitationsStream() {
-    final client = ref.read(clientProvider)!;
-    StreamSubscription<FfiListInvitation>? _invitesSubscription;
-    _invitesSubscription = client.invitationsRx().listen((event) {
-      ref.read(invitationListProvider.notifier).setList(event.toList());
-    });
-    // call stream close when provider isn't listened
-    ref.onDispose(() {
-      _invitesSubscription?.cancel();
-    });
   }
 
   // Typing notification stream

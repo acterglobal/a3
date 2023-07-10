@@ -492,7 +492,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
 
   Widget buildBody(BuildContext context) {
     final client = ref.watch(clientProvider);
-    final invitations = ref.watch(invitationListProvider);
     if (roomController.isLoading.isTrue) {
       return const Center(
         child: SizedBox(
@@ -502,9 +501,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
         ),
       );
     }
-    int invitedIndex = invitations.indexWhere((x) {
-      return x.roomId() == widget.conversation.getRoomId();
-    });
     return GetBuilder<ChatRoomController>(
       id: 'Chat',
       builder: (ChatRoomController controller) {
@@ -543,8 +539,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               },
               onPreviewDataFetched: controller.handlePreviewDataFetched,
               onMessageTap: controller.handleMessageTap,
-              onEndReached:
-                  invitedIndex != -1 ? null : controller.handleEndReached,
+              onEndReached: controller.handleEndReached,
               onEndReachedThreshold: 0.75,
               onBackgroundTap: () {
                 if (controller.isEmojiContainerVisible) {

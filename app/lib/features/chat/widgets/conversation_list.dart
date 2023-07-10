@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:acter/features/chat/models/joined_room/joined_room.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/conversation_card.dart';
-import 'package:acter/features/chat/widgets/invitations_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reorderable_list_2.dart';
@@ -32,7 +31,6 @@ class ConversationsList extends ConsumerWidget {
             ),
           )
         : ImplicitlyAnimatedReorderableList<JoinedRoom>(
-            header: const InvitationsList(),
             items: chatList.showSearch ? chatList.searchData : joinedRooms,
             areItemsTheSame: (a, b) => a.id == b.id,
             // Remember to update the underlying data when the list has been reordered.
