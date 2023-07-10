@@ -47,5 +47,12 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Upload Fotos into Acter</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Record messages with Acter</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Take pictures to share in Acter.</string>
+
 </dict>
 </plist>

@@ -91,11 +91,11 @@ pub struct CalendarEventEventContent {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<TextMessageEventContent>,
 
-    /// When will this events start?
+    /// When will this event start?
     #[builder(setter(into))]
     pub utc_start: UtcDateTime,
 
-    /// When will this events end
+    /// When will this event end?
     #[builder(setter(into))]
     pub utc_end: UtcDateTime,
 

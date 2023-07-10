@@ -1963,6 +1963,98 @@ class Api {
     return tmp7;
   }
 
+  EventId? __calendarEventUpdateBuilderSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _calendarEventUpdateBuilderSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __calendarEventDraftSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _calendarEventDraftSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   RoomMessage? __timelineStreamNextFuturePoll(
     int boxed,
     int postCobject,
@@ -7059,6 +7151,98 @@ class Api {
     return tmp7;
   }
 
+  CalendarEvent? __clientCalendarEventFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientCalendarEventFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_CalendarEvent");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = CalendarEvent._(this, tmp13_1);
+    return tmp7;
+  }
+
+  CalendarEvent? __clientWaitForCalendarEventFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientWaitForCalendarEventFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_CalendarEvent");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = CalendarEvent._(this, tmp13_1);
+    return tmp7;
+  }
+
   bool? __userProfileHasAvatarFuturePoll(
     int boxed,
     int postCobject,
@@ -10213,6 +10397,354 @@ class Api {
   late final _calendarEventShowWithoutTime =
       _calendarEventShowWithoutTimePtr.asFunction<
           int Function(
+    int,
+  )>();
+  late final _calendarEventEventIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__CalendarEvent_event_id");
+
+  late final _calendarEventEventId = _calendarEventEventIdPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _calendarEventUpdateBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventUpdateBuilderReturn Function(
+    ffi.Int64,
+  )>>("__CalendarEvent_update_builder");
+
+  late final _calendarEventUpdateBuilder =
+      _calendarEventUpdateBuilderPtr.asFunction<
+          _CalendarEventUpdateBuilderReturn Function(
+    int,
+  )>();
+  late final _calendarEventUpdateBuilderTitlePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventUpdateBuilder_title");
+
+  late final _calendarEventUpdateBuilderTitle =
+      _calendarEventUpdateBuilderTitlePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventUpdateBuilderDescriptionTextPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventUpdateBuilder_description_text");
+
+  late final _calendarEventUpdateBuilderDescriptionText =
+      _calendarEventUpdateBuilderDescriptionTextPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventUpdateBuilderUtcStartFromRfc3339Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventUpdateBuilder_utc_start_from_rfc3339");
+
+  late final _calendarEventUpdateBuilderUtcStartFromRfc3339 =
+      _calendarEventUpdateBuilderUtcStartFromRfc3339Ptr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventUpdateBuilderUtcStartFromRfc2822Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventUpdateBuilder_utc_start_from_rfc2822");
+
+  late final _calendarEventUpdateBuilderUtcStartFromRfc2822 =
+      _calendarEventUpdateBuilderUtcStartFromRfc2822Ptr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventUpdateBuilderUtcStartFromFormatPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventUpdateBuilder_utc_start_from_format");
+
+  late final _calendarEventUpdateBuilderUtcStartFromFormat =
+      _calendarEventUpdateBuilderUtcStartFromFormatPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventUpdateBuilderUtcEndFromRfc3339Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventUpdateBuilder_utc_end_from_rfc3339");
+
+  late final _calendarEventUpdateBuilderUtcEndFromRfc3339 =
+      _calendarEventUpdateBuilderUtcEndFromRfc3339Ptr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventUpdateBuilderUtcEndFromRfc2822Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventUpdateBuilder_utc_end_from_rfc2822");
+
+  late final _calendarEventUpdateBuilderUtcEndFromRfc2822 =
+      _calendarEventUpdateBuilderUtcEndFromRfc2822Ptr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventUpdateBuilderUtcEndFromFormatPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventUpdateBuilder_utc_end_from_format");
+
+  late final _calendarEventUpdateBuilderUtcEndFromFormat =
+      _calendarEventUpdateBuilderUtcEndFromFormatPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventUpdateBuilderSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__CalendarEventUpdateBuilder_send");
+
+  late final _calendarEventUpdateBuilderSend =
+      _calendarEventUpdateBuilderSendPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _calendarEventDraftTitlePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventDraft_title");
+
+  late final _calendarEventDraftTitle = _calendarEventDraftTitlePtr.asFunction<
+      void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventDraftDescriptionTextPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventDraft_description_text");
+
+  late final _calendarEventDraftDescriptionText =
+      _calendarEventDraftDescriptionTextPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventDraftUnsetDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__CalendarEventDraft_unset_description");
+
+  late final _calendarEventDraftUnsetDescription =
+      _calendarEventDraftUnsetDescriptionPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _calendarEventDraftUtcStartFromRfc3339Ptr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventDraftUtcStartFromRfc3339Return Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventDraft_utc_start_from_rfc3339");
+
+  late final _calendarEventDraftUtcStartFromRfc3339 =
+      _calendarEventDraftUtcStartFromRfc3339Ptr.asFunction<
+          _CalendarEventDraftUtcStartFromRfc3339Return Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventDraftUtcStartFromRfc2822Ptr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventDraftUtcStartFromRfc2822Return Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventDraft_utc_start_from_rfc2822");
+
+  late final _calendarEventDraftUtcStartFromRfc2822 =
+      _calendarEventDraftUtcStartFromRfc2822Ptr.asFunction<
+          _CalendarEventDraftUtcStartFromRfc2822Return Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventDraftUtcStartFromFormatPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventDraftUtcStartFromFormatReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventDraft_utc_start_from_format");
+
+  late final _calendarEventDraftUtcStartFromFormat =
+      _calendarEventDraftUtcStartFromFormatPtr.asFunction<
+          _CalendarEventDraftUtcStartFromFormatReturn Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventDraftUtcEndFromRfc3339Ptr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventDraftUtcEndFromRfc3339Return Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventDraft_utc_end_from_rfc3339");
+
+  late final _calendarEventDraftUtcEndFromRfc3339 =
+      _calendarEventDraftUtcEndFromRfc3339Ptr.asFunction<
+          _CalendarEventDraftUtcEndFromRfc3339Return Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventDraftUtcEndFromRfc2822Ptr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventDraftUtcEndFromRfc2822Return Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventDraft_utc_end_from_rfc2822");
+
+  late final _calendarEventDraftUtcEndFromRfc2822 =
+      _calendarEventDraftUtcEndFromRfc2822Ptr.asFunction<
+          _CalendarEventDraftUtcEndFromRfc2822Return Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventDraftUtcEndFromFormatPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventDraftUtcEndFromFormatReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CalendarEventDraft_utc_end_from_format");
+
+  late final _calendarEventDraftUtcEndFromFormat =
+      _calendarEventDraftUtcEndFromFormatPtr.asFunction<
+          _CalendarEventDraftUtcEndFromFormatReturn Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventDraftSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__CalendarEventDraft_send");
+
+  late final _calendarEventDraftSend = _calendarEventDraftSendPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _mediaSourceUrlPtr = _lookup<
@@ -14178,6 +14710,16 @@ class Api {
       int Function(
     int,
   )>();
+  late final _spaceCalendarEventDraftPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceCalendarEventDraftReturn Function(
+    ffi.Int64,
+  )>>("__Space_calendar_event_draft");
+
+  late final _spaceCalendarEventDraft = _spaceCalendarEventDraftPtr.asFunction<
+      _SpaceCalendarEventDraftReturn Function(
+    int,
+  )>();
   late final _spaceNewsDraftPtr = _lookup<
       ffi.NativeFunction<
           _SpaceNewsDraftReturn Function(
@@ -15378,6 +15920,43 @@ class Api {
       int Function(
     int,
   )>();
+  late final _clientCalendarEventPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_calendar_event");
+
+  late final _clientCalendarEvent = _clientCalendarEventPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientWaitForCalendarEventPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+  )>>("__Client_wait_for_calendar_event");
+
+  late final _clientWaitForCalendarEvent =
+      _clientWaitForCalendarEventPtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _optionTextTextPtr = _lookup<
       ffi.NativeFunction<
           _OptionTextTextReturn Function(
@@ -16241,6 +16820,36 @@ class Api {
   late final _pinUpdateBuilderSendFuturePoll =
       _pinUpdateBuilderSendFuturePollPtr.asFunction<
           _PinUpdateBuilderSendFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventUpdateBuilderSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventUpdateBuilderSendFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__CalendarEventUpdateBuilder_send_future_poll");
+
+  late final _calendarEventUpdateBuilderSendFuturePoll =
+      _calendarEventUpdateBuilderSendFuturePollPtr.asFunction<
+          _CalendarEventUpdateBuilderSendFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _calendarEventDraftSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventDraftSendFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__CalendarEventDraft_send_future_poll");
+
+  late final _calendarEventDraftSendFuturePoll =
+      _calendarEventDraftSendFuturePollPtr.asFunction<
+          _CalendarEventDraftSendFuturePollReturn Function(
     int,
     int,
     int,
@@ -17876,6 +18485,36 @@ class Api {
   late final _clientCalendarEventsFuturePoll =
       _clientCalendarEventsFuturePollPtr.asFunction<
           _ClientCalendarEventsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientCalendarEventFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientCalendarEventFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_calendar_event_future_poll");
+
+  late final _clientCalendarEventFuturePoll =
+      _clientCalendarEventFuturePollPtr.asFunction<
+          _ClientCalendarEventFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientWaitForCalendarEventFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientWaitForCalendarEventFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_wait_for_calendar_event_future_poll");
+
+  late final _clientWaitForCalendarEventFuturePoll =
+      _clientWaitForCalendarEventFuturePollPtr.asFunction<
+          _ClientWaitForCalendarEventFuturePollReturn Function(
     int,
     int,
     int,
@@ -21378,6 +22017,7 @@ class PinDraft {
     return;
   }
 
+  /// fire this pin over - the event_id is the confirmation from the server.
   Future<EventId> send() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -21584,6 +22224,7 @@ class ActerPin {
     return tmp2;
   }
 
+  /// The room this Pin belongs to
   /// the unique event ID
   String eventIdStr() {
     var tmp0 = 0;
@@ -21676,6 +22317,7 @@ class ActerPin {
     return tmp2;
   }
 
+  /// get informed about changes to this pin
   Stream<void> subscribe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -21705,6 +22347,7 @@ class ActerPin {
     return tmp2;
   }
 
+  /// get the comments manager for this pin
   Future<CommentsManager> comments() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -21872,6 +22515,7 @@ class PinUpdateBuilder {
     return;
   }
 
+  /// fire this update over - the event_id is the confirmation from the server.
   Future<EventId> send() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -22039,7 +22683,7 @@ class CalendarEvent {
     return tmp2;
   }
 
-  /// When the event end
+  /// When the event ends
   UtcDateTime utcEnd() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -22063,6 +22707,703 @@ class CalendarEvent {
     );
     final tmp3 = tmp1;
     final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// locations
+  /// event id
+  EventId eventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_EventId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = EventId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// update builder
+  CalendarEventUpdateBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventUpdateBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = CalendarEventUpdateBuilder._(_api, tmp7_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class CalendarEventUpdateBuilder {
+  final Api _api;
+  final _Box _box;
+
+  CalendarEventUpdateBuilder._(this._api, this._box);
+
+  /// set title of the event>
+  void title(
+    String title,
+  ) {
+    final tmp1 = title;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._calendarEventUpdateBuilderTitle(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set description text
+  void descriptionText(
+    String body,
+  ) {
+    final tmp1 = body;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._calendarEventUpdateBuilderDescriptionText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set utc start in rfc3339 string
+  void utcStartFromRfc3339(
+    String utcStart,
+  ) {
+    final tmp1 = utcStart;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._calendarEventUpdateBuilderUtcStartFromRfc3339(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set utc start in rfc2822 string
+  void utcStartFromRfc2822(
+    String utcStart,
+  ) {
+    final tmp1 = utcStart;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._calendarEventUpdateBuilderUtcStartFromRfc2822(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set utc start in custom format
+  void utcStartFromFormat(
+    String utcStart,
+    String format,
+  ) {
+    final tmp1 = utcStart;
+    final tmp5 = format;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._calendarEventUpdateBuilderUtcStartFromFormat(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    return;
+  }
+
+  /// set utc end in rfc3339 string
+  void utcEndFromRfc3339(
+    String utcEnd,
+  ) {
+    final tmp1 = utcEnd;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._calendarEventUpdateBuilderUtcEndFromRfc3339(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set utc end in rfc2822 string
+  void utcEndFromRfc2822(
+    String utcEnd,
+  ) {
+    final tmp1 = utcEnd;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._calendarEventUpdateBuilderUtcEndFromRfc2822(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set utc end in custom format
+  void utcEndFromFormat(
+    String utcEnd,
+    String format,
+  ) {
+    final tmp1 = utcEnd;
+    final tmp5 = format;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._calendarEventUpdateBuilderUtcEndFromFormat(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    return;
+  }
+
+  /// send builder update
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventUpdateBuilderSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__CalendarEventUpdateBuilder_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__calendarEventUpdateBuilderSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class CalendarEventDraft {
+  final Api _api;
+  final _Box _box;
+
+  CalendarEventDraft._(this._api, this._box);
+
+  /// set the title for this calendar event
+  void title(
+    String title,
+  ) {
+    final tmp1 = title;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._calendarEventDraftTitle(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the description for this calendar event
+  void descriptionText(
+    String text,
+  ) {
+    final tmp1 = text;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._calendarEventDraftDescriptionText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void unsetDescription() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._calendarEventDraftUnsetDescription(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the utc_start for this calendar event in rfc3339 format
+  void utcStartFromRfc3339(
+    String utcStart,
+  ) {
+    final tmp1 = utcStart;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._calendarEventDraftUtcStartFromRfc3339(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    return;
+  }
+
+  /// set the utc_start for this calendar event in rfc2822 format
+  void utcStartFromRfc2822(
+    String utcStart,
+  ) {
+    final tmp1 = utcStart;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._calendarEventDraftUtcStartFromRfc2822(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    return;
+  }
+
+  /// set the utc_start for this calendar event in custom format
+  void utcStartFromFormat(
+    String utcStart,
+    String format,
+  ) {
+    final tmp1 = utcStart;
+    final tmp5 = format;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._calendarEventDraftUtcStartFromFormat(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9.arg0;
+    final tmp12 = tmp9.arg1;
+    final tmp13 = tmp9.arg2;
+    final tmp14 = tmp9.arg3;
+    if (tmp11 == 0) {
+      debugAllocation("handle error", tmp12, tmp13);
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+      final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
+      if (tmp13 > 0) {
+        final ffi.Pointer<ffi.Void> tmp12_0;
+        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+        _api.__deallocate(tmp12_0, tmp14, 1);
+      }
+      throw tmp11_0;
+    }
+    return;
+  }
+
+  /// set the utc_end for this calendar event in rfc3339 format
+  void utcEndFromRfc3339(
+    String utcEnd,
+  ) {
+    final tmp1 = utcEnd;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._calendarEventDraftUtcEndFromRfc3339(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    return;
+  }
+
+  /// set the utc_end for this calendar event in rfc2822 format
+  void utcEndFromRfc2822(
+    String utcEnd,
+  ) {
+    final tmp1 = utcEnd;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._calendarEventDraftUtcEndFromRfc2822(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    return;
+  }
+
+  /// set the utc_end for this calendar event in custom format
+  void utcEndFromFormat(
+    String utcEnd,
+    String format,
+  ) {
+    final tmp1 = utcEnd;
+    final tmp5 = format;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._calendarEventDraftUtcEndFromFormat(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9.arg0;
+    final tmp12 = tmp9.arg1;
+    final tmp13 = tmp9.arg2;
+    final tmp14 = tmp9.arg3;
+    if (tmp11 == 0) {
+      debugAllocation("handle error", tmp12, tmp13);
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+      final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
+      if (tmp13 > 0) {
+        final ffi.Pointer<ffi.Void> tmp12_0;
+        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+        _api.__deallocate(tmp12_0, tmp14, 1);
+      }
+      throw tmp11_0;
+    }
+    return;
+  }
+
+  /// create this calendar event
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventDraftSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__CalendarEventDraft_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__calendarEventDraftSendFuturePoll);
     return tmp2;
   }
 
@@ -24200,6 +25541,7 @@ class Conversation {
     return tmp2;
   }
 
+  /// the Membership of myself
   Future<Member> getMyMembership() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -26132,6 +27474,7 @@ class CommentDraft {
     return;
   }
 
+  /// fire this comment over - the event_id is the confirmation from the server.
   Future<EventId> send() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -26346,6 +27689,7 @@ class AttachmentDraft {
 
   AttachmentDraft._(this._api, this._box);
 
+  /// fire this attachment over - the event_id is the confirmation from the server.
   Future<EventId> send() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -27366,6 +28710,7 @@ class Task {
     return tmp2;
   }
 
+  /// get informed about changes to this task
   Stream<void> subscribe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -28948,6 +30293,7 @@ class TaskList {
     return tmp2;
   }
 
+  /// get informed about changes to this task
   Stream<void> subscribe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -29921,6 +31267,7 @@ class Space {
     return tmp2;
   }
 
+  /// the members currently in the room
   Future<Member> getMember(
     String userId,
   ) {
@@ -29952,6 +31299,7 @@ class Space {
     return tmp6;
   }
 
+  /// the Membership of myself
   Future<Member> getMyMembership() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -30092,6 +31440,36 @@ class Space {
     final tmp3_1 = _Box(_api, tmp3_0, "__Space_calendar_events_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__spaceCalendarEventsFuturePoll);
+    return tmp2;
+  }
+
+  /// create calendart event draft
+  CalendarEventDraft calendarEventDraft() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceCalendarEventDraft(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CalendarEventDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = CalendarEventDraft._(_api, tmp7_1);
     return tmp2;
   }
 
@@ -31643,6 +33021,7 @@ class Client {
     return tmp2;
   }
 
+  /// The device_id of the client
   DeviceId deviceId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -32690,6 +34069,85 @@ class Client {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__clientCalendarEventsFuturePoll);
     return tmp2;
+  }
+
+  /// Get a specific Calendar Event for the client
+  Future<CalendarEvent> calendarEvent(
+    String calendarId,
+  ) {
+    final tmp1 = calendarId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientCalendarEvent(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Client_calendar_event_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__clientCalendarEventFuturePoll);
+    return tmp6;
+  }
+
+  /// Fetch the calendar event or use its event_id to wait for it to come down the wire
+  Future<CalendarEvent> waitForCalendarEvent(
+    String key,
+    EfkDuration? timeout,
+  ) {
+    final tmp1 = key;
+    final tmp5 = timeout;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      tmp8 = tmp7._box.move();
+    }
+    final tmp9 = _api._clientWaitForCalendarEvent(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Client_wait_for_calendar_event_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 =
+        _nativeFuture(tmp11_1, _api.__clientWaitForCalendarEventFuturePoll);
+    return tmp10;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -34617,6 +36075,85 @@ class _CalendarEventDescriptionReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _CalendarEventUpdateBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
+class _CalendarEventDraftUtcStartFromRfc3339Return extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _CalendarEventDraftUtcStartFromRfc2822Return extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _CalendarEventDraftUtcStartFromFormatReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _CalendarEventDraftUtcEndFromRfc3339Return extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _CalendarEventDraftUtcEndFromRfc2822Return extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _CalendarEventDraftUtcEndFromFormatReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
 class _MediaSourceUrlReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -35498,6 +37035,19 @@ class _SpaceTaskListDraftReturn extends ffi.Struct {
   external int arg4;
 }
 
+class _SpaceCalendarEventDraftReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
 class _SpaceNewsDraftReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -36109,6 +37659,36 @@ class _ActerPinAttachmentsFuturePollReturn extends ffi.Struct {
 }
 
 class _PinUpdateBuilderSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _CalendarEventUpdateBuilderSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _CalendarEventDraftSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -37767,6 +39347,36 @@ class _ClientTaskListFuturePollReturn extends ffi.Struct {
 }
 
 class _ClientCalendarEventsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientCalendarEventFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientWaitForCalendarEventFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

@@ -1,12 +1,13 @@
 use acter_core::{
     events::{
         calendar::{self as calendar_events, CalendarEventBuilder},
-        Icon,
+        Icon, UtcDateTime,
     },
     models::{self, ActerModel, AnyActerModel, Color},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
+use chrono::DateTime;
 use core::time::Duration;
 use matrix_sdk::{
     room::{Joined, Room},
@@ -27,19 +28,43 @@ impl Client {
         key: String,
         timeout: Option<Box<Duration>>,
     ) -> Result<CalendarEvent> {
-        let AnyActerModel::CalendarEvent(inner) = self.wait_for(key.clone(), timeout).await? else {
-            bail!("{key} is not a calendar_event");
-        };
-        let room = self
-            .core
-            .client()
-            .get_room(inner.room_id())
-            .context("Room not found")?;
-        Ok(CalendarEvent {
-            client: self.clone(),
-            room,
-            inner,
-        })
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let AnyActerModel::CalendarEvent(inner) = me.wait_for(key.clone(), timeout).await? else {
+                    bail!("{key} is not a calendar_event");
+                };
+                let room = me
+                    .core
+                    .client()
+                    .get_room(inner.room_id())
+                    .context("Room not found")?;
+                Ok(CalendarEvent {
+                    client: me.clone(),
+                    room,
+                    inner,
+                })
+            })
+            .await?
+    }
+
+    pub async fn calendar_event(&self, calendar_id: String) -> Result<CalendarEvent> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let AnyActerModel::CalendarEvent(inner) = client.store().get(&calendar_id).await? else {
+                    bail!("Calendar event not found");
+                };
+                let room = client
+                    .get_room(inner.room_id())
+                    .context("Room of calendar event not found")?;
+                Ok(CalendarEvent {
+                    client,
+                    room,
+                    inner,
+                })
+            })
+            .await?
     }
 
     pub async fn calendar_events(&self) -> Result<Vec<CalendarEvent>> {
@@ -91,11 +116,11 @@ impl Space {
             .spawn(async move {
                 let k = format!("{room_id}::{}", KEYS::CALENDAR);
                 for mdl in client.store().get_list(&k).await? {
-                    if let AnyActerModel::CalendarEvent(t) = mdl {
+                    if let AnyActerModel::CalendarEvent(inner) = mdl {
                         calendar_events.push(CalendarEvent {
                             client: client.clone(),
                             room: room.clone(),
-                            inner: t,
+                            inner,
                         })
                     } else {
                         warn!(
@@ -140,6 +165,18 @@ impl CalendarEvent {
 
     pub fn icon(&self) -> Option<Icon> {
         self.inner.icon.clone()
+    }
+
+    pub fn event_id(&self) -> OwnedEventId {
+        self.inner.event_id().to_owned()
+    }
+
+    pub fn utc_start(&self) -> UtcDateTime {
+        self.inner.utc_start
+    }
+
+    pub fn utc_end(&self) -> UtcDateTime {
+        self.inner.utc_end
     }
 }
 
@@ -210,14 +247,50 @@ impl CalendarEventDraft {
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
-        self.inner
-            .description(Some(TextMessageEventContent::plain(body)));
+        let desc = TextMessageEventContent::plain(body);
+        self.inner.description(Some(desc));
         self
     }
 
     pub fn unset_description(&mut self) -> &mut Self {
         self.inner.description(None);
         self
+    }
+
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
+        let dt: UtcDateTime = DateTime::parse_from_rfc3339(&utc_start)?.into();
+        self.inner.utc_start(dt);
+        Ok(())
+    }
+
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<()> {
+        let dt: UtcDateTime = DateTime::parse_from_rfc2822(&utc_start)?.into();
+        self.inner.utc_start(dt);
+        Ok(())
+    }
+
+    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<()> {
+        let dt: UtcDateTime = DateTime::parse_from_str(&utc_start, &format)?.into();
+        self.inner.utc_start(dt);
+        Ok(())
+    }
+
+    pub fn utc_end_from_rfc3339(&mut self, utc_end: String) -> Result<()> {
+        let dt: UtcDateTime = DateTime::parse_from_rfc3339(&utc_end)?.into();
+        self.inner.utc_end(dt);
+        Ok(())
+    }
+
+    pub fn utc_end_from_rfc2822(&mut self, utc_end: String) -> Result<()> {
+        let dt: UtcDateTime = DateTime::parse_from_rfc2822(&utc_end)?.into();
+        self.inner.utc_end(dt);
+        Ok(())
+    }
+
+    pub fn utc_end_from_format(&mut self, utc_end: String, format: String) -> Result<()> {
+        let dt: UtcDateTime = DateTime::parse_from_str(&utc_end, &format)?.into();
+        self.inner.utc_end(dt);
+        Ok(())
     }
 
     pub async fn send(&self) -> Result<OwnedEventId> {
@@ -251,8 +324,8 @@ impl CalendarEventUpdateBuilder {
     }
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
-        self.inner
-            .description(Some(Some(TextMessageEventContent::plain(body))));
+        let desc = TextMessageEventContent::plain(body);
+        self.inner.description(Some(Some(desc)));
         self
     }
 
@@ -261,9 +334,55 @@ impl CalendarEventUpdateBuilder {
         self
     }
 
-    pub fn description_update(&mut self) -> &mut Self {
+    pub fn unset_description_update(&mut self) -> &mut Self {
         self.inner
             .description(None::<Option<TextMessageEventContent>>);
+        self
+    }
+
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc3339(&utc_start)?.into();
+        self.inner.utc_start(Some(dt));
+        Ok(())
+    }
+
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc2822(&utc_start)?.into();
+        self.inner.utc_start(Some(dt));
+        Ok(())
+    }
+
+    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<()> {
+        let dt = DateTime::parse_from_str(&utc_start, &format)?.into();
+        self.inner.utc_start(Some(dt));
+        Ok(())
+    }
+
+    pub fn unset_utc_start_update(&mut self) -> &mut Self {
+        self.inner.utc_start(None);
+        self
+    }
+
+    pub fn utc_end_from_rfc3339(&mut self, utc_end: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc3339(&utc_end)?.into();
+        self.inner.utc_end(Some(dt));
+        Ok(())
+    }
+
+    pub fn utc_end_from_rfc2822(&mut self, utc_end: String) -> Result<()> {
+        let dt = DateTime::parse_from_rfc2822(&utc_end)?.into();
+        self.inner.utc_end(Some(dt));
+        Ok(())
+    }
+
+    pub fn utc_end_from_format(&mut self, utc_end: String, format: String) -> Result<()> {
+        let dt = DateTime::parse_from_str(&utc_end, &format)?.into();
+        self.inner.utc_end(Some(dt));
+        Ok(())
+    }
+
+    pub fn unset_utc_end_update(&mut self) -> &mut Self {
+        self.inner.utc_end(None);
         self
     }
 

@@ -31,6 +31,7 @@ use std::{
     path::PathBuf,
 };
 use tokio::sync::broadcast::Receiver;
+use tracing::trace;
 
 use super::{
     api::FfiBuffer,
@@ -382,25 +383,21 @@ impl NewsEntryDraft {
         height: Option<u64>,
         blurhash: Option<String>,
     ) -> Result<bool> {
+        trace!("add image slide");
         let client = self.client.clone();
-        let is_encrypted = self.room.is_encrypted().await?;
+        let room = self.room.clone();
 
         let path = PathBuf::from(uri);
         let mime_type = mimetype.parse::<mime::Mime>()?;
-        let mut image_content = if is_encrypted {
-            let encrypted_file = RUNTIME
-                .spawn(async move {
+        let mut image_content = RUNTIME
+            .spawn(async move {
+                if room.is_encrypted().await? {
                     let mut reader = std::fs::File::open(path)?;
                     let encrypted_file = client
                         .prepare_encrypted_file(&mime_type, &mut reader)
                         .await?;
-                    anyhow::Ok(encrypted_file)
-                })
-                .await??;
-            ImageMessageEventContent::encrypted(body, encrypted_file)
-        } else {
-            RUNTIME
-                .spawn(async move {
+                    anyhow::Ok(ImageMessageEventContent::encrypted(body, encrypted_file))
+                } else {
                     let data = std::fs::read(path)?;
                     let upload_resp = client.media().upload(&mime_type, data).await?;
                     anyhow::Ok(ImageMessageEventContent::plain(
@@ -408,9 +405,9 @@ impl NewsEntryDraft {
                         upload_resp.content_uri,
                         None,
                     ))
-                })
-                .await??
-        };
+                }
+            })
+            .await??;
         image_content.info = Some(Box::new(assign!(ImageInfo::new(), {
             height: height.and_then(UInt::new),
             width: width.and_then(UInt::new),
@@ -520,6 +517,7 @@ impl NewsEntryDraft {
     }
 
     pub async fn send(&mut self) -> Result<OwnedEventId> {
+        trace!("starting send");
         let slides = self
             .slides
             .iter()
@@ -528,8 +526,10 @@ impl NewsEntryDraft {
         self.content.slides(slides);
 
         let room = self.room.clone();
+        trace!("send buildin");
         let content = self.content.build()?;
 
+        trace!("off we go");
         RUNTIME
             .spawn(async move {
                 let resp = room.send(content, None).await?;
