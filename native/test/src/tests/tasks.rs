@@ -5,6 +5,10 @@ use acter::{
 use acter_core::models::{ActerModel, TaskList};
 use anyhow::{bail, Result};
 use tokio::time::{sleep, Duration};
+use tokio_retry::{
+    strategy::{jitter, FibonacciBackoff},
+    Retry,
+};
 
 use crate::utils::random_user_with_random_space;
 
@@ -161,21 +165,14 @@ async fn task_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    assert!(
-        wait_for(move || {
-            let mut task_list_listener = task_list_listener.resubscribe();
-            async move {
-                if let Ok(t) = task_list_listener.try_recv() {
-                    Ok(Some(t))
-                } else {
-                    Ok(None)
-                }
-            }
-        })
-        .await?
-        .is_some(),
-        "Didn't receive any update on the list for the first event"
-    );
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if task_list_listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
+    })
+    .await?;
 
     let task_list = task_list.refresh().await?;
     let tasks = task_list.tasks().await?;
@@ -194,21 +191,14 @@ async fn task_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    assert!(
-        wait_for(move || {
-            let mut task_list_listener = task_list_listener.resubscribe();
-            async move {
-                if let Ok(t) = task_list_listener.try_recv() {
-                    Ok(Some(t))
-                } else {
-                    Ok(None)
-                }
-            }
-        })
-        .await?
-        .is_some(),
-        "Didn't receive any update on the list for the second event"
-    );
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if task_list_listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
+    })
+    .await?;
 
     let task_list = task_list.refresh().await?;
     let tasks = task_list.tasks().await?;
@@ -228,21 +218,14 @@ async fn task_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    assert!(
-        wait_for(move || {
-            let mut task_1_updater = task_1_updater.resubscribe();
-            async move {
-                if let Ok(t) = task_1_updater.try_recv() {
-                    Ok(Some(t))
-                } else {
-                    Ok(None)
-                }
-            }
-        })
-        .await?
-        .is_some(),
-        "Didn't receive any update on the task"
-    );
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if task_1_updater.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
+    })
+    .await?;
 
     let task_1 = task_1.refresh().await?;
     // Update has been applied properly
@@ -258,21 +241,14 @@ async fn task_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    assert!(
-        wait_for(move || {
-            let mut task_list_listener = task_list_listener.resubscribe();
-            async move {
-                if let Ok(t) = task_list_listener.try_recv() {
-                    Ok(Some(t))
-                } else {
-                    Ok(None)
-                }
-            }
-        })
-        .await?
-        .is_some(),
-        "Didn't receive the update on the task list"
-    );
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if task_list_listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
+    })
+    .await?;
 
     let task_list = task_list.refresh().await?;
 
@@ -333,21 +309,14 @@ async fn task_lists_comments_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    assert!(
-        wait_for(move || {
-            let mut comments_listener = comments_listener.resubscribe();
-            async move {
-                if let Ok(t) = comments_listener.try_recv() {
-                    Ok(Some(t))
-                } else {
-                    Ok(None)
-                }
-            }
-        })
-        .await?
-        .is_some(),
-        "Didn't receive any update on the list for the first event"
-    );
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if comments_listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
+    })
+    .await?;
 
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
@@ -404,21 +373,14 @@ async fn task_comment_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    assert!(
-        wait_for(move || {
-            let mut task_list_listener = task_list_listener.resubscribe();
-            async move {
-                if let Ok(t) = task_list_listener.try_recv() {
-                    Ok(Some(t))
-                } else {
-                    Ok(None)
-                }
-            }
-        })
-        .await?
-        .is_some(),
-        "Didn't receive any update on the list for the first event"
-    );
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if task_list_listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
+    })
+    .await?;
 
     let task_list = task_list.refresh().await?;
     let mut tasks = task_list.tasks().await?;
@@ -441,21 +403,14 @@ async fn task_comment_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    assert!(
-        wait_for(move || {
-            let mut comments_listener = comments_listener.resubscribe();
-            async move {
-                if let Ok(t) = comments_listener.try_recv() {
-                    Ok(Some(t))
-                } else {
-                    Ok(None)
-                }
-            }
-        })
-        .await?
-        .is_some(),
-        "Didn't receive any update on the list for the first event"
-    );
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if comments_listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
+    })
+    .await?;
 
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);

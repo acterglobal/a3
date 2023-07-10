@@ -1,5 +1,5 @@
 use acter::new_space_settings;
-use anyhow::{bail, Result};
+use anyhow::{bail, Ok, Result};
 use tokio::sync::broadcast::error::TryRecvError;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -77,25 +77,24 @@ async fn spaces_deleted() -> Result<()> {
     .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), move || {
-        let mut listener = all_listener.resubscribe();
-        async move { listener.try_recv() }
+    Retry::spawn(retry_strategy.clone(), || async {
+        if all_listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
     })
     .await?;
 
     println!("all triggered");
-    let first_listener_result = {
-        loop {
-            let res = first_listener.try_recv();
-            if matches!(res, Err(TryRecvError::Lagged(_))) {
-                // this was an overflow reporting, try again
-                continue;
-            }
-            break res;
+    Retry::spawn(retry_strategy.clone(), || async {
+        if first_listener.is_empty() {
+            // not yet.
+            bail!("First still empty");
         }
-    };
+        anyhow::Ok(())
+    });
 
-    assert_eq!(first_listener_result, Ok(()));
+    assert!(first_listener.try_recv().is_ok());
     assert_eq!(second_listener.try_recv(), Err(TryRecvError::Empty));
     assert_eq!(last_listener.try_recv(), Err(TryRecvError::Empty));
 
@@ -116,36 +115,26 @@ async fn spaces_deleted() -> Result<()> {
     })
     .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), move || {
-        let mut listener = all_listener.resubscribe();
-        async move {
-            loop {
-                let res = listener.try_recv();
-                if matches!(res, Err(TryRecvError::Lagged(_))) {
-                    // this was an overflow reporting, try again
-                    continue;
-                }
-                return res;
-            }
+    Retry::spawn(retry_strategy.clone(), || async {
+        if all_listener.is_empty() {
+            // this was empty, try again
+            bail!("all listeners still empty");
         }
+        anyhow::Ok(())
     })
     .await?;
 
-    println!("all triggered");
-    let second_listener_result = {
-        loop {
-            let res = second_listener.try_recv();
-            if matches!(res, Err(TryRecvError::Lagged(_))) {
-                // this was an overflow reporting, try again
-                continue;
-            }
-            break res;
+    Retry::spawn(retry_strategy.clone(), || async {
+        if second_listener.is_empty() {
+            // this was empty, try again
+            bail!("second listener still empty");
         }
-    };
+        anyhow::Ok(())
+    })
+    .await?;
 
     assert_eq!(first_listener.try_recv(), Err(TryRecvError::Empty));
-    assert_eq!(second_listener_result, Ok(()));
+    assert!(second_listener.try_recv().is_ok());
     assert_eq!(last_listener.try_recv(), Err(TryRecvError::Empty));
 
     Ok(())
@@ -220,18 +209,12 @@ async fn create_subspace() -> Result<()> {
     assert_eq!(space_parent.room_id(), first.room_id());
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), move || {
-        let mut listener = all_listener.resubscribe();
-        async move {
-            loop {
-                let res = listener.try_recv();
-                if matches!(res, Err(TryRecvError::Lagged(_))) {
-                    // this was an overflow reporting, try again
-                    continue;
-                }
-                return res;
-            }
-        }
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        if all_listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
     })
     .await?;
 
@@ -288,18 +271,12 @@ async fn update_name() -> Result<()> {
 
     // and we've seen the update
 
-    Retry::spawn(retry_strategy.clone(), move || {
-        let mut listener = listener.resubscribe();
-        async move {
-            loop {
-                let res = listener.try_recv();
-                if matches!(res, Err(TryRecvError::Lagged(_))) {
-                    // this was an overflow reporting, try again
-                    continue;
-                }
-                return res;
-            }
-        }
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
     })
     .await?;
 
@@ -399,18 +376,11 @@ async fn update_topic() -> Result<()> {
 
     // and we've seen the update
 
-    Retry::spawn(retry_strategy.clone(), move || {
-        let mut listener = listener.resubscribe();
-        async move {
-            loop {
-                let res = listener.try_recv();
-                if matches!(res, Err(TryRecvError::Lagged(_))) {
-                    // this was an overflow reporting, try again
-                    continue;
-                }
-                return res;
-            }
-        }
+    Retry::spawn(retry_strategy.clone(), || async {
+        if listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
     })
     .await?;
 
