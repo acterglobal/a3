@@ -55,8 +55,9 @@ use crate::{
         },
         pins::{OriginalPinEvent, OriginalPinUpdateEvent, SyncPinEvent, SyncPinUpdateEvent},
         tasks::{
-            OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskUpdateEvent, SyncTaskEvent,
-            SyncTaskListEvent, SyncTaskUpdateEvent,
+            OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskListUpdateEvent,
+            OriginalTaskUpdateEvent, SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent,
+            SyncTaskUpdateEvent,
         },
     },
 };
@@ -218,6 +219,17 @@ impl AnyActerModel {
                         error!(?error, ?raw, "parsing task list event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.tasklist".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+            "global.acter.dev.tasklist.update" => Ok(AnyActerModel::TaskListUpdate(
+                raw.deserialize_as::<OriginalTaskListUpdateEvent>()
+                    .map_err(|error| {
+                        error!(?error, ?raw, "parsing task list update event failed");
+                        Error::FailedToParse {
+                            model_type: "global.acter.dev.tasklist.update".to_string(),
                             msg: error.to_string(),
                         }
                     })?
@@ -406,6 +418,20 @@ impl AnyActerModel {
                 .into_full_event(room_id.to_owned())
             {
                 MessageLikeEvent::Original(t) => Ok(AnyActerModel::TaskList(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+            "global.acter.dev.tasklist.update" => match raw
+                .deserialize_as::<SyncTaskListUpdateEvent>()
+                .map_err(|error| {
+                    error!(?error, ?raw, "parsing task list update event failed");
+                    Error::FailedToParse {
+                        model_type: "global.acter.dev.tasklist.update".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::TaskListUpdate(t.into())),
                 _ => Err(Error::UnknownModel(None)),
             },
             "global.acter.dev.task" => match raw
