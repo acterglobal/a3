@@ -9,6 +9,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use chrono::DateTime;
 use core::time::Duration;
+use futures::stream::StreamExt;
 use matrix_sdk::{
     room::{Joined, Room},
     ruma::{
@@ -368,7 +369,12 @@ impl TaskList {
             .await?
     }
 
-    pub fn subscribe(&self) -> impl tokio_stream::Stream<Item = ()> {
+    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = ()> {
+        tokio_stream::wrappers::BroadcastStream::new(self.subscribe())
+            .map(|f| f.unwrap_or_default())
+    }
+
+    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
         let key = self.content.event_id().to_string();
         self.client.subscribe(key)
     }
@@ -575,7 +581,12 @@ impl Task {
         })
     }
 
-    pub fn subscribe(&self) -> impl tokio_stream::Stream<Item = ()> {
+    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = ()> {
+        tokio_stream::wrappers::BroadcastStream::new(self.subscribe())
+            .map(|f| f.unwrap_or_default())
+    }
+
+    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
         let key = self.content.event_id().to_string();
         self.client.subscribe(key)
     }

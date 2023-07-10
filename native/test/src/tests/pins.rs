@@ -107,7 +107,7 @@ async fn pin_comments() -> Result<()> {
 
     assert!(
         wait_for(move || {
-            let mut comments_listener = comments_listener.clone();
+            let mut comments_listener = comments_listener.resubscribe();
             async move {
                 if let Ok(t) = comments_listener.try_recv() {
                     Ok(Some(t))
@@ -180,7 +180,7 @@ async fn pin_attachments() -> Result<()> {
 
     assert!(
         wait_for(move || {
-            let mut attachments_listener = attachments_listener.clone();
+            let mut attachments_listener = attachments_listener.resubscribe();
             async move {
                 if let Ok(t) = attachments_listener.try_recv() {
                     Ok(Some(t))
@@ -220,7 +220,7 @@ async fn pin_attachments() -> Result<()> {
 
     assert!(
         wait_for(move || {
-            let mut attachments_listener = attachments_listener.clone();
+            let mut attachments_listener = attachments_listener.resubscribe();
             async move {
                 if let Ok(t) = attachments_listener.try_recv() {
                     Ok(Some(t))

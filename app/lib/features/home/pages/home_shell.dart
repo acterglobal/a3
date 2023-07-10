@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:acter/common/dialogs/logout_confirmation.dart';
-import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 // import 'package:acter/features/chat/controllers/receipt_controller.dart';
@@ -90,7 +89,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                     height: 100,
                     width: 100,
                     child: SvgPicture.asset(
-                        'assets/images/undraw_access_denied_re_awnf.svg'),
+                        'assets/images/undraw_access_denied_re_awnf.svg',),
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 15),
@@ -129,7 +128,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                       : OutlinedButton(
                           onPressed: () =>
                               logoutConfirmationDialog(context, ref),
-                          child: Text('Clear db and re-login'),
+                          child: const Text('Clear db and re-login'),
                         ),
                 ],
               ),

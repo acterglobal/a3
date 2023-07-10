@@ -1,6 +1,6 @@
 use acter::new_space_settings;
 use anyhow::{bail, Result};
-use tokio::sync::broadcast::TryRecvError;
+use tokio::sync::broadcast::error::TryRecvError;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -78,7 +78,7 @@ async fn spaces_deleted() -> Result<()> {
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), move || {
-        let mut listener = all_listener.clone();
+        let mut listener = all_listener.resubscribe();
         async move { listener.try_recv() }
     })
     .await?;
@@ -87,7 +87,7 @@ async fn spaces_deleted() -> Result<()> {
     let first_listener_result = {
         loop {
             let res = first_listener.try_recv();
-            if matches!(res, Err(TryRecvError::Overflowed(_))) {
+            if matches!(res, Err(TryRecvError::Lagged(_))) {
                 // this was an overflow reporting, try again
                 continue;
             }
@@ -118,11 +118,11 @@ async fn spaces_deleted() -> Result<()> {
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), move || {
-        let mut listener = all_listener.clone();
+        let mut listener = all_listener.resubscribe();
         async move {
             loop {
                 let res = listener.try_recv();
-                if matches!(res, Err(TryRecvError::Overflowed(_))) {
+                if matches!(res, Err(TryRecvError::Lagged(_))) {
                     // this was an overflow reporting, try again
                     continue;
                 }
@@ -136,7 +136,7 @@ async fn spaces_deleted() -> Result<()> {
     let second_listener_result = {
         loop {
             let res = second_listener.try_recv();
-            if matches!(res, Err(TryRecvError::Overflowed(_))) {
+            if matches!(res, Err(TryRecvError::Lagged(_))) {
                 // this was an overflow reporting, try again
                 continue;
             }
@@ -221,11 +221,11 @@ async fn create_subspace() -> Result<()> {
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), move || {
-        let mut listener = all_listener.clone();
+        let mut listener = all_listener.resubscribe();
         async move {
             loop {
                 let res = listener.try_recv();
-                if matches!(res, Err(TryRecvError::Overflowed(_))) {
+                if matches!(res, Err(TryRecvError::Lagged(_))) {
                     // this was an overflow reporting, try again
                     continue;
                 }
@@ -289,11 +289,11 @@ async fn update_name() -> Result<()> {
     // and we've seen the update
 
     Retry::spawn(retry_strategy.clone(), move || {
-        let mut listener = listener.clone();
+        let mut listener = listener.resubscribe();
         async move {
             loop {
                 let res = listener.try_recv();
-                if matches!(res, Err(TryRecvError::Overflowed(_))) {
+                if matches!(res, Err(TryRecvError::Lagged(_))) {
                     // this was an overflow reporting, try again
                     continue;
                 }
@@ -331,11 +331,11 @@ async fn update_name() -> Result<()> {
     // // and we've seen the update
 
     // Retry::spawn(retry_strategy.clone(), move || {
-    //     let mut listener = listener.clone();
+    //     let mut listener = listener.resubscribe();
     //     async move {
     //         loop {
     //             let res = listener.try_recv();
-    //             if matches!(res, Err(TryRecvError::Overflowed(_))) {
+    //             if matches!(res, Err(TryRecvError::Lagged(_))) {
     //                 // this was an overflow reporting, try again
     //                 continue;
     //             }
@@ -400,11 +400,11 @@ async fn update_topic() -> Result<()> {
     // and we've seen the update
 
     Retry::spawn(retry_strategy.clone(), move || {
-        let mut listener = listener.clone();
+        let mut listener = listener.resubscribe();
         async move {
             loop {
                 let res = listener.try_recv();
-                if matches!(res, Err(TryRecvError::Overflowed(_))) {
+                if matches!(res, Err(TryRecvError::Lagged(_))) {
                     // this was an overflow reporting, try again
                     continue;
                 }

@@ -39,15 +39,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         showNoInternetNotification();
       } else {
         final notifier = ref.read(authStateProvider.notifier);
-        final login_success = await notifier.login(
+        final loginSuccess = await notifier.login(
           username.text,
           password.text,
         );
-        if (login_success == null) {
+        if (loginSuccess == null) {
           // no message means, login was successful.
           context.goNamed(Routes.main.name);
         } else {
-          customMsgSnackbar(context, login_success);
+          customMsgSnackbar(context, loginSuccess);
         }
       }
     }

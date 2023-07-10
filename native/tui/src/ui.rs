@@ -54,7 +54,7 @@ struct ChatStats {
     notifications: u32,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Debug, Default)]
 struct TasksState {
     task_lists_list_state: ListState,
     tasks_list_state: ListState,
@@ -284,7 +284,7 @@ impl TasksState {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 enum Tool {
     News,
     Tasks(TasksState),
@@ -335,8 +335,8 @@ impl Tool {
         *self = Tool::Tasks(TasksState::fresh(t))
     }
 
-    fn all() -> [Self; 3] {
-        [
+    fn all() -> Vec<Self> {
+        vec![
             Tool::Tasks(Default::default()),
             Tool::News,
             Tool::Chat(None),
@@ -382,7 +382,7 @@ impl App {
             Widget::Tools
         };
         App {
-            tools: Tool::all().to_vec(),
+            tools: Tool::all(),
             index: 0,
             logs_fullscreen,
             selected_widget,

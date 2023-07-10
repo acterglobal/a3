@@ -30,7 +30,10 @@ use std::{
     },
 };
 use tokio::{
-    sync::{broadcast, Mutex, RwLock},
+    sync::{
+        broadcast::{self, Receiver},
+        Mutex, RwLock,
+    },
     task::JoinHandle,
 };
 use tokio_stream::wrappers::BroadcastStream;
@@ -199,7 +202,7 @@ impl From<&ruma::api::client::Error> for SyncError {
                 kind: ErrorKind::UnknownToken { soft_logout },
                 ..
             } => SyncError::Unauthorized {
-                soft_logout: soft_logout.clone(),
+                soft_logout: *soft_logout,
             },
             ruma::api::client::error::ErrorBody::Standard { ref message, .. } => SyncError::Other {
                 msg: Some(message.clone()),
@@ -712,8 +715,12 @@ impl Client {
             .map(|room| Room { room })
     }
 
-    pub fn subscribe(&self, key: String) -> impl Stream<Item = ()> {
+    pub fn subscribe_stream(&self, key: String) -> impl Stream<Item = ()> {
         BroadcastStream::new(self.executor().subscribe(key)).map(|f| f.unwrap_or_default())
+    }
+
+    pub fn subscribe(&self, key: String) -> Receiver<()> {
+        self.executor().subscribe(key)
     }
 
     pub(crate) async fn wait_for(

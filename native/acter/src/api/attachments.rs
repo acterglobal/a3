@@ -20,6 +20,7 @@ use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 
 use super::{api::FfiBuffer, client::Client, RUNTIME};
+use futures::stream::StreamExt;
 
 use crate::{AudioDesc, FileDesc, ImageDesc, VideoDesc};
 
@@ -353,7 +354,12 @@ impl AttachmentsManager {
         })
     }
 
-    pub fn subscribe(&self) -> impl tokio_stream::Stream<Item = ()> {
+    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = ()> {
+        tokio_stream::wrappers::BroadcastStream::new(self.subscribe())
+            .map(|f| f.unwrap_or_default())
+    }
+
+    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
         self.client.subscribe(self.inner.update_key())
     }
 }

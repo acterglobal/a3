@@ -163,7 +163,7 @@ async fn task_smoketests() -> Result<()> {
 
     assert!(
         wait_for(move || {
-            let mut task_list_listener = task_list_listener.clone();
+            let mut task_list_listener = task_list_listener.resubscribe();
             async move {
                 if let Ok(t) = task_list_listener.try_recv() {
                     Ok(Some(t))
@@ -196,7 +196,7 @@ async fn task_smoketests() -> Result<()> {
 
     assert!(
         wait_for(move || {
-            let mut task_list_listener = task_list_listener.clone();
+            let mut task_list_listener = task_list_listener.resubscribe();
             async move {
                 if let Ok(t) = task_list_listener.try_recv() {
                     Ok(Some(t))
@@ -230,7 +230,7 @@ async fn task_smoketests() -> Result<()> {
 
     assert!(
         wait_for(move || {
-            let mut task_1_updater = task_1_updater.clone();
+            let mut task_1_updater = task_1_updater.resubscribe();
             async move {
                 if let Ok(t) = task_1_updater.try_recv() {
                     Ok(Some(t))
@@ -260,7 +260,7 @@ async fn task_smoketests() -> Result<()> {
 
     assert!(
         wait_for(move || {
-            let mut task_list_listener = task_list_listener.clone();
+            let mut task_list_listener = task_list_listener.resubscribe();
             async move {
                 if let Ok(t) = task_list_listener.try_recv() {
                     Ok(Some(t))
@@ -335,7 +335,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
 
     assert!(
         wait_for(move || {
-            let mut comments_listener = comments_listener.clone();
+            let mut comments_listener = comments_listener.resubscribe();
             async move {
                 if let Ok(t) = comments_listener.try_recv() {
                     Ok(Some(t))
@@ -406,7 +406,7 @@ async fn task_comment_smoketests() -> Result<()> {
 
     assert!(
         wait_for(move || {
-            let mut task_list_listener = task_list_listener.clone();
+            let mut task_list_listener = task_list_listener.resubscribe();
             async move {
                 if let Ok(t) = task_list_listener.try_recv() {
                     Ok(Some(t))
@@ -443,7 +443,7 @@ async fn task_comment_smoketests() -> Result<()> {
 
     assert!(
         wait_for(move || {
-            let mut comments_listener = comments_listener.clone();
+            let mut comments_listener = comments_listener.resubscribe();
             async move {
                 if let Ok(t) = comments_listener.try_recv() {
                     Ok(Some(t))
