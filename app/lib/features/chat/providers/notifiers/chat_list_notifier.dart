@@ -6,12 +6,7 @@ import 'package:acter/features/chat/models/joined_room/joined_room.dart';
 import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show
-        Conversation,
-        FfiListConversation,
-        FfiListInvitation,
-        RoomId,
-        TypingEvent;
+    show Conversation, FfiListConversation, RoomId, TypingEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,21 +70,7 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
       _convosSubscription?.cancel();
     });
     // start listener streams
-    _invitationsStream();
     _typingEventStream();
-  }
-
-  // Invitations stream
-  void _invitationsStream() {
-    final client = ref.read(clientProvider)!;
-    StreamSubscription<FfiListInvitation>? _invitesSubscription;
-    _invitesSubscription = client.invitationsRx().listen((event) {
-      ref.read(invitationListProvider.notifier).setList(event.toList());
-    });
-    // call stream close when provider isn't listened
-    ref.onDispose(() {
-      _invitesSubscription?.cancel();
-    });
   }
 
   // Typing notification stream

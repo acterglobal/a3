@@ -1,5 +1,5 @@
-import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat/widgets/invitation_card.dart';
+import 'package:acter/features/activities/providers/invitations_providers.dart';
+import 'package:acter/features/activities/widgets/invitation_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
