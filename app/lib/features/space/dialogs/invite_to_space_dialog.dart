@@ -1,8 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -10,7 +7,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:go_router/go_router.dart';
 
 final searchController = Provider.autoDispose<TextEditingController>((ref) {
   final controller = TextEditingController();
@@ -116,21 +112,45 @@ class UserEntry extends ConsumerWidget {
 
 class InviteToSpaceDialog extends ConsumerWidget {
   final String spaceId;
-  const InviteToSpaceDialog({super.key, required this.spaceId});
+  final List<String> invited;
+  const InviteToSpaceDialog({
+    super.key,
+    required this.spaceId,
+    this.invited = const [],
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final space = ref.watch(briefSpaceItemWithMembershipProvider(spaceId));
+    final invited =
+        ref.watch(spaceInvitedMembersProvider(spaceId)).valueOrNull ?? [];
     final _searchTextCtrl = ref.watch(searchController);
     final suggestedUsers =
         ref.watch(filteredSuggestedUsersProvider(spaceId)).valueOrNull;
     final foundUsers = ref.watch(searchResultProvider);
     final children = [];
 
+    bool isInvited(String userId) {
+      for (final i in invited) {
+        if (i.userId().toString() == userId) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     if (suggestedUsers != null && suggestedUsers.isNotEmpty) {
-      children.add(const SliverToBoxAdapter(
-        child: Text('Suggested Users'),
-      ));
+      children.add(
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Text(
+              'Suggested Users',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+          ),
+        ),
+      );
       children.add(
         SliverList(
           delegate: SliverChildBuilderDelegate(
@@ -147,6 +167,17 @@ class InviteToSpaceDialog extends ConsumerWidget {
                     displayName: e.profile.displayName,
                     avatar: e.profile.getAvatarImage(),
                   ),
+                  trailing: isInvited(e.userId)
+                      ? const Chip(label: Text('invited'))
+                      : space.hasValue
+                          ? OutlinedButton.icon(
+                              onPressed: () async {
+                                await space.value!.space!.inviteUser(e.userId);
+                              },
+                              icon: const Icon(Atlas.paper_airplane_thin),
+                              label: const Text('invite'),
+                            )
+                          : null,
                 ),
               );
             },
@@ -157,9 +188,17 @@ class InviteToSpaceDialog extends ConsumerWidget {
     }
 
     if (foundUsers.hasValue && foundUsers.value!.isNotEmpty) {
-      children.add(const SliverToBoxAdapter(
-        child: Text('Users found in public directory'),
-      ));
+      children.add(
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Text(
+              'Users found in public directory',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+          ),
+        ),
+      );
       children.add(
         SliverList(
           delegate: SliverChildBuilderDelegate(
@@ -181,6 +220,18 @@ class InviteToSpaceDialog extends ConsumerWidget {
                         displayName: displayName.valueOrNull,
                         avatar: avatarProv.valueOrNull,
                       ),
+                      trailing: isInvited(userId)
+                          ? const Chip(label: Text('invited'))
+                          : space.hasValue
+                              ? OutlinedButton.icon(
+                                  onPressed: () async {
+                                    await space.value!.space!
+                                        .inviteUser(userId);
+                                  },
+                                  icon: const Icon(Atlas.paper_airplane_thin),
+                                  label: const Text('invite'),
+                                )
+                              : null,
                     ),
                   );
                 },

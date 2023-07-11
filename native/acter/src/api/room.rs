@@ -343,6 +343,22 @@ impl Room {
             .await?
     }
 
+    pub async fn invited_members(&self) -> Result<Vec<Member>> {
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let members = room
+                    .members(RoomMemberships::INVITE)
+                    .await?
+                    .into_iter()
+                    .map(|member| Member { member })
+                    .collect();
+                Ok(members)
+            })
+            .await?
+    }
+
     pub async fn active_members_no_sync(&self) -> Result<Vec<Member>> {
         let room = self.room.clone();
 

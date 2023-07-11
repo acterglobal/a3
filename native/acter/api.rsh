@@ -597,6 +597,9 @@ object Conversation {
     /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
 
+    /// the members invited to this room
+    fn invited_members() -> Future<Result<Vec<Member>>>;
+
     /// get the room member by user id
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
@@ -1181,6 +1184,9 @@ object Space {
 
     /// the members currently in the space
     fn active_members() -> Future<Result<Vec<Member>>>;
+
+    /// the members invited to this room
+    fn invited_members() -> Future<Result<Vec<Member>>>;
 
     /// the room id
     fn get_room_id() -> RoomId;
