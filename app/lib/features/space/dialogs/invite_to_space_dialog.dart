@@ -110,6 +110,51 @@ class UserEntry extends ConsumerWidget {
   }
 }
 
+class InviteButton extends ConsumerStatefulWidget {
+  final String userId;
+  final bool invited;
+  final Space space;
+  const InviteButton({
+    super.key,
+    required this.space,
+    this.invited = false,
+    required this.userId,
+  });
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _InviteButtonState();
+}
+
+class _InviteButtonState extends ConsumerState<InviteButton> {
+  bool _loading = false;
+  bool _success = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.invited || _success) {
+      return const Chip(label: Text('invited'));
+    }
+
+    if (_loading) {
+      return const CircularProgressIndicator();
+    }
+
+    return OutlinedButton.icon(
+      onPressed: () async {
+        setState(() {
+          _loading = true;
+        });
+        await widget.space.inviteUser(widget.userId);
+        setState(() {
+          _success = true;
+        });
+      },
+      icon: const Icon(Atlas.paper_airplane_thin),
+      label: const Text('invite'),
+    );
+  }
+}
+
 class InviteToSpaceDialog extends ConsumerStatefulWidget {
   final String spaceId;
   const InviteToSpaceDialog({
@@ -187,17 +232,11 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
                     displayName: e.profile.displayName,
                     avatar: e.profile.getAvatarImage(),
                   ),
-                  trailing: isInvited(e.userId)
-                      ? const Chip(label: Text('invited'))
-                      : space.hasValue
-                          ? OutlinedButton.icon(
-                              onPressed: () async {
-                                await space.value!.space!.inviteUser(e.userId);
-                              },
-                              icon: const Icon(Atlas.paper_airplane_thin),
-                              label: const Text('invite'),
-                            )
-                          : null,
+                  trailing: InviteButton(
+                    userId: e.userId,
+                    space: space.valueOrNull!.space!,
+                    invited: isInvited(e.userId),
+                  ),
                 ),
               );
             },
@@ -240,18 +279,11 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
                         displayName: displayName.valueOrNull,
                         avatar: avatarProv.valueOrNull,
                       ),
-                      trailing: isInvited(userId)
-                          ? const Chip(label: Text('invited'))
-                          : space.hasValue
-                              ? OutlinedButton.icon(
-                                  onPressed: () async {
-                                    await space.value!.space!
-                                        .inviteUser(userId);
-                                  },
-                                  icon: const Icon(Atlas.paper_airplane_thin),
-                                  label: const Text('invite'),
-                                )
-                              : null,
+                      trailing: InviteButton(
+                        userId: userId,
+                        space: space.valueOrNull!.space!,
+                        invited: isInvited(userId),
+                      ),
                     ),
                   );
                 },
@@ -291,7 +323,6 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
             title: const Text('Invite user'),
           ),
         ),
-        // title: const Text('Invite User to')),
         body: TabBarView(
           controller: _tabController,
           children: <Widget>[
