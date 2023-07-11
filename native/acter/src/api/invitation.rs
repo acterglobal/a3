@@ -9,13 +9,14 @@ use matrix_sdk::{
     },
     Client as SdkClient, RoomMemberships,
 };
+use ruma::api::client::user_directory::search_users::v3::User;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
 use tracing::{error, info};
 
 use super::{
     client::{devide_spaces_from_convos, Client},
-    profile::UserProfile,
+    profile::{PublicProfile, UserProfile},
     RUNTIME,
 };
 
@@ -283,12 +284,38 @@ impl InvitationController {
     }
 }
 
+struct SearchedUser {
+    inner: User,
+}
+
+impl SearchedUser {
+    pub fn user_id_str(&self) -> String {
+        self.inner.user_id.to_string()
+    }
+}
+
 impl Client {
     pub fn invitations_rx(&self) -> SignalStream<MutableSignalCloned<Vec<Invitation>>> {
         self.invitation_controller
             .invitations
             .signal_cloned()
             .to_stream()
+    }
+
+    pub async fn search_users(&self, search_term: String) -> Result<Vec<UserProfile>> {
+        let client = self.core.client().clone();
+        return RUNTIME
+            .spawn(async move {
+                let resp = client.search_users(&search_term, 30).await?;
+                Ok(resp
+                    .results
+                    .into_iter()
+                    .map(|inner| {
+                        UserProfile::from_search(PublicProfile::new(inner, client.clone()))
+                    })
+                    .collect())
+            })
+            .await?;
     }
 
     pub async fn suggested_users_to_invite(&self, room_name: String) -> Result<Vec<UserProfile>> {

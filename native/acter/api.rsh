@@ -1438,6 +1438,9 @@ object Client {
     /// the users out of room
     fn suggested_users_to_invite(room_name: string) -> Future<Result<Vec<UserProfile>>>;
 
+    /// search the user directory
+    fn search_users(search_term: string) -> Future<Result<Vec<UserProfile>>>;
+
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
