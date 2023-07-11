@@ -153,7 +153,7 @@ final briefSpaceItemsProviderWithMembership =
   return items;
 });
 
-/// Get the list of known spaces as SpaceItem filled in brief form
+/// Get the SpaceItem of the given sapceId filled in brief form
 /// (only spaceProfileData, no activeMembers). Stays up to date with underlying
 /// client info
 final briefSpaceItemProvider =
@@ -163,6 +163,21 @@ final briefSpaceItemProvider =
   return SpaceItem(
     roomId: space.getRoomId().toString(),
     membership: null,
+    activeMembers: [],
+    spaceProfileData: profileData,
+  );
+});
+
+/// Get the SpaceItem of the given sapceId filled in brief form
+/// (only spaceProfileData, no activeMembers) with Membership.
+/// Stays up to date with underlying client info
+final briefSpaceItemWithMembershipProvider =
+    FutureProvider.autoDispose.family<SpaceItem, String>((ref, spaceId) async {
+  final space = await ref.watch(spaceProvider(spaceId).future);
+  final profileData = await ref.watch(spaceProfileDataProvider(space).future);
+  return SpaceItem(
+    roomId: space.getRoomId().toString(),
+    membership: await space.getMyMembership(),
     activeMembers: [],
     spaceProfileData: profileData,
   );

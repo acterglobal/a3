@@ -116,9 +116,9 @@ class _ShellToolbar extends ConsumerWidget {
       if (membership.canString('CanInvite')) {
         submenu.add(
           PopupMenuItem(
-            onTap: () => customMsgSnackbar(
-              context,
-              'Inviting to Space not implemented yet',
+            onTap: () => context.pushNamed(
+              Routes.spaceInvite.name,
+              pathParameters: {'spaceId': spaceId},
             ),
             child: const Text('Invite Users'),
           ),
