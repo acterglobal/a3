@@ -110,17 +110,37 @@ class UserEntry extends ConsumerWidget {
   }
 }
 
-class InviteToSpaceDialog extends ConsumerWidget {
+class InviteToSpaceDialog extends ConsumerStatefulWidget {
   final String spaceId;
-  final List<String> invited;
   const InviteToSpaceDialog({
     super.key,
     required this.spaceId,
-    this.invited = const [],
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _InviteToSpaceDialogState();
+}
+
+class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
+    with TickerProviderStateMixin {
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final spaceId = widget.spaceId;
     final space = ref.watch(briefSpaceItemWithMembershipProvider(spaceId));
     final invited =
         ref.watch(spaceInvitedMembersProvider(spaceId)).valueOrNull ?? [];
@@ -251,6 +271,20 @@ class InviteToSpaceDialog extends ConsumerWidget {
             title: Text(
               'Invite to ${space.spaceProfileData.displayName}',
             ),
+            bottom: TabBar(
+              controller: _tabController,
+              dividerColor: Colors.transparent,
+              tabs: <Widget>[
+                const Tab(
+                  text: 'Invite',
+                  icon: Icon(Atlas.paper_airplane_thin),
+                ),
+                Tab(
+                  text: 'Pending Invites (${invited.length})',
+                  icon: const Icon(Atlas.mailbox_thin),
+                ),
+              ],
+            ),
           ),
           error: (error, stackTrace) => AppBar(title: Text('Error: $error')),
           loading: () => AppBar(
@@ -258,28 +292,72 @@ class InviteToSpaceDialog extends ConsumerWidget {
           ),
         ),
         // title: const Text('Invite User to')),
-        body: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                child: TextField(
-                  controller: _searchTextCtrl,
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(
-                      Atlas.magnifying_glass_thin,
-                      color: Colors.white,
+        body: TabBarView(
+          controller: _tabController,
+          children: <Widget>[
+            CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
                     ),
-                    labelText: 'search user',
+                    child: TextField(
+                      controller: _searchTextCtrl,
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(
+                          Atlas.magnifying_glass_thin,
+                          color: Colors.white,
+                        ),
+                        labelText: 'search user',
+                      ),
+                      onChanged: (String value) async {
+                        ref.read(searchValueProvider.notifier).state = value;
+                      },
+                    ),
                   ),
-                  onChanged: (String value) async {
-                    ref.read(searchValueProvider.notifier).state = value;
-                  },
                 ),
-              ),
+                ...children
+              ],
             ),
-            ...children
+            CustomScrollView(
+              slivers: [
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final e = invited[index];
+                      final userId = e.userId().toString();
+                      final profile = e.getProfile();
+                      return Consumer(
+                        builder: (context, ref, child) {
+                          final avatarProv =
+                              ref.watch(userAvatarProvider(profile));
+                          final displayName =
+                              ref.watch(displayNameProvider(profile));
+                          return Card(
+                            child: ListTile(
+                              title: Text(displayName.valueOrNull ?? userId),
+                              subtitle: displayName.valueOrNull != null
+                                  ? Text(userId)
+                                  : null,
+                              leading: ActerAvatar(
+                                mode: DisplayMode.User,
+                                uniqueId: userId,
+                                displayName: displayName.valueOrNull,
+                                avatar: avatarProv.valueOrNull,
+                              ),
+                              trailing: null,
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    childCount: invited.length,
+                  ),
+                ),
+              ],
+            )
           ],
         ),
       ),
