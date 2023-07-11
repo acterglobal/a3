@@ -88,6 +88,55 @@ class _ShellToolbar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final membership = ref.watch(spaceMembershipProvider(spaceId)).valueOrNull;
+    final List<PopupMenuEntry> submenu = [];
+    if (membership != null) {
+      if (membership.canString('CanSetName')) {
+        submenu.add(
+          PopupMenuItem(
+            onTap: () => context.pushNamed(
+              Routes.editSpace.name,
+              pathParameters: {'spaceId': spaceId},
+              queryParameters: {'spaceId': spaceId},
+            ),
+            child: const Text('Edit Space'),
+          ),
+        );
+        submenu.add(
+          PopupMenuItem(
+            onTap: () => customMsgSnackbar(
+              context,
+              'Edit Space is not implemented yet',
+            ),
+            child: const Text('Settings'),
+          ),
+        );
+      }
+
+      if (membership.canString('CanInvite')) {
+        submenu.add(
+          PopupMenuItem(
+            onTap: () => customMsgSnackbar(
+              context,
+              'Inviting to Space not implemented yet',
+            ),
+            child: const Text('Invite Users'),
+          ),
+        );
+      }
+    }
+
+    if (submenu.isNotEmpty) {
+      // add divider
+      submenu.add(const PopupMenuDivider());
+    }
+    submenu.add(
+      PopupMenuItem(
+        onTap: () => _handleLeaveSpace(context, space, ref),
+        child: const Text('Leave Space'),
+      ),
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
@@ -107,27 +156,7 @@ class _ShellToolbar extends ConsumerWidget {
             ),
             iconSize: 28,
             color: Theme.of(context).colorScheme.surface,
-            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-              PopupMenuItem(
-                onTap: () => context.pushNamed(
-                  Routes.editSpace.name,
-                  pathParameters: {'spaceId': spaceId},
-                  queryParameters: {'spaceId': spaceId},
-                ),
-                child: const Text('Edit Space'),
-              ),
-              PopupMenuItem(
-                onTap: () => customMsgSnackbar(
-                  context,
-                  'Edit Space is not implemented yet',
-                ),
-                child: const Text('Settings'),
-              ),
-              PopupMenuItem(
-                onTap: () => _handleLeaveSpace(context, space, ref),
-                child: const Text('Leave Space'),
-              ),
-            ],
+            itemBuilder: (BuildContext context) => submenu,
           ),
         ],
       ),
