@@ -1185,6 +1185,9 @@ object Space {
     /// the room id
     fn get_room_id() -> RoomId;
 
+    /// invite the new user to this space
+    fn invite_user(user_id: string) -> Future<Result<bool>>;
+
     /// the room id as str
     fn get_room_id_str() -> string;
 
@@ -1274,6 +1277,7 @@ enum MemberPermission {
     CanPostPin,
     CanBan,
     CanKick,
+    CanInvite,
     CanRedact,
     CanTriggerRoomNotification,
     CanSetName,

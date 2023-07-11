@@ -70,6 +70,7 @@ pub enum MemberPermission {
     CanPostPin,
     // moderation tools
     CanBan,
+    CanInvite,
     CanKick,
     CanRedact,
     CanTriggerRoomNotification,
@@ -129,6 +130,7 @@ impl Member {
     pub fn can(&self, permission: MemberPermission) -> bool {
         let tester: PermissionTest = match permission {
             MemberPermission::CanBan => return self.member.can_ban(),
+            MemberPermission::CanInvite => return self.member.can_invite(),
             MemberPermission::CanRedact => return self.member.can_redact(),
             MemberPermission::CanKick => return self.member.can_kick(),
             MemberPermission::CanTriggerRoomNotification => {
