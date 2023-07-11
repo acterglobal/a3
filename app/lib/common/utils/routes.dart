@@ -24,7 +24,7 @@ enum Routes {
 
   // --- chat
   chat('/chat'),
-  chatroom(r'/chat/(?<roomId>([!#][^/]+)'), // !roomId, #roomName
+  chatroom('/chat/:roomId([!#][^/]+)'), // !roomId, #roomName
 
   // -- spaces
   spaces('/spaces'),

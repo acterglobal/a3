@@ -6,6 +6,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
+import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/events/dialogs/create_event_sheet.dart';
 import 'package:acter/features/events/dialogs/edit_event_sheet.dart';
 import 'package:acter/features/events/pages/event_page.dart';
@@ -42,6 +43,7 @@ import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/todo/pages/create_task_sidesheet.dart';
 import 'package:acter/features/todo/pages/todo_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod/riverpod.dart';
@@ -308,6 +310,21 @@ List<RouteBase> makeRoutes(Ref ref) => [
         },
       ),
 
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        name: Routes.chatroom.name,
+        path: Routes.chatroom.route,
+        redirect: authGuardRedirect,
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: RoomPage(
+              conversation: state.extra as Conversation,
+            ),
+          );
+        },
+      ),
+
       /// Application shell
       ShellRoute(
         navigatorKey: shellNavigatorKey,
@@ -422,17 +439,6 @@ List<RouteBase> makeRoutes(Ref ref) => [
               return NoTransitionPage(
                 key: state.pageKey,
                 child: const SearchPage(),
-              );
-            },
-          ),
-          GoRoute(
-            name: Routes.chatroom.name,
-            path: Routes.chatroom.route,
-            redirect: authGuardRedirect,
-            pageBuilder: (context, state) {
-              return NoTransitionPage(
-                key: state.pageKey,
-                child: const ChatPage(),
               );
             },
           ),

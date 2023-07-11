@@ -42,7 +42,11 @@ class ChatsCard extends ConsumerWidget {
                         final profile = ref.watch(provider);
                         return profile.when(
                           data: (profile) => ListTile(
-                            onTap: () => context.go('/chat/$roomId'),
+                            onTap: () => context.goNamed(
+                              Routes.chatroom.name,
+                              pathParameters: {'roomId': roomId},
+                              extra: chats[index],
+                            ),
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [

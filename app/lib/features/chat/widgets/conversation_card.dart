@@ -11,8 +11,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 // import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+
+import '../../../common/utils/routes.dart';
 
 class ConversationCard extends ConsumerStatefulWidget {
   final JoinedRoom room;
@@ -45,21 +48,25 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
         ref.watch(chatProfileDataProvider(widget.room.conversation));
     // ToDo: UnreadCounter
     return convoProfile.when(
-      data: (data) {
+      data: (profile) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              onTap: () => handleTap(context),
+              onTap: () => context.goNamed(
+                Routes.chatroom.name,
+                pathParameters: {'roomId': roomId},
+                extra: widget.room.conversation,
+              ),
               leading: ActerAvatar(
                 mode: DisplayMode.GroupChat, // FIXME: checking for DM somehow?
                 uniqueId: roomId,
-                displayName: data.displayName ?? roomId,
-                avatar: data.getAvatarImage(),
+                displayName: profile.displayName ?? roomId,
+                avatar: profile.getAvatarImage(),
                 size: 36,
               ),
               title: Text(
-                data.displayName ?? roomId,
+                profile.displayName ?? roomId,
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium!
@@ -89,18 +96,6 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
       },
       error: (error, stackTrace) => const Text('Failed to load Conversation'),
       loading: () => const CircularProgressIndicator(),
-    );
-  }
-
-  void handleTap(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RoomPage(
-          conversation: widget.room.conversation,
-          name: widget.room.displayName,
-        ),
-      ),
     );
   }
 
