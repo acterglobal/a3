@@ -30,7 +30,7 @@ async fn odos_tasks() -> Result<()> {
     state_sync.await_has_synced_history().await?;
 
     let task_lists = odo.task_lists().await?;
-    let Some(mut task_list) = task_lists.into_iter().find(|t| t.name() == list_name) else {
+    let Some(mut task_list) = task_lists.into_iter().find(|t| t.name() == list_name.as_str()) else {
         bail!("TaskList not found");
     };
 
@@ -61,7 +61,7 @@ async fn odos_tasks() -> Result<()> {
                 .task_lists()
                 .await?
                 .into_iter()
-                .find(|t| t.name() == list_name)
+                .find(|t| t.name() == list_name.as_str())
                 .expect("TaskList not found again");
             if let Some(task) = task_list
                 .tasks()
@@ -150,7 +150,7 @@ async fn task_smoketests() -> Result<()> {
         bail!("freshly created Task List couldn't be found");
     };
 
-    assert_eq!(task_list.name(), "Starting up".to_owned());
+    assert_eq!(task_list.name(), "Starting up");
     assert_eq!(task_list.tasks().await?.len(), 0);
 
     let task_list_listener = task_list.subscribe();
@@ -183,7 +183,7 @@ async fn task_smoketests() -> Result<()> {
     assert_eq!(tasks[0].event_id(), task_1_id);
 
     let task_1 = tasks[0].clone();
-    assert_eq!(task_1.title(), "Testing 1".to_owned());
+    assert_eq!(task_1.title(), "Testing 1");
     assert!(!task_1.is_done());
 
     let task_list_listener = task_list.subscribe();
@@ -216,7 +216,7 @@ async fn task_smoketests() -> Result<()> {
     assert_eq!(tasks[1].event_id(), task_2_id);
 
     let task_2 = tasks[1].clone();
-    assert_eq!(task_2.title(), "Testing 2".to_owned());
+    assert_eq!(task_2.title(), "Testing 2");
     assert!(!task_2.is_done());
 
     let task_1_updater = task_1.subscribe();
@@ -246,7 +246,7 @@ async fn task_smoketests() -> Result<()> {
 
     let task_1 = task_1.refresh().await?;
     // Update has been applied properly
-    assert_eq!(task_1.title(), "Replacement Name".to_owned());
+    assert_eq!(task_1.title(), "Replacement Name");
     assert!(task_1.is_done());
 
     let task_list_listener = task_list.subscribe();
@@ -276,9 +276,9 @@ async fn task_smoketests() -> Result<()> {
 
     let task_list = task_list.refresh().await?;
 
-    assert_eq!(task_list.name(), "Setup".to_owned());
+    assert_eq!(task_list.name(), "Setup");
     assert_eq!(
-        task_list.description().as_ref().unwrap().body,
+        task_list.description_text().unwrap(),
         "All done now".to_owned()
     );
 
@@ -320,7 +320,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
 
     let comments_manager = task_list.comments().await?;
 
-    assert_eq!(task_list.name(), "Comments test".to_owned());
+    assert_eq!(task_list.name(), "Comments test");
     assert_eq!(task_list.tasks().await?.len(), 0);
     assert!(!comments_manager.stats().has_comments());
 
@@ -393,7 +393,7 @@ async fn task_comment_smoketests() -> Result<()> {
         bail!("freshly created Task List couldn't be found");
     };
 
-    assert_eq!(task_list.name(), "Starting up".to_owned());
+    assert_eq!(task_list.name(), "Starting up");
     assert_eq!(task_list.tasks().await?.len(), 0);
 
     let task_list_listener = task_list.subscribe();

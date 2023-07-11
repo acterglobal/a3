@@ -151,32 +151,8 @@ impl Deref for CalendarEvent {
 
 /// helpers for inner
 impl CalendarEvent {
-    pub fn title(&self) -> String {
-        self.inner.title.clone()
-    }
-
-    pub fn description_text(&self) -> Option<String> {
-        self.inner.description.as_ref().map(|t| t.body.clone())
-    }
-
-    pub fn color(&self) -> Option<Color> {
-        self.inner.color.clone()
-    }
-
-    pub fn icon(&self) -> Option<Icon> {
-        self.inner.icon.clone()
-    }
-
     pub fn event_id(&self) -> OwnedEventId {
         self.inner.event_id().to_owned()
-    }
-
-    pub fn utc_start(&self) -> UtcDateTime {
-        self.inner.utc_start
-    }
-
-    pub fn utc_end(&self) -> UtcDateTime {
-        self.inner.utc_end
     }
 }
 
