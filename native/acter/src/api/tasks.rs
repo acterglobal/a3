@@ -281,17 +281,10 @@ impl Deref for TaskList {
     }
 }
 
+/// helpers for content
 impl TaskList {
-    pub fn name(&self) -> String {
-        self.content.name.clone()
-    }
-
     pub fn description_text(&self) -> Option<String> {
-        self.description.as_ref().map(|t| t.body.clone())
-    }
-
-    pub fn subscribers(&self) -> Vec<OwnedUserId> {
-        self.content.subscribers.clone()
+        self.content.description.as_ref().map(|t| t.body.clone())
     }
 
     pub fn role(&self) -> Option<String> {
@@ -303,10 +296,6 @@ impl TaskList {
 
     pub fn sort_order(&self) -> u32 {
         self.content.sort_order
-    }
-
-    pub fn color(&self) -> Option<Color> {
-        self.content.color.clone()
     }
 
     pub fn time_zone(&self) -> Option<String> {
@@ -345,6 +334,7 @@ impl TaskList {
     }
 }
 
+// custom functions
 impl TaskList {
     pub fn client(&self) -> &Client {
         &self.client
@@ -471,20 +461,8 @@ impl Deref for Task {
 
 /// helpers for content
 impl Task {
-    pub fn title(&self) -> String {
-        self.content.title.clone()
-    }
-
     pub fn description_text(&self) -> Option<String> {
         self.content.description.as_ref().map(|t| t.body.clone())
-    }
-
-    pub fn assignees(&self) -> Vec<OwnedUserId> {
-        self.content.assignees.clone()
-    }
-
-    pub fn subscribers(&self) -> Vec<OwnedUserId> {
-        self.content.subscribers.clone()
     }
 
     pub fn sort_order(&self) -> u32 {
@@ -504,18 +482,6 @@ impl Task {
             Priority::SecondLowest => 8,
             Priority::Lowest => 9,
         })
-    }
-
-    pub fn utc_due(&self) -> Option<UtcDateTime> {
-        self.content.utc_due
-    }
-
-    pub fn utc_start(&self) -> Option<UtcDateTime> {
-        self.content.utc_start
-    }
-
-    pub fn color(&self) -> Option<Color> {
-        self.content.color.clone()
     }
 
     pub fn is_done(&self) -> bool {

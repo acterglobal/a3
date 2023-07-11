@@ -94,12 +94,6 @@ pub struct TaskListEventContent {
     pub subscribers: Vec<OwnedUserId>,
 }
 
-impl TaskListBuilder {
-    pub fn description_text(&mut self, text: String) -> &mut Self {
-        self.description(Some(TextMessageEventContent::plain(text)))
-    }
-}
-
 /// The TaskList Event
 ///
 /// modeled after [JMAP TaskList](https://jmap.io/spec-tasks.html#tasklists)
