@@ -304,7 +304,7 @@ impl Client {
 
     pub async fn search_users(&self, search_term: String) -> Result<Vec<UserProfile>> {
         let client = self.core.client().clone();
-        return RUNTIME
+        RUNTIME
             .spawn(async move {
                 let resp = client.search_users(&search_term, 30).await?;
                 Ok(resp
@@ -315,7 +315,7 @@ impl Client {
                     })
                     .collect())
             })
-            .await?;
+            .await?
     }
 
     pub async fn suggested_users_to_invite(&self, room_name: String) -> Result<Vec<UserProfile>> {

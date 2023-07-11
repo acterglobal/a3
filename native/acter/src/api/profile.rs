@@ -171,7 +171,7 @@ impl UserProfile {
             return Ok(OptionText::new(text));
         }
         if let Some(public_profile) = self.public_profile.clone() {
-            let text = public_profile.inner.display_name.map(|x| x.to_string());
+            let text = public_profile.inner.display_name;
             return Ok(OptionText::new(text));
         }
         Ok(OptionText::new(None))
