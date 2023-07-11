@@ -288,7 +288,7 @@ object CalendarEvent {
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
 }
 
-object CalendarEventUpdateBuilder{
+object CalendarEventUpdateBuilder {
     /// set title of the event>
     fn title(title: string);
     /// set description text
@@ -822,7 +822,7 @@ object Task {
     /// the name of this task
     fn title() -> string;
 
-    /// the name of this task
+    /// the description of this task
     fn description_text() -> Option<string>;
 
     /// the users assigned
@@ -1014,7 +1014,7 @@ object TaskList {
     /// the name of this task list
     fn name() -> string;
 
-    /// the name of this task list
+    /// the description of this task list
     fn description_text() -> Option<string>;
 
     /// who wants to be informed on updates about this?

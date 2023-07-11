@@ -28460,7 +28460,7 @@ class Task {
     return tmp2;
   }
 
-  /// the name of this task
+  /// the description of this task
   String? descriptionText() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -30037,7 +30037,7 @@ class TaskList {
     return tmp2;
   }
 
-  /// the name of this task list
+  /// the description of this task list
   String? descriptionText() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
