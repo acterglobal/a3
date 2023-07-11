@@ -5,6 +5,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
+import 'package:acter/features/chat/dialogs/create_chat_sheet.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/events/dialogs/create_event_sheet.dart';
@@ -321,6 +322,29 @@ List<RouteBase> makeRoutes(Ref ref) => [
             child: RoomPage(
               conversation: state.extra as Conversation,
             ),
+          );
+        },
+      ),
+
+      GoRoute(
+        name: Routes.createChat.name,
+        path: Routes.createChat.route,
+        pageBuilder: (context, state) {
+          return SideSheetPage(
+            key: state.pageKey,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: Tween(
+                  begin: const Offset(1, 0),
+                  end: const Offset(0, 0),
+                ).animate(
+                  animation,
+                ),
+                child: child,
+              );
+            },
+            child: const CreateChatSheet(),
           );
         },
       ),

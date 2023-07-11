@@ -45,10 +45,8 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   @override
   void initState() {
     super.initState();
-    if (!Get.isRegistered<ChatRoomController>()) {
-      final client = ref.read(clientProvider)!;
-      roomController = Get.put(ChatRoomController(client: client));
-    }
+    final client = ref.read(clientProvider)!;
+    roomController = Get.put(ChatRoomController(client: client));
     roomController.setCurrentRoom(widget.conversation);
   }
 
