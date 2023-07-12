@@ -18,6 +18,7 @@ import 'package:acter/features/pins/dialogs/create_pin_sheet.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
+import 'package:acter/features/space/dialogs/invite_to_space_dialog.dart';
 import 'package:acter/features/spaces/dialogs/create_space_sheet.dart';
 import 'package:acter/features/news/pages/simple_post.dart';
 import 'package:acter/features/news/pages/news_page.dart';
@@ -310,6 +311,16 @@ List<RouteBase> makeRoutes(Ref ref) => [
             ),
           );
         },
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        name: Routes.spaceInvite.name,
+        path: Routes.spaceInvite.route,
+        pageBuilder: (context, state) => DialogPage(
+          builder: (BuildContext ctx) => InviteToSpaceDialog(
+            spaceId: state.pathParameters['spaceId']!,
+          ),
+        ),
       ),
 
       GoRoute(

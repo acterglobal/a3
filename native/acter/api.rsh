@@ -597,6 +597,9 @@ object Conversation {
     /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
 
+    /// the members invited to this room
+    fn invited_members() -> Future<Result<Vec<Member>>>;
+
     /// get the room member by user id
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
@@ -1182,8 +1185,14 @@ object Space {
     /// the members currently in the space
     fn active_members() -> Future<Result<Vec<Member>>>;
 
+    /// the members invited to this room
+    fn invited_members() -> Future<Result<Vec<Member>>>;
+
     /// the room id
     fn get_room_id() -> RoomId;
+
+    /// invite the new user to this space
+    fn invite_user(user_id: string) -> Future<Result<bool>>;
 
     /// the room id as str
     fn get_room_id_str() -> string;
@@ -1274,6 +1283,7 @@ enum MemberPermission {
     CanPostPin,
     CanBan,
     CanKick,
+    CanInvite,
     CanRedact,
     CanTriggerRoomNotification,
     CanSetName,
@@ -1472,6 +1482,9 @@ object Client {
 
     /// the users out of room
     fn suggested_users_to_invite(room_name: string) -> Future<Result<Vec<UserProfile>>>;
+
+    /// search the user directory
+    fn search_users(search_term: string) -> Future<Result<Vec<UserProfile>>>;
 
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
