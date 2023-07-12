@@ -394,20 +394,20 @@ pub struct CreateConversationSettings {
 
 // helper for built-in setters
 impl CreateConversationSettingsBuilder {
-    pub fn set_name(&mut self, name: String) {
-        self.name(name);
+    pub fn set_name(&mut self, value: String) {
+        self.name(value);
     }
 
-    pub fn set_alias(&mut self, alias: String) {
-        self.alias(alias);
+    pub fn set_alias(&mut self, value: String) {
+        self.alias(value);
     }
 
-    pub fn set_topic(&mut self, topic: String) {
-        self.topic(topic);
+    pub fn set_topic(&mut self, value: String) {
+        self.topic(value);
     }
 
-    pub fn set_invites(&mut self, user_ids: &mut Vec<String>) -> Result<()> {
-        let invites = user_ids
+    pub fn set_invites(&mut self, values: &mut Vec<String>) -> Result<()> {
+        let invites = values
             .into_iter()
             .filter_map(|x| UserId::parse(x).ok())
             .collect();
