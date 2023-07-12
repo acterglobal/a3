@@ -182,12 +182,12 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
     );
   }
 
-  void _showTeamDialog(BuildContext ctx) async {
+  Future<void> _showTeamDialog(BuildContext ctx) async {
     await showDialog(
       context: ctx,
-      builder: (ctx) {
+      builder: (BuildContext context) {
         return StatefulBuilder(
-          builder: (ctx, setState) {
+          builder: (BuildContext buildContext, setState) {
             return AlertDialog(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -200,15 +200,15 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
               contentPadding: const EdgeInsets.all(13),
               actions: <Widget>[
                 TextButton(
-                  onPressed: () => Navigator.pop(ctx),
+                  onPressed: () => Navigator.pop(buildContext),
                   child: const Text('Cancel'),
                 ),
                 TextButton(
-                  onPressed: (!disableBtn && teamInputController.text.isEmpty)
-                      ? null
-                      : () async {
-                          await handleSave(ctx);
-                        },
+                  onPressed: () async {
+                    if (disableBtn || teamInputController.text.isNotEmpty) {
+                      await handleSave(buildContext);
+                    }
+                  },
                   child: Text(
                     'Save',
                     style: TextStyle(
@@ -307,25 +307,28 @@ class _CreateBtnWidget extends StatelessWidget {
                 child: CircularProgressIndicator(),
               )
             : CustomButton(
-                onPressed: (controller.taskNameCount < 30 &&
-                        nameController.text.trim().isNotEmpty)
-                    ? () async {
-                        controller.isLoading.value = true;
-                        await controller
-                            .createToDoList(
-                              controller.selectedTeam!.id,
-                              nameController.text.trim(),
-                              descriptionController.text.trim(),
-                            )
-                            .then((res) => debugPrint('ToDo CREATED: $res'));
-                        controller.isLoading.value = false;
-                        Navigator.pop(context);
-                      }
-                    : null,
+                onPressed: () async {
+                  await handleClick(context);
+                },
                 title: 'Create',
               ),
       ),
     );
+  }
+
+  Future<void> handleClick(BuildContext context) async {
+    if (controller.taskNameCount < 30 &&
+        nameController.text.trim().isNotEmpty) {
+      controller.isLoading.value = true;
+      var eventId = await controller.createToDoList(
+        controller.selectedTeam!.id,
+        nameController.text.trim(),
+        descriptionController.text.trim(),
+      );
+      debugPrint('ToDo CREATED: $eventId');
+      controller.isLoading.value = false;
+      Navigator.pop(context);
+    }
   }
 }
 

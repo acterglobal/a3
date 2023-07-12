@@ -446,12 +446,8 @@ class ChatRoomController extends GetxController {
       UserProfile profile = activeMembers[i].getProfile();
       Map<String, dynamic> record = {};
       if (await profile.hasAvatar()) {
-        var userAvatar = await profile
-            .getThumbnail(62, 60)
-            .then((optionBuffer) => optionBuffer.data()!);
-        var userName = await profile
-            .getDisplayName()
-            .then((optionBuffer) => optionBuffer.text());
+        var userAvatar = (await profile.getThumbnail(62, 60)).data()!;
+        var userName = (await profile.getDisplayName()).text();
         userProfiles[userId] = ProfileData(userName, userAvatar);
         record['avatar'] = userProfiles[userId];
       }

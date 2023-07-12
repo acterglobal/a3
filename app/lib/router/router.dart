@@ -79,14 +79,17 @@ Future<String?> authGuardRedirect(
   );
 }
 
-final GlobalKey<NavigatorState> rootNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'root');
+final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>(
+  debugLabel: 'root',
+);
 
-final GlobalKey<NavigatorState> shellNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'shell');
+final GlobalKey<NavigatorState> shellNavKey = GlobalKey<NavigatorState>(
+  debugLabel: 'shell',
+);
 
-final GlobalKey<NavigatorState> spaceNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'space');
+final GlobalKey<NavigatorState> spaceNavKey = GlobalKey<NavigatorState>(
+  debugLabel: 'space',
+);
 
 List<RouteBase> makeRoutes(Ref ref) {
   return [
@@ -120,7 +123,7 @@ List<RouteBase> makeRoutes(Ref ref) {
       builder: (context, state) => const GalleryPage(),
     ),
     GoRoute(
-      parentNavigatorKey: rootNavigatorKey,
+      parentNavigatorKey: rootNavKey,
       name: Routes.bugReport.name,
       path: Routes.bugReport.route,
       pageBuilder: (context, state) => DialogPage(
@@ -130,7 +133,7 @@ List<RouteBase> makeRoutes(Ref ref) {
       ),
     ),
     GoRoute(
-      parentNavigatorKey: rootNavigatorKey,
+      parentNavigatorKey: rootNavKey,
       name: Routes.quickJump.name,
       path: Routes.quickJump.route,
       pageBuilder: (context, state) => DialogPage(
@@ -138,7 +141,7 @@ List<RouteBase> makeRoutes(Ref ref) {
       ),
     ),
     GoRoute(
-      parentNavigatorKey: rootNavigatorKey,
+      parentNavigatorKey: rootNavKey,
       name: Routes.actionAddTask.name,
       path: Routes.actionAddTask.route,
       pageBuilder: (context, state) {
@@ -161,7 +164,7 @@ List<RouteBase> makeRoutes(Ref ref) {
     ),
 
     GoRoute(
-      parentNavigatorKey: rootNavigatorKey,
+      parentNavigatorKey: rootNavKey,
       name: Routes.actionAddPin.name,
       path: Routes.actionAddPin.route,
       pageBuilder: (context, state) {
@@ -186,7 +189,7 @@ List<RouteBase> makeRoutes(Ref ref) {
     ),
 
     GoRoute(
-      parentNavigatorKey: rootNavigatorKey,
+      parentNavigatorKey: rootNavKey,
       name: Routes.createEvent.name,
       path: Routes.createEvent.route,
       pageBuilder: (context, state) {
@@ -211,7 +214,7 @@ List<RouteBase> makeRoutes(Ref ref) {
     ),
 
     GoRoute(
-      parentNavigatorKey: rootNavigatorKey,
+      parentNavigatorKey: rootNavKey,
       name: Routes.editCalendarEvent.name,
       path: Routes.editCalendarEvent.route,
       pageBuilder: (context, state) {
@@ -234,7 +237,7 @@ List<RouteBase> makeRoutes(Ref ref) {
     ),
 
     GoRoute(
-      parentNavigatorKey: rootNavigatorKey,
+      parentNavigatorKey: rootNavKey,
       name: Routes.createSpace.name,
       path: Routes.createSpace.route,
       pageBuilder: (context, state) {
@@ -259,7 +262,7 @@ List<RouteBase> makeRoutes(Ref ref) {
     ),
 
     GoRoute(
-      parentNavigatorKey: rootNavigatorKey,
+      parentNavigatorKey: rootNavKey,
       name: Routes.actionAddUpdate.name,
       path: Routes.actionAddUpdate.route,
       pageBuilder: (context, state) {
@@ -281,7 +284,7 @@ List<RouteBase> makeRoutes(Ref ref) {
       },
     ),
     GoRoute(
-      parentNavigatorKey: rootNavigatorKey,
+      parentNavigatorKey: rootNavKey,
       name: Routes.editSpace.name,
       path: Routes.editSpace.route,
       pageBuilder: (context, state) {
@@ -303,7 +306,7 @@ List<RouteBase> makeRoutes(Ref ref) {
       },
     ),
     GoRoute(
-      parentNavigatorKey: rootNavigatorKey,
+      parentNavigatorKey: rootNavKey,
       name: Routes.spaceInvite.name,
       path: Routes.spaceInvite.route,
       pageBuilder: (context, state) => DialogPage(
@@ -314,7 +317,7 @@ List<RouteBase> makeRoutes(Ref ref) {
     ),
 
     GoRoute(
-      parentNavigatorKey: rootNavigatorKey,
+      parentNavigatorKey: rootNavKey,
       name: Routes.chatroom.name,
       path: Routes.chatroom.route,
       redirect: authGuardRedirect,
@@ -327,7 +330,7 @@ List<RouteBase> makeRoutes(Ref ref) {
     ),
 
     GoRoute(
-      parentNavigatorKey: rootNavigatorKey,
+      parentNavigatorKey: rootNavKey,
       name: Routes.createChat.name,
       path: Routes.createChat.route,
       pageBuilder: (context, state) {
@@ -353,7 +356,7 @@ List<RouteBase> makeRoutes(Ref ref) {
 
     /// Application shell
     ShellRoute(
-      navigatorKey: shellNavigatorKey,
+      navigatorKey: shellNavKey,
       // FIXME: unfortunately ShellRoute doesn't support redirects yet,
       // thus we have to put it onto every route. Once that is fixed,
       // remove that param from the sub-routes and use only here instead
@@ -542,7 +545,7 @@ List<RouteBase> makeRoutes(Ref ref) {
 
         /// Space subshell
         ShellRoute(
-          navigatorKey: spaceNavigatorKey,
+          navigatorKey: spaceNavKey,
           pageBuilder: (context, state, child) {
             return NoTransitionPage(
               key: state.pageKey,

@@ -319,13 +319,12 @@ class _CreateBtnWidget extends StatelessWidget {
                           nameController.text.trim().isNotEmpty)
                       ? () async {
                           controller.isLoading.value = true;
-                          await controller
-                              .createToDoList(
-                                controller.selectedTeam!.id,
-                                nameController.text.trim(),
-                                descriptionController.text.trim(),
-                              )
-                              .then((res) => debugPrint('ToDo CREATED: $res'));
+                          var eventId = await controller.createToDoList(
+                            controller.selectedTeam!.id,
+                            nameController.text.trim(),
+                            descriptionController.text.trim(),
+                          );
+                          debugPrint('ToDo CREATED: $eventId');
                           controller.isLoading.value = false;
                           Navigator.pop(context);
                         }
