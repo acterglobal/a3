@@ -60,8 +60,7 @@ pub use common::{
     ReactionDesc, TextDesc, ThumbnailInfo, VideoDesc,
 };
 pub use convo::{
-    new_convo_settings_builder, Convo, CreateConvoSettings,
-    CreateConvoSettingsBuilder,
+    new_convo_settings_builder, Convo, CreateConvoSettings, CreateConvoSettingsBuilder,
 };
 pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};

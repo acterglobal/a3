@@ -442,10 +442,7 @@ pub fn new_convo_settings_builder() -> CreateConvoSettingsBuilder {
 }
 
 impl Client {
-    pub async fn create_convo(
-        &self,
-        settings: Box<CreateConvoSettings>,
-    ) -> Result<OwnedRoomId> {
+    pub async fn create_convo(&self, settings: Box<CreateConvoSettings>) -> Result<OwnedRoomId> {
         let client = self.core.client().clone();
 
         RUNTIME
@@ -536,10 +533,7 @@ impl Client {
     }
 
     pub fn convos_rx(&self) -> SignalStream<MutableSignalCloned<Vec<Convo>>> {
-        self.convo_controller
-            .convos
-            .signal_cloned()
-            .to_stream()
+        self.convo_controller.convos.signal_cloned().to_stream()
     }
 
     pub fn incoming_message_rx(&self) -> Option<Receiver<RoomMessage>> {
