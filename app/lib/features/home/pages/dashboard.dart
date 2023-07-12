@@ -152,7 +152,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                 ),
               ],
               title: isDesktop
-                  ? const Text('Acter Dashboard')
+                  ? const Text('My Dashboard')
                   : const Text('Overview'),
             ),
             ...children,
