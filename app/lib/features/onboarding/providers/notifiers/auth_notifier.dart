@@ -1,7 +1,7 @@
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:flutter/material.dart';
@@ -11,12 +11,10 @@ import 'package:go_router/go_router.dart';
 
 class AuthStateNotifier extends StateNotifier<bool> {
   final Ref ref;
+
   AuthStateNotifier(this.ref) : super(false);
 
-  Future<String?> login(
-    String username,
-    String password,
-  ) async {
+  Future<String?> login(String username, String password) async {
     final sdk = await ref.watch(sdkProvider.future);
     try {
       final client = await sdk.login(username, password);
@@ -32,9 +30,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     }
   }
 
-  Future<void> makeGuest(
-    BuildContext? context,
-  ) async {
+  Future<void> makeGuest(BuildContext? context) async {
     state = true;
     final sdk = await ref.watch(sdkProvider.future);
     try {
