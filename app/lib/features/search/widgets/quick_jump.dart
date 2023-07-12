@@ -141,10 +141,10 @@ class QuickJump extends ConsumerWidget {
                   ),
                   onPressed: () {
                     navigateTo(route: Routes.actionAddUpdate, push: true);
-                    debugPrint('News');
+                    debugPrint('Update');
                   },
                   icon: const Icon(Atlas.plus_circle_thin),
-                  label: const Text('News'),
+                  label: const Text('Update'),
                 )
               : null,
           isActive(LabsFeature.tasks)
