@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -9,14 +10,13 @@ import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 
 // interface data providers
 final titleProvider = StateProvider<String>((ref) => '');
@@ -290,14 +290,19 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     final sdk = await ref.watch(sdkProvider.future);
     final parentRoomId = ref.watch(parentSpaceProvider);
     var avatarUri = ref.read(avatarProvider);
-    var settings = sdk.newSpaceSettings(
-      spaceName,
-      description,
-      avatarUri.isNotEmpty ? avatarUri : null,
-      parentRoomId,
-    );
+    var config = sdk.newSpaceSettingsBuilder();
+    config.setName(spaceName);
+    if (description != null) {
+      config.setTopic(description);
+    }
+    if (avatarUri.isNotEmpty) {
+      config.setAvatarUri(avatarUri);
+    }
+    if (parentRoomId != null) {
+      config.setParent(parentRoomId);
+    }
     final client = ref.read(clientProvider)!;
-    final roomId = await client.createActerSpace(settings);
+    final roomId = await client.createActerSpace(config.build());
     if (parentRoomId != null) {
       final space = await ref.read(spaceProvider(parentRoomId).future);
       await space.addChildSpace(roomId.toString());

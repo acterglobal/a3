@@ -524,31 +524,8 @@ impl Deref for Space {
     }
 }
 
-// impl CreateSpaceSettingsBuilder {
-//     pub fn add_invite(&mut self, user_id: OwnedUserId) {
-//         self.invites.get_or_insert_with(Vec::new).push(user_id);
-//     }
-// }
-
-pub fn new_space_settings(
-    name: String,
-    topic: Option<String>,
-    avatar_uri: Option<String>,
-    parent: Option<String>,
-) -> Result<CreateSpaceSettings> {
-    let mut builder = CreateSpaceSettingsBuilder::default();
-    builder.name(name);
-    if let Some(topic) = topic {
-        builder.topic(topic);
-    }
-    if let Some(avatar_uri) = avatar_uri {
-        builder.avatar_uri(avatar_uri);
-    }
-    if let Some(parent) = parent {
-        let owned_parent = OwnedRoomId::try_from(parent)?;
-        builder.parent(owned_parent);
-    }
-    Ok(builder.build()?)
+pub fn new_space_settings_builder() -> CreateSpaceSettingsBuilder {
+    CreateSpaceSettingsBuilder::default()
 }
 
 // External API

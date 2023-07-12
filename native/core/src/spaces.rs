@@ -15,7 +15,7 @@ use matrix_sdk::{
         },
         room::RoomType,
         serde::Raw,
-        OwnedRoomId, OwnedUserId, UserId,
+        OwnedRoomId, OwnedUserId, RoomId, UserId,
     },
 };
 use serde::{Deserialize, Serialize};
@@ -77,35 +77,49 @@ pub struct CreateSpaceSettings {
     parent: Option<OwnedRoomId>,
 }
 
-impl CreateSpaceSettings {
-    pub fn visibility(&mut self, value: String) {
+// helper for built-in setters
+impl CreateSpaceSettingsBuilder {
+    pub fn set_name(&mut self, value: String) {
+        self.name(value);
+    }
+
+    pub fn set_visibility(&mut self, value: String) {
         match value.as_str() {
             "Public" => {
-                self.visibility = Visibility::Public;
+                self.visibility(Visibility::Public);
             }
             "Private" => {
-                self.visibility = Visibility::Private;
+                self.visibility(Visibility::Private);
             }
             _ => {}
         }
     }
 
-    pub fn add_invitee(&mut self, value: String) {
-        if let Ok(user_id) = UserId::parse(value) {
-            self.invites.push(user_id);
+    pub fn set_invites(&mut self, values: &mut Vec<String>) -> Result<()> {
+        let invites = values
+            .into_iter()
+            .filter_map(|x| UserId::parse(x).ok())
+            .collect();
+        self.invites = Some(invites);
+        Ok(())
+    }
+
+    pub fn set_alias(&mut self, value: String) {
+        self.alias(value);
+    }
+
+    pub fn set_topic(&mut self, value: String) {
+        self.topic(value);
+    }
+
+    pub fn set_avatar_uri(&mut self, value: String) {
+        self.avatar_uri(value);
+    }
+
+    pub fn set_parent(&mut self, value: String) {
+        if let Ok(parent) = RoomId::parse(value) {
+            self.parent(parent);
         }
-    }
-
-    pub fn alias(&mut self, value: String) {
-        self.alias = Some(value);
-    }
-
-    pub fn topic(&mut self, value: String) {
-        self.topic = Some(value);
-    }
-
-    pub fn avatar_uri(&mut self, value: String) {
-        self.avatar_uri = Some(value);
     }
 }
 

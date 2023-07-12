@@ -24,7 +24,7 @@ use matrix_sdk::{
             AnySyncTimelineEvent,
         },
         serde::Raw,
-        OwnedRoomId, OwnedUserId,
+        OwnedRoomId, OwnedUserId, UserId,
     },
     Client as SdkClient, RoomMemberships,
 };
@@ -389,10 +389,34 @@ pub struct CreateConversationSettings {
     alias: Option<String>,
 }
 
+// helper for built-in setters
+impl CreateConversationSettingsBuilder {
+    pub fn set_name(&mut self, name: String) {
+        self.name(name);
+    }
+
+    pub fn set_alias(&mut self, alias: String) {
+        self.alias(alias);
+    }
+
+    pub fn set_invites(&mut self, user_ids: &mut Vec<String>) -> Result<()> {
+        let invites = user_ids
+            .into_iter()
+            .filter_map(|x| UserId::parse(x).ok())
+            .collect();
+        self.invites = Some(invites);
+        Ok(())
+    }
+}
+
+pub fn new_convo_settings_builder() -> CreateConversationSettingsBuilder {
+    CreateConversationSettingsBuilder::default()
+}
+
 impl Client {
     pub async fn create_conversation(
         &self,
-        settings: CreateConversationSettings,
+        settings: Box<CreateConversationSettings>,
     ) -> Result<OwnedRoomId> {
         let client = self.core.client().clone();
         RUNTIME

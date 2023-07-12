@@ -1,18 +1,20 @@
 import 'dart:io';
 
+import 'package:acter/common/providers/sdk_provider.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 
 // interface data providers
 final titleProvider = StateProvider<String>((ref) => '');
@@ -49,9 +51,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
-              'Create a new group chat',
-            ),
+            const Text('Create a new group chat'),
             const SizedBox(height: 15),
             Row(
               children: <Widget>[
@@ -131,14 +131,15 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                   ),
                   trailing: _selectParentSpace
                       ? Consumer(
-                          builder: (context, ref, child) =>
-                              ref.watch(parentSpaceDetailsProvider).when(
-                                    data: (space) => space != null
-                                        ? SpaceChip(space: space)
-                                        : Text(currentParentSpace),
-                                    error: (e, s) => Text('error: $e'),
-                                    loading: () => const Text('loading'),
-                                  ),
+                          builder: (context, ref, child) {
+                            return ref.watch(parentSpaceDetailsProvider).when(
+                                  data: (space) => space != null
+                                      ? SpaceChip(space: space)
+                                      : Text(currentParentSpace),
+                                  error: (e, s) => Text('error: $e'),
+                                  loading: () => const Text('loading'),
+                                );
+                          },
                         )
                       : null,
                   onTap: () async {
@@ -179,12 +180,13 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
         ElevatedButton(
           onPressed: () async {
             if (_titleInput.isEmpty) {
-              customMsgSnackbar(
-                context,
-                'Please enter group name',
-              );
+              customMsgSnackbar(context, 'Please enter group name');
               return;
             }
+            final sdk = await ref.watch(sdkProvider.future);
+            var config = sdk.newConvoSettingsBuilder();
+            final client = ref.read(clientProvider)!;
+            final roomId = await client.createConversation(config.build());
           },
           child: const Text('Create Room'),
           style: ElevatedButton.styleFrom(

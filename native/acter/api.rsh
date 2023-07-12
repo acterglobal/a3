@@ -1316,22 +1316,12 @@ object Account {
 object SyncState {
     /// Get event handler of first synchronization on every launch
     fn first_synced_rx() -> Stream<bool>;
+
     /// When the sync stopped with an error, this will trigger
     fn sync_error_rx() -> Stream<string>;
 
     /// stop the sync loop
     fn cancel();
-}
-
-object CreateSpaceSettings {
-    /// set the alias of space
-    fn alias(value: string);
-
-    /// set the space's visibility to either Public or Private
-    fn visibility(value: string);
-
-    /// add the id of user that will be invited to this space
-    fn add_invitee(value: string);
 }
 
 object PublicSearchResultItem {
@@ -1363,7 +1353,53 @@ object PublicSearchResult {
     fn chunks() -> Vec<PublicSearchResultItem>;
 }
 
-fn new_space_settings(name: string, topic: Option<string>, avatar_uri: Option<string>, parent: Option<string>) -> Result<CreateSpaceSettings>;
+/// make convo settings builder
+fn new_convo_settings_builder() -> CreateConversationSettingsBuilder;
+
+object CreateConversationSettingsBuilder {
+    /// set the name of convo
+    fn set_name(value: string);
+
+    /// set the alias of space
+    fn set_alias(value: string);
+
+    /// set the list of user ids that will be invited to this space
+    fn set_invites(values: Vec<string>) -> Result<()>;
+
+    fn build() -> CreateConversationSettings;
+}
+
+object CreateConversationSettings {}
+
+/// make space settings builder
+fn new_space_settings_builder() -> CreateSpaceSettingsBuilder;
+
+object CreateSpaceSettingsBuilder {
+    /// set the name of convo
+    fn set_name(value: string);
+
+    /// set the space's visibility to either Public or Private
+    fn set_visibility(value: string);
+
+    /// set the list of user ids that will be invited to this space
+    fn set_invites(values: Vec<string>) -> Result<()>;
+
+    /// set the alias of space
+    fn set_alias(value: string);
+
+    /// set the topic of space
+    fn set_topic(value: string);
+
+    /// set the avatar uri of space
+    fn set_avatar_uri(value: string);
+
+    /// set the parent of space
+    fn set_parent(value: string);
+
+    fn build() -> CreateSpaceSettings;
+}
+
+object CreateSpaceSettings {}
 
 /// Main entry point for `acter`.
 object Client {
@@ -1457,6 +1493,9 @@ object Client {
 
     /// Return the message receiver
     fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
+
+    /// create convo
+    fn create_conversation(settings: CreateConversationSettings) -> Future<Result<RoomId>>;
 
     /// create default space
     fn create_acter_space(settings: CreateSpaceSettings) -> Future<Result<RoomId>>;
