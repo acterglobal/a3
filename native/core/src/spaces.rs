@@ -95,12 +95,15 @@ impl CreateSpaceSettingsBuilder {
         }
     }
 
-    pub fn set_invites(&mut self, values: &mut [String]) -> Result<()> {
-        let invites = values
-            .iter_mut()
-            .filter_map(|x| UserId::parse(x).ok())
-            .collect();
-        self.invites = Some(invites);
+    pub fn add_invitee(&mut self, value: String) -> Result<()> {
+        if let Ok(user_id) = UserId::parse(value) {
+            if let Some(mut invites) = self.invites.clone() {
+                invites.push(user_id);
+                self.invites = Some(invites);
+            } else {
+                self.invites = Some(vec![user_id]);
+            }
+        }
         Ok(())
     }
 

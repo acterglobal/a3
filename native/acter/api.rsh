@@ -1373,8 +1373,8 @@ object CreateConversationSettingsBuilder {
     /// set the alias of convo
     fn set_alias(value: string);
 
-    /// set the list of user ids that will be invited to this space
-    fn set_invites(values: Vec<string>) -> Result<()>;
+    /// append user id that will be invited to this space
+    fn add_invitee(value: string) -> Result<()>;
 
     /// set the topic of convo
     fn set_topic(value: string);
@@ -1394,8 +1394,8 @@ object CreateSpaceSettingsBuilder {
     /// set the space's visibility to either Public or Private
     fn set_visibility(value: string);
 
-    /// set the list of user ids that will be invited to this space
-    fn set_invites(values: Vec<string>) -> Result<()>;
+    /// append user id that will be invited to this space
+    fn add_invitee(value: string) -> Result<()>;
 
     /// set the alias of space
     fn set_alias(value: string);

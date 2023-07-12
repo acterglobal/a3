@@ -15527,16 +15527,20 @@ class Api {
     int,
     int,
   )>();
-  late final _createConversationSettingsBuilderSetInvitesPtr = _lookup<
+  late final _createConversationSettingsBuilderAddInviteePtr = _lookup<
       ffi.NativeFunction<
-          _CreateConversationSettingsBuilderSetInvitesReturn Function(
+          _CreateConversationSettingsBuilderAddInviteeReturn Function(
     ffi.Int64,
     ffi.Int64,
-  )>>("__CreateConversationSettingsBuilder_set_invites");
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateConversationSettingsBuilder_add_invitee");
 
-  late final _createConversationSettingsBuilderSetInvites =
-      _createConversationSettingsBuilderSetInvitesPtr.asFunction<
-          _CreateConversationSettingsBuilderSetInvitesReturn Function(
+  late final _createConversationSettingsBuilderAddInvitee =
+      _createConversationSettingsBuilderAddInviteePtr.asFunction<
+          _CreateConversationSettingsBuilderAddInviteeReturn Function(
+    int,
+    int,
     int,
     int,
   )>();
@@ -15602,16 +15606,20 @@ class Api {
     int,
     int,
   )>();
-  late final _createSpaceSettingsBuilderSetInvitesPtr = _lookup<
+  late final _createSpaceSettingsBuilderAddInviteePtr = _lookup<
       ffi.NativeFunction<
-          _CreateSpaceSettingsBuilderSetInvitesReturn Function(
+          _CreateSpaceSettingsBuilderAddInviteeReturn Function(
     ffi.Int64,
     ffi.Int64,
-  )>>("__CreateSpaceSettingsBuilder_set_invites");
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateSpaceSettingsBuilder_add_invitee");
 
-  late final _createSpaceSettingsBuilderSetInvites =
-      _createSpaceSettingsBuilderSetInvitesPtr.asFunction<
-          _CreateSpaceSettingsBuilderSetInvitesReturn Function(
+  late final _createSpaceSettingsBuilderAddInvitee =
+      _createSpaceSettingsBuilderAddInviteePtr.asFunction<
+          _CreateSpaceSettingsBuilderAddInviteeReturn Function(
+    int,
+    int,
     int,
     int,
   )>();
@@ -33422,33 +33430,44 @@ class CreateConversationSettingsBuilder {
     return;
   }
 
-  /// set the list of user ids that will be invited to this space
-  void setInvites(
-    FfiListFfiString values,
+  /// append user id that will be invited to this space
+  void addInvitee(
+    String value,
   ) {
-    final tmp1 = values;
+    final tmp1 = value;
     var tmp0 = 0;
     var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    final tmp3 = _api._createConversationSettingsBuilderSetInvites(
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._createConversationSettingsBuilderAddInvitee(
       tmp0,
       tmp2,
+      tmp3,
+      tmp4,
     );
-    final tmp5 = tmp3.arg0;
-    final tmp6 = tmp3.arg1;
-    final tmp7 = tmp3.arg2;
-    final tmp8 = tmp3.arg3;
-    if (tmp5 == 0) {
-      debugAllocation("handle error", tmp6, tmp7);
-      final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-      final tmp5_0 = utf8.decode(tmp6_0.asTypedList(tmp7));
-      if (tmp7 > 0) {
-        final ffi.Pointer<ffi.Void> tmp6_0;
-        tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-        _api.__deallocate(tmp6_0, tmp8, 1);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
       }
-      throw tmp5_0;
+      throw tmp7_0;
     }
     return;
   }
@@ -33572,33 +33591,44 @@ class CreateSpaceSettingsBuilder {
     return;
   }
 
-  /// set the list of user ids that will be invited to this space
-  void setInvites(
-    FfiListFfiString values,
+  /// append user id that will be invited to this space
+  void addInvitee(
+    String value,
   ) {
-    final tmp1 = values;
+    final tmp1 = value;
     var tmp0 = 0;
     var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    final tmp3 = _api._createSpaceSettingsBuilderSetInvites(
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._createSpaceSettingsBuilderAddInvitee(
       tmp0,
       tmp2,
+      tmp3,
+      tmp4,
     );
-    final tmp5 = tmp3.arg0;
-    final tmp6 = tmp3.arg1;
-    final tmp7 = tmp3.arg2;
-    final tmp8 = tmp3.arg3;
-    if (tmp5 == 0) {
-      debugAllocation("handle error", tmp6, tmp7);
-      final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-      final tmp5_0 = utf8.decode(tmp6_0.asTypedList(tmp7));
-      if (tmp7 > 0) {
-        final ffi.Pointer<ffi.Void> tmp6_0;
-        tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-        _api.__deallocate(tmp6_0, tmp8, 1);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
       }
-      throw tmp5_0;
+      throw tmp7_0;
     }
     return;
   }
@@ -38090,7 +38120,7 @@ class _PublicSearchResultTotalRoomCountEstimateReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _CreateConversationSettingsBuilderSetInvitesReturn extends ffi.Struct {
+class _CreateConversationSettingsBuilderAddInviteeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -38101,7 +38131,7 @@ class _CreateConversationSettingsBuilderSetInvitesReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _CreateSpaceSettingsBuilderSetInvitesReturn extends ffi.Struct {
+class _CreateSpaceSettingsBuilderAddInviteeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
