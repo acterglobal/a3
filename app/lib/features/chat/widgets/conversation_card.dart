@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
@@ -51,13 +52,27 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
           children: <Widget>[
             ListTile(
               onTap: () => handleTap(context),
-              leading: ActerAvatar(
-                mode: DisplayMode.GroupChat, // FIXME: checking for DM somehow?
-                uniqueId: roomId,
-                displayName: data.displayName ?? roomId,
-                avatar: data.getAvatarImage(),
-                size: 36,
-              ),
+              leading: data.hasAvatar()
+                  ? ActerAvatar(
+                      uniqueId: roomId,
+                      mode: DisplayMode.GroupChat,
+                      displayName: data.displayName ?? roomId,
+                      avatar: data.getAvatarImage(),
+                      size: 36,
+                    )
+                  : Container(
+                      height: 36,
+                      width: 36,
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                        borderRadius: BorderRadius.circular(6),
+                        shape: BoxShape.rectangle,
+                      ),
+                      child: SvgPicture.asset(
+                        'assets/icon/acter.svg',
+                      ),
+                    ),
               title: Text(
                 data.displayName ?? roomId,
                 style: Theme.of(context)
