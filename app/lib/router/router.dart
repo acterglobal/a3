@@ -17,6 +17,7 @@ import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/pins/dialogs/create_pin_sheet.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
+import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/spaces/dialogs/create_space_sheet.dart';
 import 'package:acter/features/news/pages/simple_post.dart';
 import 'package:acter/features/news/pages/news_page.dart';
@@ -602,6 +603,22 @@ List<RouteBase> makeRoutes(Ref ref) => [
                 },
               ),
               GoRoute(
+                name: Routes.spaceChats.name,
+                path: Routes.spaceChats.route,
+                redirect: authGuardRedirect,
+                pageBuilder: (context, state) {
+                  ref
+                      .read(selectedTabKeyProvider.notifier)
+                      .switchTo(const Key('chat'));
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: SpaceChatsPage(
+                      spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
                 name: Routes.space.name,
                 path: Routes.space.route,
                 redirect: authGuardRedirect,
@@ -643,6 +660,7 @@ List<RouteBase> makeRoutes(Ref ref) => [
               );
             },
           ),
+
           GoRoute(
             name: Routes.main.name,
             path: Routes.main.route,

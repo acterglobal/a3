@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 // import 'package:acter/features/chat/providers/notifiers/receipt_notifier.dart';
-import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/models/joined_room/joined_room.dart';
 // import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -14,8 +14,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 // import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
-
-import '../../../common/utils/routes.dart';
 
 class ConversationCard extends ConsumerStatefulWidget {
   final JoinedRoom room;

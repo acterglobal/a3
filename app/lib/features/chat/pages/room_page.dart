@@ -408,18 +408,26 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                   builder: (ChatRoomController controller) {
                     return Consumer(
                       builder: (context, ref, child) {
-                        final convoProfile = ref
-                            .watch(chatProfileDataProvider(widget.conversation))
-                            .requireValue;
-                        if (convoProfile.displayName == null) {
-                          return Text(
-                              AppLocalizations.of(context)!.loadingName);
-                        }
-                        return Text(
-                          convoProfile.displayName ??
-                              widget.conversation.getRoomIdStr(),
-                          overflow: TextOverflow.clip,
-                          style: Theme.of(context).textTheme.bodyLarge,
+                        final convoProfile = ref.watch(
+                          chatProfileDataProvider(widget.conversation),
+                        );
+                        return convoProfile.when(
+                          data: (profile) {
+                            if (profile.displayName == null) {
+                              return Text(
+                                AppLocalizations.of(context)!.loadingName,
+                              );
+                            }
+                            return Text(
+                              profile.displayName ??
+                                  widget.conversation.getRoomIdStr(),
+                              overflow: TextOverflow.clip,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            );
+                          },
+                          error: (error, stackTrace) =>
+                              Text('Error loading profile $error'),
+                          loading: () => const CircularProgressIndicator(),
                         );
                       },
                     );

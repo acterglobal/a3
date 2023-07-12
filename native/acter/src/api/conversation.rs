@@ -387,6 +387,9 @@ pub struct CreateConversationSettings {
 
     #[builder(setter(into, strip_option), default)]
     alias: Option<String>,
+
+    #[builder(setter(into, strip_option), default)]
+    topic: Option<String>,
 }
 
 // helper for built-in setters
@@ -397,6 +400,10 @@ impl CreateConversationSettingsBuilder {
 
     pub fn set_alias(&mut self, alias: String) {
         self.alias(alias);
+    }
+
+    pub fn set_topic(&mut self, topic: String) {
+        self.topic(topic);
     }
 
     pub fn set_invites(&mut self, user_ids: &mut Vec<String>) -> Result<()> {
@@ -430,6 +437,7 @@ impl Client {
                     room_alias_name: settings.alias,
                     name: settings.name,
                     visibility: Visibility::Private,
+                    topic: settings.topic,
                 });
                 let response = client.create_room(request).await?;
                 Ok(response.room_id().to_owned())
