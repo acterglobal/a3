@@ -15,11 +15,11 @@ use matrix_sdk::{
         },
         room::RoomType,
         serde::Raw,
-        OwnedRoomId, OwnedUserId, RoomId, UserId,
+        MxcUri, OwnedRoomId, OwnedUserId, RoomId, UserId,
     },
 };
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::{fs, path::PathBuf};
 use strum::Display;
 use tracing::error;
 
@@ -217,24 +217,36 @@ impl CoreClient {
             invites,
             alias,
             topic,
-            avatar_uri,
+            avatar_uri, // remote or local
             parent,
         } = settings;
         let mut initial_states = default_acter_space_states();
 
-        if let Some(uri) = avatar_uri {
-            let path = PathBuf::from(uri);
-            let guess = mime_guess::from_path(path.clone());
-            let content_type = guess.first().expect("MIME type should be given");
-            let buf = std::fs::read(path).expect("File should be read");
-            let upload_resp = client.media().upload(&content_type, buf).await?;
+        if let Some(avatar_uri) = avatar_uri {
+            let uri = Box::<MxcUri>::from(avatar_uri.as_str());
+            let avatar_content = if uri.is_valid() {
+                // remote uri
+                assign!(RoomAvatarEventContent::new(), {
+                    url: Some((*uri).to_owned()),
+                })
+            } else {
+                // local uri
+                let path = PathBuf::from(avatar_uri);
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().expect("MIME type should be given");
+                let buf = fs::read(path).expect("File should be read");
+                let upload_resp = client.media().upload(&content_type, buf).await?;
 
-            let info = assign!(ImageInfo::new(), {
-                blurhash: upload_resp.blurhash,
-                mimetype: Some(content_type.to_string()),
-            });
-            let room_avatar_content = assign!(RoomAvatarEventContent::new(), { url : Some(upload_resp.content_uri), info: Some(Box::new(info)) } );
-            initial_states.push(InitialRoomAvatarEvent::new(room_avatar_content).to_raw_any());
+                let info = assign!(ImageInfo::new(), {
+                    blurhash: upload_resp.blurhash,
+                    mimetype: Some(content_type.to_string()),
+                });
+                assign!(RoomAvatarEventContent::new(), {
+                    url: Some(upload_resp.content_uri),
+                    info: Some(Box::new(info)),
+                })
+            };
+            initial_states.push(InitialRoomAvatarEvent::new(avatar_content).to_raw_any());
         };
 
         if let Some(parent) = parent {

@@ -1379,6 +1379,10 @@ object CreateConversationSettingsBuilder {
     /// set the topic of convo
     fn set_topic(value: string);
 
+    /// set the avatar uri of convo
+    /// both remote and local are allowed
+    fn set_avatar_uri(value: string);
+
     fn build() -> CreateConversationSettings;
 }
 
@@ -1404,6 +1408,7 @@ object CreateSpaceSettingsBuilder {
     fn set_topic(value: string);
 
     /// set the avatar uri of space
+    /// both remote and local are allowed
     fn set_avatar_uri(value: string);
 
     /// set the parent of space

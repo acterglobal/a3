@@ -190,6 +190,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
         ElevatedButton(
           onPressed: () async {
             if (_titleInput.isEmpty) {
+              customMsgSnackbar(context, 'Please enter conversation name');
               return;
             }
             if (isSpaceRoom && currentParentSpace == null) {
@@ -203,41 +204,11 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
               ),
               isLoader: true,
             );
-            try {
-              final sdk = await ref.watch(sdkProvider.future);
-              var config = sdk.newConvoSettingsBuilder();
-              String _title = ref.read(_titleProvider);
-              if (_title.isNotEmpty) {
-                config.setName(_title);
-              }
-              String _description = _descriptionController.text.trim();
-              if (_description.isNotEmpty) {
-                config.setTopic(_description);
-              }
-              final client = ref.read(clientProvider)!;
-              final roomId = await client.createConversation(config.build());
-              final linkSpace = ref.watch(parentSpaceProvider);
-              // add room to child of space (if given)
-              if (linkSpace != null) {
-                final space = await ref.watch(spaceProvider(linkSpace).future);
-                await space.addChildSpace(roomId.toString());
-              }
-              final conversation = await client.conversation(roomId.toString());
-              final _avatarUri = ref.read(_avatarProvider);
-              if (_avatarUri.isNotEmpty) {
-                await conversation.uploadAvatar(_avatarUri);
-                debugPrint('Room: $roomId avatar set');
-              }
-              Navigator.of(context, rootNavigator: true).pop();
-              context.goNamed(
-                Routes.chatroom.name,
-                pathParameters: {'roomId': roomId.toString()},
-                extra: conversation,
-              );
-            } catch (e) {
-              context.pop();
-              customMsgSnackbar(context, 'Some error occured $e');
-            }
+            await _handleCreateConvo(
+              context,
+              _titleInput,
+              _descriptionController.text.trim(),
+            );
           },
           child: const Text('Create Room'),
           style: ElevatedButton.styleFrom(
@@ -270,6 +241,44 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
       ref.read(_avatarProvider.notifier).update((state) => filepath);
     } else {
       // user cancelled the picker
+    }
+  }
+
+  Future<void> _handleCreateConvo(
+    BuildContext context,
+    String convoName,
+    String description,
+  ) async {
+    try {
+      final sdk = await ref.watch(sdkProvider.future);
+      var config = sdk.newConvoSettingsBuilder();
+      config.setName(convoName);
+      if (description.isNotEmpty) {
+        config.setTopic(description);
+      }
+      var _avatarUri = ref.read(_avatarProvider);
+      if (_avatarUri.isNotEmpty) {
+        config.setAvatarUri(_avatarUri); // convo creation will upload it
+      }
+      final client = ref.read(clientProvider)!;
+      final roomId = await client.createConversation(config.build());
+      final linkSpace = ref.watch(parentSpaceProvider);
+      // add room to child of space (if given)
+      if (linkSpace != null) {
+        final space = await ref.watch(spaceProvider(linkSpace).future);
+        await space.addChildSpace(roomId.toString());
+      }
+      final conversation = await client.conversation(roomId.toString());
+
+      Navigator.of(context, rootNavigator: true).pop();
+      context.goNamed(
+        Routes.chatroom.name,
+        pathParameters: {'roomId': roomId.toString()},
+        extra: conversation,
+      );
+    } catch (e) {
+      context.pop();
+      customMsgSnackbar(context, 'Some error occured $e');
     }
   }
 }

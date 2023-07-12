@@ -16,6 +16,7 @@ use matrix_sdk::{
         events::{
             receipt::{ReceiptThread, ReceiptType},
             room::{
+                avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
                 encrypted::OriginalSyncRoomEncryptedEvent,
                 member::{MembershipState, OriginalSyncRoomMemberEvent},
                 message::OriginalSyncRoomMessageEvent,
@@ -24,11 +25,11 @@ use matrix_sdk::{
             AnySyncTimelineEvent,
         },
         serde::Raw,
-        OwnedRoomId, OwnedUserId, UserId,
+        MxcUri, OwnedRoomId, OwnedUserId, UserId,
     },
     Client as SdkClient, RoomMemberships,
 };
-use std::{ops::Deref, sync::Arc};
+use std::{fs, ops::Deref, path::PathBuf, sync::Arc};
 use tokio::sync::Mutex;
 use tracing::{error, info};
 
@@ -390,6 +391,9 @@ pub struct CreateConversationSettings {
 
     #[builder(setter(into, strip_option), default)]
     topic: Option<String>,
+
+    #[builder(setter(strip_option), default)]
+    avatar_uri: Option<String>,
 }
 
 // helper for built-in setters
@@ -417,6 +421,10 @@ impl CreateConversationSettingsBuilder {
         }
         Ok(())
     }
+
+    pub fn set_avatar_uri(&mut self, value: String) {
+        self.avatar_uri(value);
+    }
 }
 
 pub fn new_convo_settings_builder() -> CreateConversationSettingsBuilder {
@@ -429,9 +437,38 @@ impl Client {
         settings: Box<CreateConversationSettings>,
     ) -> Result<OwnedRoomId> {
         let client = self.core.client().clone();
+
         RUNTIME
             .spawn(async move {
-                let initial_states = default_acter_conversation_states();
+                let mut initial_states = default_acter_conversation_states();
+
+                if let Some(avatar_uri) = settings.avatar_uri {
+                    let uri = Box::<MxcUri>::from(avatar_uri.as_str());
+                    let avatar_content = if uri.is_valid() {
+                        // remote uri
+                        assign!(RoomAvatarEventContent::new(), {
+                            url: Some((*uri).to_owned()),
+                        })
+                    } else {
+                        // local uri
+                        let path = PathBuf::from(avatar_uri);
+                        let guess = mime_guess::from_path(path.clone());
+                        let content_type = guess.first().expect("MIME type should be given");
+                        let buf = fs::read(path).expect("File should be read");
+                        let upload_resp = client.media().upload(&content_type, buf).await?;
+
+                        let info = assign!(ImageInfo::new(), {
+                            blurhash: upload_resp.blurhash,
+                            mimetype: Some(content_type.to_string()),
+                        });
+                        assign!(RoomAvatarEventContent::new(), {
+                            url: Some(upload_resp.content_uri),
+                            info: Some(Box::new(info)),
+                        })
+                    };
+                    initial_states.push(InitialRoomAvatarEvent::new(avatar_content).to_raw_any());
+                }
+
                 let request = assign!(CreateRoomRequest::new(), {
                     creation_content: Some(Raw::new(&CreationContent::new())?),
                     initial_state: initial_states,

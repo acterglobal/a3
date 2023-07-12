@@ -222,22 +222,13 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         ElevatedButton(
           onPressed: () async {
             if (_titleInput.isEmpty) {
-              customMsgSnackbar(
-                context,
-                'Please enter space name',
-              );
+              customMsgSnackbar(context, 'Please enter space name');
               return;
             }
-            final roomId = await _handleCreateSpace(
+            await _handleCreateSpace(
               context,
               _titleInput,
               _descriptionController.text.trim(),
-            );
-            context.goNamed(
-              Routes.space.name,
-              pathParameters: {
-                'spaceId': roomId.toString(),
-              },
             );
           },
           child: const Text('Create Space'),
@@ -274,10 +265,10 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     }
   }
 
-  Future<RoomId> _handleCreateSpace(
+  Future<void> _handleCreateSpace(
     BuildContext context,
     String spaceName,
-    String? description,
+    String description,
   ) async {
     popUpDialog(
       context: context,
@@ -287,28 +278,34 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       ),
       isLoader: true,
     );
+
     final sdk = await ref.watch(sdkProvider.future);
     var config = sdk.newSpaceSettingsBuilder();
     config.setName(spaceName);
-    if (description != null) {
+    if (description.isNotEmpty) {
       config.setTopic(description);
     }
     var localUri = ref.read(avatarProvider);
-    final client = ref.read(clientProvider)!;
     if (localUri.isNotEmpty) {
-      var remoteUri = await client.uploadMedia(localUri);
-      config.setAvatarUri(remoteUri.toString());
+      config.setAvatarUri(localUri); // space creation will upload it
     }
     final parentRoomId = ref.watch(parentSpaceProvider);
     if (parentRoomId != null) {
       config.setParent(parentRoomId);
     }
+    final client = ref.read(clientProvider)!;
     final roomId = await client.createActerSpace(config.build());
     if (parentRoomId != null) {
       final space = await ref.read(spaceProvider(parentRoomId).future);
       await space.addChildSpace(roomId.toString());
     }
+
     Navigator.of(context, rootNavigator: true).pop();
-    return roomId;
+    context.goNamed(
+      Routes.space.name,
+      pathParameters: {
+        'spaceId': roomId.toString(),
+      },
+    );
   }
 }
