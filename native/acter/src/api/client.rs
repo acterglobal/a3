@@ -24,11 +24,14 @@ use ruma::{
     },
     device_id,
     events::room::MediaSource,
-    OwnedDeviceId, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomId, UserId,
+    OwnedDeviceId, OwnedMxcUri, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId,
+    RoomId, UserId,
 };
 use std::{
     collections::{BTreeMap, HashMap},
+    fs,
     ops::Deref,
+    path::PathBuf,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -694,6 +697,21 @@ impl Client {
     //         Ok(user_id.to_string())
     //     }).await?
     // }
+
+    pub async fn upload_media(&self, uri: String) -> Result<OwnedMxcUri> {
+        let client = self.core.client().clone();
+        let path = PathBuf::from(uri);
+
+        RUNTIME
+            .spawn(async move {
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().context("MIME type should be given")?;
+                let buf = fs::read(path).context("File should be read")?;
+                let response = client.media().upload(&content_type, buf).await?;
+                Ok(response.content_uri)
+            })
+            .await?
+    }
 
     pub fn user_id(&self) -> Result<OwnedUserId> {
         self.core

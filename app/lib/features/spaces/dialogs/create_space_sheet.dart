@@ -49,9 +49,9 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   Widget build(BuildContext context) {
     final _titleInput = ref.watch(titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
-    final _selectParentSpace = currentParentSpace != null;
+    final parentSelected = currentParentSpace != null;
     return SideSheet(
-      header: _selectParentSpace ? 'Create Subspace' : 'Create Space',
+      header: parentSelected ? 'Create Subspace' : 'Create Space',
       addActions: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -59,7 +59,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              _selectParentSpace
+              parentSelected
                   ? 'Create a new subspace'
                   : 'Create new space and start organizing.',
             ),
@@ -167,12 +167,12 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                 ),
                 ListTile(
                   title: Text(
-                    _selectParentSpace
+                    parentSelected
                         ? 'Parent space'
                         : 'No parent space selected',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  trailing: _selectParentSpace
+                  trailing: parentSelected
                       ? Consumer(
                           builder: (context, ref, child) =>
                               ref.watch(parentSpaceDetailsProvider).when(
@@ -288,20 +288,21 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       isLoader: true,
     );
     final sdk = await ref.watch(sdkProvider.future);
-    final parentRoomId = ref.watch(parentSpaceProvider);
-    var avatarUri = ref.read(avatarProvider);
     var config = sdk.newSpaceSettingsBuilder();
     config.setName(spaceName);
     if (description != null) {
       config.setTopic(description);
     }
-    if (avatarUri.isNotEmpty) {
-      config.setAvatarUri(avatarUri);
+    var localUri = ref.read(avatarProvider);
+    final client = ref.read(clientProvider)!;
+    if (localUri.isNotEmpty) {
+      var remoteUri = await client.uploadMedia(localUri);
+      config.setAvatarUri(remoteUri.toString());
     }
+    final parentRoomId = ref.watch(parentSpaceProvider);
     if (parentRoomId != null) {
       config.setParent(parentRoomId);
     }
-    final client = ref.read(clientProvider)!;
     final roomId = await client.createActerSpace(config.build());
     if (parentRoomId != null) {
       final space = await ref.read(spaceProvider(parentRoomId).future);

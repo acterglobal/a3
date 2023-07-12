@@ -1452,6 +1452,9 @@ object Client {
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Result<UserProfile>;
 
+    /// upload file and return remote url
+    fn upload_media(uri: string) -> Future<Result<MxcUri>>;
+
     /// The conversations the user is involved in
     fn conversations() -> Future<Result<Vec<Conversation>>>;
 
