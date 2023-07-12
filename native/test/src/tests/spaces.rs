@@ -1,4 +1,4 @@
-use acter::new_space_settings;
+use acter::new_space_settings_builder;
 use anyhow::{bail, Ok, Result};
 use tokio::sync::broadcast::error::TryRecvError;
 use tokio_retry::{
@@ -179,14 +179,11 @@ async fn create_subspace() -> Result<()> {
     let first = spaces.pop().unwrap();
 
     let all_listener = user.subscribe("SPACES".to_owned());
-    let settings = new_space_settings(
-        "subspace".to_owned(),
-        None,
-        None,
-        Some(first.room_id().to_string()),
-    )?;
+    let mut cfg = new_space_settings_builder();
+    cfg.set_name("subspace".to_owned());
+    cfg.set_parent(first.room_id().to_string());
 
-    let subspace_id = user.create_acter_space(Box::new(settings)).await?;
+    let subspace_id = user.create_acter_space(Box::new(cfg.build()?)).await?;
 
     let fetcher_client = user.clone();
     Retry::spawn(retry_strategy.clone(), move || {

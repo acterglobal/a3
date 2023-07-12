@@ -38,7 +38,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let settings = CreateConversationSettingsBuilder::default()
         .invites(vec![format!("@kyra:{homeserver_name}").try_into()?])
         .build()?;
-    let sisko_kyra_dm_id = sisko.create_conversation(settings).await?;
+    let sisko_kyra_dm_id = sisko.create_conversation(Box::new(settings)).await?;
 
     // initialize kyra's client
     let tmp_dir = TempDir::new()?;
