@@ -33318,7 +33318,7 @@ class CreateConversationSettingsBuilder {
     return;
   }
 
-  /// set the alias of room
+  /// set the alias of convo
   void setAlias(
     String value,
   ) {
@@ -33376,7 +33376,7 @@ class CreateConversationSettingsBuilder {
     return;
   }
 
-  /// set the topic of room
+  /// set the topic of convo
   void setTopic(
     String value,
   ) {
