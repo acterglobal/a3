@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/space/widgets/about_card.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
