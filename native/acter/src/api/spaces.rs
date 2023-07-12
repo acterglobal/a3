@@ -40,8 +40,6 @@ use std::{ops::Deref, thread::JoinHandle};
 use tokio::sync::broadcast::Receiver;
 use tracing::{error, trace};
 
-use crate::Conversation;
-
 use super::{
     client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
     room::{Member, Room},

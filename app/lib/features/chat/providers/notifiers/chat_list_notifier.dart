@@ -1,12 +1,13 @@
 import 'dart:async';
+
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
-import 'package:acter/features/chat/models/joined_room/joined_room.dart';
 import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
+import 'package:acter/features/chat/models/joined_room/joined_room.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Conversation, FfiListConversation, RoomId, TypingEvent;
+    show Convo, FfiListConvo, RoomId, TypingEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,14 +30,14 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
   void _init() async {
     final client = ref.read(clientProvider)!;
 
-    ///FIXME: This provider doesn't fetch latest messages in conversation for some reason.
-    // final conversations = await ref.read(chatsProvider.future);
-    /// Using conversation stream then...
-    StreamSubscription<FfiListConversation>? _convosSubscription;
-    _convosSubscription = client.conversationsRx().listen((event) async {
+    ///FIXME: This provider doesn't fetch latest messages in convo for some reason.
+    // final convos = await ref.read(chatsProvider.future);
+    /// Using convo stream then...
+    StreamSubscription<FfiListConvo>? _convosSubscription;
+    _convosSubscription = client.convosRx().listen((event) async {
       // FIXME: Maybe have CRUD possibility here instead of whole list reset
       ref.read(joinedRoomListProvider.notifier).reset();
-      for (Conversation convo in event.toList()) {
+      for (Convo convo in event.toList()) {
         final convoProfile = convo.getProfile();
         var dispName = await convoProfile.getDisplayName();
         RoomId r1 = convo.getRoomId();
@@ -44,7 +45,7 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
         String name = dispName.text() ?? r2;
         JoinedRoom newItem = JoinedRoom(
           id: r2,
-          conversation: convo,
+          convo: convo,
           latestMessage: convo.latestMessage(),
           displayName: name,
         );
@@ -56,7 +57,7 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
         ref.read(joinedRoomListProvider.notifier).addRoom(newItem);
       }
     });
-    // await call so the update occurs in list from conversations
+    // await call so the update occurs in list from convos
     await Future.delayed(const Duration(milliseconds: 200), () {});
 
     ref.read(joinedRoomListProvider.notifier).sortRooms();

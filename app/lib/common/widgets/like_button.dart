@@ -63,7 +63,9 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
           weight: 20.0,
         ),
       ],
-    ).animate(CurvedAnimation(parent: controller, curve: const Interval(0, 1)));
+    ).animate(
+      CurvedAnimation(parent: controller, curve: const Interval(0, 1)),
+    );
 
     smallHeartOpacity = TweenSequence(
       <TweenSequenceItem<double>>[

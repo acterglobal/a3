@@ -45,8 +45,8 @@ async fn load_pending_invitation() -> Result<()> {
     sleep(Duration::from_secs(3)).await;
 
     // sisko creates room and invites kyra
-    // let settings = acter::api::CreateConversationSettingsBuilder::default().build()?;
-    // let room_id = sisko.create_conversation(settings).await?;
+    // let settings = acter::api::CreateConvoSettingsBuilder::default().build()?;
+    // let room_id = sisko.create_convo(settings).await?;
     // println!("created room id: {}", room_id);
 
     // sleep(Duration::from_secs(3)).await;

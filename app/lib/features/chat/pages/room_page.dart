@@ -3,21 +3,21 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:atlas_icons/atlas_icons.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/chat_theme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/pages/profile_page.dart';
 import 'package:acter/features/chat/widgets/bubble_builder.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:acter/features/chat/widgets/empty_history_placeholder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/chat/widgets/type_indicator.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Conversation;
+import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Convo;
+import 'package:atlas_icons/atlas_icons.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -28,11 +28,11 @@ import 'package:go_router/go_router.dart';
 import 'package:string_validator/string_validator.dart';
 
 class RoomPage extends ConsumerStatefulWidget {
-  final Conversation conversation;
+  final Convo convo;
 
   const RoomPage({
     Key? key,
-    required this.conversation,
+    required this.convo,
   }) : super(key: key);
 
   @override
@@ -47,7 +47,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     super.initState();
     final client = ref.read(clientProvider)!;
     roomController = Get.put(ChatRoomController(client: client));
-    roomController.setCurrentRoom(widget.conversation);
+    roomController.setCurrentRoom(widget.convo);
   }
 
   @override
@@ -140,9 +140,8 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
         if (!controller.isEmojiContainerVisible) {
           return Consumer(
             builder: (context, ref, child) {
-              final convoProfile = ref
-                  .watch(chatProfileDataProvider(widget.conversation))
-                  .requireValue;
+              final convoProfile =
+                  ref.watch(chatProfileDataProvider(widget.convo)).requireValue;
               return CustomChatInput(
                 roomController: controller,
                 isChatScreen: true,
@@ -265,9 +264,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                 ),
               ),
               GestureDetector(
-                onTap: () {
-                  showMoreOptions();
-                },
+                onTap: showMoreOptions,
                 child: const Text(
                   'More',
                   style: TextStyle(color: Colors.white),
@@ -342,9 +339,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           child: const SizedBox(
             height: 60,
             width: 60,
-            child: CircularProgressIndicator(
-              strokeWidth: 6,
-            ),
+            child: CircularProgressIndicator(strokeWidth: 6),
           ),
         );
       }
@@ -409,7 +404,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                     return Consumer(
                       builder: (context, ref, child) {
                         final convoProfile = ref.watch(
-                          chatProfileDataProvider(widget.conversation),
+                          chatProfileDataProvider(widget.convo),
                         );
                         return convoProfile.when(
                           data: (profile) {
@@ -420,7 +415,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                             }
                             return Text(
                               profile.displayName ??
-                                  widget.conversation.getRoomIdStr(),
+                                  widget.convo.getRoomIdStr(),
                               overflow: TextOverflow.clip,
                               style: Theme.of(context).textTheme.bodyLarge,
                             );
@@ -459,7 +454,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
 
   Widget buildProfileAction() {
     final client = ref.watch(clientProvider);
-    String roomId = widget.conversation.getRoomId().toString();
+    String roomId = widget.convo.getRoomId().toString();
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -467,7 +462,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           MaterialPageRoute(
             builder: (context) => ProfilePage(
               client: client!,
-              room: widget.conversation,
+              room: widget.convo,
               isGroup: true,
               isAdmin: true,
             ),
@@ -476,8 +471,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
       },
       child: Consumer(
         builder: (context, ref, child) {
-          final convoProfile =
-              ref.watch(chatProfileDataProvider(widget.conversation));
+          final convoProfile = ref.watch(chatProfileDataProvider(widget.convo));
           return convoProfile.when(
             data: (data) {
               return Padding(
@@ -633,10 +627,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const ListTile(
-              leading: Icon(
-                Atlas.link,
-                color: Colors.white,
-              ),
+              leading: Icon(Atlas.link, color: Colors.white),
               title: Text(
                 'Copy',
                 style: TextStyle(color: Colors.white),
@@ -649,10 +640,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               color: Colors.grey,
             ),
             const ListTile(
-              leading: Icon(
-                Atlas.book,
-                color: Colors.white,
-              ),
+              leading: Icon(Atlas.book, color: Colors.white),
               title: Text(
                 'Bookmark',
                 style: TextStyle(color: Colors.white),

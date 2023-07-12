@@ -24,7 +24,7 @@ class ProfileData {
 }
 
 class ChatWithProfileData {
-  final Conversation chat;
+  final Convo chat;
   final ProfileData profile;
 
   const ChatWithProfileData(this.chat, this.profile);

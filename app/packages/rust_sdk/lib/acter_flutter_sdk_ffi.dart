@@ -1077,14 +1077,13 @@ class Api {
   }
 
   /// make convo settings builder
-  CreateConversationSettingsBuilder newConvoSettingsBuilder() {
+  CreateConvoSettingsBuilder newConvoSettingsBuilder() {
     final tmp0 = _newConvoSettingsBuilder();
     final tmp2 = tmp0;
     final ffi.Pointer<ffi.Void> tmp2_0 = ffi.Pointer.fromAddress(tmp2);
-    final tmp2_1 =
-        _Box(this, tmp2_0, "drop_box_CreateConversationSettingsBuilder");
+    final tmp2_1 = _Box(this, tmp2_0, "drop_box_CreateConvoSettingsBuilder");
     tmp2_1._finalizer = this._registerFinalizer(tmp2_1);
-    final tmp1 = CreateConversationSettingsBuilder._(this, tmp2_1);
+    final tmp1 = CreateConvoSettingsBuilder._(this, tmp2_1);
     return tmp1;
   }
 
@@ -2095,7 +2094,7 @@ class Api {
     return tmp7;
   }
 
-  MxcUri? __conversationUploadAvatarFuturePoll(
+  MxcUri? __convoUploadAvatarFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2109,7 +2108,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationUploadAvatarFuturePoll(
+    final tmp6 = _convoUploadAvatarFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2141,7 +2140,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationRemoveAvatarFuturePoll(
+  EventId? __convoRemoveAvatarFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2155,7 +2154,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationRemoveAvatarFuturePoll(
+    final tmp6 = _convoRemoveAvatarFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2187,7 +2186,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSetTopicFuturePoll(
+  EventId? __convoSetTopicFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2201,7 +2200,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSetTopicFuturePoll(
+    final tmp6 = _convoSetTopicFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2233,7 +2232,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListMember? __conversationActiveMembersFuturePoll(
+  FfiListMember? __convoActiveMembersFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2247,7 +2246,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationActiveMembersFuturePoll(
+    final tmp6 = _convoActiveMembersFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2280,7 +2279,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListMember? __conversationInvitedMembersFuturePoll(
+  FfiListMember? __convoInvitedMembersFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2294,7 +2293,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationInvitedMembersFuturePoll(
+    final tmp6 = _convoInvitedMembersFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2327,7 +2326,7 @@ class Api {
     return tmp7;
   }
 
-  Member? __conversationGetMemberFuturePoll(
+  Member? __convoGetMemberFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2341,7 +2340,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationGetMemberFuturePoll(
+    final tmp6 = _convoGetMemberFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2373,7 +2372,7 @@ class Api {
     return tmp7;
   }
 
-  TimelineStream? __conversationTimelineStreamFuturePoll(
+  TimelineStream? __convoTimelineStreamFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2387,7 +2386,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationTimelineStreamFuturePoll(
+    final tmp6 = _convoTimelineStreamFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2419,7 +2418,7 @@ class Api {
     return tmp7;
   }
 
-  Member? __conversationGetMyMembershipFuturePoll(
+  Member? __convoGetMyMembershipFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2433,7 +2432,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationGetMyMembershipFuturePoll(
+    final tmp6 = _convoGetMyMembershipFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2465,7 +2464,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __conversationTypingNoticeFuturePoll(
+  bool? __convoTypingNoticeFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2479,7 +2478,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationTypingNoticeFuturePoll(
+    final tmp6 = _convoTypingNoticeFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2508,7 +2507,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __conversationReadReceiptFuturePoll(
+  bool? __convoReadReceiptFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2522,7 +2521,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationReadReceiptFuturePoll(
+    final tmp6 = _convoReadReceiptFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2551,7 +2550,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSendPlainMessageFuturePoll(
+  EventId? __convoSendPlainMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2565,7 +2564,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendPlainMessageFuturePoll(
+    final tmp6 = _convoSendPlainMessageFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2597,7 +2596,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSendFormattedMessageFuturePoll(
+  EventId? __convoSendFormattedMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2611,7 +2610,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendFormattedMessageFuturePoll(
+    final tmp6 = _convoSendFormattedMessageFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2643,7 +2642,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSendReactionFuturePoll(
+  EventId? __convoSendReactionFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2657,7 +2656,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendReactionFuturePoll(
+    final tmp6 = _convoSendReactionFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2689,7 +2688,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSendImageMessageFuturePoll(
+  EventId? __convoSendImageMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2703,7 +2702,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendImageMessageFuturePoll(
+    final tmp6 = _convoSendImageMessageFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2735,7 +2734,7 @@ class Api {
     return tmp7;
   }
 
-  FfiBufferUint8? __conversationImageBinaryFuturePoll(
+  FfiBufferUint8? __convoImageBinaryFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2749,7 +2748,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationImageBinaryFuturePoll(
+    final tmp6 = _convoImageBinaryFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2782,7 +2781,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSendAudioMessageFuturePoll(
+  EventId? __convoSendAudioMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2796,7 +2795,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendAudioMessageFuturePoll(
+    final tmp6 = _convoSendAudioMessageFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2828,7 +2827,7 @@ class Api {
     return tmp7;
   }
 
-  FfiBufferUint8? __conversationAudioBinaryFuturePoll(
+  FfiBufferUint8? __convoAudioBinaryFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2842,7 +2841,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationAudioBinaryFuturePoll(
+    final tmp6 = _convoAudioBinaryFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2875,7 +2874,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSendVideoMessageFuturePoll(
+  EventId? __convoSendVideoMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2889,7 +2888,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendVideoMessageFuturePoll(
+    final tmp6 = _convoSendVideoMessageFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2921,7 +2920,7 @@ class Api {
     return tmp7;
   }
 
-  FfiBufferUint8? __conversationVideoBinaryFuturePoll(
+  FfiBufferUint8? __convoVideoBinaryFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2935,7 +2934,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationVideoBinaryFuturePoll(
+    final tmp6 = _convoVideoBinaryFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2968,7 +2967,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSendFileMessageFuturePoll(
+  EventId? __convoSendFileMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2982,7 +2981,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendFileMessageFuturePoll(
+    final tmp6 = _convoSendFileMessageFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3014,7 +3013,7 @@ class Api {
     return tmp7;
   }
 
-  FfiBufferUint8? __conversationFileBinaryFuturePoll(
+  FfiBufferUint8? __convoFileBinaryFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3028,7 +3027,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationFileBinaryFuturePoll(
+    final tmp6 = _convoFileBinaryFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3061,7 +3060,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __conversationInviteUserFuturePoll(
+  bool? __convoInviteUserFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3075,7 +3074,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationInviteUserFuturePoll(
+    final tmp6 = _convoInviteUserFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3104,7 +3103,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __conversationJoinFuturePoll(
+  bool? __convoJoinFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3118,7 +3117,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationJoinFuturePoll(
+    final tmp6 = _convoJoinFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3147,7 +3146,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __conversationLeaveFuturePoll(
+  bool? __convoLeaveFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3161,7 +3160,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationLeaveFuturePoll(
+    final tmp6 = _convoLeaveFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3190,7 +3189,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListMember? __conversationGetInviteesFuturePoll(
+  FfiListMember? __convoGetInviteesFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3204,7 +3203,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationGetInviteesFuturePoll(
+    final tmp6 = _convoGetInviteesFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3237,7 +3236,7 @@ class Api {
     return tmp7;
   }
 
-  String? __conversationDownloadMediaFuturePoll(
+  String? __convoDownloadMediaFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3251,7 +3250,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationDownloadMediaFuturePoll(
+    final tmp6 = _convoDownloadMediaFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3299,7 +3298,7 @@ class Api {
     return tmp7;
   }
 
-  String? __conversationMediaPathFuturePoll(
+  String? __convoMediaPathFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3313,7 +3312,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationMediaPathFuturePoll(
+    final tmp6 = _convoMediaPathFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3361,7 +3360,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListReceiptRecord? __conversationUserReceiptsFuturePoll(
+  FfiListReceiptRecord? __convoUserReceiptsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3375,7 +3374,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationUserReceiptsFuturePoll(
+    final tmp6 = _convoUserReceiptsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3408,7 +3407,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __conversationIsEncryptedFuturePoll(
+  bool? __convoIsEncryptedFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3422,7 +3421,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationIsEncryptedFuturePoll(
+    final tmp6 = _convoIsEncryptedFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3451,7 +3450,7 @@ class Api {
     return tmp7;
   }
 
-  RoomMessage? __conversationGetMessageFuturePoll(
+  RoomMessage? __convoGetMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3465,7 +3464,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationGetMessageFuturePoll(
+    final tmp6 = _convoGetMessageFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3497,7 +3496,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSendTextReplyFuturePoll(
+  EventId? __convoSendTextReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3511,7 +3510,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendTextReplyFuturePoll(
+    final tmp6 = _convoSendTextReplyFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3543,7 +3542,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSendImageReplyFuturePoll(
+  EventId? __convoSendImageReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3557,7 +3556,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendImageReplyFuturePoll(
+    final tmp6 = _convoSendImageReplyFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3589,7 +3588,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSendAudioReplyFuturePoll(
+  EventId? __convoSendAudioReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3603,7 +3602,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendAudioReplyFuturePoll(
+    final tmp6 = _convoSendAudioReplyFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3635,7 +3634,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSendVideoReplyFuturePoll(
+  EventId? __convoSendVideoReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3649,7 +3648,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendVideoReplyFuturePoll(
+    final tmp6 = _convoSendVideoReplyFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3681,7 +3680,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationSendFileReplyFuturePoll(
+  EventId? __convoSendFileReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3695,7 +3694,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendFileReplyFuturePoll(
+    final tmp6 = _convoSendFileReplyFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3727,7 +3726,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationRedactMessageFuturePoll(
+  EventId? __convoRedactMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3741,7 +3740,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationRedactMessageFuturePoll(
+    final tmp6 = _convoRedactMessageFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3773,7 +3772,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __conversationUpdatePowerLevelFuturePoll(
+  EventId? __convoUpdatePowerLevelFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3787,7 +3786,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationUpdatePowerLevelFuturePoll(
+    final tmp6 = _convoUpdatePowerLevelFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -6136,7 +6135,7 @@ class Api {
     return tmp7;
   }
 
-  Conversation? __clientConversationFuturePoll(
+  Convo? __clientConvoFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -6150,7 +6149,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientConversationFuturePoll(
+    final tmp6 = _clientConvoFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -6176,9 +6175,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Conversation");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Convo");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = Conversation._(this, tmp13_1);
+    final tmp7 = Convo._(this, tmp13_1);
     return tmp7;
   }
 
@@ -6228,7 +6227,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListConversation? __clientConversationsFuturePoll(
+  FfiListConvo? __clientConvosFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -6242,7 +6241,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientConversationsFuturePoll(
+    final tmp6 = _clientConvosFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -6268,9 +6267,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListConversation");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListConvo");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListConversation._(this, tmp13_1);
+    final tmp14 = FfiListConvo._(this, tmp13_1);
     final tmp7 = tmp14;
     return tmp7;
   }
@@ -6368,7 +6367,7 @@ class Api {
     return tmp7;
   }
 
-  Conversation? __clientJoinConversationFuturePoll(
+  Convo? __clientJoinConvoFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -6382,7 +6381,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientJoinConversationFuturePoll(
+    final tmp6 = _clientJoinConvoFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -6408,9 +6407,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Conversation");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Convo");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = Conversation._(this, tmp13_1);
+    final tmp7 = Convo._(this, tmp13_1);
     return tmp7;
   }
 
@@ -6733,7 +6732,7 @@ class Api {
     return tmp7;
   }
 
-  RoomId? __clientCreateConversationFuturePoll(
+  RoomId? __clientCreateConvoFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -6747,7 +6746,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientCreateConversationFuturePoll(
+    final tmp6 = _clientCreateConvoFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -8900,7 +8899,7 @@ class Api {
     return tmp9;
   }
 
-  FfiListConversation? __clientConversationsRxStreamPoll(
+  FfiListConvo? __clientConvosRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -8918,7 +8917,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _clientConversationsRxStreamPoll(
+    final tmp8 = _clientConvosRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -8930,9 +8929,9 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_FfiListConversation");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_FfiListConvo");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp12 = FfiListConversation._(this, tmp11_1);
+    final tmp12 = FfiListConvo._(this, tmp11_1);
     final tmp9 = tmp12;
     return tmp9;
   }
@@ -11650,367 +11649,238 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationGetProfilePtr = _lookup<
+  late final _convoGetProfilePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Conversation_get_profile");
+  )>>("__Convo_get_profile");
 
-  late final _conversationGetProfile = _conversationGetProfilePtr.asFunction<
+  late final _convoGetProfile = _convoGetProfilePtr.asFunction<
       int Function(
     int,
   )>();
-  late final _conversationUploadAvatarPtr = _lookup<
+  late final _convoUploadAvatarPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_upload_avatar");
+  )>>("__Convo_upload_avatar");
 
-  late final _conversationUploadAvatar =
-      _conversationUploadAvatarPtr.asFunction<
-          int Function(
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _conversationRemoveAvatarPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__Conversation_remove_avatar");
-
-  late final _conversationRemoveAvatar =
-      _conversationRemoveAvatarPtr.asFunction<
-          int Function(
-    int,
-  )>();
-  late final _conversationTopicPtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationTopicReturn Function(
-    ffi.Int64,
-  )>>("__Conversation_topic");
-
-  late final _conversationTopic = _conversationTopicPtr.asFunction<
-      _ConversationTopicReturn Function(
-    int,
-  )>();
-  late final _conversationSetTopicPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__Conversation_set_topic");
-
-  late final _conversationSetTopic = _conversationSetTopicPtr.asFunction<
+  late final _convoUploadAvatar = _convoUploadAvatarPtr.asFunction<
       int Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _conversationActiveMembersPtr = _lookup<
+  late final _convoRemoveAvatarPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Conversation_active_members");
+  )>>("__Convo_remove_avatar");
 
-  late final _conversationActiveMembers =
-      _conversationActiveMembersPtr.asFunction<
-          int Function(
+  late final _convoRemoveAvatar = _convoRemoveAvatarPtr.asFunction<
+      int Function(
     int,
   )>();
-  late final _conversationInvitedMembersPtr = _lookup<
+  late final _convoTopicPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _ConvoTopicReturn Function(
     ffi.Int64,
-  )>>("__Conversation_invited_members");
+  )>>("__Convo_topic");
 
-  late final _conversationInvitedMembers =
-      _conversationInvitedMembersPtr.asFunction<
-          int Function(
+  late final _convoTopic = _convoTopicPtr.asFunction<
+      _ConvoTopicReturn Function(
     int,
   )>();
-  late final _conversationGetMemberPtr = _lookup<
+  late final _convoSetTopicPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_get_member");
+  )>>("__Convo_set_topic");
 
-  late final _conversationGetMember = _conversationGetMemberPtr.asFunction<
+  late final _convoSetTopic = _convoSetTopicPtr.asFunction<
       int Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _conversationTimelineStreamPtr = _lookup<
+  late final _convoActiveMembersPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Conversation_timeline_stream");
+  )>>("__Convo_active_members");
 
-  late final _conversationTimelineStream =
-      _conversationTimelineStreamPtr.asFunction<
-          int Function(
-    int,
-  )>();
-  late final _conversationLatestMessagePtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationLatestMessageReturn Function(
-    ffi.Int64,
-  )>>("__Conversation_latest_message");
-
-  late final _conversationLatestMessage =
-      _conversationLatestMessagePtr.asFunction<
-          _ConversationLatestMessageReturn Function(
-    int,
-  )>();
-  late final _conversationGetMyMembershipPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__Conversation_get_my_membership");
-
-  late final _conversationGetMyMembership =
-      _conversationGetMyMembershipPtr.asFunction<
-          int Function(
-    int,
-  )>();
-  late final _conversationGetRoomIdPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__Conversation_get_room_id");
-
-  late final _conversationGetRoomId = _conversationGetRoomIdPtr.asFunction<
+  late final _convoActiveMembers = _convoActiveMembersPtr.asFunction<
       int Function(
     int,
   )>();
-  late final _conversationGetRoomIdStrPtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationGetRoomIdStrReturn Function(
-    ffi.Int64,
-  )>>("__Conversation_get_room_id_str");
-
-  late final _conversationGetRoomIdStr =
-      _conversationGetRoomIdStrPtr.asFunction<
-          _ConversationGetRoomIdStrReturn Function(
-    int,
-  )>();
-  late final _conversationTypingNoticePtr = _lookup<
+  late final _convoInvitedMembersPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-    ffi.Uint8,
-  )>>("__Conversation_typing_notice");
+  )>>("__Convo_invited_members");
 
-  late final _conversationTypingNotice =
-      _conversationTypingNoticePtr.asFunction<
-          int Function(
-    int,
+  late final _convoInvitedMembers = _convoInvitedMembersPtr.asFunction<
+      int Function(
     int,
   )>();
-  late final _conversationReadReceiptPtr = _lookup<
+  late final _convoGetMemberPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_read_receipt");
+  )>>("__Convo_get_member");
 
-  late final _conversationReadReceipt = _conversationReadReceiptPtr.asFunction<
+  late final _convoGetMember = _convoGetMemberPtr.asFunction<
       int Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _conversationSendPlainMessagePtr = _lookup<
+  late final _convoTimelineStreamPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__Conversation_send_plain_message");
+  )>>("__Convo_timeline_stream");
 
-  late final _conversationSendPlainMessage =
-      _conversationSendPlainMessagePtr.asFunction<
-          int Function(
+  late final _convoTimelineStream = _convoTimelineStreamPtr.asFunction<
+      int Function(
     int,
+  )>();
+  late final _convoLatestMessagePtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoLatestMessageReturn Function(
+    ffi.Int64,
+  )>>("__Convo_latest_message");
+
+  late final _convoLatestMessage = _convoLatestMessagePtr.asFunction<
+      _ConvoLatestMessageReturn Function(
     int,
+  )>();
+  late final _convoGetMyMembershipPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Convo_get_my_membership");
+
+  late final _convoGetMyMembership = _convoGetMyMembershipPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _convoGetRoomIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Convo_get_room_id");
+
+  late final _convoGetRoomId = _convoGetRoomIdPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _convoGetRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoGetRoomIdStrReturn Function(
+    ffi.Int64,
+  )>>("__Convo_get_room_id_str");
+
+  late final _convoGetRoomIdStr = _convoGetRoomIdStrPtr.asFunction<
+      _ConvoGetRoomIdStrReturn Function(
+    int,
+  )>();
+  late final _convoTypingNoticePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Uint8,
+  )>>("__Convo_typing_notice");
+
+  late final _convoTypingNotice = _convoTypingNoticePtr.asFunction<
+      int Function(
     int,
     int,
   )>();
-  late final _conversationSendFormattedMessagePtr = _lookup<
+  late final _convoReadReceiptPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_send_formatted_message");
+  )>>("__Convo_read_receipt");
 
-  late final _conversationSendFormattedMessage =
-      _conversationSendFormattedMessagePtr.asFunction<
-          int Function(
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _conversationSendReactionPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__Conversation_send_reaction");
-
-  late final _conversationSendReaction =
-      _conversationSendReactionPtr.asFunction<
-          int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _conversationSendImageMessagePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__Conversation_send_image_message");
-
-  late final _conversationSendImageMessage =
-      _conversationSendImageMessagePtr.asFunction<
-          int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _conversationImageBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__Conversation_image_binary");
-
-  late final _conversationImageBinary = _conversationImageBinaryPtr.asFunction<
+  late final _convoReadReceipt = _convoReadReceiptPtr.asFunction<
       int Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _conversationSendAudioMessagePtr = _lookup<
+  late final _convoSendPlainMessagePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Uint32,
-  )>>("__Conversation_send_audio_message");
+  )>>("__Convo_send_plain_message");
 
-  late final _conversationSendAudioMessage =
-      _conversationSendAudioMessagePtr.asFunction<
-          int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _conversationAudioBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__Conversation_audio_binary");
-
-  late final _conversationAudioBinary = _conversationAudioBinaryPtr.asFunction<
+  late final _convoSendPlainMessage = _convoSendPlainMessagePtr.asFunction<
       int Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _conversationSendVideoMessagePtr = _lookup<
+  late final _convoSendFormattedMessagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Convo_send_formatted_message");
+
+  late final _convoSendFormattedMessage =
+      _convoSendFormattedMessagePtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _convoSendReactionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Convo_send_reaction");
+
+  late final _convoSendReaction = _convoSendReactionPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _convoSendImageMessagePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -12030,18 +11900,13 @@ class Api {
     ffi.Uint8,
     ffi.Uint32,
     ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_send_video_message");
+  )>>("__Convo_send_image_message");
 
-  late final _conversationSendVideoMessage =
-      _conversationSendVideoMessagePtr.asFunction<
-          int Function(
-    int,
-    int,
+  late final _convoSendImageMessage = _convoSendImageMessagePtr.asFunction<
+      int Function(
     int,
     int,
     int,
@@ -12063,23 +11928,23 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationVideoBinaryPtr = _lookup<
+  late final _convoImageBinaryPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_video_binary");
+  )>>("__Convo_image_binary");
 
-  late final _conversationVideoBinary = _conversationVideoBinaryPtr.asFunction<
+  late final _convoImageBinary = _convoImageBinaryPtr.asFunction<
       int Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _conversationSendFileMessagePtr = _lookup<
+  late final _convoSendAudioMessagePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -12092,12 +11957,17 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
+    ffi.Uint8,
     ffi.Uint32,
-  )>>("__Conversation_send_file_message");
+    ffi.Uint8,
+    ffi.Uint32,
+  )>>("__Convo_send_audio_message");
 
-  late final _conversationSendFileMessage =
-      _conversationSendFileMessagePtr.asFunction<
-          int Function(
+  late final _convoSendAudioMessage = _convoSendAudioMessagePtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
     int,
     int,
     int,
@@ -12110,93 +11980,112 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationFileBinaryPtr = _lookup<
+  late final _convoAudioBinaryPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_file_binary");
+  )>>("__Convo_audio_binary");
 
-  late final _conversationFileBinary = _conversationFileBinaryPtr.asFunction<
+  late final _convoAudioBinary = _convoAudioBinaryPtr.asFunction<
       int Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _conversationRoomTypePtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationRoomTypeReturn Function(
-    ffi.Int64,
-  )>>("__Conversation_room_type");
-
-  late final _conversationRoomType = _conversationRoomTypePtr.asFunction<
-      _ConversationRoomTypeReturn Function(
-    int,
-  )>();
-  late final _conversationInviteUserPtr = _lookup<
+  late final _convoSendVideoMessagePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_invite_user");
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Convo_send_video_message");
 
-  late final _conversationInviteUser = _conversationInviteUserPtr.asFunction<
+  late final _convoSendVideoMessage = _convoSendVideoMessagePtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _convoVideoBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Convo_video_binary");
+
+  late final _convoVideoBinary = _convoVideoBinaryPtr.asFunction<
       int Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _conversationJoinPtr = _lookup<
+  late final _convoSendFileMessagePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Conversation_join");
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint32,
+  )>>("__Convo_send_file_message");
 
-  late final _conversationJoin = _conversationJoinPtr.asFunction<
+  late final _convoSendFileMessage = _convoSendFileMessagePtr.asFunction<
       int Function(
     int,
-  )>();
-  late final _conversationLeavePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__Conversation_leave");
-
-  late final _conversationLeave = _conversationLeavePtr.asFunction<
-      int Function(
     int,
-  )>();
-  late final _conversationGetInviteesPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__Conversation_get_invitees");
-
-  late final _conversationGetInvitees = _conversationGetInviteesPtr.asFunction<
-      int Function(
     int,
-  )>();
-  late final _conversationDownloadMediaPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__Conversation_download_media");
-
-  late final _conversationDownloadMedia =
-      _conversationDownloadMediaPtr.asFunction<
-          int Function(
+    int,
     int,
     int,
     int,
@@ -12205,60 +12094,153 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationMediaPathPtr = _lookup<
+  late final _convoFileBinaryPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_media_path");
+  )>>("__Convo_file_binary");
 
-  late final _conversationMediaPath = _conversationMediaPathPtr.asFunction<
+  late final _convoFileBinary = _convoFileBinaryPtr.asFunction<
       int Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _conversationUserReceiptsPtr = _lookup<
+  late final _convoRoomTypePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _ConvoRoomTypeReturn Function(
     ffi.Int64,
-  )>>("__Conversation_user_receipts");
+  )>>("__Convo_room_type");
 
-  late final _conversationUserReceipts =
-      _conversationUserReceiptsPtr.asFunction<
-          int Function(
+  late final _convoRoomType = _convoRoomTypePtr.asFunction<
+      _ConvoRoomTypeReturn Function(
     int,
   )>();
-  late final _conversationIsEncryptedPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__Conversation_is_encrypted");
-
-  late final _conversationIsEncrypted = _conversationIsEncryptedPtr.asFunction<
-      int Function(
-    int,
-  )>();
-  late final _conversationGetMessagePtr = _lookup<
+  late final _convoInviteUserPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_get_message");
+  )>>("__Convo_invite_user");
 
-  late final _conversationGetMessage = _conversationGetMessagePtr.asFunction<
+  late final _convoInviteUser = _convoInviteUserPtr.asFunction<
       int Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _conversationSendTextReplyPtr = _lookup<
+  late final _convoJoinPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Convo_join");
+
+  late final _convoJoin = _convoJoinPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _convoLeavePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Convo_leave");
+
+  late final _convoLeave = _convoLeavePtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _convoGetInviteesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Convo_get_invitees");
+
+  late final _convoGetInvitees = _convoGetInviteesPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _convoDownloadMediaPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Convo_download_media");
+
+  late final _convoDownloadMedia = _convoDownloadMediaPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _convoMediaPathPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Convo_media_path");
+
+  late final _convoMediaPath = _convoMediaPathPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _convoUserReceiptsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Convo_user_receipts");
+
+  late final _convoUserReceipts = _convoUserReceiptsPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _convoIsEncryptedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Convo_is_encrypted");
+
+  late final _convoIsEncrypted = _convoIsEncryptedPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _convoGetMessagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Convo_get_message");
+
+  late final _convoGetMessage = _convoGetMessagePtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _convoSendTextReplyPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -12272,11 +12254,10 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_send_text_reply");
+  )>>("__Convo_send_text_reply");
 
-  late final _conversationSendTextReply =
-      _conversationSendTextReplyPtr.asFunction<
-          int Function(
+  late final _convoSendTextReply = _convoSendTextReplyPtr.asFunction<
+      int Function(
     int,
     int,
     int,
@@ -12289,7 +12270,7 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationSendImageReplyPtr = _lookup<
+  late final _convoSendImageReplyPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -12315,129 +12296,10 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_send_image_reply");
+  )>>("__Convo_send_image_reply");
 
-  late final _conversationSendImageReply =
-      _conversationSendImageReplyPtr.asFunction<
-          int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _conversationSendAudioReplyPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__Conversation_send_audio_reply");
-
-  late final _conversationSendAudioReply =
-      _conversationSendAudioReplyPtr.asFunction<
-          int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _conversationSendVideoReplyPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Uint32,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__Conversation_send_video_reply");
-
-  late final _conversationSendVideoReply =
-      _conversationSendVideoReplyPtr.asFunction<
-          int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
+  late final _convoSendImageReply = _convoSendImageReplyPtr.asFunction<
+      int Function(
     int,
     int,
     int,
@@ -12462,7 +12324,123 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationSendFileReplyPtr = _lookup<
+  late final _convoSendAudioReplyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Convo_send_audio_reply");
+
+  late final _convoSendAudioReply = _convoSendAudioReplyPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _convoSendVideoReplyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Uint32,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Convo_send_video_reply");
+
+  late final _convoSendVideoReply = _convoSendVideoReplyPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _convoSendFileReplyPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -12484,11 +12462,10 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_send_file_reply");
+  )>>("__Convo_send_file_reply");
 
-  late final _conversationSendFileReply =
-      _conversationSendFileReplyPtr.asFunction<
-          int Function(
+  late final _convoSendFileReply = _convoSendFileReplyPtr.asFunction<
+      int Function(
     int,
     int,
     int,
@@ -12509,7 +12486,7 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationRedactMessagePtr = _lookup<
+  late final _convoRedactMessagePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -12524,11 +12501,10 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_redact_message");
+  )>>("__Convo_redact_message");
 
-  late final _conversationRedactMessage =
-      _conversationRedactMessagePtr.asFunction<
-          int Function(
+  late final _convoRedactMessage = _convoRedactMessagePtr.asFunction<
+      int Function(
     int,
     int,
     int,
@@ -12542,7 +12518,7 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationUpdatePowerLevelPtr = _lookup<
+  late final _convoUpdatePowerLevelPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -12550,11 +12526,10 @@ class Api {
     ffi.Uint64,
     ffi.Uint64,
     ffi.Int32,
-  )>>("__Conversation_update_power_level");
+  )>>("__Convo_update_power_level");
 
-  late final _conversationUpdatePowerLevel =
-      _conversationUpdatePowerLevelPtr.asFunction<
-          int Function(
+  late final _convoUpdatePowerLevel = _convoUpdatePowerLevelPtr.asFunction<
+      int Function(
     int,
     int,
     int,
@@ -15493,116 +15468,116 @@ class Api {
           int Function(
     int,
   )>();
-  late final _createConversationSettingsBuilderSetNamePtr = _lookup<
+  late final _createConvoSettingsBuilderSetNamePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__CreateConversationSettingsBuilder_set_name");
+  )>>("__CreateConvoSettingsBuilder_set_name");
 
-  late final _createConversationSettingsBuilderSetName =
-      _createConversationSettingsBuilderSetNamePtr.asFunction<
+  late final _createConvoSettingsBuilderSetName =
+      _createConvoSettingsBuilderSetNamePtr.asFunction<
           void Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _createConversationSettingsBuilderSetAliasPtr = _lookup<
+  late final _createConvoSettingsBuilderSetAliasPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__CreateConversationSettingsBuilder_set_alias");
+  )>>("__CreateConvoSettingsBuilder_set_alias");
 
-  late final _createConversationSettingsBuilderSetAlias =
-      _createConversationSettingsBuilderSetAliasPtr.asFunction<
+  late final _createConvoSettingsBuilderSetAlias =
+      _createConvoSettingsBuilderSetAliasPtr.asFunction<
           void Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _createConversationSettingsBuilderAddInviteePtr = _lookup<
+  late final _createConvoSettingsBuilderAddInviteePtr = _lookup<
       ffi.NativeFunction<
-          _CreateConversationSettingsBuilderAddInviteeReturn Function(
+          _CreateConvoSettingsBuilderAddInviteeReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__CreateConversationSettingsBuilder_add_invitee");
+  )>>("__CreateConvoSettingsBuilder_add_invitee");
 
-  late final _createConversationSettingsBuilderAddInvitee =
-      _createConversationSettingsBuilderAddInviteePtr.asFunction<
-          _CreateConversationSettingsBuilderAddInviteeReturn Function(
+  late final _createConvoSettingsBuilderAddInvitee =
+      _createConvoSettingsBuilderAddInviteePtr.asFunction<
+          _CreateConvoSettingsBuilderAddInviteeReturn Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _createConversationSettingsBuilderSetTopicPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__CreateConversationSettingsBuilder_set_topic");
-
-  late final _createConversationSettingsBuilderSetTopic =
-      _createConversationSettingsBuilderSetTopicPtr.asFunction<
-          void Function(
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _createConversationSettingsBuilderSetAvatarUriPtr = _lookup<
+  late final _createConvoSettingsBuilderSetTopicPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__CreateConversationSettingsBuilder_set_avatar_uri");
+  )>>("__CreateConvoSettingsBuilder_set_topic");
 
-  late final _createConversationSettingsBuilderSetAvatarUri =
-      _createConversationSettingsBuilderSetAvatarUriPtr.asFunction<
+  late final _createConvoSettingsBuilderSetTopic =
+      _createConvoSettingsBuilderSetTopicPtr.asFunction<
           void Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _createConversationSettingsBuilderSetParentPtr = _lookup<
+  late final _createConvoSettingsBuilderSetAvatarUriPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__CreateConversationSettingsBuilder_set_parent");
+  )>>("__CreateConvoSettingsBuilder_set_avatar_uri");
 
-  late final _createConversationSettingsBuilderSetParent =
-      _createConversationSettingsBuilderSetParentPtr.asFunction<
+  late final _createConvoSettingsBuilderSetAvatarUri =
+      _createConvoSettingsBuilderSetAvatarUriPtr.asFunction<
           void Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _createConversationSettingsBuilderBuildPtr = _lookup<
+  late final _createConvoSettingsBuilderSetParentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateConvoSettingsBuilder_set_parent");
+
+  late final _createConvoSettingsBuilderSetParent =
+      _createConvoSettingsBuilderSetParentPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createConvoSettingsBuilderBuildPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__CreateConversationSettingsBuilder_build");
+  )>>("__CreateConvoSettingsBuilder_build");
 
-  late final _createConversationSettingsBuilderBuild =
-      _createConversationSettingsBuilderBuildPtr.asFunction<
+  late final _createConvoSettingsBuilderBuild =
+      _createConvoSettingsBuilderBuildPtr.asFunction<
           int Function(
     int,
   )>();
@@ -15826,16 +15801,16 @@ class Api {
       _ClientUserIdReturn Function(
     int,
   )>();
-  late final _clientConversationPtr = _lookup<
+  late final _clientConvoPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Client_conversation");
+  )>>("__Client_convo");
 
-  late final _clientConversation = _clientConversationPtr.asFunction<
+  late final _clientConvo = _clientConvoPtr.asFunction<
       int Function(
     int,
     int,
@@ -15868,23 +15843,23 @@ class Api {
     int,
     int,
   )>();
-  late final _clientConversationsPtr = _lookup<
+  late final _clientConvosPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Client_conversations");
+  )>>("__Client_convos");
 
-  late final _clientConversations = _clientConversationsPtr.asFunction<
+  late final _clientConvos = _clientConvosPtr.asFunction<
       int Function(
     int,
   )>();
-  late final _clientConversationsRxPtr = _lookup<
+  late final _clientConvosRxPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Client_conversations_rx");
+  )>>("__Client_convos_rx");
 
-  late final _clientConversationsRx = _clientConversationsRxPtr.asFunction<
+  late final _clientConvosRx = _clientConvosRxPtr.asFunction<
       int Function(
     int,
   )>();
@@ -15922,7 +15897,7 @@ class Api {
     int,
     int,
   )>();
-  late final _clientJoinConversationPtr = _lookup<
+  late final _clientJoinConvoPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -15933,9 +15908,9 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Client_join_conversation");
+  )>>("__Client_join_convo");
 
-  late final _clientJoinConversation = _clientJoinConversationPtr.asFunction<
+  late final _clientJoinConvo = _clientJoinConvoPtr.asFunction<
       int Function(
     int,
     int,
@@ -16137,16 +16112,15 @@ class Api {
       _ClientIncomingMessageRxReturn Function(
     int,
   )>();
-  late final _clientCreateConversationPtr = _lookup<
+  late final _clientCreateConvoPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_create_conversation");
+  )>>("__Client_create_convo");
 
-  late final _clientCreateConversation =
-      _clientCreateConversationPtr.asFunction<
-          int Function(
+  late final _clientCreateConvo = _clientCreateConvoPtr.asFunction<
+      int Function(
     int,
     int,
   )>();
@@ -17331,557 +17305,554 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationUploadAvatarFuturePollPtr = _lookup<
+  late final _convoUploadAvatarFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationUploadAvatarFuturePollReturn Function(
+          _ConvoUploadAvatarFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_upload_avatar_future_poll");
+  )>>("__Convo_upload_avatar_future_poll");
 
-  late final _conversationUploadAvatarFuturePoll =
-      _conversationUploadAvatarFuturePollPtr.asFunction<
-          _ConversationUploadAvatarFuturePollReturn Function(
+  late final _convoUploadAvatarFuturePoll =
+      _convoUploadAvatarFuturePollPtr.asFunction<
+          _ConvoUploadAvatarFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationRemoveAvatarFuturePollPtr = _lookup<
+  late final _convoRemoveAvatarFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationRemoveAvatarFuturePollReturn Function(
+          _ConvoRemoveAvatarFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_remove_avatar_future_poll");
+  )>>("__Convo_remove_avatar_future_poll");
 
-  late final _conversationRemoveAvatarFuturePoll =
-      _conversationRemoveAvatarFuturePollPtr.asFunction<
-          _ConversationRemoveAvatarFuturePollReturn Function(
+  late final _convoRemoveAvatarFuturePoll =
+      _convoRemoveAvatarFuturePollPtr.asFunction<
+          _ConvoRemoveAvatarFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSetTopicFuturePollPtr = _lookup<
+  late final _convoSetTopicFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSetTopicFuturePollReturn Function(
+          _ConvoSetTopicFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_set_topic_future_poll");
+  )>>("__Convo_set_topic_future_poll");
 
-  late final _conversationSetTopicFuturePoll =
-      _conversationSetTopicFuturePollPtr.asFunction<
-          _ConversationSetTopicFuturePollReturn Function(
+  late final _convoSetTopicFuturePoll = _convoSetTopicFuturePollPtr.asFunction<
+      _ConvoSetTopicFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationActiveMembersFuturePollPtr = _lookup<
+  late final _convoActiveMembersFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationActiveMembersFuturePollReturn Function(
+          _ConvoActiveMembersFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_active_members_future_poll");
+  )>>("__Convo_active_members_future_poll");
 
-  late final _conversationActiveMembersFuturePoll =
-      _conversationActiveMembersFuturePollPtr.asFunction<
-          _ConversationActiveMembersFuturePollReturn Function(
+  late final _convoActiveMembersFuturePoll =
+      _convoActiveMembersFuturePollPtr.asFunction<
+          _ConvoActiveMembersFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationInvitedMembersFuturePollPtr = _lookup<
+  late final _convoInvitedMembersFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationInvitedMembersFuturePollReturn Function(
+          _ConvoInvitedMembersFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_invited_members_future_poll");
+  )>>("__Convo_invited_members_future_poll");
 
-  late final _conversationInvitedMembersFuturePoll =
-      _conversationInvitedMembersFuturePollPtr.asFunction<
-          _ConversationInvitedMembersFuturePollReturn Function(
+  late final _convoInvitedMembersFuturePoll =
+      _convoInvitedMembersFuturePollPtr.asFunction<
+          _ConvoInvitedMembersFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationGetMemberFuturePollPtr = _lookup<
+  late final _convoGetMemberFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationGetMemberFuturePollReturn Function(
+          _ConvoGetMemberFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_get_member_future_poll");
+  )>>("__Convo_get_member_future_poll");
 
-  late final _conversationGetMemberFuturePoll =
-      _conversationGetMemberFuturePollPtr.asFunction<
-          _ConversationGetMemberFuturePollReturn Function(
+  late final _convoGetMemberFuturePoll =
+      _convoGetMemberFuturePollPtr.asFunction<
+          _ConvoGetMemberFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationTimelineStreamFuturePollPtr = _lookup<
+  late final _convoTimelineStreamFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationTimelineStreamFuturePollReturn Function(
+          _ConvoTimelineStreamFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_timeline_stream_future_poll");
+  )>>("__Convo_timeline_stream_future_poll");
 
-  late final _conversationTimelineStreamFuturePoll =
-      _conversationTimelineStreamFuturePollPtr.asFunction<
-          _ConversationTimelineStreamFuturePollReturn Function(
+  late final _convoTimelineStreamFuturePoll =
+      _convoTimelineStreamFuturePollPtr.asFunction<
+          _ConvoTimelineStreamFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationGetMyMembershipFuturePollPtr = _lookup<
+  late final _convoGetMyMembershipFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationGetMyMembershipFuturePollReturn Function(
+          _ConvoGetMyMembershipFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_get_my_membership_future_poll");
+  )>>("__Convo_get_my_membership_future_poll");
 
-  late final _conversationGetMyMembershipFuturePoll =
-      _conversationGetMyMembershipFuturePollPtr.asFunction<
-          _ConversationGetMyMembershipFuturePollReturn Function(
+  late final _convoGetMyMembershipFuturePoll =
+      _convoGetMyMembershipFuturePollPtr.asFunction<
+          _ConvoGetMyMembershipFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationTypingNoticeFuturePollPtr = _lookup<
+  late final _convoTypingNoticeFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationTypingNoticeFuturePollReturn Function(
+          _ConvoTypingNoticeFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_typing_notice_future_poll");
+  )>>("__Convo_typing_notice_future_poll");
 
-  late final _conversationTypingNoticeFuturePoll =
-      _conversationTypingNoticeFuturePollPtr.asFunction<
-          _ConversationTypingNoticeFuturePollReturn Function(
+  late final _convoTypingNoticeFuturePoll =
+      _convoTypingNoticeFuturePollPtr.asFunction<
+          _ConvoTypingNoticeFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationReadReceiptFuturePollPtr = _lookup<
+  late final _convoReadReceiptFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationReadReceiptFuturePollReturn Function(
+          _ConvoReadReceiptFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_read_receipt_future_poll");
+  )>>("__Convo_read_receipt_future_poll");
 
-  late final _conversationReadReceiptFuturePoll =
-      _conversationReadReceiptFuturePollPtr.asFunction<
-          _ConversationReadReceiptFuturePollReturn Function(
+  late final _convoReadReceiptFuturePoll =
+      _convoReadReceiptFuturePollPtr.asFunction<
+          _ConvoReadReceiptFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendPlainMessageFuturePollPtr = _lookup<
+  late final _convoSendPlainMessageFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendPlainMessageFuturePollReturn Function(
+          _ConvoSendPlainMessageFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_plain_message_future_poll");
+  )>>("__Convo_send_plain_message_future_poll");
 
-  late final _conversationSendPlainMessageFuturePoll =
-      _conversationSendPlainMessageFuturePollPtr.asFunction<
-          _ConversationSendPlainMessageFuturePollReturn Function(
+  late final _convoSendPlainMessageFuturePoll =
+      _convoSendPlainMessageFuturePollPtr.asFunction<
+          _ConvoSendPlainMessageFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendFormattedMessageFuturePollPtr = _lookup<
+  late final _convoSendFormattedMessageFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendFormattedMessageFuturePollReturn Function(
+          _ConvoSendFormattedMessageFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_formatted_message_future_poll");
+  )>>("__Convo_send_formatted_message_future_poll");
 
-  late final _conversationSendFormattedMessageFuturePoll =
-      _conversationSendFormattedMessageFuturePollPtr.asFunction<
-          _ConversationSendFormattedMessageFuturePollReturn Function(
+  late final _convoSendFormattedMessageFuturePoll =
+      _convoSendFormattedMessageFuturePollPtr.asFunction<
+          _ConvoSendFormattedMessageFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendReactionFuturePollPtr = _lookup<
+  late final _convoSendReactionFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendReactionFuturePollReturn Function(
+          _ConvoSendReactionFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_reaction_future_poll");
+  )>>("__Convo_send_reaction_future_poll");
 
-  late final _conversationSendReactionFuturePoll =
-      _conversationSendReactionFuturePollPtr.asFunction<
-          _ConversationSendReactionFuturePollReturn Function(
+  late final _convoSendReactionFuturePoll =
+      _convoSendReactionFuturePollPtr.asFunction<
+          _ConvoSendReactionFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendImageMessageFuturePollPtr = _lookup<
+  late final _convoSendImageMessageFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendImageMessageFuturePollReturn Function(
+          _ConvoSendImageMessageFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_image_message_future_poll");
+  )>>("__Convo_send_image_message_future_poll");
 
-  late final _conversationSendImageMessageFuturePoll =
-      _conversationSendImageMessageFuturePollPtr.asFunction<
-          _ConversationSendImageMessageFuturePollReturn Function(
+  late final _convoSendImageMessageFuturePoll =
+      _convoSendImageMessageFuturePollPtr.asFunction<
+          _ConvoSendImageMessageFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationImageBinaryFuturePollPtr = _lookup<
+  late final _convoImageBinaryFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationImageBinaryFuturePollReturn Function(
+          _ConvoImageBinaryFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_image_binary_future_poll");
+  )>>("__Convo_image_binary_future_poll");
 
-  late final _conversationImageBinaryFuturePoll =
-      _conversationImageBinaryFuturePollPtr.asFunction<
-          _ConversationImageBinaryFuturePollReturn Function(
+  late final _convoImageBinaryFuturePoll =
+      _convoImageBinaryFuturePollPtr.asFunction<
+          _ConvoImageBinaryFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendAudioMessageFuturePollPtr = _lookup<
+  late final _convoSendAudioMessageFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendAudioMessageFuturePollReturn Function(
+          _ConvoSendAudioMessageFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_audio_message_future_poll");
+  )>>("__Convo_send_audio_message_future_poll");
 
-  late final _conversationSendAudioMessageFuturePoll =
-      _conversationSendAudioMessageFuturePollPtr.asFunction<
-          _ConversationSendAudioMessageFuturePollReturn Function(
+  late final _convoSendAudioMessageFuturePoll =
+      _convoSendAudioMessageFuturePollPtr.asFunction<
+          _ConvoSendAudioMessageFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationAudioBinaryFuturePollPtr = _lookup<
+  late final _convoAudioBinaryFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationAudioBinaryFuturePollReturn Function(
+          _ConvoAudioBinaryFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_audio_binary_future_poll");
+  )>>("__Convo_audio_binary_future_poll");
 
-  late final _conversationAudioBinaryFuturePoll =
-      _conversationAudioBinaryFuturePollPtr.asFunction<
-          _ConversationAudioBinaryFuturePollReturn Function(
+  late final _convoAudioBinaryFuturePoll =
+      _convoAudioBinaryFuturePollPtr.asFunction<
+          _ConvoAudioBinaryFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendVideoMessageFuturePollPtr = _lookup<
+  late final _convoSendVideoMessageFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendVideoMessageFuturePollReturn Function(
+          _ConvoSendVideoMessageFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_video_message_future_poll");
+  )>>("__Convo_send_video_message_future_poll");
 
-  late final _conversationSendVideoMessageFuturePoll =
-      _conversationSendVideoMessageFuturePollPtr.asFunction<
-          _ConversationSendVideoMessageFuturePollReturn Function(
+  late final _convoSendVideoMessageFuturePoll =
+      _convoSendVideoMessageFuturePollPtr.asFunction<
+          _ConvoSendVideoMessageFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationVideoBinaryFuturePollPtr = _lookup<
+  late final _convoVideoBinaryFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationVideoBinaryFuturePollReturn Function(
+          _ConvoVideoBinaryFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_video_binary_future_poll");
+  )>>("__Convo_video_binary_future_poll");
 
-  late final _conversationVideoBinaryFuturePoll =
-      _conversationVideoBinaryFuturePollPtr.asFunction<
-          _ConversationVideoBinaryFuturePollReturn Function(
+  late final _convoVideoBinaryFuturePoll =
+      _convoVideoBinaryFuturePollPtr.asFunction<
+          _ConvoVideoBinaryFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendFileMessageFuturePollPtr = _lookup<
+  late final _convoSendFileMessageFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendFileMessageFuturePollReturn Function(
+          _ConvoSendFileMessageFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_file_message_future_poll");
+  )>>("__Convo_send_file_message_future_poll");
 
-  late final _conversationSendFileMessageFuturePoll =
-      _conversationSendFileMessageFuturePollPtr.asFunction<
-          _ConversationSendFileMessageFuturePollReturn Function(
+  late final _convoSendFileMessageFuturePoll =
+      _convoSendFileMessageFuturePollPtr.asFunction<
+          _ConvoSendFileMessageFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationFileBinaryFuturePollPtr = _lookup<
+  late final _convoFileBinaryFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationFileBinaryFuturePollReturn Function(
+          _ConvoFileBinaryFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_file_binary_future_poll");
+  )>>("__Convo_file_binary_future_poll");
 
-  late final _conversationFileBinaryFuturePoll =
-      _conversationFileBinaryFuturePollPtr.asFunction<
-          _ConversationFileBinaryFuturePollReturn Function(
+  late final _convoFileBinaryFuturePoll =
+      _convoFileBinaryFuturePollPtr.asFunction<
+          _ConvoFileBinaryFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationInviteUserFuturePollPtr = _lookup<
+  late final _convoInviteUserFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationInviteUserFuturePollReturn Function(
+          _ConvoInviteUserFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_invite_user_future_poll");
+  )>>("__Convo_invite_user_future_poll");
 
-  late final _conversationInviteUserFuturePoll =
-      _conversationInviteUserFuturePollPtr.asFunction<
-          _ConversationInviteUserFuturePollReturn Function(
+  late final _convoInviteUserFuturePoll =
+      _convoInviteUserFuturePollPtr.asFunction<
+          _ConvoInviteUserFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationJoinFuturePollPtr = _lookup<
+  late final _convoJoinFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationJoinFuturePollReturn Function(
+          _ConvoJoinFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_join_future_poll");
+  )>>("__Convo_join_future_poll");
 
-  late final _conversationJoinFuturePoll =
-      _conversationJoinFuturePollPtr.asFunction<
-          _ConversationJoinFuturePollReturn Function(
+  late final _convoJoinFuturePoll = _convoJoinFuturePollPtr.asFunction<
+      _ConvoJoinFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationLeaveFuturePollPtr = _lookup<
+  late final _convoLeaveFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationLeaveFuturePollReturn Function(
+          _ConvoLeaveFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_leave_future_poll");
+  )>>("__Convo_leave_future_poll");
 
-  late final _conversationLeaveFuturePoll =
-      _conversationLeaveFuturePollPtr.asFunction<
-          _ConversationLeaveFuturePollReturn Function(
+  late final _convoLeaveFuturePoll = _convoLeaveFuturePollPtr.asFunction<
+      _ConvoLeaveFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationGetInviteesFuturePollPtr = _lookup<
+  late final _convoGetInviteesFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationGetInviteesFuturePollReturn Function(
+          _ConvoGetInviteesFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_get_invitees_future_poll");
+  )>>("__Convo_get_invitees_future_poll");
 
-  late final _conversationGetInviteesFuturePoll =
-      _conversationGetInviteesFuturePollPtr.asFunction<
-          _ConversationGetInviteesFuturePollReturn Function(
+  late final _convoGetInviteesFuturePoll =
+      _convoGetInviteesFuturePollPtr.asFunction<
+          _ConvoGetInviteesFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationDownloadMediaFuturePollPtr = _lookup<
+  late final _convoDownloadMediaFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationDownloadMediaFuturePollReturn Function(
+          _ConvoDownloadMediaFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_download_media_future_poll");
+  )>>("__Convo_download_media_future_poll");
 
-  late final _conversationDownloadMediaFuturePoll =
-      _conversationDownloadMediaFuturePollPtr.asFunction<
-          _ConversationDownloadMediaFuturePollReturn Function(
+  late final _convoDownloadMediaFuturePoll =
+      _convoDownloadMediaFuturePollPtr.asFunction<
+          _ConvoDownloadMediaFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationMediaPathFuturePollPtr = _lookup<
+  late final _convoMediaPathFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationMediaPathFuturePollReturn Function(
+          _ConvoMediaPathFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_media_path_future_poll");
+  )>>("__Convo_media_path_future_poll");
 
-  late final _conversationMediaPathFuturePoll =
-      _conversationMediaPathFuturePollPtr.asFunction<
-          _ConversationMediaPathFuturePollReturn Function(
+  late final _convoMediaPathFuturePoll =
+      _convoMediaPathFuturePollPtr.asFunction<
+          _ConvoMediaPathFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationUserReceiptsFuturePollPtr = _lookup<
+  late final _convoUserReceiptsFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationUserReceiptsFuturePollReturn Function(
+          _ConvoUserReceiptsFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_user_receipts_future_poll");
+  )>>("__Convo_user_receipts_future_poll");
 
-  late final _conversationUserReceiptsFuturePoll =
-      _conversationUserReceiptsFuturePollPtr.asFunction<
-          _ConversationUserReceiptsFuturePollReturn Function(
+  late final _convoUserReceiptsFuturePoll =
+      _convoUserReceiptsFuturePollPtr.asFunction<
+          _ConvoUserReceiptsFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationIsEncryptedFuturePollPtr = _lookup<
+  late final _convoIsEncryptedFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationIsEncryptedFuturePollReturn Function(
+          _ConvoIsEncryptedFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_is_encrypted_future_poll");
+  )>>("__Convo_is_encrypted_future_poll");
 
-  late final _conversationIsEncryptedFuturePoll =
-      _conversationIsEncryptedFuturePollPtr.asFunction<
-          _ConversationIsEncryptedFuturePollReturn Function(
+  late final _convoIsEncryptedFuturePoll =
+      _convoIsEncryptedFuturePollPtr.asFunction<
+          _ConvoIsEncryptedFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationGetMessageFuturePollPtr = _lookup<
+  late final _convoGetMessageFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationGetMessageFuturePollReturn Function(
+          _ConvoGetMessageFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_get_message_future_poll");
+  )>>("__Convo_get_message_future_poll");
 
-  late final _conversationGetMessageFuturePoll =
-      _conversationGetMessageFuturePollPtr.asFunction<
-          _ConversationGetMessageFuturePollReturn Function(
+  late final _convoGetMessageFuturePoll =
+      _convoGetMessageFuturePollPtr.asFunction<
+          _ConvoGetMessageFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendTextReplyFuturePollPtr = _lookup<
+  late final _convoSendTextReplyFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendTextReplyFuturePollReturn Function(
+          _ConvoSendTextReplyFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_text_reply_future_poll");
+  )>>("__Convo_send_text_reply_future_poll");
 
-  late final _conversationSendTextReplyFuturePoll =
-      _conversationSendTextReplyFuturePollPtr.asFunction<
-          _ConversationSendTextReplyFuturePollReturn Function(
+  late final _convoSendTextReplyFuturePoll =
+      _convoSendTextReplyFuturePollPtr.asFunction<
+          _ConvoSendTextReplyFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendImageReplyFuturePollPtr = _lookup<
+  late final _convoSendImageReplyFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendImageReplyFuturePollReturn Function(
+          _ConvoSendImageReplyFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_image_reply_future_poll");
+  )>>("__Convo_send_image_reply_future_poll");
 
-  late final _conversationSendImageReplyFuturePoll =
-      _conversationSendImageReplyFuturePollPtr.asFunction<
-          _ConversationSendImageReplyFuturePollReturn Function(
+  late final _convoSendImageReplyFuturePoll =
+      _convoSendImageReplyFuturePollPtr.asFunction<
+          _ConvoSendImageReplyFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendAudioReplyFuturePollPtr = _lookup<
+  late final _convoSendAudioReplyFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendAudioReplyFuturePollReturn Function(
+          _ConvoSendAudioReplyFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_audio_reply_future_poll");
+  )>>("__Convo_send_audio_reply_future_poll");
 
-  late final _conversationSendAudioReplyFuturePoll =
-      _conversationSendAudioReplyFuturePollPtr.asFunction<
-          _ConversationSendAudioReplyFuturePollReturn Function(
+  late final _convoSendAudioReplyFuturePoll =
+      _convoSendAudioReplyFuturePollPtr.asFunction<
+          _ConvoSendAudioReplyFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendVideoReplyFuturePollPtr = _lookup<
+  late final _convoSendVideoReplyFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendVideoReplyFuturePollReturn Function(
+          _ConvoSendVideoReplyFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_video_reply_future_poll");
+  )>>("__Convo_send_video_reply_future_poll");
 
-  late final _conversationSendVideoReplyFuturePoll =
-      _conversationSendVideoReplyFuturePollPtr.asFunction<
-          _ConversationSendVideoReplyFuturePollReturn Function(
+  late final _convoSendVideoReplyFuturePoll =
+      _convoSendVideoReplyFuturePollPtr.asFunction<
+          _ConvoSendVideoReplyFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendFileReplyFuturePollPtr = _lookup<
+  late final _convoSendFileReplyFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendFileReplyFuturePollReturn Function(
+          _ConvoSendFileReplyFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_file_reply_future_poll");
+  )>>("__Convo_send_file_reply_future_poll");
 
-  late final _conversationSendFileReplyFuturePoll =
-      _conversationSendFileReplyFuturePollPtr.asFunction<
-          _ConversationSendFileReplyFuturePollReturn Function(
+  late final _convoSendFileReplyFuturePoll =
+      _convoSendFileReplyFuturePollPtr.asFunction<
+          _ConvoSendFileReplyFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationRedactMessageFuturePollPtr = _lookup<
+  late final _convoRedactMessageFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationRedactMessageFuturePollReturn Function(
+          _ConvoRedactMessageFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_redact_message_future_poll");
+  )>>("__Convo_redact_message_future_poll");
 
-  late final _conversationRedactMessageFuturePoll =
-      _conversationRedactMessageFuturePollPtr.asFunction<
-          _ConversationRedactMessageFuturePollReturn Function(
+  late final _convoRedactMessageFuturePoll =
+      _convoRedactMessageFuturePollPtr.asFunction<
+          _ConvoRedactMessageFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationUpdatePowerLevelFuturePollPtr = _lookup<
+  late final _convoUpdatePowerLevelFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationUpdatePowerLevelFuturePollReturn Function(
+          _ConvoUpdatePowerLevelFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_update_power_level_future_poll");
+  )>>("__Convo_update_power_level_future_poll");
 
-  late final _conversationUpdatePowerLevelFuturePoll =
-      _conversationUpdatePowerLevelFuturePollPtr.asFunction<
-          _ConversationUpdatePowerLevelFuturePollReturn Function(
+  late final _convoUpdatePowerLevelFuturePoll =
+      _convoUpdatePowerLevelFuturePollPtr.asFunction<
+          _ConvoUpdatePowerLevelFuturePollReturn Function(
     int,
     int,
     int,
@@ -18625,17 +18596,16 @@ class Api {
     int,
     int,
   )>();
-  late final _clientConversationFuturePollPtr = _lookup<
+  late final _clientConvoFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientConversationFuturePollReturn Function(
+          _ClientConvoFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_conversation_future_poll");
+  )>>("__Client_convo_future_poll");
 
-  late final _clientConversationFuturePoll =
-      _clientConversationFuturePollPtr.asFunction<
-          _ClientConversationFuturePollReturn Function(
+  late final _clientConvoFuturePoll = _clientConvoFuturePollPtr.asFunction<
+      _ClientConvoFuturePollReturn Function(
     int,
     int,
     int,
@@ -18655,17 +18625,16 @@ class Api {
     int,
     int,
   )>();
-  late final _clientConversationsFuturePollPtr = _lookup<
+  late final _clientConvosFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientConversationsFuturePollReturn Function(
+          _ClientConvosFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_conversations_future_poll");
+  )>>("__Client_convos_future_poll");
 
-  late final _clientConversationsFuturePoll =
-      _clientConversationsFuturePollPtr.asFunction<
-          _ClientConversationsFuturePollReturn Function(
+  late final _clientConvosFuturePoll = _clientConvosFuturePollPtr.asFunction<
+      _ClientConvosFuturePollReturn Function(
     int,
     int,
     int,
@@ -18699,17 +18668,17 @@ class Api {
     int,
     int,
   )>();
-  late final _clientJoinConversationFuturePollPtr = _lookup<
+  late final _clientJoinConvoFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientJoinConversationFuturePollReturn Function(
+          _ClientJoinConvoFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_join_conversation_future_poll");
+  )>>("__Client_join_convo_future_poll");
 
-  late final _clientJoinConversationFuturePoll =
-      _clientJoinConversationFuturePollPtr.asFunction<
-          _ClientJoinConversationFuturePollReturn Function(
+  late final _clientJoinConvoFuturePoll =
+      _clientJoinConvoFuturePollPtr.asFunction<
+          _ClientJoinConvoFuturePollReturn Function(
     int,
     int,
     int,
@@ -18818,17 +18787,17 @@ class Api {
     int,
     int,
   )>();
-  late final _clientCreateConversationFuturePollPtr = _lookup<
+  late final _clientCreateConvoFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientCreateConversationFuturePollReturn Function(
+          _ClientCreateConvoFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_create_conversation_future_poll");
+  )>>("__Client_create_convo_future_poll");
 
-  late final _clientCreateConversationFuturePoll =
-      _clientCreateConversationFuturePollPtr.asFunction<
-          _ClientCreateConversationFuturePollReturn Function(
+  late final _clientCreateConvoFuturePoll =
+      _clientCreateConvoFuturePollPtr.asFunction<
+          _ClientCreateConvoFuturePollReturn Function(
     int,
     int,
     int,
@@ -19580,18 +19549,18 @@ class Api {
     int,
     int,
   )>();
-  late final _clientConversationsRxStreamPollPtr = _lookup<
+  late final _clientConvosRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientConversationsRxStreamPollReturn Function(
+          _ClientConvosRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_conversations_rx_stream_poll");
+  )>>("__Client_convos_rx_stream_poll");
 
-  late final _clientConversationsRxStreamPoll =
-      _clientConversationsRxStreamPollPtr.asFunction<
-          _ClientConversationsRxStreamPollReturn Function(
+  late final _clientConvosRxStreamPoll =
+      _clientConvosRxStreamPollPtr.asFunction<
+          _ClientConvosRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -19929,55 +19898,55 @@ class Api {
 
   late final _ffiListCommentInsert =
       _ffiListCommentInsertPtr.asFunction<void Function(int, int, int)>();
-  FfiListConversation createFfiListConversation() {
+  FfiListConvo createFfiListConvo() {
     final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListConversationCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListConversation");
-    return FfiListConversation._(this, list_box);
+        ffi.Pointer.fromAddress(_ffiListConvoCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListConvo");
+    return FfiListConvo._(this, list_box);
   }
 
-  late final _ffiListConversationCreatePtr =
+  late final _ffiListConvoCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-          "__FfiListConversationCreate");
+          "__FfiListConvoCreate");
 
-  late final _ffiListConversationCreate =
-      _ffiListConversationCreatePtr.asFunction<int Function()>();
+  late final _ffiListConvoCreate =
+      _ffiListConvoCreatePtr.asFunction<int Function()>();
 
-  late final _ffiListConversationLenPtr =
+  late final _ffiListConvoLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListConversationLen");
+          "__FfiListConvoLen");
 
-  late final _ffiListConversationLen =
-      _ffiListConversationLenPtr.asFunction<int Function(int)>();
+  late final _ffiListConvoLen =
+      _ffiListConvoLenPtr.asFunction<int Function(int)>();
 
-  late final _ffiListConversationElementAtPtr =
+  late final _ffiListConvoElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListConversationElementAt");
+          "__FfiListConvoElementAt");
 
-  late final _ffiListConversationElementAt =
-      _ffiListConversationElementAtPtr.asFunction<int Function(int, int)>();
+  late final _ffiListConvoElementAt =
+      _ffiListConvoElementAtPtr.asFunction<int Function(int, int)>();
 
-  late final _ffiListConversationRemovePtr =
+  late final _ffiListConvoRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListConversationRemove");
+          "__FfiListConvoRemove");
 
-  late final _ffiListConversationRemove =
-      _ffiListConversationRemovePtr.asFunction<int Function(int, int)>();
+  late final _ffiListConvoRemove =
+      _ffiListConvoRemovePtr.asFunction<int Function(int, int)>();
 
-  late final _ffiListConversationAddPtr =
+  late final _ffiListConvoAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-          "__FfiListConversationAdd");
+          "__FfiListConvoAdd");
 
-  late final _ffiListConversationAdd =
-      _ffiListConversationAddPtr.asFunction<void Function(int, int)>();
+  late final _ffiListConvoAdd =
+      _ffiListConvoAddPtr.asFunction<void Function(int, int)>();
 
-  late final _ffiListConversationInsertPtr = _lookup<
+  late final _ffiListConvoInsertPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListConversationInsert");
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListConvoInsert");
 
-  late final _ffiListConversationInsert =
-      _ffiListConversationInsertPtr.asFunction<void Function(int, int, int)>();
+  late final _ffiListConvoInsert =
+      _ffiListConvoInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListDeviceRecord createFfiListDeviceRecord() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListDeviceRecordCreate());
@@ -25842,17 +25811,17 @@ class TimelineStream {
   }
 }
 
-class Conversation {
+class Convo {
   final Api _api;
   final _Box _box;
 
-  Conversation._(this._api, this._box);
+  Convo._(this._api, this._box);
 
   /// get the room profile that contains avatar and display name
   RoomProfile getProfile() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationGetProfile(
+    final tmp1 = _api._convoGetProfile(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -25881,7 +25850,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationUploadAvatar(
+    final tmp5 = _api._convoUploadAvatar(
       tmp0,
       tmp2,
       tmp3,
@@ -25889,11 +25858,9 @@ class Conversation {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 =
-        _Box(_api, tmp7_0, "__Conversation_upload_avatar_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_upload_avatar_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 =
-        _nativeFuture(tmp7_1, _api.__conversationUploadAvatarFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoUploadAvatarFuturePoll);
     return tmp6;
   }
 
@@ -25901,16 +25868,14 @@ class Conversation {
   Future<EventId> removeAvatar() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationRemoveAvatar(
+    final tmp1 = _api._convoRemoveAvatar(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__Conversation_remove_avatar_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_remove_avatar_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__conversationRemoveAvatarFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoRemoveAvatarFuturePoll);
     return tmp2;
   }
 
@@ -25918,7 +25883,7 @@ class Conversation {
   String? topic() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationTopic(
+    final tmp1 = _api._convoTopic(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -25967,7 +25932,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationSetTopic(
+    final tmp5 = _api._convoSetTopic(
       tmp0,
       tmp2,
       tmp3,
@@ -25975,9 +25940,9 @@ class Conversation {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Conversation_set_topic_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_set_topic_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__conversationSetTopicFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoSetTopicFuturePoll);
     return tmp6;
   }
 
@@ -25985,16 +25950,14 @@ class Conversation {
   Future<FfiListMember> activeMembers() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationActiveMembers(
+    final tmp1 = _api._convoActiveMembers(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__Conversation_active_members_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_active_members_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__conversationActiveMembersFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoActiveMembersFuturePoll);
     return tmp2;
   }
 
@@ -26002,16 +25965,14 @@ class Conversation {
   Future<FfiListMember> invitedMembers() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationInvitedMembers(
+    final tmp1 = _api._convoInvitedMembers(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__Conversation_invited_members_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_invited_members_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__conversationInvitedMembersFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoInvitedMembersFuturePoll);
     return tmp2;
   }
 
@@ -26033,7 +25994,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationGetMember(
+    final tmp5 = _api._convoGetMember(
       tmp0,
       tmp2,
       tmp3,
@@ -26041,9 +26002,9 @@ class Conversation {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Conversation_get_member_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_get_member_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__conversationGetMemberFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoGetMemberFuturePoll);
     return tmp6;
   }
 
@@ -26051,16 +26012,14 @@ class Conversation {
   Future<TimelineStream> timelineStream() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationTimelineStream(
+    final tmp1 = _api._convoTimelineStream(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__Conversation_timeline_stream_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_timeline_stream_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__conversationTimelineStreamFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoTimelineStreamFuturePoll);
     return tmp2;
   }
 
@@ -26068,7 +26027,7 @@ class Conversation {
   RoomMessage? latestMessage() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationLatestMessage(
+    final tmp1 = _api._convoLatestMessage(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -26087,16 +26046,14 @@ class Conversation {
   Future<Member> getMyMembership() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationGetMyMembership(
+    final tmp1 = _api._convoGetMyMembership(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__Conversation_get_my_membership_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_get_my_membership_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__conversationGetMyMembershipFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoGetMyMembershipFuturePoll);
     return tmp2;
   }
 
@@ -26104,7 +26061,7 @@ class Conversation {
   RoomId getRoomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationGetRoomId(
+    final tmp1 = _api._convoGetRoomId(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -26119,7 +26076,7 @@ class Conversation {
   String getRoomIdStr() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationGetRoomIdStr(
+    final tmp1 = _api._convoGetRoomIdStr(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -26159,17 +26116,15 @@ class Conversation {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1 ? 1 : 0;
-    final tmp3 = _api._conversationTypingNotice(
+    final tmp3 = _api._convoTypingNotice(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 =
-        _Box(_api, tmp5_0, "__Conversation_typing_notice_future_drop");
+    final tmp5_1 = _Box(_api, tmp5_0, "__Convo_typing_notice_future_drop");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 =
-        _nativeFuture(tmp5_1, _api.__conversationTypingNoticeFuturePoll);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__convoTypingNoticeFuturePoll);
     return tmp4;
   }
 
@@ -26191,7 +26146,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationReadReceipt(
+    final tmp5 = _api._convoReadReceipt(
       tmp0,
       tmp2,
       tmp3,
@@ -26199,11 +26154,9 @@ class Conversation {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 =
-        _Box(_api, tmp7_0, "__Conversation_read_receipt_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_read_receipt_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 =
-        _nativeFuture(tmp7_1, _api.__conversationReadReceiptFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoReadReceiptFuturePoll);
     return tmp6;
   }
 
@@ -26227,7 +26180,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationSendPlainMessage(
+    final tmp5 = _api._convoSendPlainMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -26235,11 +26188,9 @@ class Conversation {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 =
-        _Box(_api, tmp7_0, "__Conversation_send_plain_message_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_send_plain_message_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 =
-        _nativeFuture(tmp7_1, _api.__conversationSendPlainMessageFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoSendPlainMessageFuturePoll);
     return tmp6;
   }
 
@@ -26261,7 +26212,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationSendFormattedMessage(
+    final tmp5 = _api._convoSendFormattedMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -26270,10 +26221,10 @@ class Conversation {
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
     final tmp7_1 =
-        _Box(_api, tmp7_0, "__Conversation_send_formatted_message_future_drop");
+        _Box(_api, tmp7_0, "__Convo_send_formatted_message_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(
-        tmp7_1, _api.__conversationSendFormattedMessageFuturePoll);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__convoSendFormattedMessageFuturePoll);
     return tmp6;
   }
 
@@ -26308,7 +26259,7 @@ class Conversation {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._conversationSendReaction(
+    final tmp9 = _api._convoSendReaction(
       tmp0,
       tmp2,
       tmp3,
@@ -26319,11 +26270,9 @@ class Conversation {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 =
-        _Box(_api, tmp11_0, "__Conversation_send_reaction_future_drop");
+    final tmp11_1 = _Box(_api, tmp11_0, "__Convo_send_reaction_future_drop");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 =
-        _nativeFuture(tmp11_1, _api.__conversationSendReactionFuturePoll);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__convoSendReactionFuturePoll);
     return tmp10;
   }
 
@@ -26424,7 +26373,7 @@ class Conversation {
       tmp28 = tmp28_0.address;
       tmp30 = tmp29;
     }
-    final tmp31 = _api._conversationSendImageMessage(
+    final tmp31 = _api._convoSendImageMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -26449,10 +26398,10 @@ class Conversation {
     final tmp33 = tmp31;
     final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
     final tmp33_1 =
-        _Box(_api, tmp33_0, "__Conversation_send_image_message_future_drop");
+        _Box(_api, tmp33_0, "__Convo_send_image_message_future_drop");
     tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
     final tmp32 =
-        _nativeFuture(tmp33_1, _api.__conversationSendImageMessageFuturePoll);
+        _nativeFuture(tmp33_1, _api.__convoSendImageMessageFuturePoll);
     return tmp32;
   }
 
@@ -26476,7 +26425,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationImageBinary(
+    final tmp5 = _api._convoImageBinary(
       tmp0,
       tmp2,
       tmp3,
@@ -26484,11 +26433,9 @@ class Conversation {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 =
-        _Box(_api, tmp7_0, "__Conversation_image_binary_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_image_binary_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 =
-        _nativeFuture(tmp7_1, _api.__conversationImageBinaryFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoImageBinaryFuturePoll);
     return tmp6;
   }
 
@@ -26558,7 +26505,7 @@ class Conversation {
       final tmp19 = tmp17;
       tmp20 = tmp19;
     }
-    final tmp21 = _api._conversationSendAudioMessage(
+    final tmp21 = _api._convoSendAudioMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -26577,10 +26524,10 @@ class Conversation {
     final tmp23 = tmp21;
     final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
     final tmp23_1 =
-        _Box(_api, tmp23_0, "__Conversation_send_audio_message_future_drop");
+        _Box(_api, tmp23_0, "__Convo_send_audio_message_future_drop");
     tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
     final tmp22 =
-        _nativeFuture(tmp23_1, _api.__conversationSendAudioMessageFuturePoll);
+        _nativeFuture(tmp23_1, _api.__convoSendAudioMessageFuturePoll);
     return tmp22;
   }
 
@@ -26604,7 +26551,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationAudioBinary(
+    final tmp5 = _api._convoAudioBinary(
       tmp0,
       tmp2,
       tmp3,
@@ -26612,11 +26559,9 @@ class Conversation {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 =
-        _Box(_api, tmp7_0, "__Conversation_audio_binary_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_audio_binary_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 =
-        _nativeFuture(tmp7_1, _api.__conversationAudioBinaryFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoAudioBinaryFuturePoll);
     return tmp6;
   }
 
@@ -26728,7 +26673,7 @@ class Conversation {
       tmp32 = tmp32_0.address;
       tmp34 = tmp33;
     }
-    final tmp35 = _api._conversationSendVideoMessage(
+    final tmp35 = _api._convoSendVideoMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -26755,10 +26700,10 @@ class Conversation {
     final tmp37 = tmp35;
     final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
     final tmp37_1 =
-        _Box(_api, tmp37_0, "__Conversation_send_video_message_future_drop");
+        _Box(_api, tmp37_0, "__Convo_send_video_message_future_drop");
     tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
     final tmp36 =
-        _nativeFuture(tmp37_1, _api.__conversationSendVideoMessageFuturePoll);
+        _nativeFuture(tmp37_1, _api.__convoSendVideoMessageFuturePoll);
     return tmp36;
   }
 
@@ -26782,7 +26727,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationVideoBinary(
+    final tmp5 = _api._convoVideoBinary(
       tmp0,
       tmp2,
       tmp3,
@@ -26790,11 +26735,9 @@ class Conversation {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 =
-        _Box(_api, tmp7_0, "__Conversation_video_binary_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_video_binary_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 =
-        _nativeFuture(tmp7_1, _api.__conversationVideoBinaryFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoVideoBinaryFuturePoll);
     return tmp6;
   }
 
@@ -26846,7 +26789,7 @@ class Conversation {
     tmp10 = tmp10_0.address;
     tmp12 = tmp11;
     tmp14 = tmp13;
-    final tmp15 = _api._conversationSendFileMessage(
+    final tmp15 = _api._convoSendFileMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -26862,10 +26805,9 @@ class Conversation {
     final tmp17 = tmp15;
     final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
     final tmp17_1 =
-        _Box(_api, tmp17_0, "__Conversation_send_file_message_future_drop");
+        _Box(_api, tmp17_0, "__Convo_send_file_message_future_drop");
     tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
-    final tmp16 =
-        _nativeFuture(tmp17_1, _api.__conversationSendFileMessageFuturePoll);
+    final tmp16 = _nativeFuture(tmp17_1, _api.__convoSendFileMessageFuturePoll);
     return tmp16;
   }
 
@@ -26889,7 +26831,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationFileBinary(
+    final tmp5 = _api._convoFileBinary(
       tmp0,
       tmp2,
       tmp3,
@@ -26897,9 +26839,9 @@ class Conversation {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Conversation_file_binary_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_file_binary_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__conversationFileBinaryFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoFileBinaryFuturePoll);
     return tmp6;
   }
 
@@ -26907,7 +26849,7 @@ class Conversation {
   String roomType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationRoomType(
+    final tmp1 = _api._convoRoomType(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -26952,7 +26894,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationInviteUser(
+    final tmp5 = _api._convoInviteUser(
       tmp0,
       tmp2,
       tmp3,
@@ -26960,9 +26902,9 @@ class Conversation {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Conversation_invite_user_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_invite_user_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__conversationInviteUserFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoInviteUserFuturePoll);
     return tmp6;
   }
 
@@ -26970,14 +26912,14 @@ class Conversation {
   Future<bool> join() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationJoin(
+    final tmp1 = _api._convoJoin(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Conversation_join_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_join_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__conversationJoinFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoJoinFuturePoll);
     return tmp2;
   }
 
@@ -26985,14 +26927,14 @@ class Conversation {
   Future<bool> leave() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationLeave(
+    final tmp1 = _api._convoLeave(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Conversation_leave_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_leave_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__conversationLeaveFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoLeaveFuturePoll);
     return tmp2;
   }
 
@@ -27000,16 +26942,14 @@ class Conversation {
   Future<FfiListMember> getInvitees() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationGetInvitees(
+    final tmp1 = _api._convoGetInvitees(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__Conversation_get_invitees_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_get_invitees_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__conversationGetInviteesFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoGetInviteesFuturePoll);
     return tmp2;
   }
 
@@ -27044,7 +26984,7 @@ class Conversation {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._conversationDownloadMedia(
+    final tmp9 = _api._convoDownloadMedia(
       tmp0,
       tmp2,
       tmp3,
@@ -27055,11 +26995,9 @@ class Conversation {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 =
-        _Box(_api, tmp11_0, "__Conversation_download_media_future_drop");
+    final tmp11_1 = _Box(_api, tmp11_0, "__Convo_download_media_future_drop");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 =
-        _nativeFuture(tmp11_1, _api.__conversationDownloadMediaFuturePoll);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__convoDownloadMediaFuturePoll);
     return tmp10;
   }
 
@@ -27081,7 +27019,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationMediaPath(
+    final tmp5 = _api._convoMediaPath(
       tmp0,
       tmp2,
       tmp3,
@@ -27089,9 +27027,9 @@ class Conversation {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Conversation_media_path_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_media_path_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__conversationMediaPathFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoMediaPathFuturePoll);
     return tmp6;
   }
 
@@ -27099,16 +27037,14 @@ class Conversation {
   Future<FfiListReceiptRecord> userReceipts() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationUserReceipts(
+    final tmp1 = _api._convoUserReceipts(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__Conversation_user_receipts_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_user_receipts_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__conversationUserReceiptsFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoUserReceiptsFuturePoll);
     return tmp2;
   }
 
@@ -27116,16 +27052,14 @@ class Conversation {
   Future<bool> isEncrypted() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationIsEncrypted(
+    final tmp1 = _api._convoIsEncrypted(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__Conversation_is_encrypted_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_is_encrypted_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__conversationIsEncryptedFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoIsEncryptedFuturePoll);
     return tmp2;
   }
 
@@ -27147,7 +27081,7 @@ class Conversation {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._conversationGetMessage(
+    final tmp5 = _api._convoGetMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -27155,9 +27089,9 @@ class Conversation {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Conversation_get_message_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_get_message_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__conversationGetMessageFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoGetMessageFuturePoll);
     return tmp6;
   }
 
@@ -27212,7 +27146,7 @@ class Conversation {
       tmp12 = tmp12_0.address;
       tmp14 = tmp13;
     }
-    final tmp15 = _api._conversationSendTextReply(
+    final tmp15 = _api._convoSendTextReply(
       tmp0,
       tmp2,
       tmp3,
@@ -27227,11 +27161,9 @@ class Conversation {
     );
     final tmp17 = tmp15;
     final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
-    final tmp17_1 =
-        _Box(_api, tmp17_0, "__Conversation_send_text_reply_future_drop");
+    final tmp17_1 = _Box(_api, tmp17_0, "__Convo_send_text_reply_future_drop");
     tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
-    final tmp16 =
-        _nativeFuture(tmp17_1, _api.__conversationSendTextReplyFuturePoll);
+    final tmp16 = _nativeFuture(tmp17_1, _api.__convoSendTextReplyFuturePoll);
     return tmp16;
   }
 
@@ -27345,7 +27277,7 @@ class Conversation {
       tmp32 = tmp32_0.address;
       tmp34 = tmp33;
     }
-    final tmp35 = _api._conversationSendImageReply(
+    final tmp35 = _api._convoSendImageReply(
       tmp0,
       tmp2,
       tmp3,
@@ -27372,11 +27304,9 @@ class Conversation {
     );
     final tmp37 = tmp35;
     final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
-    final tmp37_1 =
-        _Box(_api, tmp37_0, "__Conversation_send_image_reply_future_drop");
+    final tmp37_1 = _Box(_api, tmp37_0, "__Convo_send_image_reply_future_drop");
     tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
-    final tmp36 =
-        _nativeFuture(tmp37_1, _api.__conversationSendImageReplyFuturePoll);
+    final tmp36 = _nativeFuture(tmp37_1, _api.__convoSendImageReplyFuturePoll);
     return tmp36;
   }
 
@@ -27479,7 +27409,7 @@ class Conversation {
       tmp28 = tmp28_0.address;
       tmp30 = tmp29;
     }
-    final tmp31 = _api._conversationSendAudioReply(
+    final tmp31 = _api._convoSendAudioReply(
       tmp0,
       tmp2,
       tmp3,
@@ -27504,11 +27434,9 @@ class Conversation {
     );
     final tmp33 = tmp31;
     final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
-    final tmp33_1 =
-        _Box(_api, tmp33_0, "__Conversation_send_audio_reply_future_drop");
+    final tmp33_1 = _Box(_api, tmp33_0, "__Convo_send_audio_reply_future_drop");
     tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
-    final tmp32 =
-        _nativeFuture(tmp33_1, _api.__conversationSendAudioReplyFuturePoll);
+    final tmp32 = _nativeFuture(tmp33_1, _api.__convoSendAudioReplyFuturePoll);
     return tmp32;
   }
 
@@ -27653,7 +27581,7 @@ class Conversation {
       tmp42 = tmp42_0.address;
       tmp44 = tmp43;
     }
-    final tmp45 = _api._conversationSendVideoReply(
+    final tmp45 = _api._convoSendVideoReply(
       tmp0,
       tmp2,
       tmp3,
@@ -27686,11 +27614,9 @@ class Conversation {
     );
     final tmp47 = tmp45;
     final ffi.Pointer<ffi.Void> tmp47_0 = ffi.Pointer.fromAddress(tmp47);
-    final tmp47_1 =
-        _Box(_api, tmp47_0, "__Conversation_send_video_reply_future_drop");
+    final tmp47_1 = _Box(_api, tmp47_0, "__Convo_send_video_reply_future_drop");
     tmp47_1._finalizer = _api._registerFinalizer(tmp47_1);
-    final tmp46 =
-        _nativeFuture(tmp47_1, _api.__conversationSendVideoReplyFuturePoll);
+    final tmp46 = _nativeFuture(tmp47_1, _api.__convoSendVideoReplyFuturePoll);
     return tmp46;
   }
 
@@ -27782,7 +27708,7 @@ class Conversation {
       tmp24 = tmp24_0.address;
       tmp26 = tmp25;
     }
-    final tmp27 = _api._conversationSendFileReply(
+    final tmp27 = _api._convoSendFileReply(
       tmp0,
       tmp2,
       tmp3,
@@ -27805,11 +27731,9 @@ class Conversation {
     );
     final tmp29 = tmp27;
     final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
-    final tmp29_1 =
-        _Box(_api, tmp29_0, "__Conversation_send_file_reply_future_drop");
+    final tmp29_1 = _Box(_api, tmp29_0, "__Convo_send_file_reply_future_drop");
     tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
-    final tmp28 =
-        _nativeFuture(tmp29_1, _api.__conversationSendFileReplyFuturePoll);
+    final tmp28 = _nativeFuture(tmp29_1, _api.__convoSendFileReplyFuturePoll);
     return tmp28;
   }
 
@@ -27871,7 +27795,7 @@ class Conversation {
       tmp14 = tmp14_0.address;
       tmp16 = tmp15;
     }
-    final tmp17 = _api._conversationRedactMessage(
+    final tmp17 = _api._convoRedactMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -27887,11 +27811,9 @@ class Conversation {
     );
     final tmp19 = tmp17;
     final ffi.Pointer<ffi.Void> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
-    final tmp19_1 =
-        _Box(_api, tmp19_0, "__Conversation_redact_message_future_drop");
+    final tmp19_1 = _Box(_api, tmp19_0, "__Convo_redact_message_future_drop");
     tmp19_1._finalizer = _api._registerFinalizer(tmp19_1);
-    final tmp18 =
-        _nativeFuture(tmp19_1, _api.__conversationRedactMessageFuturePoll);
+    final tmp18 = _nativeFuture(tmp19_1, _api.__convoRedactMessageFuturePoll);
     return tmp18;
   }
 
@@ -27917,7 +27839,7 @@ class Conversation {
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
     tmp6 = tmp5;
-    final tmp7 = _api._conversationUpdatePowerLevel(
+    final tmp7 = _api._convoUpdatePowerLevel(
       tmp0,
       tmp2,
       tmp3,
@@ -27926,11 +27848,9 @@ class Conversation {
     );
     final tmp9 = tmp7;
     final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
-    final tmp9_1 =
-        _Box(_api, tmp9_0, "__Conversation_update_power_level_future_drop");
+    final tmp9_1 = _Box(_api, tmp9_0, "__Convo_update_power_level_future_drop");
     tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
-    final tmp8 =
-        _nativeFuture(tmp9_1, _api.__conversationUpdatePowerLevelFuturePoll);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__convoUpdatePowerLevelFuturePoll);
     return tmp8;
   }
 
@@ -33404,11 +33324,11 @@ class PublicSearchResult {
   }
 }
 
-class CreateConversationSettingsBuilder {
+class CreateConvoSettingsBuilder {
   final Api _api;
   final _Box _box;
 
-  CreateConversationSettingsBuilder._(this._api, this._box);
+  CreateConvoSettingsBuilder._(this._api, this._box);
 
   /// set the name of convo
   void setName(
@@ -33428,7 +33348,7 @@ class CreateConversationSettingsBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._createConversationSettingsBuilderSetName(
+    _api._createConvoSettingsBuilderSetName(
       tmp0,
       tmp2,
       tmp3,
@@ -33455,7 +33375,7 @@ class CreateConversationSettingsBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._createConversationSettingsBuilderSetAlias(
+    _api._createConvoSettingsBuilderSetAlias(
       tmp0,
       tmp2,
       tmp3,
@@ -33482,7 +33402,7 @@ class CreateConversationSettingsBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._createConversationSettingsBuilderAddInvitee(
+    final tmp5 = _api._createConvoSettingsBuilderAddInvitee(
       tmp0,
       tmp2,
       tmp3,
@@ -33524,7 +33444,7 @@ class CreateConversationSettingsBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._createConversationSettingsBuilderSetTopic(
+    _api._createConvoSettingsBuilderSetTopic(
       tmp0,
       tmp2,
       tmp3,
@@ -33552,7 +33472,7 @@ class CreateConversationSettingsBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._createConversationSettingsBuilderSetAvatarUri(
+    _api._createConvoSettingsBuilderSetAvatarUri(
       tmp0,
       tmp2,
       tmp3,
@@ -33579,7 +33499,7 @@ class CreateConversationSettingsBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._createConversationSettingsBuilderSetParent(
+    _api._createConvoSettingsBuilderSetParent(
       tmp0,
       tmp2,
       tmp3,
@@ -33588,17 +33508,17 @@ class CreateConversationSettingsBuilder {
     return;
   }
 
-  CreateConversationSettings build() {
+  CreateConvoSettings build() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._createConversationSettingsBuilderBuild(
+    final tmp1 = _api._createConvoSettingsBuilderBuild(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CreateConversationSettings");
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CreateConvoSettings");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = CreateConversationSettings._(_api, tmp3_1);
+    final tmp2 = CreateConvoSettings._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -33608,11 +33528,11 @@ class CreateConversationSettingsBuilder {
   }
 }
 
-class CreateConversationSettings {
+class CreateConvoSettings {
   final Api _api;
   final _Box _box;
 
-  CreateConversationSettings._(this._api, this._box);
+  CreateConvoSettings._(this._api, this._box);
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -34039,8 +33959,8 @@ class Client {
     return tmp2;
   }
 
-  /// get conversation room
-  Future<Conversation> conversation(
+  /// get convo room
+  Future<Convo> convo(
     String roomOrId,
   ) {
     final tmp1 = roomOrId;
@@ -34057,7 +33977,7 @@ class Client {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._clientConversation(
+    final tmp5 = _api._clientConvo(
       tmp0,
       tmp2,
       tmp3,
@@ -34065,9 +33985,9 @@ class Client {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Client_conversation_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Client_convo_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__clientConversationFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__clientConvoFuturePoll);
     return tmp6;
   }
 
@@ -34133,33 +34053,33 @@ class Client {
     return tmp6;
   }
 
-  /// The conversations the user is involved in
-  Future<FfiListConversation> conversations() {
+  /// The convos the user is involved in
+  Future<FfiListConvo> convos() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientConversations(
+    final tmp1 = _api._clientConvos(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Client_conversations_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_convos_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__clientConversationsFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientConvosFuturePoll);
     return tmp2;
   }
 
-  /// The update event of conversations the user is involved in
-  Stream<FfiListConversation> conversationsRx() {
+  /// The update event of convos the user is involved in
+  Stream<FfiListConvo> convosRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientConversationsRx(
+    final tmp1 = _api._clientConvosRx(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Client_conversations_rx_stream_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_convos_rx_stream_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeStream(tmp3_1, _api.__clientConversationsRxStreamPoll);
+    final tmp2 = _nativeStream(tmp3_1, _api.__clientConvosRxStreamPoll);
     return tmp2;
   }
 
@@ -34235,7 +34155,7 @@ class Client {
   }
 
   /// attempt to join a room
-  Future<Conversation> joinConversation(
+  Future<Convo> joinConvo(
     String roomIdOrAlias,
     String? serverName,
   ) {
@@ -34272,7 +34192,7 @@ class Client {
       tmp8 = tmp8_0.address;
       tmp10 = tmp9;
     }
-    final tmp11 = _api._clientJoinConversation(
+    final tmp11 = _api._clientJoinConvo(
       tmp0,
       tmp2,
       tmp3,
@@ -34284,11 +34204,9 @@ class Client {
     );
     final tmp13 = tmp11;
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 =
-        _Box(_api, tmp13_0, "__Client_join_conversation_future_drop");
+    final tmp13_1 = _Box(_api, tmp13_0, "__Client_join_convo_future_drop");
     tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
-    final tmp12 =
-        _nativeFuture(tmp13_1, _api.__clientJoinConversationFuturePoll);
+    final tmp12 = _nativeFuture(tmp13_1, _api.__clientJoinConvoFuturePoll);
     return tmp12;
   }
 
@@ -34679,25 +34597,23 @@ class Client {
   }
 
   /// create convo
-  Future<RoomId> createConversation(
-    CreateConversationSettings settings,
+  Future<RoomId> createConvo(
+    CreateConvoSettings settings,
   ) {
     final tmp1 = settings;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    final tmp3 = _api._clientCreateConversation(
+    final tmp3 = _api._clientCreateConvo(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 =
-        _Box(_api, tmp5_0, "__Client_create_conversation_future_drop");
+    final tmp5_1 = _Box(_api, tmp5_0, "__Client_create_convo_future_drop");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 =
-        _nativeFuture(tmp5_1, _api.__clientCreateConversationFuturePoll);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__clientCreateConvoFuturePoll);
     return tmp4;
   }
 
@@ -37663,7 +37579,7 @@ class _TimelineDiffValueReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ConversationTopicReturn extends ffi.Struct {
+class _ConvoTopicReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -37674,14 +37590,14 @@ class _ConversationTopicReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ConversationLatestMessageReturn extends ffi.Struct {
+class _ConvoLatestMessageReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _ConversationGetRoomIdStrReturn extends ffi.Struct {
+class _ConvoGetRoomIdStrReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -37690,7 +37606,7 @@ class _ConversationGetRoomIdStrReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ConversationRoomTypeReturn extends ffi.Struct {
+class _ConvoRoomTypeReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -38210,7 +38126,7 @@ class _PublicSearchResultTotalRoomCountEstimateReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _CreateConversationSettingsBuilderAddInviteeReturn extends ffi.Struct {
+class _CreateConvoSettingsBuilderAddInviteeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -38806,7 +38722,7 @@ class _TimelineStreamEditFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationUploadAvatarFuturePollReturn extends ffi.Struct {
+class _ConvoUploadAvatarFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -38821,7 +38737,7 @@ class _ConversationUploadAvatarFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationRemoveAvatarFuturePollReturn extends ffi.Struct {
+class _ConvoRemoveAvatarFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -38836,7 +38752,7 @@ class _ConversationRemoveAvatarFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSetTopicFuturePollReturn extends ffi.Struct {
+class _ConvoSetTopicFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -38851,7 +38767,7 @@ class _ConversationSetTopicFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationActiveMembersFuturePollReturn extends ffi.Struct {
+class _ConvoActiveMembersFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -38866,7 +38782,7 @@ class _ConversationActiveMembersFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationInvitedMembersFuturePollReturn extends ffi.Struct {
+class _ConvoInvitedMembersFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -38881,7 +38797,7 @@ class _ConversationInvitedMembersFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationGetMemberFuturePollReturn extends ffi.Struct {
+class _ConvoGetMemberFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -38896,7 +38812,7 @@ class _ConversationGetMemberFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationTimelineStreamFuturePollReturn extends ffi.Struct {
+class _ConvoTimelineStreamFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -38911,7 +38827,7 @@ class _ConversationTimelineStreamFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationGetMyMembershipFuturePollReturn extends ffi.Struct {
+class _ConvoGetMyMembershipFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -38926,7 +38842,7 @@ class _ConversationGetMyMembershipFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationTypingNoticeFuturePollReturn extends ffi.Struct {
+class _ConvoTypingNoticeFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -38941,7 +38857,7 @@ class _ConversationTypingNoticeFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationReadReceiptFuturePollReturn extends ffi.Struct {
+class _ConvoReadReceiptFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -38956,7 +38872,7 @@ class _ConversationReadReceiptFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendPlainMessageFuturePollReturn extends ffi.Struct {
+class _ConvoSendPlainMessageFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -38971,7 +38887,7 @@ class _ConversationSendPlainMessageFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendFormattedMessageFuturePollReturn extends ffi.Struct {
+class _ConvoSendFormattedMessageFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -38986,7 +38902,7 @@ class _ConversationSendFormattedMessageFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendReactionFuturePollReturn extends ffi.Struct {
+class _ConvoSendReactionFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39001,7 +38917,7 @@ class _ConversationSendReactionFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendImageMessageFuturePollReturn extends ffi.Struct {
+class _ConvoSendImageMessageFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39016,7 +38932,7 @@ class _ConversationSendImageMessageFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationImageBinaryFuturePollReturn extends ffi.Struct {
+class _ConvoImageBinaryFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39031,7 +38947,7 @@ class _ConversationImageBinaryFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendAudioMessageFuturePollReturn extends ffi.Struct {
+class _ConvoSendAudioMessageFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39046,7 +38962,7 @@ class _ConversationSendAudioMessageFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationAudioBinaryFuturePollReturn extends ffi.Struct {
+class _ConvoAudioBinaryFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39061,7 +38977,7 @@ class _ConversationAudioBinaryFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendVideoMessageFuturePollReturn extends ffi.Struct {
+class _ConvoSendVideoMessageFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39076,7 +38992,7 @@ class _ConversationSendVideoMessageFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationVideoBinaryFuturePollReturn extends ffi.Struct {
+class _ConvoVideoBinaryFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39091,7 +39007,7 @@ class _ConversationVideoBinaryFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendFileMessageFuturePollReturn extends ffi.Struct {
+class _ConvoSendFileMessageFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39106,7 +39022,7 @@ class _ConversationSendFileMessageFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationFileBinaryFuturePollReturn extends ffi.Struct {
+class _ConvoFileBinaryFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39121,7 +39037,7 @@ class _ConversationFileBinaryFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationInviteUserFuturePollReturn extends ffi.Struct {
+class _ConvoInviteUserFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39136,7 +39052,7 @@ class _ConversationInviteUserFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationJoinFuturePollReturn extends ffi.Struct {
+class _ConvoJoinFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39151,7 +39067,7 @@ class _ConversationJoinFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationLeaveFuturePollReturn extends ffi.Struct {
+class _ConvoLeaveFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39166,7 +39082,7 @@ class _ConversationLeaveFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationGetInviteesFuturePollReturn extends ffi.Struct {
+class _ConvoGetInviteesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39181,26 +39097,7 @@ class _ConversationGetInviteesFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationDownloadMediaFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
-}
-
-class _ConversationMediaPathFuturePollReturn extends ffi.Struct {
+class _ConvoDownloadMediaFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39219,7 +39116,26 @@ class _ConversationMediaPathFuturePollReturn extends ffi.Struct {
   external int arg7;
 }
 
-class _ConversationUserReceiptsFuturePollReturn extends ffi.Struct {
+class _ConvoMediaPathFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
+}
+
+class _ConvoUserReceiptsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39234,7 +39150,7 @@ class _ConversationUserReceiptsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationIsEncryptedFuturePollReturn extends ffi.Struct {
+class _ConvoIsEncryptedFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39249,7 +39165,7 @@ class _ConversationIsEncryptedFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationGetMessageFuturePollReturn extends ffi.Struct {
+class _ConvoGetMessageFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39264,7 +39180,7 @@ class _ConversationGetMessageFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendTextReplyFuturePollReturn extends ffi.Struct {
+class _ConvoSendTextReplyFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39279,7 +39195,7 @@ class _ConversationSendTextReplyFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendImageReplyFuturePollReturn extends ffi.Struct {
+class _ConvoSendImageReplyFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39294,7 +39210,7 @@ class _ConversationSendImageReplyFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendAudioReplyFuturePollReturn extends ffi.Struct {
+class _ConvoSendAudioReplyFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39309,7 +39225,7 @@ class _ConversationSendAudioReplyFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendVideoReplyFuturePollReturn extends ffi.Struct {
+class _ConvoSendVideoReplyFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39324,7 +39240,7 @@ class _ConversationSendVideoReplyFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendFileReplyFuturePollReturn extends ffi.Struct {
+class _ConvoSendFileReplyFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39339,7 +39255,7 @@ class _ConversationSendFileReplyFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationRedactMessageFuturePollReturn extends ffi.Struct {
+class _ConvoRedactMessageFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -39354,7 +39270,7 @@ class _ConversationRedactMessageFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationUpdatePowerLevelFuturePollReturn extends ffi.Struct {
+class _ConvoUpdatePowerLevelFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -40119,7 +40035,7 @@ class _ClientRestoreTokenFuturePollReturn extends ffi.Struct {
   external int arg7;
 }
 
-class _ClientConversationFuturePollReturn extends ffi.Struct {
+class _ClientConvoFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -40149,7 +40065,7 @@ class _ClientUploadMediaFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientConversationsFuturePollReturn extends ffi.Struct {
+class _ClientConvosFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -40194,7 +40110,7 @@ class _ClientJoinSpaceFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientJoinConversationFuturePollReturn extends ffi.Struct {
+class _ClientJoinConvoFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -40314,7 +40230,7 @@ class _ClientLogoutFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientCreateConversationFuturePollReturn extends ffi.Struct {
+class _ClientCreateConvoFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -41002,7 +40918,7 @@ class _SyncStateSyncErrorRxStreamPollReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ClientConversationsRxStreamPollReturn extends ffi.Struct {
+class _ClientConvosRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -41299,59 +41215,57 @@ class FfiListComment extends Iterable<Comment>
   }
 }
 
-class FfiListConversation extends Iterable<Conversation>
-    implements CustomIterable<Conversation> {
+class FfiListConvo extends Iterable<Convo> implements CustomIterable<Convo> {
   final Api _api;
   final _Box _box;
 
-  FfiListConversation._(this._api, this._box);
+  FfiListConvo._(this._api, this._box);
 
   @override
-  Iterator<Conversation> get iterator => CustomIterator(this);
+  Iterator<Convo> get iterator => CustomIterator(this);
 
   @override
   int get length {
-    return _api._ffiListConversationLen(_box.borrow());
+    return _api._ffiListConvoLen(_box.borrow());
   }
 
   ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
-  Conversation elementAt(int index) {
-    final address = _api._ffiListConversationElementAt(_box.borrow(), index);
+  Convo elementAt(int index) {
+    final address = _api._ffiListConvoElementAt(_box.borrow(), index);
     final reference = _Box(
       _api,
       ffi.Pointer.fromAddress(address),
       "drop_box_Leak",
       context: this,
     );
-    return Conversation._(_api, reference);
+    return Convo._(_api, reference);
   }
 
-  Conversation operator [](int index) {
+  Convo operator [](int index) {
     return elementAt(index);
   }
 
   /// Moves the element out of this list and returns it
-  Conversation remove(int index) {
-    final address = _api._ffiListConversationRemove(_box.borrow(), index);
+  Convo remove(int index) {
+    final address = _api._ffiListConvoRemove(_box.borrow(), index);
     final reference =
-        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Conversation");
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Convo");
     reference._finalizer = _api._registerFinalizer(reference);
-    return Conversation._(_api, reference);
+    return Convo._(_api, reference);
   }
 
   ///The inserted element is moved into the list and must not be used again
   ///Although you can use the "elementAt" method to get a reference to the added element
-  void add(Conversation element) {
-    _api._ffiListConversationAdd(_box.borrow(), element._box.borrow());
+  void add(Convo element) {
+    _api._ffiListConvoAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
   ///The inserted element is moved into the list and must not be used again
   ///Although you can use the "elementAt" method to get a reference to the added element
-  void insert(int index, Conversation element) {
-    _api._ffiListConversationInsert(
-        _box.borrow(), index, element._box.borrow());
+  void insert(int index, Convo element) {
+    _api._ffiListConvoInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

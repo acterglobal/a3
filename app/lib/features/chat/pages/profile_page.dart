@@ -1,12 +1,12 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
-import 'package:acter/features/chat/pages/link_settings_page.dart';
 import 'package:acter/features/chat/pages/edit_group_page.dart';
 import 'package:acter/features/chat/pages/group_link_page.dart';
+import 'package:acter/features/chat/pages/link_settings_page.dart';
 import 'package:acter/features/chat/pages/requests_page.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/features/chat/widgets/group_member_view.dart';
 import 'package:acter/features/chat/widgets/invite_list_view.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,7 @@ import 'package:get/get.dart';
 
 class ProfilePage extends ConsumerWidget {
   final Client client;
-  final Conversation room;
+  final Convo room;
   final bool isGroup;
   final bool isAdmin;
 
@@ -180,16 +180,12 @@ class ProfilePage extends ConsumerWidget {
                         buildRequestsAndInvites(context),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 12),
-                          child: Divider(
-                            height: 2,
-                          ),
+                          child: Divider(height: 2),
                         ),
                         buildGroupLinkSwitch(context),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 12),
-                          child: Divider(
-                            height: 2,
-                          ),
+                          child: Divider(height: 2),
                         ),
                         buildCreateRoomInviteButton(context),
                       ],
@@ -471,9 +467,7 @@ class ProfilePage extends ConsumerWidget {
                             },
                             child: const Text(
                               'Edit invite link',
-                              style: TextStyle(
-                                fontSize: 14,
-                              ),
+                              style: TextStyle(fontSize: 14),
                             ),
                           ),
                         ],
@@ -563,7 +557,10 @@ class ProfilePage extends ConsumerWidget {
             Icon(Atlas.danger),
             Padding(
               padding: EdgeInsets.only(left: 8),
-              child: Text('Block this user', style: TextStyle(fontSize: 16)),
+              child: Text(
+                'Block this user',
+                style: TextStyle(fontSize: 16),
+              ),
             )
           ],
         ),
@@ -659,10 +656,7 @@ class ProfilePage extends ConsumerWidget {
             initialChildSize: 0.55,
             minChildSize: 0.25,
             expand: false,
-            builder: (
-              BuildContext context,
-              ScrollController scrollController,
-            ) {
+            builder: (BuildContext context, ScrollController scrollController) {
               return Container(
                 margin: const EdgeInsets.symmetric(
                   vertical: 16,
@@ -672,8 +666,10 @@ class ProfilePage extends ConsumerWidget {
                   children: [
                     const Padding(
                       padding: EdgeInsets.all(8),
-                      child:
-                          Text('Spam', style: TextStyle(color: Colors.white)),
+                      child: Text(
+                        'Spam',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(6.33),
@@ -681,9 +677,7 @@ class ProfilePage extends ConsumerWidget {
                         width: double.infinity,
                         decoration: const BoxDecoration(
                           border: Border(
-                            bottom: BorderSide(
-                              width: 1.0,
-                            ),
+                            bottom: BorderSide(width: 1.0),
                           ),
                         ),
                       ),
@@ -701,9 +695,7 @@ class ProfilePage extends ConsumerWidget {
                         width: double.infinity,
                         decoration: const BoxDecoration(
                           border: Border(
-                            bottom: BorderSide(
-                              width: 1,
-                            ),
+                            bottom: BorderSide(width: 1),
                           ),
                         ),
                       ),
@@ -721,9 +713,7 @@ class ProfilePage extends ConsumerWidget {
                         width: double.infinity,
                         decoration: const BoxDecoration(
                           border: Border(
-                            bottom: BorderSide(
-                              width: 1,
-                            ),
+                            bottom: BorderSide(width: 1),
                           ),
                         ),
                       ),
@@ -741,17 +731,17 @@ class ProfilePage extends ConsumerWidget {
                         width: double.infinity,
                         decoration: const BoxDecoration(
                           border: Border(
-                            bottom: BorderSide(
-                              width: 1,
-                            ),
+                            bottom: BorderSide(width: 1),
                           ),
                         ),
                       ),
                     ),
                     const Padding(
                       padding: EdgeInsets.all(8),
-                      child:
-                          Text('Spam', style: TextStyle(color: Colors.white)),
+                      child: Text(
+                        'Spam',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ],
                 ),
@@ -806,9 +796,7 @@ class ProfilePage extends ConsumerWidget {
                           width: double.infinity,
                           decoration: const BoxDecoration(
                             border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
+                              bottom: BorderSide(width: 1),
                             ),
                           ),
                         ),
@@ -829,9 +817,7 @@ class ProfilePage extends ConsumerWidget {
                           width: double.infinity,
                           decoration: const BoxDecoration(
                             border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
+                              bottom: BorderSide(width: 1),
                             ),
                           ),
                         ),
@@ -852,9 +838,7 @@ class ProfilePage extends ConsumerWidget {
                           width: double.infinity,
                           decoration: const BoxDecoration(
                             border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
+                              bottom: BorderSide(width: 1),
                             ),
                           ),
                         ),
@@ -875,9 +859,7 @@ class ProfilePage extends ConsumerWidget {
                           width: double.infinity,
                           decoration: const BoxDecoration(
                             border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
+                              bottom: BorderSide(width: 1),
                             ),
                           ),
                         ),
@@ -898,9 +880,7 @@ class ProfilePage extends ConsumerWidget {
                           width: double.infinity,
                           decoration: const BoxDecoration(
                             border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
+                              bottom: BorderSide(width: 1),
                             ),
                           ),
                         ),
@@ -926,9 +906,7 @@ class ProfilePage extends ConsumerWidget {
                           width: double.infinity,
                           decoration: const BoxDecoration(
                             border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
+                              bottom: BorderSide(width: 1),
                             ),
                           ),
                         ),

@@ -10,7 +10,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
         AudioDesc,
         Client,
-        Conversation,
+        Convo,
         FileDesc,
         ImageDesc,
         Member,
@@ -43,7 +43,7 @@ class ChatRoomController extends GetxController {
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
   int _page = 0;
-  Conversation? _currentRoom;
+  Convo? _currentRoom;
   final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
   RxBool isEmojiVisible = false.obs;
   RxBool isAttachmentVisible = false.obs;
@@ -138,7 +138,7 @@ class ChatRoomController extends GetxController {
   }
 
   // get the timeline of room
-  Future<void> setCurrentRoom(Conversation? convoRoom) async {
+  Future<void> setCurrentRoom(Convo? convoRoom) async {
     if (convoRoom == null) {
       _messages.clear();
       typingUsers.clear();
@@ -497,7 +497,7 @@ class ChatRoomController extends GetxController {
     });
   }
 
-  //push messages in conversation
+  // push messages in convo
   Future<void> handleSendPressed(
     String markdownMessage,
     String htmlMessage,
