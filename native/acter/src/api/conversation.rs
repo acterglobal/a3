@@ -406,7 +406,7 @@ impl CreateConversationSettingsBuilder {
         self.topic(value);
     }
 
-    pub fn set_invites(&mut self, values: &mut Vec<String>) -> Result<()> {
+    pub fn set_invites(&mut self, values: &mut [String]) -> Result<()> {
         let invites = values
             .into_iter()
             .filter_map(|x| UserId::parse(x).ok())
