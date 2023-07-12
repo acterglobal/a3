@@ -9,7 +9,6 @@ dependencies = [
  "acter-core",
  "android_logger",
  "anyhow",
- "async-broadcast",
  "async-stream",
  "cbindgen",
  "chrono",
@@ -31,7 +30,6 @@ dependencies = [
  "mime_guess",
  "oslog",
  "parse-env-filter",
- "proc-macro2 1.0.55",
  "ruma",
  "sanitize-filename-reader-friendly",
  "serde",
@@ -39,6 +37,7 @@ dependencies = [
  "strum",
  "tempfile",
  "tokio",
+ "tokio-stream",
  "tracing",
  "tracing-android",
  "tracing-wasm",
@@ -71,7 +70,6 @@ name = "acter-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "async-broadcast",
  "async-recursion",
  "async-stream",
  "chrono",
@@ -1485,7 +1483,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen"
 version = "0.1.13"
-source = "git+https://github.com/acterglobal/ffi-gen?branch=leaking-no-drop#82b88341adb7cb6203b09c9bddb0289d34b0bf7c"
+source = "git+https://github.com/acterglobal/ffi-gen?branch=leaking-no-drop#781f49b0c242cfdba2f2c7d39eee2a8e737dd23d"
 dependencies = [
  "anyhow",
  "genco",
@@ -1498,7 +1496,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen-macro"
 version = "0.1.2"
-source = "git+https://github.com/acterglobal/ffi-gen?branch=leaking-no-drop#82b88341adb7cb6203b09c9bddb0289d34b0bf7c"
+source = "git+https://github.com/acterglobal/ffi-gen?branch=leaking-no-drop#781f49b0c242cfdba2f2c7d39eee2a8e737dd23d"
 dependencies = [
  "ffi-gen",
  "proc-macro2 1.0.55",

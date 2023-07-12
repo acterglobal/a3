@@ -3,29 +3,33 @@ import 'package:acter/common/dialogs/side_sheet_page.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/activities/presentation/pages/activities_page.dart';
+import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
+import 'package:acter/features/events/dialogs/create_event_sheet.dart';
+import 'package:acter/features/events/dialogs/edit_event_sheet.dart';
+import 'package:acter/features/events/pages/event_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/pins/dialogs/create_pin_sheet.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
-import 'package:acter/features/space/dialogs/create_space_sheet.dart';
-import 'package:acter/features/news/pages/news_builder_page.dart';
+import 'package:acter/features/spaces/dialogs/create_space_sheet.dart';
+import 'package:acter/features/news/pages/simple_post.dart';
 import 'package:acter/features/news/pages/news_page.dart';
-import 'package:acter/features/news/pages/post_page.dart';
-import 'package:acter/features/news/pages/search_space_page.dart';
 import 'package:acter/features/onboarding/pages/intro_page.dart';
 import 'package:acter/features/onboarding/pages/intro_profile.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
+import 'package:acter/features/space/dialogs/edit_space_sheet.dart';
+import 'package:acter/features/space/pages/events_page.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/related_spaces_page.dart';
-import 'package:acter/features/space/pages/spaces_page.dart';
+import 'package:acter/features/spaces/pages/spaces_page.dart';
+import 'package:acter/features/spaces/pages/join_space.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/search/pages/search.dart';
 import 'package:acter/features/settings/pages/index_page.dart';
@@ -179,6 +183,58 @@ List<RouteBase> makeRoutes(Ref ref) => [
 
       GoRoute(
         parentNavigatorKey: rootNavigatorKey,
+        name: Routes.createEvent.name,
+        path: Routes.createEvent.route,
+        pageBuilder: (context, state) {
+          return SideSheetPage(
+            key: state.pageKey,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: Tween(
+                  begin: const Offset(1, 0),
+                  end: const Offset(0, 0),
+                ).animate(
+                  animation,
+                ),
+                child: child,
+              );
+            },
+            child: CreateEventSheet(
+              initialSelectedSpace: state.queryParameters['spaceId'],
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        name: Routes.editCalendarEvent.name,
+        path: Routes.editCalendarEvent.route,
+        pageBuilder: (context, state) {
+          return SideSheetPage(
+            key: state.pageKey,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: Tween(
+                  begin: const Offset(1, 0),
+                  end: const Offset(0, 0),
+                ).animate(
+                  animation,
+                ),
+                child: child,
+              );
+            },
+            child: EditEventSheet(
+              calendarId: state.pathParameters['calendarId'],
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
         name: Routes.createSpace.name,
         path: Routes.createSpace.route,
         pageBuilder: (context, state) {
@@ -198,6 +254,55 @@ List<RouteBase> makeRoutes(Ref ref) => [
             },
             child: CreateSpacePage(
               initialParentsSpaceId: state.queryParameters['parentSpaceId'],
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        name: Routes.actionAddUpdate.name,
+        path: Routes.actionAddUpdate.route,
+        pageBuilder: (context, state) {
+          return SideSheetPage(
+            key: state.pageKey,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: Tween(
+                  begin: const Offset(1, 0),
+                  end: const Offset(0, 0),
+                ).animate(
+                  animation,
+                ),
+                child: child,
+              );
+            },
+            child: const SimpleNewsPost(),
+          );
+        },
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        name: Routes.editSpace.name,
+        path: Routes.editSpace.route,
+        pageBuilder: (context, state) {
+          return SideSheetPage(
+            key: state.pageKey,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: Tween(
+                  begin: const Offset(1, 0),
+                  end: const Offset(0, 0),
+                ).animate(
+                  animation,
+                ),
+                child: child,
+              );
+            },
+            child: EditSpacePage(
+              spaceId: state.queryParameters['spaceId'],
             ),
           );
         },
@@ -282,6 +387,21 @@ List<RouteBase> makeRoutes(Ref ref) => [
               );
             },
           ),
+
+          GoRoute(
+            name: Routes.calendarEvent.name,
+            path: Routes.calendarEvent.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: CalendarEventPage(
+                  calendarId: state.pathParameters['calendarId']!,
+                ),
+              );
+            },
+          ),
+
           GoRoute(
             name: Routes.updates.name,
             path: Routes.updates.route,
@@ -292,49 +412,6 @@ List<RouteBase> makeRoutes(Ref ref) => [
                 child: const NewsPage(),
               );
             },
-            routes: <RouteBase>[
-              // hide bottom nav for nested pages, use rootNavigatorKey
-              GoRoute(
-                parentNavigatorKey: rootNavigatorKey,
-                name: Routes.updatesEdit.name,
-                path: Routes.updatesEdit.route,
-                redirect: authGuardRedirect,
-                pageBuilder: (context, state) {
-                  return NoTransitionPage(
-                    key: state.pageKey,
-                    child: const NewsBuilderPage(),
-                  );
-                },
-              ),
-              GoRoute(
-                parentNavigatorKey: rootNavigatorKey,
-                name: Routes.updatesPost.name,
-                path: Routes.updatesPost.route,
-                redirect: authGuardRedirect,
-                pageBuilder: (context, state) {
-                  return NoTransitionPage(
-                    key: state.pageKey,
-                    child: PostPage(
-                      attachmentUri: state.extra as String?,
-                    ),
-                  );
-                },
-                routes: <RouteBase>[
-                  GoRoute(
-                    parentNavigatorKey: rootNavigatorKey,
-                    name: Routes.updatesPostSearch.name,
-                    path: Routes.updatesPostSearch.route,
-                    redirect: authGuardRedirect,
-                    pageBuilder: (context, state) {
-                      return NoTransitionPage(
-                        key: state.pageKey,
-                        child: const SearchSpacePage(),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ],
           ),
 
           GoRoute(
@@ -479,6 +556,22 @@ List<RouteBase> makeRoutes(Ref ref) => [
                 },
               ),
               GoRoute(
+                name: Routes.spaceEvents.name,
+                path: Routes.spaceEvents.route,
+                redirect: authGuardRedirect,
+                pageBuilder: (context, state) {
+                  ref
+                      .read(selectedTabKeyProvider.notifier)
+                      .switchTo(const Key('events'));
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: SpaceEventsPage(
+                      spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
                 name: Routes.space.name,
                 path: Routes.space.route,
                 redirect: authGuardRedirect,
@@ -498,6 +591,18 @@ List<RouteBase> makeRoutes(Ref ref) => [
           ),
 
           GoRoute(
+            name: Routes.joinSpace.name,
+            path: Routes.joinSpace.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const JoinSpacePage(),
+              );
+            },
+          ),
+
+          GoRoute(
             name: Routes.spaces.name,
             path: Routes.spaces.route,
             redirect: authGuardRedirect,
@@ -508,7 +613,6 @@ List<RouteBase> makeRoutes(Ref ref) => [
               );
             },
           ),
-
           GoRoute(
             name: Routes.main.name,
             path: Routes.main.route,

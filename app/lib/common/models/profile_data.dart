@@ -4,18 +4,22 @@ import 'package:flutter/material.dart';
 class ProfileData {
   final String? displayName;
   final FfiBufferUint8? avatar;
+  MemoryImage? avatarMem;
 
-  const ProfileData(this.displayName, this.avatar);
+  ProfileData(this.displayName, this.avatar);
 
   bool hasAvatar() {
     return avatar != null;
   }
 
   MemoryImage? getAvatarImage() {
-    if (avatar == null) {
-      return null;
+    if (avatarMem == null) {
+      if (avatar == null) {
+        return null;
+      }
+      avatarMem = MemoryImage(avatar!.asTypedList());
     }
-    return MemoryImage(avatar!.asTypedList());
+    return avatarMem;
   }
 }
 

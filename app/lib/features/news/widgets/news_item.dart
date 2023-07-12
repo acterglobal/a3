@@ -1,97 +1,155 @@
 import 'dart:typed_data';
 
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NewsItem extends StatefulWidget {
+class NewsItem extends ConsumerWidget {
   final Client client;
   final NewsEntry news;
   final int index;
 
   const NewsItem({
-    Key? key,
+    super.key,
     required this.client,
     required this.news,
     required this.index,
-  }) : super(key: key);
+  });
 
   @override
-  State<NewsItem> createState() => _NewsItemState();
-}
-
-class _NewsItemState extends State<NewsItem> {
-  @override
-  Widget build(BuildContext context) {
-    var slide = widget.news.getSlide(0)!;
+  Widget build(BuildContext context, WidgetRef ref) {
+    var slide = news.getSlide(0)!;
     var slideType = slide.typeStr();
+    final roomId = news.roomId().toString();
+    final space = ref.watch(briefSpaceItemProvider(roomId));
 
     // else
     var bgColor = convertColor(
-      widget.news.colors()?.background(),
-      Theme.of(context).colorScheme.secondary,
+      news.colors()?.background(),
+      Theme.of(context).colorScheme.background,
     );
     var fgColor = convertColor(
-      widget.news.colors()?.color(),
+      news.colors()?.color(),
       Theme.of(context).colorScheme.primary,
     );
-    return Stack(
-      alignment: Alignment.bottomRight,
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
+
+    Stack regularSlide(Widget child) => Stack(
           children: [
-            slideWidget(slideType, slide),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.78,
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-              child: Text(
-                slide.text(),
-                softWrap: true,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: fgColor,
-                  shadows: [
-                    Shadow(
-                      color: bgColor,
-                      offset: const Offset(1, 1),
-                      blurRadius: 1,
+            child,
+            Padding(
+              padding: const EdgeInsets.only(left: 8, right: 80, bottom: 8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      context.goNamed(
+                        Routes.space.name,
+                        pathParameters: {'spaceId': roomId},
+                      );
+                    },
+                    child: space.when(
+                      data: (space) =>
+                          Text(space!.spaceProfileData.displayName ?? roomId),
+                      error: (e, st) => Text('Error loading space: $e'),
+                      loading: () => Text(roomId),
                     ),
-                  ],
-                ),
+                  ),
+                  Text(
+                    slide.text(),
+                    softWrap: true,
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: fgColor,
+                      shadows: [
+                        Shadow(
+                          color: bgColor,
+                          offset: const Offset(1, 1),
+                          blurRadius: 0,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: NewsSideBar(
+                news: news,
+                index: index,
               ),
             ),
           ],
-        ),
-        NewsSideBar(
-          client: widget.client,
-          news: widget.news,
-          index: widget.index,
-        ),
-      ],
-    );
-  }
+        );
 
-  Widget slideWidget(String slideType, NewsSlide slide) {
     switch (slideType) {
       case 'image':
-        return Center(
-          child: SizedBox.square(
-            dimension: 346,
-            child: ImageSlide(
-              slide: slide,
+        return regularSlide(ImageSlide(slide: slide));
+
+      case 'video':
+        return regularSlide(
+          const Expanded(
+            child: Center(
+              child: Text('video slides not yet supported'),
             ),
           ),
         );
-      case 'text':
-        return const SizedBox();
 
-      case 'video':
-        return const SizedBox();
+      case 'text':
+        return Stack(
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8, right: 80, bottom: 8),
+                child: Card(
+                  color: bgColor,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: slide.hasFormattedText()
+                        ? RenderHtml(
+                            text: slide.text(),
+                            defaultTextStyle:
+                                Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                      color: fgColor,
+                                    ),
+                          )
+                        : Text(
+                            slide.text(),
+                            softWrap: true,
+                            style:
+                                Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                      color: fgColor,
+                                    ),
+                          ),
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: NewsSideBar(
+                news: news,
+                index: index,
+              ),
+            ),
+          ],
+        );
 
       default:
-        return const SizedBox();
+        return regularSlide(
+          Expanded(
+            child: Center(
+              child: Text('$slideType slides not yet supported'),
+            ),
+          ),
+        );
     }
   }
 }
@@ -129,42 +187,20 @@ class _ImageSlideState extends State<ImageSlide> {
       future: newsImage.then((value) => value.asTypedList()),
       builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
         if (snapshot.hasData) {
-          return _ImageWidget(
-            image: snapshot.data,
-            imageDesc: imageDesc,
+          return Container(
+            foregroundDecoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: MemoryImage(
+                  Uint8List.fromList(snapshot.data!),
+                ),
+              ),
+            ),
           );
         } else {
           return const Center(child: Text('Loading image'));
         }
       },
-    );
-  }
-}
-
-class _ImageWidget extends StatelessWidget {
-  const _ImageWidget({
-    required this.image,
-    required this.imageDesc,
-  });
-
-  final List<int>? image;
-  final ImageDesc? imageDesc;
-
-  @override
-  Widget build(BuildContext context) {
-    // Size size = WidgetsBinding.instance.window.physicalSize;
-    if (image == null) {
-      return const SizedBox.shrink();
-    }
-
-    // return Image.memory(Uint8List.fromList(image), fit: BoxFit.cover);
-    return FittedBox(
-      fit: BoxFit.contain,
-      child: Image.memory(
-        Uint8List.fromList(image!),
-        height: imageDesc!.height()!.toDouble(),
-        width: imageDesc!.width()!.toDouble(),
-      ),
     );
   }
 }

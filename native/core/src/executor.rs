@@ -1,6 +1,6 @@
-use async_broadcast::{broadcast, Receiver, Sender};
 use dashmap::{mapref::entry::Entry, DashMap};
 use std::sync::Arc;
+use tokio::sync::broadcast::{channel as broadcast, Receiver, Sender};
 use tracing::{error, trace, trace_span};
 
 use crate::{
@@ -31,18 +31,17 @@ impl Executor {
         match self.notifiers.entry(key) {
             Entry::Occupied(o) => {
                 let sender = o.get();
-                if sender.is_closed() {
+                if sender.receiver_count() == 0 {
                     // replace the existing channel to reopen
                     let (sender, receiver) = broadcast(1);
                     o.replace_entry(sender);
                     receiver
                 } else {
-                    sender.new_receiver()
+                    sender.subscribe()
                 }
             }
             Entry::Vacant(v) => {
-                let (mut sender, receiver) = broadcast(1);
-                sender.set_overflow(true);
+                let (sender, receiver) = broadcast(1);
                 v.insert(sender);
                 receiver
             }
@@ -70,14 +69,14 @@ impl Executor {
             let _enter = span.enter();
             if let Entry::Occupied(o) = self.notifiers.entry(key) {
                 let v = o.get();
-                if v.is_closed() {
+                if v.receiver_count() == 0 {
                     trace!("No listeners. removing");
                     o.remove();
                     continue;
                 }
                 trace!("Broadcasting");
-                if let Err(error) = v.try_broadcast(()) {
-                    error!(?error, "Notifying failed");
+                if let Err(error) = v.send(()) {
+                    trace!(?error, "Notifying failed. No receivers. Clearing");
                     // we have overflow activated, this only fails because it has been closed
                     o.remove();
                 } else {
@@ -91,8 +90,10 @@ impl Executor {
     }
 
     pub async fn handle(&self, model: AnyActerModel) -> Result<()> {
-        trace!(?model, "handle");
+        let event_id = model.event_id().to_string();
+        trace!(?event_id, ?model, "handle");
         self.notify(model.execute(&self.store).await?);
+        trace!(?event_id, "handling done");
         Ok(())
     }
 }

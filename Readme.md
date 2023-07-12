@@ -8,22 +8,28 @@ Your social organizing app build on [matrix](https://matrix.org): think WhatsApp
 [![Docs ](https://img.shields.io/badge/DOCS-blue?style=for-the-badge)](https://docs.acter.global)
 [![Matrix ](https://img.shields.io/badge/News-yellow?style=for-the-badge)](https://matrix.to/#/#news:acter.global)
 
-## Build
 
-![Native Build](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/native.yml?branch=main&label=Rust%20Build&style=for-the-badge)
-![App Build](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/app.yml?branch=main&label=App%20Build&style=for-the-badge)
-![Docs](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/docs.yml?branch=main&label=Docs&style=for-the-badge)
+[![Nightly Build](https://img.shields.io/badge/Nightly_Build-available-gree?style=for-the-badge)](https://github.com/acterglobal/a3/tags)
 
-[![Matrix: #News](https://img.shields.io/badge/Matrix-gray?style=for-the-badge)](https://matrix.to/#/#news:acter.global)
-[![Matrix: #News](https://img.shields.io/badge/News-green?style=for-the-badge)](https://matrix.to/#/#news:acter.global)
-[![Matrix: #Foyer](https://img.shields.io/badge/Foyer-green?style=for-the-badge)](https://matrix.to/#/#foyer:acter.global)
-[![Matrix: #Tech](https://img.shields.io/badge/tech-green?style=for-the-badge)](https://matrix.to/#/#tech:acter.global)
 
-[![Acter Public Source License](https://img.shields.io/badge/License-Acter%20Public%20Source%20License-blue?style=for-the-badge)](./LICENSE.txt)
+## Contact:
+
+[![Matrix: #News](https://img.shields.io/badge/News-deeppink?style=for-the-badge)](https://matrix.to/#/#news:acter.global)
+[![Matrix: #Foyer](https://img.shields.io/badge/Foyer-aquamarine?style=for-the-badge)](https://matrix.to/#/#foyer:acter.global)
+[![Matrix: #Tech](https://img.shields.io/badge/tech-crimson?style=for-the-badge)](https://matrix.to/#/#tech:acter.global)
 
 </div>
 
+## CI Status:
+
+![Native Build](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/native.yml?branch=main&label=Rust%20Build&style=for-the-badge)
+![App Build](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/deploy.yml?branch=main&label=App&style=for-the-badge)
+![Docs](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/docs.yml?branch=main&label=Docs&style=for-the-badge)
+
+
 ## License
+
+[![Acter Public Source License](https://img.shields.io/badge/License-Acter%20Public%20Source%20License-blue?style=for-the-badge)](./LICENSE.txt)
 
 The App (code) is made available under an the eventually Free Software "Acter Public Source License". Tl;dr: You can use the software for personal, educational and interal usage as long as the installation stays below 100 registered users and is not available to the public. Any other installation, usage or derivation of the work requires consent by the licensor. All code is made availble under the AGPL Free Software License two years after its publication.
 

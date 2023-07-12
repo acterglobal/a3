@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -6,6 +7,7 @@ import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const fallbackSidebarIdx = 1;
@@ -73,6 +75,7 @@ final spaceItemsProvider = FutureProvider.autoDispose
               displayName: info.displayName,
               mode: DisplayMode.Space,
               avatar: info.getAvatarImage(),
+              size: 48,
             ),
             label: Text(
               info.displayName ?? roomId,
@@ -87,11 +90,38 @@ final spaceItemsProvider = FutureProvider.autoDispose
   );
 });
 
+final activitiesIconProvider = Provider.family<Widget, BuildContext>(
+  (ref, context) {
+    final activites = ref.watch(hasActivitiesProvider);
+    const baseIcon = Icon(Atlas.audio_wave_thin);
+    switch (activites) {
+      case HasActivities.important:
+        return Badge(
+          backgroundColor: Theme.of(context).colorScheme.badgeImportant,
+          child: baseIcon,
+        );
+      case HasActivities.urgent:
+        return Badge(
+          backgroundColor: Theme.of(context).colorScheme.badgeUrgent,
+          child: baseIcon,
+        );
+      case HasActivities.unread:
+        return Badge(
+          backgroundColor: Theme.of(context).colorScheme.badgeUnread,
+          child: baseIcon,
+        );
+      default:
+        // read and none, we do not show any icon to prevent notification fatigue
+        return baseIcon;
+    }
+  },
+);
+
 // provider that returns a string value
 final sidebarItemsProvider = Provider.autoDispose
     .family<List<SidebarNavigationItem>, BuildContext>((ref, context) {
   final config = ref.watch(spaceItemsProvider(context));
-
+  final activitiesIcon = ref.watch(activitiesIconProvider(context));
   final features = [
     SidebarNavigationItem(
       icon: const Icon(Atlas.magnifying_glass_thin),
@@ -123,7 +153,7 @@ final sidebarItemsProvider = Provider.autoDispose
       location: Routes.chat.route,
     ),
     SidebarNavigationItem(
-      icon: const Icon(Atlas.audio_wave_thin),
+      icon: activitiesIcon,
       label: Column(
         children: [
           Text(
@@ -164,56 +194,64 @@ final currentSelectedSidebarIndexProvider =
   return index < 0 ? fallbackSidebarIdx : index;
 });
 
-final bottomBarNav = [
-  BottomBarNavigationItem(
-    icon: const Icon(Atlas.home_thin),
-    activeIcon: const CustomSelectedIcon(
-      icon: Icon(Atlas.home_bold),
+final bottomBarNavProvider =
+    Provider.family<List<BottomBarNavigationItem>, BuildContext>(
+        (ref, context) {
+  final activitiesIcon = ref.watch(activitiesIconProvider(context));
+
+  return [
+    BottomBarNavigationItem(
+      icon: const Icon(Atlas.home_thin),
+      activeIcon: const CustomSelectedIcon(
+        icon: Icon(Atlas.home_bold),
+      ),
+      label: 'Dashboard',
+      initialLocation: Routes.dashboard.route,
     ),
-    label: 'Dashboard',
-    initialLocation: Routes.dashboard.route,
-  ),
-  BottomBarNavigationItem(
-    icon: const Icon(Atlas.megaphone_thin),
-    activeIcon: const CustomSelectedIcon(
-      icon: Icon(Atlas.megaphone_thin),
+    BottomBarNavigationItem(
+      icon: const Icon(Atlas.megaphone_thin),
+      activeIcon: const CustomSelectedIcon(
+        icon: Icon(Atlas.megaphone_thin),
+      ),
+      label: 'Updates',
+      initialLocation: Routes.updates.route,
     ),
-    label: 'Updates',
-    initialLocation: Routes.updates.route,
-  ),
-  BottomBarNavigationItem(
-    icon: const Icon(Atlas.chats_thin),
-    activeIcon: const CustomSelectedIcon(
-      icon: Icon(Atlas.chats_thin),
+    BottomBarNavigationItem(
+      icon: const Icon(Atlas.chats_thin),
+      activeIcon: const CustomSelectedIcon(
+        icon: Icon(Atlas.chats_thin),
+      ),
+      label: 'Chat',
+      initialLocation: Routes.chat.route,
     ),
-    label: 'Chat',
-    initialLocation: Routes.chat.route,
-  ),
-  BottomBarNavigationItem(
-    icon: const Icon(Atlas.audio_wave_thin),
-    activeIcon: const CustomSelectedIcon(
-      icon: Icon(Atlas.audio_wave_thin),
+    BottomBarNavigationItem(
+      icon: activitiesIcon,
+      activeIcon: CustomSelectedIcon(
+        icon: activitiesIcon,
+      ),
+      label: 'Activities',
+      initialLocation: Routes.activities.route,
     ),
-    label: 'Activities',
-    initialLocation: Routes.activities.route,
-  ),
-  BottomBarNavigationItem(
-    icon: const Icon(
-      Atlas.magnifying_glass_thin,
-    ),
-    activeIcon: const CustomSelectedIcon(
-      icon: Icon(
+    BottomBarNavigationItem(
+      icon: const Icon(
         Atlas.magnifying_glass_thin,
       ),
-    ),
-    label: 'Search',
-    initialLocation: Routes.search.route,
-  )
-];
+      activeIcon: const CustomSelectedIcon(
+        icon: Icon(
+          Atlas.magnifying_glass_thin,
+        ),
+      ),
+      label: 'Search',
+      initialLocation: Routes.search.route,
+    )
+  ];
+});
 
 final currentSelectedBottomBarIndexProvider =
     Provider.autoDispose.family<int, BuildContext>((ref, context) {
   final location = ref.watch(currentRoutingLocation);
+  final bottomBarNav = ref.watch(bottomBarNavProvider(context));
+
   debugPrint('bottom location: $location');
   final index =
       bottomBarNav.indexWhere((t) => location.startsWith(t.initialLocation));

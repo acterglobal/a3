@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -114,7 +113,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   }
 
   Widget avatarBuilder(String userId) {
-    // var avtr = roomController.getUserAvatar(userId);
+    var profile = roomController.getUserProfile(userId);
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: SizedBox(
@@ -123,7 +122,8 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
         child: ActerAvatar(
           mode: DisplayMode.User,
           uniqueId: userId,
-          displayName: roomController.getUserName(userId),
+          displayName: profile != null ? profile.displayName ?? '' : null,
+          avatar: profile?.getAvatarImage(),
           size: 50,
         ),
       ),
@@ -491,7 +491,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
 
   Widget buildBody(BuildContext context) {
     final client = ref.watch(clientProvider);
-    final invitations = ref.watch(invitationListProvider);
     if (roomController.isLoading.isTrue) {
       return const Center(
         child: SizedBox(
@@ -501,9 +500,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
         ),
       );
     }
-    int invitedIndex = invitations.indexWhere((x) {
-      return x.roomId() == widget.conversation.getRoomId();
-    });
     return GetBuilder<ChatRoomController>(
       id: 'Chat',
       builder: (ChatRoomController controller) {
@@ -542,8 +538,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               },
               onPreviewDataFetched: controller.handlePreviewDataFetched,
               onMessageTap: controller.handleMessageTap,
-              onEndReached:
-                  invitedIndex != -1 ? null : controller.handleEndReached,
+              onEndReached: controller.handleEndReached,
               onEndReachedThreshold: 0.75,
               onBackgroundTap: () {
                 if (controller.isEmojiContainerVisible) {

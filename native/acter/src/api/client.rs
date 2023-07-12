@@ -9,17 +9,20 @@ use futures::{
     future::{join_all, ready},
     pin_mut, stream, Stream, StreamExt,
 };
-use futures_signals::signal::{
-    channel, Mutable, MutableSignalCloned, Receiver, SignalExt, SignalStream,
-};
+use futures_signals::signal::{channel, Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
     config::SyncSettings,
+    event_handler::{Ctx, EventHandlerHandle},
+    media::{MediaFormat, MediaRequest},
     room::Room as SdkRoom,
-    ruma::{device_id, OwnedDeviceId, OwnedRoomId, OwnedUserId, RoomId, UserId},
     Client as SdkClient, LoopCtrl, RumaApiError,
 };
+use ruma::{
+    api::client::error::ErrorKind, device_id, events::room::MediaSource, OwnedDeviceId,
+    OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomId, UserId,
+};
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, HashMap},
     ops::Deref,
     sync::{
         atomic::{AtomicBool, Ordering},
@@ -27,13 +30,18 @@ use std::{
     },
 };
 use tokio::{
-    sync::{Mutex, RwLock},
+    sync::{
+        broadcast::{self, Receiver},
+        Mutex, RwLock,
+    },
     task::JoinHandle,
 };
-use tracing::{error, info, trace};
+use tokio_stream::wrappers::BroadcastStream;
+use tracing::{error, info, trace, warn};
 
 use super::{
     account::Account,
+    api::FfiBuffer,
     conversation::{Conversation, ConversationController},
     device::DeviceController,
     invitation::InvitationController,
@@ -45,6 +53,7 @@ use super::{
     verification::VerificationController,
     RUNTIME,
 };
+use crate::FileDesc;
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
@@ -177,36 +186,94 @@ impl HistoryLoadState {
     }
 }
 
+type RoomHandlers = Arc<Mutex<HashMap<OwnedRoomId, Vec<EventHandlerHandle>>>>;
+
+#[derive(Clone)]
+pub enum SyncError {
+    Unauthorized { soft_logout: bool },
+    Other { msg: Option<String> },
+    DeserializationFailed,
+}
+
+impl From<&ruma::api::client::Error> for SyncError {
+    fn from(value: &ruma::api::client::Error) -> Self {
+        match &value.body {
+            ruma::api::client::error::ErrorBody::Standard {
+                kind: ErrorKind::UnknownToken { soft_logout },
+                ..
+            } => SyncError::Unauthorized {
+                soft_logout: *soft_logout,
+            },
+            ruma::api::client::error::ErrorBody::Standard { ref message, .. } => SyncError::Other {
+                msg: Some(message.clone()),
+            },
+            ruma::api::client::error::ErrorBody::Json(_) => SyncError::Other { msg: None },
+            ruma::api::client::error::ErrorBody::NotJson { .. } => SyncError::DeserializationFailed,
+        }
+    }
+}
+
+impl SyncError {
+    fn ffi_string(&self) -> String {
+        match &self {
+            SyncError::Unauthorized { soft_logout } => {
+                if *soft_logout {
+                    "SoftLogout".to_owned()
+                } else {
+                    "Unauthorized".to_owned()
+                }
+            }
+            SyncError::DeserializationFailed => "DeserializationFailed".to_owned(),
+            SyncError::Other { msg } => msg.clone().unwrap_or("Other".to_owned()),
+        }
+    }
+}
+
 #[derive(Clone)]
 pub struct SyncState {
     handle: Mutable<Option<JoinHandle<()>>>,
-    history_sync_handle: Mutable<Option<JoinHandle<Result<()>>>>,
-    first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
+    first_sync_task: Mutable<Option<JoinHandle<Result<()>>>>,
+    first_synced_rx: Arc<broadcast::Receiver<bool>>,
+    sync_error: Arc<broadcast::Receiver<SyncError>>,
     history_loading: Mutable<HistoryLoadState>,
+    room_handles: RoomHandlers,
 }
 
 impl SyncState {
-    pub fn new(first_synced_rx: Receiver<bool>) -> Self {
-        let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
+    pub fn new(
+        first_synced_rx: broadcast::Receiver<bool>,
+        sync_error: broadcast::Receiver<SyncError>,
+    ) -> Self {
         Self {
-            first_synced_rx,
+            first_synced_rx: Arc::new(first_synced_rx),
+            sync_error: Arc::new(sync_error),
             history_loading: Default::default(),
-            history_sync_handle: Default::default(),
+            first_sync_task: Default::default(),
             handle: Default::default(),
+            room_handles: Default::default(),
         }
     }
 
-    pub fn first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
-        match self.first_synced_rx.try_lock() {
-            Ok(mut l) => l.take().map(|t| t.to_stream()),
-            Err(e) => None,
-        }
+    pub fn first_synced_rx(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.first_synced_rx.resubscribe()).map(|o| o.unwrap_or_default())
     }
 
+    pub fn sync_error_rx_typed(&self) -> BroadcastStream<SyncError> {
+        BroadcastStream::new(self.sync_error.resubscribe())
+    }
+
+    pub fn sync_error_rx(&self) -> impl Stream<Item = String> {
+        self.sync_error_rx_typed()
+            .map(|o| o.map(|f| f.ffi_string()).unwrap_or_default())
+    }
+
+    // FIXE: This is not save. History state is copied and thus not all known_spaces are tracked
+    // for only tui, not api.rsh
     pub fn get_history_loading_rx(&self) -> SignalStream<MutableSignalCloned<HistoryLoadState>> {
         self.history_loading.signal_cloned().to_stream()
     }
 
+    // for only cli and integration tests, not api.rsh
     pub async fn await_has_synced_history(&self) -> Result<u32> {
         trace!("Waiting for history to sync");
         let signal = self.history_loading.signal_cloned().to_stream();
@@ -219,14 +286,6 @@ impl SyncState {
             }
         }
         unimplemented!("We never reach this state")
-    }
-
-    pub fn is_running(&self) -> bool {
-        if let Some(handle) = self.handle.lock_ref().as_ref() {
-            !handle.is_finished()
-        } else {
-            false
-        }
     }
 
     pub fn cancel(&self) {
@@ -242,6 +301,136 @@ impl Drop for SyncState {
     }
 }
 
+// internal API
+impl Client {
+    fn refresh_history_on_start(
+        &self,
+        history: Mutable<HistoryLoadState>,
+        room_handles: RoomHandlers,
+    ) -> JoinHandle<Result<()>> {
+        let me = self.clone();
+        tokio::spawn(async move {
+            trace!(user_id=?me.user_id_ref(), "refreshing history");
+            let mut spaces = me.spaces().await?;
+            let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
+            history.lock_mut().start(space_ids);
+
+            join_all(spaces.iter_mut().map(|space| async {
+                if !space.is_acter_space().await {
+                    trace!(room_id=?space.room_id(), "not an acter space");
+                    history.lock_mut().unknow_room(&space.room_id().to_owned());
+                    return;
+                }
+
+                let space_handles = space.setup_handles().await;
+                {
+                    let mut handles = room_handles.lock().await;
+                    if let Some(h) = handles.insert(space.room_id().to_owned(), space_handles) {
+                        warn!(room_id=?space.room_id(), "handles overwritten. Might cause issues?!?");
+                    }
+                }
+
+                if let Err(err) = space.refresh_history().await {
+                    error!(?err, room_id=?space.room_id(), "Loading space history failed");
+                };
+                history
+                    .lock_mut()
+                    .set_loading(space.room_id().to_owned(), false);
+            }))
+            .await;
+            Ok(())
+        })
+    }
+
+    async fn refresh_history_on_way(
+        &self,
+        history: Mutable<HistoryLoadState>,
+        room_handles: RoomHandlers,
+        new_spaces: Vec<SdkRoom>,
+    ) -> Result<()> {
+        trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
+
+        join_all(
+            new_spaces
+                .into_iter()
+                .map(|room| Space::new(self.clone(), Room { room }))
+                .map(|mut space| {
+                    let history = history.clone();
+                    let room_handles = room_handles.clone();
+                    async move {
+                        {
+                            let room_id = space.room_id().to_owned();
+                            let mut history = history.lock_mut();
+                            if history.is_loading(&room_id) {
+                                trace!(room_id=?room_id, "Already loading room.");
+                                return;
+                            }
+                            history.set_loading(room_id, true);
+                        }
+
+
+                        let space_handles = space.setup_handles().await;
+                        {
+                            let mut handles = room_handles.lock().await;
+                            if let Some(h) = handles.insert(space.room_id().to_owned(), space_handles) {
+                                warn!(room_id=?space.room_id(), "handles overwritten. Might cause issues?!?");
+                            }
+                        }
+
+                        if let Err(err) = space.refresh_history().await {
+                            error!(?err, room_id=?space.room_id(), "refreshing history failed");
+                        }
+                        history
+                            .lock_mut()
+                            .set_loading(space.room_id().to_owned(), false);
+                    }
+                }),
+        )
+        .await;
+        Ok(())
+    }
+
+    pub(crate) async fn source_binary(&self, source: MediaSource) -> Result<FfiBuffer<u8>> {
+        // any variable in self can't be called directly in spawn
+        let client = self.clone();
+        let request = MediaRequest {
+            source,
+            format: MediaFormat::File,
+        };
+        trace!(?request, "tasked to get source binary");
+        RUNTIME
+            .spawn(async move {
+                let buf = client.media().get_media_content(&request, true).await?;
+                Ok(FfiBuffer::new(buf))
+            })
+            .await?
+    }
+
+    pub(crate) async fn join_room(
+        &self,
+        room_id_or_alias: String,
+        server_names: Vec<String>,
+    ) -> Result<Room> {
+        let alias = OwnedRoomOrAliasId::try_from(room_id_or_alias)?;
+        let server_names: Vec<OwnedServerName> = server_names
+            .into_iter()
+            .map(OwnedServerName::try_from)
+            .collect::<Result<Vec<OwnedServerName>, ruma::IdParseError>>()?;
+        let c = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let joined = c
+                    .join_room_by_id_or_alias(alias.as_ref(), server_names.as_slice())
+                    .await?;
+                Ok(Room {
+                    room: joined.into(),
+                })
+            })
+            .await?
+    }
+}
+
+// external API
 impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
         let core = CoreClient::new(client).await?;
@@ -271,77 +460,6 @@ impl Client {
         Ok(engine)
     }
 
-    async fn refresh_history_on_start(
-        &self,
-        history: Mutable<HistoryLoadState>,
-    ) -> JoinHandle<Result<()>> {
-        let me = self.clone();
-        tokio::spawn(async move {
-            trace!(user_id=?me.user_id_ref(), "refreshing history");
-            let mut spaces = me.spaces().await?;
-            let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
-            history.lock_mut().start(space_ids);
-
-            join_all(spaces.iter_mut().map(|space| async {
-                if !space.is_acter_space().await {
-                    trace!(room_id=?space.room_id(), "not an acter space");
-                    history.lock_mut().unknow_room(&space.room_id().to_owned());
-                    return;
-                }
-
-                space.add_handlers().await;
-
-                if let Err(err) = space.refresh_history().await {
-                    error!(?err, room_id=?space.room_id(), "Loading space history failed");
-                };
-                history
-                    .lock_mut()
-                    .set_loading(space.room_id().to_owned(), false);
-            }))
-            .await;
-            Ok(())
-        })
-    }
-
-    async fn refresh_history_on_way(
-        &self,
-        history: Mutable<HistoryLoadState>,
-        new_spaces: Vec<SdkRoom>,
-    ) -> Result<()> {
-        trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
-
-        join_all(
-            new_spaces
-                .into_iter()
-                .map(|room| Space::new(self.clone(), Room { room }))
-                .map(|mut space| {
-                    let history = history.clone();
-                    async move {
-                        {
-                            let room_id = space.room_id().to_owned();
-                            let mut history = history.lock_mut();
-                            if history.is_loading(&room_id) {
-                                trace!(room_id=?room_id, "Already loading room.");
-                                return;
-                            }
-                            history.set_loading(room_id, true);
-                        }
-
-                        space.add_handlers().await;
-
-                        if let Err(err) = space.refresh_history().await {
-                            error!(?err, room_id=?space.room_id(), "refreshing history failed");
-                        }
-                        history
-                            .lock_mut()
-                            .set_loading(space.room_id().to_owned(), false);
-                    }
-                }),
-        )
-        .await;
-        Ok(())
-    }
-
     pub fn start_sync(&mut self) -> SyncState {
         info!("starting sync");
         let state = self.state.clone();
@@ -365,13 +483,17 @@ impl Client {
         let mut device_controller = self.device_controller.clone();
         let mut conversation_controller = self.conversation_controller.clone();
 
-        let (first_synced_tx, first_synced_rx) = channel(false);
+        let (first_synced_tx, first_synced_rx) = broadcast::channel(1);
         let first_synced_arc = Arc::new(first_synced_tx);
 
+        let (sync_error_tx, sync_error_rx) = broadcast::channel(1);
+        let sync_error_arc = Arc::new(sync_error_tx);
+
         let initial_arc = Arc::new(AtomicBool::from(true));
-        let sync_state = SyncState::new(first_synced_rx);
-        let sync_state_history = sync_state.history_loading.clone();
-        let sync_state_history_sync_handle = sync_state.history_sync_handle.clone();
+        let sync_state = SyncState::new(first_synced_rx, sync_error_rx);
+        let history_loading = sync_state.history_loading.clone();
+        let first_sync_task = sync_state.first_sync_task.clone();
+        let room_handles = sync_state.room_handles.clone();
 
         let handle = RUNTIME.spawn(async move {
             info!("spawning sync callback");
@@ -382,8 +504,9 @@ impl Client {
             let mut device_controller = device_controller.clone();
             let mut conversation_controller = conversation_controller.clone();
 
-            let sync_state_history = sync_state_history.clone();
-            let sync_state_history_sync_handle = sync_state_history_sync_handle.clone();
+            let history_loading = history_loading.clone();
+            let first_sync_task = first_sync_task.clone();
+            let room_handles = room_handles.clone();
 
             // fetch the events that received when offline
             client
@@ -400,7 +523,8 @@ impl Client {
                     let mut conversation_controller = conversation_controller.clone();
 
                     let first_synced_arc = first_synced_arc.clone();
-                    let sync_state_history = sync_state_history.clone();
+                    let sync_error_arc = sync_error_arc.clone();
+                    let history_loading = history_loading.clone();
                     let initial = initial_arc.clone();
 
                     let response = match result {
@@ -408,12 +532,14 @@ impl Client {
                         Err(err) => {
                             if let Some(RumaApiError::ClientApi(e)) = err.as_ruma_api_error() {
                                 error!(?e, "Client error");
+                                sync_error_arc.send(e.into());
                                 return Ok(LoopCtrl::Break);
                             }
                             error!(?err, "Other error, continuing");
                             return Ok(LoopCtrl::Continue);
                         }
                     };
+                    trace!(target: "acter::sync_response::full", "sync response: {:#?}", response);
 
                     device_controller.process_device_lists(&client, &response);
                     trace!("post device controller");
@@ -441,15 +567,16 @@ impl Client {
                             w.has_first_synced = true;
                         };
                         // background and keep the handle around.
-                        let history_first_sync = me
-                            .refresh_history_on_start(sync_state_history.clone())
-                            .await;
-                        sync_state_history_sync_handle.set(Some(history_first_sync));
+                        let history_first_sync = me.refresh_history_on_start(
+                            history_loading.clone(),
+                            room_handles.clone(),
+                        );
+                        first_sync_task.set(Some(history_first_sync)); // keep task in global variable to avoid too early free of temporary varible in release build
                     } else {
                         // see if we have new spaces to catch up upon
                         let mut new_spaces = Vec::new();
                         for room_id in response.rooms.join.keys() {
-                            if sync_state_history.lock_mut().knows_room(room_id) {
+                            if history_loading.lock_mut().knows_room(room_id) {
                                 // we are already loading this room
                                 continue;
                             }
@@ -463,8 +590,12 @@ impl Client {
                         }
 
                         if !new_spaces.is_empty() {
-                            me.refresh_history_on_way(sync_state_history.clone(), new_spaces)
-                                .await;
+                            me.refresh_history_on_way(
+                                history_loading.clone(),
+                                room_handles.clone(),
+                                new_spaces,
+                            )
+                            .await;
                         }
                     }
 
@@ -475,7 +606,7 @@ impl Client {
                         .chain(response.rooms.leave.keys())
                         .chain(response.rooms.invite.keys())
                         .map(|id| id.to_string()) // FIXME: handle aliases, too?!?
-                        .collect::<Vec<_>>();
+                        .collect::<Vec<String>>();
 
                     if (!changed_rooms.is_empty()) {
                         changed_rooms.push("SPACES".to_owned());
@@ -584,7 +715,11 @@ impl Client {
             .map(|room| Room { room })
     }
 
-    pub fn subscribe(&self, key: String) -> async_broadcast::Receiver<()> {
+    pub fn subscribe_stream(&self, key: String) -> impl Stream<Item = ()> {
+        BroadcastStream::new(self.executor().subscribe(key)).map(|f| f.unwrap_or_default())
+    }
+
+    pub fn subscribe(&self, key: String) -> Receiver<()> {
         self.executor().subscribe(key)
     }
 

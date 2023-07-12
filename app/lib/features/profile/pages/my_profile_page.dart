@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +33,28 @@ class MyProfile extends ConsumerWidget {
               onPressed: () {
                 context.go('/settings');
               },
-            )
+            ),
+            PopupMenuButton(
+              color: Theme.of(context).colorScheme.surface,
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                PopupMenuItem(
+                  onTap: () => logoutConfirmationDialog(context, ref),
+                  child: Row(
+                    children: [
+                      const Icon(Atlas.exit_thin),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Text(
+                          AppLocalizations.of(context)!.logOut,
+                          style: Theme.of(context).textTheme.labelSmall,
+                          softWrap: false,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
         body: SingleChildScrollView(

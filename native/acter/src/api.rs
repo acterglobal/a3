@@ -19,6 +19,7 @@ lazy_static! {
 }
 
 mod account;
+mod attachments;
 mod auth;
 mod calendar_events;
 mod client;
@@ -33,6 +34,7 @@ mod pins;
 mod profile;
 mod receipt;
 mod room;
+mod search;
 mod spaces;
 mod stream;
 mod tasks;
@@ -44,12 +46,13 @@ pub use acter_core::{
     events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
     models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},
 };
+pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token,
     login_with_token_under_config, make_client_config, register_under_config, register_with_token,
     register_with_token_under_config, sanitize_user,
 };
-pub use calendar_events::CalendarEvent;
+pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
@@ -66,6 +69,7 @@ pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, MemberPermission, Room};
+pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use spaces::{
     new_space_settings, CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, Space,
     SpaceRelation, SpaceRelations,

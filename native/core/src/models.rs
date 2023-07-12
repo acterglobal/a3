@@ -1,3 +1,4 @@
+mod attachments;
 mod calendar;
 mod color;
 mod comments;
@@ -10,6 +11,7 @@ mod tasks;
 mod test;
 
 use async_recursion::async_recursion;
+pub use attachments::{Attachment, AttachmentUpdate, AttachmentsManager, AttachmentsStats};
 pub use calendar::{CalendarEvent, CalendarEventUpdate};
 pub use color::Color;
 pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
@@ -35,6 +37,10 @@ pub use crate::store::Store;
 use crate::{
     error::Error,
     events::{
+        attachments::{
+            OriginalAttachmentEvent, OriginalAttachmentUpdateEvent, SyncAttachmentEvent,
+            SyncAttachmentUpdateEvent,
+        },
         calendar::{
             OriginalCalendarEventEvent, OriginalCalendarEventUpdateEvent, SyncCalendarEventEvent,
             SyncCalendarEventUpdateEvent,
@@ -49,8 +55,9 @@ use crate::{
         },
         pins::{OriginalPinEvent, OriginalPinUpdateEvent, SyncPinEvent, SyncPinUpdateEvent},
         tasks::{
-            OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskUpdateEvent, SyncTaskEvent,
-            SyncTaskListEvent, SyncTaskUpdateEvent,
+            OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskListUpdateEvent,
+            OriginalTaskUpdateEvent, SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent,
+            SyncTaskUpdateEvent,
         },
     },
 };
@@ -59,6 +66,8 @@ use crate::{
 pub enum Capability {
     // someone can comment on this
     Commentable,
+    // someone can add attchments on this
+    HasAttachments,
     // another custom capability
     Custom(&'static str),
 }
@@ -165,6 +174,9 @@ pub enum AnyActerModel {
     // -- more generics
     Comment,
     CommentUpdate,
+
+    Attachment,
+    AttachmentUpdate,
     #[cfg(test)]
     TestModel,
 }
@@ -191,9 +203,9 @@ impl AnyActerModel {
             "global.acter.dev.calendar_event.update" => Ok(AnyActerModel::CalendarEventUpdate(
                 raw.deserialize_as::<OriginalCalendarEventUpdateEvent>()
                     .map_err(|error| {
-                        error!(?error, ?raw, "parsing pin update event failed");
+                        error!(?error, ?raw, "parsing calendar_event update event failed");
                         Error::FailedToParse {
-                            model_type: "global.acter.dev.pin.update".to_string(),
+                            model_type: "global.acter.dev.calendar_event.update".to_string(),
                             msg: error.to_string(),
                         }
                     })?
@@ -207,6 +219,17 @@ impl AnyActerModel {
                         error!(?error, ?raw, "parsing task list event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.tasklist".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+            "global.acter.dev.tasklist.update" => Ok(AnyActerModel::TaskListUpdate(
+                raw.deserialize_as::<OriginalTaskListUpdateEvent>()
+                    .map_err(|error| {
+                        error!(?error, ?raw, "parsing task list update event failed");
+                        Error::FailedToParse {
+                            model_type: "global.acter.dev.tasklist.update".to_string(),
                             msg: error.to_string(),
                         }
                     })?
@@ -289,7 +312,7 @@ impl AnyActerModel {
             "global.acter.dev.comment" => Ok(AnyActerModel::Comment(
                 raw.deserialize_as::<OriginalCommentEvent>()
                     .map_err(|error| {
-                        error!(?error, ?raw, "parsing task update event failed");
+                        error!(?error, ?raw, "parsing comment event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.comment".to_string(),
                             msg: error.to_string(),
@@ -300,9 +323,33 @@ impl AnyActerModel {
             "global.acter.dev.comment.update" => Ok(AnyActerModel::CommentUpdate(
                 raw.deserialize_as::<OriginalCommentUpdateEvent>()
                     .map_err(|error| {
-                        error!(?error, ?raw, "parsing task update event failed");
+                        error!(?error, ?raw, "parsing comment update event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.comment.update".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+
+            // attachments
+            "global.acter.dev.attachment" => Ok(AnyActerModel::Attachment(
+                raw.deserialize_as::<OriginalAttachmentEvent>()
+                    .map_err(|error| {
+                        error!(?error, ?raw, "parsing attachment event failed");
+                        Error::FailedToParse {
+                            model_type: "global.acter.dev.attachment".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+            "global.acter.dev.attachment.update" => Ok(AnyActerModel::AttachmentUpdate(
+                raw.deserialize_as::<OriginalAttachmentUpdateEvent>()
+                    .map_err(|error| {
+                        error!(?error, ?raw, "parsing attachment update event failed");
+                        Error::FailedToParse {
+                            model_type: "global.acter.dev.attachment.update".to_string(),
                             msg: error.to_string(),
                         }
                     })?
@@ -371,6 +418,20 @@ impl AnyActerModel {
                 .into_full_event(room_id.to_owned())
             {
                 MessageLikeEvent::Original(t) => Ok(AnyActerModel::TaskList(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+            "global.acter.dev.tasklist.update" => match raw
+                .deserialize_as::<SyncTaskListUpdateEvent>()
+                .map_err(|error| {
+                    error!(?error, ?raw, "parsing task list update event failed");
+                    Error::FailedToParse {
+                        model_type: "global.acter.dev.tasklist.update".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::TaskListUpdate(t.into())),
                 _ => Err(Error::UnknownModel(None)),
             },
             "global.acter.dev.task" => match raw
@@ -468,7 +529,7 @@ impl AnyActerModel {
             "global.acter.dev.comment" => match raw
                 .deserialize_as::<SyncCommentEvent>()
                 .map_err(|error| {
-                    error!(?error, ?raw, "parsing task update event failed");
+                    error!(?error, ?raw, "parsing comment event failed");
                     Error::FailedToParse {
                         model_type: "global.acter.dev.comment".to_string(),
                         msg: error.to_string(),
@@ -482,7 +543,7 @@ impl AnyActerModel {
             "global.acter.dev.comment.update" => match raw
                 .deserialize_as::<SyncCommentUpdateEvent>()
                 .map_err(|error| {
-                    error!(?error, ?raw, "parsing task update event failed");
+                    error!(?error, ?raw, "parsing comment update event failed");
                     Error::FailedToParse {
                         model_type: "global.acter.dev.comment.update".to_string(),
                         msg: error.to_string(),
@@ -491,6 +552,36 @@ impl AnyActerModel {
                 .into_full_event(room_id.to_owned())
             {
                 MessageLikeEvent::Original(t) => Ok(AnyActerModel::CommentUpdate(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+
+            // attachments
+            "global.acter.dev.attachment" => match raw
+                .deserialize_as::<SyncAttachmentEvent>()
+                .map_err(|error| {
+                    error!(?error, ?raw, "parsing attachment event failed");
+                    Error::FailedToParse {
+                        model_type: "global.acter.dev.attachment".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::Attachment(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+            "global.acter.dev.attachment.update" => match raw
+                .deserialize_as::<SyncAttachmentUpdateEvent>()
+                .map_err(|error| {
+                    error!(?error, ?raw, "parsing attachment update event failed");
+                    Error::FailedToParse {
+                        model_type: "global.acter.dev.attachment.update".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::AttachmentUpdate(t.into())),
                 _ => Err(Error::UnknownModel(None)),
             },
 

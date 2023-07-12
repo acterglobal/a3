@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -12,11 +13,10 @@ class AuthStateNotifier extends StateNotifier<bool> {
   final Ref ref;
   AuthStateNotifier(this.ref) : super(false);
 
-  Future<void> login(
+  Future<String?> login(
     String username,
     String password,
   ) async {
-    state = true;
     final sdk = await ref.watch(sdkProvider.future);
     try {
       final client = await sdk.login(username, password);
@@ -25,10 +25,10 @@ class AuthStateNotifier extends StateNotifier<bool> {
       // inject chat dependencies once actual client is logged in.
       Get.replace(ChatRoomController(client: client));
       // Get.replace(ReceiptController(client: client));
-      state = false;
+      return null;
     } catch (e) {
       debugPrint('$e');
-      state = false;
+      return e.toString();
     }
   }
 
@@ -50,32 +50,42 @@ class AuthStateNotifier extends StateNotifier<bool> {
     }
   }
 
-  Future<void> register(
+  Future<String?> register(
     String username,
     String password,
     String displayName,
     String token,
     BuildContext context,
   ) async {
-    state = true;
     final sdk = await ref.watch(sdkProvider.future);
     try {
       final client = await sdk.register(username, password, displayName, token);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
-      state = false;
       context.goNamed(Routes.main.name);
+      return null;
     } catch (e) {
-      state = false;
+      return e.toString();
     }
   }
 
-  void logout(BuildContext context) async {
+  Future<void> logout(BuildContext context) async {
     final sdk = await ref.watch(sdkProvider.future);
-    await sdk.logout();
-    ref.read(isLoggedInProvider.notifier).update((state) => !state);
+    final stillHasClient = await sdk.logout();
+    if (stillHasClient) {
+      debugPrint('Still has clients, dropping back to other');
+      ref.read(isLoggedInProvider.notifier).update((state) => true);
+      ref.invalidate(clientProvider);
+      ref.invalidate(spacesProvider);
+      ref.read(clientProvider.notifier).state = sdk.currentClient;
+      context.goNamed(Routes.main.name);
+    } else {
+      debugPrint('No clients left, redir to onboarding');
+      ref.read(isLoggedInProvider.notifier).update((state) => false);
+      ref.invalidate(clientProvider);
+      ref.invalidate(spacesProvider);
+      context.goNamed(Routes.main.name);
+    }
     // return to guest client.
-    ref.read(clientProvider.notifier).state = sdk.currentClient;
-    context.goNamed(Routes.main.name);
   }
 }

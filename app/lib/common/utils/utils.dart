@@ -1,10 +1,85 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:async';
 
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:riverpod/riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
+
+/// An extension on [Ref] with helpful methods to add a debounce.
+extension RefDebounceExtension on Ref {
+  /// Delays an execution by a bit such that if a dependency changes multiple
+  /// time rapidly, the rest of the code is only run once.
+  Future<void> debounce(Duration duration) {
+    final completer = Completer<void>();
+    final timer = Timer(duration, () {
+      if (!completer.isCompleted) completer.complete();
+    });
+    onDispose(() {
+      timer.cancel();
+      if (!completer.isCompleted) {
+        completer.completeError(StateError('Cancelled'));
+      }
+    });
+    return completer.future;
+  }
+}
+
+DateTime kFirstDay = DateTime.utc(2010, 10, 16);
+DateTime kLastDay = DateTime.utc(2050, 12, 31);
+
+List<CalendarEvent> eventsForDay(List<CalendarEvent> events, DateTime day) {
+  return events.where((e) {
+    final startDay = toDartDatetime(e.utcStart());
+    final endDay = toDartDatetime(e.utcEnd());
+    return (startDay.difference(day).inDays == 0) ||
+        (endDay.difference(day).inDays == 0);
+  }).toList();
+}
+
+String formatDt(CalendarEvent e) {
+  final start = toDartDatetime(e.utcStart()).toLocal();
+  final end = toDartDatetime(e.utcEnd()).toLocal();
+  if (e.showWithoutTime()) {
+    final startFmt = DateFormat.yMMMd().format(start);
+    if (start.difference(end).inDays == 0) {
+      return startFmt;
+    } else {
+      final endFmt = DateFormat.yMMMd().format(end);
+      return '$startFmt - $endFmt';
+    }
+  } else {
+    final startFmt = DateFormat.yMMMd().format(start);
+    final startTimeFmt = DateFormat('hh:mm a').format(start);
+    final endTimeFmt = DateFormat('hh:mm a').format(end);
+
+    if (start.difference(end).inDays == 0) {
+      return '$startFmt $startTimeFmt - $endTimeFmt';
+    } else {
+      final endFmt = DateFormat.yMMMd().format(end);
+      return '$startFmt $startTimeFmt - $endFmt $endTimeFmt';
+    }
+  }
+}
+
+Future<bool> openLink(String target, BuildContext context) async {
+  final Uri? url = Uri.tryParse(target);
+  if (url == null || !url.hasAuthority) {
+    debugPrint('Opening internally: $url');
+    // not a valid URL, try local routing
+    await context.push(target);
+    return true;
+  } else {
+    debugPrint('Opening external URL: $url');
+    return await launchUrl(url);
+  }
+}
 
 bool isDesktop(BuildContext context) {
   return desktopPlatforms.contains(Theme.of(context).platform);
