@@ -151,6 +151,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       bindings: <LogicalKeySet, VoidCallback>{
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK): () {
           context.pushNamed(Routes.quickJump.name);
+        },
+        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyK): () {
+          context.pushNamed(Routes.quickJump.name);
         }
       },
       child: Scaffold(
