@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -23,16 +24,15 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:string_validator/string_validator.dart';
 
 class RoomPage extends ConsumerStatefulWidget {
-  final String? name;
   final Conversation conversation;
 
   const RoomPage({
     Key? key,
     required this.conversation,
-    this.name,
   }) : super(key: key);
 
   @override
@@ -40,17 +40,20 @@ class RoomPage extends ConsumerStatefulWidget {
 }
 
 class _RoomPageConsumerState extends ConsumerState<RoomPage> {
-  ChatRoomController roomController = Get.find<ChatRoomController>();
+  late final ChatRoomController roomController;
 
   @override
   void initState() {
     super.initState();
+    final client = ref.read(clientProvider)!;
+    roomController = Get.put(ChatRoomController(client: client));
     roomController.setCurrentRoom(widget.conversation);
   }
 
   @override
   void dispose() {
     roomController.setCurrentRoom(null);
+    Get.delete<ChatRoomController>();
     super.dispose();
   }
 
@@ -135,11 +138,19 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
       id: 'emoji-reaction',
       builder: (ChatRoomController controller) {
         if (!controller.isEmojiContainerVisible) {
-          return CustomChatInput(
-            roomController: controller,
-            isChatScreen: true,
-            roomName: widget.name ?? AppLocalizations.of(context)!.noName,
-            onButtonPressed: () => onSendButtonPressed(controller),
+          return Consumer(
+            builder: (context, ref, child) {
+              final convoProfile = ref
+                  .watch(chatProfileDataProvider(widget.conversation))
+                  .requireValue;
+              return CustomChatInput(
+                roomController: controller,
+                isChatScreen: true,
+                roomName: convoProfile.displayName ??
+                    AppLocalizations.of(context)!.noName,
+                onButtonPressed: () => onSendButtonPressed(controller),
+              );
+            },
           );
         }
         return Container(
@@ -383,7 +394,9 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             centerTitle: true,
             toolbarHeight: 70,
             leading: IconButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.canPop()
+                  ? context.pop()
+                  : context.goNamed(Routes.chat.name),
               icon: const Icon(Atlas.arrow_left),
             ),
             title: Column(
@@ -393,7 +406,31 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                 GetBuilder<ChatRoomController>(
                   id: 'room-profile',
                   builder: (ChatRoomController controller) {
-                    return buildRoomName(context);
+                    return Consumer(
+                      builder: (context, ref, child) {
+                        final convoProfile = ref.watch(
+                          chatProfileDataProvider(widget.conversation),
+                        );
+                        return convoProfile.when(
+                          data: (profile) {
+                            if (profile.displayName == null) {
+                              return Text(
+                                AppLocalizations.of(context)!.loadingName,
+                              );
+                            }
+                            return Text(
+                              profile.displayName ??
+                                  widget.conversation.getRoomIdStr(),
+                              overflow: TextOverflow.clip,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            );
+                          },
+                          error: (error, stackTrace) =>
+                              Text('Error loading profile $error'),
+                          loading: () => const CircularProgressIndicator(),
+                        );
+                      },
+                    );
                   },
                 ),
                 const SizedBox(height: 5),
@@ -431,7 +468,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             builder: (context) => ProfilePage(
               client: client!,
               room: widget.conversation,
-              roomName: widget.name,
               isGroup: true,
               isAdmin: true,
             ),
@@ -449,7 +485,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                 child: ActerAvatar(
                   mode: DisplayMode.User,
                   uniqueId: roomId,
-                  displayName: widget.name,
+                  displayName: data.displayName ?? roomId,
                   avatar: data.getAvatarImage(),
                   size: data.hasAvatar() ? 24 : 45,
                 ),
@@ -461,17 +497,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           );
         },
       ),
-    );
-  }
-
-  Widget buildRoomName(BuildContext context) {
-    if (widget.name == null) {
-      return Text(AppLocalizations.of(context)!.loadingName);
-    }
-    return Text(
-      widget.name!,
-      overflow: TextOverflow.clip,
-      style: Theme.of(context).textTheme.bodyLarge,
     );
   }
 

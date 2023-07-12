@@ -216,6 +216,9 @@ List<String>? asDartStringList(List<FfiString> list) {
 // ignore: constant_identifier_names
 enum NetworkStatus { NotDetermined, On, Off }
 
+// ignore: constant_identifier_names
+enum RoomVisibility { Public, Private, SpaceVisible }
+
 enum LabsFeature {
   // apps in general
   tasks,

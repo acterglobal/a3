@@ -10,7 +10,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         Comment,
         CommentDraft,
         CommentsManager,
-        CreateSpaceSettings,
         OptionText,
         RoomId,
         RoomProfile,
@@ -52,9 +51,15 @@ class ToDoController extends GetxController {
     String? avatarUri,
   ) async {
     final sdk = await ActerSdk.instance;
-    CreateSpaceSettings settings =
-        sdk.newSpaceSettings(name, description, avatarUri, null);
-    RoomId roomId = await client.createActerSpace(settings);
+    var config = sdk.newSpaceSettingsBuilder();
+    config.setName(name);
+    if (description != null) {
+      config.setTopic(description);
+    }
+    if (avatarUri != null) {
+      config.setAvatarUri(avatarUri);
+    }
+    RoomId roomId = await client.createActerSpace(config.build());
     return roomId.toString();
   }
 

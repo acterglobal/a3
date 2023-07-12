@@ -15,7 +15,7 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
         content: RichText(
           textAlign: TextAlign.left,
           text: const TextSpan(
-            text: 'Attention',
+            text: 'Attention: ',
             style: TextStyle(color: Colors.white, fontSize: 32),
             children: <TextSpan>[
               TextSpan(

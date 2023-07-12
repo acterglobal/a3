@@ -375,13 +375,12 @@ class ActerSdk {
     return _clients;
   }
 
-  ffi.CreateSpaceSettings newSpaceSettings(
-    String name,
-    String? description,
-    String? avatarUri,
-    String? parent,
-  ) {
-    return _api.newSpaceSettings(name, description, avatarUri, parent);
+  ffi.CreateConversationSettingsBuilder newConvoSettingsBuilder() {
+    return _api.newConvoSettingsBuilder();
+  }
+
+  ffi.CreateSpaceSettingsBuilder newSpaceSettingsBuilder() {
+    return _api.newSpaceSettingsBuilder();
   }
 
   String rotateLogFile() {

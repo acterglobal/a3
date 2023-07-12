@@ -77,7 +77,7 @@ final tabsProvider =
       key: const Key('chat'),
       label: 'Chat',
       icon: const Icon(Atlas.chats_thin),
-      target: Routes.space.name,
+      target: Routes.spaceChats.name,
     ),
   );
   tabs.add(

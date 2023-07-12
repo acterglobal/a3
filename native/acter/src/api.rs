@@ -59,7 +59,10 @@ pub use common::{
     duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, OptionBuffer, OptionText,
     ReactionDesc, TextDesc, ThumbnailInfo, VideoDesc,
 };
-pub use conversation::{Conversation, CreateConversationSettingsBuilder};
+pub use conversation::{
+    new_convo_settings_builder, Conversation, CreateConversationSettings,
+    CreateConversationSettingsBuilder,
+};
 pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use invitation::Invitation;
@@ -71,8 +74,8 @@ pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, MemberPermission, Room};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use spaces::{
-    new_space_settings, CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, Space,
-    SpaceRelation, SpaceRelations,
+    new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
+    RelationTargetType, Space, SpaceRelation, SpaceRelations,
 };
 pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{

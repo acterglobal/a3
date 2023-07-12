@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/pages/link_settings_page.dart';
 import 'package:acter/features/chat/pages/edit_group_page.dart';
@@ -10,12 +11,12 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends ConsumerWidget {
   final Client client;
   final Conversation room;
-  final String? roomName;
   final bool isGroup;
   final bool isAdmin;
 
@@ -25,12 +26,12 @@ class ProfilePage extends StatelessWidget {
     required this.room,
     required this.isGroup,
     required this.isAdmin,
-    this.roomName,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final ChatRoomController roomController = Get.find<ChatRoomController>();
+    final convoProfile = ref.watch(chatProfileDataProvider(room)).requireValue;
     String chatDesc =
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.';
     String roomId = room.getRoomId().toString();
@@ -69,7 +70,8 @@ class ProfilePage extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => EditGroupInfoScreen(
                       room: room,
-                      name: roomName ?? AppLocalizations.of(context)!.noName,
+                      name: convoProfile.displayName ??
+                          AppLocalizations.of(context)!.noName,
                       description: chatDesc,
                     ),
                   ),
@@ -86,7 +88,7 @@ class ProfilePage extends StatelessWidget {
                       child: ActerAvatar(
                         mode: DisplayMode.User,
                         uniqueId: roomId,
-                        displayName: roomName,
+                        displayName: convoProfile.displayName,
                         size: 20,
                       ),
                     ),
@@ -94,7 +96,7 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
             ),
-            if (roomName == null)
+            if (convoProfile.displayName == null)
               const Text('Loading Name')
             else
               GestureDetector(
@@ -104,14 +106,15 @@ class ProfilePage extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => EditGroupInfoScreen(
                         room: room,
-                        name: roomName ?? AppLocalizations.of(context)!.noName,
+                        name: convoProfile.displayName ??
+                            AppLocalizations.of(context)!.noName,
                         description: chatDesc,
                       ),
                     ),
                   );
                 },
                 child: Text(
-                  roomName!,
+                  convoProfile.displayName ?? roomId,
                   overflow: TextOverflow.clip,
                 ),
               ),
@@ -122,7 +125,8 @@ class ProfilePage extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => EditGroupInfoScreen(
                       room: room,
-                      name: roomName ?? AppLocalizations.of(context)!.noName,
+                      name: convoProfile.displayName ??
+                          AppLocalizations.of(context)!.noName,
                       description: chatDesc,
                     ),
                   ),

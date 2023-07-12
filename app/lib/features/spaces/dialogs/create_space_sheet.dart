@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -9,14 +10,12 @@ import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 
 // interface data providers
 final titleProvider = StateProvider<String>((ref) => '');
@@ -49,9 +48,9 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   Widget build(BuildContext context) {
     final _titleInput = ref.watch(titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
-    final _selectParentSpace = currentParentSpace != null;
+    final parentSelected = currentParentSpace != null;
     return SideSheet(
-      header: _selectParentSpace ? 'Create Subspace' : 'Create Space',
+      header: parentSelected ? 'Create Subspace' : 'Create Space',
       addActions: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -59,7 +58,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              _selectParentSpace
+              parentSelected
                   ? 'Create a new subspace'
                   : 'Create new space and start organizing.',
             ),
@@ -167,12 +166,12 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                 ),
                 ListTile(
                   title: Text(
-                    _selectParentSpace
+                    parentSelected
                         ? 'Parent space'
                         : 'No parent space selected',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  trailing: _selectParentSpace
+                  trailing: parentSelected
                       ? Consumer(
                           builder: (context, ref, child) =>
                               ref.watch(parentSpaceDetailsProvider).when(
@@ -222,22 +221,13 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         ElevatedButton(
           onPressed: () async {
             if (_titleInput.isEmpty) {
-              customMsgSnackbar(
-                context,
-                'Please enter space name',
-              );
+              customMsgSnackbar(context, 'Please enter space name');
               return;
             }
-            final roomId = await _handleCreateSpace(
+            await _handleCreateSpace(
               context,
               _titleInput,
               _descriptionController.text.trim(),
-            );
-            context.goNamed(
-              Routes.space.name,
-              pathParameters: {
-                'spaceId': roomId.toString(),
-              },
             );
           },
           child: const Text('Create Space'),
@@ -274,10 +264,10 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     }
   }
 
-  Future<RoomId> _handleCreateSpace(
+  Future<void> _handleCreateSpace(
     BuildContext context,
     String spaceName,
-    String? description,
+    String description,
   ) async {
     popUpDialog(
       context: context,
@@ -287,22 +277,34 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       ),
       isLoader: true,
     );
+
     final sdk = await ref.watch(sdkProvider.future);
+    var config = sdk.newSpaceSettingsBuilder();
+    config.setName(spaceName);
+    if (description.isNotEmpty) {
+      config.setTopic(description);
+    }
+    var localUri = ref.read(avatarProvider);
+    if (localUri.isNotEmpty) {
+      config.setAvatarUri(localUri); // space creation will upload it
+    }
     final parentRoomId = ref.watch(parentSpaceProvider);
-    var avatarUri = ref.read(avatarProvider);
-    var settings = sdk.newSpaceSettings(
-      spaceName,
-      description,
-      avatarUri.isNotEmpty ? avatarUri : null,
-      parentRoomId,
-    );
+    if (parentRoomId != null) {
+      config.setParent(parentRoomId);
+    }
     final client = ref.read(clientProvider)!;
-    final roomId = await client.createActerSpace(settings);
+    final roomId = await client.createActerSpace(config.build());
     if (parentRoomId != null) {
       final space = await ref.read(spaceProvider(parentRoomId).future);
       await space.addChildSpace(roomId.toString());
     }
+
     Navigator.of(context, rootNavigator: true).pop();
-    return roomId;
+    context.goNamed(
+      Routes.space.name,
+      pathParameters: {
+        'spaceId': roomId.toString(),
+      },
+    );
   }
 }

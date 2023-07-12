@@ -1,9 +1,9 @@
 import 'dart:core';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/chat/widgets/conversation_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class ChatsCard extends ConsumerWidget {
@@ -36,57 +36,8 @@ class ChatsCard extends ConsumerWidget {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: chats.length > 3 ? 3 : chats.length,
-                      itemBuilder: (context, index) {
-                        final roomId = chats[index].getRoomId().toString();
-                        final provider = chatProfileDataProvider(chats[index]);
-                        final profile = ref.watch(provider);
-                        return profile.when(
-                          data: (profile) => ListTile(
-                            onTap: () => context.go('/chat/$roomId'),
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                profile.hasAvatar()
-                                    ? CircleAvatar(
-                                        foregroundImage:
-                                            profile.getAvatarImage(),
-                                        radius: 18,
-                                      )
-                                    : SvgPicture.asset(
-                                        'assets/icon/acter.svg',
-                                        height: 32,
-                                        width: 32,
-                                      ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 8,
-                                  ),
-                                  child: Text(
-                                    profile.displayName ?? roomId,
-                                    style:
-                                        Theme.of(context).textTheme.titleSmall,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            subtitle: Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 16,
-                              ),
-                              child: const Divider(indent: 0),
-                            ),
-                          ),
-                          error: (error, stack) => ListTile(
-                            title: Text('Error loading: $roomId'),
-                            subtitle: Text('$error'),
-                          ),
-                          loading: () => ListTile(
-                            title: Text(roomId),
-                            subtitle: const Text('loading'),
-                          ),
-                        );
-                      },
+                      itemBuilder: (context, index) =>
+                          ConversationCard(room: chats[index]),
                     ),
                     chats.length > 3
                         ? Padding(
@@ -94,7 +45,8 @@ class ChatsCard extends ConsumerWidget {
                             child: OutlinedButton(
                               onPressed: () {
                                 context.goNamed(
-                                  Routes.chat.name,
+                                  Routes.spaceChats.name,
+                                  pathParameters: {'spaceId': spaceId},
                                 );
                               },
                               child:

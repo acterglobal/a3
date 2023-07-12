@@ -1076,119 +1076,27 @@ class Api {
     return tmp3;
   }
 
-  CreateSpaceSettings newSpaceSettings(
-    String name,
-    String? topic,
-    String? avatarUri,
-    String? parent,
-  ) {
-    final tmp0 = name;
-    final tmp4 = topic;
-    final tmp10 = avatarUri;
-    final tmp16 = parent;
-    var tmp1 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp9 = 0;
-    var tmp11 = 0;
-    var tmp13 = 0;
-    var tmp14 = 0;
-    var tmp15 = 0;
-    var tmp17 = 0;
-    var tmp19 = 0;
-    var tmp20 = 0;
-    var tmp21 = 0;
-    final tmp0_0 = utf8.encode(tmp0);
-    tmp2 = tmp0_0.length;
+  /// make convo settings builder
+  CreateConversationSettingsBuilder newConvoSettingsBuilder() {
+    final tmp0 = _newConvoSettingsBuilder();
+    final tmp2 = tmp0;
+    final ffi.Pointer<ffi.Void> tmp2_0 = ffi.Pointer.fromAddress(tmp2);
+    final tmp2_1 =
+        _Box(this, tmp2_0, "drop_box_CreateConversationSettingsBuilder");
+    tmp2_1._finalizer = this._registerFinalizer(tmp2_1);
+    final tmp1 = CreateConversationSettingsBuilder._(this, tmp2_1);
+    return tmp1;
+  }
 
-    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
-    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
-    tmp1_1.setAll(0, tmp0_0);
-    tmp1 = tmp1_0.address;
-    tmp3 = tmp2;
-    if (tmp4 == null) {
-      tmp5 = 0;
-    } else {
-      tmp5 = 1;
-      final tmp6 = tmp4;
-      final tmp6_0 = utf8.encode(tmp6);
-      tmp8 = tmp6_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp7_0 = this.__allocate(tmp8 * 1, 1);
-      final Uint8List tmp7_1 = tmp7_0.asTypedList(tmp8);
-      tmp7_1.setAll(0, tmp6_0);
-      tmp7 = tmp7_0.address;
-      tmp9 = tmp8;
-    }
-    if (tmp10 == null) {
-      tmp11 = 0;
-    } else {
-      tmp11 = 1;
-      final tmp12 = tmp10;
-      final tmp12_0 = utf8.encode(tmp12);
-      tmp14 = tmp12_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp13_0 = this.__allocate(tmp14 * 1, 1);
-      final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
-      tmp13_1.setAll(0, tmp12_0);
-      tmp13 = tmp13_0.address;
-      tmp15 = tmp14;
-    }
-    if (tmp16 == null) {
-      tmp17 = 0;
-    } else {
-      tmp17 = 1;
-      final tmp18 = tmp16;
-      final tmp18_0 = utf8.encode(tmp18);
-      tmp20 = tmp18_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp19_0 = this.__allocate(tmp20 * 1, 1);
-      final Uint8List tmp19_1 = tmp19_0.asTypedList(tmp20);
-      tmp19_1.setAll(0, tmp18_0);
-      tmp19 = tmp19_0.address;
-      tmp21 = tmp20;
-    }
-    final tmp22 = _newSpaceSettings(
-      tmp1,
-      tmp2,
-      tmp3,
-      tmp5,
-      tmp7,
-      tmp8,
-      tmp9,
-      tmp11,
-      tmp13,
-      tmp14,
-      tmp15,
-      tmp17,
-      tmp19,
-      tmp20,
-      tmp21,
-    );
-    final tmp24 = tmp22.arg0;
-    final tmp25 = tmp22.arg1;
-    final tmp26 = tmp22.arg2;
-    final tmp27 = tmp22.arg3;
-    final tmp28 = tmp22.arg4;
-    if (tmp24 == 0) {
-      debugAllocation("handle error", tmp25, tmp26);
-      final ffi.Pointer<ffi.Uint8> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
-      final tmp24_0 = utf8.decode(tmp25_0.asTypedList(tmp26));
-      if (tmp26 > 0) {
-        final ffi.Pointer<ffi.Void> tmp25_0;
-        tmp25_0 = ffi.Pointer.fromAddress(tmp25);
-        this.__deallocate(tmp25_0, tmp27, 1);
-      }
-      throw tmp24_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp28_0 = ffi.Pointer.fromAddress(tmp28);
-    final tmp28_1 = _Box(this, tmp28_0, "drop_box_CreateSpaceSettings");
-    tmp28_1._finalizer = this._registerFinalizer(tmp28_1);
-    final tmp23 = CreateSpaceSettings._(this, tmp28_1);
-    return tmp23;
+  /// make space settings builder
+  CreateSpaceSettingsBuilder newSpaceSettingsBuilder() {
+    final tmp0 = _newSpaceSettingsBuilder();
+    final tmp2 = tmp0;
+    final ffi.Pointer<ffi.Void> tmp2_0 = ffi.Pointer.fromAddress(tmp2);
+    final tmp2_1 = _Box(this, tmp2_0, "drop_box_CreateSpaceSettingsBuilder");
+    tmp2_1._finalizer = this._registerFinalizer(tmp2_1);
+    final tmp1 = CreateSpaceSettingsBuilder._(this, tmp2_1);
+    return tmp1;
   }
 
   late final _allocatePtr = _lookup<
@@ -6274,6 +6182,52 @@ class Api {
     return tmp7;
   }
 
+  MxcUri? __clientUploadMediaFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientUploadMediaFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_MxcUri");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = MxcUri._(this, tmp13_1);
+    return tmp7;
+  }
+
   FfiListConversation? __clientConversationsFuturePoll(
     int boxed,
     int postCobject,
@@ -6776,6 +6730,52 @@ class Api {
       throw tmp9_0;
     }
     final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  RoomId? __clientCreateConversationFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientCreateConversationFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_RoomId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = RoomId._(this, tmp13_1);
     return tmp7;
   }
 
@@ -9427,44 +9427,18 @@ class Api {
       int Function(
     int,
   )>();
-  late final _newSpaceSettingsPtr = _lookup<
-      ffi.NativeFunction<
-          _NewSpaceSettingsReturn Function(
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__new_space_settings");
+  late final _newConvoSettingsBuilderPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function()>>(
+          "__new_convo_settings_builder");
 
-  late final _newSpaceSettings = _newSpaceSettingsPtr.asFunction<
-      _NewSpaceSettingsReturn Function(
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-  )>();
+  late final _newConvoSettingsBuilder =
+      _newConvoSettingsBuilderPtr.asFunction<int Function()>();
+  late final _newSpaceSettingsBuilderPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function()>>(
+          "__new_space_settings_builder");
+
+  late final _newSpaceSettingsBuilder =
+      _newSpaceSettingsBuilderPtr.asFunction<int Function()>();
   late final _efkColorRgbaU8Ptr = _lookup<
       ffi.NativeFunction<
           _EfkColorRgbaU8Return Function(
@@ -15365,57 +15339,6 @@ class Api {
       void Function(
     int,
   )>();
-  late final _createSpaceSettingsAliasPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__CreateSpaceSettings_alias");
-
-  late final _createSpaceSettingsAlias =
-      _createSpaceSettingsAliasPtr.asFunction<
-          void Function(
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _createSpaceSettingsVisibilityPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__CreateSpaceSettings_visibility");
-
-  late final _createSpaceSettingsVisibility =
-      _createSpaceSettingsVisibilityPtr.asFunction<
-          void Function(
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _createSpaceSettingsAddInviteePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__CreateSpaceSettings_add_invitee");
-
-  late final _createSpaceSettingsAddInvitee =
-      _createSpaceSettingsAddInviteePtr.asFunction<
-          void Function(
-    int,
-    int,
-    int,
-    int,
-  )>();
   late final _publicSearchResultItemNamePtr = _lookup<
       ffi.NativeFunction<
           _PublicSearchResultItemNameReturn Function(
@@ -15570,6 +15493,249 @@ class Api {
           int Function(
     int,
   )>();
+  late final _createConversationSettingsBuilderSetNamePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateConversationSettingsBuilder_set_name");
+
+  late final _createConversationSettingsBuilderSetName =
+      _createConversationSettingsBuilderSetNamePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createConversationSettingsBuilderSetAliasPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateConversationSettingsBuilder_set_alias");
+
+  late final _createConversationSettingsBuilderSetAlias =
+      _createConversationSettingsBuilderSetAliasPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createConversationSettingsBuilderAddInviteePtr = _lookup<
+      ffi.NativeFunction<
+          _CreateConversationSettingsBuilderAddInviteeReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateConversationSettingsBuilder_add_invitee");
+
+  late final _createConversationSettingsBuilderAddInvitee =
+      _createConversationSettingsBuilderAddInviteePtr.asFunction<
+          _CreateConversationSettingsBuilderAddInviteeReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createConversationSettingsBuilderSetTopicPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateConversationSettingsBuilder_set_topic");
+
+  late final _createConversationSettingsBuilderSetTopic =
+      _createConversationSettingsBuilderSetTopicPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createConversationSettingsBuilderSetAvatarUriPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateConversationSettingsBuilder_set_avatar_uri");
+
+  late final _createConversationSettingsBuilderSetAvatarUri =
+      _createConversationSettingsBuilderSetAvatarUriPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createConversationSettingsBuilderSetParentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateConversationSettingsBuilder_set_parent");
+
+  late final _createConversationSettingsBuilderSetParent =
+      _createConversationSettingsBuilderSetParentPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createConversationSettingsBuilderBuildPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__CreateConversationSettingsBuilder_build");
+
+  late final _createConversationSettingsBuilderBuild =
+      _createConversationSettingsBuilderBuildPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _createSpaceSettingsBuilderSetNamePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateSpaceSettingsBuilder_set_name");
+
+  late final _createSpaceSettingsBuilderSetName =
+      _createSpaceSettingsBuilderSetNamePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createSpaceSettingsBuilderSetVisibilityPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateSpaceSettingsBuilder_set_visibility");
+
+  late final _createSpaceSettingsBuilderSetVisibility =
+      _createSpaceSettingsBuilderSetVisibilityPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createSpaceSettingsBuilderAddInviteePtr = _lookup<
+      ffi.NativeFunction<
+          _CreateSpaceSettingsBuilderAddInviteeReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateSpaceSettingsBuilder_add_invitee");
+
+  late final _createSpaceSettingsBuilderAddInvitee =
+      _createSpaceSettingsBuilderAddInviteePtr.asFunction<
+          _CreateSpaceSettingsBuilderAddInviteeReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createSpaceSettingsBuilderSetAliasPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateSpaceSettingsBuilder_set_alias");
+
+  late final _createSpaceSettingsBuilderSetAlias =
+      _createSpaceSettingsBuilderSetAliasPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createSpaceSettingsBuilderSetTopicPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateSpaceSettingsBuilder_set_topic");
+
+  late final _createSpaceSettingsBuilderSetTopic =
+      _createSpaceSettingsBuilderSetTopicPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createSpaceSettingsBuilderSetAvatarUriPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateSpaceSettingsBuilder_set_avatar_uri");
+
+  late final _createSpaceSettingsBuilderSetAvatarUri =
+      _createSpaceSettingsBuilderSetAvatarUriPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createSpaceSettingsBuilderSetParentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateSpaceSettingsBuilder_set_parent");
+
+  late final _createSpaceSettingsBuilderSetParent =
+      _createSpaceSettingsBuilderSetParentPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createSpaceSettingsBuilderBuildPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__CreateSpaceSettingsBuilder_build");
+
+  late final _createSpaceSettingsBuilderBuild =
+      _createSpaceSettingsBuilderBuildPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _clientStartSyncPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -15684,6 +15850,22 @@ class Api {
 
   late final _clientGetUserProfile = _clientGetUserProfilePtr.asFunction<
       _ClientGetUserProfileReturn Function(
+    int,
+  )>();
+  late final _clientUploadMediaPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_upload_media");
+
+  late final _clientUploadMedia = _clientUploadMediaPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
     int,
   )>();
   late final _clientConversationsPtr = _lookup<
@@ -15953,6 +16135,19 @@ class Api {
 
   late final _clientIncomingMessageRx = _clientIncomingMessageRxPtr.asFunction<
       _ClientIncomingMessageRxReturn Function(
+    int,
+  )>();
+  late final _clientCreateConversationPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_create_conversation");
+
+  late final _clientCreateConversation =
+      _clientCreateConversationPtr.asFunction<
+          int Function(
+    int,
     int,
   )>();
   late final _clientCreateActerSpacePtr = _lookup<
@@ -18445,6 +18640,21 @@ class Api {
     int,
     int,
   )>();
+  late final _clientUploadMediaFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientUploadMediaFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_upload_media_future_poll");
+
+  late final _clientUploadMediaFuturePoll =
+      _clientUploadMediaFuturePollPtr.asFunction<
+          _ClientUploadMediaFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _clientConversationsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientConversationsFuturePollReturn Function(
@@ -18604,6 +18814,21 @@ class Api {
 
   late final _clientLogoutFuturePoll = _clientLogoutFuturePollPtr.asFunction<
       _ClientLogoutFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientCreateConversationFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientCreateConversationFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_create_conversation_future_poll");
+
+  late final _clientCreateConversationFuturePoll =
+      _clientCreateConversationFuturePollPtr.asFunction<
+          _ClientCreateConversationFuturePollReturn Function(
     int,
     int,
     int,
@@ -32794,99 +33019,6 @@ class SyncState {
   }
 }
 
-class CreateSpaceSettings {
-  final Api _api;
-  final _Box _box;
-
-  CreateSpaceSettings._(this._api, this._box);
-
-  /// set the alias of space
-  void alias(
-    String value,
-  ) {
-    final tmp1 = value;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    _api._createSpaceSettingsAlias(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    return;
-  }
-
-  /// set the space's visibility to either Public or Private
-  void visibility(
-    String value,
-  ) {
-    final tmp1 = value;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    _api._createSpaceSettingsVisibility(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    return;
-  }
-
-  /// add the id of user that will be invited to this space
-  void addInvitee(
-    String value,
-  ) {
-    final tmp1 = value;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    _api._createSpaceSettingsAddInvitee(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    return;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
 class PublicSearchResultItem {
   final Api _api;
   final _Box _box;
@@ -33272,6 +33404,465 @@ class PublicSearchResult {
   }
 }
 
+class CreateConversationSettingsBuilder {
+  final Api _api;
+  final _Box _box;
+
+  CreateConversationSettingsBuilder._(this._api, this._box);
+
+  /// set the name of convo
+  void setName(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createConversationSettingsBuilderSetName(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the alias of convo
+  void setAlias(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createConversationSettingsBuilderSetAlias(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// append user id that will be invited to this space
+  void addInvitee(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._createConversationSettingsBuilderAddInvitee(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    return;
+  }
+
+  /// set the topic of convo
+  void setTopic(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createConversationSettingsBuilderSetTopic(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the avatar uri of convo
+  /// both remote and local are allowed
+  void setAvatarUri(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createConversationSettingsBuilderSetAvatarUri(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the parent of convo
+  void setParent(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createConversationSettingsBuilderSetParent(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  CreateConversationSettings build() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._createConversationSettingsBuilderBuild(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CreateConversationSettings");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = CreateConversationSettings._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class CreateConversationSettings {
+  final Api _api;
+  final _Box _box;
+
+  CreateConversationSettings._(this._api, this._box);
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class CreateSpaceSettingsBuilder {
+  final Api _api;
+  final _Box _box;
+
+  CreateSpaceSettingsBuilder._(this._api, this._box);
+
+  /// set the name of convo
+  void setName(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createSpaceSettingsBuilderSetName(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the space's visibility to either Public or Private
+  void setVisibility(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createSpaceSettingsBuilderSetVisibility(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// append user id that will be invited to this space
+  void addInvitee(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._createSpaceSettingsBuilderAddInvitee(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    return;
+  }
+
+  /// set the alias of space
+  void setAlias(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createSpaceSettingsBuilderSetAlias(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the topic of space
+  void setTopic(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createSpaceSettingsBuilderSetTopic(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the avatar uri of space
+  /// both remote and local are allowed
+  void setAvatarUri(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createSpaceSettingsBuilderSetAvatarUri(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the parent of space
+  void setParent(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createSpaceSettingsBuilderSetParent(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  CreateSpaceSettings build() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._createSpaceSettingsBuilderBuild(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CreateSpaceSettings");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = CreateSpaceSettings._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class CreateSpaceSettings {
+  final Api _api;
+  final _Box _box;
+
+  CreateSpaceSettings._(this._api, this._box);
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// Main entry point for `acter`.
 class Client {
   final Api _api;
@@ -33508,6 +34099,38 @@ class Client {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp2 = UserProfile._(_api, tmp7_1);
     return tmp2;
+  }
+
+  /// upload file and return remote url
+  Future<MxcUri> uploadMedia(
+    String uri,
+  ) {
+    final tmp1 = uri;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientUploadMedia(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Client_upload_media_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__clientUploadMediaFuturePoll);
+    return tmp6;
   }
 
   /// The conversations the user is involved in
@@ -34053,6 +34676,29 @@ class Client {
     final tmp2 =
         _nativeStream(tmp4_1, _api.__clientIncomingMessageRxStreamPoll);
     return tmp2;
+  }
+
+  /// create convo
+  Future<RoomId> createConversation(
+    CreateConversationSettings settings,
+  ) {
+    final tmp1 = settings;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._clientCreateConversation(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__Client_create_conversation_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 =
+        _nativeFuture(tmp5_1, _api.__clientCreateConversationFuturePoll);
+    return tmp4;
   }
 
   /// create default space
@@ -36137,19 +36783,6 @@ class _WriteLogReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _NewSpaceSettingsReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
-}
-
 class _EfkColorRgbaU8Return extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -37575,6 +38208,28 @@ class _PublicSearchResultTotalRoomCountEstimateReturn extends ffi.Struct {
   external int arg0;
   @ffi.Uint64()
   external int arg1;
+}
+
+class _CreateConversationSettingsBuilderAddInviteeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _CreateSpaceSettingsBuilderAddInviteeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class _ClientAccountReturn extends ffi.Struct {
@@ -39479,6 +40134,21 @@ class _ClientConversationFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientUploadMediaFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ClientConversationsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -39641,6 +40311,21 @@ class _ClientLogoutFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Uint8()
+  external int arg5;
+}
+
+class _ClientCreateConversationFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
   external int arg5;
 }
 

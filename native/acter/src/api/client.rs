@@ -9,21 +9,29 @@ use futures::{
     future::{join_all, ready},
     pin_mut, stream, Stream, StreamExt,
 };
-use futures_signals::signal::{channel, Mutable, MutableSignalCloned, SignalExt, SignalStream};
+use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
     config::SyncSettings,
-    event_handler::{Ctx, EventHandlerHandle},
+    event_handler::EventHandlerHandle,
     media::{MediaFormat, MediaRequest},
     room::Room as SdkRoom,
     Client as SdkClient, LoopCtrl, RumaApiError,
 };
 use ruma::{
-    api::client::error::ErrorKind, device_id, events::room::MediaSource, OwnedDeviceId,
-    OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomId, UserId,
+    api::client::{
+        error::{ErrorBody, ErrorKind},
+        Error,
+    },
+    device_id,
+    events::room::MediaSource,
+    OwnedDeviceId, OwnedMxcUri, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId,
+    RoomId, UserId,
 };
 use std::{
     collections::{BTreeMap, HashMap},
+    fs,
     ops::Deref,
+    path::PathBuf,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -31,7 +39,7 @@ use std::{
 };
 use tokio::{
     sync::{
-        broadcast::{self, Receiver},
+        broadcast::{channel, Receiver},
         Mutex, RwLock,
     },
     task::JoinHandle,
@@ -53,7 +61,6 @@ use super::{
     verification::VerificationController,
     RUNTIME,
 };
-use crate::FileDesc;
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
@@ -100,11 +107,11 @@ pub struct SpaceFilter {
 }
 
 impl SpaceFilter {
-    pub fn should_include(&self, room: &matrix_sdk::room::Room) -> bool {
+    pub fn should_include(&self, room: &SdkRoom) -> bool {
         match room {
-            matrix_sdk::room::Room::Joined(_) => self.include_joined,
-            matrix_sdk::room::Room::Left(_) => self.include_left,
-            matrix_sdk::room::Room::Invited(_) => self.include_invited,
+            SdkRoom::Joined(r) => self.include_joined,
+            SdkRoom::Left(r) => self.include_left,
+            SdkRoom::Invited(r) => self.include_invited,
         }
     }
 }
@@ -195,20 +202,20 @@ pub enum SyncError {
     DeserializationFailed,
 }
 
-impl From<&ruma::api::client::Error> for SyncError {
-    fn from(value: &ruma::api::client::Error) -> Self {
+impl From<&Error> for SyncError {
+    fn from(value: &Error) -> Self {
         match &value.body {
-            ruma::api::client::error::ErrorBody::Standard {
+            ErrorBody::Standard {
                 kind: ErrorKind::UnknownToken { soft_logout },
                 ..
             } => SyncError::Unauthorized {
                 soft_logout: *soft_logout,
             },
-            ruma::api::client::error::ErrorBody::Standard { ref message, .. } => SyncError::Other {
+            ErrorBody::Standard { ref message, .. } => SyncError::Other {
                 msg: Some(message.clone()),
             },
-            ruma::api::client::error::ErrorBody::Json(_) => SyncError::Other { msg: None },
-            ruma::api::client::error::ErrorBody::NotJson { .. } => SyncError::DeserializationFailed,
+            ErrorBody::Json(value) => SyncError::Other { msg: None },
+            ErrorBody::NotJson { .. } => SyncError::DeserializationFailed,
         }
     }
 }
@@ -233,17 +240,14 @@ impl SyncError {
 pub struct SyncState {
     handle: Mutable<Option<JoinHandle<()>>>,
     first_sync_task: Mutable<Option<JoinHandle<Result<()>>>>,
-    first_synced_rx: Arc<broadcast::Receiver<bool>>,
-    sync_error: Arc<broadcast::Receiver<SyncError>>,
+    first_synced_rx: Arc<Receiver<bool>>,
+    sync_error: Arc<Receiver<SyncError>>,
     history_loading: Mutable<HistoryLoadState>,
     room_handles: RoomHandlers,
 }
 
 impl SyncState {
-    pub fn new(
-        first_synced_rx: broadcast::Receiver<bool>,
-        sync_error: broadcast::Receiver<SyncError>,
-    ) -> Self {
+    pub fn new(first_synced_rx: Receiver<bool>, sync_error: Receiver<SyncError>) -> Self {
         Self {
             first_synced_rx: Arc::new(first_synced_rx),
             sync_error: Arc::new(sync_error),
@@ -483,10 +487,10 @@ impl Client {
         let mut device_controller = self.device_controller.clone();
         let mut conversation_controller = self.conversation_controller.clone();
 
-        let (first_synced_tx, first_synced_rx) = broadcast::channel(1);
+        let (first_synced_tx, first_synced_rx) = channel(1);
         let first_synced_arc = Arc::new(first_synced_tx);
 
-        let (sync_error_tx, sync_error_rx) = broadcast::channel(1);
+        let (sync_error_tx, sync_error_rx) = channel(1);
         let sync_error_arc = Arc::new(sync_error_tx);
 
         let initial_arc = Arc::new(AtomicBool::from(true));
@@ -693,6 +697,21 @@ impl Client {
     //         Ok(user_id.to_string())
     //     }).await?
     // }
+
+    pub async fn upload_media(&self, uri: String) -> Result<OwnedMxcUri> {
+        let client = self.core.client().clone();
+        let path = PathBuf::from(uri);
+
+        RUNTIME
+            .spawn(async move {
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().context("MIME type should be given")?;
+                let buf = fs::read(path).context("File should be read")?;
+                let response = client.media().upload(&content_type, buf).await?;
+                Ok(response.content_uri)
+            })
+            .await?
+    }
 
     pub fn user_id(&self) -> Result<OwnedUserId> {
         self.core
