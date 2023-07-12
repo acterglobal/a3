@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -10,6 +12,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,7 +20,7 @@ import 'package:go_router/go_router.dart';
 // interface data providers
 final _titleProvider = StateProvider<String>((ref) => '');
 // upload avatar path
-// final _avatarProvider = StateProvider.autoDispose<String>((ref) => '');
+final _avatarProvider = StateProvider.autoDispose<String>((ref) => '');
 // final _roomVisibilityProvider =
 //     StateProvider<RoomVisibility>((ref) => RoomVisibility.Private);
 
@@ -53,6 +56,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
   Widget build(BuildContext context) {
     final _titleInput = ref.watch(_titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
+    final _avatarUpload = ref.watch(_avatarProvider);
     return SideSheet(
       header: 'Create Chat Room',
       addActions: true,
@@ -72,10 +76,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                       child: Text('Avatar'),
                     ),
                     GestureDetector(
-                      onTap: () => customMsgSnackbar(
-                        context,
-                        'Room Avatar upload isn\'t available yet',
-                      ),
+                      onTap: _handleAvatarUpload,
                       child: Container(
                         height: 75,
                         width: 75,
@@ -83,10 +84,15 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                           color: Theme.of(context).colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(5),
                         ),
-                        child: Icon(
-                          Atlas.up_arrow_from_bracket_thin,
-                          color: Theme.of(context).colorScheme.neutral4,
-                        ),
+                        child: _avatarUpload.isNotEmpty
+                            ? Image.file(
+                                File(_avatarUpload),
+                                fit: BoxFit.cover,
+                              )
+                            : Icon(
+                                Atlas.up_arrow_from_bracket_thin,
+                                color: Theme.of(context).colorScheme.neutral4,
+                              ),
                       ),
                     ),
                   ],
@@ -217,6 +223,11 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                 await space.addChildSpace(roomId.toString());
               }
               final conversation = await client.conversation(roomId.toString());
+              final _avatarUri = ref.read(_avatarProvider);
+              if (_avatarUri.isNotEmpty) {
+                await conversation.uploadAvatar(_avatarUri);
+                debugPrint('Room: $roomId avatar set');
+              }
               Navigator.of(context, rootNavigator: true).pop();
               context.goNamed(
                 Routes.chatroom.name,
@@ -248,17 +259,17 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
     ref.read(_titleProvider.notifier).update((state) => value!);
   }
 
-  // void _handleAvatarUpload() async {
-  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
-  //     dialogTitle: 'Upload Avatar',
-  //     type: FileType.image,
-  //   );
-  //   if (result != null) {
-  //     File file = File(result.files.single.path!);
-  //     String filepath = file.path;
-  //     ref.read(_avatarProvider.notifier).update((state) => filepath);
-  //   } else {
-  //     // user cancelled the picker
-  //   }
-  // }
+  void _handleAvatarUpload() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      dialogTitle: 'Upload Avatar',
+      type: FileType.image,
+    );
+    if (result != null) {
+      File file = File(result.files.single.path!);
+      String filepath = file.path;
+      ref.read(_avatarProvider.notifier).update((state) => filepath);
+    } else {
+      // user cancelled the picker
+    }
+  }
 }
