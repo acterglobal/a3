@@ -1,8 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 
 class LocalSyncState {
   final bool syncing;

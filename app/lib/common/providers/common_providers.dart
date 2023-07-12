@@ -14,7 +14,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         Member,
         OptionText,
         UserProfile;
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Network/Connectivity Providers
