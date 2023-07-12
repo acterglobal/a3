@@ -1,9 +1,11 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat/widgets/conversation_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class SpaceChatsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -32,7 +34,10 @@ class SpaceChatsPage extends ConsumerWidget {
                   ),
                   iconSize: 28,
                   color: Theme.of(context).colorScheme.surface,
-                  onPressed: () => {},
+                  onPressed: () => context.pushNamed(
+                    Routes.createChat.name,
+                    queryParameters: {'spaceId': spaceIdOrAlias},
+                  ),
                 ),
               ],
             ),

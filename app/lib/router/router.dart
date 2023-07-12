@@ -339,6 +339,7 @@ List<RouteBase> makeRoutes(Ref ref) => [
       ),
 
       GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
         name: Routes.createChat.name,
         path: Routes.createChat.route,
         pageBuilder: (context, state) {
@@ -356,7 +357,9 @@ List<RouteBase> makeRoutes(Ref ref) => [
                 child: child,
               );
             },
-            child: const CreateChatSheet(),
+            child: CreateChatSheet(
+              initialSelectedSpaceId: state.queryParameters['spaceId'],
+            ),
           );
         },
       ),

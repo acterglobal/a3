@@ -1,20 +1,15 @@
-import 'dart:io';
-
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-// import 'package:acter/features/home/widgets/space_chip.dart';
-// import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
-// import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show RoomId;
+import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-// import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,7 +22,8 @@ final _titleProvider = StateProvider<String>((ref) => '');
 //     StateProvider<RoomVisibility>((ref) => RoomVisibility.Private);
 
 class CreateChatSheet extends ConsumerStatefulWidget {
-  const CreateChatSheet({super.key});
+  final String? initialSelectedSpaceId;
+  const CreateChatSheet({super.key, this.initialSelectedSpaceId});
 
   @override
   ConsumerState<CreateChatSheet> createState() =>
@@ -37,17 +33,26 @@ class CreateChatSheet extends ConsumerStatefulWidget {
 class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  // to determine whether the sheet is opened in space chat / chat
+  // when true will restrict to create room in the space when sheet is opened
+  bool isSpaceRoom = false;
 
   @override
   void initState() {
     super.initState();
+    if (widget.initialSelectedSpaceId != null) {
+      isSpaceRoom = true;
+      Future(() {
+        ref.read(parentSpaceProvider.notifier).state =
+            widget.initialSelectedSpaceId;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final _titleInput = ref.watch(_titleProvider);
-    // final currentParentSpace = ref.watch(parentSpaceProvider);
-    // final _selectParentSpace = currentParentSpace != null;
+    final currentParentSpace = ref.watch(parentSpaceProvider);
     return SideSheet(
       header: 'Create Chat Room',
       addActions: true,
@@ -119,37 +124,39 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                   textInputType: TextInputType.multiline,
                   maxLines: 10,
                 ),
-                // ListTile(
-                //   title: Text(
-                //     currentParentSpace != null
-                //         ? 'Selected Space'
-                //         : 'No space selected',
-                //     style: Theme.of(context).textTheme.bodyMedium,
-                //   ),
-                //   trailing: _selectParentSpace
-                //       ? Consumer(
-                //           builder: (context, ref, child) {
-                //             return ref.watch(parentSpaceDetailsProvider).when(
-                //                   data: (space) => space != null
-                //                       ? SpaceChip(space: space)
-                //                       : Text(currentParentSpace),
-                //                   error: (e, s) => Text('error: $e'),
-                //                   loading: () => const Text('loading'),
-                //                 );
-                //           },
-                //         )
-                //       : null,
-                //   onTap: () async {
-                //     final currentSpaceId = ref.read(parentSpaceProvider);
-                //     final newSelectedSpaceId = await selectSpaceDrawer(
-                //       context: context,
-                //       currentSpaceId: currentSpaceId,
-                //       title: const Text('Select space'),
-                //     );
-                //     ref.read(parentSpaceProvider.notifier).state =
-                //         newSelectedSpaceId;
-                //   },
-                // )
+                ListTile(
+                  title: Text(
+                    isSpaceRoom ? 'Selected Space' : 'No space selected',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  trailing: isSpaceRoom
+                      ? Consumer(
+                          builder: (context, ref, child) {
+                            return ref.watch(parentSpaceDetailsProvider).when(
+                                  data: (space) => space != null
+                                      ? SpaceChip(space: space)
+                                      : Text(currentParentSpace ?? ''),
+                                  error: (e, s) => Text('error: $e'),
+                                  loading: () => const Text('loading'),
+                                );
+                          },
+                        )
+                      : null,
+                  onTap: () async {
+                    if (!isSpaceRoom) {
+                      final currentSpaceId = ref.read(parentSpaceProvider);
+                      final newSelectedSpaceId = await selectSpaceDrawer(
+                        context: context,
+                        currentSpaceId: currentSpaceId,
+                        title: const Text('Select space'),
+                      );
+                      ref.read(parentSpaceProvider.notifier).state =
+                          newSelectedSpaceId;
+                    } else {
+                      return;
+                    }
+                  },
+                )
               ],
             ),
           ],
@@ -179,6 +186,9 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
             if (_titleInput.isEmpty) {
               return;
             }
+            if (isSpaceRoom && currentParentSpace == null) {
+              return;
+            }
             popUpDialog(
               context: context,
               title: Text(
@@ -200,6 +210,12 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
               }
               final client = ref.read(clientProvider)!;
               final roomId = await client.createConversation(config.build());
+              final linkSpace = ref.watch(parentSpaceProvider);
+              // add room to child of space (if given)
+              if (linkSpace != null) {
+                final space = await ref.watch(spaceProvider(linkSpace).future);
+                await space.addChildSpace(roomId.toString());
+              }
               final conversation = await client.conversation(roomId.toString());
               Navigator.of(context, rootNavigator: true).pop();
               context.goNamed(
