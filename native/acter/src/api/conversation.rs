@@ -408,7 +408,7 @@ impl CreateConversationSettingsBuilder {
 
     pub fn set_invites(&mut self, values: &mut [String]) -> Result<()> {
         let invites = values
-            .into_iter()
+            .iter_mut()
             .filter_map(|x| UserId::parse(x).ok())
             .collect();
         self.invites = Some(invites);
