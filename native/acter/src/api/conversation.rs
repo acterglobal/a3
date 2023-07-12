@@ -22,10 +22,11 @@ use matrix_sdk::{
                 message::OriginalSyncRoomMessageEvent,
                 redaction::SyncRoomRedactionEvent,
             },
-            AnySyncTimelineEvent,
+            space::parent::SpaceParentEventContent,
+            AnySyncTimelineEvent, InitialStateEvent,
         },
         serde::Raw,
-        MxcUri, OwnedRoomId, OwnedUserId, UserId,
+        MxcUri, OwnedRoomId, OwnedUserId, RoomId, UserId,
     },
     Client as SdkClient, RoomMemberships,
 };
@@ -394,6 +395,9 @@ pub struct CreateConversationSettings {
 
     #[builder(setter(strip_option), default)]
     avatar_uri: Option<String>,
+
+    #[builder(setter(strip_option), default)]
+    parent: Option<OwnedRoomId>,
 }
 
 // helper for built-in setters
@@ -424,6 +428,12 @@ impl CreateConversationSettingsBuilder {
 
     pub fn set_avatar_uri(&mut self, value: String) {
         self.avatar_uri(value);
+    }
+
+    pub fn set_parent(&mut self, value: String) {
+        if let Ok(parent) = RoomId::parse(value) {
+            self.parent(parent);
+        }
     }
 }
 
@@ -469,6 +479,14 @@ impl Client {
                     initial_states.push(InitialRoomAvatarEvent::new(avatar_content).to_raw_any());
                 }
 
+                if let Some(parent) = settings.parent {
+                    let parent_event = InitialStateEvent::<SpaceParentEventContent> {
+                        content: SpaceParentEventContent::new(true),
+                        state_key: parent,
+                    };
+                    initial_states.push(parent_event.to_raw_any());
+                };
+
                 let request = assign!(CreateRoomRequest::new(), {
                     creation_content: Some(Raw::new(&CreationContent::new())?),
                     initial_state: initial_states,
@@ -479,8 +497,8 @@ impl Client {
                     visibility: Visibility::Private,
                     topic: settings.topic,
                 });
-                let response = client.create_room(request).await?;
-                Ok(response.room_id().to_owned())
+                let room = client.create_room(request).await?;
+                Ok(room.room_id().to_owned())
             })
             .await?
     }

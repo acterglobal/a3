@@ -268,7 +268,6 @@ impl CoreClient {
             topic: topic,
         });
         let room = client.create_room(request).await?;
-
         Ok(room.room_id().to_owned())
     }
 

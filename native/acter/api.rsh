@@ -1383,6 +1383,9 @@ object CreateConversationSettingsBuilder {
     /// both remote and local are allowed
     fn set_avatar_uri(value: string);
 
+    /// set the parent of convo
+    fn set_parent(value: string);
+
     fn build() -> CreateConversationSettings;
 }
 

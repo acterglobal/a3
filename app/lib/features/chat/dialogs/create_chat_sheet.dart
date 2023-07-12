@@ -260,6 +260,10 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
       if (_avatarUri.isNotEmpty) {
         config.setAvatarUri(_avatarUri); // convo creation will upload it
       }
+      final parentRoomId = ref.watch(parentSpaceProvider);
+      if (parentRoomId != null) {
+        config.setParent(parentRoomId);
+      }
       final client = ref.read(clientProvider)!;
       final roomId = await client.createConversation(config.build());
       final linkSpace = ref.watch(parentSpaceProvider);
