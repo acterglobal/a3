@@ -1370,13 +1370,13 @@ object CreateConversationSettingsBuilder {
     /// set the name of convo
     fn set_name(value: string);
 
-    /// set the alias of room
+    /// set the alias of convo
     fn set_alias(value: string);
 
     /// set the list of user ids that will be invited to this space
     fn set_invites(values: Vec<string>) -> Result<()>;
 
-    /// set the topic of room
+    /// set the topic of convo
     fn set_topic(value: string);
 
     fn build() -> CreateConversationSettings;
