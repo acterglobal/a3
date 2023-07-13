@@ -1275,6 +1275,13 @@ object Space {
     fn leave() -> Future<Result<bool>>;
 }
 
+enum MembershipStatus {
+    Admin,
+    Mod,
+    Custom,
+    Regular
+}
+
 enum MemberPermission {
     CanSendChatMessages,
     CanSendReaction,
@@ -1290,6 +1297,7 @@ enum MemberPermission {
     CanUpdateAvatar,
     CanSetTopic,
     CanLinkSpaces,
+    CanUpdatePowerLevels,
     CanSetParentSpace
 }
 
@@ -1299,6 +1307,12 @@ object Member {
 
     /// Full user_id
     fn user_id() -> UserId;
+
+    /// The status of this member.
+    fn membership_status_str() -> string;
+
+    /// the power level this user has
+    fn power_level() -> u64;
 
     /// Whether this user is allowed to perform the given action
     //fn can(permission: MemberPermission) -> bool;

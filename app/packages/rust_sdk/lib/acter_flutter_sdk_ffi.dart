@@ -15225,6 +15225,27 @@ class Api {
       int Function(
     int,
   )>();
+  late final _memberMembershipStatusStrPtr = _lookup<
+      ffi.NativeFunction<
+          _MemberMembershipStatusStrReturn Function(
+    ffi.Int64,
+  )>>("__Member_membership_status_str");
+
+  late final _memberMembershipStatusStr =
+      _memberMembershipStatusStrPtr.asFunction<
+          _MemberMembershipStatusStrReturn Function(
+    int,
+  )>();
+  late final _memberPowerLevelPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+    ffi.Int64,
+  )>>("__Member_power_level");
+
+  late final _memberPowerLevel = _memberPowerLevelPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _memberCanStringPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -20823,6 +20844,12 @@ class Api {
 
   late final _destructureRelationTargetType = _destructureRelationTargetTypePtr
       .asFunction<_EnumWrapper Function(int)>();
+  late final _destructureMembershipStatusPtr =
+      _lookup<ffi.NativeFunction<_EnumWrapper Function(ffi.IntPtr)>>(
+          "destructure_enum_MembershipStatus");
+
+  late final _destructureMembershipStatus =
+      _destructureMembershipStatusPtr.asFunction<_EnumWrapper Function(int)>();
   late final _destructureMemberPermissionPtr =
       _lookup<ffi.NativeFunction<_EnumWrapper Function(ffi.IntPtr)>>(
           "destructure_enum_MemberPermission");
@@ -32795,6 +32822,49 @@ class Member {
     return tmp2;
   }
 
+  /// The status of this member.
+  String membershipStatusStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._memberMembershipStatusStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the power level this user has
+  int powerLevel() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._memberPowerLevel(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
   /// Whether this user is allowed to perform the given action
   bool canString(
     String permission,
@@ -36630,6 +36700,65 @@ class RelationTargetType {
   RelationTargetType._(this._api, this._box);
 }
 
+enum MembershipStatusTag {
+  Admin,
+  Mod,
+  Custom,
+  Regular,
+}
+
+class MembershipStatus {
+  final Api _api;
+  final _Box _box;
+
+  MembershipStatusTag? _tag;
+  Object? _inner;
+
+  void destructureSelf() {
+    final parts = this._api._destructureMembershipStatus(this._box.borrow());
+    switch (parts.tag) {
+      case 0:
+        this._tag = MembershipStatusTag.Admin;
+
+        break;
+      case 1:
+        this._tag = MembershipStatusTag.Mod;
+
+        break;
+      case 2:
+        this._tag = MembershipStatusTag.Custom;
+
+        break;
+      case 3:
+        this._tag = MembershipStatusTag.Regular;
+
+        break;
+      default:
+        throw new StateError(
+            "Destructuring enum gave back an invalid tag: ${parts.tag}");
+    }
+  }
+
+  /// The tag of this enum object
+  MembershipStatusTag get tag {
+    if (_tag == null) {
+      destructureSelf();
+    }
+    return _tag!;
+  }
+
+  /// The data contained inside this enum object. You will need
+  /// to cast it to the correct type based on the value of tag
+  Object? get inner {
+    if (_inner == null) {
+      destructureSelf();
+    }
+    return _inner;
+  }
+
+  MembershipStatus._(this._api, this._box);
+}
+
 enum MemberPermissionTag {
   CanSendChatMessages,
   CanSendReaction,
@@ -36645,6 +36774,7 @@ enum MemberPermissionTag {
   CanUpdateAvatar,
   CanSetTopic,
   CanLinkSpaces,
+  CanUpdatePowerLevels,
   CanSetParentSpace,
 }
 
@@ -36715,6 +36845,10 @@ class MemberPermission {
 
         break;
       case 14:
+        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
+
+        break;
+      case 15:
         this._tag = MemberPermissionTag.CanSetParentSpace;
 
         break;
@@ -38108,6 +38242,15 @@ class _SpacePinDraftReturn extends ffi.Struct {
   external int arg3;
   @ffi.Int64()
   external int arg4;
+}
+
+class _MemberMembershipStatusStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _PublicSearchResultItemNameReturn extends ffi.Struct {

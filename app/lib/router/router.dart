@@ -19,6 +19,7 @@ import 'package:acter/features/pins/pages/pins_page.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/dialogs/invite_to_space_dialog.dart';
+import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/spaces/dialogs/create_space_sheet.dart';
 import 'package:acter/features/news/pages/simple_post.dart';
 import 'package:acter/features/news/pages/news_page.dart';
@@ -579,6 +580,22 @@ List<RouteBase> makeRoutes(Ref ref) => [
                   return NoTransitionPage(
                     key: state.pageKey,
                     child: RelatedSpacesPage(
+                      spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
+                name: Routes.spaceMembers.name,
+                path: Routes.spaceMembers.route,
+                redirect: authGuardRedirect,
+                pageBuilder: (context, state) {
+                  ref
+                      .read(selectedTabKeyProvider.notifier)
+                      .switchTo(const Key('members'));
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: SpaceMembersPage(
                       spaceIdOrAlias: state.pathParameters['spaceId']!,
                     ),
                   );
