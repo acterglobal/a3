@@ -56,12 +56,12 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
                 pathParameters: {'roomId': roomId},
                 extra: widget.room.conversation,
               ),
-              leading: data.hasAvatar()
+              leading: profile.hasAvatar()
                   ? ActerAvatar(
                       uniqueId: roomId,
                       mode: DisplayMode.GroupChat,
-                      displayName: data.displayName ?? roomId,
-                      avatar: data.getAvatarImage(),
+                      displayName: profile.displayName ?? roomId,
+                      avatar: profile.getAvatarImage(),
                       size: 36,
                     )
                   : Container(
