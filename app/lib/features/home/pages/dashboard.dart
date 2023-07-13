@@ -68,7 +68,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
     bool isActive(f) => provider.isActive(f);
 
     List<Widget> children = [];
-    if (isActive(LabsFeature.tasks)) {
+    if (false && isActive(LabsFeature.tasks)) {
       children.add(const MyTasksSection(limit: 5));
     }
 

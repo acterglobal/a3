@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -10,8 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class CustomChatInput extends StatelessWidget {
   static const List<Icon> _attachmentIcons = [
@@ -534,8 +537,12 @@ class EmojiPickerWidget extends StatelessWidget {
               columns: 7,
               verticalSpacing: 0,
               horizontalSpacing: 0,
-              initCategory: Category.SMILEYS,
-              showRecentsTab: true,
+              checkPlatformCompatibility: false,
+              emojiTextStyle: GoogleFonts.notoColorEmoji(),
+              initCategory: Category.RECENT,
+              emojiSizeMax: 32 * ((!kIsWeb && Platform.isIOS) ? 1.30 : 1.0),
+              bgColor: Theme.of(context).colorScheme.background,
+              recentTabBehavior: RecentTabBehavior.RECENT,
               recentsLimit: 28,
               noRecents: Text(
                 AppLocalizations.of(context)!.noRecents,

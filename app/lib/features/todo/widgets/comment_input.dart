@@ -9,6 +9,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 
 class CommentInput extends ConsumerStatefulWidget {
@@ -168,8 +169,10 @@ class CommentInputState extends ConsumerState<CommentInput> {
                     backspaceColor: Colors.blue,
                     skinToneDialogBgColor: Colors.white,
                     skinToneIndicatorColor: Colors.grey,
+                    checkPlatformCompatibility: false,
+                    emojiTextStyle: GoogleFonts.notoColorEmoji(),
                     enableSkinTones: true,
-                    showRecentsTab: true,
+                    recentTabBehavior: RecentTabBehavior.RECENT,
                     recentsLimit: 28,
                     noRecents: const Text(
                       'No Recents',

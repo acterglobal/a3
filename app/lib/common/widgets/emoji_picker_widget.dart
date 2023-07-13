@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 
 class EmojiPickerWidget extends StatelessWidget {
@@ -37,10 +38,12 @@ class EmojiPickerWidget extends StatelessWidget {
                   onSelected(emoji.emoji),
               config: Config(
                 columns: 7,
+                emojiTextStyle: GoogleFonts.notoColorEmoji(),
+                checkPlatformCompatibility: false,
                 emojiSizeMax: 32 * ((!kIsWeb && Platform.isIOS) ? 1.30 : 1.0),
                 initCategory: Category.RECENT,
-                bgColor: Colors.white,
-                showRecentsTab: false,
+                bgColor: Theme.of(context).colorScheme.background,
+                recentTabBehavior: RecentTabBehavior.RECENT,
                 recentsLimit: 28,
               ),
             ),
