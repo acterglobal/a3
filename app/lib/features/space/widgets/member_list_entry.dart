@@ -1,24 +1,202 @@
+import 'dart:async';
+
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:go_router/go_router.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/services.dart';
 
+class ChangePowerLevel extends StatefulWidget {
+  final Member member;
+  final Member? myMembership;
+  const ChangePowerLevel({
+    Key? key,
+    required this.member,
+    this.myMembership,
+  }) : super(key: key);
+
+  @override
+  _ChangePowerLevelState createState() => _ChangePowerLevelState();
+}
+
+class _ChangePowerLevelState extends State<ChangePowerLevel> {
+  final TextEditingController dropDownMenuCtrl = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  String? currentMemberStatus;
+  int? customValue;
+
+  @override
+  void initState() {
+    super.initState();
+    currentMemberStatus = widget.member.membershipStatusStr();
+  }
+
+  void _updateMembershipStatus(String? value) {
+    setState(() {
+      currentMemberStatus = value;
+    });
+  }
+
+  void _newCustomLevel(String? value) {
+    setState(() {
+      customValue = value != null ? int.tryParse(value) : null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final member = widget.member;
+    final memberStatus = member.membershipStatusStr();
+    final currentPowerLevel = member.powerLevel();
+    return AlertDialog(
+      title: const Text('Update Power level'),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Change the power level of'),
+            Text(member.userId().toString()),
+            // Row(
+            //   children: [
+            Text('from $memberStatus ($currentPowerLevel) to '),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: DropdownButtonFormField(
+                value: currentMemberStatus,
+                onChanged: _updateMembershipStatus,
+                items: const [
+                  DropdownMenuItem(
+                    child: Text('Admin'),
+                    // leadingIcon: Icon(Atlas.crown_winner_thin),
+                    value: 'Admin',
+                  ),
+                  DropdownMenuItem(
+                    child: Text('Moderator'),
+                    // leadingIcon: Icon(Atlas.shield_star_win_thin),
+                    value: 'Mod',
+                  ),
+                  DropdownMenuItem(
+                    child: Text('Regular'),
+                    value: 'Regular',
+                  ),
+                  DropdownMenuItem(
+                    child: Text('Custom'),
+                    value: 'Custom',
+                  ),
+                ],
+              ),
+            ),
+            Visibility(
+              visible: currentMemberStatus == 'Custom',
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    hintText: 'any number',
+                    labelText: 'Custom power level',
+                  ),
+                  onChanged: _newCustomLevel,
+                  initialValue: currentPowerLevel.toString(),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(signed: true),
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ], // Only numbers
+                  validator: (String? value) {
+                    return currentMemberStatus == 'Custom' &&
+                            (value == null || int.tryParse(value) == null)
+                        ? 'You need to enter the custom value as a number.'
+                        : null;
+                  },
+                ),
+              ),
+            ),
+          ],
+          //   ),
+          // ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.pop(context, null),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              final freshMemberStatus = widget.member.membershipStatusStr();
+              if (freshMemberStatus == currentMemberStatus) {
+                // nothing to do, all the same.
+                Navigator.pop(context, null);
+                return;
+              }
+              int? newValue;
+              if (currentMemberStatus == 'Admin') {
+                newValue = 100;
+              } else if (currentMemberStatus == 'Mod') {
+                newValue = 50;
+              } else if (currentMemberStatus == 'Regular') {
+                newValue = 0;
+              } else {
+                newValue = customValue ?? 0;
+              }
+
+              if (currentPowerLevel == newValue) {
+                // nothing to be done.
+                newValue = null;
+              }
+
+              Navigator.pop(context, newValue);
+              return;
+            }
+          },
+          child: const Text('Submit'),
+        ),
+      ],
+    );
+  }
+}
+
 class MemberListEntry extends ConsumerWidget {
   final Member member;
+  final Space space;
   final Member? myMembership;
 
   const MemberListEntry({
     super.key,
     required this.member,
+    required this.space,
     this.myMembership,
   });
+
+  Future<void> changePowerLevel(BuildContext context, WidgetRef ref) async {
+    final newPowerlevel = await showDialog<int?>(
+      context: context,
+      builder: (BuildContext context) =>
+          ChangePowerLevel(member: member, myMembership: myMembership),
+    );
+    if (newPowerlevel != null) {
+      final userId = member.userId().toString();
+      popUpDialog(
+        context: context,
+        title: Text(
+          'Updating Power level of $userId',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        isLoader: true,
+      );
+      await space.updatePowerLevel(userId, newPowerlevel);
+      Navigator.of(context, rootNavigator: true).pop();
+      customMsgSnackbar(context, 'PowerLevel update submitted');
+    }
+  }
 
   Widget submenu(BuildContext context, WidgetRef ref) {
     final List<PopupMenuEntry> submenu = [];
@@ -45,10 +223,9 @@ class MemberListEntry extends ConsumerWidget {
       if (myMembership!.canString('CanUpdatePowerLevels')) {
         submenu.add(
           PopupMenuItem(
-            onTap: () => customMsgSnackbar(
-              context,
-              'Power Level change is not implemented yet',
-            ),
+            onTap: () async {
+              await changePowerLevel(context, ref);
+            },
             child: const Text('Change Power Level'),
           ),
         );

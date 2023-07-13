@@ -70,6 +70,7 @@ class SpaceMembersPage extends ConsumerWidget {
                   final member = members[index];
                   return MemberListEntry(
                     member: member,
+                    space: space,
                     myMembership: myMembership.valueOrNull,
                   );
                 },

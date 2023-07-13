@@ -6,7 +6,6 @@ import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
-import 'package:acter/features/home/widgets/my_tasks.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/providers/space_providers.dart';
