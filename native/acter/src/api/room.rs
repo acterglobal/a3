@@ -40,13 +40,7 @@ use matrix_sdk::{
 };
 use matrix_sdk_ui::timeline::RoomExt;
 use ruma::events::{EventContent, StaticEventContent};
-use std::{
-    fs::{File, Permissions},
-    io::Write,
-    ops::Deref,
-    path::PathBuf,
-    sync::Arc,
-};
+use std::{fs, io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tracing::{error, info};
 
 use super::{
@@ -219,7 +213,7 @@ impl Room {
 
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("MIME type should be given")?;
-                let buf = std::fs::read(path).context("File should be read")?;
+                let buf = fs::read(path).context("File should be read")?;
                 let upload_resp = client.media().upload(&content_type, buf).await?;
 
                 let info = assign!(AvatarImageInfo::new(), {
@@ -586,7 +580,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let image_buf = std::fs::read(path)?;
+                let image_buf = fs::read(path)?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, image_buf, config)
                     .await?;
@@ -662,7 +656,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let audio_buf = std::fs::read(path)?;
+                let audio_buf = fs::read(path)?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, audio_buf, config)
                     .await?;
@@ -745,7 +739,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let video_buf = std::fs::read(path)?;
+                let video_buf = fs::read(path)?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, video_buf, config)
                     .await?;
@@ -819,7 +813,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let file_buf = std::fs::read(path)?;
+                let file_buf = fs::read(path)?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, file_buf, config)
                     .await?;
@@ -1003,7 +997,7 @@ impl Room {
                 };
                 let mut path = PathBuf::from(dir_path.clone());
                 path.push(name);
-                let mut file = File::create(path.clone())?;
+                let mut file = fs::File::create(path.clone())?;
                 let data = client.media().get_media_content(&request, false).await?;
                 file.write_all(&data)?;
                 let key = [
@@ -1419,7 +1413,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let image_buf = std::fs::read(path)?;
+                let image_buf = fs::read(path)?;
 
                 let timeline_event = room.event(&event_id).await?;
 
@@ -1485,7 +1479,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let image_buf = std::fs::read(path)?;
+                let image_buf = fs::read(path)?;
 
                 let timeline_event = room.event(&event_id).await?;
 
@@ -1557,7 +1551,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let video_buf = std::fs::read(path)?;
+                let video_buf = fs::read(path)?;
 
                 let timeline_event = room.event(&event_id).await?;
 
@@ -1620,7 +1614,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let file_buf = std::fs::read(path)?;
+                let file_buf = fs::read(path)?;
 
                 let timeline_event = room.event(&event_id).await?;
 

@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 // import 'package:acter/features/chat/providers/notifiers/receipt_notifier.dart';
-import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/models/joined_room/joined_room.dart';
 // import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -12,7 +12,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class ConversationCard extends ConsumerStatefulWidget {
@@ -46,12 +46,16 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
         ref.watch(chatProfileDataProvider(widget.room.conversation));
     // ToDo: UnreadCounter
     return convoProfile.when(
-      data: (data) {
+      data: (profile) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              onTap: () => handleTap(context),
+              onTap: () => context.goNamed(
+                Routes.chatroom.name,
+                pathParameters: {'roomId': roomId},
+                extra: widget.room.conversation,
+              ),
               leading: data.hasAvatar()
                   ? ActerAvatar(
                       uniqueId: roomId,
@@ -74,7 +78,7 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
                       ),
                     ),
               title: Text(
-                data.displayName ?? roomId,
+                profile.displayName ?? roomId,
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium!
@@ -104,18 +108,6 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
       },
       error: (error, stackTrace) => const Text('Failed to load Conversation'),
       loading: () => const CircularProgressIndicator(),
-    );
-  }
-
-  void handleTap(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RoomPage(
-          conversation: widget.room.conversation,
-          name: widget.room.displayName,
-        ),
-      ),
     );
   }
 

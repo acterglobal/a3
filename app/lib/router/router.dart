@@ -5,7 +5,9 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
+import 'package:acter/features/chat/dialogs/create_chat_sheet.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
+import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/events/dialogs/create_event_sheet.dart';
 import 'package:acter/features/events/dialogs/edit_event_sheet.dart';
 import 'package:acter/features/events/pages/event_page.dart';
@@ -15,6 +17,7 @@ import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/pins/dialogs/create_pin_sheet.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
+import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/dialogs/invite_to_space_dialog.dart';
 import 'package:acter/features/spaces/dialogs/create_space_sheet.dart';
 import 'package:acter/features/news/pages/simple_post.dart';
@@ -43,6 +46,7 @@ import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/todo/pages/create_task_sidesheet.dart';
 import 'package:acter/features/todo/pages/todo_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod/riverpod.dart';
@@ -319,6 +323,47 @@ List<RouteBase> makeRoutes(Ref ref) => [
         ),
       ),
 
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        name: Routes.chatroom.name,
+        path: Routes.chatroom.route,
+        redirect: authGuardRedirect,
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: RoomPage(
+              conversation: state.extra as Conversation,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        name: Routes.createChat.name,
+        path: Routes.createChat.route,
+        pageBuilder: (context, state) {
+          return SideSheetPage(
+            key: state.pageKey,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: Tween(
+                  begin: const Offset(1, 0),
+                  end: const Offset(0, 0),
+                ).animate(
+                  animation,
+                ),
+                child: child,
+              );
+            },
+            child: CreateChatSheet(
+              initialSelectedSpaceId: state.queryParameters['spaceId'],
+            ),
+          );
+        },
+      ),
+
       /// Application shell
       ShellRoute(
         navigatorKey: shellNavigatorKey,
@@ -433,17 +478,6 @@ List<RouteBase> makeRoutes(Ref ref) => [
               return NoTransitionPage(
                 key: state.pageKey,
                 child: const SearchPage(),
-              );
-            },
-          ),
-          GoRoute(
-            name: Routes.chatroom.name,
-            path: Routes.chatroom.route,
-            redirect: authGuardRedirect,
-            pageBuilder: (context, state) {
-              return NoTransitionPage(
-                key: state.pageKey,
-                child: const ChatPage(),
               );
             },
           ),
@@ -583,6 +617,22 @@ List<RouteBase> makeRoutes(Ref ref) => [
                 },
               ),
               GoRoute(
+                name: Routes.spaceChats.name,
+                path: Routes.spaceChats.route,
+                redirect: authGuardRedirect,
+                pageBuilder: (context, state) {
+                  ref
+                      .read(selectedTabKeyProvider.notifier)
+                      .switchTo(const Key('chat'));
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: SpaceChatsPage(
+                      spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
                 name: Routes.space.name,
                 path: Routes.space.route,
                 redirect: authGuardRedirect,
@@ -624,6 +674,7 @@ List<RouteBase> makeRoutes(Ref ref) => [
               );
             },
           ),
+
           GoRoute(
             name: Routes.main.name,
             path: Routes.main.route,

@@ -1,8 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 
 class LocalSyncState {
   final bool syncing;
@@ -23,7 +21,6 @@ class SyncNotifier extends StateNotifier<LocalSyncState> {
   }
 
   Future<void> startSync(Client client, Ref ref) async {
-    Get.put(ChatRoomController(client: client));
     // Get.put(ReceiptController(client: state!));
     // on release we have a really weird behavior, where, if we schedule
     // any async call in rust too early, they just pend forever. this

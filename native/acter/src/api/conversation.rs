@@ -16,19 +16,21 @@ use matrix_sdk::{
         events::{
             receipt::{ReceiptThread, ReceiptType},
             room::{
+                avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
                 encrypted::OriginalSyncRoomEncryptedEvent,
                 member::{MembershipState, OriginalSyncRoomMemberEvent},
                 message::OriginalSyncRoomMessageEvent,
                 redaction::SyncRoomRedactionEvent,
             },
-            AnySyncTimelineEvent,
+            space::parent::SpaceParentEventContent,
+            AnySyncTimelineEvent, InitialStateEvent,
         },
         serde::Raw,
-        OwnedRoomId, OwnedUserId,
+        MxcUri, OwnedRoomId, OwnedUserId, RoomId, UserId,
     },
     Client as SdkClient, RoomMemberships,
 };
-use std::{ops::Deref, sync::Arc};
+use std::{fs, ops::Deref, path::PathBuf, sync::Arc};
 use tokio::sync::Mutex;
 use tracing::{error, info};
 
@@ -387,17 +389,104 @@ pub struct CreateConversationSettings {
 
     #[builder(setter(into, strip_option), default)]
     alias: Option<String>,
+
+    #[builder(setter(into, strip_option), default)]
+    topic: Option<String>,
+
+    #[builder(setter(strip_option), default)]
+    avatar_uri: Option<String>,
+
+    #[builder(setter(strip_option), default)]
+    parent: Option<OwnedRoomId>,
+}
+
+// helper for built-in setters
+impl CreateConversationSettingsBuilder {
+    pub fn set_name(&mut self, value: String) {
+        self.name(value);
+    }
+
+    pub fn set_alias(&mut self, value: String) {
+        self.alias(value);
+    }
+
+    pub fn set_topic(&mut self, value: String) {
+        self.topic(value);
+    }
+
+    pub fn add_invitee(&mut self, value: String) -> Result<()> {
+        if let Ok(user_id) = UserId::parse(value) {
+            if let Some(mut invites) = self.invites.clone() {
+                invites.push(user_id);
+                self.invites = Some(invites);
+            } else {
+                self.invites = Some(vec![user_id]);
+            }
+        }
+        Ok(())
+    }
+
+    pub fn set_avatar_uri(&mut self, value: String) {
+        self.avatar_uri(value);
+    }
+
+    pub fn set_parent(&mut self, value: String) {
+        if let Ok(parent) = RoomId::parse(value) {
+            self.parent(parent);
+        }
+    }
+}
+
+pub fn new_convo_settings_builder() -> CreateConversationSettingsBuilder {
+    CreateConversationSettingsBuilder::default()
 }
 
 impl Client {
     pub async fn create_conversation(
         &self,
-        settings: CreateConversationSettings,
+        settings: Box<CreateConversationSettings>,
     ) -> Result<OwnedRoomId> {
         let client = self.core.client().clone();
+
         RUNTIME
             .spawn(async move {
-                let initial_states = default_acter_conversation_states();
+                let mut initial_states = default_acter_conversation_states();
+
+                if let Some(avatar_uri) = settings.avatar_uri {
+                    let uri = Box::<MxcUri>::from(avatar_uri.as_str());
+                    let avatar_content = if uri.is_valid() {
+                        // remote uri
+                        assign!(RoomAvatarEventContent::new(), {
+                            url: Some((*uri).to_owned()),
+                        })
+                    } else {
+                        // local uri
+                        let path = PathBuf::from(avatar_uri);
+                        let guess = mime_guess::from_path(path.clone());
+                        let content_type = guess.first().expect("MIME type should be given");
+                        let buf = fs::read(path).expect("File should be read");
+                        let upload_resp = client.media().upload(&content_type, buf).await?;
+
+                        let info = assign!(ImageInfo::new(), {
+                            blurhash: upload_resp.blurhash,
+                            mimetype: Some(content_type.to_string()),
+                        });
+                        assign!(RoomAvatarEventContent::new(), {
+                            url: Some(upload_resp.content_uri),
+                            info: Some(Box::new(info)),
+                        })
+                    };
+                    initial_states.push(InitialRoomAvatarEvent::new(avatar_content).to_raw_any());
+                }
+
+                if let Some(parent) = settings.parent {
+                    let parent_event = InitialStateEvent::<SpaceParentEventContent> {
+                        content: SpaceParentEventContent::new(true),
+                        state_key: parent,
+                    };
+                    initial_states.push(parent_event.to_raw_any());
+                };
+
                 let request = assign!(CreateRoomRequest::new(), {
                     creation_content: Some(Raw::new(&CreationContent::new())?),
                     initial_state: initial_states,
@@ -406,9 +495,10 @@ impl Client {
                     room_alias_name: settings.alias,
                     name: settings.name,
                     visibility: Visibility::Private,
+                    topic: settings.topic,
                 });
-                let response = client.create_room(request).await?;
-                Ok(response.room_id().to_owned())
+                let room = client.create_room(request).await?;
+                Ok(room.room_id().to_owned())
             })
             .await?
     }

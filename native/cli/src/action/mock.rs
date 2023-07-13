@@ -6,7 +6,10 @@ use acter::{
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
-use matrix_sdk::ruma::{api::client::room::Visibility, OwnedUserId};
+use matrix_sdk::{
+    ruma::{api::client::room::Visibility, OwnedUserId},
+    HttpError,
+};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sqlite::make_store_config;
 use std::collections::HashMap;
@@ -212,10 +215,8 @@ impl<'a> Mock<'a> {
             Ok(ops_id) => {
                 info!("Ops Room Id: {:?}", ops_id);
             }
-            Err(x) if x.is::<matrix_sdk::HttpError>() => {
-                let inner = x
-                    .downcast::<matrix_sdk::HttpError>()
-                    .expect("already checked");
+            Err(x) if x.is::<HttpError>() => {
+                let inner = x.downcast::<HttpError>().expect("already checked");
                 error!("Problem creating Ops Room: {:?}", inner);
             }
             Err(e) => {
@@ -234,10 +235,8 @@ impl<'a> Mock<'a> {
             Ok(promenade_room_id) => {
                 info!("Promenade Room Id: {:?}", promenade_room_id);
             }
-            Err(x) if x.is::<matrix_sdk::HttpError>() => {
-                let inner = x
-                    .downcast::<matrix_sdk::HttpError>()
-                    .expect("already checked");
+            Err(x) if x.is::<HttpError>() => {
+                let inner = x.downcast::<HttpError>().expect("already checked");
                 error!("Problem creating Promenade Room: {:?}", inner);
             }
             Err(e) => {
@@ -256,10 +255,8 @@ impl<'a> Mock<'a> {
             Ok(quarks_id) => {
                 info!("Quarks Room Id: {:?}", quarks_id);
             }
-            Err(x) if x.is::<matrix_sdk::HttpError>() => {
-                let inner = x
-                    .downcast::<matrix_sdk::HttpError>()
-                    .expect("already checked");
+            Err(x) if x.is::<HttpError>() => {
+                let inner = x.downcast::<HttpError>().expect("already checked");
                 error!("Problem creating Quarks Room: {:?}", inner);
             }
             Err(e) => {
