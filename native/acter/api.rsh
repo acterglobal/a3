@@ -1336,9 +1336,9 @@ object Account {
     /// The avatar of the client
     fn avatar() -> Future<Result<OptionBuffer>>;
 
-    /// Change the avatar of the account
-    /// provide the content_type as MIME, e.g. `image/jpeg`
-    fn upload_avatar(content_type: string, data: Vec<u8>) -> Future<Result<MxcUri>>;
+    /// Change the avatar of the account with the provided
+    /// local file path
+    fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
 }
 
 object SyncState {
