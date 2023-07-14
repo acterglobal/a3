@@ -115,24 +115,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     );
   }
 
-  Widget avatarBuilder(String userId) {
-    var profile = roomController.getUserProfile(userId);
-    return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: SizedBox(
-        height: 28,
-        width: 28,
-        child: ActerAvatar(
-          mode: DisplayMode.User,
-          uniqueId: userId,
-          displayName: profile != null ? profile.displayName ?? '' : null,
-          avatar: profile?.getAvatarImage(),
-          size: 50,
-        ),
-      ),
-    );
-  }
-
   Widget customBottomWidget(BuildContext context) {
     return GetBuilder<ChatRoomController>(
       id: 'emoji-reaction',
@@ -432,7 +414,17 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                 GetBuilder<ChatRoomController>(
                   id: 'active-members',
                   builder: (ChatRoomController controller) {
-                    return buildActiveMembers(context);
+                    if (controller.activeMembers.isEmpty) {
+                      return const SizedBox(
+                        height: 15,
+                        width: 15,
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return Text(
+                      '${controller.activeMembers.length} ${AppLocalizations.of(context)!.members}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    );
                   },
                 ),
               ],
@@ -446,7 +438,128 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               ),
             ],
           ),
-          body: Obx(() => buildBody(context)),
+          body: Obx(() {
+            final client = ref.watch(clientProvider);
+            if (roomController.isLoading.isTrue) {
+              return const Center(
+                child: SizedBox(
+                  height: 15,
+                  width: 15,
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            return GetBuilder<ChatRoomController>(
+              id: 'Chat',
+              builder: (ChatRoomController controller) {
+                return Stack(
+                  children: [
+                    Chat(
+                      customBottomWidget: customBottomWidget(context),
+                      textMessageBuilder: textMessageBuilder,
+                      l10n: ChatL10nEn(
+                        emptyChatPlaceholder: '',
+                        attachmentButtonAccessibilityLabel: '',
+                        fileButtonAccessibilityLabel: '',
+                        inputPlaceholder: AppLocalizations.of(context)!.message,
+                        sendButtonAccessibilityLabel: '',
+                      ),
+                      messages: controller.getMessages(),
+                      typingIndicatorOptions: TypingIndicatorOptions(
+                        customTypingIndicator: GetBuilder<ChatRoomController>(
+                          id: 'typing indicator',
+                          builder: (ChatRoomController controller) {
+                            return TypeIndicator(
+                              bubbleAlignment: BubbleRtlAlignment.right,
+                              showIndicator: controller.typingUsers.isNotEmpty,
+                              options: TypingIndicatorOptions(
+                                animationSpeed:
+                                    const Duration(milliseconds: 800),
+                                typingUsers: controller.typingUsers,
+                                typingMode: TypingIndicatorMode.name,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      onSendPressed: (types.PartialText partialText) {},
+                      user: types.User(id: client!.userId().toString()),
+                      // disable image preview
+                      disableImageGallery: true,
+                      //custom avatar builder
+                      avatarBuilder: (userId) {
+                        var profile = roomController.getUserProfile(userId);
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: SizedBox(
+                            height: 28,
+                            width: 28,
+                            child: ActerAvatar(
+                              mode: DisplayMode.User,
+                              uniqueId: userId,
+                              displayName: profile != null
+                                  ? profile.displayName ?? ''
+                                  : null,
+                              avatar: profile?.getAvatarImage(),
+                              size: 50,
+                            ),
+                          ),
+                        );
+                      },
+                      bubbleBuilder: (
+                        child, {
+                        required message,
+                        required nextMessageInGroup,
+                      }) {
+                        return GetBuilder<ChatRoomController>(
+                          id: 'chat-bubble',
+                          builder: (context) {
+                            final client = ref.watch(clientProvider);
+                            return BubbleBuilder(
+                              userId: client!.userId().toString(),
+                              child: child,
+                              message: message,
+                              nextMessageInGroup: nextMessageInGroup,
+                              enlargeEmoji:
+                                  message.metadata!['enlargeEmoji'] ?? false,
+                            );
+                          },
+                        );
+                      },
+                      imageMessageBuilder: imageMessageBuilder,
+                      customMessageBuilder: customMessageBuilder,
+                      showUserAvatars: true,
+                      onAttachmentPressed: () =>
+                          handleAttachmentPressed(context),
+                      onAvatarTap: (types.User user) {
+                        customMsgSnackbar(
+                          context,
+                          'Chat Profile view is not implemented yet',
+                        );
+                      },
+                      onPreviewDataFetched: controller.handlePreviewDataFetched,
+                      onMessageTap: controller.handleMessageTap,
+                      onEndReached: controller.handleEndReached,
+                      onEndReachedThreshold: 0.75,
+                      onBackgroundTap: () {
+                        if (controller.isEmojiContainerVisible) {
+                          controller.toggleEmojiContainer();
+                          roomController.replyMessageWidget = null;
+                          roomController.repliedToMessage = null;
+                        }
+                      },
+                      emptyState: const EmptyHistoryPlaceholder(),
+                      //Custom Theme class, see lib/common/store/chatTheme.dart
+                      theme: const ActerChatTheme(
+                        attachmentButtonIcon: Icon(Atlas.plus_circle),
+                        sendButtonIcon: Icon(Atlas.paper_airplane),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          }),
         );
       },
     );
@@ -491,108 +604,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           );
         },
       ),
-    );
-  }
-
-  Widget buildActiveMembers(BuildContext context) {
-    if (roomController.activeMembers.isEmpty) {
-      return const SizedBox(
-        height: 15,
-        width: 15,
-        child: CircularProgressIndicator(),
-      );
-    }
-    return Text(
-      '${roomController.activeMembers.length} ${AppLocalizations.of(context)!.members}',
-      style: Theme.of(context).textTheme.bodySmall,
-    );
-  }
-
-  Widget buildBody(BuildContext context) {
-    final client = ref.watch(clientProvider);
-    if (roomController.isLoading.isTrue) {
-      return const Center(
-        child: SizedBox(
-          height: 15,
-          width: 15,
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-    return GetBuilder<ChatRoomController>(
-      id: 'Chat',
-      builder: (ChatRoomController controller) {
-        return Stack(
-          children: [
-            Chat(
-              customBottomWidget: customBottomWidget(context),
-              textMessageBuilder: textMessageBuilder,
-              l10n: ChatL10nEn(
-                emptyChatPlaceholder: '',
-                attachmentButtonAccessibilityLabel: '',
-                fileButtonAccessibilityLabel: '',
-                inputPlaceholder: AppLocalizations.of(context)!.message,
-                sendButtonAccessibilityLabel: '',
-              ),
-              messages: controller.getMessages(),
-              typingIndicatorOptions: TypingIndicatorOptions(
-                customTypingIndicator: buildTypingIndicator(),
-              ),
-              onSendPressed: (types.PartialText partialText) {},
-              user: types.User(id: client!.userId().toString()),
-              // disable image preview
-              disableImageGallery: true,
-              //custom avatar builder
-              avatarBuilder: avatarBuilder,
-              bubbleBuilder: bubbleBuilder,
-              imageMessageBuilder: imageMessageBuilder,
-              customMessageBuilder: customMessageBuilder,
-              showUserAvatars: true,
-              onAttachmentPressed: () => handleAttachmentPressed(context),
-              onAvatarTap: (types.User user) {
-                customMsgSnackbar(
-                  context,
-                  'Chat Profile view is not implemented yet',
-                );
-              },
-              onPreviewDataFetched: controller.handlePreviewDataFetched,
-              onMessageTap: controller.handleMessageTap,
-              onEndReached: controller.handleEndReached,
-              onEndReachedThreshold: 0.75,
-              onBackgroundTap: () {
-                if (controller.isEmojiContainerVisible) {
-                  controller.toggleEmojiContainer();
-                  roomController.replyMessageWidget = null;
-                  roomController.repliedToMessage = null;
-                }
-              },
-              emptyState: const EmptyHistoryPlaceholder(),
-              //Custom Theme class, see lib/common/store/chatTheme.dart
-              theme: const ActerChatTheme(
-                attachmentButtonIcon: Icon(Atlas.plus_circle),
-                sendButtonIcon: Icon(Atlas.paper_airplane),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget buildTypingIndicator() {
-    return GetBuilder<ChatRoomController>(
-      id: 'typing indicator',
-      builder: (ChatRoomController controller) {
-        return TypeIndicator(
-          bubbleAlignment: BubbleRtlAlignment.right,
-          showIndicator: controller.typingUsers.isNotEmpty,
-          options: TypingIndicatorOptions(
-            animationSpeed: const Duration(milliseconds: 800),
-            typingUsers: controller.typingUsers,
-            typingMode: TypingIndicatorMode.name,
-          ),
-        );
-      },
     );
   }
 
@@ -667,26 +678,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               ),
             ),
           ],
-        );
-      },
-    );
-  }
-
-  Widget bubbleBuilder(
-    Widget child, {
-    required types.Message message,
-    required bool nextMessageInGroup,
-  }) {
-    return GetBuilder<ChatRoomController>(
-      id: 'chat-bubble',
-      builder: (context) {
-        final client = ref.watch(clientProvider);
-        return BubbleBuilder(
-          userId: client!.userId().toString(),
-          child: child,
-          message: message,
-          nextMessageInGroup: nextMessageInGroup,
-          enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
         );
       },
     );
