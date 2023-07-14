@@ -7,7 +7,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/joined_room/joined_room.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Account, Convo, FfiListConvo, Member, OptionText, UserProfile;
+    show Account, Convo, Member, OptionText, UserProfile;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Network/Connectivity Providers
@@ -83,9 +83,8 @@ final chatMembersProvider =
 final chatStreamProvider =
     StreamProvider.autoDispose<List<JoinedRoom>>((ref) async* {
   final client = ref.watch(clientProvider)!;
-  late List<JoinedRoom> convos = [];
-  StreamSubscription<FfiListConvo>? _convosSubscription;
-  _convosSubscription = client.convosRx().listen((event) {
+  List<JoinedRoom> convos = [];
+  var convosPoller = client.convosRx().listen((event) {
     for (var room in event.toList()) {
       JoinedRoom r = JoinedRoom(
         id: room.getRoomIdStr(),
@@ -95,7 +94,7 @@ final chatStreamProvider =
       convos.add(r);
     }
   });
-  ref.onDispose(() => _convosSubscription!.cancel());
+  ref.onDispose(() => convosPoller.cancel());
   yield convos;
 });
 

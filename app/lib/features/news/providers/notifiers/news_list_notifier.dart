@@ -8,16 +8,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AsyncNewsListNotifier extends AutoDisposeAsyncNotifier<List<NewsEntry>> {
   late Stream<void> _listener;
   // ignore: unused_field
-  late StreamSubscription<void> _sub;
+  late StreamSubscription<void> _poller;
 
   @override
   Future<List<NewsEntry>> build() async {
     final client = ref.watch(clientProvider)!;
     _listener = client.subscribeStream('news');
-    _sub = _listener.listen((_e) async {
+    _poller = _listener.listen((_e) async {
       debugPrint(' --- - - ----------------- new subscribe received');
       state = await AsyncValue.guard(() => _fetchNews());
     });
+    ref.onDispose(() => _poller.cancel());
     return await _fetchNews();
   }
 

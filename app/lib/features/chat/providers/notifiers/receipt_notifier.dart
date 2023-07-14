@@ -17,8 +17,7 @@
 
 //   void _init() {
 //     final client = ref.read(clientProvider)!;
-//     StreamSubscription<ReceiptEvent>? _subscription;
-//     _subscription = client.receiptEventRx()?.listen((event) {
+//     var poller = client.receiptEventRx()?.listen((event) {
 //       String myId = client.userId().toString();
 //       RoomId roomId = event.roomId();
 //       bool changed = false;
@@ -37,9 +36,7 @@
 //       }
 //     });
 
-//     ref.onDispose(() {
-//       _subscription!.cancel();
-//     });
+//     ref.onDispose(() => poller?.cancel());
 //   }
 
 //   void updateUser(String userId, String eventId, int? ts) {
