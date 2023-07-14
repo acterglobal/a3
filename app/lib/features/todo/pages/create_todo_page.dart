@@ -190,80 +190,76 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
     );
   }
 
-  void _showTeamDialog(BuildContext ctx) async {
-    await showDialog(
-      context: ctx,
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setState) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+  void _showTeamDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          insetPadding: EdgeInsets.zero,
+          title: Text(
+            'Create new team',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          contentPadding: const EdgeInsets.all(13),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text(
+                'Cancel',
               ),
-              insetPadding: EdgeInsets.zero,
-              title: Text(
-                'Create new team',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              contentPadding: const EdgeInsets.all(13),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: const Text(
-                    'Cancel',
-                  ),
-                ),
-                TextButton(
-                  onPressed: (!disableBtn && teamInputController.text.isEmpty)
-                      ? null
-                      : () async {
-                          await handleSave(ctx);
-                        },
-                  child: Text(
-                    'Save',
-                    style: TextStyle(
-                      color: teamInputController.text.isNotEmpty
-                          ? Theme.of(context).colorScheme.tertiary2
-                          : null,
-                    ),
-                  ),
-                )
-              ],
-              content: Form(
-                key: formGlobalKey,
-                child: TextFormField(
-                  controller: teamInputController,
-                  maxLines: 5,
-                  maxLength: 50,
-                  cursorColor: Colors.white,
-                  decoration: InputDecoration(
-                    filled: true,
-                    hintText: 'Input here.',
-                    contentPadding: const EdgeInsets.all(13),
-                    border: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.transparent,
-                        style: BorderStyle.none,
-                        width: 0,
-                      ),
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(12),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.tertiary,
-                      ),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(12),
-                      ),
-                    ),
-                  ),
-                  onChanged: handleTeamInputChange,
+            ),
+            TextButton(
+              onPressed: (!disableBtn && teamInputController.text.isEmpty)
+                  ? null
+                  : () async {
+                      await handleSave(ctx);
+                    },
+              child: Text(
+                'Save',
+                style: TextStyle(
+                  color: teamInputController.text.isNotEmpty
+                      ? Theme.of(context).colorScheme.tertiary2
+                      : null,
                 ),
               ),
-            );
-          },
+            )
+          ],
+          content: Form(
+            key: formGlobalKey,
+            child: TextFormField(
+              controller: teamInputController,
+              maxLines: 5,
+              maxLength: 50,
+              cursorColor: Colors.white,
+              decoration: InputDecoration(
+                filled: true,
+                hintText: 'Input here.',
+                contentPadding: const EdgeInsets.all(13),
+                border: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.transparent,
+                    style: BorderStyle.none,
+                    width: 0,
+                  ),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(12),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.tertiary,
+                  ),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(12),
+                  ),
+                ),
+              ),
+              onChanged: handleTeamInputChange,
+            ),
+          ),
         );
       },
     );
