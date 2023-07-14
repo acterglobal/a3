@@ -57,8 +57,8 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     super.dispose();
   }
 
-  Future<void> onAttach(BuildContext context) async {
-    await showModalBottomSheet<void>(
+  void onAttach(BuildContext context) {
+    showModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: context,
       builder: (BuildContext context) {
@@ -475,7 +475,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                     );
                   },
                   showUserAvatars: true,
-                  onAttachmentPressed: () async => await onAttach(context),
+                  onAttachmentPressed: () => onAttach(context),
                   onAvatarTap: (types.User user) => customMsgSnackbar(
                     context,
                     'Chat Profile view is not implemented yet',
@@ -771,7 +771,7 @@ class _MoreButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async => await onClick(context),
+      onTap: () => onClick(context),
       child: const Text(
         'More',
         style: TextStyle(color: Colors.white),
@@ -779,8 +779,8 @@ class _MoreButton extends StatelessWidget {
     );
   }
 
-  Future<void> onClick(BuildContext context) async {
-    await showModalBottomSheet<void>(
+  void onClick(BuildContext context) {
+    showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(

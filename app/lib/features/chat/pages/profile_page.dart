@@ -248,8 +248,8 @@ class _AdminMenuButton extends StatelessWidget {
     }
   }
 
-  Future<void> showReportBottomSheet(BuildContext context) async {
-    await showModalBottomSheet<void>(
+  void showReportBottomSheet(BuildContext context) {
+    showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
@@ -366,7 +366,7 @@ class _MuteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async => await onClick(context),
+      onTap: () => onClick(context),
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -390,8 +390,8 @@ class _MuteButton extends StatelessWidget {
     );
   }
 
-  Future<void> onClick(BuildContext context) async {
-    await showModalBottomSheet<void>(
+  void onClick(BuildContext context) {
+    showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
@@ -748,7 +748,7 @@ class _CreateRoomInviteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async => await onClick(context),
+      onTap: () => onClick(context),
       child: Container(
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(bottom: 12, left: 16),
@@ -760,8 +760,8 @@ class _CreateRoomInviteButton extends StatelessWidget {
     );
   }
 
-  Future<void> onClick(BuildContext context) async {
-    await showModalBottomSheet<void>(
+  void onClick(BuildContext context) {
+    showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
