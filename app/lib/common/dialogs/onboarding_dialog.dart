@@ -7,7 +7,7 @@ void onBoardingDialog({
   required BuildContext context,
   required String btnText,
   required String btn2Text,
-  required void Function()? onPressed1,
+  required void Function() onPressed1,
   required void Function() onPressed2,
   required bool canDismissable,
 }) async {
@@ -30,9 +30,7 @@ void onBoardingDialog({
               ],
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+          child: ListView(
             children: <Widget>[
               SizedBox(height: MediaQuery.of(context).size.height * 0.15),
               Center(
@@ -99,7 +97,10 @@ void onBoardingDialog({
               const SizedBox(height: 40),
               Center(
                 child: ElevatedButton(
-                  onPressed: onPressed1,
+                  onPressed: () {
+                    context.pop();
+                    onPressed1();
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -125,7 +126,10 @@ void onBoardingDialog({
               const SizedBox(height: 36),
               Center(
                 child: ElevatedButton(
-                  onPressed: onPressed2,
+                  onPressed: () {
+                    context.pop();
+                    onPressed2();
+                  },
                   child: Text(btn2Text),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
