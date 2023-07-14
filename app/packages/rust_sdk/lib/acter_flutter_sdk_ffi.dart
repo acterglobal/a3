@@ -5893,6 +5893,52 @@ class Api {
     return tmp7;
   }
 
+  EventId? __spaceUpdatePowerLevelFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceUpdatePowerLevelFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   OptionText? __accountDisplayNameFuturePoll(
     int boxed,
     int postCobject,
@@ -15205,6 +15251,24 @@ class Api {
       int Function(
     int,
   )>();
+  late final _spaceUpdatePowerLevelPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int32,
+  )>>("__Space_update_power_level");
+
+  late final _spaceUpdatePowerLevel = _spaceUpdatePowerLevelPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _memberGetProfilePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -15222,6 +15286,27 @@ class Api {
   )>>("__Member_user_id");
 
   late final _memberUserId = _memberUserIdPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _memberMembershipStatusStrPtr = _lookup<
+      ffi.NativeFunction<
+          _MemberMembershipStatusStrReturn Function(
+    ffi.Int64,
+  )>>("__Member_membership_status_str");
+
+  late final _memberMembershipStatusStr =
+      _memberMembershipStatusStrPtr.asFunction<
+          _MemberMembershipStatusStrReturn Function(
+    int,
+  )>();
+  late final _memberPowerLevelPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+    ffi.Int64,
+  )>>("__Member_power_level");
+
+  late final _memberPowerLevel = _memberPowerLevelPtr.asFunction<
       int Function(
     int,
   )>();
@@ -18551,6 +18636,21 @@ class Api {
     int,
     int,
   )>();
+  late final _spaceUpdatePowerLevelFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceUpdatePowerLevelFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Space_update_power_level_future_poll");
+
+  late final _spaceUpdatePowerLevelFuturePoll =
+      _spaceUpdatePowerLevelFuturePollPtr.asFunction<
+          _SpaceUpdatePowerLevelFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _accountDisplayNameFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _AccountDisplayNameFuturePollReturn Function(
@@ -20823,6 +20923,12 @@ class Api {
 
   late final _destructureRelationTargetType = _destructureRelationTargetTypePtr
       .asFunction<_EnumWrapper Function(int)>();
+  late final _destructureMembershipStatusPtr =
+      _lookup<ffi.NativeFunction<_EnumWrapper Function(ffi.IntPtr)>>(
+          "destructure_enum_MembershipStatus");
+
+  late final _destructureMembershipStatus =
+      _destructureMembershipStatusPtr.asFunction<_EnumWrapper Function(int)>();
   late final _destructureMemberPermissionPtr =
       _lookup<ffi.NativeFunction<_EnumWrapper Function(ffi.IntPtr)>>(
           "destructure_enum_MemberPermission");
@@ -32753,6 +32859,43 @@ class Space {
     return tmp2;
   }
 
+  /// update the power levels of specified member
+  Future<EventId> updatePowerLevel(
+    String userId,
+    int level,
+  ) {
+    final tmp1 = userId;
+    final tmp5 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    tmp6 = tmp5;
+    final tmp7 = _api._spaceUpdatePowerLevel(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+    );
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "__Space_update_power_level_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__spaceUpdatePowerLevelFuturePoll);
+    return tmp8;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -32792,6 +32935,49 @@ class Member {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// The status of this member.
+  String membershipStatusStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._memberMembershipStatusStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the power level this user has
+  int powerLevel() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._memberPowerLevel(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
     return tmp2;
   }
 
@@ -36630,6 +36816,65 @@ class RelationTargetType {
   RelationTargetType._(this._api, this._box);
 }
 
+enum MembershipStatusTag {
+  Admin,
+  Mod,
+  Custom,
+  Regular,
+}
+
+class MembershipStatus {
+  final Api _api;
+  final _Box _box;
+
+  MembershipStatusTag? _tag;
+  Object? _inner;
+
+  void destructureSelf() {
+    final parts = this._api._destructureMembershipStatus(this._box.borrow());
+    switch (parts.tag) {
+      case 0:
+        this._tag = MembershipStatusTag.Admin;
+
+        break;
+      case 1:
+        this._tag = MembershipStatusTag.Mod;
+
+        break;
+      case 2:
+        this._tag = MembershipStatusTag.Custom;
+
+        break;
+      case 3:
+        this._tag = MembershipStatusTag.Regular;
+
+        break;
+      default:
+        throw new StateError(
+            "Destructuring enum gave back an invalid tag: ${parts.tag}");
+    }
+  }
+
+  /// The tag of this enum object
+  MembershipStatusTag get tag {
+    if (_tag == null) {
+      destructureSelf();
+    }
+    return _tag!;
+  }
+
+  /// The data contained inside this enum object. You will need
+  /// to cast it to the correct type based on the value of tag
+  Object? get inner {
+    if (_inner == null) {
+      destructureSelf();
+    }
+    return _inner;
+  }
+
+  MembershipStatus._(this._api, this._box);
+}
+
 enum MemberPermissionTag {
   CanSendChatMessages,
   CanSendReaction,
@@ -36645,6 +36890,7 @@ enum MemberPermissionTag {
   CanUpdateAvatar,
   CanSetTopic,
   CanLinkSpaces,
+  CanUpdatePowerLevels,
   CanSetParentSpace,
 }
 
@@ -36715,6 +36961,10 @@ class MemberPermission {
 
         break;
       case 14:
+        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
+
+        break;
+      case 15:
         this._tag = MemberPermissionTag.CanSetParentSpace;
 
         break;
@@ -38108,6 +38358,15 @@ class _SpacePinDraftReturn extends ffi.Struct {
   external int arg3;
   @ffi.Int64()
   external int arg4;
+}
+
+class _MemberMembershipStatusStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _PublicSearchResultItemNameReturn extends ffi.Struct {
@@ -40037,6 +40296,21 @@ class _SpaceLeaveFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Uint8()
+  external int arg5;
+}
+
+class _SpaceUpdatePowerLevelFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
   external int arg5;
 }
 
