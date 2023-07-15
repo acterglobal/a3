@@ -14,6 +14,7 @@ import 'package:acter/features/events/pages/event_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/news/pages/simple_post.dart';
 import 'package:acter/features/onboarding/pages/intro_page.dart';
@@ -567,6 +568,22 @@ List<RouteBase> makeRoutes(Ref ref) {
                 return NoTransitionPage(
                   key: state.pageKey,
                   child: RelatedSpacesPage(
+                    spaceIdOrAlias: state.pathParameters['spaceId']!,
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: Routes.spaceMembers.name,
+              path: Routes.spaceMembers.route,
+              redirect: authGuardRedirect,
+              pageBuilder: (context, state) {
+                ref
+                    .read(selectedTabKeyProvider.notifier)
+                    .switchTo(const Key('members'));
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: SpaceMembersPage(
                     spaceIdOrAlias: state.pathParameters['spaceId']!,
                   ),
                 );

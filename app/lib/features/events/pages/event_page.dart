@@ -65,7 +65,9 @@ class CalendarEventPage extends ConsumerWidget {
                               ),
                               const SizedBox(height: 15),
                               Text(
-                                'Description: ${calendarEvent.description()!.body()}',
+                                calendarEvent.description() != null
+                                    ? 'Description: ${calendarEvent.description()!.body()}'
+                                    : '',
                               ),
                               const SizedBox(height: 15),
                             ],

@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -54,13 +54,27 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
                 pathParameters: {'roomId': roomId},
                 extra: widget.room.convo,
               ),
-              leading: ActerAvatar(
-                mode: DisplayMode.GroupChat, // FIXME: checking for DM somehow?
-                uniqueId: roomId,
-                displayName: profile.displayName ?? roomId,
-                avatar: profile.getAvatarImage(),
-                size: 36,
-              ),
+              leading: profile.hasAvatar()
+                  ? ActerAvatar(
+                      uniqueId: roomId,
+                      mode: DisplayMode.GroupChat,
+                      displayName: profile.displayName ?? roomId,
+                      avatar: profile.getAvatarImage(),
+                      size: 36,
+                    )
+                  : Container(
+                      height: 36,
+                      width: 36,
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                        borderRadius: BorderRadius.circular(6),
+                        shape: BoxShape.rectangle,
+                      ),
+                      child: SvgPicture.asset(
+                        'assets/icon/acter.svg',
+                      ),
+                    ),
               title: Text(
                 profile.displayName ?? roomId,
                 style: Theme.of(context)
