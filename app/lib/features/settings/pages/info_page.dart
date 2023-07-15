@@ -78,8 +78,9 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                   title: const Text('Licenses'),
                   value: const Text('Built on the shoulders of giants'),
                   leading: const Icon(Atlas.list_file_thin),
-                  onPressed: (context) =>
-                      context.pushNamed(Routes.licenses.name),
+                  onPressed: (context) => context.pushNamed(
+                    Routes.licenses.name,
+                  ),
                 ),
               ],
             ),

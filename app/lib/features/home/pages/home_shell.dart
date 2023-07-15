@@ -312,14 +312,12 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       fileName: 'screenshot_$timestamp.png',
     );
     if (imagePath != null) {
-      context.pushNamed(
+      await context.pushNamed(
         Routes.bugReport.name,
-        extra: {
-          'screenshot': imagePath,
-        },
+        extra: {'screenshot': imagePath},
       );
     } else {
-      context.push(Routes.bugReport.name);
+      await context.push(Routes.bugReport.name);
     }
   }
 }
