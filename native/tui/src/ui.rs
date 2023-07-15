@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use acter::{Conversation, HistoryLoadState, Space, Task, TaskList};
+use acter::{Convo, HistoryLoadState, Space, Task, TaskList};
 use anyhow::Result;
 use clap::crate_version;
 use crossterm::{
@@ -34,7 +34,7 @@ const BG_DARKER: Color = Color::Rgb(47, 49, 62);
 pub enum AppUpdate {
     SetUsername(String), // set the username
     SetSynced(bool),     // set the synced state
-    UpdateConversations(Vec<Conversation>),
+    UpdateConvos(Vec<Convo>),
     UpdateSpaces(Vec<Space>),
     SetHistoryLoadState(HistoryLoadState),
     SetTasksList(Vec<TaskList>),
@@ -368,7 +368,7 @@ struct App {
     pub logs_fullscreen: bool,
     pub tools: Vec<Tool>,
     pub spaces: Vec<Space>,
-    pub conversations: Vec<Conversation>,
+    pub convos: Vec<Convo>,
     pub history_load_state: HistoryLoadState,
     pub index: usize,
     pub synced: bool,
@@ -388,7 +388,7 @@ impl App {
             selected_widget,
             log_state: Default::default(),
             spaces: Default::default(),
-            conversations: Default::default(),
+            convos: Default::default(),
             history_load_state: Default::default(),
             username: None,
             synced: false,
@@ -423,7 +423,7 @@ impl App {
             AppUpdate::SetHistoryLoadState(state) => {
                 self.history_load_state = state;
             }
-            AppUpdate::UpdateConversations(convos) => {
+            AppUpdate::UpdateConvos(convos) => {
                 for m in self.tools.iter_mut() {
                     if m.is_chat() {
                         m.update_chat_stats(ChatStats {
@@ -434,7 +434,7 @@ impl App {
                         break;
                     }
                 }
-                self.conversations = convos;
+                self.convos = convos;
             }
         }
     }

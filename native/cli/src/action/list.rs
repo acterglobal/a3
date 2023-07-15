@@ -151,8 +151,8 @@ impl List {
 
         if self.list_chats {
             println!("## Chat rooms:");
-            for sp in client.conversations().await? {
-                println!(" * {} : {}", sp.room_id(), sp.display_name().await?);
+            for convo in client.convos().await? {
+                println!(" * {} : {}", convo.room_id(), convo.display_name().await?);
             }
         }
         Ok(())

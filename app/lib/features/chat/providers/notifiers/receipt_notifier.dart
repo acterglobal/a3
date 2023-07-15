@@ -1,8 +1,8 @@
 // import 'dart:async';
 
 // import 'package:acter/features/chat/controllers/chat_room_controller.dart';
-// import 'package:acter/features/chat/models/receipt_user.dart';
 // import 'package:acter/features/chat/models/reciept_room/receipt_room.dart';
+// import 'package:acter/features/chat/models/receipt_user.dart';
 // import 'package:acter/features/home/providers/client_providers.dart';
 // import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,8 +17,7 @@
 
 //   void _init() {
 //     final client = ref.read(clientProvider)!;
-//     StreamSubscription<ReceiptEvent>? _subscription;
-//     _subscription = client.receiptEventRx()?.listen((event) {
+//     var poller = client.receiptEventRx()?.listen((event) {
 //       String myId = client.userId().toString();
 //       RoomId roomId = event.roomId();
 //       bool changed = false;
@@ -37,9 +36,7 @@
 //       }
 //     });
 
-//     ref.onDispose(() {
-//       _subscription!.cancel();
-//     });
+//     ref.onDispose(() => poller?.cancel());
 //   }
 
 //   void updateUser(String userId, String eventId, int? ts) {
@@ -65,8 +62,8 @@
 //     return room;
 //   }
 
-//   void loadRoom(Conversation conversation, List<ReceiptRecord> records) {
-//     var room = _getRoom(conversation.getRoomId());
+//   void loadRoom(Convo convo, List<ReceiptRecord> records) {
+//     var room = _getRoom(convo.getRoomId());
 //     state = room;
 //     for (var record in records) {
 //       String seenBy = record.seenBy();

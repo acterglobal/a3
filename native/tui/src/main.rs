@@ -74,9 +74,9 @@ async fn main() -> Result<()> {
                     sender.send(AppUpdate::SetSynced(synced)).unwrap();
                     if synced {
                         // let's update the chats;
-                        let conversastions = client.conversations().await.unwrap();
+                        let conversastions = client.convos().await.unwrap();
                         sender
-                            .send(AppUpdate::UpdateConversations(conversastions))
+                            .send(AppUpdate::UpdateConvos(conversastions))
                             .unwrap();
 
                         // let's update the spaces;

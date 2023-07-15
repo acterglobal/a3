@@ -192,16 +192,21 @@ class _NameWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           InkWell(
-            onTap: () async => await controller
-                .updateToDoTask(task, list, null, null, null)
-                .then((res) {
-              debugPrint('Update eventId: $res');
-            }),
+            onTap: () async {
+              var eventId = await controller.updateToDoTask(
+                task,
+                list,
+                null,
+                null,
+                null,
+              );
+              debugPrint('Update eventId: $eventId');
+            },
             child: _CheckWidget(task: task),
           ),
           GetBuilder<ToDoController>(
             id: 'task-name',
-            builder: (_) {
+            builder: (ToDoController controller) {
               return Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8),
@@ -212,16 +217,18 @@ class _NameWidget extends StatelessWidget {
                       focusedBorder: InputBorder.none,
                     ),
                     style: Theme.of(context).textTheme.bodyMedium,
-                    onChanged: (val) =>
-                        controller.updateNameInput(_nameController, val),
-                    onEditingComplete: () async =>
-                        await controller.updateToDoTask(
-                      task,
-                      list,
-                      _nameController.text.trim(),
-                      null,
-                      task.progressPercent,
-                    ),
+                    onChanged: (val) {
+                      controller.updateNameInput(_nameController, val);
+                    },
+                    onEditingComplete: () async {
+                      await controller.updateToDoTask(
+                        task,
+                        list,
+                        _nameController.text.trim(),
+                        null,
+                        task.progressPercent,
+                      );
+                    },
                   ),
                 ),
               );
@@ -234,11 +241,9 @@ class _NameWidget extends StatelessWidget {
 }
 
 class _CheckWidget extends StatelessWidget {
-  const _CheckWidget({
-    required this.task,
-  });
-
   final ToDoTask task;
+
+  const _CheckWidget({required this.task});
 
   @override
   Widget build(BuildContext context) {
@@ -285,17 +290,20 @@ class _AssignWidget extends StatelessWidget {
 }
 
 class _DueDateWidget extends StatelessWidget {
-  const _DueDateWidget(this.task, this.list);
   final ToDoTask task;
   final ToDoList list;
+
+  const _DueDateWidget(
+    this.task,
+    this.list,
+  );
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => showBottomSheet(context, task),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
           children: <Widget>[
             const Icon(Atlas.calendar),
@@ -344,7 +352,7 @@ class _DueDateWidget extends StatelessWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             void _showDatePicker(BuildContext ctx) async {
-              await showDatePicker(
+              DateTime? _pickedDate = await showDatePicker(
                 context: ctx,
                 initialDatePickerMode: DatePickerMode.day,
                 initialEntryMode: DatePickerEntryMode.calendarOnly,
@@ -360,15 +368,12 @@ class _DueDateWidget extends StatelessWidget {
                     child: child!,
                   );
                 },
-              ).then((_pickedDate) {
-                if (_pickedDate != null) {
-                  setState(() {
-                    _selectedDate = _pickedDate;
-                  });
-                } else {
-                  Navigator.pop(context);
-                }
-              });
+              );
+              if (_pickedDate != null) {
+                setState(() => _selectedDate = _pickedDate);
+              } else {
+                Navigator.pop(context);
+              }
             }
 
             return Wrap(
@@ -439,18 +444,23 @@ class _DueDateWidget extends StatelessWidget {
                               _selectedDate = now;
                               break;
                             case 1:
-                              _selectedDate =
-                                  DateTime(now.year, now.month, now.day + 1);
+                              _selectedDate = DateTime(
+                                now.year,
+                                now.month,
+                                now.day + 1,
+                              );
                               break;
                             case 2:
-                              DateTime nextWeek =
-                                  now.add(const Duration(days: 7));
+                              DateTime nextWeek = now.add(
+                                const Duration(days: 7),
+                              );
                               int weekDay = nextWeek.weekday;
                               if (weekDay == 7) {
                                 _selectedDate = nextWeek;
                               } else {
-                                _selectedDate = nextWeek
-                                    .subtract(Duration(days: weekDay - 1));
+                                _selectedDate = nextWeek.subtract(
+                                  Duration(days: weekDay - 1),
+                                );
                               }
                               break;
                             case 3:
@@ -465,13 +475,9 @@ class _DueDateWidget extends StatelessWidget {
                       tileColor: Colors.transparent,
                       selected: tappedIdx != null && tappedIdx == index,
                       leading: optionIcons[index],
-                      title: Text(
-                        options[index],
-                      ),
+                      title: Text(options[index]),
                       trailing: index == options.length - 1
-                          ? const Icon(
-                              Atlas.arrow_right_circle,
-                            )
+                          ? const Icon(Atlas.arrow_right_circle)
                           : null,
                     ),
                   ),
@@ -523,10 +529,7 @@ class _AddFileWidget extends StatelessWidget {
               },
               child: Row(
                 children: [
-                  const Icon(
-                    Atlas.camera_photo,
-                    color: Colors.white,
-                  ),
+                  const Icon(Atlas.camera_photo, color: Colors.white),
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -547,10 +550,7 @@ class _AddFileWidget extends StatelessWidget {
               },
               child: Row(
                 children: [
-                  const Icon(
-                    Atlas.photo_camera,
-                    color: Colors.white,
-                  ),
+                  const Icon(Atlas.photo_camera, color: Colors.white),
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -571,10 +571,7 @@ class _AddFileWidget extends StatelessWidget {
               },
               child: Row(
                 children: [
-                  const Icon(
-                    Atlas.file,
-                    color: Colors.white,
-                  ),
+                  const Icon(Atlas.file, color: Colors.white),
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -606,10 +603,12 @@ class _AddFileWidget extends StatelessWidget {
 }
 
 class _DiscussionWidget extends StatelessWidget {
-  const _DiscussionWidget(this.task, this.listIndex, this.index);
   final ToDoTask task;
   final int listIndex;
   final int index;
+
+  const _DiscussionWidget(this.task, this.listIndex, this.index);
+
   @override
   Widget build(BuildContext context) {
     final ToDoController controller = Get.find<ToDoController>();
@@ -617,8 +616,10 @@ class _DiscussionWidget extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              TaskCommentsPage(listIndex: listIndex, index: index),
+          builder: (context) => TaskCommentsPage(
+            listIndex: listIndex,
+            index: index,
+          ),
         ),
       ),
       child: Padding(
@@ -630,10 +631,7 @@ class _DiscussionWidget extends StatelessWidget {
               children: <Widget>[
                 Row(
                   children: <Widget>[
-                    const Icon(
-                      Atlas.message,
-                      size: 18,
-                    ),
+                    const Icon(Atlas.message, size: 18),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
@@ -643,15 +641,12 @@ class _DiscussionWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                const Icon(
-                  Icons.fiber_manual_record,
-                  color: Colors.grey,
-                ),
+                const Icon(Icons.fiber_manual_record, color: Colors.grey),
 
                 // TODO: fix comments count.
                 GetBuilder<ToDoController>(
                   id: 'discussion',
-                  builder: (_) {
+                  builder: (ToDoController controller) {
                     return Text(
                       '${task.commentsManager.commentsCount()}',
                       style: Theme.of(context).textTheme.labelSmall,
@@ -673,7 +668,7 @@ class _DiscussionWidget extends StatelessWidget {
             ),
             GetBuilder<ToDoController>(
               id: 'discussion',
-              builder: (_) {
+              builder: (ToDoController controller) {
                 return Visibility(
                   visible: task.commentsManager.hasComments(),
                   child: FutureBuilder<List<ToDoComment>>(
@@ -715,8 +710,9 @@ class _DiscussionWidget extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     InkWell(
-                                      onTap: () =>
-                                          showCommentBottomSheet(context),
+                                      onTap: () {
+                                        showCommentBottomSheet(context);
+                                      },
                                       child: const Icon(
                                         Atlas.dots_horizontal,
                                         color: Colors.white,
@@ -734,8 +730,9 @@ class _DiscussionWidget extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              separatorBuilder: (context, index) =>
-                                  const Divider(),
+                              separatorBuilder: (context, index) {
+                                return const Divider();
+                              },
                             );
                           } else {
                             const SizedBox.shrink();
@@ -763,18 +760,10 @@ class _DiscussionWidget extends StatelessWidget {
   void showCommentBottomSheet(BuildContext context) {
     List<String> options = ['Save', 'Copy Link', 'Share', 'Report'];
     List<Icon> optionIcons = [
-      const Icon(
-        Icons.bookmark_border,
-      ),
-      const Icon(
-        Icons.link,
-      ),
-      const Icon(
-        Icons.file_upload_outlined,
-      ),
-      const Icon(
-        Icons.warning_amber_rounded,
-      ),
+      const Icon(Icons.bookmark_border),
+      const Icon(Icons.link),
+      const Icon(Icons.file_upload_outlined),
+      const Icon(Icons.warning_amber_rounded),
     ];
     showModalBottomSheet(
       context: context,
@@ -799,12 +788,8 @@ class _DiscussionWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     optionIcons[index],
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      options[index],
-                    )
+                    const SizedBox(height: 8),
+                    Text(options[index])
                   ],
                 ),
               ),
@@ -886,6 +871,7 @@ class _SubscribersWidget extends StatelessWidget {
 
 class _LastUpdatedWidget extends StatelessWidget {
   const _LastUpdatedWidget();
+
   @override
   Widget build(BuildContext context) {
     return const Align(
@@ -893,10 +879,7 @@ class _LastUpdatedWidget extends StatelessWidget {
       child: SizedBox(
         height: 30,
         width: double.infinity,
-        child: Text(
-          'Last Update ???',
-          textAlign: TextAlign.center,
-        ),
+        child: Text('Last Update ???', textAlign: TextAlign.center),
       ),
     );
   }

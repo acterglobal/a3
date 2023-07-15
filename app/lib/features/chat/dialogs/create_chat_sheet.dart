@@ -265,20 +265,20 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
         config.setParent(parentRoomId);
       }
       final client = ref.read(clientProvider)!;
-      final roomId = await client.createConversation(config.build());
+      final roomId = await client.createConvo(config.build());
       final linkSpace = ref.watch(parentSpaceProvider);
       // add room to child of space (if given)
       if (linkSpace != null) {
         final space = await ref.watch(spaceProvider(linkSpace).future);
         await space.addChildSpace(roomId.toString());
       }
-      final conversation = await client.conversation(roomId.toString());
+      final convo = await client.convo(roomId.toString());
 
       Navigator.of(context, rootNavigator: true).pop();
       context.goNamed(
         Routes.chatroom.name,
         pathParameters: {'roomId': roomId.toString()},
-        extra: conversation,
+        extra: convo,
       );
     } catch (e) {
       context.pop();

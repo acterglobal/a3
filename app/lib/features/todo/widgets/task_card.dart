@@ -7,15 +7,28 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TaskCard extends StatelessWidget {
+  final ToDoController controller;
+  final ToDoTask task;
+  final ToDoList todoList;
+
   const TaskCard({
     super.key,
     required this.controller,
     required this.task,
     required this.todoList,
   });
-  final ToDoController controller;
-  final ToDoTask task;
-  final ToDoList todoList;
+
+  Future<void> _handleUpdate() async {
+    var eventId = await controller.updateToDoTask(
+      task,
+      todoList,
+      null,
+      null,
+      null,
+    );
+    debugPrint('TOGGLE CHECK: $eventId');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -32,9 +45,7 @@ class TaskCard extends StatelessWidget {
               children: <Widget>[
                 Flexible(
                   child: InkWell(
-                    onTap: () async => await controller
-                        .updateToDoTask(task, todoList, null, null, null)
-                        .then((res) => debugPrint('TOGGLE CHECK')),
+                    onTap: _handleUpdate,
                     child: _CheckWidget(task: task),
                   ),
                 ),
@@ -79,10 +90,7 @@ class TaskCard extends StatelessWidget {
                     visible: task.commentsManager.hasComments(),
                     child: Row(
                       children: <Widget>[
-                        const Icon(
-                          Atlas.dots_horizontal,
-                          color: Colors.grey,
-                        ),
+                        const Icon(Atlas.dots_horizontal, color: Colors.grey),
                         const Icon(Atlas.message),
                         Padding(
                           padding: const EdgeInsets.only(left: 8),
@@ -104,11 +112,9 @@ class TaskCard extends StatelessWidget {
 }
 
 class _CheckWidget extends StatelessWidget {
-  const _CheckWidget({
-    required this.task,
-  });
-
   final ToDoTask task;
+
+  const _CheckWidget({required this.task});
 
   @override
   Widget build(BuildContext context) {

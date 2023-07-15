@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$JoinedRoom {
   String get id => throw _privateConstructorUsedError;
-  Conversation get conversation => throw _privateConstructorUsedError;
+  Convo get convo => throw _privateConstructorUsedError;
   RoomMessage? get latestMessage => throw _privateConstructorUsedError;
   String? get displayName => throw _privateConstructorUsedError;
   List<User> get typingUsers => throw _privateConstructorUsedError;
@@ -33,12 +33,13 @@ abstract class $JoinedRoomCopyWith<$Res> {
           JoinedRoom value, $Res Function(JoinedRoom) then) =
       _$JoinedRoomCopyWithImpl<$Res, JoinedRoom>;
   @useResult
-  $Res call(
-      {String id,
-      Conversation conversation,
-      RoomMessage? latestMessage,
-      String? displayName,
-      List<User> typingUsers});
+  $Res call({
+    String id,
+    Convo convo,
+    RoomMessage? latestMessage,
+    String? displayName,
+    List<User> typingUsers,
+  });
 }
 
 /// @nodoc
@@ -55,7 +56,7 @@ class _$JoinedRoomCopyWithImpl<$Res, $Val extends JoinedRoom>
   @override
   $Res call({
     Object? id = null,
-    Object? conversation = null,
+    Object? convo = null,
     Object? latestMessage = freezed,
     Object? displayName = freezed,
     Object? typingUsers = null,
@@ -65,10 +66,10 @@ class _$JoinedRoomCopyWithImpl<$Res, $Val extends JoinedRoom>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      conversation: null == conversation
-          ? _value.conversation
-          : conversation // ignore: cast_nullable_to_non_nullable
-              as Conversation,
+      convo: null == convo
+          ? _value.convo
+          : convo // ignore: cast_nullable_to_non_nullable
+              as Convo,
       latestMessage: freezed == latestMessage
           ? _value.latestMessage
           : latestMessage // ignore: cast_nullable_to_non_nullable
@@ -93,12 +94,13 @@ abstract class _$$_JoinedRoomCopyWith<$Res>
       __$$_JoinedRoomCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String id,
-      Conversation conversation,
-      RoomMessage? latestMessage,
-      String? displayName,
-      List<User> typingUsers});
+  $Res call({
+    String id,
+    Convo convo,
+    RoomMessage? latestMessage,
+    String? displayName,
+    List<User> typingUsers,
+  });
 }
 
 /// @nodoc
@@ -113,7 +115,7 @@ class __$$_JoinedRoomCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? conversation = null,
+    Object? convo = null,
     Object? latestMessage = freezed,
     Object? displayName = freezed,
     Object? typingUsers = null,
@@ -123,10 +125,10 @@ class __$$_JoinedRoomCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      conversation: null == conversation
-          ? _value.conversation
-          : conversation // ignore: cast_nullable_to_non_nullable
-              as Conversation,
+      convo: null == convo
+          ? _value.convo
+          : convo // ignore: cast_nullable_to_non_nullable
+              as Convo,
       latestMessage: freezed == latestMessage
           ? _value.latestMessage
           : latestMessage // ignore: cast_nullable_to_non_nullable
@@ -146,17 +148,18 @@ class __$$_JoinedRoomCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_JoinedRoom implements _JoinedRoom {
-  const _$_JoinedRoom(
-      {required this.id,
-      required this.conversation,
-      this.latestMessage = null,
-      this.displayName = null,
-      this.typingUsers = const []});
+  const _$_JoinedRoom({
+    required this.id,
+    required this.convo,
+    this.latestMessage = null,
+    this.displayName = null,
+    this.typingUsers = const [],
+  });
 
   @override
   final String id;
   @override
-  final Conversation conversation;
+  final Convo convo;
   @override
   @JsonKey()
   final RoomMessage? latestMessage;
@@ -169,7 +172,7 @@ class _$_JoinedRoom implements _JoinedRoom {
 
   @override
   String toString() {
-    return 'JoinedRoom(id: $id, conversation: $conversation, latestMessage: $latestMessage, displayName: $displayName, typingUsers: $typingUsers)';
+    return 'JoinedRoom(id: $id, convo: $convo, latestMessage: $latestMessage, displayName: $displayName, typingUsers: $typingUsers)';
   }
 
   @override
@@ -178,8 +181,7 @@ class _$_JoinedRoom implements _JoinedRoom {
         (other.runtimeType == runtimeType &&
             other is _$_JoinedRoom &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.conversation, conversation) ||
-                other.conversation == conversation) &&
+            (identical(other.convo, convo) || other.convo == convo) &&
             (identical(other.latestMessage, latestMessage) ||
                 other.latestMessage == latestMessage) &&
             (identical(other.displayName, displayName) ||
@@ -189,7 +191,7 @@ class _$_JoinedRoom implements _JoinedRoom {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, conversation, latestMessage,
+  int get hashCode => Object.hash(runtimeType, id, convo, latestMessage,
       displayName, const DeepCollectionEquality().hash(typingUsers));
 
   @JsonKey(ignore: true)
@@ -200,17 +202,18 @@ class _$_JoinedRoom implements _JoinedRoom {
 }
 
 abstract class _JoinedRoom implements JoinedRoom {
-  const factory _JoinedRoom(
-      {required final String id,
-      required final Conversation conversation,
-      final RoomMessage? latestMessage,
-      final String? displayName,
-      final List<User> typingUsers}) = _$_JoinedRoom;
+  const factory _JoinedRoom({
+    required final String id,
+    required final Convo convo,
+    final RoomMessage? latestMessage,
+    final String? displayName,
+    final List<User> typingUsers,
+  }) = _$_JoinedRoom;
 
   @override
   String get id;
   @override
-  Conversation get conversation;
+  Convo get convo;
   @override
   RoomMessage? get latestMessage;
   @override

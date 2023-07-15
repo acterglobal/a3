@@ -10,7 +10,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
         AudioDesc,
         Client,
-        Conversation,
+        Convo,
         FileDesc,
         ImageDesc,
         Member,
@@ -43,7 +43,7 @@ class ChatRoomController extends GetxController {
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
   int _page = 0;
-  Conversation? _currentRoom;
+  Convo? _currentRoom;
   final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
   RxBool isEmojiVisible = false.obs;
   RxBool isAttachmentVisible = false.obs;
@@ -58,8 +58,8 @@ class ChatRoomController extends GetxController {
   Map<String, String> messageTextMapHtml = {};
   final Map<String, ProfileData> _userProfiles = {};
   List<Map<String, dynamic>> mentionList = [];
-  StreamSubscription<TimelineDiff>? _diffSubscription;
-  StreamSubscription<RoomMessage>? _messageSubscription;
+  StreamSubscription<TimelineDiff>? _diffPoller;
+  StreamSubscription<RoomMessage>? _messagePoller;
   int emojiMessageIndex = 0;
   String? emojiCurrentId;
   String? authorId;
@@ -80,7 +80,7 @@ class ChatRoomController extends GetxController {
       }
     });
 
-    _messageSubscription = client.incomingMessageRx()?.listen((event) {
+    _messagePoller = client.incomingMessageRx()?.listen((event) {
       // the latest message is dealt in convo receiver of ChatListController
       // here manage only its message history
       if (_currentRoom == null) {
@@ -131,20 +131,20 @@ class ChatRoomController extends GetxController {
   @override
   void onClose() {
     focusNode.removeListener(() {});
-    _diffSubscription?.cancel();
-    _messageSubscription?.cancel();
+    _diffPoller?.cancel();
+    _messagePoller?.cancel();
 
     super.onClose();
   }
 
   // get the timeline of room
-  Future<void> setCurrentRoom(Conversation? convoRoom) async {
+  Future<void> setCurrentRoom(Convo? convoRoom) async {
     if (convoRoom == null) {
       _messages.clear();
       typingUsers.clear();
       activeMembers.clear();
       mentionList.clear();
-      _diffSubscription?.cancel();
+      _diffPoller?.cancel();
       _stream = null;
       _page = 0;
       _currentRoom = null;
@@ -163,7 +163,7 @@ class ChatRoomController extends GetxController {
     }
     _stream = await _currentRoom!.timelineStream();
     // event handler from paginate
-    _diffSubscription = _stream?.diffRx().listen((event) {
+    _diffPoller = _stream?.diffRx().listen((event) {
       // stream is rendered in reverse order
       switch (event.action()) {
         // Append the given elements at the end of the `Vector` and notify subscribers
@@ -446,12 +446,8 @@ class ChatRoomController extends GetxController {
       UserProfile profile = activeMembers[i].getProfile();
       Map<String, dynamic> record = {};
       if (await profile.hasAvatar()) {
-        var userAvatar = await profile
-            .getThumbnail(62, 60)
-            .then((optionBuffer) => optionBuffer.data()!);
-        var userName = await profile
-            .getDisplayName()
-            .then((optionBuffer) => optionBuffer.text());
+        var userAvatar = (await profile.getThumbnail(62, 60)).data()!;
+        var userName = (await profile.getDisplayName()).text();
         userProfiles[userId] = ProfileData(userName, userAvatar);
         record['avatar'] = userProfiles[userId];
       }
@@ -497,7 +493,7 @@ class ChatRoomController extends GetxController {
     });
   }
 
-  //push messages in conversation
+  // push messages in convo
   Future<void> handleSendPressed(
     String markdownMessage,
     String htmlMessage,

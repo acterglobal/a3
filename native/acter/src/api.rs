@@ -25,7 +25,7 @@ mod calendar_events;
 mod client;
 mod comments;
 mod common;
-mod conversation;
+mod convo;
 mod device;
 mod invitation;
 mod message;
@@ -59,9 +59,8 @@ pub use common::{
     duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, OptionBuffer, OptionText,
     ReactionDesc, TextDesc, ThumbnailInfo, VideoDesc,
 };
-pub use conversation::{
-    new_convo_settings_builder, Conversation, CreateConversationSettings,
-    CreateConversationSettingsBuilder,
+pub use convo::{
+    new_convo_settings_builder, Convo, CreateConvoSettings, CreateConvoSettingsBuilder,
 };
 pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
