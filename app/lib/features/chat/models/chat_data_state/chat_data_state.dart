@@ -1,4 +1,4 @@
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Conversation;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Convo;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'chat_data_state.freezed.dart';
@@ -17,7 +17,7 @@ class ChatDataState with _$ChatDataState {
   const factory ChatDataState.loading() = _ChatDataStateLoading;
 
   ///Data
-  const factory ChatDataState.data({required List<Conversation> chats}) =
+  const factory ChatDataState.data({required List<Convo> chats}) =
       _ChatDataStateData;
 
   ///Error

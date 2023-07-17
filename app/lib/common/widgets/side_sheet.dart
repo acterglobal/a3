@@ -37,7 +37,6 @@ class SideSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
 
     return Material(
@@ -54,19 +53,52 @@ class SideSheet extends StatelessWidget {
         ),
         child: Column(
           children: [
-            _buildHeader(textTheme, context),
+            _SheetHeader(
+              header: header,
+              addBackIconButton: addBackIconButton,
+              addCloseIconButton: addCloseIconButton,
+              backButtonTooltip: backButtonTooltip,
+              closeButtonTooltip: closeButtonTooltip,
+            ),
             Expanded(child: body),
             Visibility(
               visible: addActions,
-              child: _buildFooter(context),
+              child: _SheetFooter(
+                addDivider: addDivider,
+                confirmActionTitle: confirmActionTitle,
+                cancelActionTitle: cancelActionTitle,
+                actions: actions,
+                confirmActionOnPressed: confirmActionOnPressed,
+                cancelActionOnPressed: cancelActionOnPressed,
+              ),
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildHeader(TextTheme textTheme, BuildContext context) {
+class _SheetHeader extends StatelessWidget {
+  final String header;
+  final bool addBackIconButton;
+  final bool addCloseIconButton;
+  final String? backButtonTooltip;
+  final String? closeButtonTooltip;
+
+  const _SheetHeader({
+    Key? key,
+    required this.header,
+    required this.addBackIconButton,
+    required this.addCloseIconButton,
+    this.backButtonTooltip,
+    this.closeButtonTooltip,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
     return Padding(
       padding: EdgeInsets.fromLTRB(addBackIconButton ? 16 : 24, 16, 16, 16),
       child: Row(
@@ -108,8 +140,29 @@ class SideSheet extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildFooter(BuildContext context) {
+class _SheetFooter extends StatelessWidget {
+  final bool addDivider;
+  final String confirmActionTitle;
+  final String cancelActionTitle;
+  final List<Widget>? actions;
+
+  final void Function()? confirmActionOnPressed;
+  final void Function()? cancelActionOnPressed;
+
+  const _SheetFooter({
+    Key? key,
+    required this.addDivider,
+    required this.confirmActionTitle,
+    required this.cancelActionTitle,
+    this.actions,
+    this.confirmActionOnPressed,
+    this.cancelActionOnPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Visibility(

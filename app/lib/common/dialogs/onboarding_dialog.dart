@@ -10,8 +10,8 @@ void onBoardingDialog({
   required void Function()? onPressed1,
   required void Function() onPressed2,
   required bool canDismissable,
-}) async {
-  await showModalBottomSheet(
+}) {
+  showModalBottomSheet(
     useRootNavigator: true,
     enableDrag: false,
     isScrollControlled: true,

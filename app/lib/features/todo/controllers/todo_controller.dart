@@ -66,8 +66,7 @@ class ToDoController extends GetxController {
   /// fetches teams (groups) for client.
   Future<List<Team>> getTeams() async {
     final List<Team> teams = [];
-    List<Space> listTeams =
-        await client.spaces().then((groups) => groups.toList());
+    List<Space> listTeams = (await client.spaces()).toList();
     if (listTeams.isNotEmpty) {
       for (var team in listTeams) {
         RoomProfile profile = team.getProfile();
@@ -122,7 +121,7 @@ class ToDoController extends GetxController {
     List<String> assignees = [];
     List<String> subscribers = [];
 
-    var tasksList = await list.tasks().then((tasks) => tasks.toList());
+    var tasksList = (await list.tasks()).toList();
     if (tasksList.isNotEmpty) {
       for (Task task in tasksList) {
         if (task.assignees().isNotEmpty) {
@@ -162,9 +161,7 @@ class ToDoController extends GetxController {
   /// fetch comments for todo task.
   Future<List<ToDoComment>> getComments(ToDoTask task) async {
     List<ToDoComment> todoComments = [];
-    List<Comment> comments = await task.commentsManager
-        .comments()
-        .then((ffiList) => ffiList.toList());
+    List<Comment> comments = (await task.commentsManager.comments()).toList();
     for (Comment comment in comments) {
       ToDoComment item = ToDoComment(
         userId: comment.sender().toString(),
@@ -193,7 +190,7 @@ class ToDoController extends GetxController {
     final TaskListDraft listDraft = space.taskListDraft();
     listDraft.name(name);
     listDraft.descriptionText(description ?? '');
-    String eventId = await listDraft.send().then((res) => res.toString());
+    var eventId = (await listDraft.send()).toString();
     TaskList list = await client.waitForTaskList(eventId, null);
     final ToDoList newItem = ToDoList(
       name: list.name(),
@@ -204,7 +201,7 @@ class ToDoController extends GetxController {
       taskUpdateDraft: list.updateBuilder(),
     );
     todos.add(newItem);
-    return eventId.toString();
+    return eventId;
   }
 
   /// creates todo task.
@@ -217,8 +214,7 @@ class ToDoController extends GetxController {
     if (dueDate != null) {
       list.taskDraft.utcDueFromRfc3339(dueDate.toUtc().toIso8601String());
     }
-    final String eventId =
-        await list.taskDraft.send().then((res) => res.toString());
+    final String eventId = (await list.taskDraft.send()).toString();
     // wait for task to come down to wire.
     final Task task = await client.waitForTask(eventId, null);
     final CommentsManager commentsManager = await task.comments();
@@ -228,9 +224,7 @@ class ToDoController extends GetxController {
       taskUpdateDraft: task.updateBuilder(),
       commentsManager: commentsManager,
       due: task.utcDue() != null
-          ? DateTime.parse(
-              task.utcDue()!.toRfc3339(),
-            )
+          ? DateTime.parse(task.utcDue()!.toRfc3339())
           : null,
       description: task.descriptionText() ?? '',
       assignees: [],
@@ -287,8 +281,7 @@ class ToDoController extends GetxController {
       completedDate = null;
     }
     // send task update.
-    String eventId =
-        await task.taskUpdateDraft.send().then((eventId) => eventId.toString());
+    String eventId = (await task.taskUpdateDraft.send()).toString();
     ToDoTask updateItem = ToDoTask(
       name: name ?? task.name,
       progressPercent: progressPercent ?? updateVal,
@@ -395,7 +388,7 @@ class ToDoController extends GetxController {
   /// send comment draft to wire.
   Future<String> sendComment(CommentDraft draft, String text) async {
     draft.contentText(text);
-    String eventId = await draft.send().then((eventId) => eventId.toString());
+    String eventId = (await draft.send()).toString();
     // Wait for comment to come down on wire before refreshing screen.
     Future.delayed(const Duration(milliseconds: 800), () {
       update(['discussion']);

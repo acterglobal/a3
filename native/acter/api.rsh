@@ -578,7 +578,7 @@ object TimelineStream {
     fn edit(new_msg: string, original_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
-object Conversation {
+object Convo {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
 
@@ -1273,6 +1273,17 @@ object Space {
 
     /// leave this room
     fn leave() -> Future<Result<bool>>;
+    
+       /// update the power levels of specified member
+    fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
+
+}
+
+enum MembershipStatus {
+    Admin,
+    Mod,
+    Custom,
+    Regular
 }
 
 enum MemberPermission {
@@ -1290,6 +1301,7 @@ enum MemberPermission {
     CanUpdateAvatar,
     CanSetTopic,
     CanLinkSpaces,
+    CanUpdatePowerLevels,
     CanSetParentSpace
 }
 
@@ -1299,6 +1311,12 @@ object Member {
 
     /// Full user_id
     fn user_id() -> UserId;
+
+    /// The status of this member.
+    fn membership_status_str() -> string;
+
+    /// the power level this user has
+    fn power_level() -> u64;
 
     /// Whether this user is allowed to perform the given action
     //fn can(permission: MemberPermission) -> bool;
@@ -1364,9 +1382,9 @@ object PublicSearchResult {
 }
 
 /// make convo settings builder
-fn new_convo_settings_builder() -> CreateConversationSettingsBuilder;
+fn new_convo_settings_builder() -> CreateConvoSettingsBuilder;
 
-object CreateConversationSettingsBuilder {
+object CreateConvoSettingsBuilder {
     /// set the name of convo
     fn set_name(value: string);
 
@@ -1386,10 +1404,10 @@ object CreateConversationSettingsBuilder {
     /// set the parent of convo
     fn set_parent(value: string);
 
-    fn build() -> CreateConversationSettings;
+    fn build() -> CreateConvoSettings;
 }
 
-object CreateConversationSettings {}
+object CreateConvoSettings {}
 
 /// make space settings builder
 fn new_space_settings_builder() -> CreateSpaceSettingsBuilder;
@@ -1454,8 +1472,8 @@ object Client {
     /// deprecated, please use account() instead.
     fn user_id() -> Result<UserId>;
 
-    /// get conversation room
-    fn conversation(room_or_id: string) -> Future<Result<Conversation>>;
+    /// get convo room
+    fn convo(room_or_id: string) -> Future<Result<Convo>>;
 
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Result<UserProfile>;
@@ -1463,11 +1481,11 @@ object Client {
     /// upload file and return remote url
     fn upload_media(uri: string) -> Future<Result<MxcUri>>;
 
-    /// The conversations the user is involved in
-    fn conversations() -> Future<Result<Vec<Conversation>>>;
+    /// The convos the user is involved in
+    fn convos() -> Future<Result<Vec<Convo>>>;
 
-    /// The update event of conversations the user is involved in
-    fn conversations_rx() -> Stream<Vec<Conversation>>;
+    /// The update event of convos the user is involved in
+    fn convos_rx() -> Stream<Vec<Convo>>;
 
     /// The spaces the user is part of
     fn spaces() -> Future<Result<Vec<Space>>>;
@@ -1476,7 +1494,7 @@ object Client {
     fn join_space(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Space>>;
 
     /// attempt to join a room
-    fn join_conversation(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Conversation>>;
+    fn join_convo(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Convo>>;
 
     /// search the public directory for spaces
     fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
@@ -1522,7 +1540,7 @@ object Client {
     fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
 
     /// create convo
-    fn create_conversation(settings: CreateConversationSettings) -> Future<Result<RoomId>>;
+    fn create_convo(settings: CreateConvoSettings) -> Future<Result<RoomId>>;
 
     /// create default space
     fn create_acter_space(settings: CreateSpaceSettings) -> Future<Result<RoomId>>;

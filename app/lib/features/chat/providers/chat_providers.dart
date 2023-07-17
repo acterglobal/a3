@@ -8,25 +8,23 @@ import 'package:acter/features/chat/models/chat_data_state/chat_data_state.dart'
 import 'package:acter/features/chat/providers/notifiers/chat_notifiers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Conversation, TypingEvent;
+    show Convo, TypingEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 // chats stream provider
 final chatStreamProvider =
-    StreamProvider.autoDispose<List<Conversation>>((ref) async* {
+    StreamProvider.autoDispose<List<Convo>>((ref) async* {
   final client = ref.watch(clientProvider)!;
-  StreamSubscription<List<Conversation>>? _subscription;
+  StreamSubscription<List<Convo>>? _subscription;
   ref.onDispose(() => _subscription!.cancel());
-  final _stream = client
-      .conversationsRx()
-      .asBroadcastStream()
-      .map((event) => event.toList());
+  final _stream =
+      client.convosRx().asBroadcastStream().map((event) => event.toList());
   _subscription = _stream.listen((event) {
     debugPrint('Acter Conversations Stream');
   });
-  await for (List<Conversation> event in _stream) {
+  await for (List<Convo> event in _stream) {
     // make sure we aren't emitting empty list
     if (event.isNotEmpty) {
       ///FIXME: for no rooms, this might leads to loading infinitely.
@@ -56,7 +54,7 @@ final chatsProvider =
   return ChatsNotifier(ref: ref, asyncChats: asyncChats);
 });
 
-final chatsSearchProvider = StateProvider<List<Conversation>>((ref) => []);
+final chatsSearchProvider = StateProvider<List<Convo>>((ref) => []);
 
 final typingProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
@@ -71,8 +69,7 @@ final typingStreamProvider = StreamProvider<TypingEvent>((ref) async* {
       'Typing Event : ${event.roomId().toString()}:${event.userIds().toList()}',
     );
     final roomId = event.roomId().toString();
-    final List<Conversation> roomList =
-        ref.read(chatStreamProvider).requireValue;
+    final List<Convo> roomList = ref.read(chatStreamProvider).requireValue;
     int idx = roomList.indexWhere((x) {
       return x.getRoomIdStr() == roomId.toString();
     });

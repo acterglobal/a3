@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat/widgets/conversation_card.dart';
+import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,8 +8,8 @@ import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reord
 import 'package:implicitly_animated_reorderable_list_2/transitions.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class ConversationsList extends ConsumerWidget {
-  const ConversationsList({super.key});
+class ConvosList extends ConsumerWidget {
+  const ConvosList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +23,7 @@ class ConversationsList extends ConsumerWidget {
         ),
       ),
       data: (data) {
-        return ImplicitlyAnimatedReorderableList<Conversation>(
+        return ImplicitlyAnimatedReorderableList<Convo>(
           items: data,
           areItemsTheSame: (a, b) => a.getRoomIdStr() == b.getRoomIdStr(),
           // Remember to update the underlying data when the list has been reordered.
@@ -48,7 +48,7 @@ class ConversationsList extends ConsumerWidget {
                     color: color,
                     elevation: elevation ?? 0.0,
                     type: MaterialType.transparency,
-                    child: ConversationCard(
+                    child: ConvoCard(
                       room: item,
                     ),
                   ),
@@ -61,7 +61,7 @@ class ConversationsList extends ConsumerWidget {
             builder: (context, animation, inDrag) {
               return FadeTransition(
                 opacity: animation,
-                child: ConversationCard(
+                child: ConvoCard(
                   room: item,
                 ),
               );
@@ -82,7 +82,7 @@ class ConversationsList extends ConsumerWidget {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: ConversationCard(
+                  child: ConvoCard(
                     room: item,
                   ),
                 ),

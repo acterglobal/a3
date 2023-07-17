@@ -20,7 +20,7 @@ mixin _$ChatDataState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<Conversation> chats) data,
+    required TResult Function(List<Convo> chats) data,
     required TResult Function(String? error) error,
   }) =>
       throw _privateConstructorUsedError;
@@ -28,7 +28,7 @@ mixin _$ChatDataState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Conversation> chats)? data,
+    TResult? Function(List<Convo> chats)? data,
     TResult? Function(String? error)? error,
   }) =>
       throw _privateConstructorUsedError;
@@ -36,7 +36,7 @@ mixin _$ChatDataState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Conversation> chats)? data,
+    TResult Function(List<Convo> chats)? data,
     TResult Function(String? error)? error,
     required TResult orElse(),
   }) =>
@@ -126,7 +126,7 @@ class _$_ChatDataStateInitial implements _ChatDataStateInitial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<Conversation> chats) data,
+    required TResult Function(List<Convo> chats) data,
     required TResult Function(String? error) error,
   }) {
     return initial();
@@ -137,7 +137,7 @@ class _$_ChatDataStateInitial implements _ChatDataStateInitial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Conversation> chats)? data,
+    TResult? Function(List<Convo> chats)? data,
     TResult? Function(String? error)? error,
   }) {
     return initial?.call();
@@ -148,7 +148,7 @@ class _$_ChatDataStateInitial implements _ChatDataStateInitial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Conversation> chats)? data,
+    TResult Function(List<Convo> chats)? data,
     TResult Function(String? error)? error,
     required TResult orElse(),
   }) {
@@ -240,7 +240,7 @@ class _$_ChatDataStateLoading implements _ChatDataStateLoading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<Conversation> chats) data,
+    required TResult Function(List<Convo> chats) data,
     required TResult Function(String? error) error,
   }) {
     return loading();
@@ -251,7 +251,7 @@ class _$_ChatDataStateLoading implements _ChatDataStateLoading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Conversation> chats)? data,
+    TResult? Function(List<Convo> chats)? data,
     TResult? Function(String? error)? error,
   }) {
     return loading?.call();
@@ -262,7 +262,7 @@ class _$_ChatDataStateLoading implements _ChatDataStateLoading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Conversation> chats)? data,
+    TResult Function(List<Convo> chats)? data,
     TResult Function(String? error)? error,
     required TResult orElse(),
   }) {
@@ -320,7 +320,7 @@ abstract class _$$_ChatDataStateDataCopyWith<$Res> {
           $Res Function(_$_ChatDataStateData) then) =
       __$$_ChatDataStateDataCopyWithImpl<$Res>;
   @useResult
-  $Res call({List<Conversation> chats});
+  $Res call({List<Convo> chats});
 }
 
 /// @nodoc
@@ -340,7 +340,7 @@ class __$$_ChatDataStateDataCopyWithImpl<$Res>
       chats: null == chats
           ? _value._chats
           : chats // ignore: cast_nullable_to_non_nullable
-              as List<Conversation>,
+              as List<Convo>,
     ));
   }
 }
@@ -348,12 +348,12 @@ class __$$_ChatDataStateDataCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_ChatDataStateData implements _ChatDataStateData {
-  const _$_ChatDataStateData({required final List<Conversation> chats})
+  const _$_ChatDataStateData({required final List<Convo> chats})
       : _chats = chats;
 
-  final List<Conversation> _chats;
+  final List<Convo> _chats;
   @override
-  List<Conversation> get chats {
+  List<Convo> get chats {
     if (_chats is EqualUnmodifiableListView) return _chats;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_chats);
@@ -388,7 +388,7 @@ class _$_ChatDataStateData implements _ChatDataStateData {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<Conversation> chats) data,
+    required TResult Function(List<Convo> chats) data,
     required TResult Function(String? error) error,
   }) {
     return data(chats);
@@ -399,7 +399,7 @@ class _$_ChatDataStateData implements _ChatDataStateData {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Conversation> chats)? data,
+    TResult? Function(List<Convo> chats)? data,
     TResult? Function(String? error)? error,
   }) {
     return data?.call(chats);
@@ -410,7 +410,7 @@ class _$_ChatDataStateData implements _ChatDataStateData {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Conversation> chats)? data,
+    TResult Function(List<Convo> chats)? data,
     TResult Function(String? error)? error,
     required TResult orElse(),
   }) {
@@ -459,10 +459,10 @@ class _$_ChatDataStateData implements _ChatDataStateData {
 }
 
 abstract class _ChatDataStateData implements ChatDataState {
-  const factory _ChatDataStateData({required final List<Conversation> chats}) =
+  const factory _ChatDataStateData({required final List<Convo> chats}) =
       _$_ChatDataStateData;
 
-  List<Conversation> get chats;
+  List<Convo> get chats;
   @JsonKey(ignore: true)
   _$$_ChatDataStateDataCopyWith<_$_ChatDataStateData> get copyWith =>
       throw _privateConstructorUsedError;
@@ -535,7 +535,7 @@ class _$_ChatDataStateError implements _ChatDataStateError {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<Conversation> chats) data,
+    required TResult Function(List<Convo> chats) data,
     required TResult Function(String? error) error,
   }) {
     return error(this.error);
@@ -546,7 +546,7 @@ class _$_ChatDataStateError implements _ChatDataStateError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Conversation> chats)? data,
+    TResult? Function(List<Convo> chats)? data,
     TResult? Function(String? error)? error,
   }) {
     return error?.call(this.error);
@@ -557,7 +557,7 @@ class _$_ChatDataStateError implements _ChatDataStateError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Conversation> chats)? data,
+    TResult Function(List<Convo> chats)? data,
     TResult Function(String? error)? error,
     required TResult orElse(),
   }) {

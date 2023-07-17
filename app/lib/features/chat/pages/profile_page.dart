@@ -1,12 +1,12 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
-import 'package:acter/features/chat/pages/link_settings_page.dart';
 import 'package:acter/features/chat/pages/edit_group_page.dart';
 import 'package:acter/features/chat/pages/group_link_page.dart';
+import 'package:acter/features/chat/pages/link_settings_page.dart';
 import 'package:acter/features/chat/pages/requests_page.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/features/chat/widgets/group_member_view.dart';
 import 'package:acter/features/chat/widgets/invite_list_view.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,7 @@ import 'package:get/get.dart';
 
 class ProfilePage extends ConsumerWidget {
   final Client client;
-  final Conversation room;
+  final Convo room;
   final bool isGroup;
   final bool isAdmin;
 
@@ -41,22 +41,7 @@ class ProfilePage extends ConsumerWidget {
         actions: <Widget>[
           Visibility(
             visible: isAdmin,
-            child: PopupMenuButton<int>(
-              onSelected: (item) => handleItemClick(item, context),
-              itemBuilder: (context) => [
-                PopupMenuItem<int>(
-                  value: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Text('Report'),
-                      SizedBox(width: 50),
-                      Icon(Atlas.triangle_exclamation)
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            child: const _AdminMenuButton(),
           ),
         ],
       ),
@@ -156,10 +141,10 @@ class ProfilePage extends ConsumerWidget {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                buildMuteButton(context),
-                buildSearchButton(context),
-                buildGalleryButton(context)
+              children: const [
+                _MuteButton(),
+                _SearchButton(),
+                _GalleryButton()
               ],
             ),
             Visibility(
@@ -177,21 +162,17 @@ class ProfilePage extends ConsumerWidget {
                     ),
                     child: Column(
                       children: [
-                        buildRequestsAndInvites(context),
+                        _RequestsAndInvitesWidget(client: client, room: room),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 12),
-                          child: Divider(
-                            height: 2,
-                          ),
+                          child: Divider(height: 2),
                         ),
-                        buildGroupLinkSwitch(context),
+                        const _GroupLinkSwitch(),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 12),
-                          child: Divider(
-                            height: 2,
-                          ),
+                          child: Divider(height: 2),
                         ),
-                        buildCreateRoomInviteButton(context),
+                        _CreateRoomInviteButton(room: room),
                       ],
                     ),
                   ),
@@ -200,16 +181,16 @@ class ProfilePage extends ConsumerWidget {
             ),
             Visibility(
               visible: !isGroup,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: buildGroupLabel(),
+              child: const Padding(
+                padding: EdgeInsets.all(8),
+                child: _GroupLabel(),
               ),
             ),
             Visibility(
               visible: !isGroup,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: buildBlockButton(),
+              child: const Padding(
+                padding: EdgeInsets.all(8),
+                child: _BlockButton(),
               ),
             ),
             Visibility(
@@ -217,33 +198,179 @@ class ProfilePage extends ConsumerWidget {
               child: Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.all(16),
-                child: buildActiveMembersLabel(context, roomController),
+                child: _ActiveMembersLabel(roomController: roomController),
               ),
             ),
             Visibility(
               visible: isGroup,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                child: buildMemberList(roomController),
+                child: _MemberListWidget(roomController: roomController),
               ),
             ),
             Visibility(
               visible: isGroup,
-              child: buildLeaveButton(context),
+              child: const _LeaveButton(),
             )
           ],
         ),
       ),
     );
   }
+}
 
-  Widget buildMuteButton(BuildContext context) {
+class _AdminMenuButton extends StatelessWidget {
+  const _AdminMenuButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<int>(
+      onSelected: (item) => onSelectMenuItem(item, context),
+      itemBuilder: (context) => [
+        PopupMenuItem<int>(
+          value: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Text('Report'),
+              SizedBox(width: 50),
+              Icon(Atlas.triangle_exclamation)
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void onSelectMenuItem(int item, BuildContext context) {
+    if (item == 0) {
+      showReportBottomSheet(context);
+    }
+  }
+
+  void showReportBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(30),
+        ),
+      ),
+      builder: (BuildContext ctx0) => StatefulBuilder(
+        builder: (BuildContext ctx1, StateSetter setSheetState) {
+          return DraggableScrollableSheet(
+            initialChildSize: 0.55,
+            minChildSize: 0.25,
+            expand: false,
+            builder: (BuildContext ctx2, ScrollController scrollController) {
+              return Container(
+                margin: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 12,
+                ),
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        'Spam',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(width: 1.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        'Violence',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(width: 1),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        'Fake Account',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(width: 1),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        'Copyrights',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(width: 1),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        'Spam',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _MuteButton extends StatelessWidget {
+  const _MuteButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        showMuteBottomSheet(context);
-      },
+      onTap: () => onClick(context),
       child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Column(
@@ -252,7 +379,10 @@ class ProfilePage extends ConsumerWidget {
                 padding: EdgeInsets.all(8),
                 child: Icon(Atlas.bell_reminder, color: Colors.white),
               ),
-              Text('Mute', style: TextStyle(color: Colors.white))
+              Text(
+                'Mute',
+                style: TextStyle(color: Colors.white),
+              )
             ],
           ),
         ),
@@ -260,11 +390,204 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget buildSearchButton(BuildContext context) {
+  void onClick(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(30),
+        ),
+      ),
+      builder: (BuildContext ctx0) => StatefulBuilder(
+        builder: (BuildContext ctx1, StateSetter setSheetState) {
+          return DraggableScrollableSheet(
+            initialChildSize: 0.85,
+            minChildSize: 0.5,
+            expand: false,
+            builder: (BuildContext ctx2, ScrollController scrollController) {
+              return SingleChildScrollView(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 12,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: const Text(
+                            'Mute this chat for',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6.33),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(width: 1),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: const Text(
+                            '1 Hour',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6.33),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(width: 1),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: const Text(
+                            '8 Hours',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6.33),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(width: 1),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: const Text(
+                            '1 Day',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6.33),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(width: 1),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: const Text(
+                            '1 Week',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6.33),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(width: 1),
+                            ),
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(ctx2).pop();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: const Text(
+                              'Always',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6.33),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(width: 1),
+                            ),
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(ctx2).pop();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _SearchButton extends StatelessWidget {
+  const _SearchButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Search Clicked')),
+          const SnackBar(
+            content: Text('Search Clicked'),
+          ),
         );
       },
       child: Card(
@@ -277,23 +600,35 @@ class ProfilePage extends ConsumerWidget {
                 padding: EdgeInsets.all(8),
                 child: Icon(Atlas.magnifying_glass, color: Colors.white),
               ),
-              Text('Search', style: TextStyle(color: Colors.white))
+              Text(
+                'Search',
+                style: TextStyle(color: Colors.white),
+              )
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget buildGalleryButton(BuildContext context) {
+class _GalleryButton extends StatelessWidget {
+  const _GalleryButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gallery tapped')),
+          const SnackBar(
+            content: Text('Gallery tapped'),
+          ),
         );
       },
       child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Column(
@@ -302,27 +637,32 @@ class ProfilePage extends ConsumerWidget {
                 padding: EdgeInsets.all(8),
                 child: Icon(Atlas.image_gallery, color: Colors.white),
               ),
-              Text('Gallery', style: TextStyle(color: Colors.white))
+              Text(
+                'Gallery',
+                style: TextStyle(color: Colors.white),
+              )
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget buildRequestsAndInvites(BuildContext context) {
+class _RequestsAndInvitesWidget extends StatelessWidget {
+  final Client client;
+  final Convo room;
+
+  const _RequestsAndInvitesWidget({
+    Key? key,
+    required this.client,
+    required this.room,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RequestsPage(
-              client: client,
-              room: room,
-            ),
-          ),
-        );
-      },
+      onTap: () => onClick(context),
       child: Row(
         children: const [
           Padding(
@@ -336,43 +676,79 @@ class ProfilePage extends ConsumerWidget {
           Spacer(),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Text('3', style: TextStyle(color: Colors.white)),
+            child: Text(
+              '3',
+              style: TextStyle(color: Colors.white),
+            ),
           )
         ],
       ),
     );
   }
 
-  Widget buildGroupLinkSwitch(BuildContext context) {
+  void onClick(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext ctx) => RequestsPage(
+          client: client,
+          room: room,
+        ),
+      ),
+    );
+  }
+}
+
+class _GroupLinkSwitch extends StatelessWidget {
+  const _GroupLinkSwitch({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const GroupLinkView()),
-        );
-      },
+      onTap: () => onClick(context),
       child: Row(
         children: const [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Icon(Atlas.link, color: Colors.white),
           ),
-          Text('Group Link', style: TextStyle(color: Colors.white)),
+          Text(
+            'Group Link',
+            style: TextStyle(color: Colors.white),
+          ),
           Spacer(),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Text('On', style: TextStyle(color: Colors.white)),
+            child: Text(
+              'On',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget buildCreateRoomInviteButton(BuildContext context) {
+  void onClick(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (BuildContext ctx) => const GroupLinkView()),
+    );
+  }
+}
+
+class _CreateRoomInviteButton extends StatelessWidget {
+  final Convo room;
+
+  const _CreateRoomInviteButton({
+    Key? key,
+    required this.room,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        showInviteBottomSheet(context);
-      },
+      onTap: () => onClick(context),
       child: Container(
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(bottom: 12, left: 16),
@@ -384,12 +760,14 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  void showInviteBottomSheet(BuildContext context) {
+  void onClick(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(30),
+        ),
       ),
       builder: (BuildContext context) => StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
@@ -459,21 +837,10 @@ class ProfilePage extends ConsumerWidget {
                           ),
                           const SizedBox(width: 5),
                           GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LinkSettingsPage(
-                                    room: room,
-                                  ),
-                                ),
-                              );
-                            },
+                            onTap: () => onEditLink(context),
                             child: const Text(
                               'Edit invite link',
-                              style: TextStyle(
-                                fontSize: 14,
-                              ),
+                              style: TextStyle(fontSize: 14),
                             ),
                           ),
                         ],
@@ -502,9 +869,25 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget buildGroupLabel() {
+  void onEditLink(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext ctx) => LinkSettingsPage(room: room),
+      ),
+    );
+  }
+}
+
+class _GroupLabel extends StatelessWidget {
+  const _GroupLabel({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
         child: Column(
@@ -522,7 +905,10 @@ class ProfilePage extends ConsumerWidget {
                 Spacer(),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
-                  child: Text('3', style: TextStyle(color: Colors.white)),
+                  child: Text(
+                    '3',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
@@ -552,10 +938,17 @@ class ProfilePage extends ConsumerWidget {
       ),
     );
   }
+}
 
-  Widget buildBlockButton() {
+class _BlockButton extends StatelessWidget {
+  const _BlockButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
@@ -563,18 +956,28 @@ class ProfilePage extends ConsumerWidget {
             Icon(Atlas.danger),
             Padding(
               padding: EdgeInsets.only(left: 8),
-              child: Text('Block this user', style: TextStyle(fontSize: 16)),
+              child: Text(
+                'Block this user',
+                style: TextStyle(fontSize: 16),
+              ),
             )
           ],
         ),
       ),
     );
   }
+}
 
-  Widget buildActiveMembersLabel(
-    BuildContext context,
-    ChatRoomController roomController,
-  ) {
+class _ActiveMembersLabel extends StatelessWidget {
+  final ChatRoomController roomController;
+
+  const _ActiveMembersLabel({
+    Key? key,
+    required this.roomController,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Text(
       '${roomController.activeMembers.length} ${AppLocalizations.of(context)!.members}',
       style: const TextStyle(
@@ -584,29 +987,41 @@ class ProfilePage extends ConsumerWidget {
       ),
     );
   }
+}
 
-  Widget buildMemberList(ChatRoomController roomController) {
+class _MemberListWidget extends StatelessWidget {
+  final ChatRoomController roomController;
+
+  const _MemberListWidget({
+    Key? key,
+    required this.roomController,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: ListView.builder(
         itemCount: roomController.activeMembers.length,
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          String userId =
-              roomController.activeMembers[index].userId().toString();
+          var userId = roomController.activeMembers[index].userId();
           return Padding(
             padding: const EdgeInsets.all(12),
             child: GetBuilder<ChatRoomController>(
-              id: 'user-profile-$userId',
+              id: 'user-profile-${userId.toString()}',
               builder: (ChatRoomController controller) {
-                String? name = controller.getUserProfile(userId)?.displayName;
+                var profile = controller.getUserProfile(userId.toString());
+                String? name = profile?.displayName;
                 return (name == null)
                     ? const Center(child: CircularProgressIndicator())
                     : GroupMember(
-                        userId: userId,
+                        userId: userId.toString(),
                         isAdmin: true,
-                        profile: controller.getUserProfile(userId),
+                        profile: profile,
                       );
               },
             ),
@@ -615,15 +1030,15 @@ class ProfilePage extends ConsumerWidget {
       ),
     );
   }
+}
 
-  Widget buildLeaveButton(BuildContext context) {
+class _LeaveButton extends StatelessWidget {
+  const _LeaveButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        const snackBar = SnackBar(
-          content: Text('Oops you pressed leave group'),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      },
+      onTap: () => onClick(context),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
         child: Container(
@@ -641,321 +1056,10 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  void handleItemClick(int item, BuildContext context) {
-    if (item == 0) {
-      showReportBottomSheet(context);
-    }
-  }
-
-  void showReportBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-      ),
-      builder: (BuildContext context) => StatefulBuilder(
-        builder: (BuildContext context, StateSetter setSheetState) {
-          return DraggableScrollableSheet(
-            initialChildSize: 0.55,
-            minChildSize: 0.25,
-            expand: false,
-            builder: (
-              BuildContext context,
-              ScrollController scrollController,
-            ) {
-              return Container(
-                margin: const EdgeInsets.symmetric(
-                  vertical: 16,
-                  horizontal: 12,
-                ),
-                child: Column(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.all(8),
-                      child:
-                          Text('Spam', style: TextStyle(color: Colors.white)),
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6.33),
-                      child: Container(
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              width: 1.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Text(
-                        'Violence',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6.33),
-                      child: Container(
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              width: 1,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Text(
-                        'Fake Account',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6.33),
-                      child: Container(
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              width: 1,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Text(
-                        'Copyrights',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6.33),
-                      child: Container(
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              width: 1,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.all(8),
-                      child:
-                          Text('Spam', style: TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-      ),
+  void onClick(BuildContext context) {
+    const snackBar = SnackBar(
+      content: Text('Oops you pressed leave group'),
     );
-  }
-
-  void showMuteBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-      ),
-      builder: (BuildContext context) => StatefulBuilder(
-        builder: (BuildContext context, StateSetter setSheetState) {
-          return DraggableScrollableSheet(
-            initialChildSize: 0.85,
-            minChildSize: 0.5,
-            expand: false,
-            builder: (BuildContext context, ScrollController scrollController) {
-              return SingleChildScrollView(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 12,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: const Text(
-                            'Mute this chat for',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(6.33),
-                        child: Container(
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: const Text(
-                            '1 Hour',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(6.33),
-                        child: Container(
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: const Text(
-                            '8 Hours',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(6.33),
-                        child: Container(
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: const Text(
-                            '1 Day',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(6.33),
-                        child: Container(
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: const Text(
-                            '1 Week',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(6.33),
-                        child: Container(
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: const Text(
-                              'Always',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(6.33),
-                        child: Container(
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

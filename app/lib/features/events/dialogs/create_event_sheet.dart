@@ -272,7 +272,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
             if (_titleInput.isEmpty) {
               return;
             }
-            _handleCreateEvent(context);
+            await _handleCreateEvent(context);
           },
           child: const Text('Create Event'),
           style: ElevatedButton.styleFrom(
@@ -294,7 +294,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     ref.read(_titleProvider.notifier).update((state) => value!);
   }
 
-  void _handleCreateEvent(BuildContext context) async {
+  Future<void> _handleCreateEvent(BuildContext context) async {
     popUpDialog(
       context: context,
       title: const Text('Creating Event'),
@@ -313,12 +313,13 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       _endTimeController.text = _time;
     }
     try {
-      final space =
-          await ref.read(spaceProvider(widget.initialSelectedSpace!).future);
-      final calendarEventDraft = space.calendarEventDraft();
+      final space = await ref.read(
+        spaceProvider(widget.initialSelectedSpace!).future,
+      );
+      final draft = space.calendarEventDraft();
 
-      calendarEventDraft.title(ref.read(_titleProvider));
-      calendarEventDraft.descriptionText(_descriptionController.text.trim());
+      draft.title(ref.read(_titleProvider));
+      draft.descriptionText(_descriptionController.text.trim());
 
       // convert selected date time to utc and RFC3339 format
       final _date = ref.read(_dateProvider);
@@ -330,8 +331,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
         _startTime.hour,
         _startTime.minute,
       ).toUtc();
-      calendarEventDraft
-          .utcStartFromRfc3339(utcStartDateTime.toIso8601String());
+      draft.utcStartFromRfc3339(utcStartDateTime.toIso8601String());
 
       final _endTime = ref.read(_endTimeProvider);
       final utcEndDateTime = DateTime(
@@ -341,13 +341,13 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
         _endTime.hour,
         _endTime.minute,
       ).toUtc();
-      calendarEventDraft.utcEndFromRfc3339(utcEndDateTime.toIso8601String());
+      draft.utcEndFromRfc3339(utcEndDateTime.toIso8601String());
 
-      final eventId = await calendarEventDraft.send();
+      final eventId = await draft.send();
       debugPrint('Created Calendar Event: ${eventId.toString()}');
       context.pop();
       context.pop();
-      context.pushNamed(
+      await context.pushNamed(
         Routes.calendarEvent.name,
         pathParameters: {'calendarId': eventId.toString()},
       );

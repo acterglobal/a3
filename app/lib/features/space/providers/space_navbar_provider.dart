@@ -88,6 +88,15 @@ final tabsProvider =
       target: Routes.spaceRelatedSpaces.name,
     ),
   );
+
+  tabs.add(
+    TabEntry(
+      key: const Key('members'),
+      label: 'Members',
+      icon: const Icon(Atlas.group_team_collective_thin),
+      target: Routes.spaceMembers.name,
+    ),
+  );
   return tabs;
 });
 

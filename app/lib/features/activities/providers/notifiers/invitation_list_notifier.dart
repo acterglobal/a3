@@ -7,19 +7,20 @@ import 'package:flutter/foundation.dart';
 class InvitationListNotifier extends Notifier<List<Invitation>> {
   late Stream<FfiListInvitation> _listener;
   // ignore: unused_field
-  late StreamSubscription<void> _sub;
+  late StreamSubscription<void> _poller;
 
   @override
   List<Invitation> build() {
     final client = ref.watch(clientProvider)!;
     _listener = client.invitationsRx();
-    _sub = _listener.listen((ev) {
+    _poller = _listener.listen((ev) {
       final asList = ev.toList();
       debugPrint(
         ' --- - - ----------------- new invitations received ${asList.length}',
       );
       state = asList;
     });
+    ref.onDispose(() => _poller.cancel());
     return [];
   }
 }

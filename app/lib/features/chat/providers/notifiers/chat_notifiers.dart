@@ -3,13 +3,13 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_data_state/chat_data_state.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Conversation, TypingEvent;
+    show Convo, TypingEvent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 class ChatsNotifier extends StateNotifier<ChatDataState> {
   final Ref ref;
-  final AsyncValue<List<Conversation>> asyncChats;
+  final AsyncValue<List<Convo>> asyncChats;
   ChatsNotifier({required this.ref, required this.asyncChats})
       : super(const ChatDataState.initial()) {
     _loadUp();
@@ -24,7 +24,7 @@ class ChatsNotifier extends StateNotifier<ChatDataState> {
   }
 
   void searchRoom(String data) async {
-    List<Conversation> temp = [];
+    List<Convo> temp = [];
     if (data.isNotEmpty) {
       for (var element in asyncChats.requireValue) {
         final name = await element

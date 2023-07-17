@@ -195,10 +195,10 @@ final spaceItemsProvider =
   final spaces = await ref.watch(spacesProvider.future);
   List<SpaceItem> items = [];
   for (final element in spaces) {
-    List<Member> members =
-        await element.activeMembers().then((ffiList) => ffiList.toList());
-    final profileData =
-        await ref.watch(spaceProfileDataProvider(element).future);
+    List<Member> members = (await element.activeMembers()).toList();
+    final profileData = await ref.watch(
+      spaceProfileDataProvider(element).future,
+    );
     var item = SpaceItem(
       roomId: element.getRoomId().toString(),
       activeMembers: members,
@@ -288,10 +288,10 @@ final relatedSpaceItemsProvider = FutureProvider.autoDispose
       final roomId = related.roomId().toString();
       final space = await ref.watch(spaceProvider(roomId).future);
 
-      List<Member> members =
-          await space.activeMembers().then((ffiList) => ffiList.toList());
-      final profileData =
-          await ref.watch(spaceProfileDataProvider(space).future);
+      List<Member> members = (await space.activeMembers()).toList();
+      final profileData = await ref.watch(
+        spaceProfileDataProvider(space).future,
+      );
       var item = SpaceItem(
         space: space,
         roomId: space.getRoomId().toString(),
@@ -315,10 +315,10 @@ final relatedSpaceItemsProvider = FutureProvider.autoDispose
       final roomId = mainSpace.roomId().toString();
       final space = await ref.watch(spaceProvider(roomId).future);
 
-      List<Member> members =
-          await space.activeMembers().then((ffiList) => ffiList.toList());
-      final profileData =
-          await ref.watch(spaceProfileDataProvider(space).future);
+      List<Member> members = (await space.activeMembers()).toList();
+      final profileData = await ref.watch(
+        spaceProfileDataProvider(space).future,
+      );
       mainParent = SpaceItem(
         space: space,
         roomId: space.getRoomId().toString(),
@@ -334,10 +334,10 @@ final relatedSpaceItemsProvider = FutureProvider.autoDispose
       final roomId = related.roomId().toString();
       final space = await ref.watch(spaceProvider(roomId).future);
 
-      List<Member> members =
-          await space.activeMembers().then((ffiList) => ffiList.toList());
-      final profileData =
-          await ref.watch(spaceProfileDataProvider(space).future);
+      List<Member> members = (await space.activeMembers()).toList();
+      final profileData = await ref.watch(
+        spaceProfileDataProvider(space).future,
+      );
       var item = SpaceItem(
         space: space,
         roomId: space.getRoomId().toString(),

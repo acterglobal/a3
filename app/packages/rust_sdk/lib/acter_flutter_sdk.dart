@@ -375,7 +375,7 @@ class ActerSdk {
     return _clients;
   }
 
-  ffi.CreateConversationSettingsBuilder newConvoSettingsBuilder() {
+  ffi.CreateConvoSettingsBuilder newConvoSettingsBuilder() {
     return _api.newConvoSettingsBuilder();
   }
 

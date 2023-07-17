@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class EditGroupInfoScreen extends StatefulWidget {
-  final Conversation room;
+  final Convo room;
   final String name;
   final String description;
 

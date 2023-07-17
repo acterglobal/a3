@@ -14,7 +14,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   final notifier = ref.watch(routerNotifierProvider.notifier);
   return GoRouter(
     errorBuilder: (context, state) => ErrorPage(routerState: state),
-    navigatorKey: rootNavigatorKey,
+    navigatorKey: rootNavKey,
     refreshListenable: notifier,
     initialLocation: '/',
     debugLogDiagnostics: true,
