@@ -1,8 +1,8 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 // import 'package:acter/features/chat/providers/notifiers/receipt_notifier.dart';
-import 'package:acter/features/chat/models/joined_room/joined_room.dart';
 // import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -16,7 +16,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class ConversationCard extends ConsumerStatefulWidget {
-  final JoinedRoom room;
+  final Conversation room;
 
   const ConversationCard({
     Key? key,
@@ -41,9 +41,8 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
   @override
   Widget build(BuildContext context) {
     final client = ref.watch(clientProvider);
-    String roomId = widget.room.id;
-    final convoProfile =
-        ref.watch(chatProfileDataProvider(widget.room.conversation));
+    String roomId = widget.room.getRoomIdStr();
+    final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
     // ToDo: UnreadCounter
     return convoProfile.when(
       data: (profile) {
@@ -54,7 +53,7 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
               onTap: () => context.goNamed(
                 Routes.chatroom.name,
                 pathParameters: {'roomId': roomId},
-                extra: widget.room.conversation,
+                extra: widget.room,
               ),
               leading: ActerAvatar(
                 mode: DisplayMode.GroupChat, // FIXME: checking for DM somehow?
@@ -73,13 +72,13 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
                 overflow: TextOverflow.ellipsis,
               ),
               subtitle: _SubtitleWidget(
-                typingUsers: widget.room.typingUsers,
-                latestMessage: widget.room.latestMessage,
+                room: widget.room,
+                latestMessage: widget.room.latestMessage(),
               ),
               trailing: _TrailingWidget(
                 // controller: recieptController,
-                room: widget.room.conversation,
-                latestMessage: widget.room.latestMessage,
+                room: widget.room,
+                latestMessage: widget.room.latestMessage(),
                 activeMembers: activeMembers,
                 userId: client!.userId().toString(),
               ),
@@ -98,28 +97,33 @@ class _ConversationCardState extends ConsumerState<ConversationCard> {
   }
 
   Future<void> getActiveMembers() async {
-    activeMembers = (await widget.room.conversation.activeMembers()).toList();
+    activeMembers = (await widget.room.activeMembers()).toList();
   }
 }
 
 class _SubtitleWidget extends ConsumerWidget {
   const _SubtitleWidget({
-    required this.typingUsers,
+    required this.room,
     required this.latestMessage,
   });
-  final List<types.User> typingUsers;
+  final Conversation room;
   final RoomMessage? latestMessage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (typingUsers.isNotEmpty) {
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        child: Text(
-          getUserPlural(typingUsers),
-          style: Theme.of(context).textTheme.labelLarge,
-        ),
-      );
+    final typingEvent = ref.watch(typingProvider);
+    debugPrint('$typingEvent');
+    if (typingEvent.isNotEmpty) {
+      debugPrint('$typingEvent');
+      if (typingEvent['roomId'] == room.getRoomIdStr()) {
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            getUserPlural(typingEvent['typingUsers']),
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+        );
+      }
     }
     if (latestMessage == null) {
       return const SizedBox.shrink();
