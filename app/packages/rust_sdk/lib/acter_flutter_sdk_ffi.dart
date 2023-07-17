@@ -15354,16 +15354,10 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
   )>>("__Account_upload_avatar");
 
   late final _accountUploadAvatar = _accountUploadAvatarPtr.asFunction<
       int Function(
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -20926,7 +20920,7 @@ class EfkColor {
 
   EfkColor._(this._api, this._box);
 
-  /// as rgba in u8
+  /// as rgba in u8let path = PathBuf::from(uri);
   List<dynamic> rgbaU8() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -33019,21 +33013,16 @@ class Account {
     return tmp2;
   }
 
-  /// Change the avatar of the account
-  /// provide the content_type as MIME, e.g. `image/jpeg`
+  /// Change the avatar of the account with the provided
+  /// local file path
   Future<MxcUri> uploadAvatar(
-    String contentType,
-    List<int> data,
+    String uri,
   ) {
-    final tmp1 = contentType;
-    final tmp5 = data;
+    final tmp1 = uri;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -33043,27 +33032,18 @@ class Account {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    tmp7 = tmp5.length;
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9 = _api._accountUploadAvatar(
+    final tmp5 = _api._accountUploadAvatar(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
     );
-    final tmp11 = tmp9;
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "__Account_upload_avatar_future_drop");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = _nativeFuture(tmp11_1, _api.__accountUploadAvatarFuturePoll);
-    return tmp10;
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Account_upload_avatar_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__accountUploadAvatarFuturePoll);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
