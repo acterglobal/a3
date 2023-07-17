@@ -3,13 +3,13 @@ use acter_core::{
     models::{self, ActerModel, AnyActerModel, Color},
 };
 use anyhow::{bail, Context, Result};
-use async_broadcast::Receiver;
 use core::time::Duration;
 use matrix_sdk::{
     room::{Joined, Room},
     ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedUserId},
 };
 use std::ops::Deref;
+use tokio::sync::broadcast::Receiver;
 
 use super::{client::Client, RUNTIME};
 
@@ -19,19 +19,19 @@ impl Client {
         key: String,
         timeout: Option<Box<Duration>>,
     ) -> Result<RsvpEntry> {
-        let me = self.clone();
+        let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::RsvpEntry(rsvp) = me.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::RsvpEntry(rsvp) = client.wait_for(key.clone(), timeout).await? else {
                     bail!("{key} is not a rsvp");
                 };
-                let room = me
+                let room = client
                     .core
                     .client()
                     .get_room(&rsvp.meta.room_id)
                     .context("Room not found")?;
                 Ok(RsvpEntry {
-                    client: me.clone(),
+                    client: client.clone(),
                     room,
                     inner: rsvp,
                 })
