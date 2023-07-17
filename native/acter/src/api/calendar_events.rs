@@ -231,6 +231,20 @@ impl CalendarEvent {
             })
             .await?
     }
+
+    pub async fn rsvp_manager(&self) -> Result<crate::RsvpManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.inner.event_id().to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::RsvpManager::from_store_and_event_id(client.store(), &event_id).await;
+                Ok(crate::RsvpManager::new(client, room, inner))
+            })
+            .await?
+    }
 }
 
 #[derive(Clone)]

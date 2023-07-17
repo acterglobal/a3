@@ -179,6 +179,7 @@ impl AttachmentsManager {
             inner,
         }
     }
+
     pub fn stats(&self) -> models::AttachmentsStats {
         self.inner.stats().clone()
     }

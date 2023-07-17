@@ -5,6 +5,7 @@ mod comments;
 mod common;
 mod news;
 mod pins;
+mod rsvp;
 mod tag;
 mod tasks;
 #[cfg(test)]
@@ -25,6 +26,7 @@ use matrix_sdk::ruma::{
 };
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
+pub use rsvp::{RsvpEntry, RsvpManager, RsvpStats};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
 pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
@@ -54,6 +56,7 @@ use crate::{
             SyncNewsEntryUpdateEvent,
         },
         pins::{OriginalPinEvent, OriginalPinUpdateEvent, SyncPinEvent, SyncPinUpdateEvent},
+        rsvp::{OriginalRsvpEntryEvent, SyncRsvpEntryEvent},
         tasks::{
             OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskListUpdateEvent,
             OriginalTaskUpdateEvent, SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent,
@@ -177,6 +180,9 @@ pub enum AnyActerModel {
 
     Attachment,
     AttachmentUpdate,
+
+    RsvpEntry,
+
     #[cfg(test)]
     TestModel,
 }
@@ -350,6 +356,19 @@ impl AnyActerModel {
                         error!(?error, ?raw, "parsing attachment update event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.attachment.update".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+
+            // rsvp
+            "global.acter.dev.rsvp" => Ok(AnyActerModel::RsvpEntry(
+                raw.deserialize_as::<OriginalRsvpEntryEvent>()
+                    .map_err(|error| {
+                        error!(?error, ?raw, "parsing rsvp event failed");
+                        Error::FailedToParse {
+                            model_type: "global.acter.dev.rsvp".to_string(),
                             msg: error.to_string(),
                         }
                     })?
@@ -582,6 +601,22 @@ impl AnyActerModel {
                 .into_full_event(room_id.to_owned())
             {
                 MessageLikeEvent::Original(t) => Ok(AnyActerModel::AttachmentUpdate(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+
+            // RSVP events
+            "global.acter.dev.rsvp" => match raw
+                .deserialize_as::<SyncRsvpEntryEvent>()
+                .map_err(|error| {
+                    error!(?error, ?raw, "parsing RSVP event failed");
+                    Error::FailedToParse {
+                        model_type: "global.acter.dev.rsvp".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::RsvpEntry(t.into())),
                 _ => Err(Error::UnknownModel(None)),
             },
 

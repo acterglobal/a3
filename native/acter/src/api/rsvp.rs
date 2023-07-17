@@ -1,5 +1,5 @@
 use acter_core::{
-    events::comments::CommentBuilder,
+    events::rsvp::{RsvpEntryBuilder, RsvpStatus},
     models::{self, ActerModel, AnyActerModel, Color},
 };
 use anyhow::{bail, Context, Result};
@@ -14,26 +14,26 @@ use std::ops::Deref;
 use super::{client::Client, RUNTIME};
 
 impl Client {
-    pub async fn wait_for_comment(
+    pub async fn wait_for_rsvp(
         &self,
         key: String,
         timeout: Option<Box<Duration>>,
-    ) -> Result<Comment> {
+    ) -> Result<RsvpEntry> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Comment(comment) = me.wait_for(key.clone(), timeout).await? else {
-                    bail!("{key} is not a comment");
+                let AnyActerModel::RsvpEntry(rsvp) = me.wait_for(key.clone(), timeout).await? else {
+                    bail!("{key} is not a rsvp");
                 };
                 let room = me
                     .core
                     .client()
-                    .get_room(&comment.meta.room_id)
+                    .get_room(&rsvp.meta.room_id)
                     .context("Room not found")?;
-                Ok(Comment {
+                Ok(RsvpEntry {
                     client: me.clone(),
                     room,
-                    inner: comment,
+                    inner: rsvp,
                 })
             })
             .await?
@@ -41,25 +41,25 @@ impl Client {
 }
 
 #[derive(Clone, Debug)]
-pub struct Comment {
+pub struct RsvpEntry {
     client: Client,
     room: Room,
-    inner: models::Comment,
+    inner: models::RsvpEntry,
 }
 
-impl Deref for Comment {
-    type Target = models::Comment;
+impl Deref for RsvpEntry {
+    type Target = models::RsvpEntry;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
-impl Comment {
-    pub fn reply_draft(&self) -> Result<CommentDraft> {
+impl RsvpEntry {
+    pub fn reply_draft(&self) -> Result<RsvpEntryDraft> {
         let Room::Joined(joined) = &self.room else {
-            bail!("Can only comment in joined rooms");
+            bail!("Can do RSVP in only joined rooms");
         };
-        Ok(CommentDraft {
+        Ok(RsvpEntryDraft {
             client: self.client.clone(),
             room: joined.clone(),
             inner: self.inner.reply_builder(),
@@ -74,48 +74,30 @@ impl Comment {
         self.inner.meta.origin_server_ts.get().into()
     }
 
-    pub fn content_text(&self) -> String {
-        self.inner.content.body.clone()
-    }
-
-    pub fn content_formatted(&self) -> Option<String> {
-        self.inner
-            .content
-            .formatted
-            .as_ref()
-            .map(|f| f.body.clone())
+    pub fn status(&self) -> String {
+        match self.inner.status {
+            RsvpStatus::Yes => "Yes".to_string(),
+            RsvpStatus::No => "No".to_string(),
+            RsvpStatus::Maybe => "Maybe".to_string(),
+        }
     }
 }
 
-#[derive(Clone, Debug)]
-pub struct CommentsManager {
-    client: Client,
-    room: Room,
-    inner: models::CommentsManager,
-}
-
-impl Deref for CommentsManager {
-    type Target = models::CommentsManager;
-    fn deref(&self) -> &Self::Target {
-        &self.inner
-    }
-}
-
-pub struct CommentDraft {
+pub struct RsvpEntryDraft {
     client: Client,
     room: Joined,
-    inner: CommentBuilder,
+    inner: RsvpEntryBuilder,
 }
 
-impl CommentDraft {
-    pub fn content_text(&mut self, body: String) -> &mut Self {
-        self.inner.content(TextMessageEventContent::plain(body));
-        self
-    }
-
-    pub fn content_formatted(&mut self, body: String, html_body: String) -> &mut Self {
-        self.inner
-            .content(TextMessageEventContent::html(body, html_body));
+impl RsvpEntryDraft {
+    pub fn status(&mut self, status: String) -> &mut Self {
+        let s = match status.as_str() {
+            "Yes" => RsvpStatus::Yes,
+            "Maybe" => RsvpStatus::Maybe,
+            "No" => RsvpStatus::No,
+            _ => unreachable!("Wrong status about RSVP"),
+        };
+        self.inner.status(s);
         self
     }
 
@@ -131,32 +113,42 @@ impl CommentDraft {
     }
 }
 
-impl CommentsManager {
-    pub(crate) fn new(
-        client: Client,
-        room: Room,
-        inner: models::CommentsManager,
-    ) -> CommentsManager {
-        CommentsManager {
+#[derive(Clone, Debug)]
+pub struct RsvpManager {
+    client: Client,
+    room: Room,
+    inner: models::RsvpManager,
+}
+
+impl Deref for RsvpManager {
+    type Target = models::RsvpManager;
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl RsvpManager {
+    pub(crate) fn new(client: Client, room: Room, inner: models::RsvpManager) -> RsvpManager {
+        RsvpManager {
             client,
             room,
             inner,
         }
     }
 
-    pub fn stats(&self) -> models::CommentsStats {
+    pub fn stats(&self) -> models::RsvpStats {
         self.inner.stats().clone()
     }
 
-    pub fn has_comments(&self) -> bool {
-        *self.stats().has_comments()
+    pub fn has_rsvp_entries(&self) -> bool {
+        *self.stats().has_rsvp_entries()
     }
 
-    pub fn comments_count(&self) -> u32 {
-        *self.stats().total_comments_count()
+    pub fn total_rsvp_count(&self) -> u32 {
+        *self.stats().total_rsvp_count()
     }
 
-    pub async fn comments(&self) -> Result<Vec<Comment>> {
+    pub async fn entries(&self) -> Result<Vec<RsvpEntry>> {
         let manager = self.inner.clone();
         let client = self.client.clone();
         let room = self.room.clone();
@@ -164,13 +156,13 @@ impl CommentsManager {
         RUNTIME
             .spawn(async move {
                 let res = manager
-                    .comments()
+                    .entries()
                     .await?
                     .into_iter()
-                    .map(|comment| Comment {
+                    .map(|entry| RsvpEntry {
                         client: client.clone(),
                         room: room.clone(),
-                        inner: comment,
+                        inner: entry,
                     })
                     .collect();
                 Ok(res)
@@ -178,11 +170,11 @@ impl CommentsManager {
             .await?
     }
 
-    pub fn comment_draft(&self) -> Result<CommentDraft> {
+    pub fn rsvp_draft(&self) -> Result<RsvpEntryDraft> {
         let Room::Joined(joined) = &self.room else {
-            bail!("Can only comment in joined rooms");
+            bail!("Can do RSVP in only joined rooms");
         };
-        Ok(CommentDraft {
+        Ok(RsvpEntryDraft {
             client: self.client.clone(),
             room: joined.clone(),
             inner: self.inner.draft_builder(),
@@ -190,6 +182,7 @@ impl CommentsManager {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        self.client.executor().subscribe(self.inner.update_key())
+        let key = self.inner.event_id().to_string();
+        self.client.executor().subscribe(key)
     }
 }

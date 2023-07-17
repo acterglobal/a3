@@ -4,6 +4,7 @@ pub mod comments;
 mod common;
 pub mod news;
 pub mod pins;
+pub mod rsvp;
 pub mod tasks;
 
 pub use common::{
