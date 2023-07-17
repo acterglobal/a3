@@ -20920,7 +20920,7 @@ class EfkColor {
 
   EfkColor._(this._api, this._box);
 
-  /// as rgba in u8let path = PathBuf::from(uri);
+  /// as rgba in u8
   List<dynamic> rgbaU8() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
