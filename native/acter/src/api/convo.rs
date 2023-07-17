@@ -1,4 +1,4 @@
-use acter_core::statics::default_acter_conversation_states;
+use acter_core::statics::default_acter_convo_states;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
 use futures::channel::mpsc::{channel, Receiver, Sender};
@@ -16,19 +16,21 @@ use matrix_sdk::{
         events::{
             receipt::{ReceiptThread, ReceiptType},
             room::{
+                avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
                 encrypted::OriginalSyncRoomEncryptedEvent,
                 member::{MembershipState, OriginalSyncRoomMemberEvent},
                 message::OriginalSyncRoomMessageEvent,
                 redaction::SyncRoomRedactionEvent,
             },
-            AnySyncTimelineEvent,
+            space::parent::SpaceParentEventContent,
+            AnySyncTimelineEvent, InitialStateEvent,
         },
         serde::Raw,
-        OwnedRoomId, OwnedUserId,
+        MxcUri, OwnedRoomId, OwnedUserId, RoomId, UserId,
     },
     Client as SdkClient, RoomMemberships,
 };
-use std::{ops::Deref, sync::Arc};
+use std::{fs, ops::Deref, path::PathBuf, sync::Arc};
 use tokio::sync::Mutex;
 use tracing::{error, info};
 
@@ -41,14 +43,14 @@ use super::{
 };
 
 #[derive(Clone, Debug)]
-pub struct Conversation {
+pub struct Convo {
     inner: Room,
     latest_message: Option<RoomMessage>,
 }
 
-impl Conversation {
+impl Convo {
     pub(crate) fn new(inner: Room) -> Self {
-        Conversation {
+        Convo {
             inner,
             latest_message: Default::default(),
         }
@@ -116,7 +118,7 @@ impl Conversation {
     }
 }
 
-impl Deref for Conversation {
+impl Deref for Convo {
     type Target = Room;
     fn deref(&self) -> &Room {
         &self.inner
@@ -124,8 +126,8 @@ impl Deref for Conversation {
 }
 
 #[derive(Clone, Debug)]
-pub(crate) struct ConversationController {
-    conversations: Mutable<Vec<Conversation>>,
+pub(crate) struct ConvoController {
+    convos: Mutable<Vec<Convo>>,
     incoming_event_tx: Sender<RoomMessage>,
     incoming_event_rx: Arc<Mutex<Option<Receiver<RoomMessage>>>>,
     encrypted_event_handle: Option<EventHandlerHandle>,
@@ -134,11 +136,11 @@ pub(crate) struct ConversationController {
     redaction_event_handle: Option<EventHandlerHandle>,
 }
 
-impl ConversationController {
+impl ConvoController {
     pub fn new() -> Self {
         let (incoming_tx, incoming_rx) = channel::<RoomMessage>(10); // dropping after more than 10 items queued
-        ConversationController {
-            conversations: Default::default(),
+        ConvoController {
+            convos: Default::default(),
             incoming_event_tx: incoming_tx,
             incoming_event_rx: Arc::new(Mutex::new(Some(incoming_rx))),
             encrypted_event_handle: None,
@@ -157,7 +159,7 @@ impl ConversationController {
             |ev: Raw<OriginalSyncRoomEncryptedEvent>,
              room: SdkRoom,
              c: SdkClient,
-             Ctx(me): Ctx<ConversationController>| async move {
+             Ctx(me): Ctx<ConvoController>| async move {
                 me.clone().process_room_encrypted(ev, &room, &c);
             },
         );
@@ -168,7 +170,7 @@ impl ConversationController {
             |ev: OriginalSyncRoomMessageEvent,
              room: SdkRoom,
              c: SdkClient,
-             Ctx(me): Ctx<ConversationController>| async move {
+             Ctx(me): Ctx<ConvoController>| async move {
                 me.clone().process_room_message(ev, &room, &c);
             },
         );
@@ -179,7 +181,7 @@ impl ConversationController {
             |ev: OriginalSyncRoomMemberEvent,
              room: SdkRoom,
              c: SdkClient,
-             Ctx(me): Ctx<ConversationController>| async move {
+             Ctx(me): Ctx<ConvoController>| async move {
                 // user accepted invitation or left room
                 me.clone().process_room_member(ev, &room, &c);
             },
@@ -191,7 +193,7 @@ impl ConversationController {
             |ev: SyncRoomRedactionEvent,
              room: SdkRoom,
              c: SdkClient,
-             Ctx(me): Ctx<ConversationController>| async move {
+             Ctx(me): Ctx<ConvoController>| async move {
                 me.clone().process_room_redaction(ev, &room, &c);
             },
         );
@@ -217,14 +219,14 @@ impl ConversationController {
         }
     }
 
-    pub async fn load_rooms(&mut self, convos: &Vec<Conversation>) {
-        let mut conversations: Vec<Conversation> = vec![];
+    pub async fn load_rooms(&mut self, convos: &Vec<Convo>) {
+        let mut rooms: Vec<Convo> = vec![];
         for convo in convos {
-            let mut conversation = convo.clone();
-            conversation.fetch_latest_message().await;
-            conversations.push(conversation);
+            let mut convo = convo.clone();
+            convo.fetch_latest_message().await;
+            rooms.push(convo);
         }
-        self.conversations.lock_mut().clone_from(&conversations);
+        self.convos.lock_mut().clone_from(&rooms);
     }
 
     // reorder room list on OriginalSyncRoomEncryptedEvent
@@ -236,10 +238,10 @@ impl ConversationController {
     ) {
         info!("original sync room encrypted event: {:?}", raw_event);
         if let SdkRoom::Joined(joined) = room {
-            let mut convos = self.conversations.lock_mut();
+            let mut convos = self.convos.lock_mut();
             let room_id = room.room_id();
 
-            let mut convo = Conversation::new(Room { room: room.clone() });
+            let mut convo = Convo::new(Room { room: room.clone() });
             if let Ok(decrypted) = joined.decrypt_event(&raw_event).await {
                 let ev = raw_event
                     .deserialize_as::<OriginalSyncRoomEncryptedEvent>()
@@ -269,10 +271,10 @@ impl ConversationController {
     ) {
         info!("original sync room message event: {:?}", ev);
         if let SdkRoom::Joined(joined) = room {
-            let mut convos = self.conversations.lock_mut();
+            let mut convos = self.convos.lock_mut();
             let room_id = room.room_id();
 
-            let mut convo = Conversation::new(Room { room: room.clone() });
+            let mut convo = Convo::new(Room { room: room.clone() });
             let msg = RoomMessage::room_message_from_sync_event(ev, room, true);
             convo.set_latest_message(msg.clone());
 
@@ -299,10 +301,10 @@ impl ConversationController {
         let user_id = client.user_id().expect("You seem to be not logged in");
         if ev.state_key != *user_id {
             if let SdkRoom::Joined(joined) = room {
-                let mut convos = self.conversations.lock_mut();
+                let mut convos = self.convos.lock_mut();
                 let room_id = room.room_id();
 
-                let mut convo = Conversation::new(Room { room: room.clone() });
+                let mut convo = Convo::new(Room { room: room.clone() });
                 let msg = RoomMessage::room_member_from_sync_event(ev, room);
                 convo.set_latest_message(msg.clone());
 
@@ -320,7 +322,7 @@ impl ConversationController {
         }
 
         let evt = ev.clone();
-        let mut conversations = self.conversations.lock_mut();
+        let mut convos = self.convos.lock_mut();
 
         if let Some(prev_content) = ev.unsigned.prev_content {
             match (prev_content.membership, ev.content.membership) {
@@ -328,17 +330,17 @@ impl ConversationController {
                     // when user accepted invitation, this event is called twice
                     // i don't know that reason
                     // anyway i prevent this event from being called twice
-                    if !conversations.iter().any(|x| x.room_id() == room.room_id()) {
+                    if !convos.iter().any(|x| x.room_id() == room.room_id()) {
                         // add new room
-                        let conversation = Conversation::new(Room { room: room.clone() });
-                        conversations.insert(0, conversation);
+                        let convo = Convo::new(Room { room: room.clone() });
+                        convos.insert(0, convo);
                     }
                 }
                 (MembershipState::Join, MembershipState::Leave) => {
                     // remove existing room
                     let room_id = room.room_id();
-                    if let Some(idx) = conversations.iter().position(|x| x.room_id() == room_id) {
-                        conversations.remove(idx);
+                    if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
+                        convos.remove(idx);
                     }
                 }
                 _ => {}
@@ -355,10 +357,10 @@ impl ConversationController {
     ) {
         info!("original sync room redaction event: {:?}", ev);
         if let SdkRoom::Joined(joined) = room {
-            let mut convos = self.conversations.lock_mut();
+            let mut convos = self.convos.lock_mut();
             let room_id = room.room_id();
 
-            let mut convo = Conversation::new(Room { room: room.clone() });
+            let mut convo = Convo::new(Room { room: room.clone() });
             let msg = RoomMessage::room_redaction_from_sync_event(ev, room);
             convo.set_latest_message(msg.clone());
 
@@ -376,7 +378,7 @@ impl ConversationController {
 }
 
 #[derive(Builder, Default, Clone)]
-pub struct CreateConversationSettings {
+pub struct CreateConvoSettings {
     #[builder(setter(into, strip_option), default)]
     name: Option<String>,
 
@@ -387,17 +389,101 @@ pub struct CreateConversationSettings {
 
     #[builder(setter(into, strip_option), default)]
     alias: Option<String>,
+
+    #[builder(setter(into, strip_option), default)]
+    topic: Option<String>,
+
+    #[builder(setter(strip_option), default)]
+    avatar_uri: Option<String>,
+
+    #[builder(setter(strip_option), default)]
+    parent: Option<OwnedRoomId>,
+}
+
+// helper for built-in setters
+impl CreateConvoSettingsBuilder {
+    pub fn set_name(&mut self, value: String) {
+        self.name(value);
+    }
+
+    pub fn set_alias(&mut self, value: String) {
+        self.alias(value);
+    }
+
+    pub fn set_topic(&mut self, value: String) {
+        self.topic(value);
+    }
+
+    pub fn add_invitee(&mut self, value: String) -> Result<()> {
+        if let Ok(user_id) = UserId::parse(value) {
+            if let Some(mut invites) = self.invites.clone() {
+                invites.push(user_id);
+                self.invites = Some(invites);
+            } else {
+                self.invites = Some(vec![user_id]);
+            }
+        }
+        Ok(())
+    }
+
+    pub fn set_avatar_uri(&mut self, value: String) {
+        self.avatar_uri(value);
+    }
+
+    pub fn set_parent(&mut self, value: String) {
+        if let Ok(parent) = RoomId::parse(value) {
+            self.parent(parent);
+        }
+    }
+}
+
+pub fn new_convo_settings_builder() -> CreateConvoSettingsBuilder {
+    CreateConvoSettingsBuilder::default()
 }
 
 impl Client {
-    pub async fn create_conversation(
-        &self,
-        settings: CreateConversationSettings,
-    ) -> Result<OwnedRoomId> {
+    pub async fn create_convo(&self, settings: Box<CreateConvoSettings>) -> Result<OwnedRoomId> {
         let client = self.core.client().clone();
+
         RUNTIME
             .spawn(async move {
-                let initial_states = default_acter_conversation_states();
+                let mut initial_states = default_acter_convo_states();
+
+                if let Some(avatar_uri) = settings.avatar_uri {
+                    let uri = Box::<MxcUri>::from(avatar_uri.as_str());
+                    let avatar_content = if uri.is_valid() {
+                        // remote uri
+                        assign!(RoomAvatarEventContent::new(), {
+                            url: Some((*uri).to_owned()),
+                        })
+                    } else {
+                        // local uri
+                        let path = PathBuf::from(avatar_uri);
+                        let guess = mime_guess::from_path(path.clone());
+                        let content_type = guess.first().expect("MIME type should be given");
+                        let buf = fs::read(path).expect("File should be read");
+                        let upload_resp = client.media().upload(&content_type, buf).await?;
+
+                        let info = assign!(ImageInfo::new(), {
+                            blurhash: upload_resp.blurhash,
+                            mimetype: Some(content_type.to_string()),
+                        });
+                        assign!(RoomAvatarEventContent::new(), {
+                            url: Some(upload_resp.content_uri),
+                            info: Some(Box::new(info)),
+                        })
+                    };
+                    initial_states.push(InitialRoomAvatarEvent::new(avatar_content).to_raw_any());
+                }
+
+                if let Some(parent) = settings.parent {
+                    let parent_event = InitialStateEvent::<SpaceParentEventContent> {
+                        content: SpaceParentEventContent::new(true),
+                        state_key: parent,
+                    };
+                    initial_states.push(parent_event.to_raw_any());
+                };
+
                 let request = assign!(CreateRoomRequest::new(), {
                     creation_content: Some(Raw::new(&CreationContent::new())?),
                     initial_state: initial_states,
@@ -406,31 +492,32 @@ impl Client {
                     room_alias_name: settings.alias,
                     name: settings.name,
                     visibility: Visibility::Private,
+                    topic: settings.topic,
                 });
-                let response = client.create_room(request).await?;
-                Ok(response.room_id().to_owned())
+                let room = client.create_room(request).await?;
+                Ok(room.room_id().to_owned())
             })
             .await?
     }
 
-    pub async fn join_conversation(
+    pub async fn join_convo(
         &self,
         room_id_or_alias: String,
         server_name: Option<String>,
-    ) -> Result<Conversation> {
+    ) -> Result<Convo> {
         let room = self
             .join_room(
                 room_id_or_alias,
                 server_name.map(|s| vec![s]).unwrap_or_default(),
             )
             .await?;
-        Ok(Conversation {
+        Ok(Convo {
             latest_message: None,
             inner: room,
         })
     }
 
-    pub async fn conversation(&self, name_or_id: String) -> Result<Conversation> {
+    pub async fn convo(&self, name_or_id: String) -> Result<Convo> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
@@ -438,22 +525,19 @@ impl Client {
                     bail!("Neither roomId nor alias provided");
                 };
                 if room.is_acter_space().await {
-                    bail!("Not a regular conversation but an acter space!");
+                    bail!("Not a regular convo but an acter space!");
                 }
-                Ok(Conversation::new(room))
+                Ok(Convo::new(room))
             })
             .await?
     }
 
-    pub fn conversations_rx(&self) -> SignalStream<MutableSignalCloned<Vec<Conversation>>> {
-        self.conversation_controller
-            .conversations
-            .signal_cloned()
-            .to_stream()
+    pub fn convos_rx(&self) -> SignalStream<MutableSignalCloned<Vec<Convo>>> {
+        self.convo_controller.convos.signal_cloned().to_stream()
     }
 
     pub fn incoming_message_rx(&self) -> Option<Receiver<RoomMessage>> {
-        match self.conversation_controller.incoming_event_rx.try_lock() {
+        match self.convo_controller.incoming_event_rx.try_lock() {
             Ok(mut r) => r.take(),
             Err(e) => None,
         }

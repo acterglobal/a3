@@ -6,7 +6,6 @@ import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
-import 'package:acter/features/home/widgets/my_tasks.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -19,6 +18,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'dart:math';
+import 'dart:async';
 
 class Dashboard extends ConsumerStatefulWidget {
   const Dashboard({super.key});
@@ -36,13 +36,23 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
   void _checkIfSpacesPresent() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      final syncState = ref.watch(syncStateProvider);
+      final hasFirstSynced = !syncState.syncing;
+      if (!hasFirstSynced) {
+        Future.delayed(
+          const Duration(milliseconds: 250),
+          () => _checkIfSpacesPresent(),
+        );
+        // we are still syncing, check again later
+        return;
+      }
       final spaces = await ref.watch(spacesProvider.future);
       if (spaces.isEmpty) {
         onBoardingDialog(
           context: context,
           btnText: 'Join Existing Space',
           btn2Text: 'Create New Space',
-          onPressed1: () {},
+          onPressed1: () => context.pushNamed(Routes.joinSpace.name),
           onPressed2: () => context.pushNamed(Routes.createSpace.name),
           canDismissable: true,
         );
@@ -57,10 +67,6 @@ class _DashboardState extends ConsumerState<Dashboard> {
     bool isActive(f) => provider.isActive(f);
 
     List<Widget> children = [];
-    if (isActive(LabsFeature.tasks)) {
-      children.add(const MyTasksSection(limit: 5));
-    }
-
     if (isActive(LabsFeature.events)) {
       children.add(const MyEventsSection());
     }
@@ -141,7 +147,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                 ),
               ],
               title: isDesktop
-                  ? const Text('Acter Dashboard')
+                  ? const Text('My Dashboard')
                   : const Text('Overview'),
             ),
             ...children,

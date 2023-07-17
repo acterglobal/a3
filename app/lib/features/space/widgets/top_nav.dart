@@ -46,6 +46,11 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
       builder: (context, constraints) {
         final useCols = constraints.maxWidth < (150 * tabs.length);
         int minItemWidth = useCols ? 90 : 150;
+        final minTotalWidth = minItemWidth * tabs.length;
+        bool scrollBar = false;
+        if (minTotalWidth > constraints.maxWidth) {
+          scrollBar = true;
+        }
         return Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
@@ -58,7 +63,7 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: TabBar(
             controller: _tabController,
-            // isScrollable: scrollBar,
+            isScrollable: scrollBar,
             onTap: (idx) {
               final target = tabs[idx].target;
               context.goNamed(

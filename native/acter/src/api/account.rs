@@ -4,7 +4,7 @@ use matrix_sdk::{
     ruma::{OwnedMxcUri, OwnedUserId},
     Account as SdkAccount,
 };
-use std::ops::Deref;
+use std::{fs, ops::Deref, path::PathBuf};
 
 use super::{
     api::FfiBuffer,
@@ -69,11 +69,14 @@ impl Account {
             .await?
     }
 
-    pub async fn upload_avatar(&self, content_type: String, data: Vec<u8>) -> Result<OwnedMxcUri> {
+    pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
         let account = self.account.clone();
-        let content_type = content_type.parse::<mime::Mime>()?;
+        let path = PathBuf::from(uri);
         RUNTIME
             .spawn(async move {
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().context("MIME type should be given")?;
+                let data = fs::read(path).context("File should be read")?;
                 let new_url = account.upload_avatar(&content_type, data).await?;
                 Ok(new_url)
             })

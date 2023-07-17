@@ -6,7 +6,10 @@ use acter::{
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
-use matrix_sdk::ruma::{api::client::room::Visibility, OwnedUserId};
+use matrix_sdk::{
+    ruma::{api::client::room::Visibility, OwnedUserId},
+    HttpError,
+};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sqlite::make_store_config;
 use std::collections::HashMap;
@@ -58,7 +61,7 @@ pub enum MockCmd {
     Spaces,
     AcceptInvites,
     Tasks,
-    // Conversations,
+    // Convos,
 }
 
 impl MockOpts {
@@ -212,10 +215,8 @@ impl<'a> Mock<'a> {
             Ok(ops_id) => {
                 info!("Ops Room Id: {:?}", ops_id);
             }
-            Err(x) if x.is::<matrix_sdk::HttpError>() => {
-                let inner = x
-                    .downcast::<matrix_sdk::HttpError>()
-                    .expect("already checked");
+            Err(x) if x.is::<HttpError>() => {
+                let inner = x.downcast::<HttpError>().expect("already checked");
                 error!("Problem creating Ops Room: {:?}", inner);
             }
             Err(e) => {
@@ -234,10 +235,8 @@ impl<'a> Mock<'a> {
             Ok(promenade_room_id) => {
                 info!("Promenade Room Id: {:?}", promenade_room_id);
             }
-            Err(x) if x.is::<matrix_sdk::HttpError>() => {
-                let inner = x
-                    .downcast::<matrix_sdk::HttpError>()
-                    .expect("already checked");
+            Err(x) if x.is::<HttpError>() => {
+                let inner = x.downcast::<HttpError>().expect("already checked");
                 error!("Problem creating Promenade Room: {:?}", inner);
             }
             Err(e) => {
@@ -256,10 +255,8 @@ impl<'a> Mock<'a> {
             Ok(quarks_id) => {
                 info!("Quarks Room Id: {:?}", quarks_id);
             }
-            Err(x) if x.is::<matrix_sdk::HttpError>() => {
-                let inner = x
-                    .downcast::<matrix_sdk::HttpError>()
-                    .expect("already checked");
+            Err(x) if x.is::<HttpError>() => {
+                let inner = x.downcast::<HttpError>().expect("already checked");
                 error!("Problem creating Quarks Room: {:?}", inner);
             }
             Err(e) => {
@@ -308,14 +305,16 @@ impl<'a> Mock<'a> {
 
         let task_lists = odo.task_lists().await?;
         let alias = self.local_alias("#ops");
-        let task_list =
-            if let Some(task_list) = task_lists.into_iter().find(|t| t.name() == list_name) {
-                task_list
-            } else {
-                //kyra.sync_once(Default::default()).await?;
+        let task_list = if let Some(task_list) = task_lists
+            .into_iter()
+            .find(|t| t.name() == list_name.as_str())
+        {
+            task_list
+        } else {
+            //kyra.sync_once(Default::default()).await?;
 
-                let cloned_odo = odo.clone();
-                let Some(odo_ops) = wait_for(move || {
+            let cloned_odo = odo.clone();
+            let Some(odo_ops) = wait_for(move || {
                     let cloned_odo = cloned_odo.clone();
                     let alias = alias.clone();
                     async move {
@@ -326,30 +325,30 @@ impl<'a> Mock<'a> {
                 }).await? else {
                     bail!("Odo couldn't be found in Ops");
                 };
-                let mut draft = odo_ops.task_list_draft()?;
+            let mut draft = odo_ops.task_list_draft()?;
 
-                let task_list_id = draft
-                    .name(list_name)
-                    .description_text("The tops of the daily security briefing with kyra".into())
-                    .send()
-                    .await?;
+            let task_list_id = draft
+                .name(list_name)
+                .description_text("The tops of the daily security briefing with kyra".into())
+                .send()
+                .await?;
 
-                let cloned_odo = odo.clone();
-                wait_for(move || {
-                    let cloned_odo = cloned_odo.clone();
-                    let task_list_id = task_list_id.clone();
-                    async move {
-                        let task_list = cloned_odo
-                            .task_lists()
-                            .await?
-                            .into_iter()
-                            .find(|e| e.event_id() == task_list_id);
-                        Ok(task_list)
-                    }
-                })
-                .await?
-                .context("Task list not found even after polling for 3 seconds")?
-            };
+            let cloned_odo = odo.clone();
+            wait_for(move || {
+                let cloned_odo = cloned_odo.clone();
+                let task_list_id = task_list_id.clone();
+                async move {
+                    let task_list = cloned_odo
+                        .task_lists()
+                        .await?
+                        .into_iter()
+                        .find(|e| e.event_id() == task_list_id);
+                    Ok(task_list)
+                }
+            })
+            .await?
+            .context("Task list not found even after polling for 3 seconds")?
+        };
 
         task_list
             .task_builder()?

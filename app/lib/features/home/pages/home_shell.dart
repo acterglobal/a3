@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 // import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
@@ -13,8 +13,8 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -49,7 +49,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
   @override
   void dispose() {
-    Get.delete<ChatRoomController>();
     // Get.delete<ReceiptController>();
     super.dispose();
   }
@@ -68,7 +67,81 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         ),
       );
     }
-    final hasFirstSynced = ref.watch(syncStateProvider);
+    final syncState = ref.watch(syncStateProvider);
+    final hasFirstSynced = !syncState.syncing;
+    final errorMsg = syncState.errorMsg;
+
+    if (errorMsg != null) {
+      final softLogout = errorMsg == 'SoftLogout';
+      if (softLogout || errorMsg == 'Unauthorized') {
+        // We have a special case
+        return Scaffold(
+          body: Container(
+            margin: const EdgeInsets.only(top: kToolbarHeight),
+            child: Center(
+              child: Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 15),
+                    height: 100,
+                    width: 100,
+                    child: SvgPicture.asset(
+                      'assets/images/undraw_access_denied_re_awnf.svg',
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 15),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: const TextSpan(
+                        text: 'Access',
+                        style: TextStyle(color: Colors.white, fontSize: 32),
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: ' Denied',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red,
+                              fontSize: 32,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 15),
+                    child: const Text(
+                      'Your session has been terminated by the server, you need to log in again',
+                    ),
+                  ),
+                  softLogout
+                      ? OutlinedButton(
+                          // FIXME: not yet properly supported
+                          onPressed: () => context.goNamed(Routes.intro.name),
+                          child: const Text(
+                            'Login again',
+                          ),
+                        )
+                      : OutlinedButton(
+                          onPressed: () =>
+                              logoutConfirmationDialog(context, ref),
+                          child: const Text('Clear db and re-login'),
+                        ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+      return Scaffold(
+        body: Center(
+          child: Text(errorMsg),
+        ),
+      );
+    }
+
+    final bottomBarNav = ref.watch(bottomBarNavProvider(context));
     final bottomBarIdx =
         ref.watch(currentSelectedBottomBarIndexProvider(context));
 
@@ -77,6 +150,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     return CallbackShortcuts(
       bindings: <LogicalKeySet, VoidCallback>{
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK): () {
+          context.pushNamed(Routes.quickJump.name);
+        },
+        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyK): () {
           context.pushNamed(Routes.quickJump.name);
         }
       },
@@ -236,14 +312,12 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       fileName: 'screenshot_$timestamp.png',
     );
     if (imagePath != null) {
-      context.pushNamed(
+      await context.pushNamed(
         Routes.bugReport.name,
-        extra: {
-          'screenshot': imagePath,
-        },
+        extra: {'screenshot': imagePath},
       );
     } else {
-      context.push(Routes.bugReport.name);
+      await context.push(Routes.bugReport.name);
     }
   }
 }

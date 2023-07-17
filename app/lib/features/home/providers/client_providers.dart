@@ -8,8 +8,13 @@ final clientProvider = StateNotifierProvider<ClientNotifier, Client?>((ref) {
   return ClientNotifier(ref);
 });
 
-final syncStateProvider = StateNotifierProvider<SyncNotifier, bool>((ref) {
+final syncStateProvider =
+    StateNotifierProvider<SyncNotifier, LocalSyncState>((ref) {
   final client = ref.watch(clientProvider);
   final _ = CrossSigning(client: client!);
-  return SyncNotifier(client);
+  return SyncNotifier(client, ref);
+});
+
+final isSyncingStateProvider = StateProvider<bool>((ref) {
+  return ref.watch(syncStateProvider).syncing;
 });

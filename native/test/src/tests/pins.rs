@@ -1,4 +1,4 @@
-use acter::{testing::wait_for, ActerModel};
+use acter::ActerModel;
 use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -105,21 +105,14 @@ async fn pin_comments() -> Result<()> {
         .send()
         .await?;
 
-    assert!(
-        wait_for(move || {
-            let mut comments_listener = comments_listener.clone();
-            async move {
-                if let Ok(t) = comments_listener.try_recv() {
-                    Ok(Some(t))
-                } else {
-                    Ok(None)
-                }
-            }
-        })
-        .await?
-        .is_some(),
-        "Didn't receive any update on the list for the first event"
-    );
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if comments_listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
+    })
+    .await?;
 
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
@@ -178,21 +171,14 @@ async fn pin_attachments() -> Result<()> {
         .send()
         .await?;
 
-    assert!(
-        wait_for(move || {
-            let mut attachments_listener = attachments_listener.clone();
-            async move {
-                if let Ok(t) = attachments_listener.try_recv() {
-                    Ok(Some(t))
-                } else {
-                    Ok(None)
-                }
-            }
-        })
-        .await?
-        .is_some(),
-        "Didn't receive any update on the list for the first event"
-    );
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if attachments_listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
+    })
+    .await?;
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 1);
@@ -218,21 +204,13 @@ async fn pin_attachments() -> Result<()> {
         .send()
         .await?;
 
-    assert!(
-        wait_for(move || {
-            let mut attachments_listener = attachments_listener.clone();
-            async move {
-                if let Ok(t) = attachments_listener.try_recv() {
-                    Ok(Some(t))
-                } else {
-                    Ok(None)
-                }
-            }
-        })
-        .await?
-        .is_some(),
-        "Didn't receive any update on the list for the first event"
-    );
+    Retry::spawn(retry_strategy.clone(), || async {
+        if attachments_listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
+    })
+    .await?;
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 2);

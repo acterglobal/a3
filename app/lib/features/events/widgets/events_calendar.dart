@@ -1,6 +1,8 @@
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent;
@@ -33,7 +35,10 @@ class EventsCalendar extends ConsumerWidget {
               children: [
                 ...events.map(
                   (e) => ListTile(
-                    onTap: () => debugPrint('$e'),
+                    onTap: () => context.pushNamed(
+                      Routes.calendarEvent.name,
+                      pathParameters: {'calendarId': e.eventId().toString()},
+                    ),
                     title: Text(
                       e.title(),
                       style: Theme.of(context).textTheme.bodyLarge,

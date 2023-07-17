@@ -1,5 +1,5 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Conversation, RoomMessage;
+    show Convo, RoomMessage;
 import 'package:flutter_chat_types/flutter_chat_types.dart' show User;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -9,7 +9,7 @@ part 'joined_room.freezed.dart';
 class JoinedRoom with _$JoinedRoom {
   const factory JoinedRoom({
     required String id,
-    required Conversation conversation,
+    required Convo convo,
     @Default(null) RoomMessage? latestMessage,
     @Default(null) String? displayName,
     @Default([]) List<User> typingUsers,

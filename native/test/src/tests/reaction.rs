@@ -26,7 +26,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     )
     .await?;
     let sisko_syncer = sisko.start_sync();
-    let mut sisko_synced = sisko_syncer.first_synced_rx().expect("not yet read");
+    let mut sisko_synced = sisko_syncer.first_synced_rx();
     while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
     let sisko_space = sisko
         .get_space(format!("#ops:{homeserver_name}"))
@@ -47,7 +47,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
-    let mut first_synced = kyra_syncer.first_synced_rx().expect("not yet read");
+    let mut first_synced = kyra_syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let kyra_space = kyra
         .get_space(format!("#ops:{homeserver_name}"))
@@ -65,7 +65,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     )
     .await?;
     let worf_syncer = worf.start_sync();
-    let mut first_synced = worf_syncer.first_synced_rx().expect("not yet read");
+    let mut first_synced = worf_syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let worf_space = worf
         .get_space(format!("#ops:{homeserver_name}"))
@@ -83,7 +83,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     )
     .await?;
     let bashir_syncer = bashir.start_sync();
-    let mut first_synced = bashir_syncer.first_synced_rx().expect("not yet read");
+    let mut first_synced = bashir_syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let bashir_space = bashir
         .get_space(format!("#ops:{homeserver_name}"))
@@ -101,7 +101,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     )
     .await?;
     let miles_syncer = miles.start_sync();
-    let mut first_synced = miles_syncer.first_synced_rx().expect("not yet read");
+    let mut first_synced = miles_syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let miles_space = miles
         .get_space(format!("#ops:{homeserver_name}"))
@@ -119,7 +119,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     )
     .await?;
     let jadzia_syncer = jadzia.start_sync();
-    let mut first_synced = jadzia_syncer.first_synced_rx().expect("not yet read");
+    let mut first_synced = jadzia_syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let jadzia_space = jadzia
         .get_space(format!("#ops:{homeserver_name}"))
@@ -137,7 +137,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     )
     .await?;
     let odo_syncer = odo.start_sync();
-    let mut first_synced = odo_syncer.first_synced_rx().expect("not yet read");
+    let mut first_synced = odo_syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let odo_space = odo
         .get_space(format!("#ops:{homeserver_name}"))

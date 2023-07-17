@@ -18,7 +18,6 @@ use acter_core::{
     templates::Engine,
 };
 use anyhow::{bail, Context, Result};
-use async_broadcast::Receiver;
 use futures::stream::StreamExt;
 use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
@@ -38,9 +37,8 @@ use matrix_sdk::{
 use ruma::assign;
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, thread::JoinHandle};
+use tokio::sync::broadcast::Receiver;
 use tracing::{error, trace};
-
-use crate::Conversation;
 
 use super::{
     client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
@@ -407,7 +405,12 @@ impl Space {
         Ok(())
     }
 
-    pub fn subscribe(&self) -> Receiver<()> {
+    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = ()> {
+        tokio_stream::wrappers::BroadcastStream::new(self.subscribe())
+            .map(|f| f.unwrap_or_default())
+    }
+
+    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
         self.client.subscribe(format!("{}", self.room_id()))
     }
 
@@ -519,31 +522,8 @@ impl Deref for Space {
     }
 }
 
-// impl CreateSpaceSettingsBuilder {
-//     pub fn add_invite(&mut self, user_id: OwnedUserId) {
-//         self.invites.get_or_insert_with(Vec::new).push(user_id);
-//     }
-// }
-
-pub fn new_space_settings(
-    name: String,
-    topic: Option<String>,
-    avatar_uri: Option<String>,
-    parent: Option<String>,
-) -> Result<CreateSpaceSettings> {
-    let mut builder = CreateSpaceSettingsBuilder::default();
-    builder.name(name);
-    if let Some(topic) = topic {
-        builder.topic(topic);
-    }
-    if let Some(avatar_uri) = avatar_uri {
-        builder.avatar_uri(avatar_uri);
-    }
-    if let Some(parent) = parent {
-        let owned_parent = OwnedRoomId::try_from(parent)?;
-        builder.parent(owned_parent);
-    }
-    Ok(builder.build()?)
+pub fn new_space_settings_builder() -> CreateSpaceSettingsBuilder {
+    CreateSpaceSettingsBuilder::default()
 }
 
 // External API

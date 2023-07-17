@@ -1,7 +1,6 @@
 #![allow(dead_code)]
-use acter::{Conversation, HistoryLoadState, Space, Task, TaskList};
+use acter::{Convo, HistoryLoadState, Space, Task, TaskList};
 use anyhow::Result;
-use async_broadcast::Receiver as Subscription;
 use clap::crate_version;
 use crossterm::{
     event::{self, DisableMouseCapture, Event, KeyCode, KeyEvent},
@@ -13,6 +12,7 @@ use std::{
     sync::mpsc::{Receiver, TryRecvError},
     time::{Duration, Instant},
 };
+use tokio::sync::broadcast::Receiver as Subscription;
 use tracing::{error, info, trace};
 use tui::{
     backend::{Backend, CrosstermBackend},
@@ -34,7 +34,7 @@ const BG_DARKER: Color = Color::Rgb(47, 49, 62);
 pub enum AppUpdate {
     SetUsername(String), // set the username
     SetSynced(bool),     // set the synced state
-    UpdateConversations(Vec<Conversation>),
+    UpdateConvos(Vec<Convo>),
     UpdateSpaces(Vec<Space>),
     SetHistoryLoadState(HistoryLoadState),
     SetTasksList(Vec<TaskList>),
@@ -54,7 +54,7 @@ struct ChatStats {
     notifications: u32,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Debug, Default)]
 struct TasksState {
     task_lists_list_state: ListState,
     tasks_list_state: ListState,
@@ -268,7 +268,7 @@ impl TasksState {
             let ls = List::new(
                 self.task_lists
                     .iter()
-                    .map(|l| ListItem::new(Text::from(l.name())))
+                    .map(|l| ListItem::new(Text::from(l.name().as_str())))
                     .collect::<Vec<_>>(),
             )
             .highlight_style(Style::default().add_modifier(Modifier::BOLD).fg(PRIMARY))
@@ -284,7 +284,7 @@ impl TasksState {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 enum Tool {
     News,
     Tasks(TasksState),
@@ -335,8 +335,8 @@ impl Tool {
         *self = Tool::Tasks(TasksState::fresh(t))
     }
 
-    fn all() -> [Self; 3] {
-        [
+    fn all() -> Vec<Self> {
+        vec![
             Tool::Tasks(Default::default()),
             Tool::News,
             Tool::Chat(None),
@@ -368,7 +368,7 @@ struct App {
     pub logs_fullscreen: bool,
     pub tools: Vec<Tool>,
     pub spaces: Vec<Space>,
-    pub conversations: Vec<Conversation>,
+    pub convos: Vec<Convo>,
     pub history_load_state: HistoryLoadState,
     pub index: usize,
     pub synced: bool,
@@ -382,13 +382,13 @@ impl App {
             Widget::Tools
         };
         App {
-            tools: Tool::all().to_vec(),
+            tools: Tool::all(),
             index: 0,
             logs_fullscreen,
             selected_widget,
             log_state: Default::default(),
             spaces: Default::default(),
-            conversations: Default::default(),
+            convos: Default::default(),
             history_load_state: Default::default(),
             username: None,
             synced: false,
@@ -423,7 +423,7 @@ impl App {
             AppUpdate::SetHistoryLoadState(state) => {
                 self.history_load_state = state;
             }
-            AppUpdate::UpdateConversations(convos) => {
+            AppUpdate::UpdateConvos(convos) => {
                 for m in self.tools.iter_mut() {
                     if m.is_chat() {
                         m.update_chat_stats(ChatStats {
@@ -434,7 +434,7 @@ impl App {
                         break;
                     }
                 }
-                self.conversations = convos;
+                self.convos = convos;
             }
         }
     }

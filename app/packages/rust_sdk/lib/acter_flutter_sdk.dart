@@ -146,10 +146,11 @@ class ActerSdk {
 
   Future<void> _persistSessions() async {
     List<String> sessions = [];
-    for (var c in _clients) {
+    for (final c in _clients) {
       String token = await c.restoreToken();
       sessions.add(token);
     }
+    debugPrint('setting sessions: $sessions');
     SharedPreferences prefs = await sharedPrefs();
     await prefs.setStringList(_sessionKey, sessions);
     await prefs.setInt('$_sessionKey::currentClientIdx', _index);
@@ -164,18 +165,20 @@ class ActerSdk {
   }
 
   Future<void> _restore() async {
+    if (_clients.isNotEmpty) {
+      debugPrint('double restore. ignore');
+      return;
+    }
     String appDocPath = await appDir();
     debugPrint('loading configuration from $appDocPath');
     SharedPreferences prefs = await sharedPrefs();
     List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
-    bool loggedIn = false;
-    for (var token in sessions) {
+    for (final token in sessions) {
       ffi.Client client = await _api.loginWithToken(appDocPath, token);
       _clients.add(client);
-      loggedIn = client.loggedIn();
     }
     _index = prefs.getInt('$_sessionKey::currentClientIdx') ?? 0;
-    debugPrint('Restored $_clients: $loggedIn');
+    debugPrint('Restored $_clients');
   }
 
   ffi.Client? get currentClient {
@@ -261,7 +264,9 @@ class ActerSdk {
         error: e,
       );
     }
-    return ActerSdk._(api);
+    final instance = ActerSdk._(api);
+    await instance._restore();
+    return instance;
   }
 
   static Future<ActerSdk> get _unrestoredInstance async {
@@ -274,11 +279,7 @@ class ActerSdk {
   }
 
   static Future<ActerSdk> get instance async {
-    final instance = await _unrestoredInstance;
-    if (!instance.hasClients) {
-      await instance._restore();
-    }
-    return instance;
+    return await _unrestoredInstance;
   }
 
   Future<ffi.Client> login(String username, String password) async {
@@ -317,10 +318,11 @@ class ActerSdk {
     return client;
   }
 
-  Future<void> logout() async {
+  Future<bool> logout() async {
     // remove current client from list
-    var client = _clients.removeAt(_index);
+    final client = _clients.removeAt(_index);
     _index = _index > 0 ? _index - 1 : 0;
+    debugPrint('Remaining clients $_clients');
     await _persistSessions();
     unawaited(
       client.logout().catchError((e) {
@@ -332,6 +334,7 @@ class ActerSdk {
         return e is int;
       }),
     ); // Explicitly-ignored fire-and-forget.
+    return _clients.isNotEmpty;
   }
 
   Future<ffi.Client> register(
@@ -372,13 +375,12 @@ class ActerSdk {
     return _clients;
   }
 
-  ffi.CreateSpaceSettings newSpaceSettings(
-    String name,
-    String? description,
-    String? avatarUri,
-    String? parent,
-  ) {
-    return _api.newSpaceSettings(name, description, avatarUri, parent);
+  ffi.CreateConvoSettingsBuilder newConvoSettingsBuilder() {
+    return _api.newConvoSettingsBuilder();
+  }
+
+  ffi.CreateSpaceSettingsBuilder newSpaceSettingsBuilder() {
+    return _api.newSpaceSettingsBuilder();
   }
 
   String rotateLogFile() {

@@ -1,10 +1,12 @@
 use anyhow::{bail, Context, Result};
+use matrix_sdk::media::MediaRequest;
 use matrix_sdk::{
     media::{MediaFormat, MediaThumbnailSize},
     room::RoomMember,
     ruma::{api::client::media::get_content_thumbnail::v3::Method, OwnedRoomId, OwnedUserId, UInt},
     Account, Client, DisplayName,
 };
+use ruma::{api::client::user_directory::search_users::v3::User, events::room::MediaSource};
 
 use super::{
     api::FfiBuffer,
@@ -13,8 +15,34 @@ use super::{
 };
 
 #[derive(Clone)]
+pub struct PublicProfile {
+    inner: User,
+    client: Client,
+}
+
+impl PublicProfile {
+    pub fn new(inner: User, client: Client) -> Self {
+        PublicProfile { inner, client }
+    }
+    pub async fn avatar(&self, format: MediaFormat) -> Result<Option<Vec<u8>>> {
+        let Some(url) = self.inner.avatar_url.as_ref() else { return Ok(None) };
+        let request = MediaRequest {
+            source: MediaSource::Plain(url.to_owned()),
+            format,
+        };
+        Ok(Some(
+            self.client
+                .media()
+                .get_media_content(&request, true)
+                .await?,
+        ))
+    }
+}
+
+#[derive(Clone)]
 pub struct UserProfile {
     account: Option<Account>,
+    public_profile: Option<PublicProfile>,
     user_id: OwnedUserId,
     member: Option<RoomMember>,
 }
@@ -25,6 +53,7 @@ impl UserProfile {
             account: Some(account),
             user_id,
             member: None,
+            public_profile: None,
         }
     }
 
@@ -33,6 +62,16 @@ impl UserProfile {
             account: None,
             user_id: member.user_id().to_owned(),
             member: Some(member),
+            public_profile: None,
+        }
+    }
+
+    pub(crate) fn from_search(public_profile: PublicProfile) -> Self {
+        UserProfile {
+            account: None,
+            user_id: public_profile.inner.user_id.to_owned(),
+            member: None,
+            public_profile: Some(public_profile),
         }
     }
 
@@ -49,8 +88,12 @@ impl UserProfile {
                 })
                 .await?;
         }
-        if let Some(member) = self.member.clone() {
+        if let Some(member) = self.member.as_ref() {
             return Ok(member.avatar_url().is_some());
+        }
+
+        if let Some(public_profile) = self.public_profile.as_ref() {
+            return Ok(public_profile.inner.avatar_url.is_some());
         }
         Ok(false)
     }
@@ -68,6 +111,15 @@ impl UserProfile {
             return RUNTIME
                 .spawn(async move {
                     let buf = member.avatar(MediaFormat::File).await?;
+                    Ok(OptionBuffer::new(buf))
+                })
+                .await?;
+        }
+
+        if let Some(public_profile) = self.public_profile.clone() {
+            return RUNTIME
+                .spawn(async move {
+                    let buf = public_profile.avatar(MediaFormat::File).await?;
                     Ok(OptionBuffer::new(buf))
                 })
                 .await?;
@@ -116,6 +168,10 @@ impl UserProfile {
         }
         if let Some(member) = self.member.clone() {
             let text = member.display_name().map(|x| x.to_string());
+            return Ok(OptionText::new(text));
+        }
+        if let Some(public_profile) = self.public_profile.clone() {
+            let text = public_profile.inner.display_name;
             return Ok(OptionText::new(text));
         }
         Ok(OptionText::new(None))

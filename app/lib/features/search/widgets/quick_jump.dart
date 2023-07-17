@@ -141,10 +141,10 @@ class QuickJump extends ConsumerWidget {
                   ),
                   onPressed: () {
                     navigateTo(route: Routes.actionAddUpdate, push: true);
-                    debugPrint('News');
+                    debugPrint('Update');
                   },
                   icon: const Icon(Atlas.plus_circle_thin),
-                  label: const Text('News'),
+                  label: const Text('Update'),
                 )
               : null,
           isActive(LabsFeature.tasks)
@@ -167,9 +167,7 @@ class QuickJump extends ConsumerWidget {
                     foregroundColor: Colors.purple,
                     side: const BorderSide(width: 2, color: Colors.purple),
                   ),
-                  onPressed: () {
-                    context.pushNamed(Routes.actionAddPin.name);
-                  },
+                  onPressed: () => context.pushNamed(Routes.actionAddPin.name),
                   icon: const Icon(Atlas.plus_circle_thin),
                   label: const Text('Pin'),
                 )
@@ -180,9 +178,7 @@ class QuickJump extends ConsumerWidget {
                     foregroundColor: Colors.purple,
                     side: const BorderSide(width: 2, color: Colors.purple),
                   ),
-                  onPressed: () {
-                    debugPrint('Add Event');
-                  },
+                  onPressed: () => context.pushNamed(Routes.createEvent.name),
                   icon: const Icon(Atlas.plus_circle_thin),
                   label: const Text('Event'),
                 )

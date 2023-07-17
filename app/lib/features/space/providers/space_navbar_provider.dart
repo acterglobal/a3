@@ -77,7 +77,7 @@ final tabsProvider =
       key: const Key('chat'),
       label: 'Chat',
       icon: const Icon(Atlas.chats_thin),
-      target: Routes.space.name,
+      target: Routes.spaceChats.name,
     ),
   );
   tabs.add(
@@ -86,6 +86,15 @@ final tabsProvider =
       label: 'Spaces',
       icon: const Icon(Atlas.connection_thin),
       target: Routes.spaceRelatedSpaces.name,
+    ),
+  );
+
+  tabs.add(
+    TabEntry(
+      key: const Key('members'),
+      label: 'Members',
+      icon: const Icon(Atlas.group_team_collective_thin),
+      target: Routes.spaceMembers.name,
     ),
   );
   return tabs;

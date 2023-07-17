@@ -40,13 +40,7 @@ use matrix_sdk::{
 };
 use matrix_sdk_ui::timeline::RoomExt;
 use ruma::events::{EventContent, StaticEventContent};
-use std::{
-    fs::{File, Permissions},
-    io::Write,
-    ops::Deref,
-    path::PathBuf,
-    sync::Arc,
-};
+use std::{fs, io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tracing::{error, info};
 
 use super::{
@@ -60,6 +54,15 @@ use super::{
 
 #[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]
 #[strum(serialize_all = "PascalCase")]
+pub enum MembershipStatus {
+    Admin,
+    Mod,
+    Custom,
+    Regular,
+}
+
+#[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]
+#[strum(serialize_all = "PascalCase")]
 pub enum MemberPermission {
     // regular interaction
     CanSendChatMessages,
@@ -70,6 +73,7 @@ pub enum MemberPermission {
     CanPostPin,
     // moderation tools
     CanBan,
+    CanInvite,
     CanKick,
     CanRedact,
     CanTriggerRoomNotification,
@@ -79,6 +83,7 @@ pub enum MemberPermission {
     CanSetTopic,
     CanLinkSpaces,
     CanSetParentSpace,
+    CanUpdatePowerLevels,
 }
 
 enum PermissionTest {
@@ -126,9 +131,23 @@ impl Member {
         self.can(permission)
     }
 
+    pub fn membership_status(&self) -> MembershipStatus {
+        match self.member.normalized_power_level() {
+            100 => MembershipStatus::Admin,
+            50 => MembershipStatus::Mod,
+            0 => MembershipStatus::Regular,
+            _ => MembershipStatus::Custom,
+        }
+    }
+
+    pub fn membership_status_str(&self) -> String {
+        self.membership_status().to_string()
+    }
+
     pub fn can(&self, permission: MemberPermission) -> bool {
         let tester: PermissionTest = match permission {
             MemberPermission::CanBan => return self.member.can_ban(),
+            MemberPermission::CanInvite => return self.member.can_invite(),
             MemberPermission::CanRedact => return self.member.can_redact(),
             MemberPermission::CanKick => return self.member.can_kick(),
             MemberPermission::CanTriggerRoomNotification => {
@@ -142,6 +161,7 @@ impl Member {
             MemberPermission::CanSetTopic => StateEventType::RoomTopic.into(),
             MemberPermission::CanLinkSpaces => StateEventType::SpaceChild.into(),
             MemberPermission::CanSetParentSpace => StateEventType::SpaceParent.into(),
+            MemberPermission::CanUpdatePowerLevels => StateEventType::RoomPowerLevels.into(),
             // Acter specific
             MemberPermission::CanPostNews => PermissionTest::Message(MessageLikeEventType::from(
                 <NewsEntryEventContent as StaticEventContent>::TYPE,
@@ -217,7 +237,7 @@ impl Room {
 
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("MIME type should be given")?;
-                let buf = std::fs::read(path).context("File should be read")?;
+                let buf = fs::read(path).context("File should be read")?;
                 let upload_resp = client.media().upload(&content_type, buf).await?;
 
                 let info = assign!(AvatarImageInfo::new(), {
@@ -332,6 +352,22 @@ impl Room {
             .spawn(async move {
                 let members = room
                     .members(RoomMemberships::ACTIVE)
+                    .await?
+                    .into_iter()
+                    .map(|member| Member { member })
+                    .collect();
+                Ok(members)
+            })
+            .await?
+    }
+
+    pub async fn invited_members(&self) -> Result<Vec<Member>> {
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let members = room
+                    .members(RoomMemberships::INVITE)
                     .await?
                     .into_iter()
                     .map(|member| Member { member })
@@ -568,7 +604,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let image_buf = std::fs::read(path)?;
+                let image_buf = fs::read(path)?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, image_buf, config)
                     .await?;
@@ -644,7 +680,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let audio_buf = std::fs::read(path)?;
+                let audio_buf = fs::read(path)?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, audio_buf, config)
                     .await?;
@@ -727,7 +763,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let video_buf = std::fs::read(path)?;
+                let video_buf = fs::read(path)?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, video_buf, config)
                     .await?;
@@ -801,7 +837,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let file_buf = std::fs::read(path)?;
+                let file_buf = fs::read(path)?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, file_buf, config)
                     .await?;
@@ -985,7 +1021,7 @@ impl Room {
                 };
                 let mut path = PathBuf::from(dir_path.clone());
                 path.push(name);
-                let mut file = File::create(path.clone())?;
+                let mut file = fs::File::create(path.clone())?;
                 let data = client.media().get_media_content(&request, false).await?;
                 file.write_all(&data)?;
                 let key = [
@@ -1401,7 +1437,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let image_buf = std::fs::read(path)?;
+                let image_buf = fs::read(path)?;
 
                 let timeline_event = room.event(&event_id).await?;
 
@@ -1467,7 +1503,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let image_buf = std::fs::read(path)?;
+                let image_buf = fs::read(path)?;
 
                 let timeline_event = room.event(&event_id).await?;
 
@@ -1539,7 +1575,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let video_buf = std::fs::read(path)?;
+                let video_buf = fs::read(path)?;
 
                 let timeline_event = room.event(&event_id).await?;
 
@@ -1602,7 +1638,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let file_buf = std::fs::read(path)?;
+                let file_buf = fs::read(path)?;
 
                 let timeline_event = room.event(&event_id).await?;
 
