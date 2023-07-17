@@ -1,9 +1,6 @@
 use derive_builder::Builder;
 use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
-use tracing::trace;
-
-use crate::util::deserialize_some;
 
 use super::BelongsTo;
 

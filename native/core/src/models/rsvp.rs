@@ -62,7 +62,7 @@ impl RsvpManager {
         Ok(entries)
     }
 
-    pub(crate) async fn add_entry(&mut self, entry: &RsvpEntry) -> crate::Result<bool> {
+    pub(crate) async fn add_entry(&mut self, _entry: &RsvpEntry) -> crate::Result<bool> {
         self.stats.has_rsvp_entries = true;
         self.stats.total_rsvp_count += 1;
         Ok(true)
