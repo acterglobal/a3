@@ -57,195 +57,197 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     return SideSheet(
       header: 'Create new event',
       addActions: true,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const Text('Create new event for your community'),
-            const SizedBox(height: 15),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 5),
-                  child: Text('Name'),
-                ),
-                InputTextField(
-                  hintText: 'Type Name',
-                  textInputType: TextInputType.multiline,
-                  controller: _nameController,
-                  onInputChanged: _handleTitleChange,
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 5),
-                        child: Text('Date'),
-                      ),
-                      InkWell(
-                        focusColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        onTap: () => _selectDate(context),
-                        child: TextFormField(
-                          enabled: false,
-                          controller: _dateController,
-                          keyboardType: TextInputType.datetime,
-                          style: Theme.of(context).textTheme.labelLarge,
-                          decoration: InputDecoration(
-                            fillColor:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            filled: true,
-                            hintText: 'Select Date',
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text('Create new event for your community'),
+              const SizedBox(height: 15),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 5),
+                    child: Text('Name'),
+                  ),
+                  InputTextField(
+                    hintText: 'Type Name',
+                    textInputType: TextInputType.multiline,
+                    controller: _nameController,
+                    onInputChanged: _handleTitleChange,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 5),
+                          child: Text('Date'),
+                        ),
+                        InkWell(
+                          focusColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          onTap: () => _selectDate(context),
+                          child: TextFormField(
+                            enabled: false,
+                            controller: _dateController,
+                            keyboardType: TextInputType.datetime,
+                            style: Theme.of(context).textTheme.labelLarge,
+                            decoration: InputDecoration(
+                              fillColor:
+                                  Theme.of(context).colorScheme.primaryContainer,
+                              filled: true,
+                              hintText: 'Select Date',
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 5),
-                        child: Text('Start Time'),
-                      ),
-                      InkWell(
-                        focusColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        onTap: () => _selectStartTime(context),
-                        child: TextFormField(
-                          enabled: false,
-                          controller: _startTimeController,
-                          keyboardType: TextInputType.datetime,
-                          style: Theme.of(context).textTheme.labelLarge,
-                          decoration: InputDecoration(
-                            fillColor:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            filled: true,
-                            hintText: 'Select Time',
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 5),
+                          child: Text('Start Time'),
+                        ),
+                        InkWell(
+                          focusColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          onTap: () => _selectStartTime(context),
+                          child: TextFormField(
+                            enabled: false,
+                            controller: _startTimeController,
+                            keyboardType: TextInputType.datetime,
+                            style: Theme.of(context).textTheme.labelLarge,
+                            decoration: InputDecoration(
+                              fillColor:
+                                  Theme.of(context).colorScheme.primaryContainer,
+                              filled: true,
+                              hintText: 'Select Time',
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 5),
-                        child: Text('End Time'),
-                      ),
-                      InkWell(
-                        focusColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        onTap: () => _selectEndTime(context),
-                        child: TextFormField(
-                          enabled: false,
-                          controller: _endTimeController,
-                          keyboardType: TextInputType.datetime,
-                          style: Theme.of(context).textTheme.labelLarge,
-                          decoration: InputDecoration(
-                            fillColor:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            filled: true,
-                            hintText: 'Select Time',
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 5),
+                          child: Text('End Time'),
+                        ),
+                        InkWell(
+                          focusColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          onTap: () => _selectEndTime(context),
+                          child: TextFormField(
+                            enabled: false,
+                            controller: _endTimeController,
+                            keyboardType: TextInputType.datetime,
+                            style: Theme.of(context).textTheme.labelLarge,
+                            decoration: InputDecoration(
+                              fillColor:
+                                  Theme.of(context).colorScheme.primaryContainer,
+                              filled: true,
+                              hintText: 'Select Time',
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(height: 15),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text('Description'),
+                  const SizedBox(height: 15),
+                  InputTextField(
+                    controller: _descriptionController,
+                    hintText: 'Type Description (Optional)',
+                    textInputType: TextInputType.multiline,
+                    maxLines: 10,
                   ),
-                )
-              ],
-            ),
-            const SizedBox(height: 15),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text('Description'),
-                const SizedBox(height: 15),
-                InputTextField(
-                  controller: _descriptionController,
-                  hintText: 'Type Description (Optional)',
-                  textInputType: TextInputType.multiline,
-                  maxLines: 10,
-                ),
-                const SizedBox(height: 15),
-                const Text('Link'),
-                const SizedBox(height: 15),
-                InputTextField(
-                  controller: _linkController,
-                  hintText: 'https://',
-                  textInputType: TextInputType.url,
-                  maxLines: 1,
-                ),
-                const SizedBox(height: 15),
-                ListTile(
-                  title: Text(
-                    _selectParentSpace ? 'Space' : 'No space selected',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  const SizedBox(height: 15),
+                  const Text('Link'),
+                  const SizedBox(height: 15),
+                  InputTextField(
+                    controller: _linkController,
+                    hintText: 'https://',
+                    textInputType: TextInputType.url,
+                    maxLines: 1,
                   ),
-                  trailing: _selectParentSpace
-                      ? Consumer(
-                          builder: (context, ref, child) =>
-                              ref.watch(parentSpaceDetailsProvider).when(
-                                    data: (space) => space != null
-                                        ? SpaceChip(space: space)
-                                        : Text(currentParentSpace),
-                                    error: (e, s) => Text('error: $e'),
-                                    loading: () => const Text('loading'),
-                                  ),
-                        )
-                      : null,
-                  onTap: () async {
-                    final currentSpaceId = ref.read(parentSpaceProvider);
-                    final newSelectedSpaceId = await selectSpaceDrawer(
-                      context: context,
-                      currentSpaceId: currentSpaceId,
-                      title: const Text('Select parent space'),
-                    );
-                    ref.read(parentSpaceProvider.notifier).state =
-                        newSelectedSpaceId;
-                  },
-                )
-              ],
-            ),
-          ],
+                  const SizedBox(height: 15),
+                  ListTile(
+                    title: Text(
+                      _selectParentSpace ? 'Space' : 'No space selected',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    trailing: _selectParentSpace
+                        ? Consumer(
+                            builder: (context, ref, child) =>
+                                ref.watch(parentSpaceDetailsProvider).when(
+                                      data: (space) => space != null
+                                          ? SpaceChip(space: space)
+                                          : Text(currentParentSpace),
+                                      error: (e, s) => Text('error: $e'),
+                                      loading: () => const Text('loading'),
+                                    ),
+                          )
+                        : null,
+                    onTap: () async {
+                      final currentSpaceId = ref.read(parentSpaceProvider);
+                      final newSelectedSpaceId = await selectSpaceDrawer(
+                        context: context,
+                        currentSpaceId: currentSpaceId,
+                        title: const Text('Select parent space'),
+                      );
+                      ref.read(parentSpaceProvider.notifier).state =
+                          newSelectedSpaceId;
+                    },
+                  )
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       actions: [
