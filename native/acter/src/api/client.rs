@@ -734,8 +734,8 @@ impl Client {
             .map(|room| Room { room })
     }
 
-    pub fn subscribe_stream(&self, key: String) -> impl Stream<Item = ()> {
-        BroadcastStream::new(self.executor().subscribe(key)).map(|f| f.unwrap_or_default())
+    pub fn subscribe_stream(&self, key: String) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe(key)).map(|_| true)
     }
 
     pub fn subscribe(&self, key: String) -> Receiver<()> {

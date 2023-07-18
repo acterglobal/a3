@@ -31,14 +31,18 @@ class SyncNotifier extends StateNotifier<LocalSyncState> {
     final syncPoller = syncState.firstSyncedRx();
     syncPoller.listen((event) {
       if (event) {
-        state = const LocalSyncState(false);
+        if (mounted) {
+          state = const LocalSyncState(false);
+        }
         ref.invalidate(spacesProvider);
       }
     });
 
     final errorPoller = syncState.syncErrorRx();
     errorPoller.listen((error) {
-      state = LocalSyncState(false, errorMsg: error);
+      if (mounted) {
+        state = LocalSyncState(false, errorMsg: error);
+      }
       ref.invalidate(spacesProvider);
     });
   }
