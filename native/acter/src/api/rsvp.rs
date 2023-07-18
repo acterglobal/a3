@@ -186,7 +186,7 @@ impl RsvpManager {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.inner.event_id().to_string();
+        let key = models::Rsvp::index_for(&self.inner.event_id());
         warn!("subscribe key: {}", key);
         self.client.subscribe(key)
     }
