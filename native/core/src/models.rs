@@ -30,7 +30,7 @@ pub use rsvp::{RsvpEntry, RsvpManager, RsvpStats};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
 pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
-use tracing::{error, trace};
+use tracing::{error, trace, warn};
 
 #[cfg(test)]
 pub use test::{TestModel, TestModelBuilder, TestModelBuilderError};
@@ -192,6 +192,8 @@ impl AnyActerModel {
         let Ok(Some(model_type)) = raw.get_field("type") else {
             return Err(Error::UnknownModel(None));
         };
+
+        warn!("from raw timeline event: {}", model_type);
 
         match model_type {
             // -- CALENDAR

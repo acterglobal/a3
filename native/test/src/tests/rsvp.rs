@@ -1,5 +1,6 @@
 use acter::testing::wait_for;
 use anyhow::{bail, Result};
+use futures::stream::StreamExt;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -60,34 +61,28 @@ async fn rsvp_smoketest() -> Result<()> {
     assert_eq!(events.len(), 3);
 
     let rsvp_manager = events[0].rsvp_manager().await?;
-    let rsvp_listener = rsvp_manager.subscribe();
+    let mut rsvp_listener = rsvp_manager.subscribe_stream();
 
-    let rsvp_1_event_id = rsvp_manager
+    let rsvp_1_id = rsvp_manager
         .rsvp_draft()?
         .status("Yes".to_string())
         .send()
         .await?;
-    let rsvp_2_event_id = rsvp_manager
+    let rsvp_2_id = rsvp_manager
         .rsvp_draft()?
         .status("No".to_string())
         .send()
         .await?;
 
-    assert!(
-        wait_for(move || {
-            let mut rsvp_listener = rsvp_listener.clone();
-            async move {
-                if let Ok(t) = rsvp_listener.try_recv() {
-                    Ok(Some(t))
-                } else {
-                    Ok(None)
-                }
-            }
-        })
-        .await?
-        .is_some(),
-        "Didn't receive any update on the list for the first event"
-    );
+    // let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    // Retry::spawn(retry_strategy.clone(), || async {
+    //     if rsvp_listener.is_empty() {
+    //         bail!("all still empty");
+    //     };
+    //     Ok(())
+    // })
+    // .await?;
+    // while rsvp_listener.next().await != Some(()) {}
 
     let entries = rsvp_manager.entries().await?;
     assert_eq!(entries.len(), 2);

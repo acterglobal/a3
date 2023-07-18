@@ -4,12 +4,15 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
+use futures::stream::StreamExt;
 use matrix_sdk::{
     room::{Joined, Room},
     ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedUserId},
 };
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
+use tokio_stream::{wrappers::BroadcastStream, Stream};
+use tracing::warn;
 
 use super::{client::Client, RUNTIME};
 
@@ -107,6 +110,7 @@ impl RsvpEntryDraft {
         RUNTIME
             .spawn(async move {
                 let resp = room.send(inner, None).await?;
+                warn!("RSVP draft send: {:?}", resp);
                 Ok(resp.event_id)
             })
             .await?
@@ -181,8 +185,13 @@ impl RsvpManager {
         })
     }
 
+    pub fn subscribe_stream(&self) -> impl Stream<Item = ()> {
+        BroadcastStream::new(self.subscribe()).map(|f| f.unwrap_or_default())
+    }
+
     pub fn subscribe(&self) -> Receiver<()> {
         let key = self.inner.event_id().to_string();
-        self.client.executor().subscribe(key)
+        warn!("subscribe key: {}", key);
+        self.client.subscribe(key)
     }
 }
