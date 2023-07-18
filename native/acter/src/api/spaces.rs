@@ -9,6 +9,7 @@ use acter_core::{
         comments::{SyncCommentEvent, SyncCommentUpdateEvent},
         news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
         pins::{SyncPinEvent, SyncPinUpdateEvent},
+        rsvp::SyncRsvpEvent,
         tasks::{SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskUpdateEvent},
     },
     executor::Executor,
@@ -222,9 +223,9 @@ impl Space {
                 },
             ),
 
-            // CalendarEvents
+            // RSVPs
             self.room.add_event_handler(
-                |ev: SyncCalendarEventEvent,
+                |ev: SyncRsvpEvent,
                 room: SdkRoom,
                 c: SdkClient,
                 Ctx(executor): Ctx<Executor>| async move {
@@ -232,23 +233,7 @@ impl Space {
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
-                            .handle(AnyActerModel::CalendarEvent(t.into()))
-                            .await  {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-            self.room.add_event_handler(
-                |ev: SyncCalendarEventUpdateEvent,
-                room: SdkRoom,
-                c: SdkClient,
-                Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor
-                            .handle(AnyActerModel::CalendarEventUpdate(t.into()))
+                            .handle(AnyActerModel::Rsvp(t.into()))
                             .await  {
                             error!(?error, "execution failed");
                         }
