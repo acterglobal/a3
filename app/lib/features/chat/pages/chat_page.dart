@@ -42,8 +42,9 @@ class ChatPage extends ConsumerWidget {
                       ),
                       child: TextFormField(
                         autofocus: true,
-                        onChanged: (value) =>
-                            ref.read(chatsProvider.notifier).searchRoom(value),
+                        onChanged: (value) => ref
+                            .read(chatListProvider.notifier)
+                            .searchRoom(value),
                         cursorColor: Theme.of(context).colorScheme.tertiary2,
                         decoration: InputDecoration(
                           hintStyle: const TextStyle(color: Colors.white),

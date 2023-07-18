@@ -13,7 +13,7 @@ class ConvosList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chats = ref.watch(chatsProvider);
+    final chats = ref.watch(chatListProvider);
     return chats.when(
       initial: () => const SizedBox.shrink(),
       loading: () => Center(
@@ -28,7 +28,7 @@ class ConvosList extends ConsumerWidget {
           areItemsTheSame: (a, b) => a.getRoomIdStr() == b.getRoomIdStr(),
           // Remember to update the underlying data when the list has been reordered.
           onReorderFinished: (item, from, to, newItems) =>
-              ref.read(chatsProvider.notifier).moveItem(from, to),
+              ref.read(chatListProvider.notifier).moveItem(from, to),
           itemBuilder: (context, itemAnimation, item, index) {
             return Reorderable(
               key: ValueKey(item),

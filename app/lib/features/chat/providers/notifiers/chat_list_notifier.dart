@@ -1,16 +1,11 @@
-import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_data_state/chat_data_state.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Convo, TypingEvent;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Convo;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
-class ChatsNotifier extends StateNotifier<ChatDataState> {
+class ChatListNotifier extends StateNotifier<ChatDataState> {
   final Ref ref;
   final AsyncValue<List<Convo>> asyncChats;
-  ChatsNotifier({required this.ref, required this.asyncChats})
+  ChatListNotifier({required this.ref, required this.asyncChats})
       : super(const ChatDataState.initial()) {
     _loadUp();
   }
