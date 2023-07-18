@@ -2648,7 +2648,9 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap 4.3.15",
+ "env_logger",
  "git2",
+ "log",
 ]
 
 [[package]]
