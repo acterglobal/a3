@@ -8731,7 +8731,7 @@ class Api {
     return tmp7;
   }
 
-  void __acterPinSubscribeStreamStreamPoll(
+  bool? __acterPinSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -8755,11 +8755,13 @@ class Api {
       tmp5,
       tmp7,
     );
-    final tmp10 = tmp8;
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
     if (tmp10 == 0) {
       return null;
     }
-    return;
+    final tmp9 = tmp11 > 0;
+    return tmp9;
   }
 
   TimelineDiff? __timelineStreamDiffRxStreamPoll(
@@ -8798,7 +8800,7 @@ class Api {
     return tmp9;
   }
 
-  void __taskSubscribeStreamStreamPoll(
+  bool? __taskSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -8822,14 +8824,16 @@ class Api {
       tmp5,
       tmp7,
     );
-    final tmp10 = tmp8;
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
     if (tmp10 == 0) {
       return null;
     }
-    return;
+    final tmp9 = tmp11 > 0;
+    return tmp9;
   }
 
-  void __taskListSubscribeStreamStreamPoll(
+  bool? __taskListSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -8853,11 +8857,13 @@ class Api {
       tmp5,
       tmp7,
     );
-    final tmp10 = tmp8;
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
     if (tmp10 == 0) {
       return null;
     }
-    return;
+    final tmp9 = tmp11 > 0;
+    return tmp9;
   }
 
   bool? __syncStateFirstSyncedRxStreamPoll(
@@ -9235,7 +9241,7 @@ class Api {
     return tmp9;
   }
 
-  void __clientSubscribeStreamStreamPoll(
+  bool? __clientSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -9259,11 +9265,13 @@ class Api {
       tmp5,
       tmp7,
     );
-    final tmp10 = tmp8;
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
     if (tmp10 == 0) {
       return null;
     }
-    return;
+    final tmp9 = tmp11 > 0;
+    return tmp9;
   }
 
   late final _initLoggingPtr = _lookup<
@@ -19543,7 +19551,7 @@ class Api {
   )>();
   late final _acterPinSubscribeStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          _ActerPinSubscribeStreamStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
@@ -19552,7 +19560,7 @@ class Api {
 
   late final _acterPinSubscribeStreamStreamPoll =
       _acterPinSubscribeStreamStreamPollPtr.asFunction<
-          int Function(
+          _ActerPinSubscribeStreamStreamPollReturn Function(
     int,
     int,
     int,
@@ -19577,7 +19585,7 @@ class Api {
   )>();
   late final _taskSubscribeStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          _TaskSubscribeStreamStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
@@ -19586,7 +19594,7 @@ class Api {
 
   late final _taskSubscribeStreamStreamPoll =
       _taskSubscribeStreamStreamPollPtr.asFunction<
-          int Function(
+          _TaskSubscribeStreamStreamPollReturn Function(
     int,
     int,
     int,
@@ -19594,7 +19602,7 @@ class Api {
   )>();
   late final _taskListSubscribeStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          _TaskListSubscribeStreamStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
@@ -19603,7 +19611,7 @@ class Api {
 
   late final _taskListSubscribeStreamStreamPoll =
       _taskListSubscribeStreamStreamPollPtr.asFunction<
-          int Function(
+          _TaskListSubscribeStreamStreamPollReturn Function(
     int,
     int,
     int,
@@ -19781,7 +19789,7 @@ class Api {
   )>();
   late final _clientSubscribeStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          _ClientSubscribeStreamStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
@@ -19790,7 +19798,7 @@ class Api {
 
   late final _clientSubscribeStreamStreamPoll =
       _clientSubscribeStreamStreamPollPtr.asFunction<
-          int Function(
+          _ClientSubscribeStreamStreamPollReturn Function(
     int,
     int,
     int,
@@ -22910,7 +22918,7 @@ class ActerPin {
   }
 
   /// get informed about changes to this pin
-  Stream<void> subscribeStream() {
+  Stream<bool> subscribeStream() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._acterPinSubscribeStream(
@@ -29273,7 +29281,7 @@ class Task {
   }
 
   /// get informed about changes to this task
-  Stream<void> subscribeStream() {
+  Stream<bool> subscribeStream() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskSubscribeStream(
@@ -30856,7 +30864,7 @@ class TaskList {
   }
 
   /// get informed about changes to this task
-  Stream<void> subscribeStream() {
+  Stream<bool> subscribeStream() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskListSubscribeStream(
@@ -34806,7 +34814,7 @@ class Client {
   }
 
   /// listen to updates to any model key
-  Stream<void> subscribeStream(
+  Stream<bool> subscribeStream(
     String key,
   ) {
     final tmp1 = key;
@@ -41147,10 +41155,31 @@ class _DeviceLeftEventDeviceRecordsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ActerPinSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
 class _TimelineStreamDiffRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
+  external int arg1;
+}
+
+class _TaskSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _TaskListSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
   external int arg1;
 }
 
@@ -41225,6 +41254,13 @@ class _ClientIncomingMessageRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
+  external int arg1;
+}
+
+class _ClientSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
   external int arg1;
 }
 

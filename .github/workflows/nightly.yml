@@ -254,13 +254,19 @@ jobs:
         run: |
           7z a "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.zip" ${{ matrix.zip_files }}
 
+      - name: Generate Changelog
+        run: |
+          cargo run -p mr_minutes -- --since nightly-latest --output nightly-changes.md
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
           name: Nightly ${{ needs.tags.outputs.tag }}
           tag_name: nightly-${{ needs.tags.outputs.tag }}
+          generate_release_notes: false
           prerelease: true
+          body_path: nightly-changes.md
           files: |
             ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
             ${{ matrix.extra_artifacts }}
@@ -293,12 +299,15 @@ jobs:
         run: |
           git tag nightly-${{ needs.tags.outputs.tag }}
           git push origin nightly-${{ needs.tags.outputs.tag }}
+          git tag -f nightly-latest
+          git push -f origin nightly-latest
       - name: Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           # publish this nightly release now
           draft: true
+          generate_release_notes: false
           name: Nightly ${{ needs.tags.outputs.tag }}
           tag_name: nightly-${{ needs.tags.outputs.tag }}
           prerelease: true

@@ -99,7 +99,7 @@ class _ShellToolbar extends ConsumerWidget {
               pathParameters: {'spaceId': spaceId},
               queryParameters: {'spaceId': spaceId},
             ),
-            child: const Text('Edit Space'),
+            child: const Text('Edit Details'),
           ),
         );
         submenu.add(
