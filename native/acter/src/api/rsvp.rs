@@ -1,5 +1,5 @@
 use acter_core::{
-    events::rsvp::{RsvpEntryBuilder, RsvpStatus},
+    events::rsvp::{RsvpBuilder, RsvpStatus},
     models::{self, ActerModel, AnyActerModel, Color},
 };
 use anyhow::{bail, Context, Result};
@@ -17,15 +17,11 @@ use tracing::warn;
 use super::{client::Client, RUNTIME};
 
 impl Client {
-    pub async fn wait_for_rsvp(
-        &self,
-        key: String,
-        timeout: Option<Box<Duration>>,
-    ) -> Result<RsvpEntry> {
+    pub async fn wait_for_rsvp(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Rsvp> {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::RsvpEntry(rsvp) = client.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::Rsvp(rsvp) = client.wait_for(key.clone(), timeout).await? else {
                     bail!("{key} is not a rsvp");
                 };
                 let room = client
@@ -33,7 +29,7 @@ impl Client {
                     .client()
                     .get_room(&rsvp.meta.room_id)
                     .context("Room not found")?;
-                Ok(RsvpEntry {
+                Ok(Rsvp {
                     client: client.clone(),
                     room,
                     inner: rsvp,
@@ -44,25 +40,25 @@ impl Client {
 }
 
 #[derive(Clone, Debug)]
-pub struct RsvpEntry {
+pub struct Rsvp {
     client: Client,
     room: Room,
-    inner: models::RsvpEntry,
+    inner: models::Rsvp,
 }
 
-impl Deref for RsvpEntry {
-    type Target = models::RsvpEntry;
+impl Deref for Rsvp {
+    type Target = models::Rsvp;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
-impl RsvpEntry {
-    pub fn reply_draft(&self) -> Result<RsvpEntryDraft> {
+impl Rsvp {
+    pub fn reply_draft(&self) -> Result<RsvpDraft> {
         let Room::Joined(joined) = &self.room else {
             bail!("Can do RSVP in only joined rooms");
         };
-        Ok(RsvpEntryDraft {
+        Ok(RsvpDraft {
             client: self.client.clone(),
             room: joined.clone(),
             inner: self.inner.reply_builder(),
@@ -86,13 +82,13 @@ impl RsvpEntry {
     }
 }
 
-pub struct RsvpEntryDraft {
+pub struct RsvpDraft {
     client: Client,
     room: Joined,
-    inner: RsvpEntryBuilder,
+    inner: RsvpBuilder,
 }
 
-impl RsvpEntryDraft {
+impl RsvpDraft {
     pub fn status(&mut self, status: String) -> &mut Self {
         let s = match status.as_str() {
             "Yes" => RsvpStatus::Yes,
@@ -152,7 +148,7 @@ impl RsvpManager {
         *self.stats().total_rsvp_count()
     }
 
-    pub async fn entries(&self) -> Result<Vec<RsvpEntry>> {
+    pub async fn entries(&self) -> Result<Vec<Rsvp>> {
         let manager = self.inner.clone();
         let client = self.client.clone();
         let room = self.room.clone();
@@ -163,7 +159,7 @@ impl RsvpManager {
                     .entries()
                     .await?
                     .into_iter()
-                    .map(|entry| RsvpEntry {
+                    .map(|entry| Rsvp {
                         client: client.clone(),
                         room: room.clone(),
                         inner: entry,
@@ -174,11 +170,11 @@ impl RsvpManager {
             .await?
     }
 
-    pub fn rsvp_draft(&self) -> Result<RsvpEntryDraft> {
+    pub fn rsvp_draft(&self) -> Result<RsvpDraft> {
         let Room::Joined(joined) = &self.room else {
             bail!("Can do RSVP in only joined rooms");
         };
-        Ok(RsvpEntryDraft {
+        Ok(RsvpDraft {
             client: self.client.clone(),
             room: joined.clone(),
             inner: self.inner.draft_builder(),

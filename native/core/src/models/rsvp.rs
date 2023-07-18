@@ -6,7 +6,7 @@ use tracing::{error, trace};
 
 use super::{AnyActerModel, EventMeta};
 use crate::{
-    events::rsvp::{RsvpEntryBuilder, RsvpEntryEventContent},
+    events::rsvp::{RsvpBuilder, RsvpEventContent},
     store::Store,
 };
 
@@ -49,20 +49,20 @@ impl RsvpManager {
         self.event_id.clone()
     }
 
-    pub async fn entries(&self) -> crate::Result<Vec<RsvpEntry>> {
+    pub async fn entries(&self) -> crate::Result<Vec<Rsvp>> {
         let entries = self
             .store
-            .get_list(&RsvpEntry::index_for(&self.event_id))
+            .get_list(&Rsvp::index_for(&self.event_id))
             .await?
             .filter_map(|e| match e {
-                AnyActerModel::RsvpEntry(c) => Some(c),
+                AnyActerModel::Rsvp(c) => Some(c),
                 _ => None,
             })
             .collect();
         Ok(entries)
     }
 
-    pub(crate) async fn add_entry(&mut self, _entry: &RsvpEntry) -> crate::Result<bool> {
+    pub(crate) async fn add_entry(&mut self, _entry: &Rsvp) -> crate::Result<bool> {
         self.stats.has_rsvp_entries = true;
         self.stats.total_rsvp_count += 1;
         Ok(true)
@@ -72,8 +72,8 @@ impl RsvpManager {
         &self.stats
     }
 
-    pub fn draft_builder(&self) -> RsvpEntryBuilder {
-        RsvpEntryBuilder::default()
+    pub fn draft_builder(&self) -> RsvpBuilder {
+        RsvpBuilder::default()
             .to(self.event_id.to_owned())
             .to_owned()
     }
@@ -97,37 +97,37 @@ impl Deref for RsvpManager {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct RsvpEntry {
-    pub(crate) inner: RsvpEntryEventContent,
+pub struct Rsvp {
+    pub(crate) inner: RsvpEventContent,
     pub meta: EventMeta,
 }
 
-impl Deref for RsvpEntry {
-    type Target = RsvpEntryEventContent;
+impl Deref for Rsvp {
+    type Target = RsvpEventContent;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
-impl RsvpEntry {
+impl Rsvp {
     pub fn index_for<T: AsRef<str>>(parent: &T) -> String {
         let r = parent.as_ref();
         format!("{r}::{RSVP_FIELD}")
     }
 
-    pub fn reply_builder(&self) -> RsvpEntryBuilder {
-        RsvpEntryBuilder::default()
+    pub fn reply_builder(&self) -> RsvpBuilder {
+        RsvpBuilder::default()
             .to(self.to.event_id.to_owned())
             .to_owned()
     }
 }
 
-impl super::ActerModel for RsvpEntry {
+impl super::ActerModel for Rsvp {
     fn indizes(&self) -> Vec<String> {
         self.belongs_to()
             .unwrap() // we always have some as entries
             .into_iter()
-            .map(|v| RsvpEntry::index_for(&v))
+            .map(|v| Rsvp::index_for(&v))
             .collect()
     }
 
@@ -172,8 +172,8 @@ impl super::ActerModel for RsvpEntry {
     }
 }
 
-impl From<OriginalMessageLikeEvent<RsvpEntryEventContent>> for RsvpEntry {
-    fn from(outer: OriginalMessageLikeEvent<RsvpEntryEventContent>) -> Self {
+impl From<OriginalMessageLikeEvent<RsvpEventContent>> for Rsvp {
+    fn from(outer: OriginalMessageLikeEvent<RsvpEventContent>) -> Self {
         let OriginalMessageLikeEvent {
             content,
             room_id,
@@ -182,7 +182,7 @@ impl From<OriginalMessageLikeEvent<RsvpEntryEventContent>> for RsvpEntry {
             origin_server_ts,
             ..
         } = outer;
-        RsvpEntry {
+        Rsvp {
             inner: content,
             meta: EventMeta {
                 room_id,

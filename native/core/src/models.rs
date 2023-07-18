@@ -26,7 +26,7 @@ use matrix_sdk::ruma::{
 };
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
-pub use rsvp::{RsvpEntry, RsvpManager, RsvpStats};
+pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
 pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
@@ -56,7 +56,7 @@ use crate::{
             SyncNewsEntryUpdateEvent,
         },
         pins::{OriginalPinEvent, OriginalPinUpdateEvent, SyncPinEvent, SyncPinUpdateEvent},
-        rsvp::{OriginalRsvpEntryEvent, SyncRsvpEntryEvent},
+        rsvp::{OriginalRsvpEvent, SyncRsvpEvent},
         tasks::{
             OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskListUpdateEvent,
             OriginalTaskUpdateEvent, SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent,
@@ -181,7 +181,7 @@ pub enum AnyActerModel {
     Attachment,
     AttachmentUpdate,
 
-    RsvpEntry,
+    Rsvp,
 
     #[cfg(test)]
     TestModel,
@@ -365,8 +365,8 @@ impl AnyActerModel {
             )),
 
             // rsvp
-            "global.acter.dev.rsvp" => Ok(AnyActerModel::RsvpEntry(
-                raw.deserialize_as::<OriginalRsvpEntryEvent>()
+            "global.acter.dev.rsvp" => Ok(AnyActerModel::Rsvp(
+                raw.deserialize_as::<OriginalRsvpEvent>()
                     .map_err(|error| {
                         error!(?error, ?raw, "parsing rsvp event failed");
                         Error::FailedToParse {
@@ -608,7 +608,7 @@ impl AnyActerModel {
 
             // RSVP events
             "global.acter.dev.rsvp" => match raw
-                .deserialize_as::<SyncRsvpEntryEvent>()
+                .deserialize_as::<SyncRsvpEvent>()
                 .map_err(|error| {
                     error!(?error, ?raw, "parsing RSVP event failed");
                     Error::FailedToParse {
@@ -618,7 +618,7 @@ impl AnyActerModel {
                 })?
                 .into_full_event(room_id.to_owned())
             {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::RsvpEntry(t.into())),
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::Rsvp(t.into())),
                 _ => Err(Error::UnknownModel(None)),
             },
 

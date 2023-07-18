@@ -16,8 +16,8 @@ pub enum RsvpStatus {
 /// The RSVP Event
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder)]
 #[ruma_event(type = "global.acter.dev.rsvp", kind = MessageLike)]
-#[builder(name = "RsvpEntryBuilder", derive(Debug))]
-pub struct RsvpEntryEventContent {
+#[builder(name = "RsvpBuilder", derive(Debug))]
+pub struct RsvpEventContent {
     #[builder(setter(into))]
     #[serde(rename = "m.relates_to")]
     pub to: BelongsTo,
