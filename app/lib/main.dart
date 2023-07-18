@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/l10n/l10n.dart';
@@ -14,7 +13,6 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:window_size/window_size.dart';
 
 void main() async {
   await startApp();
@@ -31,10 +29,6 @@ Future<void> startApp() async {
 }
 
 Future<void> startAppInner() async {
-  bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
-  if (isDesktop) {
-    setWindowTitle('Acter');
-  }
   GoogleFonts.config.allowRuntimeFetching = false;
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('google_fonts/LICENSE.txt');
