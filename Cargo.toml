@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "native/*",
+  "util/mr_minutes"
 ]
 
 default-members = ["native/acter"]

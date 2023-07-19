@@ -19,33 +19,43 @@ class SpaceMembersPage extends ConsumerWidget {
     final space = ref.watch(spaceProvider(spaceIdOrAlias)).requireValue;
     final members = ref.watch(spaceMembersProvider(spaceIdOrAlias));
     final myMembership = ref.watch(spaceMembershipProvider(spaceIdOrAlias));
+    final List<Widget> topMenu = [
+      Expanded(
+        child: Text(
+          'Members',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+      )
+    ];
+
+    if (myMembership.hasValue) {
+      final membership = myMembership.value!;
+      if (membership.canString('CanInvite')) {
+        topMenu.add(
+          IconButton(
+            icon: Icon(
+              Atlas.plus_circle_thin,
+              color: Theme.of(context).colorScheme.neutral5,
+            ),
+            iconSize: 28,
+            color: Theme.of(context).colorScheme.surface,
+            onPressed: () => context.pushNamed(
+              Routes.spaceInvite.name,
+              pathParameters: {'spaceId': spaceIdOrAlias},
+            ),
+          ),
+        );
+      }
+    }
     // get platform of context.
+
     return Padding(
       padding: const EdgeInsets.all(20),
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
             child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Members',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Atlas.plus_circle_thin,
-                    color: Theme.of(context).colorScheme.neutral5,
-                  ),
-                  iconSize: 28,
-                  color: Theme.of(context).colorScheme.surface,
-                  onPressed: () => context.pushNamed(
-                    Routes.actionAddPin.name,
-                    queryParameters: {'spaceId': spaceIdOrAlias},
-                  ),
-                ),
-              ],
+              children: topMenu,
             ),
           ),
           members.when(
@@ -56,7 +66,9 @@ class SpaceMembersPage extends ConsumerWidget {
               if (members.isEmpty) {
                 return const SliverToBoxAdapter(
                   child: Center(
-                    child: Text('there is nothing pinned yet'),
+                    child: Text(
+                      'No members found. How can that even be, you are here, aren\'t you?',
+                    ),
                   ),
                 );
               }
