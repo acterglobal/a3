@@ -78,7 +78,7 @@ async fn rsvp_smoketest() -> Result<()> {
     })
     .await?;
 
-    let entries = rsvp_manager.entries().await?;
+    let entries = rsvp_manager.rsvp_entries().await?;
     assert_eq!(entries.len(), 1);
     assert_eq!(entries[0].status(), "Yes");
 
@@ -97,7 +97,7 @@ async fn rsvp_smoketest() -> Result<()> {
     })
     .await?;
 
-    let entries = rsvp_manager.entries().await?;
+    let entries = rsvp_manager.rsvp_entries().await?;
     assert_eq!(entries.len(), 2);
     assert_eq!(entries[1].status(), "No");
 

@@ -128,7 +128,7 @@ impl RsvpManager {
         *self.stats().total_rsvp_count()
     }
 
-    pub async fn entries(&self) -> Result<Vec<Rsvp>> {
+    pub async fn rsvp_entries(&self) -> Result<Vec<Rsvp>> {
         let manager = self.inner.clone();
         let client = self.client.clone();
         let room = self.room.clone();
@@ -136,7 +136,7 @@ impl RsvpManager {
         RUNTIME
             .spawn(async move {
                 let res = manager
-                    .entries()
+                    .rsvp_entries()
                     .await?
                     .into_iter()
                     .map(|entry| Rsvp {

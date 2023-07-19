@@ -49,7 +49,7 @@ impl RsvpManager {
         self.event_id.clone()
     }
 
-    pub async fn entries(&self) -> crate::Result<Vec<Rsvp>> {
+    pub async fn rsvp_entries(&self) -> crate::Result<Vec<Rsvp>> {
         let entries = self
             .store
             .get_list(&Rsvp::index_for(&self.event_id))
@@ -62,7 +62,7 @@ impl RsvpManager {
         Ok(entries)
     }
 
-    pub(crate) async fn add_entry(&mut self, _entry: &Rsvp) -> crate::Result<bool> {
+    pub(crate) async fn add_rsvp_entry(&mut self, _entry: &Rsvp) -> crate::Result<bool> {
         self.stats.has_rsvp_entries = true;
         self.stats.total_rsvp_count += 1;
         Ok(true)
@@ -156,7 +156,7 @@ impl super::ActerModel for Rsvp {
 
             // FIXME: what if we have this twice in the same loop?
             let mut manager = RsvpManager::from_store_and_event_id(store, model.event_id()).await;
-            if manager.add_entry(&self).await? {
+            if manager.add_rsvp_entry(&self).await? {
                 managers.push(manager);
             }
         }
