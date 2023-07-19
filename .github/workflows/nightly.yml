@@ -30,7 +30,7 @@ jobs:
           seconds: 86400 # One day in seconds
 
   tags:
-    runs-on: ubuntu-latesthttps://github.com/acterglobal/a3/actions/runs/5594789475/jobs/10230016033#step:22:61
+    runs-on: ubuntu-latest
     # Map a step output to a job output
     outputs:
       tag: ${{ inputs.custom_tag || steps.tag.outputs.tag }}
