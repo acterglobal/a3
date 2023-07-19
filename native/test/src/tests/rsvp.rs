@@ -62,19 +62,14 @@ async fn rsvp_smoketest() -> Result<()> {
 
     let rsvp_manager = events[0].rsvp_manager().await?;
     let rsvp_listener = rsvp_manager.subscribe();
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
     let rsvp_1_id = rsvp_manager
         .rsvp_draft()?
         .status("Yes".to_string())
         .send()
         .await?;
-    let rsvp_2_id = rsvp_manager
-        .rsvp_draft()?
-        .status("No".to_string())
-        .send()
-        .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
@@ -82,10 +77,28 @@ async fn rsvp_smoketest() -> Result<()> {
         Ok(())
     })
     .await?;
-    // while rsvp_listener.next().await != Some(()) {}
 
     let entries = rsvp_manager.entries().await?;
-    assert_eq!(entries.len(), 2);
+    assert_eq!(entries.len(), 1);
+    assert_eq!(entries[0].status().as_str(), "Yes");
+
+    let rsvp_2_id = rsvp_manager
+        .rsvp_draft()?
+        .status("No".to_string())
+        .send()
+        .await?;
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        if rsvp_listener.is_empty() {
+            bail!("all still empty");
+        };
+        Ok(())
+    })
+    .await?;
+
+    let entries = rsvp_manager.entries().await?;
+    assert_eq!(entries.len(), 1);
+    assert_eq!(entries[0].status().as_str(), "No");
 
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
