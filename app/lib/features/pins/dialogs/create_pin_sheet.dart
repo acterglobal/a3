@@ -72,20 +72,27 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                         }
                       },
                     ),
+                    const SizedBox(width: 6,),
                     Expanded(
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                          hintText: 'Your title',
-                          labelText: 'Title',
+                      child: SizedBox(
+                        height: 52,
+                        child: TextFormField(
+                          decoration:  InputDecoration(
+                            hintText: 'Your title',
+                            labelText: 'Title',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          controller: _titleController,
+                          onChanged: (String? value) {
+                            ref.read(titleProvider.notifier).state = value ?? '';
+                          },
+                          validator: (value) =>
+                              (value != null && value.isNotEmpty)
+                                  ? null
+                                  : 'Please enter a title',
                         ),
-                        controller: _titleController,
-                        onChanged: (String? value) {
-                          ref.read(titleProvider.notifier).state = value ?? '';
-                        },
-                        validator: (value) =>
-                            (value != null && value.isNotEmpty)
-                                ? null
-                                : 'Please enter a title',
                       ),
                     ),
                   ],
@@ -97,10 +104,15 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                   if (subselection == 'text') {
                     return Expanded(
                       child: TextFormField(
-                        decoration: const InputDecoration(
-                          hintText: 'the content of the pin',
+                        decoration:  InputDecoration(
+                          hintText: 'The content of the pin',
                           labelText: 'Content',
+                          
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
                         ),
+                        textAlignVertical: TextAlignVertical.top,
                         expands: true,
                         minLines: null,
                         maxLines: null,
@@ -116,10 +128,13 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                     );
                   } else {
                     return TextFormField(
-                      decoration: const InputDecoration(
-                        icon: Icon(Atlas.link_thin),
+                      decoration:  InputDecoration(
+                        icon: const Icon(Atlas.link_thin),
                         hintText: 'https://',
                         labelText: 'link',
+                        border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
                       ),
                       validator: (value) => (value != null && value.isNotEmpty)
                           ? null

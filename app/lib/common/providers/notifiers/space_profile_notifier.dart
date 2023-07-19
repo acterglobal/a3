@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/foundation.dart';
+
+// ignore_for_file: unused_field
 
 class AsyncSpaceProfileDataNotifier
-    extends AutoDisposeFamilyAsyncNotifier<ProfileData, Space> {
-  late Stream<void> _listener;
+    extends FamilyAsyncNotifier<ProfileData, Space> {
+  late Stream<bool> _listener;
+  late StreamSubscription<bool> _sub;
   Future<ProfileData> _getSpaceProfileData() async {
     final space = arg;
     final profile = space.getProfile();
@@ -17,16 +23,32 @@ class AsyncSpaceProfileDataNotifier
   @override
   Future<ProfileData> build(Space arg) async {
     final client = ref.watch(clientProvider)!;
+    ref.onDispose(onDispose);
     _listener = client.subscribeStream(arg.getRoomId().toString());
-    _listener.forEach((_e) async {
-      state = await AsyncValue.guard(() => _getSpaceProfileData());
-    });
+    _sub = _listener.listen(
+      (_e) async {
+        debugPrint('seen update $arg');
+        state = await AsyncValue.guard(() => _getSpaceProfileData());
+      },
+      onError: (e, stack) {
+        debugPrint('stream errored: $e : $stack');
+      },
+      onDone: () {
+        debugPrint('stream ended');
+      },
+    );
     return _getSpaceProfileData();
+  }
+
+  void onDispose() {
+    debugPrint('disposing profile not for $arg');
+    _sub.cancel();
   }
 }
 
-class AsyncSpaceNotifier extends AutoDisposeFamilyAsyncNotifier<Space, String> {
-  late Stream<void> _listener;
+class AsyncSpaceNotifier extends FamilyAsyncNotifier<Space, String> {
+  late Stream<bool> _listener;
+  late StreamSubscription<bool> _sub;
   Future<Space> _getSpace() async {
     final client = ref.watch(clientProvider)!;
     return await client.getSpace(arg); // this might throw internally
@@ -35,17 +57,32 @@ class AsyncSpaceNotifier extends AutoDisposeFamilyAsyncNotifier<Space, String> {
   @override
   Future<Space> build(String arg) async {
     final client = ref.watch(clientProvider)!;
+    ref.onDispose(onDispose);
     _listener = client.subscribeStream(arg);
-    _listener.forEach((_e) async {
-      state = await AsyncValue.guard(() => _getSpace());
-    });
+    _sub = _listener.listen(
+      (_e) async {
+        debugPrint('Received space update $arg');
+        state = await AsyncValue.guard(() => _getSpace());
+      },
+      onError: (e, stack) {
+        debugPrint('stream errored: $e : $stack');
+      },
+      onDone: () {
+        debugPrint('stream ended');
+      },
+    );
     return _getSpace();
+  }
+
+  void onDispose() {
+    debugPrint('disposing profile not for $arg');
+    _sub.cancel();
   }
 }
 
-class AsyncMaybeSpaceNotifier
-    extends AutoDisposeFamilyAsyncNotifier<Space?, String> {
-  late Stream<void> _listener;
+class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
+  late Stream<bool> _listener;
+  late StreamSubscription<bool> _sub;
   Future<Space?> _getSpace() async {
     final client = ref.watch(clientProvider)!;
     try {
@@ -59,16 +96,33 @@ class AsyncMaybeSpaceNotifier
   @override
   Future<Space?> build(String arg) async {
     final client = ref.watch(clientProvider)!;
+    ref.onDispose(onDispose);
     _listener = client.subscribeStream(arg);
-    _listener.forEach((_e) async {
-      state = await AsyncValue.guard(() => _getSpace());
-    });
+    _sub = _listener.listen(
+      (_e) async {
+        debugPrint('seen update $arg');
+        state = await AsyncValue.guard(() => _getSpace());
+      },
+      onError: (e, stack) {
+        debugPrint('stream errored: $e : $stack');
+      },
+      onDone: () {
+        debugPrint('stream ended');
+      },
+    );
     return _getSpace();
+  }
+
+  void onDispose() {
+    debugPrint('disposing profile not for $arg');
+    _sub.cancel();
   }
 }
 
-class AsyncSpacesNotifier extends AutoDisposeAsyncNotifier<List<Space>> {
-  late Stream<void> _listener;
+class AsyncSpacesNotifier extends AsyncNotifier<List<Space>> {
+  late Stream<bool> _listener;
+  late StreamSubscription<bool> _sub;
+
   Future<List<Space>> _getSpaces() async {
     final client = ref.watch(clientProvider)!;
     final spaces = await client.spaces();
@@ -78,10 +132,25 @@ class AsyncSpacesNotifier extends AutoDisposeAsyncNotifier<List<Space>> {
   @override
   Future<List<Space>> build() async {
     final client = ref.watch(clientProvider)!;
+    ref.onDispose(onDispose);
     _listener = client.subscribeStream('SPACES');
-    _listener.forEach((_e) async {
-      state = await AsyncValue.guard(() => _getSpaces());
-    });
+    _sub = _listener.listen(
+      (_e) async {
+        debugPrint('seen update on SPACES');
+        state = await AsyncValue.guard(() => _getSpaces());
+      },
+      onError: (e, stack) {
+        debugPrint('stream errored: $e : $stack');
+      },
+      onDone: () {
+        debugPrint('stream ended');
+      },
+    );
     return _getSpaces();
+  }
+
+  void onDispose() {
+    debugPrint('disposing profile for SPACES');
+    _sub.cancel();
   }
 }

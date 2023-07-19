@@ -184,7 +184,9 @@ class _NoSpacesWidget extends ConsumerWidget {
         const SizedBox(height: 36),
         Center(
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              context.pushNamed(Routes.joinSpace.name);
+            },
             child: const Text('Join Existing Space'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.transparent,

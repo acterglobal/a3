@@ -219,7 +219,7 @@ object ActerPin {
     fn update_builder() -> Result<PinUpdateBuilder>;
 
     /// get informed about changes to this pin
-    fn subscribe_stream() -> Stream<()>;
+    fn subscribe_stream() -> Stream<bool>;
 
     /// replace the current pin with one with the latest state
     fn refresh() -> Future<Result<ActerPin>>;
@@ -876,7 +876,7 @@ object Task {
     fn update_builder() -> Result<TaskUpdateBuilder>;
 
     /// get informed about changes to this task
-    fn subscribe_stream() -> Stream<()>;
+    fn subscribe_stream() -> Stream<bool>;
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<Task>>;
@@ -1051,7 +1051,7 @@ object TaskList {
     fn update_builder() -> Result<TaskListUpdateBuilder>;
 
     /// get informed about changes to this task
-    fn subscribe_stream() -> Stream<()>;
+    fn subscribe_stream() -> Stream<bool>;
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<TaskList>>;
@@ -1336,9 +1336,9 @@ object Account {
     /// The avatar of the client
     fn avatar() -> Future<Result<OptionBuffer>>;
 
-    /// Change the avatar of the account
-    /// provide the content_type as MIME, e.g. `image/jpeg`
-    fn upload_avatar(content_type: string, data: Vec<u8>) -> Future<Result<MxcUri>>;
+    /// Change the avatar of the account with the provided
+    /// local file path
+    fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
 }
 
 object SyncState {
@@ -1546,7 +1546,7 @@ object Client {
     fn create_acter_space(settings: CreateSpaceSettings) -> Future<Result<RoomId>>;
 
     /// listen to updates to any model key
-    fn subscribe_stream(key: string) -> Stream<()>;
+    fn subscribe_stream(key: string) -> Stream<bool>;
 
     /// Fetch the Comment or use its event_id to wait for it to come down the wire
     fn wait_for_comment(key: string, timeout: Option<EfkDuration>) -> Future<Result<Comment>>;
