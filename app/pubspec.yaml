@@ -112,6 +112,8 @@ dependencies:
   flutter_onboarding_slider: ^1.0.9
   riverpod_infinite_scroll: ^1.0.9
   infinite_scroll_pagination: ^3.2.0
+  awesome_notifications: ^0.7.4+1
+  quick_notify: ^0.3.0-dev.0
 
 dev_dependencies:
   flutter_test:

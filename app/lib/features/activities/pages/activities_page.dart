@@ -1,3 +1,4 @@
+import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
@@ -76,6 +77,7 @@ class NotificationCard extends ConsumerWidget {
                 onTap: () => context.goNamed(
                   Routes.chatroom.name,
                   pathParameters: {'roomId': roomId},
+                  extra: convo,
                 ),
                 child: ActerAvatar(
                   mode: DisplayMode.GroupChat,
@@ -112,9 +114,14 @@ class NotificationCard extends ConsumerWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.all(15),
         leading: SizedBox(height: 50, width: 50, child: avatar),
+        onTap: alert,
         title: title,
       ),
     );
+  }
+
+  void alert() {
+    notify();
   }
 }
 
