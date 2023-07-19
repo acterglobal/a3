@@ -725,12 +725,15 @@ impl Client {
         self.core.client().user_id()
     }
 
-    pub(crate) fn room(&self, room_name: String) -> Result<Room> {
-        let room_id = RoomId::parse(room_name)?;
+    pub(crate) fn room(&self, room_id: String) -> Result<Room> {
+        self.room_typed(&RoomId::parse(room_id)?)
+            .context("Room not found")
+    }
+
+    pub fn room_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
         self.core
             .client()
-            .get_room(&room_id)
-            .context("Room not found")
+            .get_room(room_id)
             .map(|room| Room { room })
     }
 

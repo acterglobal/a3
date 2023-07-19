@@ -1386,13 +1386,18 @@ object Notification {
     fn read() -> bool;
     // fn room_id() -> OwnedRoomId;
     fn room_id_str() -> string;
+    fn has_room() -> bool;
+    fn is_space() -> bool;
+    fn is_acter_space() -> bool;
+    fn space() -> Option<Space>;
+    fn convo() -> Option<Convo>;
 }
 
 object NotificationListResult {
     /// to be used for the next `since`
     fn next_batch() -> Option<string>;
     /// get the chunk of items in this response
-    fn notifications() -> Vec<Notification>;
+    fn notifications() -> Future<Result<Vec<Notification>>>;
 }
 
 /// make convo settings builder

@@ -61,7 +61,7 @@ class NotificationsListNotifier extends StateNotifier<NotificationListState>
     }
     try {
       final res = await client.listNotifications(pageReq, null);
-      final entries = res.notifications();
+      final entries = await res.notifications();
       final next = res.nextBatch();
       Next? finalPageKey;
       if (next != null) {
