@@ -114,12 +114,6 @@ impl Rsvp {
         let r = parent.as_ref();
         format!("{r}::{RSVP_FIELD}")
     }
-
-    pub fn reply_builder(&self) -> RsvpBuilder {
-        RsvpBuilder::default()
-            .to(self.to.event_id.to_owned())
-            .to_owned()
-    }
 }
 
 impl super::ActerModel for Rsvp {
