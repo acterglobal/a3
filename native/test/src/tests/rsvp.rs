@@ -59,9 +59,9 @@ async fn rsvp_smoketest() -> Result<()> {
     assert_eq!(events.len(), 3);
 
     let rsvp_manager = events[0].rsvp_manager().await?;
-    let rsvp_listener = rsvp_manager.subscribe();
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
+    let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let rsvp_1_id = rsvp_manager
         .rsvp_draft()?
         .status("Yes".to_string())
@@ -80,7 +80,7 @@ async fn rsvp_smoketest() -> Result<()> {
     assert_eq!(entries.len(), 1);
     assert_eq!(entries[0].status(), "Yes");
 
-    let rsvp_listener = rsvp_manager.subscribe();
+    let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let rsvp_2_id = rsvp_manager
         .rsvp_draft()?
         .status("No".to_string())
