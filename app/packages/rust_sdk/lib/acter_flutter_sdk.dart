@@ -47,6 +47,8 @@ const versionName = String.fromEnvironment(
   defaultValue: 'DEV',
 );
 
+const isDevBuild = versionName == 'DEV';
+
 String userAgent = '$appName/$versionName';
 
 Color convertColor(ffi.EfkColor? primary, Color fallback) {
