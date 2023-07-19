@@ -13,12 +13,15 @@ class LocalSyncState {
 class SyncNotifier extends StateNotifier<LocalSyncState> {
   late SyncState syncState;
   late Stream<bool>? syncPoller;
+  late Stream<String>? notifications;
   late Stream<bool>? errorPoller;
   late Ref ref;
 
   SyncNotifier(Client client, Ref ref) : super(const LocalSyncState(true)) {
     startSync(client, ref);
   }
+
+  Stream<String>? get notificationsStream => notifications;
 
   Future<void> startSync(Client client, Ref ref) async {
     // Get.put(ReceiptController(client: state!));
@@ -37,6 +40,8 @@ class SyncNotifier extends StateNotifier<LocalSyncState> {
         ref.invalidate(spacesProvider);
       }
     });
+
+    // final notificationsPoller = syncState.notificationsStream();
 
     final errorPoller = syncState.syncErrorRx();
     errorPoller.listen((error) {

@@ -2,11 +2,17 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
+import 'package:acter/features/activities/providers/notifications_providers.dart';
+import 'package:acter/features/activities/providers/notifiers/notifications_list_notifier.dart';
 import 'package:acter/features/activities/widgets/invitation_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter_svg/flutter_svg.dart';
+
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
 class ActivitiesPage extends ConsumerWidget {
   const ActivitiesPage({super.key});
@@ -46,22 +52,8 @@ class ActivitiesPage extends ConsumerWidget {
         ),
       );
     }
+    final weAreEmpty = children.isEmpty;
 
-    // nothing else to show, show a nice info
-    if (children.isEmpty) {
-      children.add(
-        SliverToBoxAdapter(
-          child: SizedBox(
-            height: 400,
-            child: Center(
-              child: SvgPicture.asset(
-                'assets/images/undraw_project_completed_re_jr7u.svg',
-              ),
-            ),
-          ),
-        ),
-      );
-    }
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
@@ -92,7 +84,32 @@ class ActivitiesPage extends ConsumerWidget {
               'All the important stuff requiring your attention can be found here',
             ),
           ),
-          ...children
+          ...children,
+          RiverPagedBuilder<Next?, ffi.Notification>.autoDispose(
+            firstPageKey: const Next(isStart: true),
+            provider: notificationsListProvider,
+            itemBuilder: (context, item, index) =>
+                Card(child: Text(item.roomIdStr())),
+            noItemsFoundIndicatorBuilder: (context, controller) => weAreEmpty
+                ? SizedBox(
+                    // nothing found, even in the section before. Show nice fallback
+                    height: 250,
+                    child: Center(
+                      child: SvgPicture.asset(
+                        'assets/images/undraw_project_completed_re_jr7u.svg',
+                      ),
+                    ),
+                  )
+                : const Text(''),
+            pagedBuilder: (controller, builder) => PagedSliverGrid(
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 800,
+                childAspectRatio: 3,
+              ),
+              pagingController: controller,
+              builderDelegate: builder,
+            ),
+          ),
         ],
       ),
     );
