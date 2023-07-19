@@ -30,7 +30,7 @@ jobs:
           seconds: 86400 # One day in seconds
 
   tags:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latesthttps://github.com/acterglobal/a3/actions/runs/5594789475/jobs/10230016033#step:22:61
     # Map a step output to a job output
     outputs:
       tag: ${{ inputs.custom_tag || steps.tag.outputs.tag }}
@@ -256,6 +256,7 @@ jobs:
 
       - name: Generate Changelog
         run: |
+          git fetch --prune --unshallow --tags
           cargo run -p mr_minutes -- --since nightly-latest --output nightly-changes.md
 
       - name: Release
