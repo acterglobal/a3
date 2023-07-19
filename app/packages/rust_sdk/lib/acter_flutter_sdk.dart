@@ -37,9 +37,9 @@ const defaultSessionKey = String.fromEnvironment(
 );
 
 // ex: a3-nightly or acter-linux
-String appName = String.fromEnvironment(
+const appName = String.fromEnvironment(
   'RAGESHAKE_APP_NAME',
-  defaultValue: 'acter-${Platform.operatingSystem}',
+  defaultValue: 'acter-dev',
 );
 
 const versionName = String.fromEnvironment(
