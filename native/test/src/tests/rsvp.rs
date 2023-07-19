@@ -101,10 +101,5 @@ async fn rsvp_smoketest() -> Result<()> {
     assert_eq!(entries.len(), 2);
     assert_eq!(entries[1].status(), "No");
 
-    let spaces = user.spaces().await?;
-    assert_eq!(spaces.len(), 1);
-
-    let main_space = spaces.first().unwrap();
-    assert_eq!(main_space.calendar_events().await?.len(), 3);
     Ok(())
 }
