@@ -226,19 +226,16 @@ jobs:
 
       - name: Flutter Build
         env:
-          RAGESHAKE_URL: ${{ secrets.RAGESHAKE_URL }}
-          RAGESHAKE_APP_NAME: ${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }}
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         shell: bash
         run: |
           flutter ${{ matrix.flutter_build_args }} \
             --dart-define=VERSION_NAME=Nightly+${{ needs.tags.outputs.tag }} \
-            --dart-define=RAGESHAKE_URL=$RAGESHAKE_URL \
-            --dart-define=RAGESHAKE_APP_NAME=$RAGESHAKE_APP_NAME \
+            --dart-define=RAGESHAKE_URL=${{ secrets.RAGESHAKE_URL }} \
+            --dart-define=RAGESHAKE_APP_NAME=${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }} \
             --dart-define=RAGESHAKE_APP_VERSION="Nightly-${{ needs.tags.outputs.tag }}/${{ matrix.name }}"
         working-directory: ./app
-
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
       - name: Clean up keychain and provisioning profile
         if: ${{ always() && matrix.with_apple_cert }}
