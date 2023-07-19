@@ -15,7 +15,7 @@ Future<void> setupNotificationsListeners() async {
   mobile.setupNotificationsListeners();
 }
 
-Future<void> notify() async {
+Future<void> notify(String? text) async {
   mobile.notify();
-  await desktop.notify();
+  await desktop.notify(text);
 }

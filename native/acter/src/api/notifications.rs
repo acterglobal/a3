@@ -42,7 +42,7 @@ use super::{
 };
 
 pub struct Notification {
-    notification: ruma::api::client::push::get_notifications::v3::Notification,
+    notification: RumaNotification,
     client: Client,
     room: Option<Room>,
     is_space: bool,
@@ -50,7 +50,7 @@ pub struct Notification {
 }
 
 impl Notification {
-    async fn new(notification: RumaNotification, client: Client) -> Self {
+    pub(crate) async fn new(notification: RumaNotification, client: Client) -> Self {
         let room = client.room_typed(&notification.room_id);
         let (is_space, is_acter_space) = if let Some(room) = &room {
             if room.is_space() {

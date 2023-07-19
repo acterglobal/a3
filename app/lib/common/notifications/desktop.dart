@@ -12,6 +12,6 @@ void setupNotificationsListeners() {
   // mobile.setupNotificationsListeners();
 }
 
-Future<void> notify() async {
-  var requestPermission = await QuickNotify.notify(title: 'test');
+Future<void> notify(String? text) async {
+  await QuickNotify.notify(title: 'Acter', content: text);
 }

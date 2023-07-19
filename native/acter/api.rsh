@@ -1608,6 +1608,10 @@ object Client {
 
     /// list the currently queued notifications
     fn list_notifications(since: Option<string>, only: Option<string>) -> Future<Result<NotificationListResult>>;
+
+    /// listen to incoming notifications
+    fn notifications_stream() -> Stream<Notification>;
+
 }
 
 object OptionText {

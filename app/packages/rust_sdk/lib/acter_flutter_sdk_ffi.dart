@@ -9367,6 +9367,42 @@ class Api {
     return tmp9;
   }
 
+  Notification? __clientNotificationsStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientNotificationsStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_Notification");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = Notification._(this, tmp11_1);
+    return tmp9;
+  }
+
   late final _initLoggingPtr = _lookup<
       ffi.NativeFunction<
           _InitLoggingReturn Function(
@@ -16662,6 +16698,17 @@ class Api {
     int,
     int,
   )>();
+  late final _clientNotificationsStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Client_notifications_stream");
+
+  late final _clientNotificationsStream =
+      _clientNotificationsStreamPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _optionTextTextPtr = _lookup<
       ffi.NativeFunction<
           _OptionTextTextReturn Function(
@@ -20041,6 +20088,23 @@ class Api {
   late final _clientSubscribeStreamStreamPoll =
       _clientSubscribeStreamStreamPollPtr.asFunction<
           _ClientSubscribeStreamStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientNotificationsStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientNotificationsStreamStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_notifications_stream_stream_poll");
+
+  late final _clientNotificationsStreamStreamPoll =
+      _clientNotificationsStreamStreamPollPtr.asFunction<
+          _ClientNotificationsStreamStreamPollReturn Function(
     int,
     int,
     int,
@@ -35827,6 +35891,23 @@ class Client {
     return tmp14;
   }
 
+  /// listen to incoming notifications
+  Stream<Notification> notificationsStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientNotificationsStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Client_notifications_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeStream(tmp3_1, _api.__clientNotificationsStreamStreamPoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -41868,6 +41949,13 @@ class _ClientSubscribeStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
+  external int arg1;
+}
+
+class _ClientNotificationsStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
   external int arg1;
 }
 

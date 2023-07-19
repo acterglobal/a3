@@ -121,7 +121,7 @@ class NotificationCard extends ConsumerWidget {
   }
 
   void alert() {
-    notify();
+    notify(null);
   }
 }
 

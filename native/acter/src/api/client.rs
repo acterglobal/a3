@@ -20,6 +20,7 @@ use matrix_sdk::{
 use ruma::{
     api::client::{
         error::{ErrorBody, ErrorKind},
+        push::get_notifications::v3::Notification as RumaNotification,
         Error,
     },
     device_id,
@@ -39,13 +40,15 @@ use std::{
 };
 use tokio::{
     sync::{
-        broadcast::{channel, Receiver},
+        broadcast::{channel, Receiver, Sender},
         Mutex, RwLock,
     },
     task::JoinHandle,
 };
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
+
+use crate::Notification;
 
 use super::{
     account::Account,
@@ -87,6 +90,7 @@ pub struct Client {
     pub(crate) typing_controller: TypingController,
     pub(crate) receipt_controller: ReceiptController,
     pub(crate) convo_controller: ConvoController,
+    pub(crate) notifications: Arc<Sender<RumaNotification>>,
 }
 
 impl Deref for Client {
@@ -447,6 +451,7 @@ impl Client {
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
             convo_controller: ConvoController::new(),
+            notifications: Arc::new(channel(25).0),
         };
         Ok(cl)
     }
@@ -486,6 +491,7 @@ impl Client {
         let mut invitation_controller = self.invitation_controller.clone();
         let mut device_controller = self.device_controller.clone();
         let mut convo_controller = self.convo_controller.clone();
+        let notifications = self.notifications.clone();
 
         let (first_synced_tx, first_synced_rx) = channel(1);
         let first_synced_arc = Arc::new(first_synced_tx);
@@ -511,6 +517,7 @@ impl Client {
             let history_loading = history_loading.clone();
             let first_sync_task = first_sync_task.clone();
             let room_handles = room_handles.clone();
+            let notifications = notifications.clone();
 
             // fetch the events that received when offline
             client
@@ -629,6 +636,12 @@ impl Client {
                             w.is_syncing = true;
                         }
                     }
+                    for ev in response.notifications.into_values() {
+                        for item in ev {
+                            trace!("Sending notification");
+                            notifications.send(item);
+                        }
+                    }
 
                     trace!("ready for the next round");
                     Ok(LoopCtrl::Continue)
@@ -735,6 +748,29 @@ impl Client {
             .client()
             .get_room(room_id)
             .map(|room| Room { room })
+    }
+
+    pub fn notifications_stream(&self) -> impl Stream<Item = Notification> {
+        let client = self.clone();
+        BroadcastStream::new(self.notifications.subscribe())
+            .then(move |r| {
+                let client = client.clone();
+                RUNTIME
+                    .spawn(async move { anyhow::Ok(Notification::new(r?, client.clone()).await) })
+            })
+            .filter_map(|r| async {
+                match r {
+                    Ok(Ok(n)) => Some(n),
+                    Ok(Err(e)) => {
+                        error!(?e, "Failure in notifications stream");
+                        None
+                    }
+                    Err(e) => {
+                        error!(?e, "Failure in notifications stream processing");
+                        None
+                    }
+                }
+            })
     }
 
     pub fn subscribe_stream(&self, key: String) -> impl Stream<Item = bool> {

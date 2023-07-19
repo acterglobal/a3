@@ -1,7 +1,10 @@
+import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
+import 'dart:async';
 
 class Next {
   final bool isStart;
@@ -19,6 +22,14 @@ class NotificationListState extends PagedState<Next?, ffi.Notification> {
     Next? nextPageKey = const Next(isStart: true),
     List<Next?>? previousPageKeys,
   }) : super(records: records, error: error, nextPageKey: nextPageKey);
+
+  NotificationListState addNotification(ffi.Notification n) {
+    final r = records ?? [];
+    r.insert(0, n);
+    return copyWith(
+      records: r,
+    );
+  }
 
   @override
   NotificationListState copyWith({
@@ -44,9 +55,33 @@ class NotificationListState extends PagedState<Next?, ffi.Notification> {
 
 class NotificationsListNotifier extends StateNotifier<NotificationListState>
     with PagedNotifierMixin<Next?, ffi.Notification, NotificationListState> {
-  NotificationsListNotifier(this.ref) : super(const NotificationListState());
-
+  Stream<ffi.Notification>? _listener;
+  // ignore: unused_field
+  StreamSubscription<void>? _poller;
   final Ref ref;
+
+  NotificationsListNotifier(this.ref) : super(const NotificationListState()) {
+    initListener();
+  }
+
+  void initListener() {
+    final client = ref.watch(clientProvider);
+    if (client == null) {
+      return;
+    }
+
+    _listener = client.notificationsStream();
+    if (_listener != null) {
+      _poller = _listener!.listen((ev) {
+        debugPrint(
+          ' --- - - ----------------- new notification received',
+        );
+        notify('New message in ${ev.roomIdStr()}');
+        state = state.addNotification(ev);
+      });
+      ref.onDispose(() => _poller != null ? _poller!.cancel() : null);
+    }
+  }
 
   @override
   Future<List<ffi.Notification>?> load(Next? page, int limit) async {
