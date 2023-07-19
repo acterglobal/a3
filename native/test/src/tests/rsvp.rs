@@ -80,8 +80,9 @@ async fn rsvp_smoketest() -> Result<()> {
 
     let entries = rsvp_manager.entries().await?;
     assert_eq!(entries.len(), 1);
-    assert_eq!(entries[0].status().as_str(), "Yes");
+    assert_eq!(entries[0].status(), "Yes");
 
+    let rsvp_listener = rsvp_manager.subscribe();
     let rsvp_2_id = rsvp_manager
         .rsvp_draft()?
         .status("No".to_string())
@@ -97,8 +98,8 @@ async fn rsvp_smoketest() -> Result<()> {
     .await?;
 
     let entries = rsvp_manager.entries().await?;
-    assert_eq!(entries.len(), 1);
-    assert_eq!(entries[0].status().as_str(), "No");
+    assert_eq!(entries.len(), 2);
+    assert_eq!(entries[1].status(), "No");
 
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
