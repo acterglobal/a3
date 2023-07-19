@@ -105,6 +105,7 @@ dependencies:
   http: ^0.13.5
   string_validator: ^1.0.0
   shake: ^2.2.0
+  crypto: ^3.0.2
 
   # Testing
   mockito: ^5.0.0

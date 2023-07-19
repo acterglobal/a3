@@ -7,6 +7,8 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 
 class SettingsInfoPage extends ConsumerStatefulWidget {
   const SettingsInfoPage({super.key});
@@ -56,14 +58,25 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                   title: const Text('Version'),
                   value: const Text(versionName),
                 ),
-                SettingsTile(
-                  title: const Text('Rageshake App Name'),
-                  value: Text(appName),
-                ),
-                SettingsTile(
-                  title: const Text('Rageshake Target Url'),
-                  value: const Text(rageshakeUrl),
-                ),
+                isDevBuild
+                    ? SettingsTile(
+                        title: const Text('Rageshake App Name'),
+                        value: const Text(appName),
+                      )
+                    : SettingsTile(
+                        title: const Text('Rageshake App Name Digest'),
+                        value: Text('${sha1.convert(utf8.encode(appName))}'),
+                      ),
+                isDevBuild
+                    ? SettingsTile(
+                        title: const Text('Rageshake Target Url'),
+                        value: const Text(rageshakeUrl),
+                      )
+                    : SettingsTile(
+                        title: const Text('Rageshake Target Url Digest'),
+                        value:
+                            Text('${sha1.convert(utf8.encode(rageshakeUrl))}'),
+                      ),
                 SettingsTile(
                   title: const Text('Rust Log Settings'),
                   onPressed: _displayDebugLevelEditor,
