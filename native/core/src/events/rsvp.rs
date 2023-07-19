@@ -1,16 +1,31 @@
 use derive_builder::Builder;
 use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
+use strum::Display;
 
 use super::BelongsTo;
 
 /// RSVP status
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Display)]
 #[serde(tag = "type")]
 pub enum RsvpStatus {
     Yes,
     Maybe,
     No,
+}
+
+impl FromStr for RsvpStatus {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Yes" => Ok(RsvpStatus::Yes),
+            "No" => Ok(RsvpStatus::No),
+            "Maybe" => Ok(RsvpStatus::Maybe),
+            _ => Err(()),
+        }
+    }
 }
 
 /// The RSVP Event

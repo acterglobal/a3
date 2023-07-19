@@ -266,7 +266,6 @@ impl Space {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        trace!("rsvp event");
                         if let Err(error) = executor
                             .handle(AnyActerModel::Rsvp(t.into()))
                             .await {

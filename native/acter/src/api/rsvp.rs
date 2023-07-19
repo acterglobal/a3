@@ -9,10 +9,9 @@ use matrix_sdk::{
     room::{Joined, Room},
     ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedUserId},
 };
-use std::ops::Deref;
+use std::{ops::Deref, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::warn;
 
 use super::{client::Client, RUNTIME};
 
@@ -54,17 +53,6 @@ impl Deref for Rsvp {
 }
 
 impl Rsvp {
-    pub fn reply_draft(&self) -> Result<RsvpDraft> {
-        let Room::Joined(joined) = &self.room else {
-            bail!("Can do RSVP in only joined rooms");
-        };
-        Ok(RsvpDraft {
-            client: self.client.clone(),
-            room: joined.clone(),
-            inner: self.inner.reply_builder(),
-        })
-    }
-
     pub fn sender(&self) -> OwnedUserId {
         self.inner.meta.sender.clone()
     }
@@ -74,11 +62,7 @@ impl Rsvp {
     }
 
     pub fn status(&self) -> String {
-        match self.inner.status {
-            RsvpStatus::Yes => "Yes".to_string(),
-            RsvpStatus::No => "No".to_string(),
-            RsvpStatus::Maybe => "Maybe".to_string(),
-        }
+        self.inner.status.to_string()
     }
 }
 
@@ -90,11 +74,8 @@ pub struct RsvpDraft {
 
 impl RsvpDraft {
     pub fn status(&mut self, status: String) -> &mut Self {
-        let s = match status.as_str() {
-            "Yes" => RsvpStatus::Yes,
-            "Maybe" => RsvpStatus::Maybe,
-            "No" => RsvpStatus::No,
-            _ => unreachable!("Wrong status about RSVP"),
+        let Ok(s) = RsvpStatus::from_str(&status) else {
+            unreachable!("Wrong status about RSVP")
         };
         self.inner.status(s);
         self
@@ -106,7 +87,6 @@ impl RsvpDraft {
         RUNTIME
             .spawn(async move {
                 let resp = room.send(inner, None).await?;
-                warn!("RSVP draft send: {:?}", resp);
                 Ok(resp.event_id)
             })
             .await?
@@ -187,7 +167,6 @@ impl RsvpManager {
 
     pub fn subscribe(&self) -> Receiver<()> {
         let key = models::Rsvp::index_for(&self.inner.event_id());
-        warn!("subscribe key: {}", key);
         self.client.subscribe(key)
     }
 }
