@@ -252,11 +252,6 @@ jobs:
         run: |
           7z a "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.zip" ${{ matrix.zip_files }}
 
-      - name: Generate Changelog
-        run: |
-          git fetch --prune --unshallow --tags
-          cargo run -p mr_minutes -- --since nightly-latest --output nightly-changes.md
-
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -265,7 +260,6 @@ jobs:
           tag_name: nightly-${{ needs.tags.outputs.tag }}
           generate_release_notes: false
           prerelease: true
-          body_path: nightly-changes.md
           files: |
             ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
             ${{ matrix.extra_artifacts }}
@@ -294,6 +288,15 @@ jobs:
       - build
     steps:
       - uses: actions/checkout@v2
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Generate Changelog
+        run: |
+          git fetch --prune --unshallow --tags
+          cargo run -p mr_minutes -- --since nightly-latest --output nightly-changes.md
+
       - name: Tag for nightly release
         run: |
           git tag nightly-${{ needs.tags.outputs.tag }}
@@ -309,6 +312,7 @@ jobs:
           generate_release_notes: false
           name: Nightly ${{ needs.tags.outputs.tag }}
           tag_name: nightly-${{ needs.tags.outputs.tag }}
+          body_path: nightly-changes.md
           prerelease: true
       - uses: eregon/publish-release@v1
         env:
