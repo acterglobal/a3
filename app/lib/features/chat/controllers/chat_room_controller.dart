@@ -2,17 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/pages/image_selection_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
         AudioDesc,
         Client,
-        Conversation,
+        Convo,
         FileDesc,
         ImageDesc,
         Member,
-        OptionBuffer,
         OptionText,
         RoomEventItem,
         RoomId,
@@ -41,7 +41,7 @@ class ChatRoomController extends GetxController {
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
   int _page = 0;
-  Conversation? _currentRoom;
+  Convo? _currentRoom;
   final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
   RxBool isEmojiVisible = false.obs;
   RxBool isAttachmentVisible = false.obs;
@@ -54,11 +54,10 @@ class ChatRoomController extends GetxController {
   List<Member> activeMembers = [];
   Map<String, String> messageTextMapMarkDown = {};
   Map<String, String> messageTextMapHtml = {};
-  final Map<String, Future<OptionBuffer>> _userAvatars = {};
-  final Map<String, String> _userNames = {};
+  final Map<String, ProfileData> _userProfiles = {};
   List<Map<String, dynamic>> mentionList = [];
-  StreamSubscription<TimelineDiff>? _diffSubscription;
-  StreamSubscription<RoomMessage>? _messageSubscription;
+  StreamSubscription<TimelineDiff>? _diffPoller;
+  StreamSubscription<RoomMessage>? _messagePoller;
   int emojiMessageIndex = 0;
   String? emojiCurrentId;
   String? authorId;
@@ -79,7 +78,7 @@ class ChatRoomController extends GetxController {
       }
     });
 
-    _messageSubscription = client.incomingMessageRx()?.listen((event) {
+    _messagePoller = client.incomingMessageRx()?.listen((event) {
       // the latest message is dealt in convo receiver of ChatListController
       // here manage only its message history
       if (_currentRoom == null) {
@@ -130,20 +129,20 @@ class ChatRoomController extends GetxController {
   @override
   void onClose() {
     focusNode.removeListener(() {});
-    _diffSubscription?.cancel();
-    _messageSubscription?.cancel();
+    _diffPoller?.cancel();
+    _messagePoller?.cancel();
 
     super.onClose();
   }
 
   // get the timeline of room
-  Future<void> setCurrentRoom(Conversation? convoRoom) async {
+  Future<void> setCurrentRoom(Convo? convoRoom) async {
     if (convoRoom == null) {
       _messages.clear();
       typingUsers.clear();
       activeMembers.clear();
       mentionList.clear();
-      _diffSubscription?.cancel();
+      _diffPoller?.cancel();
       _stream = null;
       _page = 0;
       _currentRoom = null;
@@ -162,7 +161,7 @@ class ChatRoomController extends GetxController {
     }
     _stream = await _currentRoom!.timelineStream();
     // event handler from paginate
-    _diffSubscription = _stream?.diffRx().listen((event) {
+    _diffPoller = _stream?.diffRx().listen((event) {
       // stream is rendered in reverse order
       switch (event.action()) {
         // Append the given elements at the end of the `Vector` and notify subscribers
@@ -436,8 +435,7 @@ class ChatRoomController extends GetxController {
   }
 
   Future<void> _fetchUserProfiles() async {
-    Map<String, Future<OptionBuffer>> avatars = {};
-    Map<String, String> names = {};
+    Map<String, ProfileData> userProfiles = {};
     List<String> ids = [];
     List<Map<String, dynamic>> mentionRecords = [];
     for (int i = 0; i < activeMembers.length; i++) {
@@ -446,37 +444,35 @@ class ChatRoomController extends GetxController {
       UserProfile profile = activeMembers[i].getProfile();
       Map<String, dynamic> record = {};
       if (await profile.hasAvatar()) {
-        avatars[userId] = profile.getThumbnail(62, 60);
-        record['avatar'] = avatars[userId];
+        var userAvatar = (await profile.getThumbnail(62, 60)).data()!;
+        var userName = (await profile.getDisplayName()).text();
+        userProfiles[userId] = ProfileData(userName, userAvatar);
+        record['avatar'] = userProfiles[userId];
       }
       OptionText dispName = await profile.getDisplayName();
       String? name = dispName.text();
       if (name != null) {
         record['display'] = name;
-        names[userId] = name;
       }
       record['link'] = userId;
       mentionRecords.add(record);
       if (i % 3 == 0 || i == activeMembers.length - 1) {
-        _userAvatars.addAll(avatars);
-        _userNames.addAll(names);
+        _userProfiles.addAll(userProfiles);
         mentionList.addAll(mentionRecords);
         mentionRecords.clear();
         update(['chat-input']);
         update(ids);
-        avatars.clear();
-        names.clear();
+        userProfiles.clear();
         ids.clear();
       }
     }
   }
 
-  Future<OptionBuffer>? getUserAvatar(String userId) {
-    return _userAvatars.containsKey(userId) ? _userAvatars[userId] : null;
-  }
-
-  String? getUserName(String userId) {
-    return _userNames.containsKey(userId) ? _userNames[userId] : null;
+  ProfileData? getUserProfile(String userId) {
+    if (_userProfiles.containsKey(userId)) {
+      return _userProfiles[userId];
+    }
+    return ProfileData('', null);
   }
 
   //preview message link
@@ -495,7 +491,7 @@ class ChatRoomController extends GetxController {
     });
   }
 
-  //push messages in conversation
+  // push messages in convo
   Future<void> handleSendPressed(
     String markdownMessage,
     String htmlMessage,

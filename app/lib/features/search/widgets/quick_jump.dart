@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/search/providers/spaces.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/search/providers/search.dart';
@@ -8,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
+
+import 'package:go_router/go_router.dart';
 
 class QuickJump extends ConsumerWidget {
   final Future<void> Function({Routes? route, bool push, String? target})
@@ -28,6 +31,18 @@ class QuickJump extends ConsumerWidget {
         alignment: MainAxisAlignment.spaceEvenly,
         children: List.from(
           [
+            IconButton(
+              icon: const Icon(Atlas.construction_tools_thin),
+              style: IconButton.styleFrom(
+                side: BorderSide(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                ),
+              ),
+              onPressed: () {
+                navigateTo(route: Routes.settings);
+              },
+            ),
             isActive(LabsFeature.pins)
                 ? IconButton(
                     iconSize: 48,
@@ -40,7 +55,7 @@ class QuickJump extends ConsumerWidget {
                       ),
                     ),
                     onPressed: () {
-                      navigateTo(route: Routes.activities);
+                      navigateTo(route: Routes.pins);
                     },
                     icon: const Icon(Atlas.pin_thin, size: 32),
                   )
@@ -104,12 +119,34 @@ class QuickJump extends ConsumerWidget {
   }
 
   Widget quickActions(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(featuresProvider);
-    bool isActive(f) => provider.isActive(f);
-    return ButtonBar(
-      alignment: MainAxisAlignment.center,
+    final features = ref.watch(featuresProvider);
+    bool isActive(f) => features.isActive(f);
+    final canPostNews =
+        ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
+            false;
+    final canPostPin = isActive(LabsFeature.pins) &&
+        (ref.watch(hasSpaceWithPermissionProvider('CanPostPin')).valueOrNull ??
+            false);
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      spacing: 8,
+      runSpacing: 10,
       children: List.from(
         [
+          canPostNews
+              ? OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.amber,
+                    side: const BorderSide(width: 2, color: Colors.amber),
+                  ),
+                  onPressed: () {
+                    navigateTo(route: Routes.actionAddUpdate, push: true);
+                    debugPrint('Update');
+                  },
+                  icon: const Icon(Atlas.plus_circle_thin),
+                  label: const Text('Update'),
+                )
+              : null,
           isActive(LabsFeature.tasks)
               ? OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
@@ -124,15 +161,24 @@ class QuickJump extends ConsumerWidget {
                   label: const Text('Task'),
                 )
               : null,
+          canPostPin
+              ? OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.purple,
+                    side: const BorderSide(width: 2, color: Colors.purple),
+                  ),
+                  onPressed: () => context.pushNamed(Routes.actionAddPin.name),
+                  icon: const Icon(Atlas.plus_circle_thin),
+                  label: const Text('Pin'),
+                )
+              : null,
           isActive(LabsFeature.events)
               ? OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.purple,
                     side: const BorderSide(width: 2, color: Colors.purple),
                   ),
-                  onPressed: () {
-                    debugPrint('Add Event');
-                  },
+                  onPressed: () => context.pushNamed(Routes.createEvent.name),
                   icon: const Icon(Atlas.plus_circle_thin),
                   label: const Text('Event'),
                 )

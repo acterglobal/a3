@@ -5,7 +5,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/features/bug_report/models/bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
-import 'package:acter/features/bug_report/widgets/select_tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -23,21 +22,25 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   final formKey = GlobalKey<FormState>();
 
   Future<void> reportBug(BugReport report) async {
-    String? reportUrl = await ref
-        .read(
-          bugReportNotifierProvider.notifier,
-        )
-        .report(
-          report.withScreenshot ? widget.imagePath : null,
-        );
-    String msg = 'Error occurred in bug report';
-    if (reportUrl != null) {
+    try {
+      String reportUrl = await ref
+          .read(
+            bugReportNotifierProvider.notifier,
+          )
+          .report(
+            report.withScreenshot ? widget.imagePath : null,
+          );
       String? issueId = getIssueId(reportUrl);
-      msg = 'Reported the bug successfully! (#$issueId)';
+      ref.read(loadingProvider.notifier).update((state) => !state);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Reported the bug successfully! (#$issueId)')),
+      );
+    } catch (e) {
+      ref.read(loadingProvider.notifier).update((state) => !state);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Bug reporting failed: $e')),
+      );
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg)),
-    );
   }
 
   @override
@@ -55,7 +58,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 10),
-              const Text('Issue description'),
+              const Text('Please describe the issue'),
               const SizedBox(height: 10),
               TextFormField(
                 style: const TextStyle(color: Colors.white),
@@ -63,12 +66,6 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                     .read(bugReportNotifierProvider.notifier)
                     .setDescription(value),
               ),
-              const SizedBox(height: 10),
-              const Text(
-                'Issue tag(s)',
-              ),
-              const SizedBox(height: 10),
-              SelectTag(),
               const SizedBox(height: 10),
               CheckboxListTile(
                 title: const Text('Including log file'),
@@ -108,16 +105,9 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                   ? const Center(child: CircularProgressIndicator())
                   : CustomButton(
                       onPressed: () async {
-                        bool res;
                         if (bugReport.description.isEmpty) {
                           _descriptionDialog();
                           return;
-                        }
-                        if (bugReport.tags.isEmpty) {
-                          res = await _tagsDialog();
-                          if (!res) {
-                            return;
-                          }
                         }
                         reportBug(bugReport);
                       },
@@ -145,27 +135,5 @@ class _BugReportState extends ConsumerState<BugReportPage> {
         ],
       ),
     );
-  }
-
-  Future<bool> _tagsDialog() async {
-    bool? res = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext ctx) => AlertDialog(
-        title: const Text('Empty tag'),
-        content: const Text('Will you submit without any tag?'),
-        actions: [
-          TextButton(
-            onPressed: () => ctx.pop(false),
-            child: const Text('No'),
-          ),
-          TextButton(
-            onPressed: () => ctx.pop(true),
-            child: const Text('Yes'),
-          ),
-        ],
-      ),
-    );
-    return res!;
   }
 }

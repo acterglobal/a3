@@ -1,9 +1,13 @@
 enum Routes {
   // primary & quickjump actions
   actionAddTask('/actions/addTask'),
+  actionAddPin('/actions/addPin'),
+  actionAddUpdate('/actions/addUpdate'),
 
   // --- Auth
+  intro('/intro'),
   start('/start'),
+  introProfile('/introProfile'),
   authLogin('/login'),
   authRegister('/register'),
 
@@ -20,18 +24,31 @@ enum Routes {
 
   // --- chat
   chat('/chat'),
-  chatroom(r'/chat/(?<roomId>([!#][^/]+)'), // !roomId, #roomName
-
-  // --- updates
-  updatesEdit('updates_edit'),
-  updatesPost('updates_post'),
-  updatesPostSearch('post_search'),
+  createChat('/chat/create'),
+  chatroom('/chat/:roomId([!#][^/]+)'), // !roomId, #roomName
 
   // -- spaces
   spaces('/spaces'),
+  joinSpace('/spaces/join'),
   createSpace('/spaces/create'),
+  editSpace('/:spaceId([!#][^/]+)/edit'),
+  spaceInvite('/:spaceId([!#][^/]+)/invite'),
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
-  relatedSpaces('/:spaceId([!#][^/]+)/spaces'), // !spaceId, #spaceName
+  spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),
+  spaceMembers('/:spaceId([!#][^/]+)/members'),
+  spacePins('/:spaceId([!#][^/]+)/pins'),
+  spaceEvents('/:spaceId([!#][^/]+)/events'),
+  spaceChats('/:spaceId([!#][^/]+)/chats'),
+
+  // -- pins
+
+  pins('/pins'),
+  pin('/pins/:pinId'),
+
+  // -- events
+  createEvent('/events/create'),
+  calendarEvent('/events/:calendarId'),
+  editCalendarEvent('/events/:calendarId/edit'),
 
   // -- settings
   settings('/settings'),

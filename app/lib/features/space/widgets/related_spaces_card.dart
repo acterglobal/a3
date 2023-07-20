@@ -1,7 +1,7 @@
 import 'dart:core';
 
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -26,7 +26,7 @@ class RelatedSpacesCard extends ConsumerWidget {
             InkWell(
               onTap: () {
                 context.pushNamed(
-                  Routes.relatedSpaces.name,
+                  Routes.spaceRelatedSpaces.name,
                   pathParameters: {'spaceId': spaceId},
                 );
               },

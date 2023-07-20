@@ -7,8 +7,8 @@ use acter_core::{
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
-use async_broadcast::Receiver;
 use core::time::Duration;
+use futures::stream::StreamExt;
 use matrix_sdk::{
     room::{Joined, Room},
     ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId},
@@ -17,6 +17,7 @@ use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
 };
+use tokio::sync::broadcast::Receiver;
 use tracing::warn;
 
 use super::{client::Client, spaces::Space, RUNTIME};
@@ -74,6 +75,25 @@ impl Client {
                     }
                 }
                 Ok(pins)
+            })
+            .await?
+    }
+
+    pub async fn pin(&self, pin_id: String) -> Result<Pin> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let AnyActerModel::Pin(t) = client.store().get(&pin_id).await? else {
+                    bail!("Ping not found");
+                };
+                let room = client
+                    .get_room(t.room_id())
+                    .context("Room of pin not found")?;
+                Ok(Pin {
+                    client,
+                    room,
+                    content: t,
+                })
             })
             .await?
     }
@@ -189,6 +209,23 @@ impl Pin {
         self.content.title.clone()
     }
 
+    pub fn has_formatted_text(&self) -> bool {
+        matches!(
+            self.content.content(),
+            Some(TextMessageEventContent {
+                formatted: Some(_),
+                ..
+            })
+        )
+    }
+
+    pub fn content_formatted(&self) -> Option<String> {
+        self.content
+            .content
+            .as_ref()
+            .and_then(|t| t.formatted.as_ref().map(|f| f.body.clone()))
+    }
+
     pub fn content_text(&self) -> Option<String> {
         self.content.content.as_ref().map(|t| t.body.clone())
     }
@@ -210,6 +247,14 @@ impl Pin {
             .display
             .as_ref()
             .and_then(|t| t.section.clone())
+    }
+
+    pub fn event_id_str(&self) -> String {
+        self.content.event_id().to_string()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.content.room_id().to_string()
     }
 }
 
@@ -245,9 +290,13 @@ impl Pin {
         })
     }
 
-    pub fn subscribe(&self) -> Receiver<()> {
+    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
+        tokio_stream::wrappers::BroadcastStream::new(self.subscribe()).map(|_| true)
+    }
+
+    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
         let key = self.content.event_id().to_string();
-        self.client.executor().subscribe(key)
+        self.client.subscribe(key)
     }
 
     pub async fn comments(&self) -> Result<crate::CommentsManager> {
@@ -261,6 +310,21 @@ impl Pin {
                     models::CommentsManager::from_store_and_event_id(client.store(), &event_id)
                         .await;
                 Ok(crate::CommentsManager::new(client, room, inner))
+            })
+            .await?
+    }
+
+    pub async fn attachments(&self) -> Result<crate::AttachmentsManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.content.event_id().to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::AttachmentsManager::from_store_and_event_id(client.store(), &event_id)
+                        .await;
+                Ok(crate::AttachmentsManager::new(client, room, inner))
             })
             .await?
     }
@@ -282,6 +346,12 @@ impl PinDraft {
     pub fn content_text(&mut self, body: String) -> &mut Self {
         self.content
             .content(Some(TextMessageEventContent::plain(body)));
+        self
+    }
+
+    pub fn content_markdown(&mut self, body: String) -> &mut Self {
+        self.content
+            .content(Some(TextMessageEventContent::markdown(body)));
         self
     }
 

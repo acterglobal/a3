@@ -1,18 +1,12 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use matrix_sdk::ruma::{
-    events::{
-        macros::EventContent,
-        room::{
-            message::{
-                AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-                ImageMessageEventContent, TextMessageEventContent, VideoInfo,
-                VideoMessageEventContent,
-            },
-            ImageInfo,
-        },
+use matrix_sdk::ruma::events::{
+    macros::EventContent,
+    room::message::{
+        AudioMessageEventContent, FileMessageEventContent,
+        ImageMessageEventContent, TextMessageEventContent,
+        VideoMessageEventContent,
     },
-    OwnedMxcUri,
 };
 use serde::{Deserialize, Serialize};
 
@@ -87,49 +81,12 @@ impl NewsContent {
 pub struct NewsSlide {
     /// A slide must contain some news-worthy content
     #[serde(flatten)]
-    content: NewsContent,
+    pub content: NewsContent,
 
     /// A slide may optionally contain references to other items
     #[builder(default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    references: Vec<ObjRef>,
-}
-
-impl NewsSlide {
-    pub fn new_text(body: String) -> Self {
-        NewsSlide {
-            content: NewsContent::Text(TextMessageEventContent::plain(body)),
-            references: vec![],
-        }
-    }
-
-    pub fn new_image(body: String, url: OwnedMxcUri, info: Option<Box<ImageInfo>>) -> Self {
-        NewsSlide {
-            content: NewsContent::Image(ImageMessageEventContent::plain(body, url, info)),
-            references: vec![],
-        }
-    }
-
-    pub fn new_audio(body: String, url: OwnedMxcUri, info: Option<Box<AudioInfo>>) -> Self {
-        NewsSlide {
-            content: NewsContent::Audio(AudioMessageEventContent::plain(body, url, info)),
-            references: vec![],
-        }
-    }
-
-    pub fn new_video(body: String, url: OwnedMxcUri, info: Option<Box<VideoInfo>>) -> Self {
-        NewsSlide {
-            content: NewsContent::Video(VideoMessageEventContent::plain(body, url, info)),
-            references: vec![],
-        }
-    }
-
-    pub fn new_file(body: String, url: OwnedMxcUri, info: Option<Box<FileInfo>>) -> Self {
-        NewsSlide {
-            content: NewsContent::File(FileMessageEventContent::plain(body, url, info)),
-            references: vec![],
-        }
-    }
+    pub references: Vec<ObjRef>,
 }
 
 /// The payload for our news creation event.

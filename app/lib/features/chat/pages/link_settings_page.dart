@@ -2,7 +2,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
 class LinkSettingsPage extends StatefulWidget {
-  final Conversation room;
+  final Convo room;
 
   const LinkSettingsPage({
     Key? key,

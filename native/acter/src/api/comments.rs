@@ -3,13 +3,14 @@ use acter_core::{
     models::{self, ActerModel, AnyActerModel, Color},
 };
 use anyhow::{bail, Context, Result};
-use async_broadcast::Receiver;
 use core::time::Duration;
+use futures::stream::StreamExt;
 use matrix_sdk::{
     room::{Joined, Room},
     ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedUserId},
 };
 use std::ops::Deref;
+use tokio::sync::broadcast::Receiver;
 
 use super::{client::Client, RUNTIME};
 
@@ -188,7 +189,11 @@ impl CommentsManager {
         })
     }
 
-    pub fn subscribe(&self) -> Receiver<()> {
-        self.client.executor().subscribe(self.inner.update_key())
+    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
+        tokio_stream::wrappers::BroadcastStream::new(self.subscribe()).map(|_| true)
+    }
+
+    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
+        self.client.subscribe(self.inner.update_key())
     }
 }

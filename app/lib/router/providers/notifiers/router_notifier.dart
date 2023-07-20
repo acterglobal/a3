@@ -1,15 +1,16 @@
 import 'package:acter/router/router.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class RouterNotifier extends AutoDisposeAsyncNotifier<void>
-    implements Listenable {
+class RouterNotifier extends AsyncNotifier<void> implements Listenable {
   VoidCallback? routerListener;
 
-  final routeList = routes;
+  late List<RouteBase> routeList;
 
   @override
   Future<void> build() async {
+    routeList = makeRoutes(ref);
     ref.listenSelf((_, __) {
       // One could write more conditional logic for when to call redirection
       routerListener?.call();

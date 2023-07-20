@@ -27,11 +27,25 @@ jobs:
           # Only return if PR is not in draft state. (By default it returns PRs in any state.)
           # filterOutDraft: true
 
+      - run: echo "PR $prNumber $prTitle at $prUrl is labeled $prLabels. It should run a demo build; $contains"
+        if: steps.PR.outputs.pr_found == 'true'
+        env:
+          # Direct access to common PR properties
+          prNumber: ${{ steps.PR.outputs.number }}
+          prUrl: ${{ steps.PR.outputs.pr_url }}
+          prTitle: ${{ steps.PR.outputs.pr_title }}
+          prBody: ${{ steps.PR.outputs.pr_body }}
+          prCreatedAt: ${{ steps.PR.outputs.pr_created_at }}
+          prMergedAt: ${{ steps.PR.outputs.pr_merged_at }}
+          prClosedAt: ${{ steps.PR.outputs.pr_closed_at }}
+          prLabels: ${{ steps.PR.outputs.pr_labels }}
+          contains: ${{ contains(steps.PR.outputs.pr_labels, 'build-demo') }}
+     
   tags:
     runs-on: ubuntu-latest
     # Map a step output to a job output
     outputs:
-      tag: ${{ inputs.custom_tag || steps.tag.outputs.tag }}
+      tag: ${{ steps.tag.outputs.tag }}
       build_num: ${{ steps.build_num.outputs.build_num }}
     steps:
       - name: Get branch name
@@ -212,19 +226,16 @@ jobs:
 
       - name: Flutter Build
         env:
-          RAGESHAKE_URL: ${{ secrets.RAGESHAKE_URL }}
-          RAGESHAKE_APP_NAME: ${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }}
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         shell: bash
         run: |
           flutter ${{ matrix.flutter_build_args }} \
-            --dart-define=VERSION_NAME=Nightly+${{ needs.tags.outputs.tag }} \
-            --dart-define=RAGESHAKE_URL=$RAGESHAKE_URL \
-            --dart-define=RAGESHAKE_APP_NAME=$RAGESHAKE_APP_NAME \
-            --dart-define=RAGESHAKE_APP_VERSION="Nightly-${{ needs.tags.outputs.tag }}/${{ matrix.name }}"
+            --dart-define VERSION_NAME="Nightly+${{ needs.tags.outputs.tag }}" \
+            --dart-define RAGESHAKE_URL="${{ secrets.RAGESHAKE_URL }}" \
+            --dart-define RAGESHAKE_APP_NAME="${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }}" \
+            --dart-define RAGESHAKE_APP_VERSION="Nightly-${{ needs.tags.outputs.tag }}/${{ matrix.name }}"
         working-directory: ./app
-
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
       - name: Clean up keychain and provisioning profile
         if: ${{ always() && matrix.with_apple_cert }}
@@ -261,6 +272,6 @@ jobs:
         uses: actions/upload-artifact@v3
         
         with:
-          name: ${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}
+          name: ${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}
           retention-days: 14
-          path: ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.*
+          path: ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*

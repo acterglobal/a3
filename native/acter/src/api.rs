@@ -19,12 +19,13 @@ lazy_static! {
 }
 
 mod account;
+mod attachments;
 mod auth;
 mod calendar_events;
 mod client;
 mod comments;
 mod common;
-mod conversation;
+mod convo;
 mod device;
 mod invitation;
 mod message;
@@ -33,6 +34,7 @@ mod pins;
 mod profile;
 mod receipt;
 mod room;
+mod search;
 mod spaces;
 mod stream;
 mod tasks;
@@ -42,21 +44,24 @@ mod verification;
 pub use account::Account;
 pub use acter_core::{
     events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
-    models::{Color as EfkColor, Tag, TextMessageContent},
+    models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},
 };
+pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token,
     login_with_token_under_config, make_client_config, register_under_config, register_with_token,
     register_with_token_under_config, sanitize_user,
 };
-pub use calendar_events::CalendarEvent;
+pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
     duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, OptionBuffer, OptionText,
     ReactionDesc, TextDesc, ThumbnailInfo, VideoDesc,
 };
-pub use conversation::{Conversation, CreateConversationSettingsBuilder};
+pub use convo::{
+    new_convo_settings_builder, Convo, CreateConvoSettings, CreateConvoSettingsBuilder,
+};
 pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use invitation::Invitation;
@@ -65,10 +70,11 @@ pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
-pub use room::{Member, Room, SendAudioResult, SendImageResult};
+pub use room::{Member, MemberPermission, MembershipStatus, Room, SendAudioResult, SendImageResult};
+pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use spaces::{
-    new_space_settings, CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, Space,
-    SpaceRelation, SpaceRelations,
+    new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
+    RelationTargetType, Space, SpaceRelation, SpaceRelations,
 };
 pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{

@@ -1,46 +1,11 @@
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:intl/intl.dart';
-
-DateTime kFirstDay = DateTime.utc(2010, 10, 16);
-DateTime kLastDay = DateTime.utc(2050, 12, 31);
-
-List<CalendarEvent> eventsForDay(List<CalendarEvent> events, DateTime day) {
-  return events.where((e) {
-    final startDay = toDartDatetime(e.utcStart());
-    final endDay = toDartDatetime(e.utcEnd());
-    return (startDay.difference(day).inDays == 0) ||
-        (endDay.difference(day).inDays == 0);
-  }).toList();
-}
-
-String formatDt(CalendarEvent e) {
-  final start = toDartDatetime(e.utcStart());
-  final end = toDartDatetime(e.utcStart());
-  if (e.showWithoutTime()) {
-    final startFmt = DateFormat.yMMMd().format(start);
-    if (start.difference(end).inDays == 0) {
-      return startFmt;
-    } else {
-      final endFmt = DateFormat.yMMMd().format(end);
-      return '$startFmt - $endFmt';
-    }
-  } else {
-    final startFmt = DateFormat.yMMMd().format(start);
-    final startTimeFmt = DateFormat.Hm().format(start);
-    final endTimeFmt = DateFormat.Hm().format(end);
-
-    if (start.difference(end).inDays == 0) {
-      return '$startFmt $startTimeFmt - $endTimeFmt';
-    } else {
-      final endFmt = DateFormat.yMMMd().format(end);
-      return '$startFmt $startTimeFmt - $endFmt $endTimeFmt';
-    }
-  }
-}
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show CalendarEvent;
 
 // ignore: must_be_immutable
 class EventsCalendar extends ConsumerWidget {
@@ -52,13 +17,11 @@ class EventsCalendar extends ConsumerWidget {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
   final AsyncValue<List<CalendarEvent>> events;
-
   EventsCalendar({super.key, required this.events});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Wrap(
       children: [
         Text(
           'Events',
@@ -72,7 +35,10 @@ class EventsCalendar extends ConsumerWidget {
               children: [
                 ...events.map(
                   (e) => ListTile(
-                    onTap: () => debugPrint('$e'),
+                    onTap: () => context.pushNamed(
+                      Routes.calendarEvent.name,
+                      pathParameters: {'calendarId': e.eventId().toString()},
+                    ),
                     title: Text(
                       e.title(),
                       style: Theme.of(context).textTheme.bodyLarge,

@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "native/*",
+  "util/mr_minutes"
 ]
 
 default-members = ["native/acter"]
@@ -33,6 +34,7 @@ rev = "854d8076eff1c5b6454c42e4309b1b070b815893"
 
 [workspace.dependencies]
 async-broadcast = "0.5"
+strum = { version = "0.24.1", features = ["derive"] }
 
 [profile.release]
 panic = "unwind"

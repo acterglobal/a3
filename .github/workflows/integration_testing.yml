@@ -21,7 +21,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2023-04-10
           override: true
 
       - uses: actions/setup-python@v4
@@ -30,6 +30,7 @@ jobs:
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
+          installer: poetry
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
@@ -87,7 +88,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2023-04-10
           override: true
 
       - uses: Swatinem/rust-cache@v1
@@ -107,6 +108,7 @@ jobs:
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
+          installer: poetry
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
@@ -175,7 +177,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2023-04-10
           override: true
 
       - uses: Swatinem/rust-cache@v1
@@ -198,6 +200,7 @@ jobs:
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
+          installer: poetry
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
@@ -265,7 +268,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2023-04-10
           override: true
 
       - uses: Swatinem/rust-cache@v1
@@ -288,6 +291,7 @@ jobs:
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
+          installer: poetry
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true

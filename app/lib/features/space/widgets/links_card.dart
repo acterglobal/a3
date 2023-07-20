@@ -1,17 +1,9 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:core';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:go_router/go_router.dart';
-
-final pinnedLinksProvider =
-    FutureProvider.family<List<ActerPin>, String>((ref, spaceId) async {
-  final space = ref.watch(spaceProvider(spaceId)).requireValue;
-  return (await space.pinnedLinks()).toList();
-});
 
 class LinksCard extends ConsumerWidget {
   final String spaceId;
@@ -43,15 +35,7 @@ class LinksCard extends ConsumerWidget {
                     (pin) => OutlinedButton(
                       onPressed: () async {
                         final target = pin.url()!;
-                        final Uri? url = Uri.tryParse(target);
-                        if (url == null) {
-                          debugPrint('Opening internally: $url');
-                          // not a valid URL, try local routing
-                          context.go(target);
-                        } else {
-                          debugPrint('Opening external URL: $url');
-                          !await launchUrl(url);
-                        }
+                        await openLink(target, context);
                       },
                       style: ButtonStyle(
                         shape:

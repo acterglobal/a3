@@ -1,4 +1,4 @@
-use acter::api::{login_new_client, CreateConversationSettingsBuilder};
+use acter::api::{login_new_client, CreateConvoSettingsBuilder};
 use anyhow::Result;
 use futures::stream::StreamExt;
 use tempfile::TempDir;
@@ -31,14 +31,14 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     )
     .await?;
     let sisko_syncer = sisko.start_sync();
-    let mut sisko_synced = sisko_syncer.first_synced_rx().expect("not yet read");
+    let mut sisko_synced = sisko_syncer.first_synced_rx();
     while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
 
     // sisko creates room and invites kyra
-    let settings = CreateConversationSettingsBuilder::default()
+    let settings = CreateConvoSettingsBuilder::default()
         .invites(vec![format!("@kyra:{homeserver_name}").try_into()?])
         .build()?;
-    let sisko_kyra_dm_id = sisko.create_conversation(settings).await?;
+    let sisko_kyra_dm_id = sisko.create_convo(Box::new(settings)).await?;
 
     // initialize kyra's client
     let tmp_dir = TempDir::new()?;
@@ -52,7 +52,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
-    let mut first_synced = kyra_syncer.first_synced_rx().expect("not yet read");
+    let mut first_synced = kyra_syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
 
     // kyra accepts invitation from sisko
@@ -68,13 +68,13 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     }
 
     // sisko sends the formatted text message to kyra
-    let convo = sisko.conversation(sisko_kyra_dm_id.to_string()).await?;
+    let convo = sisko.convo(sisko_kyra_dm_id.to_string()).await?;
     let _event_id = convo
         .send_formatted_message("**Hello**".to_string())
         .await?;
 
     // kyra receives the formatted text message from sisko
-    let mut convos_rx = kyra.conversations_rx();
+    let mut convos_rx = kyra.convos_rx();
     loop {
         #[allow(clippy::single_match)]
         match convos_rx.next().await {

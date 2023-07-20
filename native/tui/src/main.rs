@@ -58,7 +58,7 @@ async fn main() -> Result<()> {
         let name = format!("{:?} ({username:})", dp.text());
         sender.send(AppUpdate::SetUsername(name)).unwrap();
 
-        let sync_stream = sync_state.first_synced_rx().unwrap();
+        let sync_stream = sync_state.first_synced_rx();
         let history_loaded = sync_state.get_history_loading_rx();
 
         let main_stream = futures::stream::select(
@@ -74,9 +74,9 @@ async fn main() -> Result<()> {
                     sender.send(AppUpdate::SetSynced(synced)).unwrap();
                     if synced {
                         // let's update the chats;
-                        let conversastions = client.conversations().await.unwrap();
+                        let conversastions = client.convos().await.unwrap();
                         sender
-                            .send(AppUpdate::UpdateConversations(conversastions))
+                            .send(AppUpdate::UpdateConvos(conversastions))
                             .unwrap();
 
                         // let's update the spaces;

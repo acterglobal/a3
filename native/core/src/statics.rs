@@ -51,7 +51,7 @@ pub fn default_acter_space_states() -> Vec<Raw<AnyInitialStateEvent>> {
     v
 }
 
-pub fn default_acter_conversation_states() -> Vec<Raw<AnyInitialStateEvent>> {
+pub fn default_acter_convo_states() -> Vec<Raw<AnyInitialStateEvent>> {
     [HISTORY, ENCRYPTION]
         .into_iter()
         .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))

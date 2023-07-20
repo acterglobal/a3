@@ -4,7 +4,7 @@ use matrix_sdk::{
     ruma::{OwnedMxcUri, OwnedUserId},
     Account as SdkAccount,
 };
-use std::{ops::Deref, path::PathBuf};
+use std::{fs, ops::Deref, path::PathBuf};
 
 use super::{
     api::FfiBuffer,
@@ -73,13 +73,13 @@ impl Account {
         let account = self.account.clone();
         let path = PathBuf::from(uri);
         let guess = mime_guess::from_path(path.clone());
-        let content_type = guess.first().context("No MIME type")?;
+        let content_type = guess.first().context("MIME type should be given")?;
         if !content_type.to_string().starts_with("image/") {
             bail!("Account avatar accepts only image file");
         }
         RUNTIME
             .spawn(async move {
-                let buf = std::fs::read(path)?;
+                let buf = fs::read(path).context("File should be read")?;
                 let new_url = account.upload_avatar(&content_type, buf).await?;
                 Ok(new_url)
             })

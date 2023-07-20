@@ -16,13 +16,15 @@ dart = []
 image-meta = ["dep:imagesize"]
 audio-meta = ["dep:lofty", "dep:lofty_attr"]
 
+[patch.crates-io]
+proc-macro2 = "=1.0.55" # fix issue 'Your compiler does not support spans which is required by genco'
+
 [build-dependencies]
 ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "leaking-no-drop"}
 cbindgen = "0.24.3"
 
 [dependencies]
 anyhow = "1.0.51"
-async-broadcast = { workspace = true }
 async-stream =  "0.3.4"
 chrono =  "0.4"
 derive_builder = "0.10.2"
@@ -39,11 +41,13 @@ log = "0.4"
 log-panics = "2.0.0"
 mime_guess = "2.0.4"
 parse-env-filter = "0.1.0"
+strum = { workspace = true }
 ruma = { workspace = true }
 sanitize-filename-reader-friendly = "2.2.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = "1"
+tokio-stream = "0.1.14"
 tracing = { version = "0.1.29", default-features = false, features = ["log"] }
 url = "2.2.2"
 
@@ -69,9 +73,6 @@ features = [
 [dependencies.matrix-sdk-base]
 workspace = true
 optional = true
-
-[dependencies.proc-macro2]
-version = "=1.0.55" # fix issue 'Your compiler does not support spans which is required by genco'
 
 #   ----   WASM
 [target.'cfg(target_arch = "wasm32")'.dependencies]

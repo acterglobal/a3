@@ -1,4 +1,4 @@
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 use clap::Parser;
 use futures::StreamExt;
 use matrix_sdk::{
@@ -26,7 +26,7 @@ impl HistoryOpts {
         info!(" - Syncing -");
         let sync_state = client.start_sync();
 
-        let mut is_synced = sync_state.first_synced_rx().context("not yet read")?;
+        let mut is_synced = sync_state.first_synced_rx();
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         info!(" - First Sync finished - ");
 

@@ -1,4 +1,10 @@
-use acter_core::spaces::is_acter_space;
+use acter_core::{
+    events::{
+        news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
+        pins::PinEventContent,
+    },
+    spaces::is_acter_space,
+};
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 #[cfg(feature = "audio-meta")]
@@ -35,7 +41,8 @@ use matrix_sdk::{
     Client, RoomMemberships, RoomState,
 };
 use matrix_sdk_ui::timeline::RoomExt;
-use std::{fs::File, io::Write, ops::Deref, path::PathBuf, sync::Arc};
+use ruma::events::{EventContent, StaticEventContent};
+use std::{fs, io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tracing::{error, info};
 
 use super::{
@@ -46,6 +53,57 @@ use super::{
     stream::TimelineStream,
     RUNTIME,
 };
+
+#[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]
+#[strum(serialize_all = "PascalCase")]
+pub enum MembershipStatus {
+    Admin,
+    Mod,
+    Custom,
+    Regular,
+}
+
+#[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]
+#[strum(serialize_all = "PascalCase")]
+pub enum MemberPermission {
+    // regular interaction
+    CanSendChatMessages,
+    CanSendReaction,
+    CanSendSticker,
+    // Acter Specific actions
+    CanPostNews,
+    CanPostPin,
+    // moderation tools
+    CanBan,
+    CanInvite,
+    CanKick,
+    CanRedact,
+    CanTriggerRoomNotification,
+    // state events
+    CanSetName,
+    CanUpdateAvatar,
+    CanSetTopic,
+    CanLinkSpaces,
+    CanSetParentSpace,
+    CanUpdatePowerLevels,
+}
+
+enum PermissionTest {
+    StateEvent(StateEventType),
+    Message(MessageLikeEventType),
+}
+
+impl From<StateEventType> for PermissionTest {
+    fn from(value: StateEventType) -> Self {
+        PermissionTest::StateEvent(value)
+    }
+}
+
+impl From<MessageLikeEventType> for PermissionTest {
+    fn from(value: MessageLikeEventType) -> Self {
+        PermissionTest::Message(value)
+    }
+}
 
 pub struct Member {
     pub(crate) member: RoomMember,
@@ -67,6 +125,58 @@ impl Member {
     pub fn user_id(&self) -> OwnedUserId {
         self.member.user_id().to_owned()
     }
+
+    pub fn can_string(&self, input: String) -> bool {
+        let Ok(permission) = MemberPermission::try_from(input.as_str()) else {
+            return false;
+        };
+        self.can(permission)
+    }
+
+    pub fn membership_status(&self) -> MembershipStatus {
+        match self.member.normalized_power_level() {
+            100 => MembershipStatus::Admin,
+            50 => MembershipStatus::Mod,
+            0 => MembershipStatus::Regular,
+            _ => MembershipStatus::Custom,
+        }
+    }
+
+    pub fn membership_status_str(&self) -> String {
+        self.membership_status().to_string()
+    }
+
+    pub fn can(&self, permission: MemberPermission) -> bool {
+        let tester: PermissionTest = match permission {
+            MemberPermission::CanBan => return self.member.can_ban(),
+            MemberPermission::CanInvite => return self.member.can_invite(),
+            MemberPermission::CanRedact => return self.member.can_redact(),
+            MemberPermission::CanKick => return self.member.can_kick(),
+            MemberPermission::CanTriggerRoomNotification => {
+                return self.member.can_trigger_room_notification()
+            }
+            MemberPermission::CanSendChatMessages => MessageLikeEventType::RoomMessage.into(), // or should this check for encrypted?
+            MemberPermission::CanSendReaction => MessageLikeEventType::Reaction.into(),
+            MemberPermission::CanSendSticker => MessageLikeEventType::Sticker.into(),
+            MemberPermission::CanSetName => StateEventType::RoomName.into(),
+            MemberPermission::CanUpdateAvatar => StateEventType::RoomAvatar.into(),
+            MemberPermission::CanSetTopic => StateEventType::RoomTopic.into(),
+            MemberPermission::CanLinkSpaces => StateEventType::SpaceChild.into(),
+            MemberPermission::CanSetParentSpace => StateEventType::SpaceParent.into(),
+            MemberPermission::CanUpdatePowerLevels => StateEventType::RoomPowerLevels.into(),
+            // Acter specific
+            MemberPermission::CanPostNews => PermissionTest::Message(MessageLikeEventType::from(
+                <NewsEntryEventContent as StaticEventContent>::TYPE,
+            )),
+            MemberPermission::CanPostPin => PermissionTest::Message(MessageLikeEventType::from(
+                <PinEventContent as StaticEventContent>::TYPE,
+            )),
+        };
+        match tester {
+            PermissionTest::Message(msg) => self.member.can_send_message(msg),
+            PermissionTest::StateEvent(state) => self.member.can_send_state(state),
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -77,6 +187,27 @@ pub struct Room {
 impl Room {
     pub(crate) async fn is_acter_space(&self) -> bool {
         is_acter_space(&self.room).await
+    }
+
+    pub async fn get_my_membership(&self) -> Result<Member> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Not a room we have joined")
+        };
+
+        let client = room.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                Ok(Member { member })
+            })
+            .await?
     }
 
     pub fn get_profile(&self) -> RoomProfile {
@@ -91,6 +222,7 @@ impl Room {
         } else {
             bail!("Can't upload avatar to a room we are not in")
         };
+
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
         let path = PathBuf::from(uri);
@@ -107,7 +239,7 @@ impl Room {
 
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("MIME type should be given")?;
-                let buf = std::fs::read(path).context("File should be read")?;
+                let buf = fs::read(path).context("File should be read")?;
                 let upload_resp = client.media().upload(&content_type, buf).await?;
 
                 let info = assign!(AvatarImageInfo::new(), {
@@ -184,6 +316,37 @@ impl Room {
             .await?
     }
 
+    pub async fn set_name(&self, name: Option<String>) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't set name to a room we are not in")
+        };
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_state(StateEventType::RoomName) {
+                    bail!("No permission to change name of this room");
+                }
+                let resp = room
+                    .set_name(name)
+                    .await
+                    .context("Couldn't set name to the room")?;
+                Ok(resp.event_id)
+            })
+            .await?
+    }
+
     pub async fn active_members(&self) -> Result<Vec<Member>> {
         let room = self.room.clone();
 
@@ -191,6 +354,22 @@ impl Room {
             .spawn(async move {
                 let members = room
                     .members(RoomMemberships::ACTIVE)
+                    .await?
+                    .into_iter()
+                    .map(|member| Member { member })
+                    .collect();
+                Ok(members)
+            })
+            .await?
+    }
+
+    pub async fn invited_members(&self) -> Result<Vec<Member>> {
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let members = room
+                    .members(RoomMemberships::INVITE)
                     .await?
                     .into_iter()
                     .map(|member| Member { member })
@@ -222,7 +401,10 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let member = room.get_member(&uid).await?.context("User not found")?;
+                let member = room
+                    .get_member(&uid)
+                    .await?
+                    .context("Couldn't find him among room members")?;
                 Ok(Member { member })
             })
             .await?
@@ -417,7 +599,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let buf = std::fs::read(path.clone())?;
+                let buf = fs::read(path.clone())?;
                 let file_size = buf.len() as u64;
                 let mut base_info = BaseImageInfo {
                     height: None,
@@ -504,7 +686,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let buf = std::fs::read(path.clone())?;
+                let buf = fs::read(path.clone())?;
                 let file_size = buf.len() as u64;
                 let mut base_info = BaseAudioInfo {
                     duration: None,
@@ -597,7 +779,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let buf = std::fs::read(path)?;
+                let buf = fs::read(path)?;
                 let config = AttachmentConfig::new().info(AttachmentInfo::Video(BaseVideoInfo {
                     duration: secs.map(|x| Duration::from_secs(x as u64)),
                     height: height.map(UInt::from),
@@ -670,7 +852,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let buf = std::fs::read(path)?;
+                let buf = fs::read(path)?;
                 let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
                     size: UInt::new(buf.len() as u64),
                 }));
@@ -857,7 +1039,7 @@ impl Room {
                 };
                 let mut path = PathBuf::from(dir_path.clone());
                 path.push(name);
-                let mut file = File::create(path.clone())?;
+                let mut file = fs::File::create(path.clone())?;
                 let data = client.media().get_media_content(&request, false).await?;
                 file.write_all(&data)?;
                 let key = [
@@ -1266,7 +1448,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let buf = std::fs::read(path.clone())?;
+                let buf = fs::read(path.clone())?;
                 let mut info = assign!(ImageInfo::new(), {
                     height: None,
                     width: None,
@@ -1338,7 +1520,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let buf = std::fs::read(path.clone())?;
+                let buf = fs::read(path.clone())?;
                 let mut info = assign!(AudioInfo::new(), {
                     mimetype: Some(content_type.to_string()),
                     duration: None,
@@ -1415,7 +1597,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let buf = std::fs::read(path)?;
+                let buf = fs::read(path)?;
                 let info = assign!(VideoInfo::new(), {
                     duration: secs.map(|x| Duration::from_secs(x as u64)),
                     height: height.map(UInt::from),
@@ -1481,7 +1663,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let buf = std::fs::read(path)?;
+                let buf = fs::read(path)?;
                 let info = assign!(FileInfo::new(), {
                     mimetype: Some(content_type.to_string()),
                     size: UInt::new(buf.len() as u64),
