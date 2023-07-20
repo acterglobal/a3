@@ -13,7 +13,7 @@ class _IntroPageState extends State<IntroPage> {
   final List<String> introTexts = [
     'Simple to use.',
     'Secure with E2E Encryption.',
-    'Powerful for any organiser.',
+    'Powerful for any organizer.',
   ];
 
   @override
@@ -21,18 +21,18 @@ class _IntroPageState extends State<IntroPage> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-           gradient: LinearGradient(
-          colors: [
-            Color(0xff121F2B),
-            Color(0xff122334),
-            Color(0xff121315),
-            Color(0xff121315),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: [0.0, 0.6, 0.8, 1.0],
-          tileMode: TileMode.decal,
-        ),
+          gradient: LinearGradient(
+            colors: [
+              Color(0xff121F2B),
+              Color(0xff122334),
+              Color(0xff121315),
+              Color(0xff121315),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.0, 0.6, 0.8, 1.0],
+            tileMode: TileMode.decal,
+          ),
         ),
         child: Column(
           children: [
@@ -57,9 +57,10 @@ class _IntroPageState extends State<IntroPage> {
                           TextSpan(
                             text: ' Acter!',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
-                                fontSize: 32,),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                              fontSize: 32,
+                            ),
                           ),
                         ],
                       ),
@@ -72,7 +73,7 @@ class _IntroPageState extends State<IntroPage> {
                         Container(
                           margin: const EdgeInsets.symmetric(vertical: 16),
                           child: const Text(
-                            'A powerful and secure app for organising change.',
+                            'A powerful and secure app for organizing change.',
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
@@ -80,51 +81,52 @@ class _IntroPageState extends State<IntroPage> {
                           margin: const EdgeInsets.symmetric(vertical: 20),
                           height: 100,
                           child: ListView.builder(
-                              padding: EdgeInsets.zero,
-                              itemCount: introTexts.length,
-                              itemBuilder: (context, index) {
-                                return Container(
-                                  margin: const EdgeInsets.only(top: 5),
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.circle,
-                                        color: Colors.white,
-                                        size: 8,
-                                      ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            TextSpan(
-                                              text: introTexts[index]
-                                                      .split(' ')[0] +
-                                                  ' ',
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.green,
-                                                fontSize: 17,
-                                              ),
+                            padding: EdgeInsets.zero,
+                            itemCount: introTexts.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                margin: const EdgeInsets.only(top: 5),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.circle,
+                                      color: Colors.white,
+                                      size: 8,
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: introTexts[index]
+                                                    .split(' ')[0] +
+                                                ' ',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.green,
+                                              fontSize: 17,
                                             ),
-                                            TextSpan(
-                                              text: introTexts[index].substring(
-                                                introTexts[index].indexOf(' ') +
-                                                    1,
-                                              ),
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 17,
-                                              ),
+                                          ),
+                                          TextSpan(
+                                            text: introTexts[index].substring(
+                                              introTexts[index].indexOf(' ') +
+                                                  1,
                                             ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                );
-                              },),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 17,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                         ),
                         GestureDetector(
                           onTap: () => context.goNamed(Routes.start.name),
@@ -135,12 +137,14 @@ class _IntroPageState extends State<IntroPage> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Center(
-                                child: Text(
-                              "Let's get started",
-                              style: TextStyle(
+                              child: Text(
+                                "Let's get started",
+                                style: TextStyle(
                                   color: Colors.black,
-                                  fontWeight: FontWeight.bold,),
-                            ),),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ),
                         )
                       ],
