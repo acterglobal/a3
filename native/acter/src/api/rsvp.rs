@@ -12,7 +12,7 @@ use matrix_sdk::{
 use std::{ops::Deref, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::warn;
+use tracing::trace;
 
 use super::{client::Client, RUNTIME};
 
@@ -85,12 +85,12 @@ impl RsvpDraft {
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
         let inner = self.inner.build()?;
-        warn!("rsvp draft spawn");
+        trace!("rsvp draft spawn");
         RUNTIME
             .spawn(async move {
-                warn!("before sending rsvp");
+                trace!("before sending rsvp");
                 let resp = room.send(inner, None).await?;
-                warn!("after sending rsvp");
+                trace!("after sending rsvp");
                 Ok(resp.event_id)
             })
             .await?

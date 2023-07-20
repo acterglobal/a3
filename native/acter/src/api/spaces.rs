@@ -349,7 +349,7 @@ impl Space {
                     Ok(model) => model,
                     Err(m) => {
                         if let Ok(state_key) = msg.event.get_field::<String>("state_key") {
-                            trace!(state_key, "ignoring state event");
+                            trace!(state_key=?state_key, "ignoring state event");
                             // ignore state keys
                         } else {
                             error!(event=?msg.event, "Model didn't parse {:}", m);

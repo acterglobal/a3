@@ -2,7 +2,7 @@ use derive_getters::Getters;
 use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, OwnedEventId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
-use tracing::{error, trace, warn};
+use tracing::{error, trace};
 
 use super::{AnyActerModel, EventMeta};
 use crate::{
@@ -135,7 +135,7 @@ impl super::ActerModel for Rsvp {
 
     async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
         let belongs_to = self.belongs_to().unwrap();
-        warn!(event_id=?self.event_id(), ?belongs_to, "applying rsvp");
+        trace!(event_id=?self.event_id(), ?belongs_to, "applying rsvp");
 
         let mut managers = vec![];
         for m in belongs_to {
@@ -150,14 +150,14 @@ impl super::ActerModel for Rsvp {
 
             // FIXME: what if we have this twice in the same loop?
             let mut manager = RsvpManager::from_store_and_event_id(store, model.event_id()).await;
-            warn!(event_id=?self.event_id(), "adding rsvp entry");
+            trace!(event_id=?self.event_id(), "adding rsvp entry");
             if manager.add_rsvp_entry(&self).await? {
-                warn!(event_id=?self.event_id(), "added rsvp entry");
+                trace!(event_id=?self.event_id(), "added rsvp entry");
                 managers.push(manager);
             }
         }
         let mut updates = store.save(self.clone().into()).await?;
-        warn!(event_id=?self.event_id(), "saved rsvp entry");
+        trace!(event_id=?self.event_id(), "saved rsvp entry");
         for manager in managers {
             updates.push(manager.save().await?);
         }
