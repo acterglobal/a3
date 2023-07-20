@@ -136,7 +136,7 @@ final sidebarItemsProvider = Provider.autoDispose
     SidebarNavigationItem(
       icon: const Icon(Atlas.home_thin),
       label: Text(
-        'Overview',
+        'Home',
         style: Theme.of(context).textTheme.labelSmall,
         softWrap: false,
       ),
