@@ -70,7 +70,9 @@ pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
-pub use room::{Member, MemberPermission, MembershipStatus, Room, SendAudioResult, SendImageResult};
+pub use room::{
+    Member, MemberPermission, MembershipStatus, Room, SendAudioResult, SendImageResult,
+};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,

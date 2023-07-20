@@ -3,9 +3,8 @@ use derive_getters::Getters;
 use matrix_sdk::ruma::events::{
     macros::EventContent,
     room::message::{
-        AudioMessageEventContent, FileMessageEventContent,
-        ImageMessageEventContent, TextMessageEventContent,
-        VideoMessageEventContent,
+        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+        TextMessageEventContent, VideoMessageEventContent,
     },
 };
 use serde::{Deserialize, Serialize};
