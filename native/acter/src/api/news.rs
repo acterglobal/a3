@@ -490,6 +490,7 @@ impl NewsEntryDraft {
         Ok(true)
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn add_video_slide(
         &mut self,
         body: String,
