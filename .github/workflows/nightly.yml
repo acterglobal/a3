@@ -23,11 +23,17 @@ jobs:
       should_run: ${{ steps.check-new-commits.outputs.has-new-commits }}
     steps:
       - uses: actions/checkout@v2
-      - name: Check for new commits today
-        id: check-new-commits
-        uses: adriangl/check-new-commits-action@v1
         with:
-          seconds: 86400 # One day in seconds
+          fetch-depth: 0 # fetch all history and tags
+      - name: Check for new commits since last nightly
+        id: check-new-commits
+        shell: bash
+        run: |
+          if [ `git diff --name-only nightly-latest app native .changes | wc -l` -ne 0 ]; then
+            echo "has-new-commits=true"  >> $GITHUB_OUTPUT ;
+          else
+            echo "has-new-commits=false" >> $GITHUB_OUTPUT ;
+          fi
 
   tags:
     runs-on: ubuntu-latest
@@ -297,12 +303,22 @@ jobs:
           git fetch --prune --unshallow --tags
           cargo run -p mr_minutes -- --since nightly-latest --output nightly-changes.md
 
+      - name: "Generate docs"
+        run: |
+          echo "+++" > docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "title = \" Nightly ${{ needs.tags.outputs.tag }}\"" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "template = \"nightlies/release.html\"" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "+++" >>docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "" >>docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          cat nightly-changes.md >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+
       - name: Tag for nightly release
         run: |
+          git cm "Add nightly ${{ needs.tags.outputs.tag }} to docs" docs/content/nightly/${{ needs.tags.outputs.tag }}.md
           git tag nightly-${{ needs.tags.outputs.tag }}
-          git push origin nightly-${{ needs.tags.outputs.tag }}
           git tag -f nightly-latest
-          git push -f origin nightly-latest
+          git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest
       - name: Release
         id: create_release
         uses: softprops/action-gh-release@v1
