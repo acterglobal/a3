@@ -1,0 +1,52 @@
+{% extends "section.html" %}
+
+{% import 'macros/nightly-macros.html' as nightly_macros -%}
+
+{% block body %}
+{% set page_class = "blog list" %}
+{% endblock body %}
+
+{% block header %}
+  {# This value is matched by the config.extra.menu.main~section #}
+  {% set current_section = "blog" %}
+  {{ macros_header::header(current_section=current_section)}}
+{% endblock header %}
+
+{% block content %}
+<div class="wrap container" role="document">
+  <div class="content">
+    <div class="row justify-content-center">
+      <div class="col-md-12 col-lg-10 col-xxl-8">
+        <article>
+          <h1 class="text-center">{{ section.title }}</h1>
+          <div class="text-center">{{ section.content | safe }}</div>
+            {% if not paginator.previous %}
+                <div class="content">
+                {% set latest_page = paginator.pages | first %} 
+                <h3>Install Latest</h3>
+                <h4>Desktop:</h4>
+                {{ nightly_macros::nightly_desktop_install_buttons(tag_date=latest_page.date) }}
+                <h4>On mobile:</h4>
+                {{ nightly_macros::nightly_mobile_install_buttons(tag_date=latest_page.date) }}
+                </div>
+            <h2>Changes</h2>
+            {% endif %}
+            <div class="card-list">
+            {% for page in paginator.pages %}
+                <div class="card">
+                <div class="card-body">
+                    <h3><a class="stretched-link text-body" href="{{ page.permalink }}">{{ page.title }}</a></h3>
+                    <p class="lead">{{ page.content | safe }}</p>
+                </div>
+                </div>
+            {% endfor %}
+            {% if paginator.previous or paginator.next %}
+              {{ macros_section_nav::navigation(paginator=paginator) }}
+            {% endif %}
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
