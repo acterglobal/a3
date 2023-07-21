@@ -294,7 +294,7 @@ class QuickJump extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          TextField(
+          TextField(                                                         
             autofocus: true,
             decoration: const InputDecoration(
               border: InputBorder.none,
