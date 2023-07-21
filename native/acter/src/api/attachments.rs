@@ -16,7 +16,7 @@ use ruma::{
     },
     MxcUri, OwnedEventId, OwnedUserId, UInt,
 };
-use std::ops::Deref;
+use std::{fs, ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
 
 use super::{api::FfiBuffer, client::Client, RUNTIME};
@@ -226,130 +226,233 @@ impl AttachmentsManager {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn image_attachment_draft(
+    pub async fn image_attachment_draft(
         &self,
         body: String,
-        url: String,
-        mimetype: Option<String>,
+        url_or_path: String,
         size: Option<u64>,
         width: Option<u64>,
         height: Option<u64>,
         blurhash: Option<String>,
     ) -> Result<AttachmentDraft> {
-        let Room::Joined(joined) = &self.room else {
+        let client = self.client.clone();
+        let Room::Joined(room) = self.room.clone() else {
             bail!("Can only attachment in joined rooms");
         };
-        let info = assign!(ImageInfo::new(), {
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            mimetype,
-            size: size.and_then(UInt::new),
-            blurhash,
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
-        let mut builder = self.inner.draft_builder();
+        let r = room.clone();
+        let image_content = RUNTIME
+            .spawn(async move {
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                if url.is_valid() {
+                    return anyhow::Ok(ImageMessageEventContent::plain(body, url.into(), None));
+                }
+                let path = PathBuf::from(url_or_path.clone());
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().context("No MIME type")?;
+                let mimetype = content_type.to_string();
+                if !mimetype.starts_with("image/") {
+                    bail!("Image attachment accepts only image file");
+                }
+                let mut content = if r.is_encrypted().await? {
+                    let mut reader = fs::File::open(url_or_path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    ImageMessageEventContent::encrypted(body, encrypted_file)
+                } else {
+                    let buf = fs::read(url_or_path)?;
+                    let response = client.media().upload(&content_type, buf).await?;
+                    ImageMessageEventContent::plain(body, response.content_uri, None)
+                };
+                let info = assign!(ImageInfo::new(), {
+                    height: height.and_then(UInt::new),
+                    width: width.and_then(UInt::new),
+                    mimetype: Some(mimetype),
+                    size: size.and_then(UInt::new),
+                    blurhash,
+                });
+                content.info = Some(Box::new(info));
+                anyhow::Ok(content)
+            })
+            .await??;
 
-        builder.content(AttachmentContent::Image(ImageMessageEventContent::plain(
-            body,
-            url.into(),
-            Some(Box::new(info)),
-        )));
+        let mut builder = self.inner.draft_builder();
+        builder.content(AttachmentContent::Image(image_content));
+
         Ok(AttachmentDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room,
             inner: builder,
         })
     }
 
-    pub fn audio_attachment_draft(
+    pub async fn audio_attachment_draft(
         &self,
         body: String,
-        url: String,
+        url_or_path: String,
         secs: Option<u64>,
-        mimetype: Option<String>,
         size: Option<u64>,
     ) -> Result<AttachmentDraft> {
-        let Room::Joined(joined) = &self.room else {
+        let client = self.client.clone();
+        let Room::Joined(room) = self.room.clone() else {
             bail!("Can only attachment in joined rooms");
         };
-        let info = assign!(AudioInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            mimetype,
-            size: size.and_then(UInt::new),
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
-        let mut builder = self.inner.draft_builder();
+        let r = room.clone();
+        let audio_content = RUNTIME
+            .spawn(async move {
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                if url.is_valid() {
+                    return anyhow::Ok(AudioMessageEventContent::plain(body, url.into(), None));
+                }
+                let path = PathBuf::from(url_or_path.clone());
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().context("No MIME type")?;
+                let mimetype = content_type.to_string();
+                if !mimetype.starts_with("audio/") {
+                    bail!("Audio attachment accepts only audio file");
+                }
+                let mut content = if r.is_encrypted().await? {
+                    let mut reader = fs::File::open(url_or_path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    AudioMessageEventContent::encrypted(body, encrypted_file)
+                } else {
+                    let buf = fs::read(url_or_path)?;
+                    let response = client.media().upload(&content_type, buf).await?;
+                    AudioMessageEventContent::plain(body, response.content_uri, None)
+                };
+                let info = assign!(AudioInfo::new(), {
+                    duration: secs.map(|x| Duration::new(x, 0)),
+                    mimetype: Some(mimetype),
+                    size: size.and_then(UInt::new),
+                });
+                content.info = Some(Box::new(info));
+                anyhow::Ok(content)
+            })
+            .await??;
 
-        builder.content(AttachmentContent::Audio(AudioMessageEventContent::plain(
-            body,
-            url.into(),
-            Some(Box::new(info)),
-        )));
+        let mut builder = self.inner.draft_builder();
+        builder.content(AttachmentContent::Audio(audio_content));
+
         Ok(AttachmentDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room,
             inner: builder,
         })
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn video_attachment_draft(
+    pub async fn video_attachment_draft(
         &self,
         body: String,
-        url: String,
+        url_or_path: String,
         secs: Option<u64>,
         height: Option<u64>,
         width: Option<u64>,
-        mimetype: Option<String>,
         size: Option<u64>,
         blurhash: Option<String>,
     ) -> Result<AttachmentDraft> {
-        let Room::Joined(joined) = &self.room else {
+        let client = self.client.clone();
+        let Room::Joined(room) = self.room.clone() else {
             bail!("Can only attachment in joined rooms");
         };
-        let info = assign!(VideoInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            mimetype,
-            size: size.and_then(UInt::new),
-            blurhash,
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
-        let mut builder = self.inner.draft_builder();
+        let r = room.clone();
+        let video_content = RUNTIME
+            .spawn(async move {
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                if url.is_valid() {
+                    return anyhow::Ok(VideoMessageEventContent::plain(body, url.into(), None));
+                }
+                let path = PathBuf::from(url_or_path.clone());
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().context("No MIME type")?;
+                let mimetype = content_type.to_string();
+                if !mimetype.starts_with("video/") {
+                    bail!("Video attachment accepts only video file");
+                }
+                let mut content = if r.is_encrypted().await? {
+                    let mut reader = fs::File::open(url_or_path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    VideoMessageEventContent::encrypted(body, encrypted_file)
+                } else {
+                    let buf = fs::read(url_or_path)?;
+                    let response = client.media().upload(&content_type, buf).await?;
+                    VideoMessageEventContent::plain(body, response.content_uri, None)
+                };
+                let info = assign!(VideoInfo::new(), {
+                    duration: secs.map(|x| Duration::new(x, 0)),
+                    height: height.and_then(UInt::new),
+                    width: width.and_then(UInt::new),
+                    mimetype: Some(mimetype),
+                    size: size.and_then(UInt::new),
+                    blurhash,
+                });
+                content.info = Some(Box::new(info));
+                anyhow::Ok(content)
+            })
+            .await??;
 
-        builder.content(AttachmentContent::Video(VideoMessageEventContent::plain(
-            body,
-            url.into(),
-            Some(Box::new(info)),
-        )));
+        let mut builder = self.inner.draft_builder();
+        builder.content(AttachmentContent::Video(video_content));
+
         Ok(AttachmentDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room,
             inner: builder,
         })
     }
 
-    pub fn file_attachment_draft(
+    pub async fn file_attachment_draft(
         &self,
         body: String,
-        url: String,
-        mimetype: Option<String>,
+        url_or_path: String,
         size: Option<u64>,
     ) -> Result<AttachmentDraft> {
-        let Room::Joined(joined) = &self.room else {
+        let client = self.client.clone();
+        let Room::Joined(room) = self.room.clone() else {
             bail!("Can only attachment in joined rooms");
         };
+        let r = room.clone();
+        let file_content = RUNTIME
+            .spawn(async move {
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                if url.is_valid() {
+                    return anyhow::Ok(FileMessageEventContent::plain(body, url.into(), None));
+                }
+                let path = PathBuf::from(url_or_path.clone());
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess
+                    .first()
+                    .unwrap_or(mime_guess::mime::APPLICATION_OCTET_STREAM);
+                let mimetype = content_type.to_string();
+                let mut content = if r.is_encrypted().await? {
+                    let mut reader = fs::File::open(url_or_path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    FileMessageEventContent::encrypted(body, encrypted_file)
+                } else {
+                    let buf = fs::read(url_or_path)?;
+                    let response = client.media().upload(&content_type, buf).await?;
+                    FileMessageEventContent::plain(body, response.content_uri, None)
+                };
+                let info = assign!(FileInfo::new(), {
+                    mimetype: Some(mimetype),
+                    size: size.and_then(UInt::new),
+                });
+                content.info = Some(Box::new(info));
+                anyhow::Ok(content)
+            })
+            .await??;
+
         let mut builder = self.inner.draft_builder();
-        let size = size.and_then(UInt::new);
-        builder.content(AttachmentContent::File(FileMessageEventContent::plain(
-            body,
-            url.into(),
-            Some(Box::new(assign!(FileInfo::new(), {mimetype, size}))),
-        )));
+        builder.content(AttachmentContent::File(file_content));
         Ok(AttachmentDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room,
             inner: builder,
         })
     }

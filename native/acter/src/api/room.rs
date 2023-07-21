@@ -36,7 +36,7 @@ use matrix_sdk::{
             MessageLikeEventType, StateEvent, StateEventType,
         },
         room::RoomType,
-        EventId, Int, OwnedEventId, OwnedMxcUri, OwnedUserId, TransactionId, UInt, UserId,
+        EventId, Int, MxcUri, OwnedEventId, OwnedMxcUri, OwnedUserId, TransactionId, UInt, UserId,
     },
     Client, RoomMemberships, RoomState,
 };
@@ -567,8 +567,8 @@ impl Room {
 
     pub async fn send_image_message(
         &self,
-        uri: String,
-        name: String,
+        url_or_path: String,
+        body: String,
         blurhash: Option<String>,
     ) -> Result<SendImageResult> {
         let room = if let SdkRoom::Joined(r) = &self.room {
@@ -576,19 +576,13 @@ impl Room {
         } else {
             bail!("Can't send message as image to a room we are not in")
         };
+        let client = room.client();
 
         let my_id = room
             .client()
             .user_id()
             .context("User not found")?
             .to_owned();
-
-        let path = PathBuf::from(uri);
-        let guess = mime_guess::from_path(path.clone());
-        let content_type = guess.first().context("No MIME type")?;
-        if !content_type.to_string().starts_with("image/") {
-            bail!("Image message accepts only image file");
-        }
 
         RUNTIME
             .spawn(async move {
@@ -599,28 +593,58 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let buf = fs::read(path.clone())?;
-                let file_size = buf.len() as u64;
-                let mut base_info = BaseImageInfo {
-                    height: None,
-                    width: None,
-                    size: UInt::new(file_size),
-                    blurhash,
+
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                let mut file_size = None;
+                let mut width = None;
+                let mut height = None;
+                let image_content = if url.is_valid() {
+                    ImageMessageEventContent::plain(body, url.into(), None)
+                } else {
+                    let path = PathBuf::from(url_or_path);
+                    let guess = mime_guess::from_path(path.clone());
+                    let content_type = guess.first().context("No MIME type")?;
+                    let mimetype = content_type.to_string();
+                    if !mimetype.starts_with("image/") {
+                        bail!("Image message accepts only image file");
+                    }
+                    let mut content = if room.is_encrypted().await? {
+                        let mut reader = fs::File::open(path.clone())?;
+                        let encrypted_file = client
+                            .prepare_encrypted_file(&content_type, &mut reader)
+                            .await?;
+                        ImageMessageEventContent::encrypted(body, encrypted_file)
+                    } else {
+                        let buf = fs::read(path.clone())?;
+                        let response = client.media().upload(&content_type, buf).await?;
+                        ImageMessageEventContent::plain(body, response.content_uri, None)
+                    };
+                    let buf = fs::read(path.clone())?;
+                    let size = buf.len() as u64;
+                    file_size = Some(size);
+                    let mut info = assign!(ImageInfo::new(), {
+                        mimetype: Some(mimetype),
+                        size: UInt::new(size),
+                    });
+                    #[cfg(feature = "image-meta")]
+                    if let Ok(size) = imagesize::size(path.to_string_lossy().to_string()) {
+                        info.width = UInt::new(size.width as u64);
+                        info.height = UInt::new(size.height as u64);
+                        width = Some(size.width as u64);
+                        height = Some(size.height as u64);
+                    }
+                    content.info = Some(Box::new(info));
+                    content
                 };
-                #[cfg(feature = "image-meta")]
-                if let Ok(size) = imagesize::size(path.to_string_lossy().to_string()) {
-                    base_info.width = UInt::new(size.width as u64);
-                    base_info.height = UInt::new(size.height as u64);
-                }
-                let config = AttachmentConfig::new().info(AttachmentInfo::Image(base_info.clone()));
-                let response = room
-                    .send_attachment(name.as_str(), &content_type, buf, config)
-                    .await?;
+
+                let content = RoomMessageEventContent::new(MessageType::Image(image_content));
+                let response = room.send(content, None).await?;
+
                 Ok(SendImageResult {
                     event_id: response.event_id,
                     file_size,
-                    width: base_info.width.map(|x| x.into()),
-                    height: base_info.height.map(|x| x.into()),
+                    width,
+                    height,
                 })
             })
             .await?
@@ -657,25 +681,23 @@ impl Room {
             .await?
     }
 
-    pub async fn send_audio_message(&self, uri: String, name: String) -> Result<SendAudioResult> {
+    pub async fn send_audio_message(
+        &self,
+        url_or_path: String,
+        body: String,
+    ) -> Result<SendAudioResult> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send message as audio to a room we are not in")
         };
+        let client = room.client();
 
         let my_id = room
             .client()
             .user_id()
             .context("User not found")?
             .to_owned();
-
-        let path = PathBuf::from(uri);
-        let guess = mime_guess::from_path(path.clone());
-        let content_type = guess.first().context("No MIME type")?;
-        if !content_type.to_string().starts_with("audio/") {
-            bail!("Audio message accepts only audio file");
-        }
 
         RUNTIME
             .spawn(async move {
@@ -686,26 +708,54 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let buf = fs::read(path.clone())?;
-                let file_size = buf.len() as u64;
-                let mut base_info = BaseAudioInfo {
-                    duration: None,
-                    size: UInt::new(file_size),
-                };
-                #[cfg(feature = "audio-meta")]
-                if let Ok(probe) = Probe::open(path) {
-                    if let Ok(tagged_file) = probe.read() {
-                        base_info.duration = Some(tagged_file.properties().duration());
+
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                let mut file_size = None;
+                let mut duration = None;
+                let audio_content = if url.is_valid() {
+                    AudioMessageEventContent::plain(body, url.into(), None)
+                } else {
+                    let path = PathBuf::from(url_or_path);
+                    let guess = mime_guess::from_path(path.clone());
+                    let content_type = guess.first().context("No MIME type")?;
+                    let mimetype = content_type.to_string();
+                    if !mimetype.starts_with("audio/") {
+                        bail!("Audio message accepts only audio file");
                     }
-                }
-                let config = AttachmentConfig::new().info(AttachmentInfo::Audio(base_info.clone()));
-                let response = room
-                    .send_attachment(name.as_str(), &content_type, buf, config)
-                    .await?;
+                    let mut content = if room.is_encrypted().await? {
+                        let mut reader = fs::File::open(path.clone())?;
+                        let encrypted_file = client
+                            .prepare_encrypted_file(&content_type, &mut reader)
+                            .await?;
+                        AudioMessageEventContent::encrypted(body, encrypted_file)
+                    } else {
+                        let buf = fs::read(path.clone())?;
+                        let response = client.media().upload(&content_type, buf).await?;
+                        AudioMessageEventContent::plain(body, response.content_uri, None)
+                    };
+                    let buf = fs::read(path.clone())?;
+                    let size = buf.len() as u64;
+                    file_size = Some(size);
+                    let mut info = assign!(AudioInfo::new(), {
+                        size: UInt::new(size),
+                    });
+                    #[cfg(feature = "audio-meta")]
+                    if let Ok(probe) = Probe::open(path) {
+                        if let Ok(tagged_file) = probe.read() {
+                            info.duration = Some(tagged_file.properties().duration());
+                        }
+                    }
+                    content.info = Some(Box::new(info));
+                    content
+                };
+
+                let content = RoomMessageEventContent::new(MessageType::Audio(audio_content));
+                let response = room.send(content, None).await?;
+
                 Ok(SendAudioResult {
                     event_id: response.event_id,
                     file_size,
-                    duration: base_info.duration,
+                    duration,
                 })
             })
             .await?
@@ -744,8 +794,8 @@ impl Room {
 
     pub async fn send_video_message(
         &self,
-        uri: String,
-        name: String,
+        url_or_path: String,
+        body: String,
         secs: Option<u32>,
         height: Option<u32>,
         width: Option<u32>,
@@ -756,19 +806,13 @@ impl Room {
         } else {
             bail!("Can't send message as video to a room we are not in")
         };
+        let client = room.client();
 
         let my_id = room
             .client()
             .user_id()
             .context("User not found")?
             .to_owned();
-
-        let path = PathBuf::from(uri);
-        let guess = mime_guess::from_path(path.clone());
-        let content_type = guess.first().context("No MIME type")?;
-        if !content_type.to_string().starts_with("video/") {
-            bail!("Video message accepts only video file");
-        }
 
         RUNTIME
             .spawn(async move {
@@ -779,17 +823,46 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let buf = fs::read(path)?;
-                let config = AttachmentConfig::new().info(AttachmentInfo::Video(BaseVideoInfo {
-                    duration: secs.map(|x| Duration::from_secs(x as u64)),
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
-                    size: UInt::new(buf.len() as u64),
-                    blurhash,
-                }));
-                let response = room
-                    .send_attachment(name.as_str(), &content_type, buf, config)
-                    .await?;
+
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                let mut file_size = None;
+                // let mut width = None;
+                // let mut height = None;
+                let video_content = if url.is_valid() {
+                    VideoMessageEventContent::plain(body, url.into(), None)
+                } else {
+                    let path = PathBuf::from(url_or_path);
+                    let guess = mime_guess::from_path(path.clone());
+                    let content_type = guess.first().context("No MIME type")?;
+                    let mimetype = content_type.to_string();
+                    if !mimetype.starts_with("video/") {
+                        bail!("Video message accepts only video file");
+                    }
+                    let mut content = if room.is_encrypted().await? {
+                        let mut reader = fs::File::open(path.clone())?;
+                        let encrypted_file = client
+                            .prepare_encrypted_file(&content_type, &mut reader)
+                            .await?;
+                        VideoMessageEventContent::encrypted(body, encrypted_file)
+                    } else {
+                        let buf = fs::read(path.clone())?;
+                        let response = client.media().upload(&content_type, buf).await?;
+                        VideoMessageEventContent::plain(body, response.content_uri, None)
+                    };
+                    let buf = fs::read(path)?;
+                    let size = buf.len() as u64;
+                    file_size = Some(size);
+                    let info = assign!(VideoInfo::new(), {
+                        mimetype: Some(mimetype),
+                        size: UInt::new(size),
+                    });
+                    content.info = Some(Box::new(info));
+                    content
+                };
+
+                let content = RoomMessageEventContent::new(MessageType::Video(video_content));
+                let response = room.send(content, None).await?;
+
                 Ok(response.event_id)
             })
             .await?
@@ -826,22 +899,23 @@ impl Room {
             .await?
     }
 
-    pub async fn send_file_message(&self, uri: String, name: String) -> Result<OwnedEventId> {
+    pub async fn send_file_message(
+        &self,
+        url_or_path: String,
+        body: String,
+    ) -> Result<OwnedEventId> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
             bail!("Can't send message as file to a room we are not in")
         };
+        let client = room.client();
 
         let my_id = room
             .client()
             .user_id()
             .context("User not found")?
             .to_owned();
-
-        let path = PathBuf::from(uri);
-        let guess = mime_guess::from_path(path.clone());
-        let content_type = guess.first().context("No MIME type")?;
 
         RUNTIME
             .spawn(async move {
@@ -852,13 +926,43 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let buf = fs::read(path)?;
-                let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
-                    size: UInt::new(buf.len() as u64),
-                }));
-                let response = room
-                    .send_attachment(name.as_str(), &content_type, buf, config)
-                    .await?;
+
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                let mut file_size = None;
+                let file_content = if url.is_valid() {
+                    FileMessageEventContent::plain(body, url.into(), None)
+                } else {
+                    let path = PathBuf::from(url_or_path);
+                    let guess = mime_guess::from_path(path.clone());
+                    let content_type = guess
+                        .first()
+                        .unwrap_or(mime_guess::mime::APPLICATION_OCTET_STREAM);
+                    let mimetype = content_type.to_string();
+                    let mut content = if room.is_encrypted().await? {
+                        let mut reader = fs::File::open(path.clone())?;
+                        let encrypted_file = client
+                            .prepare_encrypted_file(&content_type, &mut reader)
+                            .await?;
+                        FileMessageEventContent::encrypted(body, encrypted_file)
+                    } else {
+                        let buf = fs::read(path.clone())?;
+                        let response = client.media().upload(&content_type, buf).await?;
+                        FileMessageEventContent::plain(body, response.content_uri, None)
+                    };
+                    let buf = fs::read(path)?;
+                    let size = buf.len() as u64;
+                    file_size = Some(size);
+                    let info = assign!(FileInfo::new(), {
+                        mimetype: Some(mimetype),
+                        size: UInt::new(size),
+                    });
+                    content.info = Some(Box::new(info));
+                    content
+                };
+
+                let content = RoomMessageEventContent::new(MessageType::File(file_content));
+                let response = room.send(content, None).await?;
+
                 Ok(response.event_id)
             })
             .await?
@@ -1417,8 +1521,8 @@ impl Room {
 
     pub async fn send_image_reply(
         &self,
-        uri: String,
-        name: String,
+        url_or_path: String,
+        body: String,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -1429,14 +1533,7 @@ impl Room {
         };
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
-
-        let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id)?;
-        let guess = mime_guess::from_path(path.clone());
-        let content_type = guess.first().context("No MIME type")?;
-        if !content_type.to_string().starts_with("image/") {
-            bail!("Image reply accepts only image file");
-        }
 
         RUNTIME
             .spawn(async move {
@@ -1448,34 +1545,49 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let buf = fs::read(path.clone())?;
-                let mut info = assign!(ImageInfo::new(), {
-                    height: None,
-                    width: None,
-                    mimetype: Some(content_type.to_string()),
-                    size: UInt::new(buf.len() as u64),
-                });
-                #[cfg(feature = "image-meta")]
-                if let Ok(size) = imagesize::size(path.to_string_lossy().to_string()) {
-                    info.width = UInt::new(size.width as u64);
-                    info.height = UInt::new(size.height as u64);
-                }
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                let image_content = if url.is_valid() {
+                    ImageMessageEventContent::plain(body, url.into(), None)
+                } else {
+                    let path = PathBuf::from(url_or_path);
+                    let guess = mime_guess::from_path(path.clone());
+                    let content_type = guess.first().context("No MIME type")?;
+                    let mimetype = content_type.to_string();
+                    if !mimetype.starts_with("image/") {
+                        bail!("Image reply accepts only image file");
+                    }
+                    let mut content = if room.is_encrypted().await? {
+                        let mut reader = fs::File::open(path.clone())?;
+                        let encrypted_file = client
+                            .prepare_encrypted_file(&content_type, &mut reader)
+                            .await?;
+                        ImageMessageEventContent::encrypted(body, encrypted_file)
+                    } else {
+                        let buf = fs::read(path.clone())?;
+                        let response = client.media().upload(&content_type, buf).await?;
+                        ImageMessageEventContent::plain(body, response.content_uri, None)
+                    };
+                    let buf = fs::read(path.clone())?;
+                    let mut info = assign!(ImageInfo::new(), {
+                        height: None,
+                        width: None,
+                        mimetype: Some(mimetype),
+                        size: UInt::new(buf.len() as u64),
+                    });
+                    #[cfg(feature = "image-meta")]
+                    if let Ok(size) = imagesize::size(path.to_string_lossy().to_string()) {
+                        info.width = UInt::new(size.width as u64);
+                        info.height = UInt::new(size.height as u64);
+                    }
+                    content.info = Some(Box::new(info));
+                    content
+                };
 
                 let timeline_event = room.event(&event_id).await?;
-
                 let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
-
                 let original_message = event_content
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
-
-                let response = client.media().upload(&content_type, buf).await?;
-
-                let image_content = ImageMessageEventContent::plain(
-                    name,
-                    response.content_uri,
-                    Some(Box::new(info)),
-                );
                 let content = RoomMessageEventContent::new(MessageType::Image(image_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 
@@ -1489,8 +1601,8 @@ impl Room {
 
     pub async fn send_audio_reply(
         &self,
-        uri: String,
-        name: String,
+        url_or_path: String,
+        body: String,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -1501,14 +1613,7 @@ impl Room {
         };
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
-
-        let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id)?;
-        let guess = mime_guess::from_path(path.clone());
-        let content_type = guess.first().context("No MIME type")?;
-        if !content_type.to_string().starts_with("audio/") {
-            bail!("Audio message accepts only audio file");
-        }
 
         RUNTIME
             .spawn(async move {
@@ -1520,34 +1625,49 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let buf = fs::read(path.clone())?;
-                let mut info = assign!(AudioInfo::new(), {
-                    mimetype: Some(content_type.to_string()),
-                    duration: None,
-                    size: UInt::new(buf.len() as u64),
-                });
-                #[cfg(feature = "audio-meta")]
-                if let Ok(probe) = Probe::open(path) {
-                    if let Ok(tagged_file) = probe.read() {
-                        info.duration = Some(tagged_file.properties().duration());
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                let audio_content = if url.is_valid() {
+                    AudioMessageEventContent::plain(body, url.into(), None)
+                } else {
+                    let path = PathBuf::from(url_or_path);
+                    let guess = mime_guess::from_path(path.clone());
+                    let content_type = guess.first().context("No MIME type")?;
+                    let mimetype = content_type.to_string();
+                    if !mimetype.starts_with("audio/") {
+                        bail!("Audio reply accepts only audio file");
                     }
-                }
+                    let mut content = if room.is_encrypted().await? {
+                        let mut reader = fs::File::open(path.clone())?;
+                        let encrypted_file = client
+                            .prepare_encrypted_file(&content_type, &mut reader)
+                            .await?;
+                        AudioMessageEventContent::encrypted(body, encrypted_file)
+                    } else {
+                        let buf = fs::read(path.clone())?;
+                        let response = client.media().upload(&content_type, buf).await?;
+                        AudioMessageEventContent::plain(body, response.content_uri, None)
+                    };
+                    let buf = fs::read(path.clone())?;
+                    let mut info = assign!(AudioInfo::new(), {
+                        mimetype: Some(mimetype),
+                        duration: None,
+                        size: UInt::new(buf.len() as u64),
+                    });
+                    #[cfg(feature = "audio-meta")]
+                    if let Ok(probe) = Probe::open(path) {
+                        if let Ok(tagged_file) = probe.read() {
+                            info.duration = Some(tagged_file.properties().duration());
+                        }
+                    }
+                    content.info = Some(Box::new(info));
+                    content
+                };
 
                 let timeline_event = room.event(&event_id).await?;
-
                 let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
-
                 let original_message = event_content
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
-
-                let response = client.media().upload(&content_type, buf).await?;
-
-                let audio_content = AudioMessageEventContent::plain(
-                    name,
-                    response.content_uri,
-                    Some(Box::new(info)),
-                );
                 let content = RoomMessageEventContent::new(MessageType::Audio(audio_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 
@@ -1562,8 +1682,8 @@ impl Room {
     #[allow(clippy::too_many_arguments)]
     pub async fn send_video_reply(
         &self,
-        uri: String,
-        name: String,
+        url_or_path: String,
+        body: String,
         secs: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
@@ -1578,14 +1698,7 @@ impl Room {
         };
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
-
-        let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id)?;
-        let guess = mime_guess::from_path(path.clone());
-        let content_type = guess.first().context("No MIME type")?;
-        if !content_type.to_string().starts_with("video/") {
-            bail!("Video message accepts only video file");
-        }
 
         RUNTIME
             .spawn(async move {
@@ -1597,31 +1710,46 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let buf = fs::read(path)?;
-                let info = assign!(VideoInfo::new(), {
-                    duration: secs.map(|x| Duration::from_secs(x as u64)),
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
-                    mimetype: Some(content_type.to_string()),
-                    size: UInt::new(buf.len() as u64),
-                    blurhash,
-                });
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                let video_content = if url.is_valid() {
+                    VideoMessageEventContent::plain(body, url.into(), None)
+                } else {
+                    let path = PathBuf::from(url_or_path);
+                    let guess = mime_guess::from_path(path.clone());
+                    let content_type = guess.first().context("No MIME type")?;
+                    let mimetype = content_type.to_string();
+                    if !mimetype.starts_with("video/") {
+                        bail!("Video reply accepts only video file");
+                    }
+                    let mut content = if room.is_encrypted().await? {
+                        let mut reader = fs::File::open(path.clone())?;
+                        let encrypted_file = client
+                            .prepare_encrypted_file(&content_type, &mut reader)
+                            .await?;
+                        VideoMessageEventContent::encrypted(body, encrypted_file)
+                    } else {
+                        let buf = fs::read(path.clone())?;
+                        let response = client.media().upload(&content_type, buf).await?;
+                        VideoMessageEventContent::plain(body, response.content_uri, None)
+                    };
+                    let buf = fs::read(path)?;
+                    let info = assign!(VideoInfo::new(), {
+                        duration: secs.map(|x| Duration::from_secs(x as u64)),
+                        height: height.map(UInt::from),
+                        width: width.map(UInt::from),
+                        mimetype: Some(mimetype),
+                        size: UInt::new(buf.len() as u64),
+                        blurhash,
+                    });
+                    content.info = Some(Box::new(info));
+                    content
+                };
 
                 let timeline_event = room.event(&event_id).await?;
-
                 let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
-
                 let original_message = event_content
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
-
-                let response = client.media().upload(&content_type, buf).await?;
-
-                let video_content = VideoMessageEventContent::plain(
-                    name,
-                    response.content_uri,
-                    Some(Box::new(info)),
-                );
                 let content = RoomMessageEventContent::new(MessageType::Video(video_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 
@@ -1635,8 +1763,8 @@ impl Room {
 
     pub async fn send_file_reply(
         &self,
-        uri: String,
-        name: String,
+        url_or_path: String,
+        body: String,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -1647,11 +1775,7 @@ impl Room {
         };
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
-
-        let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id)?;
-        let guess = mime_guess::from_path(path.clone());
-        let content_type = guess.first().context("No MIME type")?;
 
         RUNTIME
             .spawn(async move {
@@ -1663,27 +1787,41 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let buf = fs::read(path)?;
-                let info = assign!(FileInfo::new(), {
-                    mimetype: Some(content_type.to_string()),
-                    size: UInt::new(buf.len() as u64),
-                });
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                let file_content = if url.is_valid() {
+                    FileMessageEventContent::plain(body, url.into(), None)
+                } else {
+                    let path = PathBuf::from(url_or_path);
+                    let guess = mime_guess::from_path(path.clone());
+                    let content_type = guess
+                        .first()
+                        .unwrap_or(mime_guess::mime::APPLICATION_OCTET_STREAM);
+                    let mimetype = content_type.to_string();
+                    let mut content = if room.is_encrypted().await? {
+                        let mut reader = fs::File::open(path.clone())?;
+                        let encrypted_file = client
+                            .prepare_encrypted_file(&content_type, &mut reader)
+                            .await?;
+                        FileMessageEventContent::encrypted(body, encrypted_file)
+                    } else {
+                        let buf = fs::read(path.clone())?;
+                        let response = client.media().upload(&content_type, buf).await?;
+                        FileMessageEventContent::plain(body, response.content_uri, None)
+                    };
+                    let buf = fs::read(path)?;
+                    let info = assign!(FileInfo::new(), {
+                        mimetype: Some(mimetype),
+                        size: UInt::new(buf.len() as u64),
+                    });
+                    content.info = Some(Box::new(info));
+                    content
+                };
 
                 let timeline_event = room.event(&event_id).await?;
-
                 let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
-
                 let original_message = event_content
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
-
-                let response = client.media().upload(&content_type, buf).await?;
-
-                let file_content = FileMessageEventContent::plain(
-                    name,
-                    response.content_uri,
-                    Some(Box::new(info)),
-                );
                 let content = RoomMessageEventContent::new(MessageType::File(file_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 
@@ -1774,9 +1912,9 @@ impl Deref for Room {
 
 pub struct SendImageResult {
     event_id: OwnedEventId,
-    file_size: u64,
-    width: Option<u64>,
-    height: Option<u64>,
+    file_size: Option<u64>, // unknown for remote url
+    width: Option<u32>,     // unknown for remote url
+    height: Option<u32>,    // unknown for remote url
 }
 
 impl SendImageResult {
@@ -1784,23 +1922,23 @@ impl SendImageResult {
         self.event_id.clone()
     }
 
-    pub fn file_size(&self) -> u64 {
+    pub fn file_size(&self) -> Option<u64> {
         self.file_size
     }
 
-    pub fn width(&self) -> Option<u64> {
+    pub fn width(&self) -> Option<u32> {
         self.width
     }
 
-    pub fn height(&self) -> Option<u64> {
+    pub fn height(&self) -> Option<u32> {
         self.height
     }
 }
 
 pub struct SendAudioResult {
     event_id: OwnedEventId,
-    file_size: u64,
-    duration: Option<Duration>,
+    file_size: Option<u64>,     // unknown for remote url
+    duration: Option<Duration>, // unknown for remote url
 }
 
 impl SendAudioResult {
@@ -1808,7 +1946,7 @@ impl SendAudioResult {
         self.event_id.clone()
     }
 
-    pub fn file_size(&self) -> u64 {
+    pub fn file_size(&self) -> Option<u64> {
         self.file_size
     }
 

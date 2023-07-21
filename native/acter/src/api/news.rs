@@ -33,6 +33,7 @@ use std::{
 };
 use tokio::sync::broadcast::Receiver;
 use tracing::trace;
+use url::Url;
 
 use super::{
     api::FfiBuffer,
@@ -385,7 +386,7 @@ impl NewsEntryDraft {
     pub async fn add_image_slide(
         &mut self,
         body: String,
-        uri: String,
+        url_or_path: String,
         size: Option<u64>,
         width: Option<u64>,
         height: Option<u64>,
@@ -395,37 +396,41 @@ impl NewsEntryDraft {
         let client = self.client.clone();
         let room = self.room.clone();
 
-        let path = PathBuf::from(uri);
-        let guess = mime_guess::from_path(path.clone());
-        let content_type = guess.first().context("MIME type should be given")?;
-        let mimetype = Some(content_type.to_string());
-        let mut image_content = RUNTIME
+        let image_content = RUNTIME
             .spawn(async move {
-                if room.is_encrypted().await? {
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                if url.is_valid() {
+                    return anyhow::Ok(ImageMessageEventContent::plain(body, url.into(), None));
+                }
+                let path = PathBuf::from(url_or_path.clone());
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().context("MIME type should be given")?;
+                let mimetype = content_type.to_string();
+                if !mimetype.starts_with("image/") {
+                    bail!("Image slide accepts only image file");
+                }
+                let mut content = if room.is_encrypted().await? {
                     let mut reader = fs::File::open(path)?;
                     let encrypted_file = client
                         .prepare_encrypted_file(&content_type, &mut reader)
                         .await?;
-                    anyhow::Ok(ImageMessageEventContent::encrypted(body, encrypted_file))
+                    ImageMessageEventContent::encrypted(body, encrypted_file)
                 } else {
                     let buf = fs::read(path)?;
                     let response = client.media().upload(&content_type, buf).await?;
-                    anyhow::Ok(ImageMessageEventContent::plain(
-                        body,
-                        response.content_uri,
-                        None,
-                    ))
-                }
+                    ImageMessageEventContent::plain(body, response.content_uri, None)
+                };
+                let info = assign!(ImageInfo::new(), {
+                    height: height.and_then(UInt::new),
+                    width: width.and_then(UInt::new),
+                    mimetype: Some(mimetype),
+                    size: size.and_then(UInt::new),
+                    blurhash,
+                });
+                content.info = Some(Box::new(info));
+                anyhow::Ok(content)
             })
             .await??;
-        let info = assign!(ImageInfo::new(), {
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            mimetype,
-            size: size.and_then(UInt::new),
-            blurhash,
-        });
-        image_content.info = Some(Box::new(info));
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
@@ -441,7 +446,7 @@ impl NewsEntryDraft {
     pub async fn add_audio_slide(
         &mut self,
         body: String,
-        uri: String,
+        url_or_path: String,
         secs: Option<u64>,
         size: u64,
     ) -> Result<bool> {
@@ -449,35 +454,39 @@ impl NewsEntryDraft {
         let client = self.client.clone();
         let room = self.room.clone();
 
-        let path = PathBuf::from(uri);
-        let guess = mime_guess::from_path(path.clone());
-        let content_type = guess.first().context("MIME type should be given")?;
-        let mimetype = Some(content_type.to_string());
-        let mut audio_content = RUNTIME
+        let audio_content = RUNTIME
             .spawn(async move {
-                if room.is_encrypted().await? {
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                if url.is_valid() {
+                    return anyhow::Ok(AudioMessageEventContent::plain(body, url.into(), None));
+                }
+                let path = PathBuf::from(url_or_path);
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().context("MIME type should be given")?;
+                let mimetype = content_type.to_string();
+                if !mimetype.starts_with("audio/") {
+                    bail!("Audio slide accepts only audio file");
+                }
+                let mut content = if room.is_encrypted().await? {
                     let mut reader = fs::File::open(path)?;
                     let encrypted_file = client
                         .prepare_encrypted_file(&content_type, &mut reader)
                         .await?;
-                    anyhow::Ok(AudioMessageEventContent::encrypted(body, encrypted_file))
+                    AudioMessageEventContent::encrypted(body, encrypted_file)
                 } else {
                     let buf = fs::read(path)?;
                     let response = client.media().upload(&content_type, buf).await?;
-                    anyhow::Ok(AudioMessageEventContent::plain(
-                        body,
-                        response.content_uri,
-                        None,
-                    ))
-                }
+                    AudioMessageEventContent::plain(body, response.content_uri, None)
+                };
+                let info = assign!(AudioInfo::new(), {
+                    duration: secs.map(|x| Duration::new(x, 0)),
+                    mimetype: Some(mimetype),
+                    size: UInt::new(size),
+                });
+                content.info = Some(Box::new(info));
+                anyhow::Ok(content)
             })
             .await??;
-        let info = assign!(AudioInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            mimetype,
-            size: UInt::new(size),
-        });
-        audio_content.info = Some(Box::new(info));
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
@@ -494,7 +503,7 @@ impl NewsEntryDraft {
     pub async fn add_video_slide(
         &mut self,
         body: String,
-        uri: String,
+        url_or_path: String,
         secs: Option<u64>,
         height: Option<u64>,
         width: Option<u64>,
@@ -505,38 +514,42 @@ impl NewsEntryDraft {
         let client = self.client.clone();
         let room = self.room.clone();
 
-        let path = PathBuf::from(uri);
-        let guess = mime_guess::from_path(path.clone());
-        let content_type = guess.first().context("MIME type should be given")?;
-        let mimetype = Some(content_type.to_string());
-        let mut video_content = RUNTIME
+        let video_content = RUNTIME
             .spawn(async move {
-                if room.is_encrypted().await? {
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                if url.is_valid() {
+                    return anyhow::Ok(VideoMessageEventContent::plain(body, url.into(), None));
+                }
+                let path = PathBuf::from(url_or_path.clone());
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().context("MIME type should be given")?;
+                let mimetype = content_type.to_string();
+                if !mimetype.starts_with("video/") {
+                    bail!("Video slide accepts only video file");
+                }
+                let mut content = if room.is_encrypted().await? {
                     let mut reader = fs::File::open(path)?;
                     let encrypted_file = client
                         .prepare_encrypted_file(&content_type, &mut reader)
                         .await?;
-                    anyhow::Ok(VideoMessageEventContent::encrypted(body, encrypted_file))
+                    VideoMessageEventContent::encrypted(body, encrypted_file)
                 } else {
                     let buf = fs::read(path)?;
                     let response = client.media().upload(&content_type, buf).await?;
-                    anyhow::Ok(VideoMessageEventContent::plain(
-                        body,
-                        response.content_uri,
-                        None,
-                    ))
-                }
+                    VideoMessageEventContent::plain(body, response.content_uri, None)
+                };
+                let info = assign!(VideoInfo::new(), {
+                    duration: secs.map(|x| Duration::new(x, 0)),
+                    height: height.and_then(UInt::new),
+                    width: width.and_then(UInt::new),
+                    mimetype: Some(mimetype),
+                    size: size.and_then(UInt::new),
+                    blurhash,
+                });
+                content.info = Some(Box::new(info));
+                anyhow::Ok(content)
             })
             .await??;
-        let info = assign!(VideoInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            mimetype,
-            size: size.and_then(UInt::new),
-            blurhash,
-        });
-        video_content.info = Some(Box::new(info));
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
@@ -552,41 +565,44 @@ impl NewsEntryDraft {
     pub async fn add_file_slide(
         &mut self,
         body: String,
-        uri: String,
+        url_or_path: String,
         size: Option<u64>,
     ) -> Result<bool> {
         trace!("add file slide");
         let client = self.client.clone();
         let room = self.room.clone();
 
-        let path = PathBuf::from(uri);
-        let guess = mime_guess::from_path(path.clone());
-        let content_type = guess.first().context("MIME type should be given")?;
-        let mimetype = Some(content_type.to_string());
-        let mut file_content = RUNTIME
+        let file_content = RUNTIME
             .spawn(async move {
-                if room.is_encrypted().await? {
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                if url.is_valid() {
+                    return anyhow::Ok(FileMessageEventContent::plain(body, url.into(), None));
+                }
+                let path = PathBuf::from(url_or_path.clone());
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess
+                    .first()
+                    .unwrap_or(mime_guess::mime::APPLICATION_OCTET_STREAM);
+                let mimetype = content_type.to_string();
+                let mut content = if room.is_encrypted().await? {
                     let mut reader = fs::File::open(path)?;
                     let encrypted_file = client
                         .prepare_encrypted_file(&content_type, &mut reader)
                         .await?;
-                    anyhow::Ok(FileMessageEventContent::encrypted(body, encrypted_file))
+                    FileMessageEventContent::encrypted(body, encrypted_file)
                 } else {
                     let buf = fs::read(path)?;
                     let response = client.media().upload(&content_type, buf).await?;
-                    anyhow::Ok(FileMessageEventContent::plain(
-                        body,
-                        response.content_uri,
-                        None,
-                    ))
-                }
+                    FileMessageEventContent::plain(body, response.content_uri, None)
+                };
+                let info = assign!(FileInfo::new(), {
+                    mimetype: Some(mimetype),
+                    size: size.and_then(UInt::new),
+                });
+                content.info = Some(Box::new(info));
+                anyhow::Ok(content)
             })
             .await??;
-        let info = assign!(FileInfo::new(), {
-            mimetype,
-            size: size.and_then(UInt::new),
-        });
-        file_content.info = Some(Box::new(info));
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),

@@ -4321,6 +4321,190 @@ class Api {
     return tmp7;
   }
 
+  AttachmentDraft? __attachmentsManagerImageAttachmentDraftFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentsManagerImageAttachmentDraftFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentDraft");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = AttachmentDraft._(this, tmp13_1);
+    return tmp7;
+  }
+
+  AttachmentDraft? __attachmentsManagerAudioAttachmentDraftFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentsManagerAudioAttachmentDraftFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentDraft");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = AttachmentDraft._(this, tmp13_1);
+    return tmp7;
+  }
+
+  AttachmentDraft? __attachmentsManagerVideoAttachmentDraftFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentsManagerVideoAttachmentDraftFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentDraft");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = AttachmentDraft._(this, tmp13_1);
+    return tmp7;
+  }
+
+  AttachmentDraft? __attachmentsManagerFileAttachmentDraftFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentsManagerFileAttachmentDraftFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentDraft");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = AttachmentDraft._(this, tmp13_1);
+    return tmp7;
+  }
+
   Task? __taskRefreshFuturePoll(
     int boxed,
     int postCobject,
@@ -11822,12 +12006,12 @@ class Api {
   )>();
   late final _sendImageResultFileSizePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(
+          _SendImageResultFileSizeReturn Function(
     ffi.Int64,
   )>>("__SendImageResult_file_size");
 
   late final _sendImageResultFileSize = _sendImageResultFileSizePtr.asFunction<
-      int Function(
+      _SendImageResultFileSizeReturn Function(
     int,
   )>();
   late final _sendImageResultWidthPtr = _lookup<
@@ -11862,12 +12046,12 @@ class Api {
   )>();
   late final _sendAudioResultFileSizePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(
+          _SendAudioResultFileSizeReturn Function(
     ffi.Int64,
   )>>("__SendAudioResult_file_size");
 
   late final _sendAudioResultFileSize = _sendAudioResultFileSizePtr.asFunction<
-      int Function(
+      _SendAudioResultFileSizeReturn Function(
     int,
   )>();
   late final _sendAudioResultDurationPtr = _lookup<
@@ -12973,10 +13157,6 @@ class Api {
     ffi.Uint64,
     ffi.Uint64,
     ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
     ffi.Uint32,
     ffi.Uint8,
     ffi.Uint32,
@@ -13008,10 +13188,6 @@ class Api {
     int,
     int,
     int,
-    int,
-    int,
-    int,
-    int,
   )>();
   late final _attachmentsManagerAudioAttachmentDraftPtr = _lookup<
       ffi.NativeFunction<
@@ -13026,20 +13202,12 @@ class Api {
     ffi.Uint8,
     ffi.Uint32,
     ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
     ffi.Uint32,
   )>>("__AttachmentsManager_audio_attachment_draft");
 
   late final _attachmentsManagerAudioAttachmentDraft =
       _attachmentsManagerAudioAttachmentDraftPtr.asFunction<
           int Function(
-    int,
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -13069,10 +13237,6 @@ class Api {
     ffi.Uint8,
     ffi.Uint32,
     ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
     ffi.Uint32,
     ffi.Uint8,
     ffi.Int64,
@@ -13083,10 +13247,6 @@ class Api {
   late final _attachmentsManagerVideoAttachmentDraft =
       _attachmentsManagerVideoAttachmentDraftPtr.asFunction<
           int Function(
-    int,
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -13118,20 +13278,12 @@ class Api {
     ffi.Uint64,
     ffi.Uint64,
     ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
     ffi.Uint32,
   )>>("__AttachmentsManager_file_attachment_draft");
 
   late final _attachmentsManagerFileAttachmentDraft =
       _attachmentsManagerFileAttachmentDraftPtr.asFunction<
           int Function(
-    int,
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -18134,6 +18286,66 @@ class Api {
     int,
     int,
   )>();
+  late final _attachmentsManagerImageAttachmentDraftFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerImageAttachmentDraftFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__AttachmentsManager_image_attachment_draft_future_poll");
+
+  late final _attachmentsManagerImageAttachmentDraftFuturePoll =
+      _attachmentsManagerImageAttachmentDraftFuturePollPtr.asFunction<
+          _AttachmentsManagerImageAttachmentDraftFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentsManagerAudioAttachmentDraftFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerAudioAttachmentDraftFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__AttachmentsManager_audio_attachment_draft_future_poll");
+
+  late final _attachmentsManagerAudioAttachmentDraftFuturePoll =
+      _attachmentsManagerAudioAttachmentDraftFuturePollPtr.asFunction<
+          _AttachmentsManagerAudioAttachmentDraftFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentsManagerVideoAttachmentDraftFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerVideoAttachmentDraftFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__AttachmentsManager_video_attachment_draft_future_poll");
+
+  late final _attachmentsManagerVideoAttachmentDraftFuturePoll =
+      _attachmentsManagerVideoAttachmentDraftFuturePollPtr.asFunction<
+          _AttachmentsManagerVideoAttachmentDraftFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _attachmentsManagerFileAttachmentDraftFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerFileAttachmentDraftFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__AttachmentsManager_file_attachment_draft_future_poll");
+
+  late final _attachmentsManagerFileAttachmentDraftFuturePoll =
+      _attachmentsManagerFileAttachmentDraftFuturePollPtr.asFunction<
+          _AttachmentsManagerFileAttachmentDraftFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _taskRefreshFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TaskRefreshFuturePollReturn Function(
@@ -21878,14 +22090,14 @@ class NewsEntryDraft {
   /// create news slide for image msg
   Future<bool> addImageSlide(
     String body,
-    String uri,
+    String urlOrPath,
     int? size,
     int? width,
     int? height,
     String? blurhash,
   ) {
     final tmp1 = body;
-    final tmp5 = uri;
+    final tmp5 = urlOrPath;
     final tmp9 = size;
     final tmp13 = width;
     final tmp17 = height;
@@ -21991,12 +22203,12 @@ class NewsEntryDraft {
   /// create news slide for audio msg
   Future<bool> addAudioSlide(
     String body,
-    String uri,
+    String urlOrPath,
     int? secs,
     int size,
   ) {
     final tmp1 = body;
-    final tmp5 = uri;
+    final tmp5 = urlOrPath;
     final tmp9 = secs;
     final tmp13 = size;
     var tmp0 = 0;
@@ -22059,7 +22271,7 @@ class NewsEntryDraft {
   /// create news slide for video msg
   Future<bool> addVideoSlide(
     String body,
-    String uri,
+    String urlOrPath,
     int? secs,
     int? height,
     int? width,
@@ -22067,7 +22279,7 @@ class NewsEntryDraft {
     String? blurhash,
   ) {
     final tmp1 = body;
-    final tmp5 = uri;
+    final tmp5 = urlOrPath;
     final tmp9 = secs;
     final tmp13 = height;
     final tmp17 = width;
@@ -22185,11 +22397,11 @@ class NewsEntryDraft {
   /// create news slide for file msg
   Future<bool> addFileSlide(
     String body,
-    String uri,
+    String urlOrPath,
     int? size,
   ) {
     final tmp1 = body;
-    final tmp5 = uri;
+    final tmp5 = urlOrPath;
     final tmp9 = size;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -25948,14 +26160,18 @@ class SendImageResult {
   }
 
   /// get file size
-  int fileSize() {
+  int? fileSize() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._sendImageResultFileSize(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3;
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -26019,14 +26235,18 @@ class SendAudioResult {
   }
 
   /// get file size
-  int fileSize() {
+  int? fileSize() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._sendAudioResultFileSize(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3;
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -26522,12 +26742,12 @@ class Convo {
 
   /// send the image message to this room
   Future<SendImageResult> sendImageMessage(
-    String uri,
-    String name,
+    String urlOrPath,
+    String body,
     String? blurhash,
   ) {
-    final tmp1 = uri;
-    final tmp5 = name;
+    final tmp1 = urlOrPath;
+    final tmp5 = body;
     final tmp9 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -26630,11 +26850,11 @@ class Convo {
 
   /// send the audio message to this room
   Future<SendAudioResult> sendAudioMessage(
-    String uri,
-    String name,
+    String urlOrPath,
+    String body,
   ) {
-    final tmp1 = uri;
-    final tmp5 = name;
+    final tmp1 = urlOrPath;
+    final tmp5 = body;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -26714,15 +26934,15 @@ class Convo {
 
   /// send the video message to this room
   Future<EventId> sendVideoMessage(
-    String uri,
-    String name,
+    String urlOrPath,
+    String body,
     int? secs,
     int? height,
     int? width,
     String? blurhash,
   ) {
-    final tmp1 = uri;
-    final tmp5 = name;
+    final tmp1 = urlOrPath;
+    final tmp5 = body;
     final tmp9 = secs;
     final tmp13 = height;
     final tmp17 = width;
@@ -26861,11 +27081,11 @@ class Convo {
 
   /// send the file message to this room
   Future<EventId> sendFileMessage(
-    String uri,
-    String name,
+    String urlOrPath,
+    String body,
   ) {
-    final tmp1 = uri;
-    final tmp5 = name;
+    final tmp1 = urlOrPath;
+    final tmp5 = body;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -27266,13 +27486,13 @@ class Convo {
 
   /// send reply as image
   Future<EventId> sendImageReply(
-    String uri,
-    String name,
+    String urlOrPath,
+    String body,
     String eventId,
     String? txnId,
   ) {
-    final tmp1 = uri;
-    final tmp5 = name;
+    final tmp1 = urlOrPath;
+    final tmp5 = body;
     final tmp9 = eventId;
     final tmp13 = txnId;
     var tmp0 = 0;
@@ -27354,13 +27574,13 @@ class Convo {
 
   /// send reply as audio
   Future<EventId> sendAudioReply(
-    String uri,
-    String name,
+    String urlOrPath,
+    String body,
     String eventId,
     String? txnId,
   ) {
-    final tmp1 = uri;
-    final tmp5 = name;
+    final tmp1 = urlOrPath;
+    final tmp5 = body;
     final tmp9 = eventId;
     final tmp13 = txnId;
     var tmp0 = 0;
@@ -27442,8 +27662,8 @@ class Convo {
 
   /// send reply as video
   Future<EventId> sendVideoReply(
-    String uri,
-    String name,
+    String urlOrPath,
+    String body,
     int? secs,
     int? width,
     int? height,
@@ -27451,8 +27671,8 @@ class Convo {
     String eventId,
     String? txnId,
   ) {
-    final tmp1 = uri;
-    final tmp5 = name;
+    final tmp1 = urlOrPath;
+    final tmp5 = body;
     final tmp9 = secs;
     final tmp13 = width;
     final tmp17 = height;
@@ -27593,13 +27813,13 @@ class Convo {
 
   /// send reply as file
   Future<EventId> sendFileReply(
-    String uri,
-    String name,
+    String urlOrPath,
+    String body,
     String eventId,
     String? txnId,
   ) {
-    final tmp1 = uri;
-    final tmp5 = name;
+    final tmp1 = urlOrPath;
+    final tmp5 = body;
     final tmp9 = eventId;
     final tmp13 = txnId;
     var tmp0 = 0;
@@ -28353,257 +28573,20 @@ class AttachmentsManager {
   }
 
   /// create news slide for image msg
-  AttachmentDraft imageAttachmentDraft(
+  Future<AttachmentDraft> imageAttachmentDraft(
     String body,
-    String url,
-    String? mimetype,
+    String urlOrPath,
     int? size,
     int? width,
     int? height,
     String? blurhash,
   ) {
     final tmp1 = body;
-    final tmp5 = url;
-    final tmp9 = mimetype;
-    final tmp15 = size;
-    final tmp19 = width;
-    final tmp23 = height;
-    final tmp27 = blurhash;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp13 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp20 = 0;
-    var tmp22 = 0;
-    var tmp24 = 0;
-    var tmp26 = 0;
-    var tmp28 = 0;
-    var tmp30 = 0;
-    var tmp31 = 0;
-    var tmp32 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
-    }
-    if (tmp15 == null) {
-      tmp16 = 0;
-    } else {
-      tmp16 = 1;
-      final tmp17 = tmp15;
-      tmp18 = tmp17;
-    }
-    if (tmp19 == null) {
-      tmp20 = 0;
-    } else {
-      tmp20 = 1;
-      final tmp21 = tmp19;
-      tmp22 = tmp21;
-    }
-    if (tmp23 == null) {
-      tmp24 = 0;
-    } else {
-      tmp24 = 1;
-      final tmp25 = tmp23;
-      tmp26 = tmp25;
-    }
-    if (tmp27 == null) {
-      tmp28 = 0;
-    } else {
-      tmp28 = 1;
-      final tmp29 = tmp27;
-      final tmp29_0 = utf8.encode(tmp29);
-      tmp31 = tmp29_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp30_0 = _api.__allocate(tmp31 * 1, 1);
-      final Uint8List tmp30_1 = tmp30_0.asTypedList(tmp31);
-      tmp30_1.setAll(0, tmp29_0);
-      tmp30 = tmp30_0.address;
-      tmp32 = tmp31;
-    }
-    final tmp33 = _api._attachmentsManagerImageAttachmentDraft(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp12,
-      tmp13,
-      tmp14,
-      tmp16,
-      tmp18,
-      tmp20,
-      tmp22,
-      tmp24,
-      tmp26,
-      tmp28,
-      tmp30,
-      tmp31,
-      tmp32,
-    );
-    final tmp35 = tmp33;
-    final ffi.Pointer<ffi.Void> tmp35_0 = ffi.Pointer.fromAddress(tmp35);
-    final tmp35_1 = _Box(_api, tmp35_0, "drop_box_AttachmentDraft");
-    tmp35_1._finalizer = _api._registerFinalizer(tmp35_1);
-    final tmp34 = AttachmentDraft._(_api, tmp35_1);
-    return tmp34;
-  }
-
-  /// create news slide for audio msg
-  AttachmentDraft audioAttachmentDraft(
-    String body,
-    String url,
-    int? secs,
-    String? mimetype,
-    int? size,
-  ) {
-    final tmp1 = body;
-    final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = mimetype;
-    final tmp19 = size;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp17 = 0;
-    var tmp18 = 0;
-    var tmp20 = 0;
-    var tmp22 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      final tmp15_0 = utf8.encode(tmp15);
-      tmp17 = tmp15_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-      tmp16_1.setAll(0, tmp15_0);
-      tmp16 = tmp16_0.address;
-      tmp18 = tmp17;
-    }
-    if (tmp19 == null) {
-      tmp20 = 0;
-    } else {
-      tmp20 = 1;
-      final tmp21 = tmp19;
-      tmp22 = tmp21;
-    }
-    final tmp23 = _api._attachmentsManagerAudioAttachmentDraft(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp12,
-      tmp14,
-      tmp16,
-      tmp17,
-      tmp18,
-      tmp20,
-      tmp22,
-    );
-    final tmp25 = tmp23;
-    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
-    final tmp25_1 = _Box(_api, tmp25_0, "drop_box_AttachmentDraft");
-    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
-    final tmp24 = AttachmentDraft._(_api, tmp25_1);
-    return tmp24;
-  }
-
-  /// create news slide for video msg
-  AttachmentDraft videoAttachmentDraft(
-    String body,
-    String url,
-    int? secs,
-    int? height,
-    int? width,
-    String? mimetype,
-    int? size,
-    String? blurhash,
-  ) {
-    final tmp1 = body;
-    final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = height;
-    final tmp17 = width;
-    final tmp21 = mimetype;
-    final tmp27 = size;
-    final tmp31 = blurhash;
+    final tmp5 = urlOrPath;
+    final tmp9 = size;
+    final tmp13 = width;
+    final tmp17 = height;
+    final tmp21 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -28621,12 +28604,6 @@ class AttachmentsManager {
     var tmp24 = 0;
     var tmp25 = 0;
     var tmp26 = 0;
-    var tmp28 = 0;
-    var tmp30 = 0;
-    var tmp32 = 0;
-    var tmp34 = 0;
-    var tmp35 = 0;
-    var tmp36 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -28679,28 +28656,7 @@ class AttachmentsManager {
       tmp24 = tmp24_0.address;
       tmp26 = tmp25;
     }
-    if (tmp27 == null) {
-      tmp28 = 0;
-    } else {
-      tmp28 = 1;
-      final tmp29 = tmp27;
-      tmp30 = tmp29;
-    }
-    if (tmp31 == null) {
-      tmp32 = 0;
-    } else {
-      tmp32 = 1;
-      final tmp33 = tmp31;
-      final tmp33_0 = utf8.encode(tmp33);
-      tmp35 = tmp33_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
-      final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
-      tmp34_1.setAll(0, tmp33_0);
-      tmp34 = tmp34_0.address;
-      tmp36 = tmp35;
-    }
-    final tmp37 = _api._attachmentsManagerVideoAttachmentDraft(
+    final tmp27 = _api._attachmentsManagerImageAttachmentDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -28718,32 +28674,28 @@ class AttachmentsManager {
       tmp24,
       tmp25,
       tmp26,
-      tmp28,
-      tmp30,
-      tmp32,
-      tmp34,
-      tmp35,
-      tmp36,
     );
-    final tmp39 = tmp37;
-    final ffi.Pointer<ffi.Void> tmp39_0 = ffi.Pointer.fromAddress(tmp39);
-    final tmp39_1 = _Box(_api, tmp39_0, "drop_box_AttachmentDraft");
-    tmp39_1._finalizer = _api._registerFinalizer(tmp39_1);
-    final tmp38 = AttachmentDraft._(_api, tmp39_1);
-    return tmp38;
+    final tmp29 = tmp27;
+    final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
+    final tmp29_1 = _Box(_api, tmp29_0,
+        "__AttachmentsManager_image_attachment_draft_future_drop");
+    tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
+    final tmp28 = _nativeFuture(
+        tmp29_1, _api.__attachmentsManagerImageAttachmentDraftFuturePoll);
+    return tmp28;
   }
 
-  /// create news slide for file msg
-  AttachmentDraft fileAttachmentDraft(
+  /// create news slide for audio msg
+  Future<AttachmentDraft> audioAttachmentDraft(
     String body,
-    String url,
-    String? mimetype,
+    String urlOrPath,
+    int? secs,
     int? size,
   ) {
     final tmp1 = body;
-    final tmp5 = url;
-    final tmp9 = mimetype;
-    final tmp15 = size;
+    final tmp5 = urlOrPath;
+    final tmp9 = secs;
+    final tmp13 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -28753,10 +28705,8 @@ class AttachmentsManager {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
-    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
-    var tmp18 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -28779,23 +28729,16 @@ class AttachmentsManager {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
+      tmp12 = tmp11;
     }
-    if (tmp15 == null) {
-      tmp16 = 0;
+    if (tmp13 == null) {
+      tmp14 = 0;
     } else {
-      tmp16 = 1;
-      final tmp17 = tmp15;
-      tmp18 = tmp17;
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
     }
-    final tmp19 = _api._attachmentsManagerFileAttachmentDraft(
+    final tmp17 = _api._attachmentsManagerAudioAttachmentDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -28805,17 +28748,206 @@ class AttachmentsManager {
       tmp8,
       tmp10,
       tmp12,
-      tmp13,
+      tmp14,
+      tmp16,
+    );
+    final tmp19 = tmp17;
+    final ffi.Pointer<ffi.Void> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+    final tmp19_1 = _Box(_api, tmp19_0,
+        "__AttachmentsManager_audio_attachment_draft_future_drop");
+    tmp19_1._finalizer = _api._registerFinalizer(tmp19_1);
+    final tmp18 = _nativeFuture(
+        tmp19_1, _api.__attachmentsManagerAudioAttachmentDraftFuturePoll);
+    return tmp18;
+  }
+
+  /// create news slide for video msg
+  Future<AttachmentDraft> videoAttachmentDraft(
+    String body,
+    String urlOrPath,
+    int? secs,
+    int? height,
+    int? width,
+    int? size,
+    String? blurhash,
+  ) {
+    final tmp1 = body;
+    final tmp5 = urlOrPath;
+    final tmp9 = secs;
+    final tmp13 = height;
+    final tmp17 = width;
+    final tmp21 = size;
+    final tmp25 = blurhash;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
+    }
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      final tmp27_0 = utf8.encode(tmp27);
+      tmp29 = tmp27_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+      tmp28_1.setAll(0, tmp27_0);
+      tmp28 = tmp28_0.address;
+      tmp30 = tmp29;
+    }
+    final tmp31 = _api._attachmentsManagerVideoAttachmentDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
       tmp14,
       tmp16,
       tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp29,
+      tmp30,
     );
-    final tmp21 = tmp19;
-    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
-    final tmp21_1 = _Box(_api, tmp21_0, "drop_box_AttachmentDraft");
-    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
-    final tmp20 = AttachmentDraft._(_api, tmp21_1);
-    return tmp20;
+    final tmp33 = tmp31;
+    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
+    final tmp33_1 = _Box(_api, tmp33_0,
+        "__AttachmentsManager_video_attachment_draft_future_drop");
+    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
+    final tmp32 = _nativeFuture(
+        tmp33_1, _api.__attachmentsManagerVideoAttachmentDraftFuturePoll);
+    return tmp32;
+  }
+
+  /// create news slide for file msg
+  Future<AttachmentDraft> fileAttachmentDraft(
+    String body,
+    String urlOrPath,
+    int? size,
+  ) {
+    final tmp1 = body;
+    final tmp5 = urlOrPath;
+    final tmp9 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      tmp12 = tmp11;
+    }
+    final tmp13 = _api._attachmentsManagerFileAttachmentDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+    );
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0,
+        "__AttachmentsManager_file_attachment_draft_future_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 = _nativeFuture(
+        tmp15_1, _api.__attachmentsManagerFileAttachmentDraftFuturePoll);
+    return tmp14;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -32018,12 +32150,12 @@ class Space {
 
   /// send the image message to this room
   Future<SendImageResult> sendImageMessage(
-    String uri,
-    String name,
+    String urlOrPath,
+    String body,
     String? blurhash,
   ) {
-    final tmp1 = uri;
-    final tmp5 = name;
+    final tmp1 = urlOrPath;
+    final tmp5 = body;
     final tmp9 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -32126,11 +32258,11 @@ class Space {
 
   /// send the audio message to this room
   Future<SendAudioResult> sendAudioMessage(
-    String uri,
-    String name,
+    String urlOrPath,
+    String body,
   ) {
-    final tmp1 = uri;
-    final tmp5 = name;
+    final tmp1 = urlOrPath;
+    final tmp5 = body;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -32210,15 +32342,15 @@ class Space {
 
   /// send the video message to this room
   Future<EventId> sendVideoMessage(
-    String uri,
-    String name,
+    String urlOrPath,
+    String body,
     int? secs,
     int? height,
     int? width,
     String? blurhash,
   ) {
-    final tmp1 = uri;
-    final tmp5 = name;
+    final tmp1 = urlOrPath;
+    final tmp5 = body;
     final tmp9 = secs;
     final tmp13 = height;
     final tmp17 = width;
@@ -32357,11 +32489,11 @@ class Space {
 
   /// send the file message to this room
   Future<EventId> sendFileMessage(
-    String uri,
-    String name,
+    String urlOrPath,
+    String body,
   ) {
-    final tmp1 = uri;
-    final tmp5 = name;
+    final tmp1 = urlOrPath;
+    final tmp5 = body;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -37504,6 +37636,13 @@ class _TimelineDiffValueReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _SendImageResultFileSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
 class _SendImageResultWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -37512,6 +37651,13 @@ class _SendImageResultWidthReturn extends ffi.Struct {
 }
 
 class _SendImageResultHeightReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _SendAudioResultFileSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
@@ -39391,6 +39537,70 @@ class _AttachmentFileBinaryFuturePollReturn extends ffi.Struct {
 }
 
 class _AttachmentsManagerAttachmentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentsManagerImageAttachmentDraftFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentsManagerAudioAttachmentDraftFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentsManagerVideoAttachmentDraftFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentsManagerFileAttachmentDraftFuturePollReturn
+    extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
