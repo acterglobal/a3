@@ -14,7 +14,7 @@ import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart'
 import 'package:acter/features/chat/providers/notifiers/messages_notifier.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Convo, TimelineDiff, TypingEvent;
+    show Convo, FfiListConvo, TimelineDiff, TimelineStream, TypingEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -23,14 +23,19 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 final chatStreamProvider =
     StreamProvider.autoDispose<List<Convo>>((ref) async* {
   final client = ref.watch(clientProvider)!;
-  StreamSubscription<List<Convo>>? _subscription;
+  StreamSubscription<FfiListConvo>? _subscription;
+  final _streamController = StreamController<List<Convo>>();
   ref.onDispose(() => _subscription!.cancel());
-  final _stream =
-      client.convosRx().asBroadcastStream().map((event) => event.toList());
-  _subscription = _stream.listen((event) {
+  _subscription = client.convosRx().listen((event) {
+    _streamController.add(event.toList());
+    ref.onDispose(() async {
+      debugPrint('disposing conversation stream');
+      await _streamController.close();
+      await _subscription?.cancel();
+    });
     debugPrint('Acter Conversations Stream');
   });
-  await for (List<Convo> event in _stream) {
+  await for (List<Convo> event in _streamController.stream) {
     // make sure we aren't emitting empty list
     if (event.isNotEmpty) {
       ///FIXME: for no rooms, this might leads to loading infinitely.
@@ -64,109 +69,86 @@ final chatsSearchProvider = StateProvider<List<Convo>>((ref) => []);
 
 final typingProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
-final typingStreamProvider = StreamProvider<TypingEvent>((ref) async* {
-  Map<String, dynamic> typingEvent = {};
-  final client = ref.watch(clientProvider)!;
-  StreamSubscription<TypingEvent>? _subscription;
-  ref.onDispose(() => _subscription!.cancel());
-  final _stream = client.typingEventRx();
-  _subscription = _stream!.listen((event) {
-    debugPrint(
-      'Typing Event : ${event.roomId().toString()}:${event.userIds().toList()}',
-    );
-    final roomId = event.roomId().toString();
-    final List<Convo> roomList = ref.read(chatStreamProvider).requireValue;
-    int idx = roomList.indexWhere((x) {
-      return x.getRoomIdStr() == roomId.toString();
-    });
-    if (idx == -1) {
-      return;
-    }
-    List<types.User> typingUsers = [];
-    for (var userId in event.userIds().toList()) {
-      if (userId == client.userId()) {
-        // filter out my typing
-        continue;
-      }
-      String uid = userId.toString();
-      var user = types.User(
-        id: uid,
-        firstName: simplifyUserId(uid),
-      );
-      typingUsers.add(user);
-    }
-    typingEvent = {
-      'roomId': roomId,
-      'typingUsers': typingUsers,
-    };
-    ref.read(typingProvider.notifier).update((state) => typingEvent);
-  });
+// final typingStreamProvider = StreamProvider<TypingEvent>((ref) async* {
+//   Map<String, dynamic> typingEvent = {};
+//   final client = ref.watch(clientProvider)!;
+//   StreamSubscription<TypingEvent>? _subscription;
+//   ref.onDispose(() => _subscription!.cancel());
+//   final _stream = client.typingEventRx();
+//   _subscription = _stream!.listen((event) {
+//     debugPrint(
+//       'Typing Event : ${event.roomId().toString()}:${event.userIds().toList()}',
+//     );
+//     final roomId = event.roomId().toString();
+//     final List<Convo> roomList = ref.read(chatStreamProvider).requireValue;
+//     int idx = roomList.indexWhere((x) {
+//       return x.getRoomIdStr() == roomId.toString();
+//     });
+//     if (idx == -1) {
+//       return;
+//     }
+//     List<types.User> typingUsers = [];
+//     for (var userId in event.userIds().toList()) {
+//       if (userId == client.userId()) {
+//         // filter out my typing
+//         continue;
+//       }
+//       String uid = userId.toString();
+//       var user = types.User(
+//         id: uid,
+//         firstName: simplifyUserId(uid),
+//       );
+//       typingUsers.add(user);
+//     }
+//     typingEvent = {
+//       'roomId': roomId,
+//       'typingUsers': typingUsers,
+//     };
+//     ref.read(typingProvider.notifier).update((state) => typingEvent);
+//   });
 
-  await for (var e in _stream) {
-    yield e;
-  }
-});
+//   await for (var e in _stream) {
+//     yield e;
+//   }
+// });
 
-final messagesStreamProvider = StreamProvider.family
-    .autoDispose<TimelineDiff, String>((ref, roomId) async* {
+final messagesStreamProvider =
+    StreamProvider.autoDispose<List<TimelineDiff>>((ref) async* {
+  final roomId = ref.watch(currentChatRoomProvider);
   final room = await ref.watch(chatProvider(roomId).future);
   final timeline = await room.timelineStream();
+  ref.watch(currentTimelineProvider.notifier).state = timeline;
+  final _streamController = StreamController<TimelineDiff>();
+  StreamSubscription<TimelineDiff>? _subscription;
+  List<TimelineDiff> events = [];
+  _subscription = timeline.diffRx().listen((event) {
+    _streamController.add(event);
+    ref.onDispose(() async {
+      events.clear();
+      debugPrint('disposing message stream');
+      await _streamController.close();
+      await _subscription?.cancel();
+    });
+  });
   final bool pagination = await timeline.paginateBackwards(10);
   debugPrint('Backwards pagination: $pagination');
-  final _stream = timeline.diffRx().asBroadcastStream();
-  StreamSubscription<TimelineDiff> _subscription;
-  _subscription = _stream.listen((event) {
-    switch (event.action()) {
-      case 'Append':
-        debugPrint('DiffRx: Room Message Append');
-        break;
-      case 'Insert':
-        debugPrint('DiffRx: Room Message Insert');
-        break;
-      case 'Set':
-        debugPrint('DiffRx: Room Message Set');
-        break;
-      case 'Remove':
-        debugPrint('DiffRx: Room Message Append');
-        break;
-      case 'PushBack':
-        debugPrint('DiffRx: Room Message Push back');
-        break;
-      case 'PushFront':
-        debugPrint('DiffRx: Room Message Push front');
-        break;
-      case 'PopBack':
-        debugPrint('DiffRx: Room Message Pop back');
-        break;
-      case 'PopFront':
-        debugPrint('DiffRx: Room Message Pop front');
-        break;
-      case 'Clear':
-        debugPrint('DiffRx: Room Message Clear');
-        break;
-      case 'Reset':
-        debugPrint('DiffRx: Room Message Reset');
-        break;
-    }
-  });
-  ref.onDispose(() => _subscription.cancel());
-  await for (var rm in _stream) {
-    yield rm;
+  await for (var rm in _streamController.stream) {
+    events = [...events, rm];
+    yield events;
   }
 });
 
-final chatRoomProvider = StateNotifierProvider.family
-    .autoDispose<ChatRoomNotifier, ChatRoomState, String>((ref, roomId) {
-  final asyncTimeline = ref.watch(messagesStreamProvider(roomId));
+final chatRoomProvider =
+    StateNotifierProvider.autoDispose<ChatRoomNotifier, ChatRoomState>((ref) {
   return ChatRoomNotifier(
     ref: ref,
-    asyncTimeline: asyncTimeline,
-    roomId: roomId,
+    asyncTimeline: ref.watch(messagesStreamProvider),
+    roomId: ref.watch(currentChatRoomProvider),
   );
 });
 
 final messagesProvider =
-    StateNotifierProvider<MessagesNotifier, List<types.Message>>(
+    StateNotifierProvider.autoDispose<MessagesNotifier, List<types.Message>>(
   (ref) => MessagesNotifier(),
 );
 
@@ -185,6 +167,11 @@ final mentionListProvider =
 
 // emoji row preview toggler
 final toggleEmojiRowProvider = StateProvider<bool>((ref) => false);
+
+final currentChatRoomProvider = StateProvider.autoDispose<String>((ref) => '');
+
+final currentTimelineProvider =
+    StateProvider.autoDispose<TimelineStream?>((ref) => null);
 
 // final typingEventProvider =
 //     StateNotifierProvider.autoDispose<TypingNotifier, Map<String, dynamic>>(

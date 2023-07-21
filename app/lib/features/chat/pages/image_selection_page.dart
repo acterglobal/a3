@@ -98,8 +98,6 @@ class _ImageSelectionPageState extends State<ImageSelectionPage> {
             ),
           ),
           CustomChatInput(
-            roomController: controller,
-            isChatScreen: false,
             roomName: widget.roomName,
             onButtonPressed: () async => await onSend(context),
           )

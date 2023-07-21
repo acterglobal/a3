@@ -4,47 +4,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 
 class EmptyHistoryPlaceholder extends StatelessWidget {
   const EmptyHistoryPlaceholder({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ChatRoomController>(
-      id: 'typing indicator',
-      builder: (ChatRoomController controller) {
-        return SizedBox(
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Align(
-                  alignment: const Alignment(0.0, -0.25),
-                  child: SvgPicture.asset('assets/images/emptyPlaceholder.svg'),
-                ),
-              ),
-              Positioned.fill(
-                child: Align(
-                  alignment: const Alignment(0.0, 0.15),
-                  child: Text(
-                    '${AppLocalizations.of(context)!.noMessages} ...',
-                  ),
-                ),
-              ),
-              Positioned.fill(
-                child: Align(
-                  alignment: const Alignment(0.0, 0.25),
-                  child: Text(
-                    AppLocalizations.of(context)!.startConvo,
-                  ),
-                ),
-              ),
-              if (controller.typingUsers.isNotEmpty)
-                _TypeIndicatorWidget(controller: controller),
-            ],
+    return SizedBox(
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Align(
+              alignment: const Alignment(0.0, -0.25),
+              child: SvgPicture.asset('assets/images/emptyPlaceholder.svg'),
+            ),
           ),
-        );
-      },
+          Positioned.fill(
+            child: Align(
+              alignment: const Alignment(0.0, 0.15),
+              child: Text(
+                '${AppLocalizations.of(context)!.noMessages} ...',
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: Align(
+              alignment: const Alignment(0.0, 0.25),
+              child: Text(
+                AppLocalizations.of(context)!.startConvo,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

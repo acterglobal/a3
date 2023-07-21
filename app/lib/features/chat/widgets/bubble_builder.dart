@@ -3,15 +3,16 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:bubble/bubble.dart';
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ReactionDesc;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BubbleBuilder extends StatelessWidget {
   final String userId;
@@ -40,56 +41,48 @@ class BubbleBuilder extends StatelessWidget {
       msgType = message.metadata?['eventType'];
     }
     bool isMemberEvent = msgType == 'm.room.member';
-    return GetBuilder<ChatRoomController>(
-      id: 'emoji-reaction',
-      builder: (ChatRoomController controller) {
-        return Column(
-          crossAxisAlignment:
-              isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+
+    return Column(
+      crossAxisAlignment:
+          isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      children: [
+        Stack(
+          clipBehavior: Clip.none,
           children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                _ChatBubble(
-                  controller: controller,
-                  isAuthor: isAuthor(),
-                  userId: userId,
-                  message: message,
-                  nextMessageInGroup: nextMessageInGroup,
-                  child: child,
-                  enlargeEmoji: enlargeEmoji,
-                  isMemberEvent: isMemberEvent,
-                ),
-                !isMemberEvent
-                    ? _EmojiRow(
-                        controller: controller,
-                        isAuthor: isAuthor(),
-                        message: message,
-                      )
-                    : const SizedBox.shrink()
-              ],
+            _ChatBubble(
+              isAuthor: isAuthor(),
+              userId: userId,
+              message: message,
+              nextMessageInGroup: nextMessageInGroup,
+              child: child,
+              enlargeEmoji: enlargeEmoji,
+              isMemberEvent: isMemberEvent,
             ),
             !isMemberEvent
-                ? Align(
-                    alignment: !isAuthor()
-                        ? Alignment.bottomLeft
-                        : Alignment.bottomRight,
-                    child: _EmojiContainer(
-                      isAuthor: isAuthor(),
-                      message: message,
-                      nextMessageInGroup: nextMessageInGroup,
-                    ),
+                ? _EmojiRow(
+                    isAuthor: isAuthor(),
+                    message: message,
                   )
-                : const SizedBox.shrink(),
+                : const SizedBox.shrink()
           ],
-        );
-      },
+        ),
+        !isMemberEvent
+            ? Align(
+                alignment:
+                    !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
+                child: _EmojiContainer(
+                  isAuthor: isAuthor(),
+                  message: message,
+                  nextMessageInGroup: nextMessageInGroup,
+                ),
+              )
+            : const SizedBox.shrink(),
+      ],
     );
   }
 }
 
-class _ChatBubble extends StatelessWidget {
-  final ChatRoomController controller;
+class _ChatBubble extends ConsumerWidget {
   final bool isAuthor;
   final String userId;
   final types.Message message;
@@ -99,7 +92,6 @@ class _ChatBubble extends StatelessWidget {
   final bool isMemberEvent;
 
   const _ChatBubble({
-    required this.controller,
     required this.isAuthor,
     required this.userId,
     required this.message,
@@ -110,20 +102,21 @@ class _ChatBubble extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final client = ref.watch(clientProvider)!;
     String msgType = '';
     if (message.metadata!.containsKey('eventType')) {
       msgType = message.metadata?['eventType'];
     }
     bool isMemberEvent = msgType == 'm.room.member';
-    String myId = controller.client.userId().toString();
+    String myId = client.userId().toString();
     return GestureDetector(
       onLongPress: isMemberEvent
           ? null
           : () {
-              controller.updateEmojiState(message);
-              controller.replyMessageWidget = child;
-              controller.repliedToMessage = message;
+              ref.read(chatRoomProvider.notifier).updateEmojiState(message);
+              ref.read(chatRoomProvider.notifier).repliedToMessage = message;
+              ref.read(chatInputProvider.notifier).setReplyWidget(child);
             },
       child: Column(
         crossAxisAlignment:
@@ -341,22 +334,20 @@ class _EmojiContainerState extends State<_EmojiContainer>
   }
 }
 
-class _EmojiRow extends StatelessWidget {
+class _EmojiRow extends ConsumerWidget {
   const _EmojiRow({
-    required this.controller,
     required this.isAuthor,
     required this.message,
   });
-  final ChatRoomController controller;
   final bool isAuthor;
   final types.Message message;
 
   @override
-  Widget build(BuildContext context) {
-    final ChatRoomController controller = Get.find<ChatRoomController>();
+  Widget build(BuildContext context, WidgetRef ref) {
     return Visibility(
-      visible: controller.emojiCurrentId == message.id &&
-          controller.isEmojiContainerVisible,
+      visible:
+          ref.watch(chatRoomProvider.notifier).emojiCurrentId == message.id &&
+              ref.watch(chatInputProvider.select((ci) => ci.emojiVisible)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 202, maxHeight: 42),
         padding: const EdgeInsets.all(8),
@@ -369,11 +360,11 @@ class _EmojiRow extends StatelessWidget {
         ),
         child: EmojiRow(
           onEmojiTap: (String value) async {
-            await controller.sendEmojiReaction(
-              controller.repliedToMessage!.id,
-              value,
-            );
-            controller.updateEmojiState(message);
+            await ref.read(chatRoomProvider.notifier).sendEmojiReaction(
+                  ref.read(chatRoomProvider.notifier).repliedToMessage!.id,
+                  value,
+                );
+            ref.read(chatRoomProvider.notifier).updateEmojiState(message);
           },
         ),
       ),

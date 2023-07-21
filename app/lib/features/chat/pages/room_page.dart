@@ -8,6 +8,7 @@ import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/pages/profile_page.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/bubble_builder.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:acter/features/chat/widgets/empty_history_placeholder.dart';
@@ -23,7 +24,6 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:string_validator/string_validator.dart';
 
@@ -40,21 +40,14 @@ class RoomPage extends ConsumerStatefulWidget {
 }
 
 class _RoomPageConsumerState extends ConsumerState<RoomPage> {
-  late final ChatRoomController roomController;
-
   @override
   void initState() {
     super.initState();
-    final client = ref.read(clientProvider)!;
-    roomController = Get.put(ChatRoomController(client: client));
-    roomController.setCurrentRoom(widget.convo);
-  }
-
-  @override
-  void dispose() {
-    roomController.setCurrentRoom(null);
-    Get.delete<ChatRoomController>();
-    super.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ref
+          .read(currentChatRoomProvider.notifier)
+          .update((state) => widget.convo.getRoomIdStr());
+    });
   }
 
   void onAttach(BuildContext context) {
@@ -69,7 +62,9 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 GestureDetector(
-                  onTap: () => roomController.handleImageSelection(context),
+                  onTap: () => ref
+                      .read(chatRoomProvider.notifier)
+                      .handleImageSelection(context),
                   child: Row(
                     children: <Widget>[
                       const Padding(
@@ -89,7 +84,9 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                 ),
                 const SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () => roomController.handleFileSelection(context),
+                  onTap: () => ref
+                      .read(chatRoomProvider.notifier)
+                      .handleFileSelection(context),
                   child: Row(
                     children: <Widget>[
                       const Padding(
@@ -116,20 +113,21 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   }
 
   Widget customBottomWidget(BuildContext context) {
-    return GetBuilder<ChatRoomController>(
-      id: 'emoji-reaction',
-      builder: (ChatRoomController ctlr) {
-        if (!ctlr.isEmojiContainerVisible) {
+    return Consumer(
+      builder: (context, ref, child) {
+        final client = ref.watch(clientProvider)!;
+        final messageId =
+            ref.watch(chatRoomProvider.notifier).repliedToMessage!.id;
+        final bool isAuthor = client.userId().toString() == messageId;
+        if (!ref.watch(chatInputProvider.select((ci) => ci.emojiVisible))) {
           return Consumer(
             builder: (context, ref, child) {
               final convoProfile =
                   ref.watch(chatProfileDataProvider(widget.convo)).requireValue;
               return CustomChatInput(
-                roomController: ctlr,
-                isChatScreen: true,
                 roomName: convoProfile.displayName ??
                     AppLocalizations.of(context)!.noName,
-                onButtonPressed: () async => await onSendButtonPressed(ctlr),
+                onButtonPressed: () async => await onSendButtonPressed(),
               );
             },
           );
@@ -141,9 +139,8 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             children: [
               GestureDetector(
                 onTap: () {
-                  ctlr.isEmojiContainerVisible = false;
-                  ctlr.showReplyView = true;
-                  ctlr.update(['emoji-reaction', 'chat-input']);
+                  ref.read(chatInputProvider.notifier).toggleEmojiVisible();
+                  ref.read(chatInputProvider.notifier).toggleReplyView();
                 },
                 child: const Text(
                   'Reply',
@@ -152,10 +149,12 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               ),
               GestureDetector(
                 onTap: () async {
-                  if (ctlr.isAuthor()) {
+                  if (isAuthor) {
                     // redact message call
-                    await ctlr.redactRoomMessage(ctlr.repliedToMessage!.id);
-                    ctlr.toggleEmojiContainer();
+                    await ref
+                        .read(chatRoomProvider.notifier)
+                        .redactRoomMessage(messageId);
+                    ref.read(chatInputProvider.notifier).toggleEmojiVisible();
                   } else {
                     showDialog(
                       context: context,
@@ -202,7 +201,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                                         ctx,
                                         'Report feature not yet implemented',
                                       );
-                                      ctlr.update(['emoji-reaction']);
                                       Navigator.pop(ctx);
                                     },
                                     child: Padding(
@@ -238,9 +236,9 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                   }
                 },
                 child: Text(
-                  ctlr.isAuthor() ? 'Unsend' : 'Report',
+                  isAuthor ? 'Unsend' : 'Report',
                   style: TextStyle(
-                    color: ctlr.isAuthor() ? Colors.white : Colors.red,
+                    color: isAuthor ? Colors.white : Colors.red,
                   ),
                 ),
               ),
@@ -259,7 +257,8 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   }) {
     return TextMessageBuilder(
       message: p1,
-      onPreviewDataFetched: roomController.handlePreviewDataFetched,
+      onPreviewDataFetched:
+          ref.watch(chatRoomProvider.notifier).handlePreviewDataFetched,
       messageWidth: messageWidth,
     );
   }
@@ -267,6 +266,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   @override
   Widget build(BuildContext context) {
     final client = ref.watch(clientProvider);
+    final chatRoomState = ref.watch(chatRoomProvider);
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -286,119 +286,111 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              GetBuilder<ChatRoomController>(
-                id: 'room-profile',
-                builder: (ChatRoomController ctlr) => Consumer(
-                  builder: (context, ref, child) {
-                    final convoProfile = ref.watch(
-                      chatProfileDataProvider(widget.convo),
-                    );
-                    return convoProfile.when(
-                      data: (profile) {
-                        if (profile.displayName == null) {
-                          return Text(
-                            AppLocalizations.of(context)!.loadingName,
-                          );
-                        }
-                        var roomId = widget.convo.getRoomIdStr();
+              Consumer(
+                builder: (context, ref, child) {
+                  final convoProfile = ref.watch(
+                    chatProfileDataProvider(widget.convo),
+                  );
+                  return convoProfile.when(
+                    data: (profile) {
+                      if (profile.displayName == null) {
                         return Text(
-                          profile.displayName ?? roomId,
-                          overflow: TextOverflow.clip,
-                          style: Theme.of(context).textTheme.bodyLarge,
+                          AppLocalizations.of(context)!.loadingName,
                         );
-                      },
-                      error: (error, stackTrace) => Text(
-                        'Error loading profile $error',
-                      ),
-                      loading: () => const CircularProgressIndicator(),
-                    );
-                  },
-                ),
+                      }
+                      var roomId = widget.convo.getRoomIdStr();
+                      return Text(
+                        profile.displayName ?? roomId,
+                        overflow: TextOverflow.clip,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      );
+                    },
+                    error: (error, stackTrace) => Text(
+                      'Error loading profile $error',
+                    ),
+                    loading: () => const CircularProgressIndicator(),
+                  );
+                },
               ),
               const SizedBox(height: 5),
-              GetBuilder<ChatRoomController>(
-                id: 'active-members',
-                builder: (ChatRoomController ctlr) {
-                  if (ctlr.activeMembers.isEmpty) {
-                    return const SizedBox(
-                      height: 15,
-                      width: 15,
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  int count = ctlr.activeMembers.length;
-                  return Text(
-                    '$count ${AppLocalizations.of(context)!.members}',
-                    style: Theme.of(context).textTheme.bodySmall,
+              Consumer(
+                builder: (context, ref, child) {
+                  final activeMembers = ref
+                      .watch(chatMembersProvider(widget.convo.getRoomIdStr()));
+                  return activeMembers.when(
+                    data: (members) {
+                      int count = members.length;
+                      return Text(
+                        '$count ${AppLocalizations.of(context)!.members}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      );
+                    },
+                    error: (error, stackTrace) =>
+                        Text('Error loading members count $error'),
+                    loading: () => const CircularProgressIndicator(),
                   );
                 },
               ),
             ],
           ),
           actions: [
-            GetBuilder<ChatRoomController>(
-              id: 'room-profile',
-              builder: (ChatRoomController ctlr) {
-                String roomId = widget.convo.getRoomId().toString();
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProfilePage(
-                          client: client!,
-                          room: widget.convo,
-                          isGroup: true,
-                          isAdmin: true,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Consumer(
-                    builder: (context, ref, child) {
-                      final convoProfile = ref.watch(
-                        chatProfileDataProvider(widget.convo),
-                      );
-                      return convoProfile.when(
-                        data: (data) => Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: ActerAvatar(
-                            mode: DisplayMode.User,
-                            uniqueId: roomId,
-                            displayName: data.displayName ?? roomId,
-                            avatar: data.getAvatarImage(),
-                            size: data.hasAvatar() ? 24 : 45,
-                          ),
-                        ),
-                        error: (error, stackTrace) => Text(
-                          'Failed to load avatar due to $error',
-                        ),
-                        loading: () => const CircularProgressIndicator(),
-                      );
-                    },
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(
+                      client: client!,
+                      room: widget.convo,
+                      isGroup: true,
+                      isAdmin: true,
+                    ),
                   ),
                 );
               },
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final convoProfile = ref.watch(
+                    chatProfileDataProvider(widget.convo),
+                  );
+                  return convoProfile.when(
+                    data: (data) => Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: ActerAvatar(
+                        mode: DisplayMode.User,
+                        uniqueId: widget.convo.getRoomIdStr(),
+                        displayName:
+                            data.displayName ?? widget.convo.getRoomIdStr(),
+                        avatar: data.getAvatarImage(),
+                        size: data.hasAvatar() ? 24 : 45,
+                      ),
+                    ),
+                    error: (error, stackTrace) => Text(
+                      'Failed to load avatar due to $error',
+                    ),
+                    loading: () => const CircularProgressIndicator(),
+                  );
+                },
+              ),
             ),
           ],
         ),
-        body: Obx(() {
-          if (roomController.isLoading.isTrue) {
-            return const Center(
-              child: SizedBox(
-                height: 15,
-                width: 15,
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-          return GetBuilder<ChatRoomController>(
-            id: 'Chat',
-            builder: (ChatRoomController ctlr) => Stack(
+        body: chatRoomState.when(
+          initial: () => const SizedBox.shrink(),
+          loading: () => const Center(
+            child: SizedBox(
+              height: 15,
+              width: 15,
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (e) => Text('Failed to load messages due to $e'),
+          data: (messages) {
+            return Stack(
               children: [
                 Chat(
-                  customBottomWidget: customBottomWidget(context),
-                  textMessageBuilder: textMessageBuilder,
+                  // customBottomWidget: customBottomWidget(context),
+                  // textMessageBuilder: textMessageBuilder,
                   l10n: ChatL10nEn(
                     emptyChatPlaceholder: '',
                     attachmentButtonAccessibilityLabel: '',
@@ -406,30 +398,27 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                     inputPlaceholder: AppLocalizations.of(context)!.message,
                     sendButtonAccessibilityLabel: '',
                   ),
-                  messages: ctlr.getMessages(),
-                  typingIndicatorOptions: TypingIndicatorOptions(
-                    customTypingIndicator: GetBuilder<ChatRoomController>(
-                      id: 'typing indicator',
-                      builder: (ChatRoomController ctlr) {
-                        return TypeIndicator(
-                          bubbleAlignment: BubbleRtlAlignment.right,
-                          showIndicator: ctlr.typingUsers.isNotEmpty,
-                          options: TypingIndicatorOptions(
-                            animationSpeed: const Duration(milliseconds: 800),
-                            typingUsers: ctlr.typingUsers,
-                            typingMode: TypingIndicatorMode.name,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  messages: messages,
+                  // typingIndicatorOptions: TypingIndicatorOptions(
+                  //   customTypingIndicator: TypeIndicator(
+                  //     bubbleAlignment: BubbleRtlAlignment.right,
+                  //     showIndicator: ctlr.typingUsers.isNotEmpty,
+                  //     options: TypingIndicatorOptions(
+                  //       animationSpeed: const Duration(milliseconds: 800),
+                  //       typingUsers: ctlr.typingUsers,
+                  //       typingMode: TypingIndicatorMode.name,
+                  //     ),
+                  //   ),
+                  // ),
                   onSendPressed: (types.PartialText partialText) {},
                   user: types.User(id: client!.userId().toString()),
                   // disable image preview
                   disableImageGallery: true,
                   //custom avatar builder
                   avatarBuilder: (userId) {
-                    var profile = ctlr.getUserProfile(userId);
+                    var profile = ref
+                        .read(chatRoomProvider.notifier)
+                        .getUserProfile(userId);
                     return Padding(
                       padding: const EdgeInsets.only(right: 10),
                       child: SizedBox(
@@ -445,52 +434,59 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                       ),
                     );
                   },
-                  bubbleBuilder: (
-                    child, {
-                    required message,
-                    required nextMessageInGroup,
-                  }) {
-                    return GetBuilder<ChatRoomController>(
-                      id: 'chat-bubble',
-                      builder: (ChatRoomController ctlr) => BubbleBuilder(
-                        userId: client.userId().toString(),
-                        child: child,
-                        message: message,
-                        nextMessageInGroup: nextMessageInGroup,
-                        enlargeEmoji:
-                            message.metadata!['enlargeEmoji'] ?? false,
-                      ),
-                    );
-                  },
-                  imageMessageBuilder: (message, {required messageWidth}) {
-                    return _ImageMessage(
-                      message: message,
-                      messageWidth: messageWidth,
-                    );
-                  },
-                  customMessageBuilder: (message, {required messageWidth}) {
-                    return _CustomMessage(
-                      message: message,
-                      messageWidth: messageWidth,
-                    );
-                  },
+                  // bubbleBuilder: (
+                  //   child, {
+                  //   required message,
+                  //   required nextMessageInGroup,
+                  // }) {
+                  //   return BubbleBuilder(
+                  //     userId: client.userId().toString(),
+                  //     child: child,
+                  //     message: message,
+                  //     nextMessageInGroup: nextMessageInGroup,
+                  //     enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
+                  //   );
+                  // },
+                  // imageMessageBuilder: (message, {required messageWidth}) {
+                  //   return _ImageMessage(
+                  //     message: message,
+                  //     messageWidth: messageWidth,
+                  //   );
+                  // },
+                  // customMessageBuilder: (message, {required messageWidth}) {
+                  //   return _CustomMessage(
+                  //     message: message,
+                  //     messageWidth: messageWidth,
+                  //   );
+                  // },
                   showUserAvatars: true,
-                  onAttachmentPressed: () => onAttach(context),
+                  // onAttachmentPressed: () => onAttach(context),
                   onAvatarTap: (types.User user) => customMsgSnackbar(
                     context,
                     'Chat Profile view is not implemented yet',
                   ),
-                  onPreviewDataFetched: ctlr.handlePreviewDataFetched,
-                  onMessageTap: ctlr.handleMessageTap,
-                  onEndReached: ctlr.handleEndReached,
+                  // onPreviewDataFetched: ref
+                  //     .watch(chatRoomProvider.notifier)
+                  //     .handlePreviewDataFetched,
+                  // onMessageTap:
+                  //     ref.watch(chatRoomProvider.notifier).handleMessageTap,
+                  onEndReached:
+                      ref.read(chatRoomProvider.notifier).handleEndReached,
                   onEndReachedThreshold: 0.75,
-                  onBackgroundTap: () {
-                    if (ctlr.isEmojiContainerVisible) {
-                      ctlr.toggleEmojiContainer();
-                      ctlr.replyMessageWidget = null;
-                      ctlr.repliedToMessage = null;
-                    }
-                  },
+                  // onBackgroundTap: () {
+                  //   if (ref.watch(
+                  //     chatInputProvider.select((ci) => ci.emojiVisible),
+                  //   )) {
+                  //     ref.watch(chatRoomProvider.notifier).repliedToMessage =
+                  //         null;
+                  //     ref
+                  //         .watch(chatInputProvider.notifier)
+                  //         .toggleEmojiVisible();
+                  //     ref
+                  //         .watch(chatInputProvider.notifier)
+                  //         .setReplyWidget(null);
+                  //   }
+                  // },
                   emptyState: const EmptyHistoryPlaceholder(),
                   //Custom Theme class, see lib/common/store/chatTheme.dart
                   theme: const ActerChatTheme(
@@ -499,31 +495,34 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                   ),
                 ),
               ],
-            ),
-          );
-        }),
+            );
+          },
+        ),
       ),
     );
   }
 
-  Future<void> onSendButtonPressed(ChatRoomController ctlr) async {
-    ctlr.sendButtonDisable();
-    String markdownText = ctlr.mentionKey.currentState!.controller!.text;
-    String htmlText = ctlr.mentionKey.currentState!.controller!.text;
+  Future<void> onSendButtonPressed() async {
+    ref.watch(chatInputProvider.notifier).toogleSendBtn();
+    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
+    String markdownText =
+        chatInputNotifier.mentionKey.currentState!.controller!.text;
+    String htmlText =
+        chatInputNotifier.mentionKey.currentState!.controller!.text;
     int messageLength = markdownText.length;
-    ctlr.messageTextMapMarkDown.forEach((key, value) {
+    chatInputNotifier.messageTextMapMarkDown.forEach((key, value) {
       markdownText = markdownText.replaceAll(key, value);
     });
-    ctlr.messageTextMapHtml.forEach((key, value) {
+    chatInputNotifier.messageTextMapHtml.forEach((key, value) {
       htmlText = htmlText.replaceAll(key, value);
     });
-    await ctlr.handleSendPressed(
-      markdownText,
-      htmlText,
-      messageLength,
-    );
-    ctlr.messageTextMapMarkDown.clear();
-    ctlr.mentionKey.currentState!.controller!.clear();
+    await ref.watch(chatRoomProvider.notifier).handleSendPressed(
+          markdownText,
+          htmlText,
+          messageLength,
+        );
+    chatInputNotifier.messageTextMapMarkDown.clear();
+    chatInputNotifier.mentionKey.currentState!.controller!.clear();
   }
 }
 
