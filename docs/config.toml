@@ -28,10 +28,16 @@ twitter = "https://twitter.com/acterhq"
 email = "devs@acter.global"
 
 [[extra.menu.main]]
-name = "Getting Started"
+name = "Nightly builds"
+section = "nightly"
+url = "/nightly/"
+weight = 10
+
+[[extra.menu.main]]
+name = "Development"
 section = "docs"
 url = "/docs/getting-started/setup/"
-weight = 10
+weight = 15
 
 [[extra.menu.main]]
 name = "APIs"
