@@ -36,7 +36,7 @@ weight = 10
 [[extra.menu.main]]
 name = "Admin"
 section = "admin"
-url = "/admin/"
+url = "/admin/space-admin/moderation/"
 weight = 12
 
 [[extra.menu.main]]

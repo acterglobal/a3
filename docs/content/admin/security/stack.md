@@ -1,7 +1,7 @@
 +++
-title = "Metadata"
+title = "Tech Stack"
 
 sort_by = "weight"
-weight = 25
+weight = 20
 template = "docs/page.html"
 +++

@@ -1,7 +1,7 @@
 +++
-title = "Security"
+title = "Decentralization"
 sort_by = "weight"
-weight = 99
+weight = 10
 template = "docs/section.html"
 
 [extra]
