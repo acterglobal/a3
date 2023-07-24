@@ -257,12 +257,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
               : context.goNamed(Routes.main.name),
           child: const Text('Cancel'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.neutral,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
-            ),
-            side: BorderSide(
-              color: Theme.of(context).colorScheme.success,
             ),
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
@@ -278,9 +274,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
           },
           child: const Text('Create Event'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: _titleInput.isNotEmpty
-                ? Theme.of(context).colorScheme.success
-                : Theme.of(context).colorScheme.success.withOpacity(0.6),
+            backgroundColor:  Theme.of(context).colorScheme.success,
+                
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
             ),

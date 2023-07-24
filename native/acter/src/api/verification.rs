@@ -49,7 +49,7 @@ pub struct VerificationEvent {
     txn_id: Option<OwnedTransactionId>,
     sender: OwnedUserId,
     /// for request/ready/start events
-    launcher: Option<OwnedDeviceId>,
+    other_device_id: Option<OwnedDeviceId>,
     /// for cancel event
     cancel_code: Option<CancelCode>,
     /// for cancel event
@@ -65,7 +65,7 @@ impl VerificationEvent {
         event_id: Option<OwnedEventId>,
         txn_id: Option<OwnedTransactionId>,
         sender: OwnedUserId,
-        launcher: Option<OwnedDeviceId>,
+        other_device_id: Option<OwnedDeviceId>,
         cancel_code: Option<CancelCode>,
         reason: Option<String>,
     ) -> Self {
@@ -76,7 +76,7 @@ impl VerificationEvent {
             event_id,
             txn_id,
             sender,
-            launcher,
+            other_device_id,
             cancel_code,
             reason,
         }
@@ -269,8 +269,8 @@ impl VerificationEvent {
             .client
             .device_id()
             .context("guest user cannot get device id")?;
-        match self.launcher.clone() {
-            Some(launcher) => Ok(launcher == *device_id),
+        match self.other_device_id.clone() {
+            Some(other_device_id) => Ok(other_device_id == *device_id),
             None => Ok(false),
         }
     }

@@ -126,7 +126,7 @@ final sidebarItemsProvider = Provider.autoDispose
     SidebarNavigationItem(
       icon: const Icon(Atlas.magnifying_glass_thin),
       label: Text(
-        'Search',
+        'Jump',
         style: Theme.of(context).textTheme.labelSmall,
         softWrap: false,
       ),
@@ -136,7 +136,7 @@ final sidebarItemsProvider = Provider.autoDispose
     SidebarNavigationItem(
       icon: const Icon(Atlas.home_thin),
       label: Text(
-        'Overview',
+        'Home',
         style: Theme.of(context).textTheme.labelSmall,
         softWrap: false,
       ),

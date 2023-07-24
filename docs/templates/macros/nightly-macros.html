@@ -1,0 +1,46 @@
+
+{% macro nightly_desktop_install_buttons(tag_date) %}
+<a
+    class="btn btn-outline-secondary btn-lg px-4 mb-2"
+    href="https://github.com/acterglobal/a3/releases/download/nightly-{{tag_date}}/acter-nightly-windows-{{tag_date}}.zip"
+    role="button"
+>
+Windows (x64)
+</a>
+<a
+    class="btn btn-outline-secondary btn-lg px-4 mb-2"
+    href="https://github.com/acterglobal/a3/releases/download/nightly-{{tag_date}}/acter-nightly-macosx-{{tag_date}}.tar.bz2 "
+    role="button"
+>
+MacOS (intel & silicon)
+</a>
+<a
+    class="btn btn-outline-secondary btn-lg px-4 mb-2"
+    href="https://github.com/acterglobal/a3/releases/download/nightly-{{tag_date}}/acter-nightly-linux-x64-{{tag_date}}.tar.bz2 "
+    role="button"
+>
+Linux (x64)
+</a>
+
+{% endmacro %}
+
+{% macro nightly_mobile_install_buttons(tag_date) %}
+<a
+    class="btn btn-outline-primary btn-lg px-4 mb-2"
+    href="https://github.com/acterglobal/a3/releases/download/nightly-{{tag_date}}/acter-nightly-android-arm64-{{tag_date}}.apk"
+    role="button"
+>
+Android (arm64)
+</a>
+
+<a
+    class="btn btn-outline-primary btn-lg px-4 mb-2"
+    href="itms-services://?action=download-manifest&amp;url=https://github.com/acterglobal/a3/releases/download/nightly-{{tag_date}}/ios-manifest.plist"
+    role="button"
+>
+iPhone / iOS*
+</a>
+<br/>
+<small>* for ad-hoc registered devices only</small>
+
+{% endmacro %}
