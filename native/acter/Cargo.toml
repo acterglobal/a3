@@ -15,6 +15,7 @@ cbindgen = []
 dart = []
 image-meta = ["dep:imagesize"]
 audio-meta = ["dep:lofty", "dep:lofty_attr"]
+video-meta = ["dep:mp4parse"]
 
 [patch.crates-io]
 proc-macro2 = "=1.0.55" # fix issue 'Your compiler does not support spans which is required by genco'
@@ -40,6 +41,7 @@ lofty_attr = { version = "0.6", optional = true }
 log = "0.4"
 log-panics = "2.0.0"
 mime_guess = "2.0.4"
+mp4parse = { version = "0.17.0", optional = true }
 parse-env-filter = "0.1.0"
 strum = { workspace = true }
 ruma = { workspace = true }
@@ -90,7 +92,7 @@ android_logger = "0.12"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 tracing-android = "0.2"
 
-#   ----   IOS
+#   ----   IOS/MACOS
 [target.'cfg(any(target_os = "ios", target_os = "macos"))'.dependencies]
 oslog = "0.2"
 

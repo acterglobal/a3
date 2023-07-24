@@ -17,4 +17,6 @@ mod desktop;
 #[cfg(not(any(target_os = "android", target_os = "ios", target_os = "macos")))]
 pub use desktop::*;
 
+#[cfg(feature = "video-meta")]
+pub use native::{parse_video, VideoMetadata};
 pub use native::{rotate_log_file, sanitize, write_log};

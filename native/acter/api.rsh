@@ -606,6 +606,23 @@ object SendAudioResult {
     fn duration() -> Option<EfkDuration>;
 }
 
+object SendVideoResult {
+    /// get event id
+    fn event_id() -> EventId;
+
+    /// get file size
+    fn file_size() -> Option<u64>;
+
+    /// get duration
+    fn duration() -> Option<EfkDuration>;
+
+    /// get width
+    fn width() -> Option<u64>;
+
+    /// get height
+    fn height() -> Option<u64>;
+}
+
 object Convo {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
@@ -684,7 +701,7 @@ object Convo {
     fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// send the video message to this room
-    fn send_video_message(url_or_path: string, body: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, blurhash: Option<string>) -> Future<Result<EventId>>;
+    fn send_video_message(url_or_path: string, body: string, blurhash: Option<string>) -> Future<Result<SendVideoResult>>;
 
     /// decrypted video buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -733,13 +750,13 @@ object Convo {
     fn send_text_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as image
-    fn send_image_reply(url_or_path: string, body: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_image_reply(url_or_path: string, body: string, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as audio
     fn send_audio_reply(url_or_path: string, body: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as video
-    fn send_video_reply(url_or_path: string, body: string, secs: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_video_reply(url_or_path: string, body: string, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as file
     fn send_file_reply(url_or_path: string, body: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
@@ -1281,7 +1298,7 @@ object Space {
     fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// send the video message to this room
-    fn send_video_message(url_or_path: string, body: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, blurhash: Option<string>) -> Future<Result<EventId>>;
+    fn send_video_message(url_or_path: string, body: string, blurhash: Option<string>) -> Future<Result<SendVideoResult>>;
 
     /// decrypted video buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -1301,8 +1318,23 @@ object Space {
 
     /// leave this room
     fn leave() -> Future<Result<bool>>;
-    
-       /// update the power levels of specified member
+
+    /// send reply as text
+    fn send_text_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+
+    /// send reply as image
+    fn send_image_reply(url_or_path: string, body: string, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+
+    /// send reply as audio
+    fn send_audio_reply(url_or_path: string, body: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+
+    /// send reply as video
+    fn send_video_reply(url_or_path: string, body: string, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+
+    /// send reply as file
+    fn send_file_reply(url_or_path: string, body: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+
+    /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
 
 }

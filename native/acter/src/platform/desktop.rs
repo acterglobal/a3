@@ -1,7 +1,6 @@
-use std::io;
-
 use anyhow::Result;
 use matrix_sdk::ClientBuilder;
+use std::io;
 
 use super::native;
 

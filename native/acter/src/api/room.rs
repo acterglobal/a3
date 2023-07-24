@@ -45,6 +45,8 @@ use ruma::events::{EventContent, StaticEventContent};
 use std::{fs, io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tracing::{error, info};
 
+#[cfg(feature = "video-meta")]
+use super::platform::{parse_video, VideoMetadata};
 use super::{
     account::Account,
     api::FfiBuffer,
@@ -625,6 +627,7 @@ impl Room {
                     let mut info = assign!(ImageInfo::new(), {
                         mimetype: Some(mimetype),
                         size: UInt::new(size),
+                        blurhash,
                     });
                     #[cfg(feature = "image-meta")]
                     if let Ok(size) = imagesize::size(path.to_string_lossy().to_string()) {
@@ -796,11 +799,8 @@ impl Room {
         &self,
         url_or_path: String,
         body: String,
-        secs: Option<u32>,
-        height: Option<u32>,
-        width: Option<u32>,
         blurhash: Option<String>,
-    ) -> Result<OwnedEventId> {
+    ) -> Result<SendVideoResult> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -826,12 +826,13 @@ impl Room {
 
                 let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
                 let mut file_size = None;
-                // let mut width = None;
-                // let mut height = None;
+                let mut duration = None;
+                let mut width = None;
+                let mut height = None;
                 let video_content = if url.is_valid() {
                     VideoMessageEventContent::plain(body, url.into(), None)
                 } else {
-                    let path = PathBuf::from(url_or_path);
+                    let path = PathBuf::from(url_or_path.clone());
                     let guess = mime_guess::from_path(path.clone());
                     let content_type = guess.first().context("No MIME type")?;
                     let mimetype = content_type.to_string();
@@ -852,10 +853,20 @@ impl Room {
                     let buf = fs::read(path)?;
                     let size = buf.len() as u64;
                     file_size = Some(size);
-                    let info = assign!(VideoInfo::new(), {
+                    let mut info = assign!(VideoInfo::new(), {
                         mimetype: Some(mimetype),
                         size: UInt::new(size),
+                        blurhash,
                     });
+                    #[cfg(feature = "video-meta")]
+                    if let Ok(Some(metadata)) = parse_video(url_or_path).await {
+                        info.duration = Some(Duration::from_secs(metadata.duration));
+                        info.width = UInt::new(metadata.width as u64);
+                        info.height = UInt::new(metadata.height as u64);
+                        duration = info.duration.clone();
+                        width = Some(metadata.width);
+                        height = Some(metadata.height);
+                    }
                     content.info = Some(Box::new(info));
                     content
                 };
@@ -863,7 +874,13 @@ impl Room {
                 let content = RoomMessageEventContent::new(MessageType::Video(video_content));
                 let response = room.send(content, None).await?;
 
-                Ok(response.event_id)
+                Ok(SendVideoResult {
+                    event_id: response.event_id,
+                    file_size,
+                    duration,
+                    width,
+                    height,
+                })
             })
             .await?
     }
@@ -1523,6 +1540,7 @@ impl Room {
         &self,
         url_or_path: String,
         body: String,
+        blurhash: Option<String>,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -1569,10 +1587,9 @@ impl Room {
                     };
                     let buf = fs::read(path.clone())?;
                     let mut info = assign!(ImageInfo::new(), {
-                        height: None,
-                        width: None,
                         mimetype: Some(mimetype),
                         size: UInt::new(buf.len() as u64),
+                        blurhash,
                     });
                     #[cfg(feature = "image-meta")]
                     if let Ok(size) = imagesize::size(path.to_string_lossy().to_string()) {
@@ -1679,14 +1696,10 @@ impl Room {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn send_video_reply(
         &self,
         url_or_path: String,
         body: String,
-        secs: Option<u32>,
-        width: Option<u32>,
-        height: Option<u32>,
         blurhash: Option<String>,
         event_id: String,
         txn_id: Option<String>,
@@ -1714,7 +1727,7 @@ impl Room {
                 let video_content = if url.is_valid() {
                     VideoMessageEventContent::plain(body, url.into(), None)
                 } else {
-                    let path = PathBuf::from(url_or_path);
+                    let path = PathBuf::from(url_or_path.clone());
                     let guess = mime_guess::from_path(path.clone());
                     let content_type = guess.first().context("No MIME type")?;
                     let mimetype = content_type.to_string();
@@ -1733,14 +1746,17 @@ impl Room {
                         VideoMessageEventContent::plain(body, response.content_uri, None)
                     };
                     let buf = fs::read(path)?;
-                    let info = assign!(VideoInfo::new(), {
-                        duration: secs.map(|x| Duration::from_secs(x as u64)),
-                        height: height.map(UInt::from),
-                        width: width.map(UInt::from),
+                    let mut info = assign!(VideoInfo::new(), {
                         mimetype: Some(mimetype),
                         size: UInt::new(buf.len() as u64),
                         blurhash,
                     });
+                    #[cfg(feature = "video-meta")]
+                    if let Ok(Some(metadata)) = parse_video(url_or_path).await {
+                        info.duration = Some(Duration::from_secs(metadata.duration));
+                        info.width = UInt::new(metadata.width as u64);
+                        info.height = UInt::new(metadata.height as u64);
+                    }
                     content.info = Some(Box::new(info));
                     content
                 };
@@ -1952,5 +1968,35 @@ impl SendAudioResult {
 
     pub fn duration(&self) -> Option<Duration> {
         self.duration
+    }
+}
+
+pub struct SendVideoResult {
+    event_id: OwnedEventId,
+    file_size: Option<u64>,     // unknown for remote url
+    duration: Option<Duration>, // unknown for remote url
+    width: Option<u32>,         // unknown for remote url
+    height: Option<u32>,        // unknown for remote url
+}
+
+impl SendVideoResult {
+    pub fn event_id(&self) -> OwnedEventId {
+        self.event_id.clone()
+    }
+
+    pub fn file_size(&self) -> Option<u64> {
+        self.file_size
+    }
+
+    pub fn duration(&self) -> Option<Duration> {
+        self.duration
+    }
+
+    pub fn width(&self) -> Option<u32> {
+        self.width
+    }
+
+    pub fn height(&self) -> Option<u32> {
+        self.height
     }
 }

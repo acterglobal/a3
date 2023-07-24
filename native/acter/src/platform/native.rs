@@ -5,6 +5,8 @@ use log::{LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
 use matrix_sdk_sqlite::make_store_config;
 use parse_env_filter::eager::{filters, Filter};
+#[cfg(feature = "video-meta")]
+use std::{fs, io};
 use std::{
     path::PathBuf,
     sync::{Arc, Mutex},
@@ -172,5 +174,29 @@ fn get_log_filter(level: &str) -> Option<LevelFilter> {
         "warn" => Some(LevelFilter::Warn),
         "trace" => Some(LevelFilter::Trace),
         _ => None,
+    }
+}
+
+#[cfg(feature = "video-meta")]
+pub struct VideoMetadata {
+    pub duration: u64,
+    pub width: u32,
+    pub height: u32,
+}
+
+#[cfg(feature = "video-meta")]
+pub async fn parse_video(uri: String) -> Result<Option<VideoMetadata>> {
+    let path = PathBuf::from(uri);
+    let mut buf = fs::read(path)?;
+    let mut cursor = io::Cursor::new(&buf);
+    let context = mp4parse::read_mp4(&mut cursor).expect("read_mp4 failed");
+    if let Some(track_header) = context.tracks[0].tkhd.clone() {
+        Ok(Some(VideoMetadata {
+            duration: track_header.duration,
+            width: track_header.width,
+            height: track_header.height,
+        }))
+    } else {
+        Ok(None)
     }
 }

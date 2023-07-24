@@ -549,6 +549,7 @@ class ChatRoomController extends GetxController {
       await _currentRoom!.sendImageReply(
         path,
         name,
+        null,
         repliedToMessage!.id,
         null,
       );
@@ -578,6 +579,7 @@ class ChatRoomController extends GetxController {
       await _currentRoom!.sendImageReply(
         path,
         name,
+        null,
         repliedToMessage!.id,
         null,
       );
