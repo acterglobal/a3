@@ -247,6 +247,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
             }
             // check permissions before updating space
             bool havePermission = await permissionCheck();
+            // We are doing as expected, but the lints triggers.
+            // ignore: use_build_context_synchronously
+            if (!context.mounted) {
+              return;
+            }
             if (!havePermission) {
               popUpDialog(
                 context: context,
@@ -267,6 +272,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
             }
             final roomId = await _handleUpdateSpace(context);
             debugPrint('Space Updated: $roomId');
+            // We are doing as expected, but the lints triggers.
+            // ignore: use_build_context_synchronously
+            if (!context.mounted) {
+              return;
+            }
             context.goNamed(
               Routes.space.name,
               pathParameters: {

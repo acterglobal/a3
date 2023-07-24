@@ -299,6 +299,12 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       await space.addChildSpace(roomId.toString());
     }
 
+    // We are doing as expected, but the lints triggers.
+    // ignore: use_build_context_synchronously
+    if (!context.mounted) {
+      return;
+    }
+
     Navigator.of(context, rootNavigator: true).pop();
     context.goNamed(
       Routes.space.name,

@@ -10,7 +10,7 @@ class LinkSettingsPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _LinkSettingsPageState createState() => _LinkSettingsPageState();
+  State<LinkSettingsPage> createState() => _LinkSettingsPageState();
 }
 
 class _LinkSettingsPageState extends State<LinkSettingsPage> {

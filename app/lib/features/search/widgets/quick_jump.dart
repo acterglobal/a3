@@ -79,7 +79,10 @@ class QuickJump extends ConsumerWidget {
                       semanticsLabel: 'tasks',
                       width: 32,
                       height: 32,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.onSurface,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   )
                 : null,
@@ -290,7 +293,7 @@ class QuickJump extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          TextField(                                                         
+          TextField(
             autofocus: true,
             decoration: const InputDecoration(
               border: InputBorder.none,

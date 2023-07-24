@@ -273,7 +273,11 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
         await space.addChildSpace(roomId.toString());
       }
       final convo = await client.convo(roomId.toString());
-
+      // We are doing as expected, but the lint still triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       Navigator.of(context, rootNavigator: true).pop();
       context.goNamed(
         Routes.chatroom.name,
@@ -281,6 +285,9 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
         extra: convo,
       );
     } catch (e) {
+      if (!context.mounted) {
+        return;
+      }
       context.pop();
       customMsgSnackbar(context, 'Some error occured $e');
     }

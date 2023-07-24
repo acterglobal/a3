@@ -689,7 +689,7 @@ List<RouteBase> makeRoutes(Ref ref) {
             if (authGuarded != null) {
               return authGuarded;
             }
-            if (isDesktop(context)) {
+            if (context.mounted && isDesktop(context)) {
               return Routes.dashboard.route;
             } else {
               return Routes.updates.route;

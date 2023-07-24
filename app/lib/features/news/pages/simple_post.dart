@@ -100,7 +100,6 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               Expanded(
                 child: TextFormField(
                   textAlignVertical: TextAlignVertical.top,
-
                   decoration: InputDecoration(
                     hintText:
                         (ref.read(selectedImageProvider.notifier).state == null)
@@ -230,6 +229,11 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                       null,
                     );
                   } else {
+                    // We are doing as expected, but the lints triggers.
+                    // ignore: use_build_context_synchronously
+                    if (!context.mounted) {
+                      return;
+                    }
                     customMsgSnackbar(
                       context,
                       'Posting of $mimeType not yet supported',
@@ -237,6 +241,11 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                     return;
                   }
                 } else {
+                  // We are doing as expected, but the lints triggers.
+                  // ignore: use_build_context_synchronously
+                  if (!context.mounted) {
+                    return;
+                  }
                   customMsgSnackbar(
                     context,
                     'Detecting mimetype failed. not supported.',
@@ -251,11 +260,22 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 ref.read(textProvider.notifier).state = '';
                 ref.read(selectedImageProvider.notifier).state = null;
                 // close both
+
+                // We are doing as expected, but the lints triggers.
+                // ignore: use_build_context_synchronously
+                if (!context.mounted) {
+                  return;
+                }
                 Navigator.of(context, rootNavigator: true).pop();
                 Navigator.of(context, rootNavigator: true).pop();
                 // FIXME due to #718. well lets at least try forcing a refresh upon route.
                 ref.invalidate(newsListProvider);
               } catch (err) {
+                // We are doing as expected, but the lints triggers.
+                // ignore: use_build_context_synchronously
+                if (!context.mounted) {
+                  return;
+                }
                 Navigator.of(context, rootNavigator: true).pop();
                 popUpDialog(
                   context: context,
@@ -273,8 +293,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor:  Theme.of(context).colorScheme.success,
-                
+            backgroundColor: Theme.of(context).colorScheme.success,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
             ),

@@ -5,7 +5,7 @@ class GroupLinkView extends StatefulWidget {
   const GroupLinkView({Key? key}) : super(key: key);
 
   @override
-  _GroupLinkScreenState createState() => _GroupLinkScreenState();
+  State<GroupLinkView> createState() => _GroupLinkScreenState();
 }
 
 class _GroupLinkScreenState extends State<GroupLinkView> {

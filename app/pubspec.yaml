@@ -78,6 +78,7 @@ dependencies:
   # State Management
   get: ^4.6.5
   flutter_riverpod: ^2.2.0
+  riverpod: ^2.3.6
   # Routing
   go_router: ^10.0.0
 
@@ -90,6 +91,7 @@ dependencies:
 
   # Utilities
   path_provider: ^2.0.8
+  path: ^1.8.3
   url_launcher: ^6.1.10
   file_picker: ^5.2.5
   filesystem_picker: ^3.1.0
@@ -99,6 +101,8 @@ dependencies:
   mime: ^1.0.2
   permission_handler: ^10.2.0
   sprintf: ^7.0.0
+  freezed_annotation: ^2.4.1
+  http_parser: ^4.0.2
   flutter_custom_selector: ^0.0.3
   date_format: ^2.0.2
   screenshot: ^2.1.0
@@ -107,6 +111,7 @@ dependencies:
   shake: ^2.2.0
   crypto: ^3.0.2
   flutter_math_fork: ^0.7.1
+  shared_preferences: ^2.2.0
 
   # Testing
   mockito: ^5.0.0
@@ -133,6 +138,7 @@ dev_dependencies:
     git:
       url: https://github.com/acterglobal/flutter_gherkin
       branch: main
+  gherkin: ^3.1.0
 
 icons_launcher:
   image_path: "assets/icon/logo.png"

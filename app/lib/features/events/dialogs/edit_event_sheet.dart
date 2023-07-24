@@ -67,6 +67,12 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
 
     _nameController.text = ref.read(_titleProvider);
     _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
+
+    // We are doing as expected, but the lints triggers.
+    // ignore: use_build_context_synchronously
+    if (!context.mounted) {
+      return;
+    }
     _startTimeController.text = ref.read(_startTimeProvider).format(context);
     _endTimeController.text = ref.read(_endTimeProvider).format(context);
     _descriptionController.text = calendarEvent.description()!.body();
@@ -116,7 +122,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
                       InkWell(
                         focusColor: Colors.transparent,
                         hoverColor: Colors.transparent,
-                        onTap: () => _selectDate(context),
+                        onTap: _selectDate,
                         child: TextFormField(
                           enabled: false,
                           controller: _dateController,
@@ -152,7 +158,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
                       InkWell(
                         focusColor: Colors.transparent,
                         hoverColor: Colors.transparent,
-                        onTap: () => _selectStartTime(context),
+                        onTap: _selectStartTime,
                         child: TextFormField(
                           enabled: false,
                           controller: _startTimeController,
@@ -188,7 +194,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
                       InkWell(
                         focusColor: Colors.transparent,
                         hoverColor: Colors.transparent,
-                        onTap: () => _selectEndTime(context),
+                        onTap: _selectEndTime,
                         child: TextFormField(
                           enabled: false,
                           controller: _endTimeController,
@@ -329,15 +335,26 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
 
       final eventId = await eventUpdateBuilder.send();
       debugPrint('Updated Calendar Event: ${eventId.toString()}');
+
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       context.pop();
       context.pop();
     } catch (e) {
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       context.pop();
       debugPrint('Some error occured ${e.toString()}');
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: ref.read(_dateProvider),
@@ -351,24 +368,24 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
     }
   }
 
-  Future<void> _selectStartTime(BuildContext context) async {
+  Future<void> _selectStartTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_startTimeProvider),
     );
-    if (picked != null) {
+    if (picked != null && context.mounted) {
       ref.read(_startTimeProvider.notifier).update((state) => picked);
       var time = ref.read(_startTimeProvider).format(context);
       _startTimeController.text = time;
     }
   }
 
-  Future<void> _selectEndTime(BuildContext context) async {
+  Future<void> _selectEndTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_endTimeProvider),
     );
-    if (picked != null) {
+    if (picked != null && context.mounted) {
       ref.read(_endTimeProvider.notifier).update((state) => picked);
 
       var time = ref.read(_endTimeProvider).format(context);

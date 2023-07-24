@@ -96,15 +96,16 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                         InkWell(
                           focusColor: Colors.transparent,
                           hoverColor: Colors.transparent,
-                          onTap: () => _selectDate(context),
+                          onTap: _selectDate,
                           child: TextFormField(
                             enabled: false,
                             controller: _dateController,
                             keyboardType: TextInputType.datetime,
                             style: Theme.of(context).textTheme.labelLarge,
                             decoration: InputDecoration(
-                              fillColor:
-                                  Theme.of(context).colorScheme.primaryContainer,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
                               filled: true,
                               hintText: 'Select Date',
                               border: OutlineInputBorder(
@@ -132,15 +133,16 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                         InkWell(
                           focusColor: Colors.transparent,
                           hoverColor: Colors.transparent,
-                          onTap: () => _selectStartTime(context),
+                          onTap: _selectStartTime,
                           child: TextFormField(
                             enabled: false,
                             controller: _startTimeController,
                             keyboardType: TextInputType.datetime,
                             style: Theme.of(context).textTheme.labelLarge,
                             decoration: InputDecoration(
-                              fillColor:
-                                  Theme.of(context).colorScheme.primaryContainer,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
                               filled: true,
                               hintText: 'Select Time',
                               border: OutlineInputBorder(
@@ -168,15 +170,16 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                         InkWell(
                           focusColor: Colors.transparent,
                           hoverColor: Colors.transparent,
-                          onTap: () => _selectEndTime(context),
+                          onTap: _selectEndTime,
                           child: TextFormField(
                             enabled: false,
                             controller: _endTimeController,
                             keyboardType: TextInputType.datetime,
                             style: Theme.of(context).textTheme.labelLarge,
                             decoration: InputDecoration(
-                              fillColor:
-                                  Theme.of(context).colorScheme.primaryContainer,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
                               filled: true,
                               hintText: 'Select Time',
                               border: OutlineInputBorder(
@@ -270,11 +273,10 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
             if (titleInput.isEmpty) {
               return;
             }
-            await _handleCreateEvent(context);
+            await _handleCreateEvent();
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor:  Theme.of(context).colorScheme.success,
-                
+            backgroundColor: Theme.of(context).colorScheme.success,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
             ),
@@ -291,7 +293,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     ref.read(_titleProvider.notifier).update((state) => value!);
   }
 
-  Future<void> _handleCreateEvent(BuildContext context) async {
+  Future<void> _handleCreateEvent() async {
     popUpDialog(
       context: context,
       title: const Text('Creating Event'),
@@ -342,6 +344,11 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
 
       final eventId = await draft.send();
       debugPrint('Created Calendar Event: ${eventId.toString()}');
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       context.pop();
       context.pop();
       await context.pushNamed(
@@ -354,7 +361,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: ref.read(_dateProvider),
@@ -368,11 +375,17 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     }
   }
 
-  Future<void> _selectStartTime(BuildContext context) async {
+  Future<void> _selectStartTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_startTimeProvider),
     );
+
+    // We are doing as expected, but the lints triggers.
+    // ignore: use_build_context_synchronously
+    if (!context.mounted) {
+      return;
+    }
     if (picked != null) {
       ref.read(_startTimeProvider.notifier).update((state) => picked);
       var time = ref.read(_startTimeProvider).format(context);
@@ -380,14 +393,19 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     }
   }
 
-  Future<void> _selectEndTime(BuildContext context) async {
+  Future<void> _selectEndTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_endTimeProvider),
     );
+
+    // We are doing as expected, but the lints triggers.
+    // ignore: use_build_context_synchronously
+    if (!context.mounted) {
+      return;
+    }
     if (picked != null) {
       ref.read(_endTimeProvider.notifier).update((state) => picked);
-
       var time = ref.read(_endTimeProvider).format(context);
       _endTimeController.text = time;
     }

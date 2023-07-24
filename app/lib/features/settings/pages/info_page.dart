@@ -149,14 +149,14 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
               child: const Text('Reset to default'),
               onPressed: () async {
                 await setRustLogSettings('');
-                Navigator.pop(context);
+                if (context.mounted) Navigator.pop(context);
               },
             ),
             TextButton(
               child: const Text('Save'),
               onPressed: () async {
                 await setRustLogSettings(textFieldController.text);
-                Navigator.pop(context);
+                if (context.mounted) Navigator.pop(context);
               },
             ),
           ],

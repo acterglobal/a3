@@ -669,7 +669,7 @@ packages:
     source: hosted
     version: "2.3.3"
   freezed_annotation:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: freezed_annotation
       sha256: c3fd9336eb55a38cc1bbd79ab17573113a8deccd0ecbbf926cca3c62803b5c2d
@@ -698,7 +698,7 @@ packages:
     source: hosted
     version: "4.6.5"
   gherkin:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: gherkin
       sha256: c3e0c98b305a94ec8c015038529a1c8c6ea3b0953619514e76647407efb66d7f
@@ -770,7 +770,7 @@ packages:
     source: hosted
     version: "3.2.1"
   http_parser:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http_parser
       sha256: "2aa08ce0341cc9b354a498388e30986515406668dbcc4f7c950c3e715496693b"
@@ -1055,7 +1055,7 @@ packages:
     source: hosted
     version: "2.0.2"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       sha256: "8829d8a55c13fc0e37127c29fedf290c102f4e40ae94ada574091fe0ff96c917"
@@ -1239,7 +1239,7 @@ packages:
     source: hosted
     version: "1.2.3"
   riverpod:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: riverpod
       sha256: "80e48bebc83010d5e67a11c9514af6b44bbac1ec77b4333c8ea65dbc79e2d8ef"
@@ -1327,7 +1327,7 @@ packages:
     source: hosted
     version: "2.2.0"
   shared_preferences:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences
       sha256: "0344316c947ffeb3a529eac929e1978fcd37c26be4e8468628bac399365a3ca1"

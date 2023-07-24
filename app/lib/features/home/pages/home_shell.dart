@@ -310,12 +310,12 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       appDocDir.path,
       fileName: 'screenshot_$timestamp.png',
     );
-    if (imagePath != null) {
+    if (imagePath != null && context.mounted) {
       await context.pushNamed(
         Routes.bugReport.name,
         extra: {'screenshot': imagePath},
       );
-    } else {
+    } else if (context.mounted) {
       await context.push(Routes.bugReport.name);
     }
   }

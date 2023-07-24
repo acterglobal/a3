@@ -72,12 +72,14 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                         }
                       },
                     ),
-                    const SizedBox(width: 6,),
+                    const SizedBox(
+                      width: 6,
+                    ),
                     Expanded(
                       child: SizedBox(
                         height: 52,
                         child: TextFormField(
-                          decoration:  InputDecoration(
+                          decoration: InputDecoration(
                             hintText: 'Your title',
                             labelText: 'Title',
                             border: OutlineInputBorder(
@@ -86,7 +88,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                           ),
                           controller: _titleController,
                           onChanged: (String? value) {
-                            ref.read(titleProvider.notifier).state = value ?? '';
+                            ref.read(titleProvider.notifier).state =
+                                value ?? '';
                           },
                           validator: (value) =>
                               (value != null && value.isNotEmpty)
@@ -104,13 +107,12 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                   if (subselection == 'text') {
                     return Expanded(
                       child: TextFormField(
-                        decoration:  InputDecoration(
+                        decoration: InputDecoration(
                           hintText: 'The content of the pin',
                           labelText: 'Content',
-                          
                           border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
                         ),
                         textAlignVertical: TextAlignVertical.top,
                         expands: true,
@@ -128,13 +130,13 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                     );
                   } else {
                     return TextFormField(
-                      decoration:  InputDecoration(
+                      decoration: InputDecoration(
                         icon: const Icon(Atlas.link_thin),
                         hintText: 'https://',
                         labelText: 'link',
                         border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
                       ),
                       validator: (value) => (value != null && value.isNotEmpty)
                           ? null
@@ -147,36 +149,42 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 }),
               ),
               FormField(
-                builder:(state) =>  GestureDetector(
+                builder: (state) => GestureDetector(
                   onTap: () async {
                     final currentSpaceId = ref.read(selectedSpaceIdProvider);
-                      final newSelectedSpaceId = await selectSpaceDrawer(
-                        context: context,
-                        currentSpaceId: currentSpaceId,
-                        canCheck: 'CanPostPin',
-                        title: const Text('Select space'),
-                      );
-                      ref.read(selectedSpaceIdProvider.notifier).state =
-                          newSelectedSpaceId;
+                    final newSelectedSpaceId = await selectSpaceDrawer(
+                      context: context,
+                      currentSpaceId: currentSpaceId,
+                      canCheck: 'CanPostPin',
+                      title: const Text('Select space'),
+                    );
+                    ref.read(selectedSpaceIdProvider.notifier).state =
+                        newSelectedSpaceId;
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                          selectedSpace ? 'Space' : 'Please select a space',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        const SizedBox(width: 15,),
-                         state.errorText != null
-                      ? Text(
-                          state.errorText!,
-                          style:
-                              Theme.of(context).textTheme.bodySmall!.copyWith(
+                        selectedSpace ? 'Space' : 'Please select a space',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      state.errorText != null
+                          ? Text(
+                              state.errorText!,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .copyWith(
                                     color: Theme.of(context).colorScheme.error,
                                   ),
-                        )
-                      : Container(),
-                       const SizedBox(height: 10,) , 
+                            )
+                          : Container(),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       selectedSpace
                           ? Consumer(
                               builder: (context, ref, child) =>
@@ -188,16 +196,13 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                                         loading: () => const Text('loading'),
                                       ),
                             )
-                          : Container(),      
-                         
-                              
+                          : Container(),
                     ],
-                    
                   ),
                 ),
                 validator: (x) => (ref.read(selectedSpaceIdProvider) != null)
-                      ? null
-                      : 'You must select a space',
+                    ? null
+                    : 'You must select a space',
               ),
             ],
           ),
@@ -243,12 +248,23 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 // reset providers
                 ref.read(titleProvider.notifier).state = '';
                 ref.read(textProvider.notifier).state = '';
+
+                // We are doing as expected, but the lints triggers.
+                // ignore: use_build_context_synchronously
+                if (!context.mounted) {
+                  return;
+                }
                 Navigator.of(context, rootNavigator: true).pop();
                 context.goNamed(
                   Routes.pin.name,
                   pathParameters: {'pinId': pinId.toString()},
                 );
               } catch (e) {
+                // We are doing as expected, but the lints triggers.
+                // ignore: use_build_context_synchronously
+                if (!context.mounted) {
+                  return;
+                }
                 customMsgSnackbar(context, 'Failed to pin: $e');
               }
             }

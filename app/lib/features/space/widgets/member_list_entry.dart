@@ -21,7 +21,7 @@ class ChangePowerLevel extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ChangePowerLevelState createState() => _ChangePowerLevelState();
+  State<ChangePowerLevel> createState() => _ChangePowerLevelState();
 }
 
 class _ChangePowerLevelState extends State<ChangePowerLevel> {
@@ -182,6 +182,12 @@ class MemberListEntry extends ConsumerWidget {
     );
     if (newPowerlevel != null) {
       final userId = member.userId().toString();
+
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       popUpDialog(
         context: context,
         title: Text(
@@ -191,6 +197,12 @@ class MemberListEntry extends ConsumerWidget {
         isLoader: true,
       );
       await space.updatePowerLevel(userId, newPowerlevel);
+
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       Navigator.of(context, rootNavigator: true).pop();
       customMsgSnackbar(context, 'PowerLevel update submitted');
     }
