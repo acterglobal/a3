@@ -178,9 +178,6 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               : context.goNamed(Routes.main.name),
           child: const Text('Cancel'),
           style: ElevatedButton.styleFrom(
-            // backgroundColor: _titleInput.isNotEmpty
-            //     ? Theme.of(context).colorScheme.success
-            //     : Theme.of(context).colorScheme.success.withOpacity(0.6),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
             ),
