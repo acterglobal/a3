@@ -147,12 +147,27 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 }),
               ),
               FormField(
-                builder: (state) => ListTile(
-                  title: Text(
-                    _selectedSpace ? 'Space' : 'Please select a space',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  subtitle: state.errorText != null
+                builder:(state) =>  GestureDetector(
+                  onTap: () async {
+                    final currentSpaceId = ref.read(selectedSpaceIdProvider);
+                      final newSelectedSpaceId = await selectSpaceDrawer(
+                        context: context,
+                        currentSpaceId: currentSpaceId,
+                        canCheck: 'CanPostPin',
+                        title: const Text('Select space'),
+                      );
+                      ref.read(selectedSpaceIdProvider.notifier).state =
+                          newSelectedSpaceId;
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          _selectedSpace ? 'Space' : 'Please select a space',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        const SizedBox(width: 15,),
+                         state.errorText != null
                       ? Text(
                           state.errorText!,
                           style:
@@ -160,34 +175,29 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                                     color: Theme.of(context).colorScheme.error,
                                   ),
                         )
-                      : null,
-                  trailing: _selectedSpace
-                      ? Consumer(
-                          builder: (context, ref, child) =>
-                              ref.watch(selectedSpaceDetailsProvider).when(
-                                    data: (space) => space != null
-                                        ? SpaceChip(space: space)
-                                        : Text(currentSelectedSpace),
-                                    error: (e, s) => Text('error: $e'),
-                                    loading: () => const Text('loading'),
-                                  ),
-                        )
-                      : null,
-                  onTap: () async {
-                    final currentSpaceId = ref.read(selectedSpaceIdProvider);
-                    final newSelectedSpaceId = await selectSpaceDrawer(
-                      context: context,
-                      currentSpaceId: currentSpaceId,
-                      canCheck: 'CanPostPin',
-                      title: const Text('Select parent space'),
-                    );
-                    ref.read(selectedSpaceIdProvider.notifier).state =
-                        newSelectedSpaceId;
-                  },
+                      : Container(),
+                       const SizedBox(height: 10,) , 
+                      _selectedSpace
+                          ? Consumer(
+                              builder: (context, ref, child) =>
+                                  ref.watch(selectedSpaceDetailsProvider).when(
+                                        data: (space) => space != null
+                                            ? SpaceChip(space: space)
+                                            : Text(currentSelectedSpace),
+                                        error: (e, s) => Text('error: $e'),
+                                        loading: () => const Text('loading'),
+                                      ),
+                            )
+                          : Container(),      
+                         
+                              
+                    ],
+                    
+                  ),
                 ),
                 validator: (x) => (ref.read(selectedSpaceIdProvider) != null)
-                    ? null
-                    : 'You must select a space',
+                      ? null
+                      : 'You must select a space',
               ),
             ],
           ),
@@ -200,12 +210,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
               : context.goNamed(Routes.main.name),
           child: const Text('Cancel'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.neutral,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
-            ),
-            side: BorderSide(
-              color: Theme.of(context).colorScheme.success,
             ),
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
