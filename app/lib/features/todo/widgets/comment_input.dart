@@ -169,7 +169,7 @@ class CommentInputState extends ConsumerState<CommentInput> {
                     skinToneDialogBgColor: Colors.white,
                     skinToneIndicatorColor: Colors.grey,
                     enableSkinTones: true,
-                    showRecentsTab: true,
+                    recentTabBehavior: RecentTabBehavior.RECENT,
                     recentsLimit: 28,
                     noRecents: const Text(
                       'No Recents',
