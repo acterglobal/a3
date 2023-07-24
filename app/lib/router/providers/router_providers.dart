@@ -4,7 +4,6 @@ import 'package:acter/router/router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 // ignore: implementation_imports
-import 'package:go_router/src/information_provider.dart';
 
 final routerNotifierProvider = AsyncNotifierProvider<RouterNotifier, void>(() {
   return RouterNotifier();
