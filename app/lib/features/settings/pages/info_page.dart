@@ -122,7 +122,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
   }
 
   Future<void> _displayDebugLevelEditor(BuildContext context) async {
-    TextEditingController _textFieldController =
+    TextEditingController textFieldController =
         TextEditingController(text: rustLogSetting);
     return showDialog(
       context: context,
@@ -133,7 +133,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             children: [
               const Text('needs an app restart to take effect'),
               TextField(
-                controller: _textFieldController,
+                controller: textFieldController,
                 decoration: const InputDecoration(hintText: 'Debug Level'),
               ),
             ],
@@ -155,7 +155,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             TextButton(
               child: const Text('Save'),
               onPressed: () async {
-                await setRustLogSettings(_textFieldController.text);
+                await setRustLogSettings(textFieldController.text);
                 Navigator.pop(context);
               },
             ),

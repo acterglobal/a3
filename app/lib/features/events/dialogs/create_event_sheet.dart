@@ -51,9 +51,9 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final _titleInput = ref.watch(_titleProvider);
+    final titleInput = ref.watch(_titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
-    final _selectParentSpace = currentParentSpace != null;
+    final selectParentSpace = currentParentSpace != null;
     return SideSheet(
       header: 'Create new event',
       addActions: true,
@@ -218,10 +218,10 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                   const SizedBox(height: 15),
                   ListTile(
                     title: Text(
-                      _selectParentSpace ? 'Space' : 'No space selected',
+                      selectParentSpace ? 'Space' : 'No space selected',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    trailing: _selectParentSpace
+                    trailing: selectParentSpace
                         ? Consumer(
                             builder: (context, ref, child) =>
                                 ref.watch(parentSpaceDetailsProvider).when(
@@ -255,7 +255,6 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
           onPressed: () => context.canPop()
               ? context.pop()
               : context.goNamed(Routes.main.name),
-          child: const Text('Cancel'),
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
@@ -263,16 +262,16 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Cancel'),
         ),
         const SizedBox(width: 10),
         ElevatedButton(
           onPressed: () async {
-            if (_titleInput.isEmpty) {
+            if (titleInput.isEmpty) {
               return;
             }
             await _handleCreateEvent(context);
           },
-          child: const Text('Create Event'),
           style: ElevatedButton.styleFrom(
             backgroundColor:  Theme.of(context).colorScheme.success,
                 
@@ -282,6 +281,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Create Event'),
         ),
       ],
     );
@@ -302,12 +302,12 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
     }
     if (_startTimeController.text.isEmpty) {
-      var _time = ref.read(_startTimeProvider).format(context);
-      _startTimeController.text = _time;
+      var time = ref.read(_startTimeProvider).format(context);
+      _startTimeController.text = time;
     }
     if (_endTimeController.text.isEmpty) {
-      var _time = ref.read(_endTimeProvider).format(context);
-      _endTimeController.text = _time;
+      var time = ref.read(_endTimeProvider).format(context);
+      _endTimeController.text = time;
     }
     try {
       final space = await ref.read(
@@ -319,24 +319,24 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       draft.descriptionText(_descriptionController.text.trim());
 
       // convert selected date time to utc and RFC3339 format
-      final _date = ref.read(_dateProvider);
-      final _startTime = ref.read(_startTimeProvider);
+      final date = ref.read(_dateProvider);
+      final startTime = ref.read(_startTimeProvider);
       final utcStartDateTime = DateTime(
-        _date.year,
-        _date.month,
-        _date.day,
-        _startTime.hour,
-        _startTime.minute,
+        date.year,
+        date.month,
+        date.day,
+        startTime.hour,
+        startTime.minute,
       ).toUtc();
       draft.utcStartFromRfc3339(utcStartDateTime.toIso8601String());
 
-      final _endTime = ref.read(_endTimeProvider);
+      final endTime = ref.read(_endTimeProvider);
       final utcEndDateTime = DateTime(
-        _date.year,
-        _date.month,
-        _date.day,
-        _endTime.hour,
-        _endTime.minute,
+        date.year,
+        date.month,
+        date.day,
+        endTime.hour,
+        endTime.minute,
       ).toUtc();
       draft.utcEndFromRfc3339(utcEndDateTime.toIso8601String());
 
@@ -375,8 +375,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     );
     if (picked != null) {
       ref.read(_startTimeProvider.notifier).update((state) => picked);
-      var _time = ref.read(_startTimeProvider).format(context);
-      _startTimeController.text = _time;
+      var time = ref.read(_startTimeProvider).format(context);
+      _startTimeController.text = time;
     }
   }
 
@@ -388,8 +388,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     if (picked != null) {
       ref.read(_endTimeProvider.notifier).update((state) => picked);
 
-      var _time = ref.read(_endTimeProvider).format(context);
-      _endTimeController.text = _time;
+      var time = ref.read(_endTimeProvider).format(context);
+      _endTimeController.text = time;
     }
   }
 }

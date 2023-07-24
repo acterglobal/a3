@@ -51,7 +51,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
     if (profileData.hasAvatar()) {
       Directory appDocDirectory = await getApplicationDocumentsDirectory();
-      Directory(appDocDirectory.path + '/' + 'dir')
+      Directory('${appDocDirectory.path}/dir')
           .create(recursive: true)
           .then((Directory directory) {});
 
@@ -67,7 +67,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   @override
   Widget build(BuildContext context) {
-    final _titleInput = ref.watch(editTitleProvider);
+    final titleInput = ref.watch(editTitleProvider);
     return SideSheet(
       header: 'Edit Space',
       addActions: true,
@@ -117,16 +117,16 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                     ),
                     Consumer(
                       builder: (context, ref, child) {
-                        final _avatarUpload = ref.watch(editAvatarProvider);
+                        final avatarUpload = ref.watch(editAvatarProvider);
                         return GestureDetector(
                           onTap: _handleAvatarUpload,
                           child: Container(
                             height: 75,
                             width: 75,
                             decoration: BoxDecoration(
-                              image: _avatarUpload.isNotEmpty
+                              image: avatarUpload.isNotEmpty
                                   ? DecorationImage(
-                                      image: FileImage(File(_avatarUpload)),
+                                      image: FileImage(File(avatarUpload)),
                                       fit: BoxFit.cover,
                                     )
                                   : null,
@@ -135,7 +135,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                                   .primaryContainer,
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            child: _avatarUpload.isEmpty
+                            child: avatarUpload.isEmpty
                                 ? Icon(
                                     Atlas.up_arrow_from_bracket_thin,
                                     color:
@@ -222,7 +222,6 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
           onPressed: () => context.canPop()
               ? context.pop()
               : context.goNamed(Routes.main.name),
-          child: const Text('Cancel'),
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.neutral,
             shape: RoundedRectangleBorder(
@@ -234,11 +233,12 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Cancel'),
         ),
         const SizedBox(width: 10),
         ElevatedButton(
           onPressed: () async {
-            if (_titleInput.isEmpty) {
+            if (titleInput.isEmpty) {
               customMsgSnackbar(
                 context,
                 'Please enter space name',
@@ -274,9 +274,8 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
               },
             );
           },
-          child: const Text('Save changes'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: _titleInput.isNotEmpty
+            backgroundColor: titleInput.isNotEmpty
                 ? Theme.of(context).colorScheme.success
                 : Theme.of(context).colorScheme.success.withOpacity(0.6),
             shape: RoundedRectangleBorder(
@@ -285,6 +284,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Save changes'),
         ),
       ],
     );

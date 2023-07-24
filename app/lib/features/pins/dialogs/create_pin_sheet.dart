@@ -41,9 +41,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final _titleInput = ref.watch(titleProvider);
+    final titleInput = ref.watch(titleProvider);
     final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final _selectedSpace = currentSelectedSpace != null;
+    final selectedSpace = currentSelectedSpace != null;
     return SideSheet(
       header: 'Create new Pin',
       addActions: true,
@@ -163,7 +163,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                          _selectedSpace ? 'Space' : 'Please select a space',
+                          selectedSpace ? 'Space' : 'Please select a space',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         const SizedBox(width: 15,),
@@ -177,7 +177,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                         )
                       : Container(),
                        const SizedBox(height: 10,) , 
-                      _selectedSpace
+                      selectedSpace
                           ? Consumer(
                               builder: (context, ref, child) =>
                                   ref.watch(selectedSpaceDetailsProvider).when(
@@ -208,7 +208,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
           onPressed: () => context.canPop()
               ? context.pop()
               : context.goNamed(Routes.main.name),
-          child: const Text('Cancel'),
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
@@ -216,6 +215,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Cancel'),
         ),
         const SizedBox(width: 10),
         ElevatedButton(
@@ -253,9 +253,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
               }
             }
           },
-          child: const Text('Create Pin'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: _titleInput.isNotEmpty
+            backgroundColor: titleInput.isNotEmpty
                 ? Theme.of(context).colorScheme.success
                 : Theme.of(context).colorScheme.success.withOpacity(0.6),
             shape: RoundedRectangleBorder(
@@ -264,6 +263,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Create Pin'),
         ),
       ],
     );

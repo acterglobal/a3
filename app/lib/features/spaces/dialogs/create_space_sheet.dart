@@ -46,7 +46,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
 
   @override
   Widget build(BuildContext context) {
-    final _titleInput = ref.watch(titleProvider);
+    final titleInput = ref.watch(titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
     final parentSelected = currentParentSpace != null;
     return SideSheet(
@@ -73,7 +73,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                     ),
                     Consumer(
                       builder: (context, ref, child) {
-                        final _avatarUpload = ref.watch(avatarProvider);
+                        final avatarUpload = ref.watch(avatarProvider);
                         return GestureDetector(
                           onTap: _handleAvatarUpload,
                           child: Container(
@@ -85,9 +85,9 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                                   .primaryContainer,
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            child: _avatarUpload.isNotEmpty
+                            child: avatarUpload.isNotEmpty
                                 ? Image.file(
-                                    File(_avatarUpload),
+                                    File(avatarUpload),
                                     fit: BoxFit.cover,
                                   )
                                 : Icon(
@@ -204,7 +204,6 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
           onPressed: () => context.canPop()
               ? context.pop()
               : context.goNamed(Routes.main.name),
-          child: const Text('Cancel'),
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.neutral,
             shape: RoundedRectangleBorder(
@@ -216,23 +215,23 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Cancel'),
         ),
         const SizedBox(width: 10),
         ElevatedButton(
           onPressed: () async {
-            if (_titleInput.isEmpty) {
+            if (titleInput.isEmpty) {
               customMsgSnackbar(context, 'Please enter space name');
               return;
             }
             await _handleCreateSpace(
               context,
-              _titleInput,
+              titleInput,
               _descriptionController.text.trim(),
             );
           },
-          child: const Text('Create Space'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: _titleInput.isNotEmpty
+            backgroundColor: titleInput.isNotEmpty
                 ? Theme.of(context).colorScheme.success
                 : Theme.of(context).colorScheme.success.withOpacity(0.6),
             shape: RoundedRectangleBorder(
@@ -241,6 +240,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Create Space'),
         ),
       ],
     );

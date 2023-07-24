@@ -46,7 +46,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
   @override
   Widget build(BuildContext context) {
     final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final _selectedSpace = currentSelectedSpace != null;
+    final selectedSpace = currentSelectedSpace != null;
     return SideSheet(
       header: 'Create new Update',
       addActions: true,
@@ -127,7 +127,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               FormField(
                 builder: (state) => ListTile(
                   title: Text(
-                    _selectedSpace ? 'Space' : 'Please select a space',
+                    selectedSpace ? 'Space' : 'Please select a space',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   subtitle: state.errorText != null
@@ -139,7 +139,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                                   ),
                         )
                       : null,
-                  trailing: _selectedSpace
+                  trailing: selectedSpace
                       ? Consumer(
                           builder: (context, ref, child) =>
                               ref.watch(selectedSpaceDetailsProvider).when(
@@ -176,7 +176,6 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
           onPressed: () => context.canPop()
               ? context.pop()
               : context.goNamed(Routes.main.name),
-          child: const Text('Cancel'),
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
@@ -184,6 +183,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Cancel'),
         ),
         const SizedBox(width: 10),
         ElevatedButton(
@@ -272,7 +272,6 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               }
             }
           },
-          child: const Text('Post Update'),
           style: ElevatedButton.styleFrom(
             backgroundColor:  Theme.of(context).colorScheme.success,
                 
@@ -282,6 +281,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Post Update'),
         ),
       ],
     );

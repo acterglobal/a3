@@ -105,14 +105,14 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
                       });
                     },
                     child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
                       child: Center(
                         child: Text(
                           timeArr[index],
                           style: const TextStyle(color: Colors.white),
                         ),
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
                   );
@@ -146,14 +146,14 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
                     });
                   },
                   child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                     child: Center(
                       child: Text(
                         usesArr[index],
                         style: const TextStyle(color: Colors.white),
                       ),
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
                     ),
                   ),
                 );
@@ -179,7 +179,7 @@ class _NameWidget extends StatelessWidget {
       return const Text('Loading Name');
     }
     return Text(
-      '!' + displayName!,
+      '!${displayName!}',
       overflow: TextOverflow.clip,
     );
   }

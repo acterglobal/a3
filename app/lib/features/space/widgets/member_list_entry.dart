@@ -73,22 +73,20 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
                 onChanged: _updateMembershipStatus,
                 items: const [
                   DropdownMenuItem(
-                    child: Text('Admin'),
-                    // leadingIcon: Icon(Atlas.crown_winner_thin),
                     value: 'Admin',
+                    child: Text('Admin'),
                   ),
                   DropdownMenuItem(
-                    child: Text('Moderator'),
-                    // leadingIcon: Icon(Atlas.shield_star_win_thin),
                     value: 'Mod',
+                    child: Text('Moderator'),
                   ),
                   DropdownMenuItem(
-                    child: Text('Regular'),
                     value: 'Regular',
+                    child: Text('Regular'),
                   ),
                   DropdownMenuItem(
-                    child: Text('Custom'),
                     value: 'Custom',
+                    child: Text('Custom'),
                   ),
                 ],
               ),
@@ -330,9 +328,9 @@ class MemberListEntry extends ConsumerWidget {
         ),
         subtitle: Text(userId),
         trailing: Row(
-          children: trailing,
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
+          children: trailing,
         ),
       ),
     );

@@ -49,21 +49,21 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
         await ref.read(calendarEventProvider(widget.calendarId!).future);
     ref.read(_titleProvider.notifier).update((state) => calendarEvent.title());
     // parse RFC3393 date time
-    final _dartDateTime = toDartDatetime(calendarEvent.utcStart());
-    final _dartEndTime = toDartDatetime(calendarEvent.utcEnd());
+    final dartDateTime = toDartDatetime(calendarEvent.utcStart());
+    final dartEndTime = toDartDatetime(calendarEvent.utcEnd());
     ref.read(_dateProvider.notifier).update(
           (state) => DateTime(
-            _dartDateTime.year,
-            _dartDateTime.month,
-            _dartDateTime.day,
+            dartDateTime.year,
+            dartDateTime.month,
+            dartDateTime.day,
           ),
         );
     ref
         .read(_startTimeProvider.notifier)
-        .update((state) => TimeOfDay.fromDateTime(_dartDateTime));
+        .update((state) => TimeOfDay.fromDateTime(dartDateTime));
     ref
         .read(_endTimeProvider.notifier)
-        .update((state) => TimeOfDay.fromDateTime(_dartEndTime));
+        .update((state) => TimeOfDay.fromDateTime(dartEndTime));
 
     _nameController.text = ref.read(_titleProvider);
     _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
@@ -74,7 +74,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final _titleInput = ref.watch(_titleProvider);
+    final titleInput = ref.watch(_titleProvider);
     return SideSheet(
       header: 'Edit event',
       addActions: true,
@@ -245,7 +245,6 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
           onPressed: () => context.canPop()
               ? context.pop()
               : context.goNamed(Routes.main.name),
-          child: const Text('Cancel'),
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.neutral,
             shape: RoundedRectangleBorder(
@@ -257,18 +256,18 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Cancel'),
         ),
         const SizedBox(width: 10),
         ElevatedButton(
           onPressed: () async {
-            if (_titleInput.isEmpty) {
+            if (titleInput.isEmpty) {
               return;
             }
             _handleUpdateEvent(context);
           },
-          child: const Text('Save Changes'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: _titleInput.isNotEmpty
+            backgroundColor: titleInput.isNotEmpty
                 ? Theme.of(context).colorScheme.success
                 : Theme.of(context).colorScheme.success.withOpacity(0.6),
             shape: RoundedRectangleBorder(
@@ -277,6 +276,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Save Changes'),
         ),
       ],
     );
@@ -303,25 +303,25 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
 
       eventUpdateBuilder.title(ref.read(_titleProvider));
 
-      final _date = ref.read(_dateProvider);
-      final _startTime = ref.read(_startTimeProvider);
+      final date = ref.read(_dateProvider);
+      final startTime = ref.read(_startTimeProvider);
       final utcStartDateTime = DateTime(
-        _date.year,
-        _date.month,
-        _date.day,
-        _startTime.hour,
-        _startTime.minute,
+        date.year,
+        date.month,
+        date.day,
+        startTime.hour,
+        startTime.minute,
       ).toUtc();
       eventUpdateBuilder
           .utcStartFromRfc3339(utcStartDateTime.toIso8601String());
 
-      final _endTime = ref.read(_endTimeProvider);
+      final endTime = ref.read(_endTimeProvider);
       final utcEndDateTime = DateTime(
-        _date.year,
-        _date.month,
-        _date.day,
-        _endTime.hour,
-        _endTime.minute,
+        date.year,
+        date.month,
+        date.day,
+        endTime.hour,
+        endTime.minute,
       ).toUtc();
       eventUpdateBuilder.utcEndFromRfc3339(utcEndDateTime.toIso8601String());
 
@@ -358,8 +358,8 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
     );
     if (picked != null) {
       ref.read(_startTimeProvider.notifier).update((state) => picked);
-      var _time = ref.read(_startTimeProvider).format(context);
-      _startTimeController.text = _time;
+      var time = ref.read(_startTimeProvider).format(context);
+      _startTimeController.text = time;
     }
   }
 
@@ -371,8 +371,8 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
     if (picked != null) {
       ref.read(_endTimeProvider.notifier).update((state) => picked);
 
-      var _time = ref.read(_endTimeProvider).format(context);
-      _endTimeController.text = _time;
+      var time = ref.read(_endTimeProvider).format(context);
+      _endTimeController.text = time;
     }
   }
 }

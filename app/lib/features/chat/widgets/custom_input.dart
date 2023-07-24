@@ -392,9 +392,9 @@ class AttachmentWidget extends StatelessWidget {
                             roomName,
                           );
                         },
-                        child: Column(
+                        child: const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Icon(Atlas.camera),
                             SizedBox(height: 6),
                             Text(
@@ -408,9 +408,9 @@ class AttachmentWidget extends StatelessWidget {
                         onTap: () {
                           controller.handleFileSelection(context);
                         },
-                        child: Column(
+                        child: const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Icon(Atlas.folder),
                             SizedBox(height: 6),
                             Text('File', style: TextStyle(color: Colors.white)),
@@ -419,9 +419,9 @@ class AttachmentWidget extends StatelessWidget {
                       ),
                       InkWell(
                         onTap: () {},
-                        child: Column(
+                        child: const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Icon(Atlas.location),
                             SizedBox(height: 6),
                             Text(
