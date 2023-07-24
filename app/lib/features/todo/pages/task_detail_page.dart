@@ -351,7 +351,7 @@ class _DueDateWidget extends StatelessWidget {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            void _showDatePicker(BuildContext ctx) async {
+            void internalShowDatePicker(BuildContext ctx) async {
               DateTime? pickedDate = await showDatePicker(
                 context: ctx,
                 initialDatePickerMode: DatePickerMode.day,
@@ -372,7 +372,7 @@ class _DueDateWidget extends StatelessWidget {
               if (pickedDate != null) {
                 setState(() => selectedDate = pickedDate);
               } else {
-                Navigator.pop(context);
+                if (context.mounted) Navigator.pop(context);
               }
             }
 
@@ -390,7 +390,7 @@ class _DueDateWidget extends StatelessWidget {
                         null,
                         task.progressPercent,
                       );
-                      Navigator.pop(context);
+                      // Navigator.pop(context);
                     },
                     child: Text(
                       'Remove',
@@ -416,7 +416,7 @@ class _DueDateWidget extends StatelessWidget {
                         selectedDate,
                         task.progressPercent,
                       );
-                      Navigator.pop(context);
+                      // Navigator.pop(context);
                     },
                     child: const Text(
                       'Done',
@@ -466,7 +466,7 @@ class _DueDateWidget extends StatelessWidget {
                             case 3:
                               Future.delayed(
                                 const Duration(seconds: 0),
-                                () => _showDatePicker(context),
+                                () => internalShowDatePicker(context),
                               );
                               break;
                           }
