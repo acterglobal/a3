@@ -515,7 +515,7 @@ class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
             verticalSpacing: 0,
             horizontalSpacing: 0,
             initCategory: Category.SMILEYS,
-            showRecentsTab: true,
+            recentTabBehavior: RecentTabBehavior.RECENT,
             recentsLimit: 28,
             noRecents: Text(
               AppLocalizations.of(context)!.noRecents,
