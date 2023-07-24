@@ -30,7 +30,7 @@ email = "devs@acter.global"
 [[extra.menu.main]]
 name = "Users"
 section = "user"
-url = "/user/"
+url = "/user/getting-started/setting-up/"
 weight = 10
 
 [[extra.menu.main]]
