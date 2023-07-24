@@ -71,7 +71,8 @@ pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{
-    Member, MemberPermission, MembershipStatus, Room, SendAudioResult, SendImageResult, SendVideoResult,
+    Member, MemberPermission, MembershipStatus, Room, SendAudioResult, SendImageResult,
+    SendVideoResult,
 };
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use spaces::{
