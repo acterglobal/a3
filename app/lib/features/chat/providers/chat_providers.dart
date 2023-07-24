@@ -112,37 +112,10 @@ final typingProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 //   }
 // });
 
-final messagesStreamProvider =
-    StreamProvider.autoDispose<List<TimelineDiff>>((ref) async* {
-  final roomId = ref.watch(currentChatRoomProvider);
-  final room = await ref.watch(chatProvider(roomId).future);
-  final timeline = await room.timelineStream();
-  ref.watch(currentTimelineProvider.notifier).state = timeline;
-  final _streamController = StreamController<TimelineDiff>();
-  StreamSubscription<TimelineDiff>? _subscription;
-  List<TimelineDiff> events = [];
-  _subscription = timeline.diffRx().listen((event) {
-    _streamController.add(event);
-    ref.onDispose(() async {
-      events.clear();
-      debugPrint('disposing message stream');
-      await _streamController.close();
-      await _subscription?.cancel();
-    });
-  });
-  final bool pagination = await timeline.paginateBackwards(10);
-  debugPrint('Backwards pagination: $pagination');
-  await for (var rm in _streamController.stream) {
-    events = [...events, rm];
-    yield events;
-  }
-});
-
 final chatRoomProvider =
     StateNotifierProvider.autoDispose<ChatRoomNotifier, ChatRoomState>((ref) {
   return ChatRoomNotifier(
     ref: ref,
-    asyncTimeline: ref.watch(messagesStreamProvider),
     roomId: ref.watch(currentChatRoomProvider),
   );
 });
@@ -170,8 +143,6 @@ final toggleEmojiRowProvider = StateProvider<bool>((ref) => false);
 
 final currentChatRoomProvider = StateProvider.autoDispose<String>((ref) => '');
 
-final currentTimelineProvider =
-    StateProvider.autoDispose<TimelineStream?>((ref) => null);
 
 // final typingEventProvider =
 //     StateNotifierProvider.autoDispose<TypingNotifier, Map<String, dynamic>>(

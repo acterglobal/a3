@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -20,6 +21,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         RoomVirtualItem,
         TextDesc,
         TimelineDiff,
+        TimelineStream,
         VideoDesc;
 import 'package:file_picker/file_picker.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
@@ -33,8 +35,8 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   final Ref ref;
-  final AsyncValue<List<TimelineDiff>> asyncTimeline;
   final String roomId;
+  late TimelineStream timeline;
   String? emojiCurrentId;
   bool hasMore = false;
   types.Message? repliedToMessage;
@@ -43,176 +45,182 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   late Convo room;
   ChatRoomNotifier({
     required this.ref,
-    required this.asyncTimeline,
     required this.roomId,
   }) : super(const ChatRoomState.initial()) {
-    _mapEvents();
+    _init();
     _fetchUserProfiles();
   }
 
-  void _mapEvents() async {
+  void _init() async {
+    state = const ChatRoomState.loading();
     client = ref.watch(clientProvider)!;
     if (roomId.isNotEmpty) {
       room = await ref.read(chatProvider(roomId).future);
-      state = asyncTimeline.when(
-        data: (timeline) {
-          for (var timelineEvent in timeline) {
-            debugPrint('DiffRx: ${timelineEvent.action()}');
-            switch (timelineEvent.action()) {
-              case 'Append':
-                List<RoomMessage> _messages = timelineEvent.values()!.toList();
-                for (var m in _messages) {
-                  var message = _parseMessage(m);
-                  if (message is types.UnsupportedMessage) {
-                    continue;
-                  }
-                  ref.read(messagesProvider.notifier).insertMessage(0, message);
-                  if (message.metadata != null &&
-                      message.metadata!.containsKey('repliedTo')) {
-                    _fetchOriginalContent(
-                      message.metadata?['repliedTo'],
-                      message.id,
-                    );
-                  }
-                  RoomEventItem? eventItem = m.eventItem();
-                  if (eventItem != null) {
-                    _fetchEventContent(eventItem.subType(), message.id);
-                  }
-                }
-                break;
-              case 'Set':
-              case 'Insert':
-                RoomMessage m = timelineEvent.value()!;
-                var message = _parseMessage(m);
-                debugPrint('${message.type}');
-                if (message is types.UnsupportedMessage) {
-                  break;
-                }
-                int index = ref
-                    .read(messagesProvider)
-                    .indexWhere((msg) => message.id == msg.id);
-                if (index == -1) {
-                  ref.read(messagesProvider.notifier).addMessage(message);
-                } else {
-                  // update event may be fetched prior to insert event
-                  ref
-                      .read(messagesProvider.notifier)
-                      .replaceMessage(index, message);
-                }
-                if (message.metadata != null &&
-                    message.metadata!.containsKey('repliedTo')) {
-                  _fetchOriginalContent(
-                    message.metadata?['repliedTo'],
-                    message.id,
-                  );
-                }
-                RoomEventItem? eventItem = m.eventItem();
-                if (eventItem != null) {
-                  _fetchEventContent(eventItem.subType(), message.id);
-                }
-                break;
-              case 'Remove':
-                int index = timelineEvent.index()!;
-                final _messages = ref.read(messagesProvider);
-                if (index < _messages.length) {
-                  ref
-                      .read(messagesProvider.notifier)
-                      .removeMessage(_messages.length - 1 - index);
-                }
-                break;
-              case 'PushBack':
-                RoomMessage m = timelineEvent.value()!;
-                var message = _parseMessage(m);
-                if (message is types.UnsupportedMessage) {
-                  break;
-                }
-                ref.read(messagesProvider.notifier).insertMessage(0, message);
-                if (message.metadata != null &&
-                    message.metadata!.containsKey('repliedTo')) {
-                  _fetchOriginalContent(
-                    message.metadata?['repliedTo'],
-                    message.id,
-                  );
-                }
-                RoomEventItem? eventItem = m.eventItem();
-                if (eventItem != null) {
-                  _fetchEventContent(eventItem.subType(), message.id);
-                }
-                break;
-              case 'PushFront':
-                RoomMessage m = timelineEvent.value()!;
-                var message = _parseMessage(m);
-                if (message is types.UnsupportedMessage) {
-                  break;
-                }
-                ref.read(messagesProvider.notifier).addMessage(message);
-                if (message.metadata != null &&
-                    message.metadata!.containsKey('repliedTo')) {
-                  _fetchOriginalContent(
-                    message.metadata?['repliedTo'],
-                    message.id,
-                  );
-                }
-                RoomEventItem? eventItem = m.eventItem();
-                if (eventItem != null) {
-                  _fetchEventContent(eventItem.subType(), message.id);
-                }
-                break;
-              case 'PopBack':
-                final _messages = ref.read(messagesProvider);
-                if (_messages.isNotEmpty) {
-                  ref.read(messagesProvider.notifier).removeMessage(0);
-                }
-                break;
-              case 'PopFront':
-                final _messages = ref.read(messagesProvider);
-                if (_messages.isNotEmpty) {
-                  ref
-                      .read(messagesProvider.notifier)
-                      .removeMessage(_messages.length - 1);
-                }
-                break;
-              case 'Clear':
-                ref.read(messagesProvider.notifier).reset();
-                break;
-              case 'Reset':
-                List<RoomMessage> _messages = timelineEvent.values()!.toList();
-                for (RoomMessage m in _messages) {
-                  var message = _parseMessage(m);
-                  if (m is types.UnsupportedMessage) {
-                    continue;
-                  }
-                  int index = ref
-                      .read(messagesProvider)
-                      .indexWhere((msg) => message.id == msg.id);
-                  if (index == -1) {
-                    ref.read(messagesProvider.notifier).addMessage(message);
-                  } else {
-                    // update event may be fetched prior to insert event
-                    ref
-                        .read(messagesProvider.notifier)
-                        .replaceMessage(index, message);
-                  }
-                  if (message.metadata != null &&
-                      message.metadata!.containsKey('repliedTo')) {
-                    _fetchOriginalContent(
-                      message.metadata?['repliedTo'],
-                      message.id,
-                    );
-                  }
-                  RoomEventItem? eventItem = m.eventItem();
-                  if (eventItem != null) {
-                    _fetchEventContent(eventItem.subType(), message.id);
-                  }
-                }
-            }
-          }
+      timeline = await room.timelineStream();
+      StreamSubscription<TimelineDiff>? _subscription;
+      _subscription = timeline.diffRx().listen((event) async {
+        await _mapEvent(event);
+        state = ChatRoomState.data(messages: ref.read(messagesProvider));
+        ref.onDispose(() async {
+          debugPrint('disposing message stream');
+          await _subscription?.cancel();
+        });
+      });
+      do {
+        hasMore = await timeline.paginateBackwards(10);
+        // wait for diff rx to be finished
+        sleep(const Duration(milliseconds: 500));
+        debugPrint('Backwards pagination hasMore: $hasMore');
+      } while (hasMore && ref.read(messagesProvider).length < 10);
+    }
+  }
 
-          return ChatRoomState.data(messages: ref.read(messagesProvider));
-        },
-        error: (error, stackTrace) => ChatRoomState.error(error.toString()),
-        loading: () => const ChatRoomState.loading(),
-      );
+  // maps `RoomMessage` event to `types.Message` and updates messages list
+  Future<void> _mapEvent(TimelineDiff timelineEvent) async {
+    debugPrint('DiffRx: ${timelineEvent.action()}');
+    switch (timelineEvent.action()) {
+      case 'Append':
+        List<RoomMessage> _messages = timelineEvent.values()!.toList();
+        for (var m in _messages) {
+          var message = _parseMessage(m);
+          if (message is types.UnsupportedMessage) {
+            continue;
+          }
+          ref.read(messagesProvider.notifier).insertMessage(0, message);
+          if (message.metadata != null &&
+              message.metadata!.containsKey('repliedTo')) {
+            _fetchOriginalContent(
+              message.metadata?['repliedTo'],
+              message.id,
+            );
+          }
+          RoomEventItem? eventItem = m.eventItem();
+          if (eventItem != null) {
+            _fetchEventContent(eventItem.subType(), message.id);
+          }
+        }
+        break;
+      case 'Set':
+      case 'Insert':
+        RoomMessage m = timelineEvent.value()!;
+        var message = _parseMessage(m);
+        debugPrint('${message.type}');
+        if (message is types.UnsupportedMessage) {
+          break;
+        }
+        int index = ref
+            .read(messagesProvider)
+            .indexWhere((msg) => message.id == msg.id);
+        if (index == -1) {
+          ref.read(messagesProvider.notifier).addMessage(message);
+        } else {
+          // update event may be fetched prior to insert event
+          ref.read(messagesProvider.notifier).replaceMessage(index, message);
+        }
+        if (message.metadata != null &&
+            message.metadata!.containsKey('repliedTo')) {
+          _fetchOriginalContent(
+            message.metadata?['repliedTo'],
+            message.id,
+          );
+        }
+        RoomEventItem? eventItem = m.eventItem();
+        if (eventItem != null) {
+          _fetchEventContent(eventItem.subType(), message.id);
+        }
+        break;
+      case 'Remove':
+        int index = timelineEvent.index()!;
+        final _messages = ref.read(messagesProvider);
+        if (index < _messages.length) {
+          ref
+              .read(messagesProvider.notifier)
+              .removeMessage(_messages.length - 1 - index);
+        }
+        break;
+      case 'PushBack':
+        RoomMessage m = timelineEvent.value()!;
+        var message = _parseMessage(m);
+        if (message is types.UnsupportedMessage) {
+          break;
+        }
+        ref.read(messagesProvider.notifier).insertMessage(0, message);
+        if (message.metadata != null &&
+            message.metadata!.containsKey('repliedTo')) {
+          _fetchOriginalContent(
+            message.metadata?['repliedTo'],
+            message.id,
+          );
+        }
+        RoomEventItem? eventItem = m.eventItem();
+        if (eventItem != null) {
+          _fetchEventContent(eventItem.subType(), message.id);
+        }
+        break;
+      case 'PushFront':
+        RoomMessage m = timelineEvent.value()!;
+        var message = _parseMessage(m);
+        if (message is types.UnsupportedMessage) {
+          break;
+        }
+        ref.read(messagesProvider.notifier).addMessage(message);
+        if (message.metadata != null &&
+            message.metadata!.containsKey('repliedTo')) {
+          _fetchOriginalContent(
+            message.metadata?['repliedTo'],
+            message.id,
+          );
+        }
+        RoomEventItem? eventItem = m.eventItem();
+        if (eventItem != null) {
+          _fetchEventContent(eventItem.subType(), message.id);
+        }
+        break;
+      case 'PopBack':
+        final _messages = ref.read(messagesProvider);
+        if (_messages.isNotEmpty) {
+          ref.read(messagesProvider.notifier).removeMessage(0);
+        }
+        break;
+      case 'PopFront':
+        final _messages = ref.read(messagesProvider);
+        if (_messages.isNotEmpty) {
+          ref
+              .read(messagesProvider.notifier)
+              .removeMessage(_messages.length - 1);
+        }
+        break;
+      case 'Clear':
+        ref.read(messagesProvider.notifier).reset();
+        break;
+      case 'Reset':
+        List<RoomMessage> _messages = timelineEvent.values()!.toList();
+        for (RoomMessage m in _messages) {
+          var message = _parseMessage(m);
+          if (m is types.UnsupportedMessage) {
+            continue;
+          }
+          int index = ref
+              .read(messagesProvider)
+              .indexWhere((msg) => message.id == msg.id);
+          if (index == -1) {
+            ref.read(messagesProvider.notifier).addMessage(message);
+          } else {
+            // update event may be fetched prior to insert event
+            ref.read(messagesProvider.notifier).replaceMessage(index, message);
+          }
+          if (message.metadata != null &&
+              message.metadata!.containsKey('repliedTo')) {
+            _fetchOriginalContent(
+              message.metadata?['repliedTo'],
+              message.id,
+            );
+          }
+          RoomEventItem? eventItem = m.eventItem();
+          if (eventItem != null) {
+            _fetchEventContent(eventItem.subType(), message.id);
+          }
+        }
     }
   }
 
@@ -739,14 +747,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
 //Pagination Control
   Future<void> handleEndReached() async {
-    final _stream = ref.read(currentTimelineProvider);
-    debugPrint('STREAM:$_stream');
-    if (_stream != null) {
-      bool hasMore = await _stream.paginateBackwards(10);
-      // wait for diff rx to be finished
-      sleep(const Duration(milliseconds: 500));
-      debugPrint('backward pagination has more: $hasMore');
-    }
+    bool hasMore = await timeline.paginateBackwards(10);
+    debugPrint('backward pagination has more: $hasMore');
   }
 
   //preview message link

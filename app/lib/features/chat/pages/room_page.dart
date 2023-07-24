@@ -386,115 +386,109 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           ),
           error: (e) => Text('Failed to load messages due to $e'),
           data: (messages) {
-            return Stack(
-              children: [
-                Chat(
-                  // customBottomWidget: customBottomWidget(context),
-                  // textMessageBuilder: textMessageBuilder,
-                  l10n: ChatL10nEn(
-                    emptyChatPlaceholder: '',
-                    attachmentButtonAccessibilityLabel: '',
-                    fileButtonAccessibilityLabel: '',
-                    inputPlaceholder: AppLocalizations.of(context)!.message,
-                    sendButtonAccessibilityLabel: '',
+            return Chat(
+              // customBottomWidget: customBottomWidget(context),
+              // textMessageBuilder: textMessageBuilder,
+              l10n: ChatL10nEn(
+                emptyChatPlaceholder: '',
+                attachmentButtonAccessibilityLabel: '',
+                fileButtonAccessibilityLabel: '',
+                inputPlaceholder: AppLocalizations.of(context)!.message,
+                sendButtonAccessibilityLabel: '',
+              ),
+              messages: ref.watch(messagesProvider),
+              // typingIndicatorOptions: TypingIndicatorOptions(
+              //   customTypingIndicator: TypeIndicator(
+              //     bubbleAlignment: BubbleRtlAlignment.right,
+              //     showIndicator: ctlr.typingUsers.isNotEmpty,
+              //     options: TypingIndicatorOptions(
+              //       animationSpeed: const Duration(milliseconds: 800),
+              //       typingUsers: ctlr.typingUsers,
+              //       typingMode: TypingIndicatorMode.name,
+              //     ),
+              //   ),
+              // ),
+              onSendPressed: (types.PartialText partialText) {},
+              user: types.User(id: client!.userId().toString()),
+              // disable image preview
+              disableImageGallery: true,
+              //custom avatar builder
+              avatarBuilder: (userId) {
+                var profile =
+                    ref.read(chatRoomProvider.notifier).getUserProfile(userId);
+                return Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: SizedBox(
+                    height: 28,
+                    width: 28,
+                    child: ActerAvatar(
+                      mode: DisplayMode.User,
+                      uniqueId: userId,
+                      displayName: profile?.displayName,
+                      avatar: profile?.getAvatarImage(),
+                      size: 50,
+                    ),
                   ),
-                  messages: messages,
-                  // typingIndicatorOptions: TypingIndicatorOptions(
-                  //   customTypingIndicator: TypeIndicator(
-                  //     bubbleAlignment: BubbleRtlAlignment.right,
-                  //     showIndicator: ctlr.typingUsers.isNotEmpty,
-                  //     options: TypingIndicatorOptions(
-                  //       animationSpeed: const Duration(milliseconds: 800),
-                  //       typingUsers: ctlr.typingUsers,
-                  //       typingMode: TypingIndicatorMode.name,
-                  //     ),
-                  //   ),
-                  // ),
-                  onSendPressed: (types.PartialText partialText) {},
-                  user: types.User(id: client!.userId().toString()),
-                  // disable image preview
-                  disableImageGallery: true,
-                  //custom avatar builder
-                  avatarBuilder: (userId) {
-                    var profile = ref
-                        .read(chatRoomProvider.notifier)
-                        .getUserProfile(userId);
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: SizedBox(
-                        height: 28,
-                        width: 28,
-                        child: ActerAvatar(
-                          mode: DisplayMode.User,
-                          uniqueId: userId,
-                          displayName: profile?.displayName,
-                          avatar: profile?.getAvatarImage(),
-                          size: 50,
-                        ),
-                      ),
-                    );
-                  },
-                  // bubbleBuilder: (
-                  //   child, {
-                  //   required message,
-                  //   required nextMessageInGroup,
-                  // }) {
-                  //   return BubbleBuilder(
-                  //     userId: client.userId().toString(),
-                  //     child: child,
-                  //     message: message,
-                  //     nextMessageInGroup: nextMessageInGroup,
-                  //     enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
-                  //   );
-                  // },
-                  // imageMessageBuilder: (message, {required messageWidth}) {
-                  //   return _ImageMessage(
-                  //     message: message,
-                  //     messageWidth: messageWidth,
-                  //   );
-                  // },
-                  // customMessageBuilder: (message, {required messageWidth}) {
-                  //   return _CustomMessage(
-                  //     message: message,
-                  //     messageWidth: messageWidth,
-                  //   );
-                  // },
-                  showUserAvatars: true,
-                  // onAttachmentPressed: () => onAttach(context),
-                  onAvatarTap: (types.User user) => customMsgSnackbar(
-                    context,
-                    'Chat Profile view is not implemented yet',
-                  ),
-                  // onPreviewDataFetched: ref
-                  //     .watch(chatRoomProvider.notifier)
-                  //     .handlePreviewDataFetched,
-                  // onMessageTap:
-                  //     ref.watch(chatRoomProvider.notifier).handleMessageTap,
-                  onEndReached:
-                      ref.read(chatRoomProvider.notifier).handleEndReached,
-                  onEndReachedThreshold: 0.75,
-                  // onBackgroundTap: () {
-                  //   if (ref.watch(
-                  //     chatInputProvider.select((ci) => ci.emojiVisible),
-                  //   )) {
-                  //     ref.watch(chatRoomProvider.notifier).repliedToMessage =
-                  //         null;
-                  //     ref
-                  //         .watch(chatInputProvider.notifier)
-                  //         .toggleEmojiVisible();
-                  //     ref
-                  //         .watch(chatInputProvider.notifier)
-                  //         .setReplyWidget(null);
-                  //   }
-                  // },
-                  emptyState: const EmptyHistoryPlaceholder(),
-                  //Custom Theme class, see lib/common/store/chatTheme.dart
-                  theme: const ActerChatTheme(
-                    attachmentButtonIcon: Icon(Atlas.plus_circle),
-                    sendButtonIcon: Icon(Atlas.paper_airplane),
-                  ),
-                ),
-              ],
+                );
+              },
+              // bubbleBuilder: (
+              //   child, {
+              //   required message,
+              //   required nextMessageInGroup,
+              // }) {
+              //   return BubbleBuilder(
+              //     userId: client.userId().toString(),
+              //     child: child,
+              //     message: message,
+              //     nextMessageInGroup: nextMessageInGroup,
+              //     enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
+              //   );
+              // },
+              // imageMessageBuilder: (message, {required messageWidth}) {
+              //   return _ImageMessage(
+              //     message: message,
+              //     messageWidth: messageWidth,
+              //   );
+              // },
+              // customMessageBuilder: (message, {required messageWidth}) {
+              //   return _CustomMessage(
+              //     message: message,
+              //     messageWidth: messageWidth,
+              //   );
+              // },
+              showUserAvatars: true,
+              // onAttachmentPressed: () => onAttach(context),
+              onAvatarTap: (types.User user) => customMsgSnackbar(
+                context,
+                'Chat Profile view is not implemented yet',
+              ),
+              // onPreviewDataFetched: ref
+              //     .watch(chatRoomProvider.notifier)
+              //     .handlePreviewDataFetched,
+              // onMessageTap:
+              //     ref.watch(chatRoomProvider.notifier).handleMessageTap,
+              onEndReached:
+                  ref.read(chatRoomProvider.notifier).handleEndReached,
+              onEndReachedThreshold: 0.75,
+              // onBackgroundTap: () {
+              //   if (ref.watch(
+              //     chatInputProvider.select((ci) => ci.emojiVisible),
+              //   )) {
+              //     ref.watch(chatRoomProvider.notifier).repliedToMessage =
+              //         null;
+              //     ref
+              //         .watch(chatInputProvider.notifier)
+              //         .toggleEmojiVisible();
+              //     ref
+              //         .watch(chatInputProvider.notifier)
+              //         .setReplyWidget(null);
+              //   }
+              // },
+              //Custom Theme class, see lib/common/store/chatTheme.dart
+              theme: const ActerChatTheme(
+                attachmentButtonIcon: Icon(Atlas.plus_circle),
+                sendButtonIcon: Icon(Atlas.paper_airplane),
+              ),
             );
           },
         ),
