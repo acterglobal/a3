@@ -166,8 +166,8 @@ async fn pin_attachments() -> Result<()> {
             None,
             None,
             None,
-            None,
-        )?
+        )
+        .await?
         .send()
         .await?;
 
@@ -199,8 +199,8 @@ async fn pin_attachments() -> Result<()> {
             "effektio whitepaper".to_owned(),
             "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG".to_owned(),
             None,
-            None,
-        )?
+        )
+        .await?
         .send()
         .await?;
 
