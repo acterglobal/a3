@@ -29,7 +29,7 @@ pub struct CommentsManager {
 }
 
 impl CommentsManager {
-    pub fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
+    fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
         let r = parent.as_ref();
         format!("{r}::{COMMENTS_STATS_FIELD}")
     }

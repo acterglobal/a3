@@ -27,7 +27,7 @@ pub struct RsvpManager {
 }
 
 impl RsvpManager {
-    pub fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
+    fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
         let r = parent.as_ref();
         format!("{r}::{RSVP_STATS_FIELD}")
     }
@@ -78,7 +78,7 @@ impl RsvpManager {
             .to_owned()
     }
 
-    pub fn update_key(&self) -> String {
+    fn update_key(&self) -> String {
         Self::stats_field_for(&self.event_id)
     }
 
