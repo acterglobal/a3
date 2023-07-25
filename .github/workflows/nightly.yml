@@ -315,7 +315,8 @@ jobs:
 
       - name: Tag for nightly release
         run: |
-          git cm "Add nightly ${{ needs.tags.outputs.tag }} to docs" docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
+          git commit -m "Add nightly ${{ needs.tags.outputs.tag }} to docs"
           git tag nightly-${{ needs.tags.outputs.tag }}
           git tag -f nightly-latest
           git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest
