@@ -293,7 +293,7 @@ class PublicSpaceSelector extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _searchTextCtrl = ref.watch(searchController);
+    final searchTextCtrl = ref.watch(searchController);
     return CustomScrollView(
       slivers: [
         SliverAppBar(
@@ -308,7 +308,7 @@ class PublicSpaceSelector extends ConsumerWidget {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _searchTextCtrl,
+                    controller: searchTextCtrl,
                     autofocus: autofocus,
                     decoration: const InputDecoration(
                       prefixIcon: Icon(

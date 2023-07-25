@@ -7,6 +7,8 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 
 class SettingsInfoPage extends ConsumerStatefulWidget {
   const SettingsInfoPage({super.key});
@@ -56,14 +58,25 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                   title: const Text('Version'),
                   value: const Text(versionName),
                 ),
-                SettingsTile(
-                  title: const Text('Rageshake App Name'),
-                  value: Text(appName),
-                ),
-                SettingsTile(
-                  title: const Text('Rageshake Target Url'),
-                  value: const Text(rageshakeUrl),
-                ),
+                isDevBuild
+                    ? SettingsTile(
+                        title: const Text('Rageshake App Name'),
+                        value: const Text(appName),
+                      )
+                    : SettingsTile(
+                        title: const Text('Rageshake App Name Digest'),
+                        value: Text('${sha1.convert(utf8.encode(appName))}'),
+                      ),
+                isDevBuild
+                    ? SettingsTile(
+                        title: const Text('Rageshake Target Url'),
+                        value: const Text(rageshakeUrl),
+                      )
+                    : SettingsTile(
+                        title: const Text('Rageshake Target Url Digest'),
+                        value:
+                            Text('${sha1.convert(utf8.encode(rageshakeUrl))}'),
+                      ),
                 SettingsTile(
                   title: const Text('Rust Log Settings'),
                   onPressed: _displayDebugLevelEditor,
@@ -109,7 +122,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
   }
 
   Future<void> _displayDebugLevelEditor(BuildContext context) async {
-    TextEditingController _textFieldController =
+    TextEditingController textFieldController =
         TextEditingController(text: rustLogSetting);
     return showDialog(
       context: context,
@@ -120,7 +133,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             children: [
               const Text('needs an app restart to take effect'),
               TextField(
-                controller: _textFieldController,
+                controller: textFieldController,
                 decoration: const InputDecoration(hintText: 'Debug Level'),
               ),
             ],
@@ -136,14 +149,14 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
               child: const Text('Reset to default'),
               onPressed: () async {
                 await setRustLogSettings('');
-                Navigator.pop(context);
+                if (context.mounted) Navigator.pop(context);
               },
             ),
             TextButton(
               child: const Text('Save'),
               onPressed: () async {
-                await setRustLogSettings(_textFieldController.text);
-                Navigator.pop(context);
+                await setRustLogSettings(textFieldController.text);
+                if (context.mounted) Navigator.pop(context);
               },
             ),
           ],

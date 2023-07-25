@@ -57,8 +57,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   Widget build(BuildContext context) {
     // get platform of context.
     final bool desktop = isDesktop(context);
-    final location =
-        ref.watch(goRouterProvider.select((value) => value.location));
+    final location = ref.watch(currentRoutingLocation);
     final client = ref.watch(clientProvider);
     if (client == null) {
       return const Scaffold(
@@ -311,12 +310,12 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       appDocDir.path,
       fileName: 'screenshot_$timestamp.png',
     );
-    if (imagePath != null) {
+    if (imagePath != null && context.mounted) {
       await context.pushNamed(
         Routes.bugReport.name,
         extra: {'screenshot': imagePath},
       );
-    } else {
+    } else if (context.mounted) {
       await context.push(Routes.bugReport.name);
     }
   }

@@ -24,7 +24,7 @@ class _StartPageState extends State<StartPage> {
       title: RichText(
         textAlign: TextAlign.center,
         text: const TextSpan(
-          text: 'Organise & Collaborate Through ',
+          text: 'Organize & Collaborate Through ',
           style: TextStyle(color: Colors.green, fontSize: 24),
           children: <TextSpan>[
             TextSpan(
@@ -65,7 +65,7 @@ class _StartPageState extends State<StartPage> {
             height: 15,
           ),
           const Text(
-            'Gather people in one or multiple spaces & create your own organizational strutcure.',
+            'Gather people in one or multiple spaces & create your own organizational structure.',
             style: TextStyle(fontSize: 17, color: Colors.white),
           )
         ],
@@ -107,7 +107,7 @@ class _StartPageState extends State<StartPage> {
                   ),
                 ),
                 TextSpan(
-                  text: ' individually or acreoss endless organizations.',
+                  text: ' individually or across endless organizations.',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 17,
@@ -131,7 +131,7 @@ class _StartPageState extends State<StartPage> {
                   ),
                 ),
                 TextSpan(
-                  text: ' by default, no adds and no data mining.',
+                  text: ' by default, no ads and no data mining.',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 17,
@@ -148,7 +148,7 @@ class _StartPageState extends State<StartPage> {
       title: RichText(
         textAlign: TextAlign.center,
         text: const TextSpan(
-          text: 'Reduce noice & increase engagement with ',
+          text: 'Reduce noise & increase engagement with ',
           style: TextStyle(
             color: Colors.green,
             fontSize: 24,
@@ -277,7 +277,9 @@ class _StartPageState extends State<StartPage> {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10,),
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -334,10 +336,10 @@ class _StartPageState extends State<StartPage> {
                       onTap: () {
                         next();
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                      child: const Padding(
+                        padding: EdgeInsets.only(bottom: 16.0),
                         child: Row(
-                          children: const [
+                          children: [
                             Text('Next'),
                             SizedBox(
                               width: 8,

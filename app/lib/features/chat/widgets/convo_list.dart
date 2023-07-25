@@ -23,7 +23,7 @@ class ConvosList extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(AppLocalizations.of(context)!.loadingConvo + '...'),
+            Text('${AppLocalizations.of(context)!.loadingConvo}...'),
             const SizedBox(height: 10),
             const CircularProgressIndicator(),
           ],

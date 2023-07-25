@@ -38,7 +38,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
       state = false;
-      if (context != null) {
+      if (context != null && context.mounted) {
         context.goNamed(Routes.main.name);
       }
     } catch (e) {
@@ -58,7 +58,12 @@ class AuthStateNotifier extends StateNotifier<bool> {
       final client = await sdk.register(username, password, displayName, token);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
-      context.goNamed(Routes.main.name);
+
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (context.mounted) {
+        context.goNamed(Routes.main.name);
+      }
       return null;
     } catch (e) {
       return e.toString();
@@ -74,13 +79,22 @@ class AuthStateNotifier extends StateNotifier<bool> {
       ref.invalidate(clientProvider);
       ref.invalidate(spacesProvider);
       ref.read(clientProvider.notifier).state = sdk.currentClient;
-      context.goNamed(Routes.main.name);
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (context.mounted) {
+        context.goNamed(Routes.main.name);
+      }
     } else {
       debugPrint('No clients left, redir to onboarding');
       ref.read(isLoggedInProvider.notifier).update((state) => false);
       ref.invalidate(clientProvider);
       ref.invalidate(spacesProvider);
-      context.goNamed(Routes.main.name);
+
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (context.mounted) {
+        context.goNamed(Routes.main.name);
+      }
     }
     // return to guest client.
   }

@@ -38,10 +38,10 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
   Widget build(BuildContext context) {
     final tabs = ref.watch(tabsProvider(context));
 
-    final _tabController =
+    final tabController =
         ref.watch(recentWatchScreenTabStateTestProvider(context));
     final selectedIndex = ref.watch(selectedTabIdxProvider(context));
-    _tabController.animateTo(selectedIndex);
+    tabController.animateTo(selectedIndex);
     return LayoutBuilder(
       builder: (context, constraints) {
         final useCols = constraints.maxWidth < (150 * tabs.length);
@@ -62,7 +62,7 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
           ),
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: TabBar(
-            controller: _tabController,
+            controller: tabController,
             isScrollable: scrollBar,
             onTap: (idx) {
               final target = tabs[idx].target;
