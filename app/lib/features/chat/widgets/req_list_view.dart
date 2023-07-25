@@ -29,8 +29,8 @@ class ReqListView extends StatelessWidget {
               ),
             ],
           ),
-          Row(
-            children: const [
+          const Row(
+            children: [
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12),
                 child: Text(

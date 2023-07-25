@@ -100,9 +100,8 @@ class _IntroPageState extends State<IntroPage> {
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: introTexts[index]
-                                                    .split(' ')[0] +
-                                                ' ',
+                                            text: '${introTexts[index]
+                                                    .split(' ')[0]} ',
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.green,

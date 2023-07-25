@@ -21,7 +21,7 @@ class ChangePowerLevel extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ChangePowerLevelState createState() => _ChangePowerLevelState();
+  State<ChangePowerLevel> createState() => _ChangePowerLevelState();
 }
 
 class _ChangePowerLevelState extends State<ChangePowerLevel> {
@@ -73,22 +73,20 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
                 onChanged: _updateMembershipStatus,
                 items: const [
                   DropdownMenuItem(
-                    child: Text('Admin'),
-                    // leadingIcon: Icon(Atlas.crown_winner_thin),
                     value: 'Admin',
+                    child: Text('Admin'),
                   ),
                   DropdownMenuItem(
-                    child: Text('Moderator'),
-                    // leadingIcon: Icon(Atlas.shield_star_win_thin),
                     value: 'Mod',
+                    child: Text('Moderator'),
                   ),
                   DropdownMenuItem(
-                    child: Text('Regular'),
                     value: 'Regular',
+                    child: Text('Regular'),
                   ),
                   DropdownMenuItem(
-                    child: Text('Custom'),
                     value: 'Custom',
+                    child: Text('Custom'),
                   ),
                 ],
               ),
@@ -184,6 +182,12 @@ class MemberListEntry extends ConsumerWidget {
     );
     if (newPowerlevel != null) {
       final userId = member.userId().toString();
+
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       popUpDialog(
         context: context,
         title: Text(
@@ -193,6 +197,12 @@ class MemberListEntry extends ConsumerWidget {
         isLoader: true,
       );
       await space.updatePowerLevel(userId, newPowerlevel);
+
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       Navigator.of(context, rootNavigator: true).pop();
       customMsgSnackbar(context, 'PowerLevel update submitted');
     }
@@ -330,9 +340,9 @@ class MemberListEntry extends ConsumerWidget {
         ),
         subtitle: Text(userId),
         trailing: Row(
-          children: trailing,
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
+          children: trailing,
         ),
       ),
     );

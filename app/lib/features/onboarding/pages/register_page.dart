@@ -66,7 +66,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           token.text,
           context,
         );
-        validateRegister(context, errorMsg);
+        if (context.mounted) {
+          validateRegister(context, errorMsg);
+        }
       }
     }
   }

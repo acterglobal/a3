@@ -71,7 +71,7 @@ Future<String?> authGuardRedirect(
   // no client found yet, send user to fresh login
 
   // next param calculation
-  final next = Uri.encodeComponent(state.location);
+  final next = Uri.encodeComponent(state.uri.toString());
 
   // ignore: deprecated_member_use
   return state.namedLocation(
@@ -129,7 +129,7 @@ List<RouteBase> makeRoutes(Ref ref) {
       path: Routes.bugReport.route,
       pageBuilder: (context, state) => DialogPage(
         builder: (BuildContext ctx) => BugReportPage(
-          imagePath: state.queryParameters['screenshot'],
+          imagePath: state.uri.queryParameters['screenshot'],
         ),
       ),
     ),
@@ -183,7 +183,7 @@ List<RouteBase> makeRoutes(Ref ref) {
             );
           },
           child: CreatePinSheet(
-            initialSelectedSpace: state.queryParameters['spaceId'],
+            initialSelectedSpace: state.uri.queryParameters['spaceId'],
           ),
         );
       },
@@ -208,7 +208,7 @@ List<RouteBase> makeRoutes(Ref ref) {
             );
           },
           child: CreateEventSheet(
-            initialSelectedSpace: state.queryParameters['spaceId'],
+            initialSelectedSpace: state.uri.queryParameters['spaceId'],
           ),
         );
       },
@@ -256,7 +256,7 @@ List<RouteBase> makeRoutes(Ref ref) {
             );
           },
           child: CreateSpacePage(
-            initialParentsSpaceId: state.queryParameters['parentSpaceId'],
+            initialParentsSpaceId: state.uri.queryParameters['parentSpaceId'],
           ),
         );
       },
@@ -302,7 +302,7 @@ List<RouteBase> makeRoutes(Ref ref) {
               child: child,
             );
           },
-          child: EditSpacePage(spaceId: state.queryParameters['spaceId']),
+          child: EditSpacePage(spaceId: state.uri.queryParameters['spaceId']),
         );
       },
     ),
@@ -349,7 +349,7 @@ List<RouteBase> makeRoutes(Ref ref) {
             );
           },
           child: CreateChatSheet(
-            initialSelectedSpaceId: state.queryParameters['spaceId'],
+            initialSelectedSpaceId: state.uri.queryParameters['spaceId'],
           ),
         );
       },
@@ -689,7 +689,7 @@ List<RouteBase> makeRoutes(Ref ref) {
             if (authGuarded != null) {
               return authGuarded;
             }
-            if (isDesktop(context)) {
+            if (context.mounted && isDesktop(context)) {
               return Routes.dashboard.route;
             } else {
               return Routes.updates.route;

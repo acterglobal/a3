@@ -54,7 +54,7 @@ class ReplyViewState extends State<ReplyView> {
                       Padding(
                         padding: const EdgeInsets.only(left: 8),
                         child: Text(
-                          widget.replyModel.likeCount.toString() + ' likes',
+                          '${widget.replyModel.likeCount} likes',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 14,

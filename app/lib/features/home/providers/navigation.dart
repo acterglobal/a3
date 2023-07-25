@@ -60,7 +60,7 @@ final spaceItemsProvider = FutureProvider.autoDispose
             ),
             location: '/$roomId',
           ),
-          error: (err, _trace) => SidebarNavigationItem(
+          error: (err, trace) => SidebarNavigationItem(
             icon: const Icon(Atlas.warning_bold),
             label: Text(
               '$roomId: $err',

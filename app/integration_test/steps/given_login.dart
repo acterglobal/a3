@@ -29,7 +29,7 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
       // await context.world.appDriver.waitForAppToSettle();
       String passwordText;
       if (registrationToken.isNotEmpty) {
-        passwordText = registrationToken + ':' + username;
+        passwordText = '$registrationToken:$username';
       } else {
         passwordText = username;
       }

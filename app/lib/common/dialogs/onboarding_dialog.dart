@@ -101,16 +101,6 @@ void onBoardingDialog({
                     context.pop();
                     onPressed1();
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        btnText,
-                      ),
-                      const SizedBox(width: 10),
-                      const Icon(Icons.chevron_right_outlined)
-                    ],
-                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.neutral6,
                     foregroundColor: Theme.of(context).colorScheme.neutral,
@@ -121,6 +111,16 @@ void onBoardingDialog({
                       borderRadius: BorderRadius.circular(6),
                     ),
                   ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        btnText,
+                      ),
+                      const SizedBox(width: 10),
+                      const Icon(Icons.chevron_right_outlined)
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 36),
@@ -130,7 +130,6 @@ void onBoardingDialog({
                     context.pop();
                     onPressed2();
                   },
-                  child: Text(btn2Text),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     foregroundColor: Theme.of(context).colorScheme.neutral6,
@@ -143,17 +142,18 @@ void onBoardingDialog({
                       borderRadius: BorderRadius.circular(6),
                     ),
                   ),
+                  child: Text(btn2Text),
                 ),
               ),
               const SizedBox(height: 36),
               canDismissable
                   ? GestureDetector(
                       onTap: () => context.pop(),
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 50),
+                      child: const Padding(
+                        padding: EdgeInsets.only(right: 50),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: const <Widget>[
+                          children: <Widget>[
                             Text('Skip'),
                             SizedBox(width: 5),
                             Icon(Icons.chevron_right)

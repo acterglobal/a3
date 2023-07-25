@@ -454,11 +454,11 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                       id: 'chat-bubble',
                       builder: (ChatRoomController ctlr) => BubbleBuilder(
                         userId: client.userId().toString(),
-                        child: child,
                         message: message,
                         nextMessageInGroup: nextMessageInGroup,
                         enlargeEmoji:
                             message.metadata!['enlargeEmoji'] ?? false,
+                        child: child,
                       ),
                     );
                   },

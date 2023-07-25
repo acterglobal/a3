@@ -54,7 +54,10 @@ final tabsProvider =
           semanticsLabel: 'tasks',
           width: 24,
           height: 24,
-          color: Theme.of(context).colorScheme.onSurface,
+          colorFilter: ColorFilter.mode(
+            Theme.of(context).colorScheme.onSurface,
+            BlendMode.srcIn,
+          ),
         ),
         target: Routes.space.name,
       ),

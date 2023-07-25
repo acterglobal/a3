@@ -189,7 +189,7 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
     final space = ref.watch(briefSpaceItemWithMembershipProvider(spaceId));
     final invited =
         ref.watch(spaceInvitedMembersProvider(spaceId)).valueOrNull ?? [];
-    final _searchTextCtrl = ref.watch(searchController);
+    final searchTextCtrl = ref.watch(searchController);
     final suggestedUsers =
         ref.watch(filteredSuggestedUsersProvider(spaceId)).valueOrNull;
     final foundUsers = ref.watch(searchResultProvider);
@@ -335,7 +335,7 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
                       vertical: 20,
                     ),
                     child: TextField(
-                      controller: _searchTextCtrl,
+                      controller: searchTextCtrl,
                       decoration: const InputDecoration(
                         prefixIcon: Icon(
                           Atlas.magnifying_glass_thin,
