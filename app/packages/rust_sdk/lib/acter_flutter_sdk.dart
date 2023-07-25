@@ -232,7 +232,7 @@ class ActerSdk {
       debugPrint('DynamicLibrary.open by lib name failed: $e1');
       try {
         // android api 23 is working here
-        final String? nativeLibDir = await _getNativeLibraryDirectory();
+        final String nativeLibDir = await _getNativeLibraryDirectory();
         return DynamicLibrary.open('$nativeLibDir/$libName');
       } catch (e2) {
         debugPrint('DynamicLibrary.open from /data/app failed: $e2');

@@ -336,10 +336,10 @@ class _StartPageState extends State<StartPage> {
                       onTap: () {
                         next();
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                      child: const Padding(
+                        padding: EdgeInsets.only(bottom: 16.0),
                         child: Row(
-                          children: const [
+                          children: [
                             Text('Next'),
                             SizedBox(
                               width: 8,

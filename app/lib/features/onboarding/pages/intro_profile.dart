@@ -84,9 +84,9 @@ class _IntroProfileState extends State<IntroProfile> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Row(
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
+                              children: [
                                 Text(
                                   'Create Profile',
                                   style: TextStyle(

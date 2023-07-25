@@ -8,7 +8,7 @@ class ExpandableText extends StatefulWidget {
   ExpandableText(this.text, {Key? key}) : super(key: key);
 
   @override
-  _ExpandableTextState createState() => _ExpandableTextState();
+  State<ExpandableText> createState() => _ExpandableTextState();
 }
 
 class _ExpandableTextState extends State<ExpandableText>

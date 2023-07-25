@@ -157,7 +157,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.7.12'
+          flutter-version: '3.10.6'
           channel: 'stable'
 
       - name: Flutter info
@@ -315,7 +315,8 @@ jobs:
 
       - name: Tag for nightly release
         run: |
-          git cm "Add nightly ${{ needs.tags.outputs.tag }} to docs" docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
+          git commit -m "Add nightly ${{ needs.tags.outputs.tag }} to docs"
           git tag nightly-${{ needs.tags.outputs.tag }}
           git tag -f nightly-latest
           git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest
@@ -346,7 +347,7 @@ jobs:
           message: |
             ## Nightly ${{ needs.tags.outputs.tag }} released
 
-            Latest nightly builds have been built and [can be downloaded from here](https://github.com/acterglobal/a3/releases/nightly-${{ needs.tags.outputs.tag }}/).
+            Latest nightly builds have been built and [can be downloaded from here](https://docs.acter.global/nightly/${{ needs.tags.outputs.tag }}/).
             Direct install links:
              - 🤖 [Android devices](https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/acter-nightly-android-arm64-${{ needs.tags.outputs.tag }}.apk)
              - 🍎 [iOS devices](itms-services://?action=download-manifest&amp;url=https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/ios-manifest.plist) (for ad-hoc registered devices only)

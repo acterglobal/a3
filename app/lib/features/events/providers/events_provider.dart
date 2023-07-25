@@ -17,7 +17,7 @@ class AsyncSpaceEventsNotifier
     final client = ref.watch(clientProvider)!;
     final spaceId = arg.getRoomId();
     _listener = client.subscribeStream('$spaceId::calendar'); // stay up to date
-    _listener.forEach((_e) async {
+    _listener.forEach((e) async {
       state = await AsyncValue.guard(() => _getEvents());
     });
     return _getEvents();
@@ -46,7 +46,7 @@ class AsyncCalendarEventNotifier
   Future<CalendarEvent> build(String arg) async {
     final client = ref.watch(clientProvider)!;
     _listener = client.subscribeStream(arg); // stay up to date
-    _listener.forEach((_e) async {
+    _listener.forEach((e) async {
       state = await AsyncValue.guard(() => _getCalendarEvent());
     });
     return _getCalendarEvent();

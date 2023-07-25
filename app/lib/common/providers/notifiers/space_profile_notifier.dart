@@ -26,7 +26,7 @@ class AsyncSpaceProfileDataNotifier
     ref.onDispose(onDispose);
     _listener = client.subscribeStream(arg.getRoomId().toString());
     _sub = _listener.listen(
-      (_e) async {
+      (e) async {
         debugPrint('seen update ${arg.getRoomIdStr()}');
         state = await AsyncValue.guard(() => _getSpaceProfileData());
       },
@@ -60,7 +60,7 @@ class AsyncSpaceNotifier extends FamilyAsyncNotifier<Space, String> {
     ref.onDispose(onDispose);
     _listener = client.subscribeStream(arg);
     _sub = _listener.listen(
-      (_e) async {
+      (e) async {
         debugPrint('Received space update $arg');
         state = await AsyncValue.guard(() => _getSpace());
       },
@@ -99,7 +99,7 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
     ref.onDispose(onDispose);
     _listener = client.subscribeStream(arg);
     _sub = _listener.listen(
-      (_e) async {
+      (e) async {
         debugPrint('seen update $arg');
         state = await AsyncValue.guard(() => _getSpace());
       },
@@ -135,7 +135,7 @@ class AsyncSpacesNotifier extends AsyncNotifier<List<Space>> {
     ref.onDispose(onDispose);
     _listener = client.subscribeStream('SPACES');
     _sub = _listener.listen(
-      (_e) async {
+      (e) async {
         debugPrint('seen update on SPACES');
         state = await AsyncValue.guard(() => _getSpaces());
       },

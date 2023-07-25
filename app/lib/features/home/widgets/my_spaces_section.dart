@@ -161,14 +161,6 @@ class _NoSpacesWidget extends ConsumerWidget {
         Center(
           child: ElevatedButton(
             onPressed: () => context.pushNamed(Routes.createSpace.name),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text('Create New Space'),
-                SizedBox(width: 10),
-                Icon(Icons.chevron_right_outlined)
-              ],
-            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.neutral6,
               foregroundColor: Theme.of(context).colorScheme.neutral,
@@ -179,6 +171,14 @@ class _NoSpacesWidget extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Create New Space'),
+                SizedBox(width: 10),
+                Icon(Icons.chevron_right_outlined)
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 36),
@@ -187,7 +187,6 @@ class _NoSpacesWidget extends ConsumerWidget {
             onPressed: () {
               context.pushNamed(Routes.joinSpace.name);
             },
-            child: const Text('Join Existing Space'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.transparent,
               foregroundColor: Theme.of(context).colorScheme.neutral6,
@@ -200,6 +199,7 @@ class _NoSpacesWidget extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
+            child: const Text('Join Existing Space'),
           ),
         ),
       ],

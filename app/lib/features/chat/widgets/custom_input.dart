@@ -392,9 +392,9 @@ class AttachmentWidget extends StatelessWidget {
                             roomName,
                           );
                         },
-                        child: Column(
+                        child: const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Icon(Atlas.camera),
                             SizedBox(height: 6),
                             Text(
@@ -408,9 +408,9 @@ class AttachmentWidget extends StatelessWidget {
                         onTap: () {
                           controller.handleFileSelection(context);
                         },
-                        child: Column(
+                        child: const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Icon(Atlas.folder),
                             SizedBox(height: 6),
                             Text('File', style: TextStyle(color: Colors.white)),
@@ -419,9 +419,9 @@ class AttachmentWidget extends StatelessWidget {
                       ),
                       InkWell(
                         onTap: () {},
-                        child: Column(
+                        child: const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Icon(Atlas.location),
                             SizedBox(height: 6),
                             Text(
@@ -522,27 +522,21 @@ class EmojiPickerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Offstage(
-        offstage: !controller.isEmojiVisible.value,
-        child: SizedBox(
-          height: size.height * 0.3,
-          child: EmojiPicker(
-            onEmojiSelected: _handleEmojiSelected,
-            onBackspacePressed: _handleBackspacePressed,
-            config: Config(
-              columns: 7,
-              verticalSpacing: 0,
-              horizontalSpacing: 0,
-              initCategory: Category.SMILEYS,
-              showRecentsTab: true,
-              recentsLimit: 28,
-              noRecents: Text(
-                AppLocalizations.of(context)!.noRecents,
-              ),
-              tabIndicatorAnimDuration: kTabScrollDuration,
-              categoryIcons: const CategoryIcons(),
-              buttonMode: ButtonMode.MATERIAL,
+    return Offstage(
+      child: SizedBox(
+        height: size.height * 0.3,
+        child: EmojiPicker(
+          onEmojiSelected: _handleEmojiSelected,
+          onBackspacePressed: _handleBackspacePressed,
+          config: Config(
+            columns: 7,
+            verticalSpacing: 0,
+            horizontalSpacing: 0,
+            initCategory: Category.SMILEYS,
+            recentTabBehavior: RecentTabBehavior.RECENT,
+            recentsLimit: 28,
+            noRecents: Text(
+              AppLocalizations.of(context)!.noRecents,
             ),
           ),
         ),

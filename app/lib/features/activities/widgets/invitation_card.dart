@@ -71,16 +71,20 @@ class InvitationCard extends ConsumerWidget {
                         isLoader: true,
                       );
                       if (await invitation.accept() != true) {
-                        customMsgSnackbar(context, 'Failed to join.');
+                        if (context.mounted) {
+                          customMsgSnackbar(context, 'Failed to join.');
+                        }
                       } // FIXME: route there? But we don't know if room or space ... :(
-                      Navigator.of(context, rootNavigator: true).pop();
+                      if (context.mounted) {
+                        Navigator.of(context, rootNavigator: true).pop();
+                      }
                     },
-                    child: Text(AppLocalizations.of(context)!.accept),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
                         Theme.of(context).colorScheme.success,
                       ),
                     ),
+                    child: Text(AppLocalizations.of(context)!.accept),
                   ),
                 ],
               ),

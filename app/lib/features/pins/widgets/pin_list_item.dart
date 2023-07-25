@@ -51,6 +51,8 @@ class _PinListItemState extends ConsumerState<PinListItem> {
 
     return Card(
       child: InkWell(
+        onTap: onTap,
+        onLongPress: openItem,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -72,8 +74,6 @@ class _PinListItemState extends ConsumerState<PinListItem> {
             ),
           ],
         ),
-        onTap: onTap,
-        onLongPress: openItem,
       ),
     );
   }

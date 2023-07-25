@@ -17,7 +17,7 @@ class EditGroupInfoScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _EditGroupInfoState createState() => _EditGroupInfoState();
+  State<EditGroupInfoScreen> createState() => _EditGroupInfoState();
 }
 
 class _EditGroupInfoState extends State<EditGroupInfoScreen> {
