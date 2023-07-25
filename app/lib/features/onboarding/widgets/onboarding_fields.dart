@@ -12,10 +12,14 @@ class RegisterTextField extends StatelessWidget {
     required this.controller,
     required this.validatorText,
     required this.type,
+    this.validator,
+    this.inputFormatters,
   });
   final String hintText;
   final TextEditingController controller;
   final String validatorText;
+  final String? Function(String?)? validator;
+  final List<TextInputFormatter>? inputFormatters;
   final RegisterOnboardingTextFieldEnum type;
   @override
   Widget build(BuildContext context) {
@@ -23,12 +27,13 @@ class RegisterTextField extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       height: 60,
       child: TextFormField(
-        inputFormatters: (type == RegisterOnboardingTextFieldEnum.userName) ||
-                (type == RegisterOnboardingTextFieldEnum.password)
-            ? [
-                FilteringTextInputFormatter.deny(RegExp(r'\s')),
-              ]
-            : [],
+        inputFormatters: inputFormatters ??
+            ((type == RegisterOnboardingTextFieldEnum.userName) ||
+                    (type == RegisterOnboardingTextFieldEnum.password)
+                ? [
+                    FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                  ]
+                : []),
         style: Theme.of(context).textTheme.labelLarge,
         cursorColor: Theme.of(context).colorScheme.tertiary2,
         obscureText: type == RegisterOnboardingTextFieldEnum.password,
@@ -36,12 +41,13 @@ class RegisterTextField extends StatelessWidget {
         decoration: InputDecoration(
           hintText: hintText, // pass the hint text parameter here
         ),
-        validator: (val) {
-          if (val == null || val.trim().isEmpty) {
-            return validatorText;
-          }
-          return null;
-        },
+        validator: validator ??
+            (val) {
+              if (val == null || val.trim().isEmpty) {
+                return validatorText;
+              }
+              return null;
+            },
         onChanged: (value) {
           switch (type) {
             case RegisterOnboardingTextFieldEnum.name:

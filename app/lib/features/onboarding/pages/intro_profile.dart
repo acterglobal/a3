@@ -54,14 +54,14 @@ class _IntroProfileState extends State<IntroProfile> {
                         Container(
                           margin: const EdgeInsets.symmetric(vertical: 10),
                           child: const Text(
-                            'Ready to start organizing and collaborating in safe space ?',
+                            'Ready to start organizing and collaborating in safe space?',
                             style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                         ),
                         Container(
                           margin: const EdgeInsets.symmetric(vertical: 10),
                           child: const Text(
-                            'Log in or create a new profile and start organizing! ?',
+                            'Log in or create a new profile and start organizing!',
                             style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                         ),
@@ -84,9 +84,9 @@ class _IntroProfileState extends State<IntroProfile> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Row(
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
+                              children: [
                                 Text(
                                   'Create Profile',
                                   style: TextStyle(

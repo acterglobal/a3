@@ -56,9 +56,9 @@ class SpaceCard extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       SpaceCardIcons(
                         icon: Atlas.ticket_plus,
                         title: 'Invite',
@@ -149,9 +149,9 @@ class SpaceCard extends StatelessWidget {
                   const SizedBox(
                     height: 15,
                   ),
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       SpaceCardIcons(
                         icon: Atlas.ticket_plus,
                         title: 'Invite',

@@ -266,7 +266,7 @@ class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
   }
 
   Future<void> handleDatePicker(BuildContext ctx) async {
-    DateTime? _pickedDate = await showDatePicker(
+    DateTime? pickedDate = await showDatePicker(
       context: ctx,
       initialDatePickerMode: DatePickerMode.day,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
@@ -283,9 +283,9 @@ class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
         );
       },
     );
-    if (_pickedDate != null) {
+    if (pickedDate != null) {
       setState(() {
-        widget.updateSelected(_pickedDate);
+        widget.updateSelected(pickedDate);
       });
     } else {
       setState(() {

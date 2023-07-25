@@ -184,7 +184,7 @@ class _NameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ToDoController controller = Get.find<ToDoController>();
-    final TextEditingController _nameController =
+    final TextEditingController nameController =
         TextEditingController(text: task.name);
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -211,20 +211,20 @@ class _NameWidget extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: TextFormField(
-                    controller: _nameController,
+                    controller: nameController,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
                     ),
                     style: Theme.of(context).textTheme.bodyMedium,
                     onChanged: (val) {
-                      controller.updateNameInput(_nameController, val);
+                      controller.updateNameInput(nameController, val);
                     },
                     onEditingComplete: () async {
                       await controller.updateToDoTask(
                         task,
                         list,
-                        _nameController.text.trim(),
+                        nameController.text.trim(),
                         null,
                         task.progressPercent,
                       );
@@ -326,7 +326,7 @@ class _DueDateWidget extends StatelessWidget {
   }
 
   void showBottomSheet(BuildContext context, ToDoTask task) {
-    DateTime? _selectedDate = task.due;
+    DateTime? selectedDate = task.due;
     int? tappedIdx;
     ToDoController controller = Get.find<ToDoController>();
     List<String> options = [
@@ -351,8 +351,8 @@ class _DueDateWidget extends StatelessWidget {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            void _showDatePicker(BuildContext ctx) async {
-              DateTime? _pickedDate = await showDatePicker(
+            void internalShowDatePicker(BuildContext ctx) async {
+              DateTime? pickedDate = await showDatePicker(
                 context: ctx,
                 initialDatePickerMode: DatePickerMode.day,
                 initialEntryMode: DatePickerEntryMode.calendarOnly,
@@ -369,10 +369,10 @@ class _DueDateWidget extends StatelessWidget {
                   );
                 },
               );
-              if (_pickedDate != null) {
-                setState(() => _selectedDate = _pickedDate);
+              if (pickedDate != null) {
+                setState(() => selectedDate = pickedDate);
               } else {
-                Navigator.pop(context);
+                if (context.mounted) Navigator.pop(context);
               }
             }
 
@@ -390,7 +390,7 @@ class _DueDateWidget extends StatelessWidget {
                         null,
                         task.progressPercent,
                       );
-                      Navigator.pop(context);
+                      // Navigator.pop(context);
                     },
                     child: Text(
                       'Remove',
@@ -401,7 +401,7 @@ class _DueDateWidget extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(
-                    _selectedDate != null ? 'Change Due Date' : 'Add Due Date',
+                    selectedDate != null ? 'Change Due Date' : 'Add Due Date',
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
                 ),
@@ -413,10 +413,10 @@ class _DueDateWidget extends StatelessWidget {
                         task,
                         list,
                         null,
-                        _selectedDate,
+                        selectedDate,
                         task.progressPercent,
                       );
-                      Navigator.pop(context);
+                      // Navigator.pop(context);
                     },
                     child: const Text(
                       'Done',
@@ -441,10 +441,10 @@ class _DueDateWidget extends StatelessWidget {
                           tappedIdx = index;
                           switch (index) {
                             case 0:
-                              _selectedDate = now;
+                              selectedDate = now;
                               break;
                             case 1:
-                              _selectedDate = DateTime(
+                              selectedDate = DateTime(
                                 now.year,
                                 now.month,
                                 now.day + 1,
@@ -456,9 +456,9 @@ class _DueDateWidget extends StatelessWidget {
                               );
                               int weekDay = nextWeek.weekday;
                               if (weekDay == 7) {
-                                _selectedDate = nextWeek;
+                                selectedDate = nextWeek;
                               } else {
-                                _selectedDate = nextWeek.subtract(
+                                selectedDate = nextWeek.subtract(
                                   Duration(days: weekDay - 1),
                                 );
                               }
@@ -466,7 +466,7 @@ class _DueDateWidget extends StatelessWidget {
                             case 3:
                               Future.delayed(
                                 const Duration(seconds: 0),
-                                () => _showDatePicker(context),
+                                () => internalShowDatePicker(context),
                               );
                               break;
                           }

@@ -528,15 +528,17 @@ class ChatRoomController extends GetxController {
       return;
     }
     _imageFileList.addAll(result.files);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ImageSelectionPage(
-          imageList: _imageFileList,
-          roomName: roomName,
+    if (context.mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImageSelectionPage(
+            imageList: _imageFileList,
+            roomName: roomName,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> sendImage(PlatformFile file) async {
@@ -632,6 +634,11 @@ class ChatRoomController extends GetxController {
       String mediaPath = await _currentRoom!.mediaPath(message.id);
       if (mediaPath.isEmpty) {
         Directory? rootPath = await getApplicationSupportDirectory();
+        // We are doing as expected, but the lints triggers.
+        // ignore: use_build_context_synchronously
+        if (!context.mounted) {
+          return;
+        }
         String? dirPath = await FilesystemPicker.open(
           title: 'Save to folder',
           context: context,
@@ -648,7 +655,7 @@ class ChatRoomController extends GetxController {
         }
       } else {
         final result = await OpenAppFile.open(mediaPath);
-        if (result.message.isNotEmpty) {
+        if (result.message.isNotEmpty && context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(result.message),

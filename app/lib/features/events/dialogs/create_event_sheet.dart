@@ -51,9 +51,9 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final _titleInput = ref.watch(_titleProvider);
+    final titleInput = ref.watch(_titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
-    final _selectParentSpace = currentParentSpace != null;
+    final selectParentSpace = currentParentSpace != null;
     return SideSheet(
       header: 'Create new event',
       addActions: true,
@@ -96,15 +96,16 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                         InkWell(
                           focusColor: Colors.transparent,
                           hoverColor: Colors.transparent,
-                          onTap: () => _selectDate(context),
+                          onTap: _selectDate,
                           child: TextFormField(
                             enabled: false,
                             controller: _dateController,
                             keyboardType: TextInputType.datetime,
                             style: Theme.of(context).textTheme.labelLarge,
                             decoration: InputDecoration(
-                              fillColor:
-                                  Theme.of(context).colorScheme.primaryContainer,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
                               filled: true,
                               hintText: 'Select Date',
                               border: OutlineInputBorder(
@@ -132,15 +133,16 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                         InkWell(
                           focusColor: Colors.transparent,
                           hoverColor: Colors.transparent,
-                          onTap: () => _selectStartTime(context),
+                          onTap: _selectStartTime,
                           child: TextFormField(
                             enabled: false,
                             controller: _startTimeController,
                             keyboardType: TextInputType.datetime,
                             style: Theme.of(context).textTheme.labelLarge,
                             decoration: InputDecoration(
-                              fillColor:
-                                  Theme.of(context).colorScheme.primaryContainer,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
                               filled: true,
                               hintText: 'Select Time',
                               border: OutlineInputBorder(
@@ -168,15 +170,16 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                         InkWell(
                           focusColor: Colors.transparent,
                           hoverColor: Colors.transparent,
-                          onTap: () => _selectEndTime(context),
+                          onTap: _selectEndTime,
                           child: TextFormField(
                             enabled: false,
                             controller: _endTimeController,
                             keyboardType: TextInputType.datetime,
                             style: Theme.of(context).textTheme.labelLarge,
                             decoration: InputDecoration(
-                              fillColor:
-                                  Theme.of(context).colorScheme.primaryContainer,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
                               filled: true,
                               hintText: 'Select Time',
                               border: OutlineInputBorder(
@@ -218,10 +221,10 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                   const SizedBox(height: 15),
                   ListTile(
                     title: Text(
-                      _selectParentSpace ? 'Space' : 'No space selected',
+                      selectParentSpace ? 'Space' : 'No space selected',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    trailing: _selectParentSpace
+                    trailing: selectParentSpace
                         ? Consumer(
                             builder: (context, ref, child) =>
                                 ref.watch(parentSpaceDetailsProvider).when(
@@ -255,38 +258,32 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
           onPressed: () => context.canPop()
               ? context.pop()
               : context.goNamed(Routes.main.name),
-          child: const Text('Cancel'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.neutral,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
-            ),
-            side: BorderSide(
-              color: Theme.of(context).colorScheme.success,
             ),
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Cancel'),
         ),
         const SizedBox(width: 10),
         ElevatedButton(
           onPressed: () async {
-            if (_titleInput.isEmpty) {
+            if (titleInput.isEmpty) {
               return;
             }
-            await _handleCreateEvent(context);
+            await _handleCreateEvent();
           },
-          child: const Text('Create Event'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: _titleInput.isNotEmpty
-                ? Theme.of(context).colorScheme.success
-                : Theme.of(context).colorScheme.success.withOpacity(0.6),
+            backgroundColor: Theme.of(context).colorScheme.success,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
             ),
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Create Event'),
         ),
       ],
     );
@@ -296,7 +293,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     ref.read(_titleProvider.notifier).update((state) => value!);
   }
 
-  Future<void> _handleCreateEvent(BuildContext context) async {
+  Future<void> _handleCreateEvent() async {
     popUpDialog(
       context: context,
       title: const Text('Creating Event'),
@@ -307,12 +304,12 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
     }
     if (_startTimeController.text.isEmpty) {
-      var _time = ref.read(_startTimeProvider).format(context);
-      _startTimeController.text = _time;
+      var time = ref.read(_startTimeProvider).format(context);
+      _startTimeController.text = time;
     }
     if (_endTimeController.text.isEmpty) {
-      var _time = ref.read(_endTimeProvider).format(context);
-      _endTimeController.text = _time;
+      var time = ref.read(_endTimeProvider).format(context);
+      _endTimeController.text = time;
     }
     try {
       final space = await ref.read(
@@ -324,29 +321,34 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       draft.descriptionText(_descriptionController.text.trim());
 
       // convert selected date time to utc and RFC3339 format
-      final _date = ref.read(_dateProvider);
-      final _startTime = ref.read(_startTimeProvider);
+      final date = ref.read(_dateProvider);
+      final startTime = ref.read(_startTimeProvider);
       final utcStartDateTime = DateTime(
-        _date.year,
-        _date.month,
-        _date.day,
-        _startTime.hour,
-        _startTime.minute,
+        date.year,
+        date.month,
+        date.day,
+        startTime.hour,
+        startTime.minute,
       ).toUtc();
       draft.utcStartFromRfc3339(utcStartDateTime.toIso8601String());
 
-      final _endTime = ref.read(_endTimeProvider);
+      final endTime = ref.read(_endTimeProvider);
       final utcEndDateTime = DateTime(
-        _date.year,
-        _date.month,
-        _date.day,
-        _endTime.hour,
-        _endTime.minute,
+        date.year,
+        date.month,
+        date.day,
+        endTime.hour,
+        endTime.minute,
       ).toUtc();
       draft.utcEndFromRfc3339(utcEndDateTime.toIso8601String());
 
       final eventId = await draft.send();
       debugPrint('Created Calendar Event: ${eventId.toString()}');
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       context.pop();
       context.pop();
       await context.pushNamed(
@@ -359,7 +361,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: ref.read(_dateProvider),
@@ -373,28 +375,39 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     }
   }
 
-  Future<void> _selectStartTime(BuildContext context) async {
+  Future<void> _selectStartTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_startTimeProvider),
     );
+
+    // We are doing as expected, but the lints triggers.
+    // ignore: use_build_context_synchronously
+    if (!context.mounted) {
+      return;
+    }
     if (picked != null) {
       ref.read(_startTimeProvider.notifier).update((state) => picked);
-      var _time = ref.read(_startTimeProvider).format(context);
-      _startTimeController.text = _time;
+      var time = ref.read(_startTimeProvider).format(context);
+      _startTimeController.text = time;
     }
   }
 
-  Future<void> _selectEndTime(BuildContext context) async {
+  Future<void> _selectEndTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_endTimeProvider),
     );
+
+    // We are doing as expected, but the lints triggers.
+    // ignore: use_build_context_synchronously
+    if (!context.mounted) {
+      return;
+    }
     if (picked != null) {
       ref.read(_endTimeProvider.notifier).update((state) => picked);
-
-      var _time = ref.read(_endTimeProvider).format(context);
-      _endTimeController.text = _time;
+      var time = ref.read(_endTimeProvider).format(context);
+      _endTimeController.text = time;
     }
   }
 }

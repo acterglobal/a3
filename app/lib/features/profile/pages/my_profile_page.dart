@@ -18,7 +18,7 @@ class ChangeDisplayName extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ChangeDisplayNameState createState() => _ChangeDisplayNameState();
+  State<ChangeDisplayName> createState() => _ChangeDisplayNameState();
 }
 
 class _ChangeDisplayNameState extends State<ChangeDisplayName> {
@@ -89,7 +89,7 @@ class MyProfile extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) => ChangeDisplayName(account: profile),
     );
-    if (newUsername != null) {
+    if (newUsername != null && context.mounted) {
       popUpDialog(
         context: context,
         title: Text(
@@ -100,6 +100,12 @@ class MyProfile extends ConsumerWidget {
       );
       await profile.account.setDisplayName(newUsername);
       ref.invalidate(accountProfileProvider);
+
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       Navigator.of(context, rootNavigator: true).pop();
       customMsgSnackbar(context, 'Display Name update submitted');
     }
@@ -117,6 +123,11 @@ class MyProfile extends ConsumerWidget {
     if (result != null) {
       final file = result.files.first;
       await profile.account.uploadAvatar(file.path!);
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       customMsgSnackbar(context, 'Avatar uploaded');
     } else {
       // user cancelled the picker

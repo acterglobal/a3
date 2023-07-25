@@ -7,8 +7,7 @@ abstract class ActerFlutterSdkPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static ActerFlutterSdkPlatform _instance =
-      MethodChannelActerFlutterSdk();
+  static ActerFlutterSdkPlatform _instance = MethodChannelActerFlutterSdk();
 
   /// The default instance of [ActerFlutterSdkPlatform] to use.
   ///

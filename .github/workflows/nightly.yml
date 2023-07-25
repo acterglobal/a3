@@ -23,11 +23,17 @@ jobs:
       should_run: ${{ steps.check-new-commits.outputs.has-new-commits }}
     steps:
       - uses: actions/checkout@v2
-      - name: Check for new commits today
-        id: check-new-commits
-        uses: adriangl/check-new-commits-action@v1
         with:
-          seconds: 86400 # One day in seconds
+          fetch-depth: 0 # fetch all history and tags
+      - name: Check for new commits since last nightly
+        id: check-new-commits
+        shell: bash
+        run: |
+          if [ `git diff --name-only nightly-latest app native .changes | wc -l` -ne 0 ]; then
+            echo "has-new-commits=true"  >> $GITHUB_OUTPUT ;
+          else
+            echo "has-new-commits=false" >> $GITHUB_OUTPUT ;
+          fi
 
   tags:
     runs-on: ubuntu-latest
@@ -151,7 +157,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.7.12'
+          flutter-version: '3.10.6'
           channel: 'stable'
 
       - name: Flutter info
@@ -252,11 +258,6 @@ jobs:
         run: |
           7z a "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.zip" ${{ matrix.zip_files }}
 
-      - name: Generate Changelog
-        run: |
-          git fetch --prune --unshallow --tags
-          cargo run -p mr_minutes -- --since nightly-latest --output nightly-changes.md
-
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -265,7 +266,6 @@ jobs:
           tag_name: nightly-${{ needs.tags.outputs.tag }}
           generate_release_notes: false
           prerelease: true
-          body_path: nightly-changes.md
           files: |
             ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
             ${{ matrix.extra_artifacts }}
@@ -294,12 +294,32 @@ jobs:
       - build
     steps:
       - uses: actions/checkout@v2
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Generate Changelog
+        run: |
+          git fetch --prune --unshallow --tags
+          cargo run -p mr_minutes -- --since nightly-latest --output nightly-changes.md
+
+      - name: "Generate docs"
+        run: |
+          echo "+++" > docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "title = \" Nightly ${{ needs.tags.outputs.tag }}\"" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "template = \"nightlies/release.html\"" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "+++" >>docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "" >>docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          cat nightly-changes.md >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+
       - name: Tag for nightly release
         run: |
+          git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
+          git commit -m "Add nightly ${{ needs.tags.outputs.tag }} to docs"
           git tag nightly-${{ needs.tags.outputs.tag }}
-          git push origin nightly-${{ needs.tags.outputs.tag }}
           git tag -f nightly-latest
-          git push -f origin nightly-latest
+          git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest
       - name: Release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -309,6 +329,7 @@ jobs:
           generate_release_notes: false
           name: Nightly ${{ needs.tags.outputs.tag }}
           tag_name: nightly-${{ needs.tags.outputs.tag }}
+          body_path: nightly-changes.md
           prerelease: true
       - uses: eregon/publish-release@v1
         env:
@@ -326,7 +347,7 @@ jobs:
           message: |
             ## Nightly ${{ needs.tags.outputs.tag }} released
 
-            Latest nightly builds have been built and [can be downloaded from here](https://github.com/acterglobal/a3/releases/nightly-${{ needs.tags.outputs.tag }}/).
+            Latest nightly builds have been built and [can be downloaded from here](https://docs.acter.global/nightly/${{ needs.tags.outputs.tag }}/).
             Direct install links:
              - 🤖 [Android devices](https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/acter-nightly-android-arm64-${{ needs.tags.outputs.tag }}.apk)
              - 🍎 [iOS devices](itms-services://?action=download-manifest&amp;url=https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/ios-manifest.plist) (for ad-hoc registered devices only)
