@@ -26,8 +26,9 @@ class CustomButton extends StatelessWidget {
               if (states.contains(MaterialState.pressed)) {
                 return RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side:
-                      BorderSide(color: Theme.of(context).colorScheme.tertiary),
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                  ),
                 );
               } else if (states.contains(MaterialState.disabled)) {
                 return RoundedRectangleBorder(
@@ -36,23 +37,35 @@ class CustomButton extends StatelessWidget {
               }
               return RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Theme.of(context).colorScheme.tertiary),
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                ),
               );
             },
           ),
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
             (Set<MaterialState> states) {
               if (states.contains(MaterialState.pressed)) {
-                return Theme.of(context).colorScheme.tertiary;
+                return Theme.of(context).colorScheme.primaryContainer;
               } else if (states.contains(MaterialState.disabled)) {
                 return Theme.of(context).colorScheme.neutral3;
               }
-              return Theme.of(context).colorScheme.tertiary;
+              return Theme.of(context).colorScheme.primaryContainer;
+            },
+          ),
+          foregroundColor: MaterialStateProperty.resolveWith<Color>(
+            (Set<MaterialState> states) {
+              if (states.contains(MaterialState.pressed)) {
+                return Theme.of(context).colorScheme.onPrimaryContainer;
+              } else if (states.contains(MaterialState.disabled)) {
+                return Theme.of(context).colorScheme.neutral3;
+              }
+              return Theme.of(context).colorScheme.onPrimaryContainer;
             },
           ),
         ),
-        child: Text(title),
         onPressed: onPressed,
+        child: Text(title),
       ),
     );
   }

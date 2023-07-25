@@ -47,7 +47,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
         return;
       }
       final spaces = await ref.watch(spacesProvider.future);
-      if (spaces.isEmpty) {
+      if (spaces.isEmpty && context.mounted) {
         onBoardingDialog(
           context: context,
           btnText: 'Join Existing Space',

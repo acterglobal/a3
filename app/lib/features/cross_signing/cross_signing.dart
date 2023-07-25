@@ -30,12 +30,12 @@ Widget elevatedButton(
 }
 
 class VerificationProcess {
-  bool verifyingThisDev;
+  bool wasTriggeredFromThisDevice;
   String stage;
   String? finishedMsg;
 
   VerificationProcess({
-    required this.verifyingThisDev,
+    required this.wasTriggeredFromThisDevice,
     required this.stage,
   });
 }
@@ -65,7 +65,7 @@ class CrossSigning {
     _deviceChangedPoller = client.deviceChangedEventRx()?.listen((event) async {
       var records = await event.deviceRecords(false);
       for (var record in records) {
-        debugPrint('found device id: ' + record.deviceId().toString());
+        debugPrint('found device id: ${record.deviceId()}');
       }
 
       if (!_shouldShowNewDevicePopup()) {
@@ -138,7 +138,7 @@ class CrossSigning {
     }
     // this case is bob side
     _processMap[flowId] = VerificationProcess(
-      verifyingThisDev: true,
+      wasTriggeredFromThisDevice: event.wasTriggeredFromThisDevice(),
       stage: 'm.key.verification.request',
     );
     acceptingRequest = false;
@@ -258,7 +258,7 @@ class CrossSigning {
     } else {
       // this device is alice side
       _processMap[flowId] = VerificationProcess(
-        verifyingThisDev: false,
+        wasTriggeredFromThisDevice: event.wasTriggeredFromThisDevice(),
         stage: 'm.key.verification.ready',
       );
     }
@@ -297,7 +297,7 @@ class CrossSigning {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  _processMap[flowId]!.verifyingThisDev
+                  _processMap[flowId]!.wasTriggeredFromThisDevice
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
                 ),
@@ -441,7 +441,7 @@ class CrossSigning {
               ),
               const SizedBox(width: 5),
               Text(
-                _processMap[flowId]?.verifyingThisDev == true
+                _processMap[flowId]?.wasTriggeredFromThisDevice == true
                     ? AppLocalizations.of(context)!.verifyThisSession
                     : AppLocalizations.of(context)!.verifySession,
               ),
@@ -539,7 +539,7 @@ class CrossSigning {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    _processMap[flowId]?.verifyingThisDev == true
+                    _processMap[flowId]?.wasTriggeredFromThisDevice == true
                         ? AppLocalizations.of(context)!.verifyThisSession
                         : AppLocalizations.of(context)!.verifySession,
                   ),
@@ -603,7 +603,7 @@ class CrossSigning {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    _processMap[flowId]?.verifyingThisDev == true
+                    _processMap[flowId]?.wasTriggeredFromThisDevice == true
                         ? AppLocalizations.of(context)!.verifyThisSession
                         : AppLocalizations.of(context)!.verifySession,
                   ),
@@ -691,7 +691,7 @@ class CrossSigning {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  _processMap[flowId]?.verifyingThisDev == true
+                  _processMap[flowId]?.wasTriggeredFromThisDevice == true
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
                 ),
@@ -775,7 +775,7 @@ class CrossSigning {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  _processMap[flowId]?.verifyingThisDev == true
+                  _processMap[flowId]?.wasTriggeredFromThisDevice == true
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
                 ),
@@ -954,7 +954,7 @@ class CrossSigning {
     if (process.finishedMsg != null) {
       return process.finishedMsg!;
     }
-    if (process.verifyingThisDev) {
+    if (process.wasTriggeredFromThisDevice) {
       return AppLocalizations.of(context)!.verificationConclusionOkSelfNotice;
     }
     return AppLocalizations.of(context)!.verificationConclusionOkDone;

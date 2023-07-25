@@ -409,8 +409,10 @@ condition = { platforms = ["mac"], env_true = ["RELEASE"] }
 script_runner = "@shell"
 script = [
     """
-    MAC_LIPO=${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
+    export MAC_LIPO=${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
+    export MACOSX_DEPLOYMENT_TARGET=10.14
     cargo build --lib --target x86_64-apple-darwin --release
+    export MACOSX_DEPLOYMENT_TARGET=11
     cargo build --lib --target aarch64-apple-darwin --release
 
     # fix inner reference name

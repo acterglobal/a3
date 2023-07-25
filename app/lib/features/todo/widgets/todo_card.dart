@@ -89,9 +89,9 @@ class _TasksWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<ToDoTask> _pendingTasks =
+    List<ToDoTask> pendingTasks =
         todo.tasks.where((element) => element.progressPercent < 100).toList();
-    List<ToDoTask> _completedTasks =
+    List<ToDoTask> completedTasks =
         todo.tasks.where((element) => element.progressPercent >= 100).toList();
     return Visibility(
       visible: isExpanded,
@@ -101,9 +101,9 @@ class _TasksWidget extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             children: List.generate(
-              _pendingTasks.length,
+              pendingTasks.length,
               (index) => ToDoTaskView(
-                task: _pendingTasks[index],
+                task: pendingTasks[index],
                 todoList: todo,
               ),
             ),
@@ -164,9 +164,9 @@ class _TasksWidget extends StatelessWidget {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 children: List.generate(
-                  _completedTasks.length,
+                  completedTasks.length,
                   (index) => ToDoTaskView(
-                    task: _completedTasks[index],
+                    task: completedTasks[index],
                     todoList: todo,
                   ),
                 ),

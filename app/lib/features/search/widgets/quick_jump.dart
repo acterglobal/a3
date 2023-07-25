@@ -79,7 +79,10 @@ class QuickJump extends ConsumerWidget {
                       semanticsLabel: 'tasks',
                       width: 32,
                       height: 32,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.onSurface,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   )
                 : null,

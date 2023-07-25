@@ -37,15 +37,17 @@ const defaultSessionKey = String.fromEnvironment(
 );
 
 // ex: a3-nightly or acter-linux
-String appName = String.fromEnvironment(
+const appName = String.fromEnvironment(
   'RAGESHAKE_APP_NAME',
-  defaultValue: 'acter-${Platform.operatingSystem}',
+  defaultValue: 'acter-dev',
 );
 
 const versionName = String.fromEnvironment(
   'RAGESHAKE_APP_VERSION',
   defaultValue: 'DEV',
 );
+
+const isDevBuild = versionName == 'DEV';
 
 String userAgent = '$appName/$versionName';
 
@@ -230,7 +232,7 @@ class ActerSdk {
       debugPrint('DynamicLibrary.open by lib name failed: $e1');
       try {
         // android api 23 is working here
-        final String? nativeLibDir = await _getNativeLibraryDirectory();
+        final String nativeLibDir = await _getNativeLibraryDirectory();
         return DynamicLibrary.open('$nativeLibDir/$libName');
       } catch (e2) {
         debugPrint('DynamicLibrary.open from /data/app failed: $e2');

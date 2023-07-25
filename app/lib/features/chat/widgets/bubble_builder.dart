@@ -135,7 +135,6 @@ class _ChatBubble extends ConsumerWidget {
           (message.repliedMessage != null)
               ? Bubble(
                   color: Theme.of(context).colorScheme.neutral,
-                  child: _OriginalMessageBuilder(message: message),
                   margin: nextMessageInGroup
                       ? const BubbleEdges.symmetric(horizontal: 2)
                       : null,
@@ -144,6 +143,7 @@ class _ChatBubble extends ConsumerWidget {
                       ? const BubbleEdges.all(0)
                       : null,
                   nip: BubbleNip.no,
+                  child: _OriginalMessageBuilder(message: message),
                 )
               : const SizedBox(),
           const SizedBox(height: 4),
@@ -153,7 +153,6 @@ class _ChatBubble extends ConsumerWidget {
                   color: myId == message.author.id
                       ? Theme.of(context).colorScheme.secondary
                       : Theme.of(context).colorScheme.primary,
-                  child: child,
                   style: BubbleStyle(
                     margin: nextMessageInGroup
                         ? const BubbleEdges.symmetric(horizontal: 2)
@@ -171,6 +170,7 @@ class _ChatBubble extends ConsumerWidget {
                     nipWidth: 0.5,
                     nipRadius: 0,
                   ),
+                  child: child,
                 ),
         ],
       ),

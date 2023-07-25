@@ -43,6 +43,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           username.text,
           password.text,
         );
+
+        // We are doing as expected, but the lints triggers.
+        // ignore: use_build_context_synchronously
+        if (!context.mounted) {
+          return;
+        }
         if (loginSuccess == null) {
           // no message means, login was successful.
           context.goNamed(Routes.main.name);

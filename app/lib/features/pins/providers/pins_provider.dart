@@ -16,7 +16,7 @@ class AsyncSpacePinsNotifier
     final client = ref.watch(clientProvider)!;
     final spaceId = arg.getRoomId();
     _listener = client.subscribeStream('$spaceId::PINS'); // stay up to date
-    _listener.forEach((_e) async {
+    _listener.forEach((e) async {
       state = await AsyncValue.guard(() => _getPins());
     });
     return _getPins();
@@ -52,7 +52,7 @@ class AsyncPinsNotifier extends AutoDisposeAsyncNotifier<List<ActerPin>> {
   Future<List<ActerPin>> build() async {
     final client = ref.watch(clientProvider)!;
     _listener = client.subscribeStream('PINS'); // stay up to date
-    _listener.forEach((_e) async {
+    _listener.forEach((e) async {
       state = await AsyncValue.guard(() => _getPins());
     });
     return _getPins();
@@ -81,7 +81,7 @@ class AsyncPinNotifier
   Future<ActerPin> build(String arg) async {
     final client = ref.watch(clientProvider)!;
     _listener = client.subscribeStream(arg); // stay up to date
-    _listener.forEach((_e) async {
+    _listener.forEach((e) async {
       state = await AsyncValue.guard(() => _getPin());
     });
     return _getPin();

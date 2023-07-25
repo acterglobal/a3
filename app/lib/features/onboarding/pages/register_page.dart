@@ -9,6 +9,7 @@ import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,6 +29,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final TextEditingController token = TextEditingController();
   final TextEditingController confirmPassword = TextEditingController();
   final TextEditingController name = TextEditingController();
+
+  final usernamePattern = RegExp(r'^[a-z0-9._=\-/]+$');
 
   void validateRegister(BuildContext context, errMsg) {
     if (errMsg == null) {
@@ -63,7 +66,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           token.text,
           context,
         );
-        validateRegister(context, errorMsg);
+        if (context.mounted) {
+          validateRegister(context, errorMsg);
+        }
       }
     }
   }
@@ -125,6 +130,27 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       validatorText:
                           AppLocalizations.of(context)!.emptyUsername,
                       type: RegisterOnboardingTextFieldEnum.userName,
+                      inputFormatters: [
+                        TextInputFormatter.withFunction((
+                          TextEditingValue oldValue,
+                          TextEditingValue newValue,
+                        ) {
+                          return newValue.text.isEmpty ||
+                                  usernamePattern.hasMatch(newValue.text)
+                              ? newValue
+                              : oldValue;
+                        })
+                      ],
+                      validator: (val) {
+                        if (val == null || val.trim().isEmpty) {
+                          return AppLocalizations.of(context)!.emptyUsername;
+                        }
+                        final cleanedVal = val.trim().toLowerCase();
+                        if (!usernamePattern.hasMatch(cleanedVal)) {
+                          return 'Username may only contain letters a-z, numbers and any of  ._=-/';
+                        }
+                        return null;
+                      },
                     ),
                     RegisterTextField(
                       hintText: AppLocalizations.of(context)!.password,
