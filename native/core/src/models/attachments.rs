@@ -30,7 +30,7 @@ pub struct AttachmentsManager {
 }
 
 impl AttachmentsManager {
-    pub fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
+    fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
         let r = parent.as_ref();
         format!("{r}::{ATTACHMENTS_STATS_FIELD}")
     }

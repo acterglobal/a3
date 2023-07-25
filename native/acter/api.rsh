@@ -286,6 +286,8 @@ object CalendarEvent {
     fn event_id() -> EventId;
     /// update builder
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
+    /// get RSVP manager
+    fn rsvp_manager() -> Future<Result<RsvpManager>>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -333,6 +335,42 @@ object CalendarEventDraft {
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
+}
+
+object RsvpManager {
+    /// whether manager has rsvp entries
+    fn has_rsvp_entries() -> bool;
+
+    /// get total rsvp count
+    fn total_rsvp_count() -> u32;
+
+    /// get rsvp entries
+    fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
+
+    /// get rsvp draft
+    fn rsvp_draft() -> Result<RsvpDraft>;
+
+    /// get informed about changes to this manager
+    fn subscribe_stream() -> Stream<()>;
+}
+
+object RsvpDraft {
+    /// set status of this RSVP
+    fn status(status: string) -> RsvpDraft;
+
+    /// create this RSVP
+    fn send() -> Future<Result<EventId>>;
+}
+
+object Rsvp {
+    /// get sender of this rsvp
+    fn sender() -> UserId;
+
+    /// get timestamp of this rsvp
+    fn origin_server_ts() -> u64;
+
+    /// get status of this rsvp
+    fn status() -> string;
 }
 
 object MediaSource {

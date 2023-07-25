@@ -4,12 +4,14 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/events/providers/events_provider.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class CalendarEventPage extends ConsumerWidget {
   final String calendarId;
+
   const CalendarEventPage({super.key, required this.calendarId});
 
   @override
@@ -25,17 +27,11 @@ class CalendarEventPage extends ConsumerWidget {
               PopupMenuButton(
                 itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                   PopupMenuItem(
-                    onTap: () => context.pushNamed(
-                      Routes.editCalendarEvent.name,
-                      pathParameters: {'calendarId': calendarId},
-                    ),
+                    onTap: () => onEdit(context),
                     child: const Text('Edit Event'),
                   ),
                   PopupMenuItem(
-                    onTap: () => customMsgSnackbar(
-                      context,
-                      'Delete Event is not implemented yet',
-                    ),
+                    onTap: () => onDelete(context),
                     child: const Text('Delete Event'),
                   ),
                 ],
@@ -43,7 +39,13 @@ class CalendarEventPage extends ConsumerWidget {
             ],
           ),
           event.when(
-            data: (calendarEvent) {
+            data: (ev) {
+              String dateTime = 'Date and Time: ${formatDt(ev)}';
+              String description = '';
+              TextMessageContent? content = ev.description();
+              if (content != null) {
+                description = 'Description: ${content.body()}';
+              }
               return SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(15),
@@ -53,22 +55,14 @@ class CalendarEventPage extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ListTile(
-                          key: Key(
-                            calendarEvent.eventId().toString(),
-                          ),
-                          title: Text(calendarEvent.title()),
+                          key: Key(calendarId),
+                          title: Text(ev.title()),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Date and Time: ${formatDt(calendarEvent)}',
-                              ),
+                              Text(dateTime),
                               const SizedBox(height: 15),
-                              Text(
-                                calendarEvent.description() != null
-                                    ? 'Description: ${calendarEvent.description()!.body()}'
-                                    : '',
-                              ),
+                              Text(description),
                               const SizedBox(height: 15),
                             ],
                           ),
@@ -81,10 +75,7 @@ class CalendarEventPage extends ConsumerWidget {
                                 width: 100,
                                 child: CustomButton(
                                   title: 'Invite',
-                                  onPressed: () => customMsgSnackbar(
-                                    context,
-                                    'Invite to event is not available yet',
-                                  ),
+                                  onPressed: () => onInvite(context),
                                 ),
                               ),
                               const SizedBox(width: 10),
@@ -93,12 +84,35 @@ class CalendarEventPage extends ConsumerWidget {
                                 width: 100,
                                 child: CustomButton(
                                   title: 'Join',
-                                  onPressed: () => customMsgSnackbar(
-                                    context,
-                                    'Join event is not available yet',
-                                  ),
+                                  onPressed: () => onJoin(context),
                                 ),
-                              )
+                              ),
+                              const SizedBox(width: 10),
+                              SizedBox(
+                                height: 50,
+                                width: 100,
+                                child: PopupMenuButton(
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    child: const Text('RSVP'),
+                                  ),
+                                  itemBuilder: (BuildContext context) =>
+                                      <PopupMenuEntry>[
+                                    PopupMenuItem(
+                                      onTap: () => onRsvp(context, ev, 'Yes'),
+                                      child: const Text('Yes'),
+                                    ),
+                                    PopupMenuItem(
+                                      onTap: () => onRsvp(context, ev, 'Maybe'),
+                                      child: const Text('Maybe'),
+                                    ),
+                                    PopupMenuItem(
+                                      onTap: () => onRsvp(context, ev, 'No'),
+                                      child: const Text('No'),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -118,5 +132,42 @@ class CalendarEventPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  void onEdit(BuildContext context) {
+    context.pushNamed(
+      Routes.editCalendarEvent.name,
+      pathParameters: {'calendarId': calendarId},
+    );
+  }
+
+  void onDelete(BuildContext context) {
+    customMsgSnackbar(context, 'Delete Event is not implemented yet');
+  }
+
+  void onInvite(BuildContext context) {
+    customMsgSnackbar(context, 'Invite to event is not available yet');
+  }
+
+  void onJoin(BuildContext context) {
+    customMsgSnackbar(context, 'Join event is not available yet');
+  }
+
+  Future<void> onRsvp(
+    BuildContext context,
+    CalendarEvent event,
+    String status,
+  ) async {
+    var rsvpManager = await event.rsvpManager();
+    int count = rsvpManager.totalRsvpCount();
+    debugPrint('rsvp count: $count');
+
+    var draft = rsvpManager.rsvpDraft();
+    draft.status(status);
+    var rsvpId = await draft.send();
+
+    // rsvpManager.subscribeStream();
+    // count = rsvpManager.totalRsvpCount();
+    // debugPrint('rsvp count: $count');
   }
 }

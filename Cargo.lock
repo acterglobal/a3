@@ -105,7 +105,6 @@ dependencies = [
  "acter",
  "acter-core",
  "anyhow",
- "async-broadcast",
  "env_logger",
  "futures",
  "tempfile",
@@ -123,7 +122,6 @@ dependencies = [
  "acter-core",
  "anyhow",
  "app_dirs2",
- "async-broadcast",
  "clap 4.3.15",
  "crossterm",
  "dialoguer",
@@ -325,16 +323,6 @@ name = "assign"
 version = "1.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5f093eed78becd229346bf859eec0aa4dd7ddde0757287b2b4107a1f09c80002"
-
-[[package]]
-name = "async-broadcast"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c48ccdbf6ca6b121e0f586cbc0e73ae440e56c67c30fa0873b4e110d9c26d2b"
-dependencies = [
- "event-listener",
- "futures-core",
-]
 
 [[package]]
 name = "async-channel"
