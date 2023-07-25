@@ -11,7 +11,6 @@ import 'package:acter/features/chat/pages/profile_page.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/bubble_builder.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
-import 'package:acter/features/chat/widgets/empty_history_placeholder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/chat/widgets/type_indicator.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -48,6 +47,12 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           .read(currentChatRoomProvider.notifier)
           .update((state) => widget.convo.getRoomIdStr());
     });
+  }
+
+  @override
+  void dispose() {
+    debugPrint('Disposing message stream');
+    super.dispose();
   }
 
   void onAttach(BuildContext context) {
@@ -115,21 +120,13 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   Widget customBottomWidget(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        final client = ref.watch(clientProvider)!;
-        final messageId =
-            ref.watch(chatRoomProvider.notifier).repliedToMessage!.id;
-        final bool isAuthor = client.userId().toString() == messageId;
+        // final client = ref.watch(clientProvider)!;
+        // final messageId =
+        //     ref.watch(chatRoomProvider.notifier).repliedToMessage?.id;
+        // final bool isAuthor = client.userId().toString() == messageId;
         if (!ref.watch(chatInputProvider.select((ci) => ci.emojiVisible))) {
-          return Consumer(
-            builder: (context, ref, child) {
-              final convoProfile =
-                  ref.watch(chatProfileDataProvider(widget.convo)).requireValue;
-              return CustomChatInput(
-                roomName: convoProfile.displayName ??
-                    AppLocalizations.of(context)!.noName,
-                onButtonPressed: () async => await onSendButtonPressed(),
-              );
-            },
+          return CustomChatInput(
+            onButtonPressed: () async => await onSendButtonPressed(),
           );
         }
         return Container(
@@ -149,96 +146,97 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               ),
               GestureDetector(
                 onTap: () async {
-                  if (isAuthor) {
-                    // redact message call
-                    await ref
-                        .read(chatRoomProvider.notifier)
-                        .redactRoomMessage(messageId);
-                    ref.read(chatInputProvider.notifier).toggleEmojiVisible();
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext ctx) {
-                        return Dialog(
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            height: 280,
-                            decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(16),
-                              ),
+                  // if (isAuthor) {
+                  //   // redact message call
+                  //   await ref
+                  //       .read(chatRoomProvider.notifier)
+                  //       .redactRoomMessage(messageId!);
+                  //   ref.read(chatInputProvider.notifier).toggleEmojiVisible();
+                  // } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext ctx) {
+                      return Dialog(
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          height: 280,
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(16),
                             ),
-                            child: Center(
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          Navigator.pop(ctx);
-                                        },
-                                        child: const Icon(
-                                          Atlas.xmark_circle,
-                                          color: Colors.white,
+                          ),
+                          child: Center(
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.pop(ctx);
+                                      },
+                                      child: const Icon(
+                                        Atlas.xmark_circle,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Report This Message',
+                                ),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  "You can report this message to Acter if you think that it goes against our community guidelines. We won't notify the account that you submitted this report",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    customMsgSnackbar(
+                                      ctx,
+                                      'Report feature not yet implemented',
+                                    );
+                                    Navigator.pop(ctx);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(
+                                          14,
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    'Report This Message',
-                                  ),
-                                  const SizedBox(height: 16),
-                                  const Text(
-                                    "You can report this message to Acter if you think that it goes against our community guidelines. We won't notify the account that you submitted this report",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      customMsgSnackbar(
-                                        ctx,
-                                        'Report feature not yet implemented',
-                                      );
-                                      Navigator.pop(ctx);
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(20),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            14,
-                                          ),
-                                        ),
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(8),
-                                          child: Center(
-                                            child: Text(
-                                              'Okay!',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 15,
-                                              ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8),
+                                        child: Center(
+                                          child: Text(
+                                            'Okay!',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15,
                                             ),
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      },
-                    );
-                  }
+                        ),
+                      );
+                    },
+                  );
                 },
-                child: Text(
-                  isAuthor ? 'Unsend' : 'Report',
+                // },
+                child: const Text(
+                  // isAuthor ? 'Unsend' : 'Report',
+                  'Report',
                   style: TextStyle(
-                    color: isAuthor ? Colors.white : Colors.red,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -385,120 +383,108 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             ),
           ),
           error: (e) => Text('Failed to load messages due to $e'),
-          data: (messages) {
-            return Chat(
-              // customBottomWidget: customBottomWidget(context),
-              // textMessageBuilder: textMessageBuilder,
-              l10n: ChatL10nEn(
-                emptyChatPlaceholder: '',
-                attachmentButtonAccessibilityLabel: '',
-                fileButtonAccessibilityLabel: '',
-                inputPlaceholder: AppLocalizations.of(context)!.message,
-                sendButtonAccessibilityLabel: '',
-              ),
-              messages: ref.watch(messagesProvider),
-              // typingIndicatorOptions: TypingIndicatorOptions(
-              //   customTypingIndicator: TypeIndicator(
-              //     bubbleAlignment: BubbleRtlAlignment.right,
-              //     showIndicator: ctlr.typingUsers.isNotEmpty,
-              //     options: TypingIndicatorOptions(
-              //       animationSpeed: const Duration(milliseconds: 800),
-              //       typingUsers: ctlr.typingUsers,
-              //       typingMode: TypingIndicatorMode.name,
-              //     ),
-              //   ),
-              // ),
-              onSendPressed: (types.PartialText partialText) {},
-              user: types.User(id: client!.userId().toString()),
-              // disable image preview
-              disableImageGallery: true,
-              //custom avatar builder
-              avatarBuilder: (userId) {
-                var profile =
-                    ref.read(chatRoomProvider.notifier).getUserProfile(userId);
-                return Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: SizedBox(
-                    height: 28,
-                    width: 28,
-                    child: ActerAvatar(
-                      mode: DisplayMode.User,
-                      uniqueId: userId,
-                      displayName: profile?.displayName,
-                      avatar: profile?.getAvatarImage(),
-                      size: 50,
-                    ),
+          loaded: () => Chat(
+            customBottomWidget: customBottomWidget(context),
+            textMessageBuilder: textMessageBuilder,
+            l10n: ChatL10nEn(
+              emptyChatPlaceholder: '',
+              attachmentButtonAccessibilityLabel: '',
+              fileButtonAccessibilityLabel: '',
+              inputPlaceholder: AppLocalizations.of(context)!.message,
+              sendButtonAccessibilityLabel: '',
+            ),
+            messages: ref.watch(messagesProvider),
+            // typingIndicatorOptions: TypingIndicatorOptions(
+            //   customTypingIndicator: TypeIndicator(
+            //     bubbleAlignment: BubbleRtlAlignment.right,
+            //     showIndicator: ctlr.typingUsers.isNotEmpty,
+            //     options: TypingIndicatorOptions(
+            //       animationSpeed: const Duration(milliseconds: 800),
+            //       typingUsers: ctlr.typingUsers,
+            //       typingMode: TypingIndicatorMode.name,
+            //     ),
+            //   ),
+            // ),
+            onSendPressed: (types.PartialText partialText) {},
+            user: types.User(id: client!.userId().toString()),
+            // disable image preview
+            disableImageGallery: true,
+            //custom avatar builder
+            avatarBuilder: (userId) {
+              var profile =
+                  ref.read(chatRoomProvider.notifier).getUserProfile(userId);
+              return Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: SizedBox(
+                  height: 28,
+                  width: 28,
+                  child: ActerAvatar(
+                    mode: DisplayMode.User,
+                    uniqueId: userId,
+                    displayName: profile?.displayName,
+                    avatar: profile?.getAvatarImage(),
+                    size: 50,
                   ),
-                );
-              },
-              // bubbleBuilder: (
-              //   child, {
-              //   required message,
-              //   required nextMessageInGroup,
-              // }) {
-              //   return BubbleBuilder(
-              //     userId: client.userId().toString(),
-              //     child: child,
-              //     message: message,
-              //     nextMessageInGroup: nextMessageInGroup,
-              //     enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
-              //   );
-              // },
-              // imageMessageBuilder: (message, {required messageWidth}) {
-              //   return _ImageMessage(
-              //     message: message,
-              //     messageWidth: messageWidth,
-              //   );
-              // },
-              // customMessageBuilder: (message, {required messageWidth}) {
-              //   return _CustomMessage(
-              //     message: message,
-              //     messageWidth: messageWidth,
-              //   );
-              // },
-              showUserAvatars: true,
-              // onAttachmentPressed: () => onAttach(context),
-              onAvatarTap: (types.User user) => customMsgSnackbar(
-                context,
-                'Chat Profile view is not implemented yet',
-              ),
-              // onPreviewDataFetched: ref
-              //     .watch(chatRoomProvider.notifier)
-              //     .handlePreviewDataFetched,
-              // onMessageTap:
-              //     ref.watch(chatRoomProvider.notifier).handleMessageTap,
-              onEndReached:
-                  ref.read(chatRoomProvider.notifier).handleEndReached,
-              onEndReachedThreshold: 0.75,
-              // onBackgroundTap: () {
-              //   if (ref.watch(
-              //     chatInputProvider.select((ci) => ci.emojiVisible),
-              //   )) {
-              //     ref.watch(chatRoomProvider.notifier).repliedToMessage =
-              //         null;
-              //     ref
-              //         .watch(chatInputProvider.notifier)
-              //         .toggleEmojiVisible();
-              //     ref
-              //         .watch(chatInputProvider.notifier)
-              //         .setReplyWidget(null);
-              //   }
-              // },
-              //Custom Theme class, see lib/common/store/chatTheme.dart
-              theme: const ActerChatTheme(
-                attachmentButtonIcon: Icon(Atlas.plus_circle),
-                sendButtonIcon: Icon(Atlas.paper_airplane),
-              ),
-            );
-          },
+                ),
+              );
+            },
+            bubbleBuilder: (
+              child, {
+              required message,
+              required nextMessageInGroup,
+            }) {
+              return BubbleBuilder(
+                userId: client.userId().toString(),
+                message: message,
+                nextMessageInGroup: nextMessageInGroup,
+                enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
+                child: child,
+              );
+            },
+            imageMessageBuilder: (message, {required messageWidth}) {
+              return _ImageMessage(
+                message: message,
+                messageWidth: messageWidth,
+              );
+            },
+            customMessageBuilder: (message, {required messageWidth}) {
+              return _CustomMessage(
+                message: message,
+                messageWidth: messageWidth,
+              );
+            },
+            showUserAvatars: true,
+            onAttachmentPressed: () => onAttach(context),
+            onAvatarTap: (types.User user) => customMsgSnackbar(
+              context,
+              'Chat Profile view is not implemented yet',
+            ),
+            onMessageTap: ref.read(chatRoomProvider.notifier).handleMessageTap,
+            onEndReached: ref.read(chatRoomProvider.notifier).handleEndReached,
+            onEndReachedThreshold: 0.75,
+            onBackgroundTap: () {
+              if (ref.read(
+                chatInputProvider.select((ci) => ci.emojiVisible),
+              )) {
+                ref.read(chatRoomProvider.notifier).repliedToMessage = null;
+                ref.read(chatInputProvider.notifier).toggleEmojiVisible();
+                ref.read(chatInputProvider.notifier).setReplyWidget(null);
+              }
+            },
+            //Custom Theme class, see lib/common/store/chatTheme.dart
+            theme: const ActerChatTheme(
+              attachmentButtonIcon: Icon(Atlas.plus_circle),
+              sendButtonIcon: Icon(Atlas.paper_airplane),
+            ),
+          ),
         ),
       ),
     );
   }
 
   Future<void> onSendButtonPressed() async {
-    ref.watch(chatInputProvider.notifier).toogleSendBtn();
-    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
+    final chatInputNotifier = ref.read(chatInputProvider.notifier);
+    chatInputNotifier.sendBtnVisibility(false);
     String markdownText =
         chatInputNotifier.mentionKey.currentState!.controller!.text;
     String htmlText =
@@ -510,7 +496,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     chatInputNotifier.messageTextMapHtml.forEach((key, value) {
       htmlText = htmlText.replaceAll(key, value);
     });
-    await ref.watch(chatRoomProvider.notifier).handleSendPressed(
+    await ref.read(chatRoomProvider.notifier).handleSendPressed(
           markdownText,
           htmlText,
           messageLength,
@@ -652,6 +638,7 @@ class _CustomMessage extends StatelessWidget {
       case 'm.room.topic':
       case 'm.space.child':
       case 'm.space.parent':
+      case 'm.room.member':
         String? text = message.metadata?['body'];
         return text == null
             ? const SizedBox.shrink()
@@ -680,16 +667,6 @@ class _CustomMessage extends StatelessWidget {
       case 'm.key.verification.ready':
       case 'm.key.verification.start':
         break;
-      case 'm.room.member':
-        String text = message.metadata?['body'];
-        return Container(
-          padding: const EdgeInsets.only(left: 8, bottom: 6),
-          constraints: const BoxConstraints(minWidth: 57),
-          child: Text(
-            text,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        );
       case 'm.room.encrypted':
         String text =
             '***Failed to decrypt message. Re-request session keys.***';

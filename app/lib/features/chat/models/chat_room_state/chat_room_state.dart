@@ -17,8 +17,7 @@ class ChatRoomState with _$ChatRoomState {
   const factory ChatRoomState.loading() = _ChatRoomStateLoading;
 
   ///Data
-  const factory ChatRoomState.data({required List<Message> messages}) =
-      _ChatRoomStateData;
+  const factory ChatRoomState.loaded() = _ChatRoomStateLoaded;
 
   ///Error
   const factory ChatRoomState.error([String? error]) = _ChatRoomStateError;

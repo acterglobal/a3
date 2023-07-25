@@ -30,7 +30,6 @@ class ProfilePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ChatRoomController roomController = Get.find<ChatRoomController>();
     final convoProfile = ref.watch(chatProfileDataProvider(room)).requireValue;
     String chatDesc =
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.';
@@ -193,21 +192,21 @@ class ProfilePage extends ConsumerWidget {
                 child: _BlockButton(),
               ),
             ),
-            Visibility(
-              visible: isGroup,
-              child: Container(
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.all(16),
-                child: _ActiveMembersLabel(roomController: roomController),
-              ),
-            ),
-            Visibility(
-              visible: isGroup,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                child: _MemberListWidget(roomController: roomController),
-              ),
-            ),
+            // Visibility(
+            //   visible: isGroup,
+            //   child: Container(
+            //     alignment: Alignment.centerLeft,
+            //     padding: const EdgeInsets.all(16),
+            //     child: _ActiveMembersLabel(roomController: roomController),
+            //   ),
+            // ),
+            // Visibility(
+            //   visible: isGroup,
+            //   child: Padding(
+            //     padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+            //     child: _MemberListWidget(roomController: roomController),
+            //   ),
+            // ),
             Visibility(
               visible: isGroup,
               child: const _LeaveButton(),
@@ -968,69 +967,69 @@ class _BlockButton extends StatelessWidget {
   }
 }
 
-class _ActiveMembersLabel extends StatelessWidget {
-  final ChatRoomController roomController;
+// class _ActiveMembersLabel extends StatelessWidget {
+//   final ChatRoomController roomController;
 
-  const _ActiveMembersLabel({
-    Key? key,
-    required this.roomController,
-  }) : super(key: key);
+//   const _ActiveMembersLabel({
+//     Key? key,
+//     required this.roomController,
+//   }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      '${roomController.activeMembers.length} ${AppLocalizations.of(context)!.members}',
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 16.0,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Text(
+//       '${roomController.activeMembers.length} ${AppLocalizations.of(context)!.members}',
+//       style: const TextStyle(
+//         color: Colors.white,
+//         fontSize: 16.0,
+//         fontWeight: FontWeight.bold,
+//       ),
+//     );
+//   }
+// }
 
-class _MemberListWidget extends StatelessWidget {
-  final ChatRoomController roomController;
+// class _MemberListWidget extends StatelessWidget {
+//   final ChatRoomController roomController;
 
-  const _MemberListWidget({
-    Key? key,
-    required this.roomController,
-  }) : super(key: key);
+//   const _MemberListWidget({
+//     Key? key,
+//     required this.roomController,
+//   }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: ListView.builder(
-        itemCount: roomController.activeMembers.length,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index) {
-          var userId = roomController.activeMembers[index].userId();
-          return Padding(
-            padding: const EdgeInsets.all(12),
-            child: GetBuilder<ChatRoomController>(
-              id: 'user-profile-${userId.toString()}',
-              builder: (ChatRoomController controller) {
-                var profile = controller.getUserProfile(userId.toString());
-                String? name = profile?.displayName;
-                return (name == null)
-                    ? const Center(child: CircularProgressIndicator())
-                    : GroupMember(
-                        userId: userId.toString(),
-                        isAdmin: true,
-                        profile: profile,
-                      );
-              },
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Card(
+//       shape: RoundedRectangleBorder(
+//         borderRadius: BorderRadius.circular(12),
+//       ),
+//       child: ListView.builder(
+//         itemCount: roomController.activeMembers.length,
+//         shrinkWrap: true,
+//         physics: const NeverScrollableScrollPhysics(),
+//         itemBuilder: (context, index) {
+//           var userId = roomController.activeMembers[index].userId();
+//           return Padding(
+//             padding: const EdgeInsets.all(12),
+//             child: GetBuilder<ChatRoomController>(
+//               id: 'user-profile-${userId.toString()}',
+//               builder: (ChatRoomController controller) {
+//                 var profile = controller.getUserProfile(userId.toString());
+//                 String? name = profile?.displayName;
+//                 return (name == null)
+//                     ? const Center(child: CircularProgressIndicator())
+//                     : GroupMember(
+//                         userId: userId.toString(),
+//                         isAdmin: true,
+//                         profile: profile,
+//                       );
+//               },
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
 
 class _LeaveButton extends StatelessWidget {
   const _LeaveButton({Key? key}) : super(key: key);

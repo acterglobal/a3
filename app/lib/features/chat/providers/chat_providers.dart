@@ -23,47 +23,28 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 final chatStreamProvider =
     StreamProvider.autoDispose<List<Convo>>((ref) async* {
   final client = ref.watch(clientProvider)!;
-  StreamSubscription<FfiListConvo>? _subscription;
-  final _streamController = StreamController<List<Convo>>();
-  ref.onDispose(() => _subscription!.cancel());
-  _subscription = client.convosRx().listen((event) {
-    _streamController.add(event.toList());
-    ref.onDispose(() async {
-      debugPrint('disposing conversation stream');
-      await _streamController.close();
-      await _subscription?.cancel();
-    });
+  StreamSubscription<FfiListConvo>? subscription;
+  List<Convo> conversations = [];
+  ref.onDispose(() => subscription!.cancel());
+  subscription = client.convosRx().listen((event) {
+    conversations.addAll(event.toList());
     debugPrint('Acter Conversations Stream');
   });
-  await for (List<Convo> event in _streamController.stream) {
-    // make sure we aren't emitting empty list
-    if (event.isNotEmpty) {
-      ///FIXME: for no rooms, this might leads to loading infinitely.
-      event.sort((a, b) {
-        if (a.latestMessage() == null) {
-          return 1;
-        }
-        if (b.latestMessage() == null) {
-          return -1;
-        } else {
-          return b
-              .latestMessage()!
-              .eventItem()!
-              .originServerTs()
-              .compareTo(a.latestMessage()!.eventItem()!.originServerTs());
-        }
-      });
-      yield event;
-    }
-  }
+  ref.onDispose(() async {
+    debugPrint('disposing conversation stream');
+    await subscription?.cancel();
+  });
+  yield conversations;
 });
 
 // CHAT PAGE state provider
 final chatListProvider =
-    StateNotifierProvider.autoDispose<ChatListNotifier, ChatDataState>((ref) {
-  final asyncChats = ref.watch(chatStreamProvider);
-  return ChatListNotifier(ref: ref, asyncChats: asyncChats);
-});
+    StateNotifierProvider.autoDispose<ChatListNotifier, ChatDataState>(
+  (ref) => ChatListNotifier(
+    ref: ref,
+    asyncChats: ref.watch(chatStreamProvider),
+  ),
+);
 
 final chatsSearchProvider = StateProvider<List<Convo>>((ref) => []);
 

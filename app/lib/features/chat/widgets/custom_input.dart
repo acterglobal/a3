@@ -21,12 +21,10 @@ class CustomChatInput extends ConsumerWidget {
     Icon(Atlas.location),
   ];
   final Function()? onButtonPressed;
-  final String roomName;
 
   const CustomChatInput({
     Key? key,
     this.onButtonPressed,
-    required this.roomName,
   }) : super(key: key);
 
   @override
@@ -63,8 +61,8 @@ class CustomChatInput extends ConsumerWidget {
                               client.userId().toString() ==
                                       ref
                                           .watch(chatRoomProvider.notifier)
-                                          .repliedToMessage!
-                                          .id
+                                          .repliedToMessage
+                                          ?.id
                                   ? 'Replying to you'
                                   : 'Replying to ${toBeginningOfSentenceCase(ref.watch(chatRoomProvider.notifier).repliedToMessage?.author.firstName)}',
                               style: const TextStyle(
@@ -119,20 +117,15 @@ class CustomChatInput extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       const _BuildAttachmentBtn(),
-                      Expanded(
+                      const Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: _TextInputWidget(
-                            roomName: roomName,
-                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: _TextInputWidget(),
                         ),
                       ),
                       if (chatInputState.sendBtnVisible)
                         _BuildSendBtn(onButtonPressed: onButtonPressed),
-                      if (!chatInputState.sendBtnVisible)
-                        _BuildImageBtn(
-                          roomName: roomName,
-                        ),
+                      if (!chatInputState.sendBtnVisible) _BuildImageBtn(),
                       if (!chatInputState.sendBtnVisible)
                         const SizedBox(width: 10),
                       if (!chatInputState.sendBtnVisible)
@@ -149,7 +142,6 @@ class CustomChatInput extends ConsumerWidget {
         ),
         AttachmentWidget(
           icons: _attachmentIcons,
-          roomName: roomName,
           size: size,
         ),
       ],
@@ -165,7 +157,6 @@ class _BuildAttachmentBtn extends ConsumerWidget {
     return InkWell(
       onTap: () {
         inputNotifier.toggleAttachment();
-        inputNotifier.toggleEmojiVisible();
         inputNotifier.focusNode.unfocus();
         inputNotifier.focusNode.canRequestFocus = true;
       },
@@ -195,8 +186,8 @@ class _BuildPlusBtn extends ConsumerWidget {
 }
 
 class _TextInputWidget extends ConsumerWidget {
-  const _TextInputWidget({required this.roomName});
-  final String roomName;
+  const _TextInputWidget();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final inputNotifier = ref.watch(chatInputProvider.notifier);
@@ -208,8 +199,14 @@ class _TextInputWidget extends ConsumerWidget {
         _handleMentionAdd(roomMember, ref);
       },
       onChanged: (String value) {
-        inputNotifier.toogleSendBtn();
-        roomNotifier.typingNotice(true);
+        debugPrint(value);
+        if (value.isNotEmpty) {
+          inputNotifier.sendBtnVisibility(true);
+          roomNotifier.typingNotice(true);
+        } else {
+          inputNotifier.sendBtnVisibility(false);
+          roomNotifier.typingNotice(false);
+        }
       },
       style: Theme.of(context).textTheme.bodySmall,
       cursorColor: Theme.of(context).colorScheme.tertiary,
@@ -332,13 +329,11 @@ class _ReplyContentWidget extends StatelessWidget {
 
 class AttachmentWidget extends ConsumerWidget {
   final List<Icon> icons;
-  final String roomName;
   final Size size;
 
   const AttachmentWidget({
     Key? key,
     required this.icons,
-    required this.roomName,
     required this.size,
   }) : super(key: key);
 
@@ -373,12 +368,11 @@ class AttachmentWidget extends ConsumerWidget {
                         ref.read(chatInputProvider.notifier).toggleAttachment();
                         roomNotifier.handleMultipleImageSelection(
                           context,
-                          roomName,
                         );
                       },
-                      child: Column(
+                      child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Atlas.camera),
                           SizedBox(height: 6),
                           Text(
@@ -390,9 +384,9 @@ class AttachmentWidget extends ConsumerWidget {
                     ),
                     InkWell(
                       onTap: () => roomNotifier.handleFileSelection(context),
-                      child: Column(
+                      child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Atlas.folder),
                           SizedBox(height: 6),
                           Text('File', style: TextStyle(color: Colors.white)),
@@ -401,9 +395,9 @@ class AttachmentWidget extends ConsumerWidget {
                     ),
                     InkWell(
                       onTap: () {},
-                      child: Column(
+                      child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Atlas.location),
                           SizedBox(height: 6),
                           Text(
@@ -434,15 +428,12 @@ class _BuildAudioBtn extends StatelessWidget {
 }
 
 class _BuildImageBtn extends ConsumerWidget {
-  const _BuildImageBtn({required this.roomName});
-
-  final String roomName;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: () => ref
           .read(chatRoomProvider.notifier)
-          .handleMultipleImageSelection(context, roomName),
+          .handleMultipleImageSelection(context),
       child: const Icon(Atlas.camera_photo),
     );
   }
@@ -536,7 +527,7 @@ class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
         .currentState!
         .controller!
         .text += emoji.emoji;
-    ref.read(chatInputProvider.notifier).toogleSendBtn();
+    ref.read(chatInputProvider.notifier).sendBtnVisibility(true);
   }
 
   void _handleBackspacePressed() {
@@ -562,7 +553,7 @@ class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
         .controller!
         .text
         .isEmpty) {
-      ref.read(chatInputProvider.notifier).toogleSendBtn();
+      ref.read(chatInputProvider.notifier).sendBtnVisibility(false);
     }
   }
 }

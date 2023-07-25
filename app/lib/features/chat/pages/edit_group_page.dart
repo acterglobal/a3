@@ -25,7 +25,7 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
   String? displayName;
   TextEditingController nameController = TextEditingController();
   TextEditingController descController = TextEditingController();
-  ChatRoomController chatController = Get.find<ChatRoomController>();
+  // ChatRoomController chatController = Get.find<ChatRoomController>();
 
   @override
   void initState() {
@@ -61,9 +61,9 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
-              onTap: () {
-                chatController.handleImageSelection(context);
-              },
+              // onTap: () {
+              //   chatController.handleImageSelection(context);
+              // },
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 38, bottom: 12),

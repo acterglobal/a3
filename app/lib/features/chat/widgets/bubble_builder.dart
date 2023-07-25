@@ -54,9 +54,9 @@ class BubbleBuilder extends StatelessWidget {
               userId: userId,
               message: message,
               nextMessageInGroup: nextMessageInGroup,
-              child: child,
               enlargeEmoji: enlargeEmoji,
               isMemberEvent: isMemberEvent,
+              child: child,
             ),
             !isMemberEvent
                 ? _EmojiRow(
@@ -124,9 +124,9 @@ class _ChatBubble extends ConsumerWidget {
         children: [
           (message.repliedMessage != null)
               ? Text(
-                  myId == message.repliedMessage!.author.id
+                  myId == message.repliedMessage?.author.id
                       ? 'Replied to you'
-                      : 'Replied to ${message.repliedMessage!.author.id}',
+                      : 'Replied to ${message.repliedMessage?.author.id}',
                   style: Theme.of(context).textTheme.labelSmall,
                 )
               : const SizedBox(),
@@ -396,7 +396,7 @@ class _OriginalMessageBuilder extends StatelessWidget {
       );
     } else if (message.repliedMessage is types.ImageMessage) {
       Uint8List data =
-          base64Decode(message.repliedMessage!.metadata?['content']);
+          base64Decode(message.repliedMessage?.metadata?['content']);
       return ClipRRect(
         borderRadius: BorderRadius.circular(15),
         child: data.isNotEmpty
@@ -406,6 +406,17 @@ class _OriginalMessageBuilder extends StatelessWidget {
                     (BuildContext context, Object url, StackTrace? error) {
                   return Text('Could not load image due to $error');
                 },
+                frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
+                  if (wasSynchronouslyLoaded) {
+                    return child;
+                  }
+                  return AnimatedOpacity(
+                    opacity: frame == null ? 0 : 1,
+                    duration: const Duration(seconds: 1),
+                    curve: Curves.easeOut,
+                    child: child,
+                  );
+                }),
                 cacheHeight: 75,
                 cacheWidth: 75,
                 fit: BoxFit.cover,
