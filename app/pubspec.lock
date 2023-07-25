@@ -306,14 +306,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.8"
-  desktop_notifications:
-    dependency: transitive
-    description:
-      name: desktop_notifications
-      sha256: "6d92694ad6e9297a862c5ff7dd6b8ff64c819972557754769f819d2209612927"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.3"
   diffutil_dart:
     dependency: transitive
     description:
@@ -1255,14 +1247,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.3"
-  quick_notify:
-    dependency: "direct main"
-    description:
-      name: quick_notify
-      sha256: "4c88b6c43bc4769ae54b907b5723052633331571d4a4b0b5e67ae641f06797e1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.0-dev.0"
   riverpod:
     dependency: "direct main"
     description:
