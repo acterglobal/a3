@@ -35,35 +35,28 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   final Ref ref;
-  final String roomId;
   late TimelineStream timeline;
   String? emojiCurrentId;
   types.Message? repliedToMessage;
   final List<PlatformFile> _imageFileList = [];
   late Client client;
   late Convo room;
+  late String roomId;
   ChatRoomNotifier({
     required this.ref,
-    required this.roomId,
-  }) : super(const ChatRoomState.initial()) {
-    _init();
-    _fetchUserProfiles();
-  }
+  }) : super(const ChatRoomState.loading());
 
-  void _init() async {
-    state = const ChatRoomState.loading();
+  void init(String id) async {
     client = ref.watch(clientProvider)!;
+    roomId = id;
     if (roomId.isNotEmpty) {
       room = await ref.read(chatProvider(roomId).future);
       timeline = await room.timelineStream();
       StreamSubscription<TimelineDiff>? subscription;
       subscription = timeline.diffRx().listen((event) {
         _parseEvent(event);
-        state = const ChatRoomState.loaded();
       });
-      while (ref.read(messagesProvider).length <= 10) {
-        await timeline.paginateBackwards(10);
-      }
+      await timeline.paginateBackwards(10);
 
       ref.onDispose(() async {
         debugPrint('disposing message stream');
@@ -71,6 +64,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       });
     }
   }
+
+  void isLoaded() => state = const ChatRoomState.loaded();
 
   // parses `RoomMessage` event to `types.Message` and updates messages list
   Future<void> _parseEvent(TimelineDiff timelineEvent) async {
@@ -196,7 +191,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-  Future<void> _fetchUserProfiles() async {
+  Future<void> fetchUserProfiles() async {
     if (roomId.isNotEmpty) {
       final activeMembers = await ref.watch(chatMembersProvider(roomId).future);
       Map<String, ProfileData> userProfiles = {};

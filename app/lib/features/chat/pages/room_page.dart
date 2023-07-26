@@ -43,15 +43,16 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ref
-          .read(currentChatRoomProvider.notifier)
-          .update((state) => widget.convo.getRoomIdStr());
+      ref.watch(chatRoomProvider.notifier).init(widget.convo.getRoomIdStr());
+      ref.watch(chatRoomProvider.notifier).fetchUserProfiles();
     });
   }
 
   @override
   void dispose() {
     debugPrint('Disposing message stream');
+    // making sure we dispose stream before loading next room.
+    ref.invalidate(chatRoomProvider);
     super.dispose();
   }
 
@@ -265,6 +266,11 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   Widget build(BuildContext context) {
     final client = ref.watch(clientProvider);
     final chatRoomState = ref.watch(chatRoomProvider);
+    ref.listen(messagesProvider, (previous, next) {
+      if (next.isNotEmpty) {
+        ref.watch(chatRoomProvider.notifier).isLoaded();
+      }
+    });
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -385,7 +391,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           error: (e) => Text('Failed to load messages due to $e'),
           loaded: () => Chat(
             customBottomWidget: customBottomWidget(context),
-            textMessageBuilder: textMessageBuilder,
+            // textMessageBuilder: textMessageBuilder,
             l10n: ChatL10nEn(
               emptyChatPlaceholder: '',
               attachmentButtonAccessibilityLabel: '',

@@ -25,7 +25,6 @@ final chatStreamProvider =
   final client = ref.watch(clientProvider)!;
   StreamSubscription<FfiListConvo>? subscription;
   List<Convo> conversations = [];
-  ref.onDispose(() => subscription!.cancel());
   subscription = client.convosRx().listen((event) {
     conversations.addAll(event.toList());
     debugPrint('Acter Conversations Stream');
@@ -97,7 +96,6 @@ final chatRoomProvider =
     StateNotifierProvider.autoDispose<ChatRoomNotifier, ChatRoomState>((ref) {
   return ChatRoomNotifier(
     ref: ref,
-    roomId: ref.watch(currentChatRoomProvider),
   );
 });
 
@@ -122,7 +120,6 @@ final mentionListProvider =
 // emoji row preview toggler
 final toggleEmojiRowProvider = StateProvider<bool>((ref) => false);
 
-final currentChatRoomProvider = StateProvider.autoDispose<String>((ref) => '');
 
 
 // final typingEventProvider =
