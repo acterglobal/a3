@@ -330,9 +330,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       int index = messages.indexWhere((x) => x.id == replyId);
       if (index != -1 && repliedTo != null) {
         messages[index] = messages[index].copyWith(repliedMessage: repliedTo);
-        ref
-            .read(messagesProvider.notifier)
-            .replaceMessage(index, messages[index]);
+        ref.read(messagesProvider.notifier).state = messages;
       }
     });
   }
