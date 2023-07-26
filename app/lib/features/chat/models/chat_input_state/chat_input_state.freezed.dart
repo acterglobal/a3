@@ -19,7 +19,8 @@ mixin _$ChatInputState {
   bool get showReplyView => throw _privateConstructorUsedError;
   Widget? get replyWidget => throw _privateConstructorUsedError;
   bool get sendBtnVisible => throw _privateConstructorUsedError;
-  bool get emojiVisible => throw _privateConstructorUsedError;
+  bool get emojiRowVisible => throw _privateConstructorUsedError;
+  bool get emojiPickerVisible => throw _privateConstructorUsedError;
   bool get attachmentVisible => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -37,7 +38,8 @@ abstract class $ChatInputStateCopyWith<$Res> {
       {bool showReplyView,
       Widget? replyWidget,
       bool sendBtnVisible,
-      bool emojiVisible,
+      bool emojiRowVisible,
+      bool emojiPickerVisible,
       bool attachmentVisible});
 }
 
@@ -57,7 +59,8 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
     Object? showReplyView = null,
     Object? replyWidget = freezed,
     Object? sendBtnVisible = null,
-    Object? emojiVisible = null,
+    Object? emojiRowVisible = null,
+    Object? emojiPickerVisible = null,
     Object? attachmentVisible = null,
   }) {
     return _then(_value.copyWith(
@@ -73,9 +76,13 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
           ? _value.sendBtnVisible
           : sendBtnVisible // ignore: cast_nullable_to_non_nullable
               as bool,
-      emojiVisible: null == emojiVisible
-          ? _value.emojiVisible
-          : emojiVisible // ignore: cast_nullable_to_non_nullable
+      emojiRowVisible: null == emojiRowVisible
+          ? _value.emojiRowVisible
+          : emojiRowVisible // ignore: cast_nullable_to_non_nullable
+              as bool,
+      emojiPickerVisible: null == emojiPickerVisible
+          ? _value.emojiPickerVisible
+          : emojiPickerVisible // ignore: cast_nullable_to_non_nullable
               as bool,
       attachmentVisible: null == attachmentVisible
           ? _value.attachmentVisible
@@ -97,7 +104,8 @@ abstract class _$$_ChatInputStateCopyWith<$Res>
       {bool showReplyView,
       Widget? replyWidget,
       bool sendBtnVisible,
-      bool emojiVisible,
+      bool emojiRowVisible,
+      bool emojiPickerVisible,
       bool attachmentVisible});
 }
 
@@ -115,7 +123,8 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
     Object? showReplyView = null,
     Object? replyWidget = freezed,
     Object? sendBtnVisible = null,
-    Object? emojiVisible = null,
+    Object? emojiRowVisible = null,
+    Object? emojiPickerVisible = null,
     Object? attachmentVisible = null,
   }) {
     return _then(_$_ChatInputState(
@@ -131,9 +140,13 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
           ? _value.sendBtnVisible
           : sendBtnVisible // ignore: cast_nullable_to_non_nullable
               as bool,
-      emojiVisible: null == emojiVisible
-          ? _value.emojiVisible
-          : emojiVisible // ignore: cast_nullable_to_non_nullable
+      emojiRowVisible: null == emojiRowVisible
+          ? _value.emojiRowVisible
+          : emojiRowVisible // ignore: cast_nullable_to_non_nullable
+              as bool,
+      emojiPickerVisible: null == emojiPickerVisible
+          ? _value.emojiPickerVisible
+          : emojiPickerVisible // ignore: cast_nullable_to_non_nullable
               as bool,
       attachmentVisible: null == attachmentVisible
           ? _value.attachmentVisible
@@ -150,7 +163,8 @@ class _$_ChatInputState implements _ChatInputState {
       {this.showReplyView = false,
       this.replyWidget = null,
       this.sendBtnVisible = false,
-      this.emojiVisible = false,
+      this.emojiRowVisible = false,
+      this.emojiPickerVisible = false,
       this.attachmentVisible = false});
 
   @override
@@ -164,14 +178,17 @@ class _$_ChatInputState implements _ChatInputState {
   final bool sendBtnVisible;
   @override
   @JsonKey()
-  final bool emojiVisible;
+  final bool emojiRowVisible;
+  @override
+  @JsonKey()
+  final bool emojiPickerVisible;
   @override
   @JsonKey()
   final bool attachmentVisible;
 
   @override
   String toString() {
-    return 'ChatInputState(showReplyView: $showReplyView, replyWidget: $replyWidget, sendBtnVisible: $sendBtnVisible, emojiVisible: $emojiVisible, attachmentVisible: $attachmentVisible)';
+    return 'ChatInputState(showReplyView: $showReplyView, replyWidget: $replyWidget, sendBtnVisible: $sendBtnVisible, emojiRowVisible: $emojiRowVisible, emojiPickerVisible: $emojiPickerVisible, attachmentVisible: $attachmentVisible)';
   }
 
   @override
@@ -185,15 +202,17 @@ class _$_ChatInputState implements _ChatInputState {
                 other.replyWidget == replyWidget) &&
             (identical(other.sendBtnVisible, sendBtnVisible) ||
                 other.sendBtnVisible == sendBtnVisible) &&
-            (identical(other.emojiVisible, emojiVisible) ||
-                other.emojiVisible == emojiVisible) &&
+            (identical(other.emojiRowVisible, emojiRowVisible) ||
+                other.emojiRowVisible == emojiRowVisible) &&
+            (identical(other.emojiPickerVisible, emojiPickerVisible) ||
+                other.emojiPickerVisible == emojiPickerVisible) &&
             (identical(other.attachmentVisible, attachmentVisible) ||
                 other.attachmentVisible == attachmentVisible));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, showReplyView, replyWidget,
-      sendBtnVisible, emojiVisible, attachmentVisible);
+      sendBtnVisible, emojiRowVisible, emojiPickerVisible, attachmentVisible);
 
   @JsonKey(ignore: true)
   @override
@@ -207,7 +226,8 @@ abstract class _ChatInputState implements ChatInputState {
       {final bool showReplyView,
       final Widget? replyWidget,
       final bool sendBtnVisible,
-      final bool emojiVisible,
+      final bool emojiRowVisible,
+      final bool emojiPickerVisible,
       final bool attachmentVisible}) = _$_ChatInputState;
 
   @override
@@ -217,7 +237,9 @@ abstract class _ChatInputState implements ChatInputState {
   @override
   bool get sendBtnVisible;
   @override
-  bool get emojiVisible;
+  bool get emojiRowVisible;
+  @override
+  bool get emojiPickerVisible;
   @override
   bool get attachmentVisible;
   @override

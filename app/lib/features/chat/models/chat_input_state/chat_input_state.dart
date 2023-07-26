@@ -9,7 +9,8 @@ class ChatInputState with _$ChatInputState {
     @Default(false) bool showReplyView,
     @Default(null) Widget? replyWidget,
     @Default(false) bool sendBtnVisible,
-    @Default(false) bool emojiVisible,
+    @Default(false) bool emojiRowVisible,
+    @Default(false) bool emojiPickerVisible,
     @Default(false) bool attachmentVisible,
   }) = _ChatInputState;
 }

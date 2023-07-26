@@ -961,11 +961,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     int emojiMessageIndex = messages.indexWhere((x) => x.id == message.id);
     emojiCurrentId = messages[emojiMessageIndex].id;
     if (emojiCurrentId == message.id) {
-      ref.read(chatInputProvider.notifier).toggleEmoji();
+      ref.read(chatInputProvider.notifier).emojiRowVisible();
     }
-    // if (ref.read(provider)) {
-    //   authorId = message.author.id;
-    // }
   }
 
   // send typing event from client
@@ -978,13 +975,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     await room.sendReaction(eventId, emoji);
   }
 
-  // delete message event
-  Future<void> redactRoomMessage(String eventId) async {
-    await room.redactMessage(eventId, '', null);
-  }
-
-  // shows the emoji row on message
-  void toggleEmojiRow() {
-    ref.read(toggleEmojiRowProvider.notifier).update((state) => !state);
-  }
+// delete message event
+  Future<void> redactRoomMessage(String eventId) async =>
+      await room.redactMessage(eventId, '', null);
 }

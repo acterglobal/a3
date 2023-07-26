@@ -138,7 +138,8 @@ class _TextWidget extends ConsumerWidget {
           : Html(
               // ignore: prefer_single_quotes, unnecessary_string_interpolations
               data: """${message.text}""",
-              padding: const EdgeInsets.all(8),
+              shrinkToFit: true,
+              padding: const EdgeInsets.all(5),
               defaultTextStyle: Theme.of(context).textTheme.bodySmall,
             ),
     );
