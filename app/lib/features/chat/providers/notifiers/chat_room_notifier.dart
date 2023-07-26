@@ -42,6 +42,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   late Client client;
   late Convo room;
   late String roomId;
+
   ChatRoomNotifier({
     required this.ref,
   }) : super(const ChatRoomState.loading());
@@ -225,7 +226,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-// fetch original content media for reply msg .i.e. text,image,file etc.
+  // fetch original content media for reply msg, i.e. text/image/file etc.
   void _fetchOriginalContent(String originalId, String replyId) {
     room.getMessage(originalId).then((roomMsg) {
       // reply is allowed for only EventItem not VirtualItem
@@ -336,7 +337,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     });
   }
 
-// maps [RoomMessage] to [types.Message].
+  // maps [RoomMessage] to [types.Message].
   types.Message? _parseMessage(RoomMessage message) {
     RoomVirtualItem? virtualItem = message.virtualItem();
     if (virtualItem != null) {
@@ -586,7 +587,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
-              //check whether string only contains emoji(s).
+              // check whether string only contains emoji(s).
               metadata['enlargeEmoji'] = isOnlyEmojis(description.body());
               return types.TextMessage(
                 author: author,
@@ -652,7 +653,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     return null;
   }
 
-// fetch event media content for message.
+  // fetch event media content for message.
   void _fetchEventContent(String? subType, String eventId) {
     switch (subType) {
       case 'm.image':
@@ -667,7 +668,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-// fetch image content for message.
+  // fetch image content for message.
   void _fetchImageContent(String eventId) {
     var messages = ref.read(messagesProvider);
     room.imageBinary(eventId).then((data) {
@@ -681,7 +682,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     });
   }
 
-// fetch audio content for message.
+  // fetch audio content for message.
   void _fetchAudioContent(String eventId) {
     var messages = ref.read(messagesProvider);
     room.audioBinary(eventId).then((data) {
@@ -695,7 +696,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     });
   }
 
-// fetch video conent for message
+  // fetch video conent for message
   void _fetchVideoContent(String eventId) {
     var messages = ref.read(messagesProvider);
     room.videoBinary(eventId).then((data) {
@@ -709,13 +710,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     });
   }
 
-//Pagination Control
+  // Pagination Control
   Future<void> handleEndReached() async {
     bool hasMore = await timeline.paginateBackwards(10);
     debugPrint('backward pagination has more: $hasMore');
   }
 
-  //preview message link
+  // preview message link
   void handlePreviewDataFetched(
     types.TextMessage message,
     types.PreviewData previewData,
@@ -733,7 +734,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     );
   }
 
-//image selection
+  // image selection
   Future<void> handleImageSelection(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
@@ -777,7 +778,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-//multiple images selection
+  // multiple images selection
   Future<void> handleMultipleImageSelection(BuildContext context) async {
     _imageFileList.clear();
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -798,7 +799,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     // );
   }
 
-//file selection
+  // file selection
   Future<void> handleFileSelection(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.any,
@@ -835,7 +836,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-// push messages in convo
+  // push messages in convo
   Future<void> handleSendPressed(
     String markdownMessage,
     String htmlMessage,
@@ -859,7 +860,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-// message tap action
+  // message tap action
   Future<void> handleMessageTap(
     BuildContext context,
     types.Message message,
@@ -901,7 +902,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-// send message event with image media
+  // send message event with image media
   Future<void> sendImage(PlatformFile file) async {
     String? path = file.path;
     if (path == null) {
@@ -955,26 +956,30 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     int emojiMessageIndex = messages.indexWhere((x) => x.id == message.id);
     emojiCurrentId = messages[emojiMessageIndex].id;
     if (emojiCurrentId == message.id) {
-      ref.read(chatInputProvider.notifier).toggleEmojiVisible();
+      ref.read(chatInputProvider.notifier).toggleEmoji();
     }
     // if (ref.read(provider)) {
     //   authorId = message.author.id;
     // }
   }
 
-// send typing event from client
-  Future<bool> typingNotice(bool typing) async =>
-      await room.typingNotice(typing);
+  // send typing event from client
+  Future<bool> typingNotice(bool typing) async {
+    return await room.typingNotice(typing);
+  }
 
-// send emoji reaction to message event
-  Future<void> sendEmojiReaction(String eventId, String emoji) async =>
-      await room.sendReaction(eventId, emoji);
+  // send emoji reaction to message event
+  Future<void> sendEmojiReaction(String eventId, String emoji) async {
+    await room.sendReaction(eventId, emoji);
+  }
 
-// delete message event
-  Future<void> redactRoomMessage(String eventId) async =>
-      await room.redactMessage(eventId, '', null);
+  // delete message event
+  Future<void> redactRoomMessage(String eventId) async {
+    await room.redactMessage(eventId, '', null);
+  }
 
-// shows the emoji row on message
-  void toggleEmojiRow() =>
-      ref.read(toggleEmojiRowProvider.notifier).update((state) => !state);
+  // shows the emoji row on message
+  void toggleEmojiRow() {
+    ref.read(toggleEmojiRowProvider.notifier).update((state) => !state);
+  }
 }

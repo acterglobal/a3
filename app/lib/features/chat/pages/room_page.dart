@@ -137,7 +137,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             children: [
               GestureDetector(
                 onTap: () {
-                  ref.read(chatInputProvider.notifier).toggleEmojiVisible();
+                  ref.read(chatInputProvider.notifier).toggleEmoji();
                   ref.read(chatInputProvider.notifier).toggleReplyView();
                 },
                 child: const Text(
@@ -152,7 +152,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                   //   await ref
                   //       .read(chatRoomProvider.notifier)
                   //       .redactRoomMessage(messageId!);
-                  //   ref.read(chatInputProvider.notifier).toggleEmojiVisible();
+                  //   ref.read(chatInputProvider.notifier).toggleEmoji();
                   // } else {
                   showDialog(
                     context: context,
@@ -473,7 +473,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                 chatInputProvider.select((ci) => ci.emojiVisible),
               )) {
                 ref.read(chatRoomProvider.notifier).repliedToMessage = null;
-                ref.read(chatInputProvider.notifier).toggleEmojiVisible();
+                ref.read(chatInputProvider.notifier).toggleEmoji();
                 ref.read(chatInputProvider.notifier).setReplyWidget(null);
               }
             },
@@ -490,7 +490,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
 
   Future<void> onSendButtonPressed() async {
     final chatInputNotifier = ref.read(chatInputProvider.notifier);
-    chatInputNotifier.sendBtnVisibility(false);
+    chatInputNotifier.showSendBtn(false);
     String markdownText =
         chatInputNotifier.mentionKey.currentState!.controller!.text;
     String htmlText =

@@ -9,6 +9,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
   FocusNode focusNode = FocusNode();
   Map<String, String> messageTextMapMarkDown = {};
   Map<String, String> messageTextMapHtml = {};
+
   ChatInputNotifier() : super(const ChatInputState()) {
     _init();
   }
@@ -26,18 +27,23 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
     });
   }
 
-  void toggleReplyView() =>
-      state = state.copyWith(showReplyView: !state.showReplyView);
+  void toggleReplyView() {
+    state = state.copyWith(showReplyView: !state.showReplyView);
+  }
 
-  void sendBtnVisibility(bool value) =>
-      state = state.copyWith(sendBtnVisible: value);
+  void showSendBtn(bool value) {
+    state = state.copyWith(sendBtnVisible: value);
+  }
 
-  void toggleAttachment() =>
-      state = state.copyWith(attachmentVisible: !state.attachmentVisible);
+  void toggleAttachment() {
+    state = state.copyWith(attachmentVisible: !state.attachmentVisible);
+  }
 
-  void toggleEmojiVisible() =>
-      state = state.copyWith(emojiVisible: !state.emojiVisible);
+  void toggleEmoji() {
+    state = state.copyWith(emojiVisible: !state.emojiVisible);
+  }
 
-  void setReplyWidget(Widget? child) =>
-      state = state.copyWith(replyWidget: child);
+  void setReplyWidget(Widget? child) {
+    state = state.copyWith(replyWidget: child);
+  }
 }

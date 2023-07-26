@@ -201,10 +201,10 @@ class _TextInputWidget extends ConsumerWidget {
       onChanged: (String value) {
         debugPrint(value);
         if (value.isNotEmpty) {
-          inputNotifier.sendBtnVisibility(true);
+          inputNotifier.showSendBtn(true);
           roomNotifier.typingNotice(true);
         } else {
-          inputNotifier.sendBtnVisibility(false);
+          inputNotifier.showSendBtn(false);
           roomNotifier.typingNotice(false);
         }
       },
@@ -219,7 +219,7 @@ class _TextInputWidget extends ConsumerWidget {
         suffixIcon: InkWell(
           onTap: () {
             inputNotifier.toggleAttachment();
-            inputNotifier.toggleEmojiVisible();
+            inputNotifier.toggleEmoji();
             inputNotifier.focusNode.unfocus();
             inputNotifier.focusNode.canRequestFocus = true;
           },
@@ -339,7 +339,6 @@ class AttachmentWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomNotifier = ref.watch(chatRoomProvider.notifier);
     return Offstage(
       offstage:
           !ref.watch(chatInputProvider.select((ci) => ci.attachmentVisible)),
@@ -364,12 +363,7 @@ class AttachmentWidget extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     InkWell(
-                      onTap: () {
-                        ref.read(chatInputProvider.notifier).toggleAttachment();
-                        roomNotifier.handleMultipleImageSelection(
-                          context,
-                        );
-                      },
+                      onTap: () => onClickCamera(context, ref),
                       child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -383,18 +377,21 @@ class AttachmentWidget extends ConsumerWidget {
                       ),
                     ),
                     InkWell(
-                      onTap: () => roomNotifier.handleFileSelection(context),
+                      onTap: () => onClickFile(context, ref),
                       child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Atlas.folder),
                           SizedBox(height: 6),
-                          Text('File', style: TextStyle(color: Colors.white)),
+                          Text(
+                            'File',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ],
                       ),
                     ),
                     InkWell(
-                      onTap: () {},
+                      onTap: () => onClickLocation(context, ref),
                       child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -416,6 +413,17 @@ class AttachmentWidget extends ConsumerWidget {
       ),
     );
   }
+
+  void onClickCamera(BuildContext context, WidgetRef ref) {
+    ref.read(chatInputProvider.notifier).toggleAttachment();
+    ref.read(chatRoomProvider.notifier).handleMultipleImageSelection(context);
+  }
+
+  void onClickFile(BuildContext context, WidgetRef ref) {
+    ref.read(chatRoomProvider.notifier).handleFileSelection(context);
+  }
+
+  void onClickLocation(BuildContext context, WidgetRef ref) {}
 }
 
 class _BuildAudioBtn extends StatelessWidget {
@@ -431,11 +439,13 @@ class _BuildImageBtn extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
-      onTap: () => ref
-          .read(chatRoomProvider.notifier)
-          .handleMultipleImageSelection(context),
+      onTap: () => onClick(context, ref),
       child: const Icon(Atlas.camera_photo),
     );
+  }
+
+  void onClick(BuildContext context, WidgetRef ref) {
+    ref.read(chatRoomProvider.notifier).handleMultipleImageSelection(context);
   }
 }
 
@@ -464,11 +474,11 @@ class _BuildSettingBtn extends StatelessWidget {
 }
 
 class _BuildSendBtn extends StatelessWidget {
+  final Function()? onButtonPressed;
+
   const _BuildSendBtn({
     required this.onButtonPressed,
   });
-
-  final Function()? onButtonPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -481,6 +491,7 @@ class _BuildSendBtn extends StatelessWidget {
 
 class EmojiPickerWidget extends ConsumerStatefulWidget {
   final Size size;
+
   const EmojiPickerWidget({
     Key? key,
     required this.size,
@@ -499,8 +510,8 @@ class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
       child: SizedBox(
         height: widget.size.height * 0.3,
         child: EmojiPicker(
-          onEmojiSelected: _handleEmojiSelected,
-          onBackspacePressed: _handleBackspacePressed,
+          onEmojiSelected: handleEmojiSelected,
+          onBackspacePressed: handleBackspacePressed,
           config: Config(
             columns: 7,
             verticalSpacing: 0,
@@ -520,40 +531,20 @@ class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
     );
   }
 
-  void _handleEmojiSelected(Category? category, Emoji emoji) {
-    ref
-        .read(chatInputProvider.notifier)
-        .mentionKey
-        .currentState!
-        .controller!
-        .text += emoji.emoji;
-    ref.read(chatInputProvider.notifier).sendBtnVisibility(true);
+  void handleEmojiSelected(Category? category, Emoji emoji) {
+    var notifier = ref.read(chatInputProvider.notifier);
+    notifier.mentionKey.currentState!.controller!.text += emoji.emoji;
+    notifier.showSendBtn(true);
   }
 
-  void _handleBackspacePressed() {
-    ref
-            .read(chatInputProvider.notifier)
-            .mentionKey
-            .currentState!
-            .controller!
-            .text =
-        ref
-            .read(chatInputProvider.notifier)
-            .mentionKey
-            .currentState!
-            .controller!
-            .text
-            .characters
-            .skipLast(1)
-            .string;
-    if (ref
-        .read(chatInputProvider.notifier)
-        .mentionKey
-        .currentState!
-        .controller!
-        .text
-        .isEmpty) {
-      ref.read(chatInputProvider.notifier).sendBtnVisibility(false);
+  void handleBackspacePressed() {
+    var notifier = ref.read(chatInputProvider.notifier);
+    notifier.mentionKey.currentState!.controller!.text = notifier
+        .mentionKey.currentState!.controller!.text.characters
+        .skipLast(1)
+        .string;
+    if (notifier.mentionKey.currentState!.controller!.text.isEmpty) {
+      notifier.showSendBtn(false);
     }
   }
 }
