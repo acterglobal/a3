@@ -4,16 +4,13 @@ import 'dart:typed_data';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:bubble/bubble.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ReactionDesc;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-// import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:swipe_to/swipe_to.dart';
 
 class BubbleBuilder extends StatelessWidget {
   final String userId;

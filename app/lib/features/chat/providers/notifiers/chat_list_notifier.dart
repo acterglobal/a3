@@ -1,20 +1,20 @@
-import 'package:acter/features/chat/models/chat_data_state/chat_data_state.dart';
+import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Convo;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ChatListNotifier extends StateNotifier<ChatDataState> {
+class ChatListNotifier extends StateNotifier<ChatListState> {
   final Ref ref;
   final AsyncValue<List<Convo>> asyncChats;
   ChatListNotifier({required this.ref, required this.asyncChats})
-      : super(const ChatDataState.initial()) {
+      : super(const ChatListState.initial()) {
     _loadUp();
   }
 
   void _loadUp() async {
     state = asyncChats.when(
-      data: (rooms) => ChatDataState.data(chats: rooms),
-      error: (e, s) => ChatDataState.error(e.toString()),
-      loading: () => const ChatDataState.loading(),
+      data: (rooms) => ChatListState.data(chats: rooms),
+      error: (e, s) => ChatListState.error(e.toString()),
+      loading: () => const ChatListState.loading(),
     );
   }
 
@@ -31,10 +31,10 @@ class ChatListNotifier extends StateNotifier<ChatDataState> {
           temp.add(element);
         }
       }
-      state = ChatDataState.data(chats: temp);
+      state = ChatListState.data(chats: temp);
     } else {
       temp = asyncChats.requireValue;
-      state = ChatDataState.data(chats: temp);
+      state = ChatListState.data(chats: temp);
     }
   }
 
@@ -42,6 +42,6 @@ class ChatListNotifier extends StateNotifier<ChatDataState> {
     var temp = asyncChats.requireValue;
     temp.removeAt(from);
     temp.insert(to, temp[from]);
-    state = ChatDataState.data(chats: temp);
+    state = ChatListState.data(chats: temp);
   }
 }

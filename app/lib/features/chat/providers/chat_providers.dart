@@ -38,7 +38,7 @@ final chatStreamProvider =
 
 // CHAT PAGE state provider
 final chatListProvider =
-    StateNotifierProvider.autoDispose<ChatListNotifier, ChatDataState>(
+    StateNotifierProvider.autoDispose<ChatListNotifier, ChatListState>(
   (ref) => ChatListNotifier(
     ref: ref,
     asyncChats: ref.watch(chatStreamProvider),
