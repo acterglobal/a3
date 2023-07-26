@@ -1,11 +1,7 @@
-// import 'package:acter/features/chat/providers/notifiers/receipt_notifier.dart';
-// import 'package:acter/features/chat/models/reciept_room/receipt_room.dart';
 import 'dart:async';
 
 import 'package:acter/common/models/profile_data.dart';
-// import 'package:acter/common/providers/common_providers.dart';
-// import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/models/chat_data_state/chat_data_state.dart';
+import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_input_notifier.dart';
@@ -49,49 +45,6 @@ final chatsSearchProvider = StateProvider<List<Convo>>((ref) => []);
 
 final typingProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
-// final typingStreamProvider = StreamProvider<TypingEvent>((ref) async* {
-//   Map<String, dynamic> typingEvent = {};
-//   final client = ref.watch(clientProvider)!;
-//   StreamSubscription<TypingEvent>? _subscription;
-//   ref.onDispose(() => _subscription!.cancel());
-//   final _stream = client.typingEventRx();
-//   _subscription = _stream!.listen((event) {
-//     debugPrint(
-//       'Typing Event : ${event.roomId().toString()}:${event.userIds().toList()}',
-//     );
-//     final roomId = event.roomId().toString();
-//     final List<Convo> roomList = ref.read(chatStreamProvider).requireValue;
-//     int idx = roomList.indexWhere((x) {
-//       return x.getRoomIdStr() == roomId.toString();
-//     });
-//     if (idx == -1) {
-//       return;
-//     }
-//     List<types.User> typingUsers = [];
-//     for (var userId in event.userIds().toList()) {
-//       if (userId == client.userId()) {
-//         // filter out my typing
-//         continue;
-//       }
-//       String uid = userId.toString();
-//       var user = types.User(
-//         id: uid,
-//         firstName: simplifyUserId(uid),
-//       );
-//       typingUsers.add(user);
-//     }
-//     typingEvent = {
-//       'roomId': roomId,
-//       'typingUsers': typingUsers,
-//     };
-//     ref.read(typingProvider.notifier).update((state) => typingEvent);
-//   });
-
-//   await for (var e in _stream) {
-//     yield e;
-//   }
-// });
-
 final chatRoomProvider =
     StateNotifierProvider.autoDispose<ChatRoomNotifier, ChatRoomState>((ref) {
   return ChatRoomNotifier(
@@ -119,18 +72,3 @@ final mentionListProvider =
 
 // emoji row preview toggler
 final toggleEmojiRowProvider = StateProvider<bool>((ref) => false);
-
-
-
-// final typingEventProvider =
-//     StateNotifierProvider.autoDispose<TypingNotifier, Map<String, dynamic>>(
-//         (ref) {
-//   final asyncEvent = ref.watch(typingStreamProvider.future);
-//   return TypingNotifier(ref: ref, asyncEvent: asyncEvent);
-// });
-
-// CHAT Receipt Provider
-// final receiptProvider =
-//     StateNotifierProvider.autoDispose<ReceiptNotifier, ReceiptRoom?>(
-//   (ref) => ReceiptNotifier(ref),
-// );
