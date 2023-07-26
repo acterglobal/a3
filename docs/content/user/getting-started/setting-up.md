@@ -12,7 +12,7 @@ To install the latest built, head over to [the nightly build section](/nightly/)
 
 <details>
 <summary><strong>Running on MacOS</strong></summary>
-MacOS will probably refuse to open the application stating it was downloaded from an unknown Source. To allow it to proceed, close that said dialog, Navigate to your `System Settings -> General` and on the bottom you'll find the option to `Run Acter anyways`. Click that to start Acter. And subsequent run should work without it bothering you again. You might have to repeat that process for every new downloaded version though. 
+MacOS will probably refuse to open the application stating it was downloaded from an unknown Source. To allow it to proceed, close that said dialog, Navigate to your `System Settings -> General -> Privacy & Security` and under the security section you'll find the option to `Run Acter anyways`. Click that to start Acter. And subsequent run should work without it bothering you again. You might have to repeat that process for every new downloaded version though. 
 </details>
 
 <details>
