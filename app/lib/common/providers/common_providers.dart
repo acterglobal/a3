@@ -74,7 +74,7 @@ final chatProvider =
 
 final chatMembersProvider =
     FutureProvider.family<List<Member>, String>((ref, roomIdOrAlias) async {
-  final chat = ref.watch(chatProvider(roomIdOrAlias)).requireValue;
+  final chat = await ref.watch(chatProvider(roomIdOrAlias).future);
   final members = await chat.activeMembers();
   return members.toList();
 });

@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' show Message;
 
 part 'chat_room_state.freezed.dart';
 
@@ -10,9 +9,6 @@ extension ChatRoomStateGetters on ChatRoomState {
 
 @freezed
 class ChatRoomState with _$ChatRoomState {
-  ///Initial
-  const factory ChatRoomState.initial() = _ChatRoomStateInitial;
-
   ///Loading
   const factory ChatRoomState.loading() = _ChatRoomStateLoading;
 

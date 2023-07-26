@@ -6,7 +6,7 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
-import 'package:acter/features/chat/pages/image_selection_page.dart';
+// import 'package:acter/features/chat/pages/image_selection_page.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -57,8 +57,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       subscription = timeline.diffRx().listen((event) {
         _parseEvent(event);
       });
-      await timeline.paginateBackwards(10);
-
+      while (ref.read(messagesProvider).length < 10) {
+        await timeline.paginateBackwards(10);
+      }
       ref.onDispose(() async {
         debugPrint('disposing message stream');
         await subscription?.cancel();
@@ -330,9 +331,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       int index = messages.indexWhere((x) => x.id == replyId);
       if (index != -1 && repliedTo != null) {
         messages[index] = messages[index].copyWith(repliedMessage: repliedTo);
-        ref
-            .read(messagesProvider.notifier)
-            .replaceMessage(index, messages[index]);
+        ref.read(messagesProvider.notifier).state = messages;
       }
     });
   }
@@ -674,10 +673,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     room.imageBinary(eventId).then((data) {
       int index = messages.indexWhere((x) => x.id == eventId);
       if (index != -1) {
-        final metadata = messages[index].metadata ?? {};
+        var metadata = messages[index].metadata ?? {};
         metadata['base64'] = base64Encode(data.asTypedList());
         messages[index] = messages[index].copyWith(metadata: metadata);
-        ref.read(messagesProvider.notifier).state = messages;
+        ref
+            .read(messagesProvider.notifier)
+            .replaceMessage(index, messages[index]);
       }
     });
   }
@@ -691,7 +692,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         final metadata = messages[index].metadata ?? {};
         metadata['base64'] = base64Encode(data.asTypedList());
         messages[index] = messages[index].copyWith(metadata: metadata);
-        ref.read(messagesProvider.notifier).state = messages;
+        ref
+            .read(messagesProvider.notifier)
+            .replaceMessage(index, messages[index]);
       }
     });
   }
@@ -705,7 +708,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         final metadata = messages[index].metadata ?? {};
         metadata['base64'] = base64Encode(data.asTypedList());
         messages[index] = messages[index].copyWith(metadata: metadata);
-        ref.read(messagesProvider.notifier).state = messages;
+        ref
+            .read(messagesProvider.notifier)
+            .replaceMessage(index, messages[index]);
       }
     });
   }

@@ -3,8 +3,8 @@
 import 'dart:async';
 
 import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/utils/utils.dart';
+// import 'package:acter/common/providers/common_providers.dart';
+// import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_data_state/chat_data_state.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -14,7 +14,7 @@ import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart'
 import 'package:acter/features/chat/providers/notifiers/messages_notifier.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Convo, FfiListConvo, TimelineDiff, TimelineStream, TypingEvent;
+    show Convo, FfiListConvo;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;

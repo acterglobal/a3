@@ -1,10 +1,8 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/pages/edit_group_page.dart';
 import 'package:acter/features/chat/pages/group_link_page.dart';
 import 'package:acter/features/chat/pages/link_settings_page.dart';
 import 'package:acter/features/chat/pages/requests_page.dart';
-import 'package:acter/features/chat/widgets/group_member_view.dart';
 import 'package:acter/features/chat/widgets/invite_list_view.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -12,7 +10,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 
 class ProfilePage extends ConsumerWidget {
   final Client client;
@@ -140,11 +137,7 @@ class ProfilePage extends ConsumerWidget {
             ),
             const Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _MuteButton(),
-                _SearchButton(),
-                _GalleryButton()
-              ],
+              children: [_MuteButton(), _SearchButton(), _GalleryButton()],
             ),
             Visibility(
               visible: isGroup,
