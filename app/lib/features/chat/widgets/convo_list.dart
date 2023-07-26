@@ -19,7 +19,7 @@ class ConvosList extends ConsumerWidget {
       loading: () => Center(
         heightFactor: 10,
         child: Text(
-          AppLocalizations.of(context)!.loadingConvo + '...',
+          '${AppLocalizations.of(context)!.loadingConvo}...',
         ),
       ),
       data: (data) {

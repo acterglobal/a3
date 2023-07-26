@@ -20,11 +20,9 @@ class CustomChatInput extends ConsumerWidget {
     Icon(Atlas.folder),
     Icon(Atlas.location),
   ];
-  final Function()? onButtonPressed;
 
   const CustomChatInput({
     Key? key,
-    this.onButtonPressed,
   }) : super(key: key);
 
   @override
@@ -32,120 +30,148 @@ class CustomChatInput extends ConsumerWidget {
     final client = ref.watch(clientProvider)!;
     final chatInputState = ref.watch(chatInputProvider);
     Size size = MediaQuery.of(context).size;
-    return Column(
-      children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Visibility(
-              visible:
-                  ref.watch(chatInputProvider.select((ci) => ci.showReplyView)),
-              child: Container(
-                color: Theme.of(context).colorScheme.neutral,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    top: 12.0,
-                    left: 16.0,
-                    right: 16.0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        flex: 1,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              client.userId().toString() ==
-                                      ref
+    return Container(
+      color: Theme.of(context).colorScheme.onPrimary,
+      child: Column(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Visibility(
+                visible: ref
+                    .watch(chatInputProvider.select((ci) => ci.showReplyView)),
+                child: Container(
+                  color: Theme.of(context).colorScheme.neutral,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 12.0,
+                      left: 16.0,
+                      right: 16.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          flex: 1,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                client.userId().toString() ==
+                                        ref
+                                            .watch(chatRoomProvider.notifier)
+                                            .repliedToMessage
+                                            ?.id
+                                    ? 'Replying to you'
+                                    : 'Replying to ${toBeginningOfSentenceCase(ref.watch(chatRoomProvider.notifier).repliedToMessage?.author.firstName)}',
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              if (ref
                                           .watch(chatRoomProvider.notifier)
-                                          .repliedToMessage
-                                          ?.id
-                                  ? 'Replying to you'
-                                  : 'Replying to ${toBeginningOfSentenceCase(ref.watch(chatRoomProvider.notifier).repliedToMessage?.author.firstName)}',
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
-                            ),
-                            if (ref
-                                        .watch(chatRoomProvider.notifier)
-                                        .repliedToMessage !=
-                                    null &&
-                                chatInputState.replyWidget != null)
-                              _ReplyContentWidget(
-                                msg: ref
-                                    .watch(chatRoomProvider.notifier)
-                                    .repliedToMessage,
-                                messageWidget: chatInputState.replyWidget,
-                              ),
-                          ],
-                        ),
-                      ),
-                      Flexible(
-                        flex: 2,
-                        child: GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(chatInputProvider.notifier)
-                                .toggleReplyView();
-                            ref
-                                .read(chatInputProvider.notifier)
-                                .setReplyWidget(null);
-                          },
-                          child: const Icon(
-                            Atlas.xmark_circle,
-                            color: Colors.white,
+                                          .repliedToMessage !=
+                                      null &&
+                                  chatInputState.replyWidget != null)
+                                _ReplyContentWidget(
+                                  msg: ref
+                                      .watch(chatRoomProvider.notifier)
+                                      .repliedToMessage,
+                                  messageWidget: chatInputState.replyWidget,
+                                ),
+                            ],
                           ),
                         ),
-                      )
-                    ],
+                        Flexible(
+                          flex: 2,
+                          child: GestureDetector(
+                            onTap: () {
+                              ref
+                                  .read(chatInputProvider.notifier)
+                                  .toggleReplyView();
+                              ref
+                                  .read(chatInputProvider.notifier)
+                                  .setReplyWidget(null);
+                            },
+                            child: const Icon(
+                              Atlas.xmark_circle,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      const _BuildAttachmentBtn(),
-                      const Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: _TextInputWidget(),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const _BuildAttachmentBtn(),
+                        const Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: _TextInputWidget(),
+                          ),
                         ),
-                      ),
-                      if (chatInputState.sendBtnVisible)
-                        _BuildSendBtn(onButtonPressed: onButtonPressed),
-                      if (!chatInputState.sendBtnVisible) _BuildImageBtn(),
-                      if (!chatInputState.sendBtnVisible)
-                        const SizedBox(width: 10),
-                      if (!chatInputState.sendBtnVisible)
-                        const _BuildAudioBtn(),
-                    ],
+                        if (chatInputState.sendBtnVisible)
+                          _BuildSendBtn(
+                            onButtonPressed: () => onSendButtonPressed(ref),
+                          ),
+                        if (!chatInputState.sendBtnVisible) _BuildImageBtn(),
+                        if (!chatInputState.sendBtnVisible)
+                          const SizedBox(width: 10),
+                        if (!chatInputState.sendBtnVisible)
+                          const _BuildAudioBtn(),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-        EmojiPickerWidget(
-          size: size,
-        ),
-        AttachmentWidget(
-          icons: _attachmentIcons,
-          size: size,
-        ),
-      ],
+            ],
+          ),
+          EmojiPickerWidget(
+            size: size,
+          ),
+          AttachmentWidget(
+            icons: _attachmentIcons,
+            size: size,
+          ),
+        ],
+      ),
     );
+  }
+
+  Future<void> onSendButtonPressed(WidgetRef ref) async {
+    final chatInputNotifier = ref.read(chatInputProvider.notifier);
+    chatInputNotifier.showSendBtn(false);
+    String markdownText =
+        chatInputNotifier.mentionKey.currentState!.controller!.text;
+    String htmlText =
+        chatInputNotifier.mentionKey.currentState!.controller!.text;
+    int messageLength = markdownText.length;
+    chatInputNotifier.messageTextMapMarkDown.forEach((key, value) {
+      markdownText = markdownText.replaceAll(key, value);
+    });
+    chatInputNotifier.messageTextMapHtml.forEach((key, value) {
+      htmlText = htmlText.replaceAll(key, value);
+    });
+    await ref.read(chatRoomProvider.notifier).handleSendPressed(
+          markdownText,
+          htmlText,
+          messageLength,
+        );
+    chatInputNotifier.messageTextMapMarkDown.clear();
+    chatInputNotifier.mentionKey.currentState!.controller!.clear();
   }
 }
 
@@ -216,10 +242,10 @@ class _TextInputWidget extends ConsumerWidget {
       focusNode: inputNotifier.focusNode,
       decoration: InputDecoration(
         isCollapsed: true,
+        fillColor: Theme.of(context).colorScheme.primaryContainer,
         suffixIcon: InkWell(
           onTap: () {
-            inputNotifier.toggleAttachment();
-            inputNotifier.toggleEmoji();
+            ref.read(chatInputProvider.notifier).emojiPickerVisible();
             inputNotifier.focusNode.unfocus();
             inputNotifier.focusNode.canRequestFocus = true;
           },
@@ -506,14 +532,17 @@ class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
   @override
   Widget build(BuildContext context) {
     return Offstage(
-      offstage: !ref.watch(chatInputProvider.select((ci) => ci.emojiVisible)),
+      offstage:
+          !ref.watch(chatInputProvider.select((ci) => ci.emojiPickerVisible)),
       child: SizedBox(
         height: widget.size.height * 0.3,
         child: EmojiPicker(
           onEmojiSelected: handleEmojiSelected,
           onBackspacePressed: handleBackspacePressed,
           config: Config(
-            columns: 7,
+            columns: 8,
+            bgColor: Theme.of(context).colorScheme.neutral,
+            emojiSizeMax: 36,
             verticalSpacing: 0,
             horizontalSpacing: 0,
             initCategory: Category.SMILEYS,

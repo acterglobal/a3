@@ -23,12 +23,12 @@ class ChatPage extends ConsumerWidget {
     final showSearch = ref.watch(_searchToggleProvider);
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        backgroundColor: Theme.of(context).colorScheme.neutral,
         body: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
             SliverAppBar(
-              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              backgroundColor: Theme.of(context).colorScheme.neutral,
               pinned: false,
               snap: false,
               floating: true,

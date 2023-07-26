@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:bubble/bubble.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
@@ -12,8 +12,8 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ReactionDesc;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 // import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:swipe_to/swipe_to.dart';
 
 class BubbleBuilder extends StatelessWidget {
   final String userId;
@@ -44,28 +44,24 @@ class BubbleBuilder extends StatelessWidget {
     bool isMemberEvent = msgType == 'm.room.member';
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment:
           isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            _ChatBubble(
-              isAuthor: isAuthor(),
-              userId: userId,
-              message: message,
-              nextMessageInGroup: nextMessageInGroup,
-              enlargeEmoji: enlargeEmoji,
-              isMemberEvent: isMemberEvent,
-              child: child,
-            ),
-            !isMemberEvent
-                ? _EmojiRow(
-                    isAuthor: isAuthor(),
-                    message: message,
-                  )
-                : const SizedBox.shrink()
-          ],
+        !isMemberEvent
+            ? _EmojiRow(
+                isAuthor: isAuthor(),
+                message: message,
+              )
+            : const SizedBox.shrink(),
+        _ChatBubble(
+          isAuthor: isAuthor(),
+          userId: userId,
+          message: message,
+          nextMessageInGroup: nextMessageInGroup,
+          enlargeEmoji: enlargeEmoji,
+          isMemberEvent: isMemberEvent,
+          child: child,
         ),
         !isMemberEvent
             ? Align(
@@ -104,77 +100,66 @@ class _ChatBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider)!;
     String msgType = '';
     if (message.metadata!.containsKey('eventType')) {
       msgType = message.metadata?['eventType'];
     }
     bool isMemberEvent = msgType == 'm.room.member';
-    String myId = client.userId().toString();
-    return GestureDetector(
-      onLongPress: isMemberEvent
-          ? null
-          : () {
-              ref.read(chatRoomProvider.notifier).updateEmojiState(message);
-              ref.read(chatRoomProvider.notifier).repliedToMessage = message;
-              ref.read(chatInputProvider.notifier).setReplyWidget(child);
-            },
-      child: Column(
-        crossAxisAlignment:
-            isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          (message.repliedMessage != null)
-              ? Text(
-                  myId == message.repliedMessage?.author.id
-                      ? 'Replied to you'
-                      : 'Replied to ${message.repliedMessage?.author.id}',
-                  style: Theme.of(context).textTheme.labelSmall,
-                )
-              : const SizedBox(),
-          const SizedBox(height: 8),
-          //reply bubble
-          (message.repliedMessage != null)
-              ? Bubble(
-                  color: Theme.of(context).colorScheme.neutral,
+    return Column(
+      crossAxisAlignment:
+          isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      children: [
+        (message.repliedMessage != null)
+            ? Text(
+                userId == message.repliedMessage?.author.id
+                    ? 'Replied to you'
+                    : 'Replied to ${message.repliedMessage?.author.id}',
+                style: Theme.of(context).textTheme.labelSmall,
+              )
+            : const SizedBox(),
+        const SizedBox(height: 8),
+        //reply bubble
+        (message.repliedMessage != null)
+            ? Bubble(
+                color: Theme.of(context).colorScheme.neutral2,
+                margin: nextMessageInGroup
+                    ? const BubbleEdges.symmetric(horizontal: 2)
+                    : null,
+                radius: const Radius.circular(22),
+                padding: message.repliedMessage is types.ImageMessage
+                    ? const BubbleEdges.all(0)
+                    : null,
+                nip: BubbleNip.no,
+                child: _OriginalMessageBuilder(message: message),
+              )
+            : const SizedBox(),
+        const SizedBox(height: 4),
+        (enlargeEmoji || isMemberEvent)
+            ? child
+            : Bubble(
+                color: userId == message.author.id
+                    ? Theme.of(context).colorScheme.inversePrimary
+                    : Theme.of(context).colorScheme.onPrimary,
+                style: BubbleStyle(
                   margin: nextMessageInGroup
                       ? const BubbleEdges.symmetric(horizontal: 2)
                       : null,
                   radius: const Radius.circular(22),
-                  padding: message.repliedMessage is types.ImageMessage
+                  padding: message is types.ImageMessage
                       ? const BubbleEdges.all(0)
                       : null,
-                  nip: BubbleNip.no,
-                  child: _OriginalMessageBuilder(message: message),
-                )
-              : const SizedBox(),
-          const SizedBox(height: 4),
-          (enlargeEmoji || isMemberEvent)
-              ? child
-              : Bubble(
-                  color: myId == message.author.id
-                      ? Theme.of(context).colorScheme.secondary
-                      : Theme.of(context).colorScheme.primary,
-                  style: BubbleStyle(
-                    margin: nextMessageInGroup
-                        ? const BubbleEdges.symmetric(horizontal: 2)
-                        : null,
-                    radius: const Radius.circular(22),
-                    padding: message is types.ImageMessage
-                        ? const BubbleEdges.all(0)
-                        : null,
-                    nip: (nextMessageInGroup || message is types.ImageMessage)
-                        ? BubbleNip.no
-                        : !isAuthor
-                            ? BubbleNip.leftBottom
-                            : BubbleNip.rightBottom,
-                    nipHeight: 18,
-                    nipWidth: 0.5,
-                    nipRadius: 0,
-                  ),
-                  child: child,
+                  nip: (nextMessageInGroup || message is types.ImageMessage)
+                      ? BubbleNip.no
+                      : !isAuthor
+                          ? BubbleNip.leftBottom
+                          : BubbleNip.rightBottom,
+                  nipHeight: 18,
+                  nipWidth: 0.5,
+                  nipRadius: 0,
                 ),
-        ],
-      ),
+                child: child,
+              ),
+      ],
     );
   }
 }
@@ -350,7 +335,7 @@ class _EmojiRow extends ConsumerWidget {
     return Visibility(
       visible:
           ref.watch(chatRoomProvider.notifier).emojiCurrentId == message.id &&
-              ref.watch(chatInputProvider.select((ci) => ci.emojiVisible)),
+              ref.watch(chatInputProvider.select((ci) => ci.emojiRowVisible)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 202, maxHeight: 42),
         padding: const EdgeInsets.all(8),
@@ -385,17 +370,11 @@ class _OriginalMessageBuilder extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (message.repliedMessage is types.TextMessage) {
-      return ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth:
-              sqrt(message.repliedMessage!.metadata!['messageLength']) * 38.5,
-          maxHeight: double.infinity,
-        ),
-        child: Html(
-          data: """${message.repliedMessage!.metadata?['content']}""",
-          padding: const EdgeInsets.all(8),
-          defaultTextStyle: Theme.of(context).textTheme.bodySmall,
-        ),
+      return TextMessageBuilder(
+        message: message.repliedMessage as types.TextMessage,
+        messageWidth:
+            ((message.repliedMessage!.metadata!['messageLength']) * 38.5)
+                .toInt(),
       );
     } else if (message.repliedMessage is types.ImageMessage) {
       Uint8List data = base64Decode(

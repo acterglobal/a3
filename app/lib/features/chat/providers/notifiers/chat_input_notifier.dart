@@ -17,8 +17,8 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
   void _init() {
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
-        if (state.emojiVisible) {
-          state = state.copyWith(emojiVisible: false);
+        if (state.emojiRowVisible) {
+          state = state.copyWith(emojiRowVisible: false);
         }
         if (state.attachmentVisible) {
           state = state.copyWith(attachmentVisible: false);
@@ -39,9 +39,11 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
     state = state.copyWith(attachmentVisible: !state.attachmentVisible);
   }
 
-  void toggleEmoji() {
-    state = state.copyWith(emojiVisible: !state.emojiVisible);
-  }
+  void emojiRowVisible() =>
+      state = state.copyWith(emojiRowVisible: !state.emojiRowVisible);
+
+  void emojiPickerVisible() =>
+      state = state.copyWith(emojiPickerVisible: !state.emojiPickerVisible);
 
   void setReplyWidget(Widget? child) {
     state = state.copyWith(replyWidget: child);
