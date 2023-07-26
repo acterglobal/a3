@@ -6,13 +6,11 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/pages/profile_page.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/bubble_builder.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
-import 'package:acter/features/chat/widgets/type_indicator.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Convo;
@@ -380,7 +378,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           ],
         ),
         body: chatRoomState.when(
-          initial: () => const SizedBox.shrink(),
           loading: () => const Center(
             child: SizedBox(
               height: 15,
@@ -391,7 +388,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           error: (e) => Text('Failed to load messages due to $e'),
           loaded: () => Chat(
             customBottomWidget: customBottomWidget(context),
-            // textMessageBuilder: textMessageBuilder,
+            textMessageBuilder: textMessageBuilder,
             l10n: ChatL10nEn(
               emptyChatPlaceholder: '',
               attachmentButtonAccessibilityLabel: '',
@@ -400,17 +397,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               sendButtonAccessibilityLabel: '',
             ),
             messages: ref.watch(messagesProvider),
-            // typingIndicatorOptions: TypingIndicatorOptions(
-            //   customTypingIndicator: TypeIndicator(
-            //     bubbleAlignment: BubbleRtlAlignment.right,
-            //     showIndicator: ctlr.typingUsers.isNotEmpty,
-            //     options: TypingIndicatorOptions(
-            //       animationSpeed: const Duration(milliseconds: 800),
-            //       typingUsers: ctlr.typingUsers,
-            //       typingMode: TypingIndicatorMode.name,
-            //     ),
-            //   ),
-            // ),
             onSendPressed: (types.PartialText partialText) {},
             user: types.User(id: client!.userId().toString()),
             // disable image preview
@@ -418,7 +404,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             //custom avatar builder
             avatarBuilder: (userId) {
               var profile =
-                  ref.read(chatRoomProvider.notifier).getUserProfile(userId);
+                  ref.watch(chatRoomProvider.notifier).getUserProfile(userId);
               return Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: SizedBox(
@@ -546,15 +532,11 @@ class _ImageMessage extends StatelessWidget {
               if (wasSynchronouslyLoaded) {
                 return child;
               }
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: frame != null
-                    ? child
-                    : const SizedBox(
-                        height: 60,
-                        width: 60,
-                        child: CircularProgressIndicator(strokeWidth: 6),
-                      ),
+              return AnimatedOpacity(
+                opacity: frame == null ? 0 : 1,
+                duration: const Duration(seconds: 1),
+                curve: Curves.easeOut,
+                child: child,
               );
             },
             cacheWidth: 256,

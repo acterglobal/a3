@@ -53,42 +53,42 @@ class _TextMessageBuilderConsumerState
 
     //will return empty if link is other than mention
     final matches = urlRegexp.allMatches(parsedString);
-    // if (matches.isEmpty) {
-    //   return LinkPreview(
-    //     metadataTitleStyle:
-    //         client.userId().toString() == widget.message.author.id
-    //             ? const ActerChatTheme().sentMessageLinkTitleTextStyle
-    //             : const ActerChatTheme().receivedMessageLinkTitleTextStyle,
-    //     metadataTextStyle: client.userId().toString() ==
-    //             widget.message.author.id
-    //         ? const ActerChatTheme().sentMessageLinkDescriptionTextStyle
-    //         : const ActerChatTheme().receivedMessageLinkDescriptionTextStyle,
-    //     enableAnimation: true,
-    //     imageBuilder: (image) {
-    //       return Padding(
-    //         padding: const EdgeInsets.all(8.0),
-    //         child: ClipRRect(
-    //           borderRadius: BorderRadius.circular(16),
-    //           child: CachedNetworkImage(
-    //             imageUrl: image,
-    //             maxHeightDiskCache: 256,
-    //           ),
-    //         ),
-    //       );
-    //     },
-    //     previewData: widget.message.previewData,
-    //     text: parsedString,
-    //     onPreviewDataFetched: _onPreviewDataFetched,
-    //     textWidget: _TextWidget(
-    //       message: widget.message,
-    //       enlargeEmoji:
-    //           widget.message.metadata!['enlargeEmoji'] ?? enlargeEmoji,
-    //       isNotice: isNotice,
-    //     ),
-    //     width: widget.messageWidth.toDouble(),
-    //     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-    //   );
-    // }
+    if (matches.isEmpty) {
+      return LinkPreview(
+        metadataTitleStyle:
+            client.userId().toString() == widget.message.author.id
+                ? const ActerChatTheme().sentMessageLinkTitleTextStyle
+                : const ActerChatTheme().receivedMessageLinkTitleTextStyle,
+        metadataTextStyle: client.userId().toString() ==
+                widget.message.author.id
+            ? const ActerChatTheme().sentMessageLinkDescriptionTextStyle
+            : const ActerChatTheme().receivedMessageLinkDescriptionTextStyle,
+        enableAnimation: true,
+        imageBuilder: (image) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: CachedNetworkImage(
+                imageUrl: image,
+                maxHeightDiskCache: 256,
+              ),
+            ),
+          );
+        },
+        previewData: widget.message.previewData,
+        text: parsedString,
+        onPreviewDataFetched: _onPreviewDataFetched,
+        textWidget: _TextWidget(
+          message: widget.message,
+          enlargeEmoji:
+              widget.message.metadata!['enlargeEmoji'] ?? enlargeEmoji,
+          isNotice: isNotice,
+        ),
+        width: widget.messageWidth.toDouble(),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      );
+    }
     return _TextWidget(
       message: widget.message,
       enlargeEmoji: enlargeEmoji,

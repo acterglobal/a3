@@ -11,6 +11,7 @@ import 'package:acter/features/chat/widgets/emoji_row.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ReactionDesc;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+// import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -374,7 +375,7 @@ class _EmojiRow extends ConsumerWidget {
   }
 }
 
-class _OriginalMessageBuilder extends StatelessWidget {
+class _OriginalMessageBuilder extends ConsumerWidget {
   const _OriginalMessageBuilder({
     required this.message,
   });
@@ -382,7 +383,7 @@ class _OriginalMessageBuilder extends StatelessWidget {
   final types.Message message;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (message.repliedMessage is types.TextMessage) {
       return ConstrainedBox(
         constraints: BoxConstraints(
@@ -397,33 +398,32 @@ class _OriginalMessageBuilder extends StatelessWidget {
         ),
       );
     } else if (message.repliedMessage is types.ImageMessage) {
-      Uint8List data =
-          base64Decode(message.repliedMessage?.metadata?['content']);
+      Uint8List data = base64Decode(
+        (message.repliedMessage as types.ImageMessage).metadata?['content'] ??
+            '',
+      );
       return ClipRRect(
         borderRadius: BorderRadius.circular(15),
-        child: data.isNotEmpty
-            ? Image.memory(
-                data,
-                errorBuilder:
-                    (BuildContext context, Object url, StackTrace? error) {
-                  return Text('Could not load image due to $error');
-                },
-                frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
-                  if (wasSynchronouslyLoaded) {
-                    return child;
-                  }
-                  return AnimatedOpacity(
-                    opacity: frame == null ? 0 : 1,
-                    duration: const Duration(seconds: 1),
-                    curve: Curves.easeOut,
-                    child: child,
-                  );
-                }),
-                cacheHeight: 75,
-                cacheWidth: 75,
-                fit: BoxFit.cover,
-              )
-            : const SizedBox(),
+        child: Image.memory(
+          data,
+          errorBuilder: (BuildContext context, Object url, StackTrace? error) {
+            return Text('Could not load image due to $error');
+          },
+          frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded) {
+              return child;
+            }
+            return AnimatedOpacity(
+              opacity: frame == null ? 0 : 1,
+              duration: const Duration(seconds: 1),
+              curve: Curves.easeOut,
+              child: child,
+            );
+          }),
+          cacheHeight: 75,
+          cacheWidth: 75,
+          fit: BoxFit.cover,
+        ),
       );
     } else if (message.repliedMessage is types.FileMessage) {
       return Text(
