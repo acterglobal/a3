@@ -370,7 +370,9 @@ class _DueDateWidget extends StatelessWidget {
                 },
               );
               if (pickedDate != null) {
-                setState(() => selectedDate = pickedDate);
+                if (context.mounted) {
+                  setState(() => selectedDate = pickedDate);
+                }
               } else {
                 if (context.mounted) Navigator.pop(context);
               }
@@ -418,9 +420,7 @@ class _DueDateWidget extends StatelessWidget {
                       );
                       // Navigator.pop(context);
                     },
-                    child: const Text(
-                      'Done',
-                    ),
+                    child: const Text('Done'),
                   ),
                 ),
                 const Divider(
@@ -436,41 +436,43 @@ class _DueDateWidget extends StatelessWidget {
                     options.length,
                     (index) => ListTile(
                       onTap: () {
-                        final now = DateTime.now();
-                        setState(() {
-                          tappedIdx = index;
-                          switch (index) {
-                            case 0:
-                              selectedDate = now;
-                              break;
-                            case 1:
-                              selectedDate = DateTime(
-                                now.year,
-                                now.month,
-                                now.day + 1,
-                              );
-                              break;
-                            case 2:
-                              DateTime nextWeek = now.add(
-                                const Duration(days: 7),
-                              );
-                              int weekDay = nextWeek.weekday;
-                              if (weekDay == 7) {
-                                selectedDate = nextWeek;
-                              } else {
-                                selectedDate = nextWeek.subtract(
-                                  Duration(days: weekDay - 1),
+                        if (context.mounted) {
+                          setState(() {
+                            final now = DateTime.now();
+                            tappedIdx = index;
+                            switch (index) {
+                              case 0:
+                                selectedDate = now;
+                                break;
+                              case 1:
+                                selectedDate = DateTime(
+                                  now.year,
+                                  now.month,
+                                  now.day + 1,
                                 );
-                              }
-                              break;
-                            case 3:
-                              Future.delayed(
-                                const Duration(seconds: 0),
-                                () => internalShowDatePicker(context),
-                              );
-                              break;
-                          }
-                        });
+                                break;
+                              case 2:
+                                DateTime nextWeek = now.add(
+                                  const Duration(days: 7),
+                                );
+                                int weekDay = nextWeek.weekday;
+                                if (weekDay == 7) {
+                                  selectedDate = nextWeek;
+                                } else {
+                                  selectedDate = nextWeek.subtract(
+                                    Duration(days: weekDay - 1),
+                                  );
+                                }
+                                break;
+                              case 3:
+                                Future.delayed(
+                                  const Duration(seconds: 0),
+                                  () => internalShowDatePicker(context),
+                                );
+                                break;
+                            }
+                          });
+                        }
                       },
                       tileColor: Colors.transparent,
                       selected: tappedIdx != null && tappedIdx == index,

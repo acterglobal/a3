@@ -27,15 +27,19 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
   @override
   void initState() {
     super.initState();
-    _comments =
-        cntrl.getComments(cntrl.todos[widget.listIndex].tasks[widget.index]);
+    _comments = cntrl.getComments(
+      cntrl.todos[widget.listIndex].tasks[widget.index],
+    );
   }
 
   void onSendPressed() {
-    setState(() {
-      _comments =
-          cntrl.getComments(cntrl.todos[widget.listIndex].tasks[widget.index]);
-    });
+    if (mounted) {
+      setState(() {
+        _comments = cntrl.getComments(
+          cntrl.todos[widget.listIndex].tasks[widget.index],
+        );
+      });
+    }
   }
 
   @override

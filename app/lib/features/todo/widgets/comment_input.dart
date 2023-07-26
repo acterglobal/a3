@@ -119,7 +119,9 @@ class CommentInputState extends ConsumerState<CommentInput> {
                                 color: Colors.grey,
                               ),
                               onPressed: () {
-                                setState(() => emojiShowing = !emojiShowing);
+                                if (mounted) {
+                                  setState(() => emojiShowing = !emojiShowing);
+                                }
                               },
                             ),
                           ],

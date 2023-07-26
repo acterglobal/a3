@@ -268,9 +268,9 @@ class _StartPageState extends State<StartPage> {
             Expanded(
               child: PageView.builder(
                 onPageChanged: (index) {
-                  setState(() {
-                    _pageIndex = index;
-                  });
+                  if (mounted) {
+                    setState(() => _pageIndex = index);
+                  }
                 },
                 itemCount: onBoardingPages.length,
                 controller: _pageController,

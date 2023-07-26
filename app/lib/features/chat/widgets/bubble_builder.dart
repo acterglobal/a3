@@ -269,19 +269,21 @@ class _EmojiContainerState extends State<_EmojiContainer>
   void showEmojiReactionsSheet(Map<String, dynamic> reactions) {
     List<String> keys = reactions.keys.toList();
     num count = 0;
-    setState(() {
-      reactions.forEach((key, value) {
-        count += value.count();
-        reactionTabs.add(
-          Tab(
-            text: '$key+${value.count()}',
-          ),
+    if (mounted) {
+      setState(() {
+        reactions.forEach((key, value) {
+          count += value.count();
+          reactionTabs.add(
+            Tab(text: '$key+${value.count()}'),
+          );
+        });
+        reactionTabs.insert(0, (Tab(text: 'All $count')));
+        tabBarController = TabController(
+          length: reactionTabs.length,
+          vsync: this,
         );
       });
-      reactionTabs.insert(0, (Tab(text: 'All $count')));
-      tabBarController =
-          TabController(length: reactionTabs.length, vsync: this);
-    });
+    }
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -327,9 +329,9 @@ class _EmojiContainerState extends State<_EmojiContainer>
         );
       },
     ).whenComplete(() {
-      setState(() {
-        reactionTabs.clear();
-      });
+      if (mounted) {
+        setState(() => reactionTabs.clear());
+      }
     });
   }
 }

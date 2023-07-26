@@ -121,7 +121,9 @@
 //   void onClickItem(PlatformFile file) {
 //     if (mounted) {
 //       int index = widget.imageList.indexOf(file);
-//       setState(() => selectedIndex = index);
+//       if (mounted) {
+//         setState(() => selectedIndex = index);
+//       }
 //       pageController.jumpToPage(index);
 //     }
 //   }
