@@ -9,6 +9,7 @@ mod reaction;
 mod receipt;
 mod redact;
 mod reply;
+mod rsvp;
 mod spaces;
 mod tasks;
 mod templates;

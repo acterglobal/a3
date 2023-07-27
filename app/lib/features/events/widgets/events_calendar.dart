@@ -1,11 +1,11 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show CalendarEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show CalendarEvent;
 
 // ignore: must_be_immutable
 class EventsCalendar extends ConsumerWidget {
@@ -17,6 +17,7 @@ class EventsCalendar extends ConsumerWidget {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
   final AsyncValue<List<CalendarEvent>> events;
+
   EventsCalendar({super.key, required this.events});
 
   @override
@@ -28,8 +29,9 @@ class EventsCalendar extends ConsumerWidget {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         events.when(
-          error: (error, stackTrace) =>
-              Text('Loading calendars failed: $error'),
+          error: (error, stackTrace) => Text(
+            'Loading calendars failed: $error',
+          ),
           data: (events) {
             return Column(
               children: [
