@@ -349,7 +349,7 @@ class PublicSpaceSelector extends ConsumerWidget {
                       return DropdownMenu<String>(
                         controller: controller,
                         initialSelection:
-                            ref.read(selectedServerProvider.notifier).state,
+                            ref.watch(selectedServerProvider.notifier).state,
                         label: const Text('Server'),
                         dropdownMenuEntries: menuItems,
                         onSelected: (String? typus) {

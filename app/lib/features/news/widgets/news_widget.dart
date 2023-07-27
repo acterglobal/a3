@@ -31,6 +31,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
     final newsList = ref.watch(newsListProvider);
     return newsList.when(
       data: (data) {
+        final client = ref.watch(clientProvider)!;
         return PageView.builder(
           itemCount: data.length,
           onPageChanged: (int page) {},
@@ -40,7 +41,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
               LikeAnimation.run(index);
             },
             child: NewsItem(
-              client: ref.read(clientProvider)!,
+              client: client,
               news: data[index],
               index: index,
             ),
