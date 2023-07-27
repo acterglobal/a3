@@ -25,13 +25,13 @@ class CalendarEventPage extends ConsumerWidget {
             sectionColor: Colors.blue.shade200,
             actions: [
               PopupMenuButton(
-                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
                   PopupMenuItem(
-                    onTap: () => onEdit(context),
+                    onTap: () => onEdit(ctx),
                     child: const Text('Edit Event'),
                   ),
                   PopupMenuItem(
-                    onTap: () => onDelete(context),
+                    onTap: () => onDelete(ctx),
                     child: const Text('Delete Event'),
                   ),
                 ],
