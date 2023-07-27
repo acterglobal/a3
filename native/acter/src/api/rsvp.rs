@@ -14,7 +14,7 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::trace;
 
-use super::{client::Client, RUNTIME};
+use super::{client::Client, common::OptionText, RUNTIME};
 
 impl Client {
     pub async fn wait_for_rsvp(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Rsvp> {
@@ -150,6 +150,55 @@ impl RsvpManager {
                     })
                     .collect();
                 Ok(res)
+            })
+            .await?
+    }
+
+    pub async fn my_status(&self) -> Result<OptionText> {
+        let manager = self.inner.clone();
+        let my_id = self.client.user_id().context("User not found")?;
+        RUNTIME
+            .spawn(async move {
+                // read last rsvp
+                for entry in manager.rsvp_entries().await?.into_iter().rev() {
+                    if entry.meta.sender == my_id {
+                        let status = entry.status.to_string();
+                        return Ok(OptionText::new(Some(status)));
+                    }
+                }
+                Ok(OptionText::new(None))
+            })
+            .await?
+    }
+
+    pub async fn count_at_status(&self, status: String) -> Result<u32> {
+        let manager = self.inner.clone();
+        RUNTIME
+            .spawn(async move {
+                let mut count = 0;
+                for entry in manager.rsvp_entries().await? {
+                    if entry.status.to_string() == status {
+                        count = count + 1;
+                    }
+                }
+                Ok(count)
+            })
+            .await?
+    }
+
+    pub async fn users_at_status(&self, status: String) -> Result<Vec<OwnedUserId>> {
+        let manager = self.inner.clone();
+        RUNTIME
+            .spawn(async move {
+                let mut senders = vec![];
+                for entry in manager.rsvp_entries().await? {
+                    if entry.status.to_string() == status {
+                        if !senders.contains(&entry.meta.sender) {
+                            senders.push(entry.meta.sender);
+                        }
+                    }
+                }
+                Ok(senders)
             })
             .await?
     }

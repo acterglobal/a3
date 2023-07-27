@@ -2055,6 +2055,142 @@ class Api {
     return tmp7;
   }
 
+  OptionText? __rsvpManagerMyStatusFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _rsvpManagerMyStatusFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionText");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionText._(this, tmp13_1);
+    return tmp7;
+  }
+
+  int? __rsvpManagerCountAtStatusFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _rsvpManagerCountAtStatusFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13;
+    return tmp7;
+  }
+
+  FfiListUserId? __rsvpManagerUsersAtStatusFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _rsvpManagerUsersAtStatusFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListUserId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListUserId._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   EventId? __rsvpDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -11171,6 +11307,50 @@ class Api {
       int Function(
         int,
       )>();
+  late final _rsvpManagerMyStatusPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__RsvpManager_my_status");
+
+  late final _rsvpManagerMyStatus = _rsvpManagerMyStatusPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _rsvpManagerCountAtStatusPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__RsvpManager_count_at_status");
+
+  late final _rsvpManagerCountAtStatus =
+      _rsvpManagerCountAtStatusPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _rsvpManagerUsersAtStatusPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__RsvpManager_users_at_status");
+
+  late final _rsvpManagerUsersAtStatus =
+      _rsvpManagerUsersAtStatusPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _rsvpManagerRsvpDraftPtr = _lookup<
       ffi.NativeFunction<
           _RsvpManagerRsvpDraftReturn Function(
@@ -17666,6 +17846,51 @@ class Api {
   late final _rsvpManagerRsvpEntriesFuturePoll =
       _rsvpManagerRsvpEntriesFuturePollPtr.asFunction<
           _RsvpManagerRsvpEntriesFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _rsvpManagerMyStatusFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RsvpManagerMyStatusFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__RsvpManager_my_status_future_poll");
+
+  late final _rsvpManagerMyStatusFuturePoll =
+      _rsvpManagerMyStatusFuturePollPtr.asFunction<
+          _RsvpManagerMyStatusFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _rsvpManagerCountAtStatusFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RsvpManagerCountAtStatusFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__RsvpManager_count_at_status_future_poll");
+
+  late final _rsvpManagerCountAtStatusFuturePoll =
+      _rsvpManagerCountAtStatusFuturePollPtr.asFunction<
+          _RsvpManagerCountAtStatusFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _rsvpManagerUsersAtStatusFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RsvpManagerUsersAtStatusFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__RsvpManager_users_at_status_future_poll");
+
+  late final _rsvpManagerUsersAtStatusFuturePoll =
+      _rsvpManagerUsersAtStatusFuturePollPtr.asFunction<
+          _RsvpManagerUsersAtStatusFuturePollReturn Function(
             int,
             int,
             int,
@@ -24484,7 +24709,90 @@ class RsvpManager {
     return tmp2;
   }
 
-  /// get rsvp draft
+  /// get Yes/Maybe/No/None for the user's own status
+  Future<OptionText> myStatus() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._rsvpManagerMyStatus(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__RsvpManager_my_status_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__rsvpManagerMyStatusFuturePoll);
+    return tmp2;
+  }
+
+  /// get the count of Yes/Maybe/No
+  Future<int> countAtStatus(
+    String status,
+  ) {
+    final tmp1 = status;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._rsvpManagerCountAtStatus(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__RsvpManager_count_at_status_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__rsvpManagerCountAtStatusFuturePoll);
+    return tmp6;
+  }
+
+  /// get the user-ids that have responded said way for each status
+  Future<FfiListUserId> usersAtStatus(
+    String status,
+  ) {
+    final tmp1 = status;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._rsvpManagerUsersAtStatus(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__RsvpManager_users_at_status_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__rsvpManagerUsersAtStatusFuturePoll);
+    return tmp6;
+  }
+
+  /// create rsvp draft
   RsvpDraft rsvpDraft() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -39613,6 +39921,51 @@ class _CalendarEventDraftSendFuturePollReturn extends ffi.Struct {
 }
 
 class _RsvpManagerRsvpEntriesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _RsvpManagerMyStatusFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _RsvpManagerCountAtStatusFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint32()
+  external int arg5;
+}
+
+class _RsvpManagerUsersAtStatusFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

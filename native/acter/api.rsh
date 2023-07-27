@@ -347,7 +347,16 @@ object RsvpManager {
     /// get rsvp entries
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
-    /// get rsvp draft
+    /// get Yes/Maybe/No/None for the user's own status
+    fn my_status() -> Future<Result<OptionText>>;
+
+    /// get the count of Yes/Maybe/No
+    fn count_at_status(status: string) -> Future<Result<u32>>;
+
+    /// get the user-ids that have responded said way for each status
+    fn users_at_status(status: string) -> Future<Result<Vec<UserId>>>;
+
+    /// create rsvp draft
     fn rsvp_draft() -> Result<RsvpDraft>;
 
     /// get informed about changes to this manager
