@@ -27,7 +27,7 @@ class AsyncSpaceProfileDataNotifier
     _listener = client.subscribeStream(arg.getRoomId().toString());
     _sub = _listener.listen(
       (e) async {
-        debugPrint('seen update ${arg.getRoomIdStr()}');
+        debugPrint('seen update $arg');
         state = await AsyncValue.guard(() => _getSpaceProfileData());
       },
       onError: (e, stack) {
