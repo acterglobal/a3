@@ -178,7 +178,7 @@ impl RsvpManager {
                 let mut count = 0;
                 for entry in manager.rsvp_entries().await? {
                     if entry.status.to_string() == status {
-                        count = count + 1;
+                        count += 1;
                     }
                 }
                 Ok(count)
@@ -192,10 +192,8 @@ impl RsvpManager {
             .spawn(async move {
                 let mut senders = vec![];
                 for entry in manager.rsvp_entries().await? {
-                    if entry.status.to_string() == status {
-                        if !senders.contains(&entry.meta.sender) {
-                            senders.push(entry.meta.sender);
-                        }
+                    if entry.status.to_string() == status && !senders.contains(&entry.meta.sender) {
+                        senders.push(entry.meta.sender);
                     }
                 }
                 Ok(senders)

@@ -180,7 +180,8 @@ async fn rsvp_my_status() -> Result<()> {
 #[tokio::test]
 async fn rsvp_count_at_status() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("rsvp-count-at-status-", TMPL).await?;
+    let (user, _sync_state, _engine) =
+        random_user_with_template("rsvp-count-at-status-", TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -253,7 +254,8 @@ async fn rsvp_count_at_status() -> Result<()> {
 #[tokio::test]
 async fn rsvp_users_at_status() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("rsvp-users-at-status-", TMPL).await?;
+    let (user, _sync_state, _engine) =
+        random_user_with_template("rsvp-users-at-status-", TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);

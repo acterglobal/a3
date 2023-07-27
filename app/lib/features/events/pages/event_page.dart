@@ -160,11 +160,12 @@ class CalendarEventPage extends ConsumerWidget {
   ) async {
     var rsvpManager = await event.rsvpManager();
     int count = rsvpManager.totalRsvpCount();
-    debugPrint('rsvp count: $count');
+    debugPrint('rsvp prev count: $count');
 
     var draft = rsvpManager.rsvpDraft();
     draft.status(status);
     var rsvpId = await draft.send();
+    debugPrint('new rsvp id: $rsvpId');
 
     // rsvpManager.subscribeStream();
     // count = rsvpManager.totalRsvpCount();
