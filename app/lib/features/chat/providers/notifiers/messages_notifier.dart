@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -19,6 +20,7 @@ class MessagesNotifier extends StateNotifier<List<types.Message>> {
       }
       state = newState;
     } catch (e) {
+      debugPrint('Messages CRUD error: $e');
       rethrow;
     }
   }
@@ -31,6 +33,7 @@ class MessagesNotifier extends StateNotifier<List<types.Message>> {
         state = newState;
       }
     } catch (e) {
+      debugPrint('Messages CRUD error: $e');
       rethrow;
     }
   }
@@ -43,6 +46,7 @@ class MessagesNotifier extends StateNotifier<List<types.Message>> {
         state = newState;
       }
     } catch (e) {
+      debugPrint('Messages CRUD error: $e');
       rethrow;
     }
   }
