@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/reaction_pop_up_config.dart';
@@ -51,29 +52,32 @@ class EmojiRow extends StatelessWidget {
     final emojiList = emojiConfiguration?.emojiList ?? _emojiUnicodes;
     final size = emojiConfiguration?.size;
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Wrap(
           direction: Axis.horizontal,
           spacing: 5.0,
-          children: List.generate(
-            emojiList.length,
-            (index) => InkWell(
-              onTap: () => onEmojiTap(emojiList[index]),
-              child: Text(
-                emojiList[index],
-                style: TextStyle(fontSize: size ?? 18),
+          children: [
+            for (var emoji in emojiList)
+              InkWell(
+                onTap: () => onEmojiTap(emoji),
+                child: Text(
+                  emoji,
+                  style: TextStyle(fontSize: size ?? 18),
+                ),
+              ),
+            InkWell(
+              onTap: () => _showBottomSheet(context),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 3),
+                child: Icon(
+                  Atlas.plus_circle,
+                  color: Theme.of(context).colorScheme.neutral5,
+                  size: 18,
+                ),
               ),
             ),
-          ),
-        ),
-        IconButton(
-          padding: const EdgeInsets.only(bottom: 5.0),
-          icon: Icon(
-            Atlas.plus_circle,
-            color: Colors.grey.shade600,
-            size: size ?? 28,
-          ),
-          onPressed: () => _showBottomSheet(context),
+          ],
         ),
       ],
     );

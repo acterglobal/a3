@@ -4,7 +4,7 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/network_notifier.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/models/joined_room/joined_room.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Account, Convo, Member, OptionText, UserProfile;
@@ -74,53 +74,31 @@ final chatProvider =
 
 final chatMembersProvider =
     FutureProvider.family<List<Member>, String>((ref, roomIdOrAlias) async {
-  final chat = ref.watch(chatProvider(roomIdOrAlias)).requireValue;
+  final chat = await ref.watch(chatProvider(roomIdOrAlias).future);
   final members = await chat.activeMembers();
   return members.toList();
 });
 
-// chats stream provider
-final chatStreamProvider =
-    StreamProvider.autoDispose<List<JoinedRoom>>((ref) async* {
-  final client = ref.watch(clientProvider)!;
-  List<JoinedRoom> convos = [];
-  var convosPoller = client.convosRx().listen((event) {
-    for (var room in event.toList()) {
-      JoinedRoom r = JoinedRoom(
-        id: room.getRoomIdStr(),
-        convo: room,
-        latestMessage: room.latestMessage(),
-      );
-      convos.add(r);
-    }
-  });
-  ref.onDispose(() => convosPoller.cancel());
-  yield convos;
-});
-
 final relatedChatsProvider = FutureProvider.autoDispose
-    .family<List<JoinedRoom>, String>((ref, spaceId) async {
-  List<JoinedRoom> convos = [];
-  ref.watch(chatStreamProvider).whenData((value) => convos.addAll(value));
+    .family<List<Convo>, String>((ref, spaceId) async {
+  List<Convo> conversations = [];
+  ref
+      .watch(chatStreamProvider)
+      .whenData((value) => conversations.addAll(value));
   final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
-  final List<JoinedRoom> chats = [];
+  final chats = [];
   final children = relatedSpaces.children();
-  for (JoinedRoom room in convos) {
+  for (Convo room in conversations) {
     for (final related in children) {
       if (related.targetType() == 'ChatRoom') {
         final roomId = related.roomId().toString();
-        if (room.id == roomId) {
-          final joinedRoom = JoinedRoom(
-            id: room.id,
-            convo: room.convo,
-            latestMessage: room.latestMessage,
-          );
-          chats.add(joinedRoom);
+        if (room.getRoomIdStr() == roomId) {
+          chats.add(room);
         }
       }
     }
   }
-  return List<JoinedRoom>.from(chats);
+  return List<Convo>.from(chats);
 });
 
 // Member Providers
