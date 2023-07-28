@@ -250,7 +250,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
     String description,
   ) async {
     try {
-      final sdk = await ref.watch(sdkProvider.future);
+      var sdk = await ref.read(sdkProvider.future);
       var config = sdk.newConvoSettingsBuilder();
       config.setName(convoName);
       if (description.isNotEmpty) {
@@ -260,16 +260,15 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
       if (avatarUri.isNotEmpty) {
         config.setAvatarUri(avatarUri); // convo creation will upload it
       }
-      final parentRoomId = ref.watch(parentSpaceProvider);
-      if (parentRoomId != null) {
-        config.setParent(parentRoomId);
+      var parentId = ref.read(parentSpaceProvider);
+      if (parentId != null) {
+        config.setParent(parentId);
       }
       final client = ref.read(clientProvider)!;
       final roomId = await client.createConvo(config.build());
-      final linkSpace = ref.watch(parentSpaceProvider);
       // add room to child of space (if given)
-      if (linkSpace != null) {
-        final space = await ref.watch(spaceProvider(linkSpace).future);
+      if (parentId != null) {
+        var space = await ref.read(spaceProvider(parentId).future);
         await space.addChildSpace(roomId.toString());
       }
       final convo = await client.convo(roomId.toString());

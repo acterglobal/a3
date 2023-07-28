@@ -278,7 +278,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       isLoader: true,
     );
 
-    final sdk = await ref.watch(sdkProvider.future);
+    var sdk = await ref.read(sdkProvider.future);
     var config = sdk.newSpaceSettingsBuilder();
     config.setName(spaceName);
     if (description.isNotEmpty) {
@@ -288,14 +288,14 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     if (localUri.isNotEmpty) {
       config.setAvatarUri(localUri); // space creation will upload it
     }
-    final parentRoomId = ref.watch(parentSpaceProvider);
-    if (parentRoomId != null) {
-      config.setParent(parentRoomId);
+    var parentId = ref.read(parentSpaceProvider);
+    if (parentId != null) {
+      config.setParent(parentId);
     }
     final client = ref.read(clientProvider)!;
     final roomId = await client.createActerSpace(config.build());
-    if (parentRoomId != null) {
-      final space = await ref.read(spaceProvider(parentRoomId).future);
+    if (parentId != null) {
+      var space = await ref.read(spaceProvider(parentId).future);
       await space.addChildSpace(roomId.toString());
     }
 

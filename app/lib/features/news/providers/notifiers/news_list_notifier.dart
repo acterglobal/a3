@@ -24,7 +24,7 @@ class AsyncNewsListNotifier extends AutoDisposeAsyncNotifier<List<NewsEntry>> {
 
   Future<List<NewsEntry>> _fetchNews() async {
     debugPrint(' -------      refreshing news');
-    final client = ref.watch(clientProvider);
+    var client = ref.read(clientProvider);
     var entries = (await client!.latestNewsEntries(25)).toList();
     return entries;
   }

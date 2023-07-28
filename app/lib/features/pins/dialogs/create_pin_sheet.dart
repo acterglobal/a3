@@ -236,7 +236,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
               );
               try {
                 final spaceId = ref.read(selectedSpaceIdProvider);
-                final space = await ref.watch(spaceProvider(spaceId!).future);
+                var space = await ref.read(spaceProvider(spaceId!).future);
                 final pinDraft = space.pinDraft();
                 pinDraft.title(ref.read(titleProvider));
                 if (ref.read(selectedTypeProvider) == 'text') {

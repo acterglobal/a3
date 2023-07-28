@@ -324,7 +324,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // permission check
   Future<bool> permissionCheck() async {
-    var space = await ref.watch(spaceProvider(widget.spaceId!).future);
+    var space = await ref.read(spaceProvider(widget.spaceId!).future);
     var membership = await space.getMyMembership();
     return membership.canString('CanSetTopic');
   }
@@ -340,7 +340,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       isLoader: true,
     );
 
-    var space = await ref.watch(spaceProvider(widget.spaceId!).future);
+    var space = await ref.read(spaceProvider(widget.spaceId!).future);
     // update space name
     String title = ref.read(editTitleProvider);
     try {

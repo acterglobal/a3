@@ -208,7 +208,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 isLoader: true,
               );
 
-              final space = await ref.watch(spaceProvider(spaceId!).future);
+              var space = await ref.read(spaceProvider(spaceId!).future);
               NewsEntryDraft draft = space.newsDraft();
               if (file == null) {
                 draft.addTextSlide(caption);

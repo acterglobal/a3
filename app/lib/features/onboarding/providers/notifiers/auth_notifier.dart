@@ -15,11 +15,11 @@ class AuthStateNotifier extends StateNotifier<bool> {
   AuthStateNotifier(this.ref) : super(false);
 
   Future<String?> login(String username, String password) async {
-    final sdk = await ref.watch(sdkProvider.future);
+    var sdk = await ref.read(sdkProvider.future);
     try {
       final client = await sdk.login(username, password);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
-      ref.watch(clientProvider.notifier).state = client;
+      ref.read(clientProvider.notifier).state = client;
       // inject chat dependencies once actual client is logged in.
       Get.replace(ChatRoomController(client: client));
       // Get.replace(ReceiptController(client: client));
@@ -32,7 +32,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
 
   Future<void> makeGuest(BuildContext? context) async {
     state = true;
-    final sdk = await ref.watch(sdkProvider.future);
+    var sdk = await ref.read(sdkProvider.future);
     try {
       final client = await sdk.newGuestClient(setAsCurrent: true);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
@@ -53,7 +53,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     String token,
     BuildContext context,
   ) async {
-    final sdk = await ref.watch(sdkProvider.future);
+    var sdk = await ref.read(sdkProvider.future);
     try {
       final client = await sdk.register(username, password, displayName, token);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
@@ -71,7 +71,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
   }
 
   Future<void> logout(BuildContext context) async {
-    final sdk = await ref.watch(sdkProvider.future);
+    var sdk = await ref.read(sdkProvider.future);
     final stillHasClient = await sdk.logout();
     if (stillHasClient) {
       debugPrint('Still has clients, dropping back to other');

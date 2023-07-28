@@ -110,10 +110,10 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchState>
   final Ref ref;
 
   void setup() {
-    ref.watch(searchValueProvider.notifier).addListener((state) {
+    ref.read(searchValueProvider.notifier).addListener((state) {
       readData();
     });
-    ref.watch(selectedServerProvider.notifier).addListener((state) {
+    ref.read(selectedServerProvider.notifier).addListener((state) {
       readData();
     });
   }
@@ -147,7 +147,7 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchState>
     }
 
     final pageReq = page.next ?? '';
-    final client = ref.watch(clientProvider)!;
+    var client = ref.read(clientProvider)!;
     final searchValue = state.searchValue;
     final server = state.server;
     try {
