@@ -1,0 +1,4 @@
+- improvements in chat state management.
+- improvements in chat loading times, pagination.
+- [fix] chat mentions.
+- [fix] chat theme colors.
