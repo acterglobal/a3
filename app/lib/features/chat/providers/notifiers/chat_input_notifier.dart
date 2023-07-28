@@ -6,24 +6,38 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
   ChatInputNotifier() : super(const ChatInputState());
 
   void toggleReplyView() {
-    state = state.copyWith(showReplyView: !state.showReplyView);
+    if (mounted) {
+      state = state.copyWith(showReplyView: !state.showReplyView);
+    }
   }
 
   void showSendBtn(bool value) {
-    state = state.copyWith(sendBtnVisible: value);
+    if (mounted) {
+      state = state.copyWith(sendBtnVisible: value);
+    }
   }
 
   void toggleAttachment() {
-    state = state.copyWith(attachmentVisible: !state.attachmentVisible);
+    if (mounted) {
+      state = state.copyWith(attachmentVisible: !state.attachmentVisible);
+    }
   }
 
-  void emojiRowVisible() =>
+  void emojiRowVisible() {
+    if (mounted) {
       state = state.copyWith(emojiRowVisible: !state.emojiRowVisible);
+    }
+  }
 
-  void emojiPickerVisible() =>
+  void emojiPickerVisible() {
+    if (mounted) {
       state = state.copyWith(emojiPickerVisible: !state.emojiPickerVisible);
+    }
+  }
 
   void setReplyWidget(Widget? child) {
-    state = state.copyWith(replyWidget: child);
+    if (mounted) {
+      state = state.copyWith(replyWidget: child);
+    }
   }
 }

@@ -2,10 +2,16 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
+
+class EmojiConfig {
+  static final emojiTextStyle =
+      Platform.isLinux ? GoogleFonts.notoColorEmoji() : null;
+  static final checkPlatformCompatibility = Platform.isLinux ? false : true;
+  static final emojiSizeMax = 32 * ((!kIsWeb && Platform.isIOS) ? 1.30 : 1.0);
+}
 
 class EmojiPickerWidget extends StatelessWidget {
   const EmojiPickerWidget({
@@ -13,27 +19,32 @@ class EmojiPickerWidget extends StatelessWidget {
     this.size,
     this.onEmojiSelected,
     this.onBackspacePressed,
+    this.withBoarder = false,
   }) : super(key: key);
 
   final Size? size;
+  final bool withBoarder;
   final OnEmojiSelected? onEmojiSelected;
   final OnBackspacePressed? onBackspacePressed;
 
   @override
   Widget build(BuildContext context) {
-    final emojiSize = 32 * ((!kIsWeb && Platform.isIOS) ? 1.30 : 1.0);
     final height =
         size == null ? MediaQuery.of(context).size.height / 3 : size!.height;
     final width =
         size == null ? MediaQuery.of(context).size.width : size!.width;
-    final cols = min(width / (emojiSize * 2), 12).floor();
+    final cols = min(width / (EmojiConfig.emojiSizeMax * 2), 12).floor();
 
     return Container(
-      padding: const EdgeInsets.only(top: 10, left: 15, right: 15),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      padding: withBoarder
+          ? const EdgeInsets.only(top: 10, left: 15, right: 15)
+          : null,
+      decoration: withBoarder
+          ? const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+            )
+          : null,
       height: height,
       child: Column(
         children: [
@@ -52,9 +63,10 @@ class EmojiPickerWidget extends StatelessWidget {
               onBackspacePressed: onBackspacePressed,
               config: Config(
                 columns: cols,
-                emojiTextStyle: GoogleFonts.notoColorEmoji(),
-                checkPlatformCompatibility: false,
-                emojiSizeMax: emojiSize,
+                emojiTextStyle: EmojiConfig.emojiTextStyle,
+                checkPlatformCompatibility:
+                    EmojiConfig.checkPlatformCompatibility,
+                emojiSizeMax: EmojiConfig.emojiSizeMax,
                 initCategory: Category.RECENT,
                 bgColor: Theme.of(context).colorScheme.background,
                 recentTabBehavior: RecentTabBehavior.RECENT,
