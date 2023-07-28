@@ -408,22 +408,8 @@ class _TrailingWidget extends ConsumerWidget {
     if (eventItem == null) {
       return const SizedBox.shrink();
     }
-    // String senderID = '';
-    // types.Status? messageStatus;
+
     int ts = eventItem.originServerTs();
-
-    // List<String> seenByList = ref.read(receiptProvider.notifier).getSeenByList(
-    //       room.getRoomId(),
-    //       ts,
-    //     );
-
-    // senderID = latestMessage!.eventItem()!.sender();
-
-    // messageStatus = seenByList.isEmpty
-    //     ? types.Status.sent
-    //     : seenByList.length < activeMembers.length
-    //         ? types.Status.delivered
-    //         : types.Status.seen;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -433,41 +419,7 @@ class _TrailingWidget extends ConsumerWidget {
           ),
           style: Theme.of(context).textTheme.labelMedium,
         ),
-        // senderID == userId
-        //     ? _CustomStatusWidget(status: messageStatus)
-        //     : const SizedBox.shrink(),
       ],
     );
   }
 }
-
-// class _CustomStatusWidget extends StatelessWidget {
-//   final types.Status status;
-
-//   const _CustomStatusWidget({
-//     required this.status,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     if (status == types.Status.delivered) {
-//       return SvgPicture.asset('assets/images/deliveredIcon.svg');
-//     } else if (status == types.Status.seen) {
-//       return SvgPicture.asset('assets/images/seenIcon.svg');
-//     } else if (status == types.Status.sending) {
-//       return const Center(
-//         child: SizedBox(
-//           height: 10,
-//           width: 10,
-//           child: CircularProgressIndicator(strokeWidth: 1.5),
-//         ),
-//       );
-//     } else {
-//       return SvgPicture.asset(
-//         'assets/images/sentIcon.svg',
-//         width: 12,
-//         height: 12,
-//       );
-//     }
-//   }
-// }

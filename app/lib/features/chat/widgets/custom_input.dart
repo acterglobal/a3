@@ -230,20 +230,6 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           }
         }
       });
-      // if (isDesktop(context)) {
-      //   ref.watch(chatInputProvider.notifier).focusNode = FocusNode(
-      //     onKey: (FocusNode node, RawKeyEvent evt) {
-      //       if (!evt.isShiftPressed && evt.logicalKey.keyLabel == 'Enter') {
-      //         if (evt is RawKeyDownEvent) {
-      //           onSendButtonPressed(ref);
-      //         }
-      //         return KeyEventResult.handled;
-      //       } else {
-      //         return KeyEventResult.ignored;
-      //       }
-      //     },
-      //   );
-      // }
     });
   }
 
