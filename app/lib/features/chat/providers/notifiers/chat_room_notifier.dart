@@ -8,20 +8,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show
-        AudioDesc,
-        Client,
-        Convo,
-        FileDesc,
-        ImageDesc,
-        RoomEventItem,
-        RoomMessage,
-        RoomVirtualItem,
-        TextDesc,
-        TimelineDiff,
-        TimelineStream,
-        VideoDesc;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
@@ -49,21 +36,19 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   void init(String id) async {
     client = ref.watch(clientProvider)!;
     roomId = id;
-    if (roomId.isNotEmpty) {
-      room = await ref.read(chatProvider(roomId).future);
-      timeline = await room.timelineStream();
-      StreamSubscription<TimelineDiff>? subscription;
-      subscription = timeline.diffRx().listen((event) async {
-        await _parseEvent(event);
-      });
-      while (ref.read(messagesProvider).length < 10) {
-        await timeline.paginateBackwards(10);
-      }
-      ref.onDispose(() async {
-        debugPrint('disposing message stream');
-        await subscription?.cancel();
-      });
+    room = await ref.read(chatProvider(roomId).future);
+    timeline = await room.timelineStream();
+    StreamSubscription<TimelineDiff>? subscription;
+    subscription = timeline.diffRx().listen((event) async {
+      await _parseEvent(event);
+    });
+    while (ref.read(messagesProvider).length < 10) {
+      await timeline.paginateBackwards(10);
     }
+    ref.onDispose(() async {
+      debugPrint('disposing message stream');
+      await subscription?.cancel();
+    });
   }
 
   void isLoaded() => state = const ChatRoomState.loaded();
@@ -191,35 +176,31 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   Future<void> fetchUserProfiles() async {
-    if (roomId.isNotEmpty) {
-      final activeMembers = await ref.watch(chatMembersProvider(roomId).future);
-      Map<String, ProfileData> userProfiles = {};
-      List<Map<String, dynamic>> mentionRecords = [];
-      for (int i = 0; i < activeMembers.length; i++) {
-        String userId = activeMembers[i].userId().toString();
-        var profile = activeMembers[i].getProfile();
-        Map<String, dynamic> record = {};
-        if (await profile.hasAvatar()) {
-          var userAvatar = (await profile.getThumbnail(62, 60)).data()!;
-          var userName = (await profile.getDisplayName()).text();
-          userProfiles[userId] = ProfileData(userName, userAvatar);
-          record['avatar'] = userProfiles[userId]?.getAvatarImage();
-        }
-        var dispName = await profile.getDisplayName();
-        String? name = dispName.text();
-        if (name != null) {
-          record['display'] = name;
-        }
-        record['link'] = userId;
-        mentionRecords.add(record);
-        if (i % 3 == 0 || i == activeMembers.length - 1) {
-          ref
-              .read(chatProfilesProvider.notifier)
-              .update((state) => userProfiles);
-          ref
-              .read(mentionListProvider.notifier)
-              .update((state) => mentionRecords);
-        }
+    final activeMembers = await ref.watch(chatMembersProvider(roomId).future);
+    Map<String, ProfileData> userProfiles = {};
+    List<Map<String, dynamic>> mentionRecords = [];
+    for (int i = 0; i < activeMembers.length; i++) {
+      String userId = activeMembers[i].userId().toString();
+      var profile = activeMembers[i].getProfile();
+      Map<String, dynamic> record = {};
+      if (await profile.hasAvatar()) {
+        var userAvatar = (await profile.getThumbnail(62, 60)).data()!;
+        var userName = (await profile.getDisplayName()).text();
+        userProfiles[userId] = ProfileData(userName, userAvatar);
+        record['avatar'] = userProfiles[userId]?.getAvatarImage();
+      }
+      var dispName = await profile.getDisplayName();
+      String? name = dispName.text();
+      if (name != null) {
+        record['display'] = name;
+      }
+      record['link'] = userId;
+      mentionRecords.add(record);
+      if (i % 3 == 0 || i == activeMembers.length - 1) {
+        ref.read(chatProfilesProvider.notifier).update((state) => userProfiles);
+        ref
+            .read(mentionListProvider.notifier)
+            .update((state) => mentionRecords);
       }
     }
   }
@@ -786,14 +767,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       return;
     }
     _imageFileList.addAll(result.files);
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => ImageSelectionPage(
-    //       imageList: _imageFileList,
-    //     ),
-    //   ),
-    // );
   }
 
   // file selection

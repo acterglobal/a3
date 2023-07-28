@@ -10,28 +10,40 @@ class MessagesNotifier extends StateNotifier<List<types.Message>> {
   }
 
   void insertMessage(int to, types.Message m) {
-    List<types.Message> newState = [...state];
-    if (to < newState.length) {
-      newState.insert(to, m);
-    } else {
-      newState.add(m);
+    try {
+      List<types.Message> newState = [...state];
+      if (to < newState.length) {
+        newState.insert(to, m);
+      } else {
+        newState.add(m);
+      }
+      state = newState;
+    } catch (e) {
+      rethrow;
     }
-    state = newState;
   }
 
   void replaceMessage(int index, types.Message m) {
-    if (index < state.length) {
-      List<types.Message> newState = [...state];
-      newState[index] = m;
-      state = newState;
+    try {
+      if (index < state.length) {
+        List<types.Message> newState = [...state];
+        newState[index] = m;
+        state = newState;
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 
   void removeMessage(int idx) {
-    if (idx < state.length) {
-      List<types.Message> newState = [...state];
-      newState.removeAt(idx);
-      state = newState;
+    try {
+      if (idx < state.length) {
+        List<types.Message> newState = [...state];
+        newState.removeAt(idx);
+        state = newState;
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 
