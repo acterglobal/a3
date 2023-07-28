@@ -54,8 +54,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       room = await ref.read(chatProvider(roomId).future);
       timeline = await room.timelineStream();
       StreamSubscription<TimelineDiff>? subscription;
-      subscription = timeline.diffRx().listen((event) {
-        _parseEvent(event);
+      subscription = timeline.diffRx().listen((event) async {
+        await _parseEvent(event);
       });
       while (ref.read(messagesProvider).length < 10) {
         await timeline.paginateBackwards(10);
@@ -90,7 +90,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           }
           RoomEventItem? eventItem = m.eventItem();
           if (eventItem != null) {
-            _fetchEventContent(eventItem.subType(), message.id);
+            await _fetchEventContent(eventItem.subType(), message.id);
           }
         }
         break;
@@ -98,8 +98,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'Insert':
         RoomMessage m = timelineEvent.value()!;
         var message = _parseMessage(m);
-        debugPrint('${message?.type}');
-        debugPrint('ID:${message?.id}');
         if (message == null || message is types.UnsupportedMessage) {
           break;
         }
@@ -206,7 +204,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           var userAvatar = (await profile.getThumbnail(62, 60)).data()!;
           var userName = (await profile.getDisplayName()).text();
           userProfiles[userId] = ProfileData(userName, userAvatar);
-          record['avatar'] = userProfiles[userId];
+          record['avatar'] = userProfiles[userId]?.getAvatarImage();
         }
         var dispName = await profile.getDisplayName();
         String? name = dispName.text();
@@ -228,112 +226,112 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // fetch original content media for reply msg, i.e. text/image/file etc.
-  void _fetchOriginalContent(String originalId, String replyId) {
-    room.getMessage(originalId).then((roomMsg) {
-      // reply is allowed for only EventItem not VirtualItem
-      // user should be able to get original event as RoomMessage
-      RoomEventItem orgEventItem = roomMsg.eventItem()!;
-      String? orgMsgType = orgEventItem.subType();
-      Map<String, dynamic> repliedToContent = {};
-      types.Message? repliedTo;
-      switch (orgMsgType) {
-        case 'm.text':
-          TextDesc? description = orgEventItem.textDesc();
-          if (description != null) {
-            String body = description.body();
-            repliedToContent = {
-              'content': body,
-              'messageLength': body.length,
-            };
-            repliedTo = types.TextMessage(
-              author: types.User(id: orgEventItem.sender()),
-              id: originalId,
-              createdAt: orgEventItem.originServerTs(),
-              text: body,
-              metadata: repliedToContent,
-            );
-          }
-          break;
-        case 'm.image':
-          ImageDesc? description = orgEventItem.imageDesc();
-          if (description != null) {
-            room.imageBinary(originalId).then((data) {
-              repliedToContent['content'] = base64Encode(data.asTypedList());
-            });
-            repliedTo = types.ImageMessage(
-              author: types.User(id: orgEventItem.sender()),
-              id: originalId,
-              createdAt: orgEventItem.originServerTs(),
-              name: description.name(),
-              size: description.size() ?? 0,
-              uri: description.source().url(),
-              metadata: repliedToContent,
-            );
-          }
-          break;
-        case 'm.audio':
-          AudioDesc? description = orgEventItem.audioDesc();
-          if (description != null) {
-            room.audioBinary(originalId).then((data) {
-              repliedToContent['content'] = base64Encode(data.asTypedList());
-            });
-            repliedTo = types.AudioMessage(
-              author: types.User(id: orgEventItem.sender()),
-              id: originalId,
-              createdAt: orgEventItem.originServerTs(),
-              name: description.name(),
-              duration: Duration(seconds: description.duration() ?? 0),
-              size: description.size() ?? 0,
-              uri: description.source().url(),
-              metadata: repliedToContent,
-            );
-          }
-          break;
-        case 'm.video':
-          VideoDesc? description = orgEventItem.videoDesc();
-          if (description != null) {
-            room.videoBinary(originalId).then((data) {
-              repliedToContent['content'] = base64Encode(data.asTypedList());
-            });
-            repliedTo = types.VideoMessage(
-              author: types.User(id: orgEventItem.sender()),
-              id: originalId,
-              createdAt: orgEventItem.originServerTs(),
-              name: description.name(),
-              size: description.size() ?? 0,
-              uri: description.source().url(),
-              metadata: repliedToContent,
-            );
-          }
-          break;
-        case 'm.file':
-          FileDesc? description = orgEventItem.fileDesc();
-          if (description != null) {
-            repliedToContent = {
-              'content': description.name(),
-            };
-            repliedTo = types.FileMessage(
-              author: types.User(id: orgEventItem.sender()),
-              id: originalId,
-              createdAt: orgEventItem.originServerTs(),
-              name: description.name(),
-              size: description.size() ?? 0,
-              uri: description.source().url(),
-              metadata: repliedToContent,
-            );
-          }
-          break;
-        case 'm.sticker':
-          // user can't do any action about sticker message
-          break;
-      }
-      var messages = ref.read(messagesProvider);
-      int index = messages.indexWhere((x) => x.id == replyId);
-      if (index != -1 && repliedTo != null) {
-        messages[index] = messages[index].copyWith(repliedMessage: repliedTo);
-        ref.read(messagesProvider.notifier).state = messages;
-      }
-    });
+  Future<void> _fetchOriginalContent(String originalId, String replyId) async {
+    var roomMsg = await room.getMessage(originalId);
+
+    // reply is allowed for only EventItem not VirtualItem
+    // user should be able to get original event as RoomMessage
+    RoomEventItem orgEventItem = roomMsg.eventItem()!;
+    String? orgMsgType = orgEventItem.subType();
+    Map<String, dynamic> repliedToContent = {};
+    types.Message? repliedTo;
+    switch (orgMsgType) {
+      case 'm.text':
+        TextDesc? description = orgEventItem.textDesc();
+        if (description != null) {
+          String body = description.body();
+          repliedToContent = {
+            'content': body,
+            'messageLength': body.length,
+          };
+          repliedTo = types.TextMessage(
+            author: types.User(id: orgEventItem.sender()),
+            id: originalId,
+            createdAt: orgEventItem.originServerTs(),
+            text: body,
+            metadata: repliedToContent,
+          );
+        }
+        break;
+      case 'm.image':
+        ImageDesc? description = orgEventItem.imageDesc();
+        if (description != null) {
+          room.imageBinary(originalId).then((data) {
+            repliedToContent['content'] = base64Encode(data.asTypedList());
+          });
+          repliedTo = types.ImageMessage(
+            author: types.User(id: orgEventItem.sender()),
+            id: originalId,
+            createdAt: orgEventItem.originServerTs(),
+            name: description.name(),
+            size: description.size() ?? 0,
+            uri: description.source().url(),
+            metadata: repliedToContent,
+          );
+        }
+        break;
+      case 'm.audio':
+        AudioDesc? description = orgEventItem.audioDesc();
+        if (description != null) {
+          room.audioBinary(originalId).then((data) {
+            repliedToContent['content'] = base64Encode(data.asTypedList());
+          });
+          repliedTo = types.AudioMessage(
+            author: types.User(id: orgEventItem.sender()),
+            id: originalId,
+            createdAt: orgEventItem.originServerTs(),
+            name: description.name(),
+            duration: Duration(seconds: description.duration() ?? 0),
+            size: description.size() ?? 0,
+            uri: description.source().url(),
+            metadata: repliedToContent,
+          );
+        }
+        break;
+      case 'm.video':
+        VideoDesc? description = orgEventItem.videoDesc();
+        if (description != null) {
+          room.videoBinary(originalId).then((data) {
+            repliedToContent['content'] = base64Encode(data.asTypedList());
+          });
+          repliedTo = types.VideoMessage(
+            author: types.User(id: orgEventItem.sender()),
+            id: originalId,
+            createdAt: orgEventItem.originServerTs(),
+            name: description.name(),
+            size: description.size() ?? 0,
+            uri: description.source().url(),
+            metadata: repliedToContent,
+          );
+        }
+        break;
+      case 'm.file':
+        FileDesc? description = orgEventItem.fileDesc();
+        if (description != null) {
+          repliedToContent = {
+            'content': description.name(),
+          };
+          repliedTo = types.FileMessage(
+            author: types.User(id: orgEventItem.sender()),
+            id: originalId,
+            createdAt: orgEventItem.originServerTs(),
+            name: description.name(),
+            size: description.size() ?? 0,
+            uri: description.source().url(),
+            metadata: repliedToContent,
+          );
+        }
+        break;
+      case 'm.sticker':
+        // user can't do any action about sticker message
+        break;
+    }
+    var messages = ref.read(messagesProvider);
+    int index = messages.indexWhere((x) => x.id == replyId);
+    if (index != -1 && repliedTo != null) {
+      messages[index] = messages[index].copyWith(repliedMessage: repliedTo);
+      ref.read(messagesProvider.notifier).state = messages;
+    }
   }
 
   // maps [RoomMessage] to [types.Message].
@@ -355,9 +353,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     RoomEventItem eventItem = message.eventItem()!;
 
     String eventType = eventItem.eventType();
-    debugPrint('EVENTTYPE: $eventType');
     String sender = eventItem.sender();
-    debugPrint('SENDER: $sender');
     var author = types.User(id: sender, firstName: simplifyUserId(sender));
     int createdAt = eventItem.originServerTs(); // in milliseconds
     String eventId = eventItem.eventId();
@@ -653,66 +649,63 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // fetch event media content for message.
-  void _fetchEventContent(String? subType, String eventId) {
+  Future<void> _fetchEventContent(String? subType, String eventId) async {
     switch (subType) {
       case 'm.image':
-        _fetchImageContent(eventId);
+        await _fetchImageContent(eventId);
         break;
       case 'm.audio':
-        _fetchAudioContent(eventId);
+        await _fetchAudioContent(eventId);
         break;
       case 'm.video':
-        _fetchVideoContent(eventId);
+        await _fetchVideoContent(eventId);
         break;
     }
   }
 
   // fetch image content for message.
-  void _fetchImageContent(String eventId) {
+  Future<void> _fetchImageContent(String eventId) async {
     var messages = ref.read(messagesProvider);
-    room.imageBinary(eventId).then((data) {
-      int index = messages.indexWhere((x) => x.id == eventId);
-      if (index != -1) {
-        var metadata = messages[index].metadata ?? {};
-        metadata['base64'] = base64Encode(data.asTypedList());
-        messages[index] = messages[index].copyWith(metadata: metadata);
-        ref
-            .read(messagesProvider.notifier)
-            .replaceMessage(index, messages[index]);
-      }
-    });
+    var data = await room.imageBinary(eventId);
+    int index = messages.indexWhere((x) => x.id == eventId);
+    if (index != -1) {
+      var metadata = messages[index].metadata ?? {};
+      metadata['base64'] = base64Encode(data.asTypedList());
+      messages[index] = messages[index].copyWith(metadata: metadata);
+      ref
+          .read(messagesProvider.notifier)
+          .replaceMessage(index, messages[index]);
+    }
   }
 
   // fetch audio content for message.
-  void _fetchAudioContent(String eventId) {
+  Future<void> _fetchAudioContent(String eventId) async {
     var messages = ref.read(messagesProvider);
-    room.audioBinary(eventId).then((data) {
-      int index = messages.indexWhere((x) => x.id == eventId);
-      if (index != -1) {
-        final metadata = messages[index].metadata ?? {};
-        metadata['base64'] = base64Encode(data.asTypedList());
-        messages[index] = messages[index].copyWith(metadata: metadata);
-        ref
-            .read(messagesProvider.notifier)
-            .replaceMessage(index, messages[index]);
-      }
-    });
+    var data = await room.audioBinary(eventId);
+    int index = messages.indexWhere((x) => x.id == eventId);
+    if (index != -1) {
+      final metadata = messages[index].metadata ?? {};
+      metadata['base64'] = base64Encode(data.asTypedList());
+      messages[index] = messages[index].copyWith(metadata: metadata);
+      ref
+          .read(messagesProvider.notifier)
+          .replaceMessage(index, messages[index]);
+    }
   }
 
   // fetch video conent for message
-  void _fetchVideoContent(String eventId) {
+  Future<void> _fetchVideoContent(String eventId) async {
     var messages = ref.read(messagesProvider);
-    room.videoBinary(eventId).then((data) {
-      int index = messages.indexWhere((x) => x.id == eventId);
-      if (index != -1) {
-        final metadata = messages[index].metadata ?? {};
-        metadata['base64'] = base64Encode(data.asTypedList());
-        messages[index] = messages[index].copyWith(metadata: metadata);
-        ref
-            .read(messagesProvider.notifier)
-            .replaceMessage(index, messages[index]);
-      }
-    });
+    var data = await room.videoBinary(eventId);
+    int index = messages.indexWhere((x) => x.id == eventId);
+    if (index != -1) {
+      final metadata = messages[index].metadata ?? {};
+      metadata['base64'] = base64Encode(data.asTypedList());
+      messages[index] = messages[index].copyWith(metadata: metadata);
+      ref
+          .read(messagesProvider.notifier)
+          .replaceMessage(index, messages[index]);
+    }
   }
 
   // Pagination Control
@@ -841,10 +834,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-  // push messages in convo
+  // // push messages in convo
   Future<void> handleSendPressed(
     String markdownMessage,
-    String htmlMessage,
     int messageLength,
   ) async {
     // image or video is sent automatically

@@ -143,7 +143,7 @@ class CustomChatInput extends ConsumerWidget {
             size: size,
           ),
           AttachmentWidget(
-            icons: _attachmentIcons,
+            icons: CustomChatInput._attachmentIcons,
             size: size,
           ),
         ],
@@ -155,23 +155,17 @@ class CustomChatInput extends ConsumerWidget {
     final chatInputNotifier = ref.read(chatInputProvider.notifier);
     chatInputNotifier.showSendBtn(false);
     String markdownText =
-        chatInputNotifier.mentionKey.currentState!.controller!.text;
-    String htmlText =
-        chatInputNotifier.mentionKey.currentState!.controller!.text;
+        ref.read(mentionKeyProvider).currentState!.controller!.text;
     int messageLength = markdownText.length;
-    chatInputNotifier.messageTextMapMarkDown.forEach((key, value) {
+    ref.read(messageMarkDownProvider).forEach((key, value) {
       markdownText = markdownText.replaceAll(key, value);
-    });
-    chatInputNotifier.messageTextMapHtml.forEach((key, value) {
-      htmlText = htmlText.replaceAll(key, value);
     });
     await ref.read(chatRoomProvider.notifier).handleSendPressed(
           markdownText,
-          htmlText,
           messageLength,
         );
-    chatInputNotifier.messageTextMapMarkDown.clear();
-    chatInputNotifier.mentionKey.currentState!.controller!.clear();
+    ref.read(messageMarkDownProvider.notifier).update((state) => {});
+    ref.read(mentionKeyProvider).currentState!.controller!.clear();
   }
 }
 
@@ -183,8 +177,8 @@ class _BuildAttachmentBtn extends ConsumerWidget {
     return InkWell(
       onTap: () {
         inputNotifier.toggleAttachment();
-        inputNotifier.focusNode.unfocus();
-        inputNotifier.focusNode.canRequestFocus = true;
+        ref.read(chatInputFocusProvider).unfocus();
+        ref.read(chatInputFocusProvider).canRequestFocus = true;
       },
       child: const _BuildPlusBtn(),
     );
@@ -211,27 +205,89 @@ class _BuildPlusBtn extends ConsumerWidget {
   }
 }
 
-class _TextInputWidget extends ConsumerWidget {
+class _TextInputWidget extends ConsumerStatefulWidget {
   const _TextInputWidget();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final inputNotifier = ref.watch(chatInputProvider.notifier);
-    final roomNotifier = ref.watch(chatRoomProvider.notifier);
+  ConsumerState<_TextInputWidget> createState() =>
+      _TextInputWidgetConsumerState();
+}
+
+class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final focusNode = ref.watch(chatInputFocusProvider);
+      ref.watch(chatInputFocusProvider).addListener(() {
+        if (focusNode.hasFocus) {
+          if (ref.watch(chatInputProvider).emojiRowVisible) {
+            ref.read(chatInputProvider.notifier).emojiRowVisible();
+          }
+          if (ref.watch(chatInputProvider).attachmentVisible) {
+            ref.read(chatInputProvider.notifier).toggleAttachment();
+          }
+        }
+      });
+      // if (isDesktop(context)) {
+      //   ref.watch(chatInputProvider.notifier).focusNode = FocusNode(
+      //     onKey: (FocusNode node, RawKeyEvent evt) {
+      //       if (!evt.isShiftPressed && evt.logicalKey.keyLabel == 'Enter') {
+      //         if (evt is RawKeyDownEvent) {
+      //           onSendButtonPressed(ref);
+      //         }
+      //         return KeyEventResult.handled;
+      //       } else {
+      //         return KeyEventResult.ignored;
+      //       }
+      //     },
+      //   );
+      // }
+    });
+  }
+
+  Future<void> onSendButtonPressed(WidgetRef ref) async {
+    final chatInputNotifier = ref.read(chatInputProvider.notifier);
+    chatInputNotifier.showSendBtn(false);
+    String markdownText =
+        ref.read(mentionKeyProvider).currentState!.controller!.text;
+    int messageLength = markdownText.length;
+    ref.read(messageMarkDownProvider).forEach((key, value) {
+      markdownText = markdownText.replaceAll(key, value);
+    });
+    await ref.read(chatRoomProvider.notifier).handleSendPressed(
+          markdownText,
+          messageLength,
+        );
+    ref.read(messageMarkDownProvider.notifier).update((state) => {});
+    ref.read(mentionKeyProvider).currentState!.controller!.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mentionList = ref.watch(mentionListProvider);
+    debugPrint('$mentionList');
     return FlutterMentions(
-      key: ref.watch(chatInputProvider.notifier).mentionKey,
+      key: ref.watch(mentionKeyProvider),
       suggestionPosition: SuggestionPosition.Top,
       onMentionAdd: (Map<String, dynamic> roomMember) {
         _handleMentionAdd(roomMember, ref);
       },
-      onChanged: (String value) {
-        debugPrint(value);
+      suggestionListDecoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.neutral2,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      onChanged: (String value) async {
+        if (!ref.read(chatInputFocusProvider).hasFocus) {
+          ref.read(chatInputFocusProvider).requestFocus();
+        }
         if (value.isNotEmpty) {
-          inputNotifier.showSendBtn(true);
-          roomNotifier.typingNotice(true);
+          ref.read(chatInputProvider.notifier).showSendBtn(true);
+          await ref.read(chatRoomProvider.notifier).typingNotice(true);
         } else {
-          inputNotifier.showSendBtn(false);
-          roomNotifier.typingNotice(false);
+          ref.read(chatInputProvider.notifier).showSendBtn(false);
+          await ref.read(chatRoomProvider.notifier).typingNotice(false);
         }
       },
       style: Theme.of(context).textTheme.bodySmall,
@@ -239,15 +295,13 @@ class _TextInputWidget extends ConsumerWidget {
       maxLines:
           MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
       minLines: 1,
-      focusNode: inputNotifier.focusNode,
+      focusNode: ref.watch(chatInputFocusProvider),
       decoration: InputDecoration(
         isCollapsed: true,
         fillColor: Theme.of(context).colorScheme.primaryContainer,
         suffixIcon: InkWell(
           onTap: () {
             ref.read(chatInputProvider.notifier).emojiPickerVisible();
-            inputNotifier.focusNode.unfocus();
-            inputNotifier.focusNode.canRequestFocus = true;
           },
           child: const Icon(Icons.emoji_emotions),
         ),
@@ -267,32 +321,45 @@ class _TextInputWidget extends ConsumerWidget {
       mentions: [
         Mention(
           trigger: '@',
-          data: ref.watch(mentionListProvider),
-          matchAll: false,
+          style: TextStyle(
+            height: 0.5,
+            background: Paint()
+              ..color = Theme.of(context).colorScheme.neutral2
+              ..strokeWidth = 13
+              ..strokeJoin = StrokeJoin.round
+              ..style = PaintingStyle.stroke,
+          ),
+          data: mentionList,
+          matchAll: true,
           suggestionBuilder: (Map<String, dynamic> roomMember) {
-            String title = roomMember.containsKey('display')
-                ? roomMember['display']
-                : simplifyUserId(roomMember['link']);
-            return Container(
-              color: Theme.of(context).colorScheme.neutral2,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: ListTile(
-                contentPadding: const EdgeInsets.only(left: 50),
-                leading: SizedBox(
-                  width: 35,
-                  height: 35,
-                  child: ActerAvatar(
-                    mode: DisplayMode.User,
-                    uniqueId: roomMember['link'],
-                    size: 20,
-                    avatar: roomMember['avatar'],
-                    displayName: roomMember['display'],
+            String title =
+                roomMember['display'] ?? simplifyUserId(roomMember['id']);
+            return ListTile(
+              leading: SizedBox(
+                width: 35,
+                height: 35,
+                child: ActerAvatar(
+                  mode: DisplayMode.User,
+                  uniqueId: roomMember['link'],
+                  size: 20,
+                  avatar: roomMember['avatar'],
+                  displayName: roomMember['display'],
+                ),
+              ),
+              title: Row(
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
-                ),
-                title: Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+                  const SizedBox(width: 15),
+                  Text(
+                    roomMember['link'],
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color: Theme.of(context).colorScheme.neutral5,
+                        ),
+                  ),
+                ],
               ),
             );
           },
@@ -303,14 +370,10 @@ class _TextInputWidget extends ConsumerWidget {
 
   void _handleMentionAdd(Map<String, dynamic> roomMember, WidgetRef ref) {
     String userId = roomMember['link'];
-    String displayName = roomMember.containsKey('display')
-        ? roomMember['display']
-        : simplifyUserId(roomMember['link']);
-    ref.watch(chatInputProvider.notifier).messageTextMapMarkDown.addAll({
+    String displayName =
+        roomMember['display'] ?? simplifyUserId(roomMember['id']);
+    ref.read(messageMarkDownProvider).addAll({
       '@$displayName': '[$displayName](https://matrix.to/#/$userId)',
-    });
-    ref.watch(chatInputProvider.notifier).messageTextMapHtml.addAll({
-      '@$displayName': '<a href="https://matrix.to/#/$userId">$displayName</a>',
     });
   }
 }
@@ -561,19 +624,17 @@ class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
   }
 
   void handleEmojiSelected(Category? category, Emoji emoji) {
-    var notifier = ref.read(chatInputProvider.notifier);
-    notifier.mentionKey.currentState!.controller!.text += emoji.emoji;
-    notifier.showSendBtn(true);
+    var mentionKey = ref.watch(mentionKeyProvider);
+    mentionKey.currentState!.controller!.text += emoji.emoji;
+    ref.read(chatInputProvider.notifier).showSendBtn(true);
   }
 
   void handleBackspacePressed() {
-    var notifier = ref.read(chatInputProvider.notifier);
-    notifier.mentionKey.currentState!.controller!.text = notifier
-        .mentionKey.currentState!.controller!.text.characters
-        .skipLast(1)
-        .string;
-    if (notifier.mentionKey.currentState!.controller!.text.isEmpty) {
-      notifier.showSendBtn(false);
+    var mentionKey = ref.watch(mentionKeyProvider);
+    mentionKey.currentState!.controller!.text =
+        mentionKey.currentState!.controller!.text.characters.skipLast(1).string;
+    if (mentionKey.currentState!.controller!.text.isEmpty) {
+      ref.read(chatInputProvider.notifier).showSendBtn(false);
     }
   }
 }

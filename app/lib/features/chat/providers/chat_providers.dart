@@ -12,6 +12,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Convo, FfiListConvo;
 import 'package:flutter/material.dart';
+import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -58,7 +59,7 @@ final messagesProvider =
 );
 
 final chatInputProvider =
-    StateNotifierProvider<ChatInputNotifier, ChatInputState>(
+    StateNotifierProvider.autoDispose<ChatInputNotifier, ChatInputState>(
   (ref) => ChatInputNotifier(),
 );
 
@@ -72,3 +73,11 @@ final mentionListProvider =
 
 // emoji row preview toggler
 final toggleEmojiRowProvider = StateProvider<bool>((ref) => false);
+
+final messageMarkDownProvider = StateProvider<Map<String, String>>((ref) => {});
+
+final mentionKeyProvider = StateProvider<GlobalKey<FlutterMentionsState>>(
+  (ref) => GlobalKey<FlutterMentionsState>(),
+);
+
+final chatInputFocusProvider = StateProvider<FocusNode>((ref) => FocusNode());
