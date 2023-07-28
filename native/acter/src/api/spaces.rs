@@ -9,6 +9,7 @@ use acter_core::{
         comments::{SyncCommentEvent, SyncCommentUpdateEvent},
         news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
         pins::{SyncPinEvent, SyncPinUpdateEvent},
+        rsvp::SyncRsvpEvent,
         tasks::{SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskUpdateEvent},
     },
     executor::Executor,
@@ -38,9 +39,7 @@ use ruma::assign;
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, thread::JoinHandle};
 use tokio::sync::broadcast::Receiver;
-use tracing::{error, trace};
-
-use crate::Conversation;
+use tracing::{error, trace, warn};
 
 use super::{
     client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
@@ -155,7 +154,7 @@ impl Space {
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::CommentUpdate(t.into()))
-                            .await  {
+                            .await {
                             error!(?error, "execution failed");
                         }
                     }
@@ -187,7 +186,7 @@ impl Space {
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::AttachmentUpdate(t.into()))
-                            .await  {
+                            .await {
                             error!(?error, "execution failed");
                         }
                     }
@@ -235,7 +234,7 @@ impl Space {
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::CalendarEvent(t.into()))
-                            .await  {
+                            .await {
                             error!(?error, "execution failed");
                         }
                     }
@@ -251,7 +250,25 @@ impl Space {
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::CalendarEventUpdate(t.into()))
-                            .await  {
+                            .await {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
+
+            // RSVPs
+            self.room.add_event_handler(
+                |ev: SyncRsvpEvent,
+                room: SdkRoom,
+                c: SdkClient,
+                Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor
+                            .handle(AnyActerModel::Rsvp(t.into()))
+                            .await {
                             error!(?error, "execution failed");
                         }
                     }
@@ -283,7 +300,7 @@ impl Space {
                 if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                     if let Err(error) = executor
                         .handle(AnyActerModel::NewsEntryUpdate(t.into()))
-                        .await  {
+                        .await {
                             error!(?error, "execution failed");
                         }
                 }
@@ -332,7 +349,7 @@ impl Space {
                     Ok(model) => model,
                     Err(m) => {
                         if let Ok(state_key) = msg.event.get_field::<String>("state_key") {
-                            trace!(state_key, "ignoring state event");
+                            trace!(state_key=?state_key, "ignoring state event");
                             // ignore state keys
                         } else {
                             error!(event=?msg.event, "Model didn't parse {:}", m);
@@ -407,9 +424,8 @@ impl Space {
         Ok(())
     }
 
-    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = ()> {
-        tokio_stream::wrappers::BroadcastStream::new(self.subscribe())
-            .map(|f| f.unwrap_or_default())
+    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
+        tokio_stream::wrappers::BroadcastStream::new(self.subscribe()).map(|_| true)
     }
 
     pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
@@ -499,14 +515,14 @@ impl Space {
 
     pub async fn is_child_space_of(&self, room_id: String) -> bool {
         let Ok(room_id) = OwnedRoomId::try_from(room_id) else {
-            tracing::warn!("Asked for a not proper room id");
+            warn!("Asked for a not proper room id");
             return false
         };
 
         let space_relations = match self.space_relations().await {
             Ok(s) => s,
             Err(error) => {
-                tracing::error!(?error, room_id=?self.room_id(), "Fetching space relation failed");
+                error!(?error, room_id=?self.room_id(), "Fetching space relation failed");
                 return false;
             }
         };

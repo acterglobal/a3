@@ -6,7 +6,6 @@ import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
-import 'package:acter/features/home/widgets/my_tasks.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -48,12 +47,12 @@ class _DashboardState extends ConsumerState<Dashboard> {
         return;
       }
       final spaces = await ref.watch(spacesProvider.future);
-      if (spaces.isEmpty) {
+      if (spaces.isEmpty && context.mounted) {
         onBoardingDialog(
           context: context,
           btnText: 'Join Existing Space',
           btn2Text: 'Create New Space',
-          onPressed1: () {},
+          onPressed1: () => context.pushNamed(Routes.joinSpace.name),
           onPressed2: () => context.pushNamed(Routes.createSpace.name),
           canDismissable: true,
         );
@@ -68,10 +67,6 @@ class _DashboardState extends ConsumerState<Dashboard> {
     bool isActive(f) => provider.isActive(f);
 
     List<Widget> children = [];
-    if (false && isActive(LabsFeature.tasks)) {
-      children.add(const MyTasksSection(limit: 5));
-    }
-
     if (isActive(LabsFeature.events)) {
       children.add(const MyEventsSection());
     }

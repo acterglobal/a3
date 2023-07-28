@@ -1,12 +1,10 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
 class AuthStateNotifier extends StateNotifier<bool> {
@@ -20,9 +18,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
       final client = await sdk.login(username, password);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.watch(clientProvider.notifier).state = client;
-      // inject chat dependencies once actual client is logged in.
-      Get.replace(ChatRoomController(client: client));
-      // Get.replace(ReceiptController(client: client));
       return null;
     } catch (e) {
       debugPrint('$e');
@@ -38,7 +33,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
       state = false;
-      if (context != null) {
+      if (context != null && context.mounted) {
         context.goNamed(Routes.main.name);
       }
     } catch (e) {
@@ -58,7 +53,12 @@ class AuthStateNotifier extends StateNotifier<bool> {
       final client = await sdk.register(username, password, displayName, token);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
-      context.goNamed(Routes.main.name);
+
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (context.mounted) {
+        context.goNamed(Routes.main.name);
+      }
       return null;
     } catch (e) {
       return e.toString();
@@ -74,13 +74,22 @@ class AuthStateNotifier extends StateNotifier<bool> {
       ref.invalidate(clientProvider);
       ref.invalidate(spacesProvider);
       ref.read(clientProvider.notifier).state = sdk.currentClient;
-      context.goNamed(Routes.main.name);
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (context.mounted) {
+        context.goNamed(Routes.main.name);
+      }
     } else {
       debugPrint('No clients left, redir to onboarding');
       ref.read(isLoggedInProvider.notifier).update((state) => false);
       ref.invalidate(clientProvider);
       ref.invalidate(spacesProvider);
-      context.goNamed(Routes.main.name);
+
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (context.mounted) {
+        context.goNamed(Routes.main.name);
+      }
     }
     // return to guest client.
   }

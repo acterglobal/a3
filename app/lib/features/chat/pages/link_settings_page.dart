@@ -2,7 +2,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
 class LinkSettingsPage extends StatefulWidget {
-  final Conversation room;
+  final Convo room;
 
   const LinkSettingsPage({
     Key? key,
@@ -10,7 +10,7 @@ class LinkSettingsPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _LinkSettingsPageState createState() => _LinkSettingsPageState();
+  State<LinkSettingsPage> createState() => _LinkSettingsPageState();
 }
 
 class _LinkSettingsPageState extends State<LinkSettingsPage> {
@@ -49,7 +49,7 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
     profile.getDisplayName().then((value) {
       if (mounted) {
         String? name = value.text();
-        if (name != null) {
+        if (name != null && mounted) {
           setState(() => displayName = name);
         }
       }
@@ -96,23 +96,25 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
                 itemBuilder: (BuildContext content, index) {
                   return GestureDetector(
                     onTap: () {
-                      setState(() {
-                        timeIndexing = index;
-                        selectedTimeIndexList.clear();
-                        if (!selectedTimeIndexList.contains(index)) {
-                          selectedTimeIndexList.add(index);
-                        }
-                      });
+                      if (mounted) {
+                        setState(() {
+                          timeIndexing = index;
+                          selectedTimeIndexList.clear();
+                          if (!selectedTimeIndexList.contains(index)) {
+                            selectedTimeIndexList.add(index);
+                          }
+                        });
+                      }
                     },
                     child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
                       child: Center(
                         child: Text(
                           timeArr[index],
                           style: const TextStyle(color: Colors.white),
                         ),
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
                   );
@@ -137,23 +139,25 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
               itemBuilder: (BuildContext content, index) {
                 return GestureDetector(
                   onTap: () {
-                    setState(() {
-                      usesIndexing = index;
-                      selectedUsesIndexList.clear();
-                      if (!selectedUsesIndexList.contains(index)) {
-                        selectedUsesIndexList.add(index);
-                      }
-                    });
+                    if (mounted) {
+                      setState(() {
+                        usesIndexing = index;
+                        selectedUsesIndexList.clear();
+                        if (!selectedUsesIndexList.contains(index)) {
+                          selectedUsesIndexList.add(index);
+                        }
+                      });
+                    }
                   },
                   child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                     child: Center(
                       child: Text(
                         usesArr[index],
                         style: const TextStyle(color: Colors.white),
                       ),
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
                     ),
                   ),
                 );
@@ -179,7 +183,7 @@ class _NameWidget extends StatelessWidget {
       return const Text('Loading Name');
     }
     return Text(
-      '!' + displayName!,
+      '!${displayName!}',
       overflow: TextOverflow.clip,
     );
   }

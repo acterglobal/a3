@@ -42,6 +42,20 @@ class CommentInputState extends ConsumerState<CommentInput> {
       );
   }
 
+  Future<void> onSend() async {
+    var eventId = await controller.sendComment(
+      widget.task.commentsManager.commentDraft(),
+      _inputController.text.trim(),
+    );
+    controller.updateCommentInput(_inputController, '');
+    if (widget.callback != null) {
+      Future.delayed(const Duration(milliseconds: 800), () {
+        widget.callback!();
+      });
+    }
+    debugPrint('Comment id: $eventId');
+  }
+
   @override
   Widget build(BuildContext context) {
     String userId = controller.client.userId().toString();
@@ -106,7 +120,9 @@ class CommentInputState extends ConsumerState<CommentInput> {
                                 color: Colors.grey,
                               ),
                               onPressed: () {
-                                setState(() => emojiShowing = !emojiShowing);
+                                if (mounted) {
+                                  setState(() => emojiShowing = !emojiShowing);
+                                }
                               },
                             ),
                           ],
@@ -117,25 +133,11 @@ class CommentInputState extends ConsumerState<CommentInput> {
                 ),
                 GetBuilder<ToDoController>(
                   id: 'comment-input',
-                  builder: (cntrl) {
+                  builder: (ToDoController controller) {
                     return Visibility(
                       visible: _inputController.text.trim().isNotEmpty,
                       child: IconButton(
-                        onPressed: () async => await cntrl
-                            .sendComment(
-                          widget.task.commentsManager.commentDraft(),
-                          _inputController.text.trim(),
-                        )
-                            .then((res) {
-                          cntrl.updateCommentInput(_inputController, '');
-                          if (widget.callback != null) {
-                            Future.delayed(const Duration(milliseconds: 800),
-                                () {
-                              widget.callback!();
-                            });
-                          }
-                          debugPrint('Comment id: $res');
-                        }),
+                        onPressed: onSend,
                         icon: Icon(
                           Atlas.paper_airplane,
                           color: Theme.of(context).colorScheme.tertiary,

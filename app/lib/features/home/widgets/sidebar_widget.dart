@@ -30,8 +30,7 @@ class SidebarWidget extends ConsumerWidget {
       destinations: sidebarNavItems,
       selectedIndex: selectedSidebarIndex,
       onDestinationSelected: (tabIndex) {
-        if (tabIndex != selectedSidebarIndex &&
-            sidebarNavItems[tabIndex].location != null) {
+        if (sidebarNavItems[tabIndex].location != null) {
           final item = sidebarNavItems[tabIndex];
           // go to the initial location of the selected tab (by index)
           if (item.pushToNavigate) {

@@ -50,7 +50,7 @@ use tracing::{error, info, trace, warn};
 use super::{
     account::Account,
     api::FfiBuffer,
-    conversation::{Conversation, ConversationController},
+    convo::{Convo, ConvoController},
     device::DeviceController,
     invitation::InvitationController,
     profile::UserProfile,
@@ -86,7 +86,7 @@ pub struct Client {
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
     pub(crate) receipt_controller: ReceiptController,
-    pub(crate) conversation_controller: ConversationController,
+    pub(crate) convo_controller: ConvoController,
 }
 
 impl Deref for Client {
@@ -129,22 +129,22 @@ impl Default for SpaceFilter {
 pub(crate) async fn devide_spaces_from_convos(
     client: Client,
     filter: Option<SpaceFilter>,
-) -> (Vec<Space>, Vec<Conversation>) {
+) -> (Vec<Space>, Vec<Convo>) {
     let filter = filter.unwrap_or_default();
     let (spaces, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .filter(|room| ready(filter.should_include(room)))
         .fold(
             (Vec::new(), Vec::new(), client),
-            async move |(mut spaces, mut conversations, client), room| {
+            async move |(mut spaces, mut convos, client), room| {
                 let inner = Room { room: room.clone() };
 
                 if inner.is_space() {
                     spaces.push(Space::new(client.clone(), inner));
                 } else {
-                    conversations.push(Conversation::new(inner));
+                    convos.push(Convo::new(inner));
                 }
 
-                (spaces, conversations, client)
+                (spaces, convos, client)
             },
         )
         .await;
@@ -446,7 +446,7 @@ impl Client {
             device_controller: DeviceController::new(),
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
-            conversation_controller: ConversationController::new(),
+            convo_controller: ConvoController::new(),
         };
         Ok(cl)
     }
@@ -474,7 +474,7 @@ impl Client {
         self.invitation_controller.add_event_handler(&client);
         self.typing_controller.add_event_handler(&client);
         self.receipt_controller.add_event_handler(&client);
-        self.conversation_controller.add_event_handler(&client);
+        self.convo_controller.add_event_handler(&client);
 
         self.verification_controller
             .add_to_device_event_handler(&client);
@@ -485,7 +485,7 @@ impl Client {
 
         let mut invitation_controller = self.invitation_controller.clone();
         let mut device_controller = self.device_controller.clone();
-        let mut conversation_controller = self.conversation_controller.clone();
+        let mut convo_controller = self.convo_controller.clone();
 
         let (first_synced_tx, first_synced_rx) = channel(1);
         let first_synced_arc = Arc::new(first_synced_tx);
@@ -506,7 +506,7 @@ impl Client {
 
             let mut invitation_controller = invitation_controller.clone();
             let mut device_controller = device_controller.clone();
-            let mut conversation_controller = conversation_controller.clone();
+            let mut convo_controller = convo_controller.clone();
 
             let history_loading = history_loading.clone();
             let first_sync_task = first_sync_task.clone();
@@ -524,7 +524,7 @@ impl Client {
 
                     let mut invitation_controller = invitation_controller.clone();
                     let mut device_controller = device_controller.clone();
-                    let mut conversation_controller = conversation_controller.clone();
+                    let mut convo_controller = convo_controller.clone();
 
                     let first_synced_arc = first_synced_arc.clone();
                     let sync_error_arc = sync_error_arc.clone();
@@ -559,7 +559,7 @@ impl Client {
                         // divide_spaces_from_convos must be called after first sync
                         let (spaces, convos) =
                             devide_spaces_from_convos(me.clone(), Some(filter)).await;
-                        conversation_controller.load_rooms(&convos).await;
+                        convo_controller.load_rooms(&convos).await;
                         // load invitations after first sync
                         invitation_controller.load_invitations(&client).await;
 
@@ -679,13 +679,13 @@ impl Client {
         Ok(result)
     }
 
-    pub async fn conversations(&self) -> Result<Vec<Conversation>> {
+    pub async fn convos(&self) -> Result<Vec<Convo>> {
         let client = self.clone();
         let filter = SpaceFilterBuilder::default().build()?;
         RUNTIME
             .spawn(async move {
-                let (spaces, conversations) = devide_spaces_from_convos(client, Some(filter)).await;
-                Ok(conversations)
+                let (spaces, convos) = devide_spaces_from_convos(client, Some(filter)).await;
+                Ok(convos)
             })
             .await?
     }
@@ -734,8 +734,8 @@ impl Client {
             .map(|room| Room { room })
     }
 
-    pub fn subscribe_stream(&self, key: String) -> impl Stream<Item = ()> {
-        BroadcastStream::new(self.executor().subscribe(key)).map(|f| f.unwrap_or_default())
+    pub fn subscribe_stream(&self, key: String) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe(key)).map(|_| true)
     }
 
     pub fn subscribe(&self, key: String) -> Receiver<()> {
@@ -816,7 +816,7 @@ impl Client {
             .remove_sync_event_handler(&client);
         self.typing_controller.remove_event_handler(&client);
         self.receipt_controller.remove_event_handler(&client);
-        self.conversation_controller.remove_event_handler(&client);
+        self.convo_controller.remove_event_handler(&client);
 
         RUNTIME
             .spawn(async move {

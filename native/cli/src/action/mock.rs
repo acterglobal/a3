@@ -61,7 +61,7 @@ pub enum MockCmd {
     Spaces,
     AcceptInvites,
     Tasks,
-    // Conversations,
+    // Convos,
 }
 
 impl MockOpts {

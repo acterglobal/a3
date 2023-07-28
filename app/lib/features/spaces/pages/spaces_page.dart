@@ -47,8 +47,8 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                   itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                     PopupMenuItem(
                       onTap: () => context.pushNamed(Routes.createSpace.name),
-                      child: Row(
-                        children: const <Widget>[
+                      child: const Row(
+                        children: <Widget>[
                           Text('Create Space'),
                           Spacer(),
                           Icon(Atlas.connection),
@@ -57,8 +57,8 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                     ),
                     PopupMenuItem(
                       onTap: () => context.pushNamed(Routes.joinSpace.name),
-                      child: Row(
-                        children: const <Widget>[
+                      child: const Row(
+                        children: <Widget>[
                           Text('Join Space'),
                           Spacer(),
                           Icon(Atlas.calendar_dots),

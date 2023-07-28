@@ -79,7 +79,10 @@ class QuickJump extends ConsumerWidget {
                       semanticsLabel: 'tasks',
                       width: 32,
                       height: 32,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.onSurface,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   )
                 : null,
@@ -167,9 +170,7 @@ class QuickJump extends ConsumerWidget {
                     foregroundColor: Colors.purple,
                     side: const BorderSide(width: 2, color: Colors.purple),
                   ),
-                  onPressed: () {
-                    context.pushNamed(Routes.actionAddPin.name);
-                  },
+                  onPressed: () => context.pushNamed(Routes.actionAddPin.name),
                   icon: const Icon(Atlas.plus_circle_thin),
                   label: const Text('Pin'),
                 )
@@ -180,10 +181,7 @@ class QuickJump extends ConsumerWidget {
                     foregroundColor: Colors.purple,
                     side: const BorderSide(width: 2, color: Colors.purple),
                   ),
-                  onPressed: () =>
-                    context.pushNamed(
-                    Routes.createEvent.name,
-                  ),
+                  onPressed: () => context.pushNamed(Routes.createEvent.name),
                   icon: const Icon(Atlas.plus_circle_thin),
                   label: const Text('Event'),
                 )

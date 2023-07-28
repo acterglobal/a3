@@ -219,7 +219,7 @@ object ActerPin {
     fn update_builder() -> Result<PinUpdateBuilder>;
 
     /// get informed about changes to this pin
-    fn subscribe_stream() -> Stream<()>;
+    fn subscribe_stream() -> Stream<bool>;
 
     /// replace the current pin with one with the latest state
     fn refresh() -> Future<Result<ActerPin>>;
@@ -286,6 +286,8 @@ object CalendarEvent {
     fn event_id() -> EventId;
     /// update builder
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
+    /// get RSVP manager
+    fn rsvp_manager() -> Future<Result<RsvpManager>>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -333,6 +335,51 @@ object CalendarEventDraft {
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
+}
+
+object RsvpManager {
+    /// whether manager has rsvp entries
+    fn has_rsvp_entries() -> bool;
+
+    /// get total rsvp count
+    fn total_rsvp_count() -> u32;
+
+    /// get rsvp entries
+    fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
+
+    /// get Yes/Maybe/No/None for the user's own status
+    fn my_status() -> Future<Result<OptionText>>;
+
+    /// get the count of Yes/Maybe/No
+    fn count_at_status(status: string) -> Future<Result<u32>>;
+
+    /// get the user-ids that have responded said way for each status
+    fn users_at_status(status: string) -> Future<Result<Vec<UserId>>>;
+
+    /// create rsvp draft
+    fn rsvp_draft() -> Result<RsvpDraft>;
+
+    /// get informed about changes to this manager
+    fn subscribe_stream() -> Stream<()>;
+}
+
+object RsvpDraft {
+    /// set status of this RSVP
+    fn status(status: string) -> RsvpDraft;
+
+    /// create this RSVP
+    fn send() -> Future<Result<EventId>>;
+}
+
+object Rsvp {
+    /// get sender of this rsvp
+    fn sender() -> UserId;
+
+    /// get timestamp of this rsvp
+    fn origin_server_ts() -> u64;
+
+    /// get status of this rsvp
+    fn status() -> string;
 }
 
 object MediaSource {
@@ -578,7 +625,7 @@ object TimelineStream {
     fn edit(new_msg: string, original_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
-object Conversation {
+object Convo {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
 
@@ -876,7 +923,7 @@ object Task {
     fn update_builder() -> Result<TaskUpdateBuilder>;
 
     /// get informed about changes to this task
-    fn subscribe_stream() -> Stream<()>;
+    fn subscribe_stream() -> Stream<bool>;
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<Task>>;
@@ -1051,7 +1098,7 @@ object TaskList {
     fn update_builder() -> Result<TaskListUpdateBuilder>;
 
     /// get informed about changes to this task
-    fn subscribe_stream() -> Stream<()>;
+    fn subscribe_stream() -> Stream<bool>;
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<TaskList>>;
@@ -1273,6 +1320,17 @@ object Space {
 
     /// leave this room
     fn leave() -> Future<Result<bool>>;
+    
+       /// update the power levels of specified member
+    fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
+
+}
+
+enum MembershipStatus {
+    Admin,
+    Mod,
+    Custom,
+    Regular
 }
 
 enum MemberPermission {
@@ -1290,6 +1348,7 @@ enum MemberPermission {
     CanUpdateAvatar,
     CanSetTopic,
     CanLinkSpaces,
+    CanUpdatePowerLevels,
     CanSetParentSpace
 }
 
@@ -1299,6 +1358,12 @@ object Member {
 
     /// Full user_id
     fn user_id() -> UserId;
+
+    /// The status of this member.
+    fn membership_status_str() -> string;
+
+    /// the power level this user has
+    fn power_level() -> u64;
 
     /// Whether this user is allowed to perform the given action
     //fn can(permission: MemberPermission) -> bool;
@@ -1318,9 +1383,9 @@ object Account {
     /// The avatar of the client
     fn avatar() -> Future<Result<OptionBuffer>>;
 
-    /// Change the avatar of the account
-    /// provide the content_type as MIME, e.g. `image/jpeg`
-    fn upload_avatar(content_type: string, data: Vec<u8>) -> Future<Result<MxcUri>>;
+    /// Change the avatar of the account with the provided
+    /// local file path
+    fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
 }
 
 object SyncState {
@@ -1364,9 +1429,9 @@ object PublicSearchResult {
 }
 
 /// make convo settings builder
-fn new_convo_settings_builder() -> CreateConversationSettingsBuilder;
+fn new_convo_settings_builder() -> CreateConvoSettingsBuilder;
 
-object CreateConversationSettingsBuilder {
+object CreateConvoSettingsBuilder {
     /// set the name of convo
     fn set_name(value: string);
 
@@ -1386,10 +1451,10 @@ object CreateConversationSettingsBuilder {
     /// set the parent of convo
     fn set_parent(value: string);
 
-    fn build() -> CreateConversationSettings;
+    fn build() -> CreateConvoSettings;
 }
 
-object CreateConversationSettings {}
+object CreateConvoSettings {}
 
 /// make space settings builder
 fn new_space_settings_builder() -> CreateSpaceSettingsBuilder;
@@ -1454,8 +1519,8 @@ object Client {
     /// deprecated, please use account() instead.
     fn user_id() -> Result<UserId>;
 
-    /// get conversation room
-    fn conversation(room_or_id: string) -> Future<Result<Conversation>>;
+    /// get convo room
+    fn convo(room_or_id: string) -> Future<Result<Convo>>;
 
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Result<UserProfile>;
@@ -1463,11 +1528,11 @@ object Client {
     /// upload file and return remote url
     fn upload_media(uri: string) -> Future<Result<MxcUri>>;
 
-    /// The conversations the user is involved in
-    fn conversations() -> Future<Result<Vec<Conversation>>>;
+    /// The convos the user is involved in
+    fn convos() -> Future<Result<Vec<Convo>>>;
 
-    /// The update event of conversations the user is involved in
-    fn conversations_rx() -> Stream<Vec<Conversation>>;
+    /// The update event of convos the user is involved in
+    fn convos_rx() -> Stream<Vec<Convo>>;
 
     /// The spaces the user is part of
     fn spaces() -> Future<Result<Vec<Space>>>;
@@ -1476,7 +1541,7 @@ object Client {
     fn join_space(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Space>>;
 
     /// attempt to join a room
-    fn join_conversation(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Conversation>>;
+    fn join_convo(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Convo>>;
 
     /// search the public directory for spaces
     fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
@@ -1522,13 +1587,13 @@ object Client {
     fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
 
     /// create convo
-    fn create_conversation(settings: CreateConversationSettings) -> Future<Result<RoomId>>;
+    fn create_convo(settings: CreateConvoSettings) -> Future<Result<RoomId>>;
 
     /// create default space
     fn create_acter_space(settings: CreateSpaceSettings) -> Future<Result<RoomId>>;
 
     /// listen to updates to any model key
-    fn subscribe_stream(key: string) -> Stream<()>;
+    fn subscribe_stream(key: string) -> Stream<bool>;
 
     /// Fetch the Comment or use its event_id to wait for it to come down the wire
     fn wait_for_comment(key: string, timeout: Option<EfkDuration>) -> Future<Result<Comment>>;

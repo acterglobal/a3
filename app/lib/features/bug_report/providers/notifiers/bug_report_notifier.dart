@@ -11,7 +11,7 @@ import 'package:path/path.dart';
 
 const rageshakeUrl = String.fromEnvironment(
   'RAGESHAKE_URL',
-  defaultValue: 'https://rageshake.acter.global/api/submit',
+  defaultValue: 'http://localhost:8003/api/submit',
 );
 
 class BugReportStateNotifier extends StateNotifier<BugReport> {

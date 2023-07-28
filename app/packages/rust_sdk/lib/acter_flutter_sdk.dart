@@ -37,15 +37,17 @@ const defaultSessionKey = String.fromEnvironment(
 );
 
 // ex: a3-nightly or acter-linux
-String appName = String.fromEnvironment(
+const appName = String.fromEnvironment(
   'RAGESHAKE_APP_NAME',
-  defaultValue: 'acter-${Platform.operatingSystem}',
+  defaultValue: 'acter-dev',
 );
 
 const versionName = String.fromEnvironment(
   'RAGESHAKE_APP_VERSION',
   defaultValue: 'DEV',
 );
+
+const isDevBuild = versionName == 'DEV';
 
 String userAgent = '$appName/$versionName';
 
@@ -165,18 +167,20 @@ class ActerSdk {
   }
 
   Future<void> _restore() async {
+    if (_clients.isNotEmpty) {
+      debugPrint('double restore. ignore');
+      return;
+    }
     String appDocPath = await appDir();
     debugPrint('loading configuration from $appDocPath');
     SharedPreferences prefs = await sharedPrefs();
     List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
-    bool loggedIn = false;
-    for (var token in sessions) {
+    for (final token in sessions) {
       ffi.Client client = await _api.loginWithToken(appDocPath, token);
       _clients.add(client);
-      loggedIn = client.loggedIn();
     }
     _index = prefs.getInt('$_sessionKey::currentClientIdx') ?? 0;
-    debugPrint('Restored $_clients: $loggedIn');
+    debugPrint('Restored $_clients');
   }
 
   ffi.Client? get currentClient {
@@ -228,7 +232,7 @@ class ActerSdk {
       debugPrint('DynamicLibrary.open by lib name failed: $e1');
       try {
         // android api 23 is working here
-        final String? nativeLibDir = await _getNativeLibraryDirectory();
+        final String nativeLibDir = await _getNativeLibraryDirectory();
         return DynamicLibrary.open('$nativeLibDir/$libName');
       } catch (e2) {
         debugPrint('DynamicLibrary.open from /data/app failed: $e2');
@@ -262,7 +266,9 @@ class ActerSdk {
         error: e,
       );
     }
-    return ActerSdk._(api);
+    final instance = ActerSdk._(api);
+    await instance._restore();
+    return instance;
   }
 
   static Future<ActerSdk> get _unrestoredInstance async {
@@ -275,11 +281,7 @@ class ActerSdk {
   }
 
   static Future<ActerSdk> get instance async {
-    final instance = await _unrestoredInstance;
-    if (!instance.hasClients) {
-      await instance._restore();
-    }
-    return instance;
+    return await _unrestoredInstance;
   }
 
   Future<ffi.Client> login(String username, String password) async {
@@ -375,7 +377,7 @@ class ActerSdk {
     return _clients;
   }
 
-  ffi.CreateConversationSettingsBuilder newConvoSettingsBuilder() {
+  ffi.CreateConvoSettingsBuilder newConvoSettingsBuilder() {
     return _api.newConvoSettingsBuilder();
   }
 

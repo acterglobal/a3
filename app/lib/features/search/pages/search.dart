@@ -16,17 +16,17 @@ class SearchPage extends ConsumerWidget {
         String? target,
       }) async {
         if (push) {
-          if (route != null) {
+          if (route == null) {
+            await context.push(target!);
+          } else {
             await context.pushNamed(route.name);
-            return;
           }
-          await context.push(target!);
-          return;
         } else {
-          if (route != null) {
-            return context.goNamed(route.name);
+          if (route == null) {
+            context.go(target!);
+          } else {
+            context.goNamed(route.name);
           }
-          return context.go(target!);
         }
       },
       expand: true,

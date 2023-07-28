@@ -54,6 +54,15 @@ use super::{
 
 #[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]
 #[strum(serialize_all = "PascalCase")]
+pub enum MembershipStatus {
+    Admin,
+    Mod,
+    Custom,
+    Regular,
+}
+
+#[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]
+#[strum(serialize_all = "PascalCase")]
 pub enum MemberPermission {
     // regular interaction
     CanSendChatMessages,
@@ -74,6 +83,7 @@ pub enum MemberPermission {
     CanSetTopic,
     CanLinkSpaces,
     CanSetParentSpace,
+    CanUpdatePowerLevels,
 }
 
 enum PermissionTest {
@@ -121,6 +131,19 @@ impl Member {
         self.can(permission)
     }
 
+    pub fn membership_status(&self) -> MembershipStatus {
+        match self.member.normalized_power_level() {
+            100 => MembershipStatus::Admin,
+            50 => MembershipStatus::Mod,
+            0 => MembershipStatus::Regular,
+            _ => MembershipStatus::Custom,
+        }
+    }
+
+    pub fn membership_status_str(&self) -> String {
+        self.membership_status().to_string()
+    }
+
     pub fn can(&self, permission: MemberPermission) -> bool {
         let tester: PermissionTest = match permission {
             MemberPermission::CanBan => return self.member.can_ban(),
@@ -138,6 +161,7 @@ impl Member {
             MemberPermission::CanSetTopic => StateEventType::RoomTopic.into(),
             MemberPermission::CanLinkSpaces => StateEventType::SpaceChild.into(),
             MemberPermission::CanSetParentSpace => StateEventType::SpaceParent.into(),
+            MemberPermission::CanUpdatePowerLevels => StateEventType::RoomPowerLevels.into(),
             // Acter specific
             MemberPermission::CanPostNews => PermissionTest::Message(MessageLikeEventType::from(
                 <NewsEntryEventContent as StaticEventContent>::TYPE,

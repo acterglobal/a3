@@ -109,18 +109,16 @@ class TaskAssignPage extends StatelessWidget {
                   'Someone not in the list? Just Invite them',
                 ),
                 InkWell(
-                  onTap: () {
-                    showDialogBox(context);
-                  },
+                  onTap: () => showDialogBox(context),
                   child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 8.0),
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Icon(Icons.group),
                         SizedBox(width: 8),
                         Text('Invite Members'),
@@ -136,8 +134,8 @@ class TaskAssignPage extends StatelessWidget {
     );
   }
 
-  Future showDialogBox(BuildContext context) {
-    return showDialog(
+  void showDialogBox(BuildContext context) {
+    showDialog(
       context: context,
       builder: (BuildContext ctx) {
         return const InviteUserDialog();

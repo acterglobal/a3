@@ -5,7 +5,8 @@ target
 .idea
 .local
 .DS_Store
-
+Changes.md
+nightly-changes.md
 app/packages/rust_sdk/**/libacter.a
 native/acter/src/api_generated.rs
 native/acter/bindings.h

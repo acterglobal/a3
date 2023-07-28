@@ -95,8 +95,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                             context,
                             'Create parent space feature isn\'t implemented yet',
                           ),
-                          child: Row(
-                            children: const <Widget>[
+                          child: const Row(
+                            children: <Widget>[
                               Text('Create Parent Space'),
                               Spacer(),
                               Icon(Atlas.connection),
@@ -108,8 +108,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                             context,
                             'Link space feature isn\'t implemented yet',
                           ),
-                          child: Row(
-                            children: const <Widget>[
+                          child: const Row(
+                            children: <Widget>[
                               Text('Link Space as Parent'),
                               Spacer(),
                               Icon(Atlas.link_chain_thin),
@@ -174,8 +174,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                             Routes.createSpace.name,
                             queryParameters: {'parentSpaceId': spaceIdOrAlias},
                           ),
-                          child: Row(
-                            children: const <Widget>[
+                          child: const Row(
+                            children: <Widget>[
                               Text('Create Subspace'),
                               Spacer(),
                               Icon(Atlas.connection),
@@ -187,8 +187,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                             context,
                             'Link space feature isn\'t implemented yet',
                           ),
-                          child: Row(
-                            children: const <Widget>[
+                          child: const Row(
+                            children: <Widget>[
                               Text('Add existing Space'),
                               Spacer(),
                               Icon(Atlas.link_chain_thin),

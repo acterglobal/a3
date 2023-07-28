@@ -33,21 +33,26 @@ class _PinListItemState extends ConsumerState<PinListItem> {
     final isLink = pin.isLink();
     final spaceId = pin.roomIdStr();
 
-    void openItem() async {
-      context.pushNamed(Routes.pin.name, pathParameters: {'pinId': pinId});
+    Future<void> openItem() async {
+      await context.pushNamed(
+        Routes.pin.name,
+        pathParameters: {'pinId': pinId},
+      );
     }
 
-    void onTap() async {
+    Future<void> onTap() async {
       if (isLink) {
         final target = pin.url()!;
         await openLink(target, context);
       } else {
-        openItem();
+        await openItem();
       }
     }
 
     return Card(
       child: InkWell(
+        onTap: onTap,
+        onLongPress: openItem,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -69,8 +74,6 @@ class _PinListItemState extends ConsumerState<PinListItem> {
             ),
           ],
         ),
-        onTap: onTap,
-        onLongPress: openItem,
       ),
     );
   }

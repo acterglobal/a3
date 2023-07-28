@@ -7,11 +7,11 @@ void onBoardingDialog({
   required BuildContext context,
   required String btnText,
   required String btn2Text,
-  required void Function()? onPressed1,
+  required void Function() onPressed1,
   required void Function() onPressed2,
   required bool canDismissable,
-}) async {
-  await showModalBottomSheet(
+}) {
+  showModalBottomSheet(
     useRootNavigator: true,
     enableDrag: false,
     isScrollControlled: true,
@@ -30,9 +30,7 @@ void onBoardingDialog({
               ],
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+          child: ListView(
             children: <Widget>[
               SizedBox(height: MediaQuery.of(context).size.height * 0.15),
               Center(
@@ -99,17 +97,10 @@ void onBoardingDialog({
               const SizedBox(height: 40),
               Center(
                 child: ElevatedButton(
-                  onPressed: onPressed1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        btnText,
-                      ),
-                      const SizedBox(width: 10),
-                      const Icon(Icons.chevron_right_outlined)
-                    ],
-                  ),
+                  onPressed: () {
+                    context.pop();
+                    onPressed1();
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.neutral6,
                     foregroundColor: Theme.of(context).colorScheme.neutral,
@@ -120,13 +111,25 @@ void onBoardingDialog({
                       borderRadius: BorderRadius.circular(6),
                     ),
                   ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        btnText,
+                      ),
+                      const SizedBox(width: 10),
+                      const Icon(Icons.chevron_right_outlined)
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 36),
               Center(
                 child: ElevatedButton(
-                  onPressed: onPressed2,
-                  child: Text(btn2Text),
+                  onPressed: () {
+                    context.pop();
+                    onPressed2();
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     foregroundColor: Theme.of(context).colorScheme.neutral6,
@@ -139,17 +142,18 @@ void onBoardingDialog({
                       borderRadius: BorderRadius.circular(6),
                     ),
                   ),
+                  child: Text(btn2Text),
                 ),
               ),
               const SizedBox(height: 36),
               canDismissable
                   ? GestureDetector(
                       onTap: () => context.pop(),
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 50),
+                      child: const Padding(
+                        padding: EdgeInsets.only(right: 50),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: const <Widget>[
+                          children: <Widget>[
                             Text('Skip'),
                             SizedBox(width: 5),
                             Icon(Icons.chevron_right)

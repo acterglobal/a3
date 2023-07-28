@@ -21,8 +21,6 @@ import 'package:go_router/go_router.dart';
 final _titleProvider = StateProvider<String>((ref) => '');
 // upload avatar path
 final _avatarProvider = StateProvider.autoDispose<String>((ref) => '');
-// final _roomVisibilityProvider =
-//     StateProvider<RoomVisibility>((ref) => RoomVisibility.Private);
 
 class CreateChatSheet extends ConsumerStatefulWidget {
   final String? initialSelectedSpaceId;
@@ -54,9 +52,9 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final _titleInput = ref.watch(_titleProvider);
+    final titleInput = ref.watch(_titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
-    final _avatarUpload = ref.watch(_avatarProvider);
+    final avatarUpload = ref.watch(_avatarProvider);
     return SideSheet(
       header: 'Create Chat Room',
       addActions: true,
@@ -84,9 +82,9 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                           color: Theme.of(context).colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(5),
                         ),
-                        child: _avatarUpload.isNotEmpty
+                        child: avatarUpload.isNotEmpty
                             ? Image.file(
-                                File(_avatarUpload),
+                                File(avatarUpload),
                                 fit: BoxFit.cover,
                               )
                             : Icon(
@@ -173,7 +171,6 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
           onPressed: () => context.canPop()
               ? context.pop()
               : context.goNamed(Routes.main.name),
-          child: const Text('Cancel'),
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.neutral,
             shape: RoundedRectangleBorder(
@@ -185,11 +182,12 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Cancel'),
         ),
         const SizedBox(width: 10),
         ElevatedButton(
           onPressed: () async {
-            if (_titleInput.isEmpty) {
+            if (titleInput.isEmpty) {
               customMsgSnackbar(context, 'Please enter conversation name');
               return;
             }
@@ -206,13 +204,12 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
             );
             await _handleCreateConvo(
               context,
-              _titleInput,
+              titleInput,
               _descriptionController.text.trim(),
             );
           },
-          child: const Text('Create Room'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: _titleInput.isNotEmpty
+            backgroundColor: titleInput.isNotEmpty
                 ? Theme.of(context).colorScheme.success
                 : Theme.of(context).colorScheme.success.withOpacity(0.6),
             shape: RoundedRectangleBorder(
@@ -221,6 +218,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Create Room'),
         ),
       ],
     );
@@ -256,31 +254,38 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
       if (description.isNotEmpty) {
         config.setTopic(description);
       }
-      var _avatarUri = ref.read(_avatarProvider);
-      if (_avatarUri.isNotEmpty) {
-        config.setAvatarUri(_avatarUri); // convo creation will upload it
+      var avatarUri = ref.read(_avatarProvider);
+      if (avatarUri.isNotEmpty) {
+        config.setAvatarUri(avatarUri); // convo creation will upload it
       }
       final parentRoomId = ref.watch(parentSpaceProvider);
       if (parentRoomId != null) {
         config.setParent(parentRoomId);
       }
       final client = ref.read(clientProvider)!;
-      final roomId = await client.createConversation(config.build());
+      final roomId = await client.createConvo(config.build());
       final linkSpace = ref.watch(parentSpaceProvider);
       // add room to child of space (if given)
       if (linkSpace != null) {
         final space = await ref.watch(spaceProvider(linkSpace).future);
         await space.addChildSpace(roomId.toString());
       }
-      final conversation = await client.conversation(roomId.toString());
-
+      final convo = await client.convo(roomId.toString());
+      // We are doing as expected, but the lint still triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       Navigator.of(context, rootNavigator: true).pop();
       context.goNamed(
         Routes.chatroom.name,
         pathParameters: {'roomId': roomId.toString()},
-        extra: conversation,
+        extra: convo,
       );
     } catch (e) {
+      if (!context.mounted) {
+        return;
+      }
       context.pop();
       customMsgSnackbar(context, 'Some error occured $e');
     }

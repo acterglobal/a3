@@ -65,26 +65,3 @@ Release build: 223MB
 When using release build of `libacter.a`, the error `Invalid argument @ io_fread` disappeared.
 The compile command of release build is the following:
 `cargo make --profile release ios`
-
-## Resolving flutter package `intl 0.18` fails
-
-If you see
-
-```
-Resolving dependencies...
-Because acter depends on flutter_localizations from sdk which depends on intl 0.18.0, intl 0.18.0 is required.
-So, because acter depends on intl 0.17.0, version solving failed.
-Exited (1)
-```
-
-You are using Flutter 3.10 while we only support 3.7 so far. See [Flutter 3.10 issue](#flutter-3-10-issue).
-
-## Flutter 3.10 issue
-
-`Github` is using the latest version of flutter (`3.10` as of 5/11/2023).
-Many packages (incl. `intl`) are not ready for `3.10`, so we can't use `flutter 3.10`.
-(Our project is using `flutter_localizations` and it is using `intl`.)
-We continue to use `flutter 3.7.12` unless they are not ready.
-
-Please run `flutter --version` and if current version is greater than `3.7`, reinstall `3.7.12`.
-Try running `flutter downgrade 3.7.12`. That, however, seems to not be supported for all platforms. So, if it fails, you have to delete `3.10` and install `3.7` newly.

@@ -32,14 +32,18 @@ class _BugReportState extends ConsumerState<BugReportPage> {
           );
       String? issueId = getIssueId(reportUrl);
       ref.read(loadingProvider.notifier).update((state) => !state);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Reported the bug successfully! (#$issueId)')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Reported the bug successfully! (#$issueId)')),
+        );
+      }
     } catch (e) {
       ref.read(loadingProvider.notifier).update((state) => !state);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Bug reporting failed: $e')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Bug reporting failed: $e')),
+        );
+      }
     }
   }
 

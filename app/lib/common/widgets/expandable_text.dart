@@ -8,7 +8,7 @@ class ExpandableText extends StatefulWidget {
   ExpandableText(this.text, {Key? key}) : super(key: key);
 
   @override
-  _ExpandableTextState createState() => _ExpandableTextState();
+  State<ExpandableText> createState() => _ExpandableTextState();
 }
 
 class _ExpandableTextState extends State<ExpandableText>
@@ -33,12 +33,16 @@ class _ExpandableTextState extends State<ExpandableText>
         widget.isExpanded
             ? ConstrainedBox(constraints: const BoxConstraints())
             : GestureDetector(
-                child: const Text(
-                  'more',
-                ),
-                onTap: () => setState(() => widget.isExpanded = true),
+                onTap: onClickMore,
+                child: const Text('more'),
               )
       ],
     );
+  }
+
+  void onClickMore() {
+    if (mounted) {
+      setState(() => widget.isExpanded = true);
+    }
   }
 }

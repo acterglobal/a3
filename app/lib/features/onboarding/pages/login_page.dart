@@ -43,6 +43,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           username.text,
           password.text,
         );
+
+        // We are doing as expected, but the lints triggers.
+        // ignore: use_build_context_synchronously
+        if (!context.mounted) {
+          return;
+        }
         if (loginSuccess == null) {
           // no message means, login was successful.
           context.goNamed(Routes.main.name);
@@ -66,77 +72,83 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           horizontal: 10,
           vertical: 5,
         ),
-        child: Column(
-          children: [
-            Form(
-              key: formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 50,
-                    width: 50,
-                    child: SvgPicture.asset('assets/icon/acter.svg'),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(AppLocalizations.of(context)!.welcomeBack),
-                  const SizedBox(height: 20),
-                  Text(AppLocalizations.of(context)!.loginContinue),
-                  const SizedBox(height: 40),
-                  LoginTextField(
-                    key: LoginPageKeys.usernameField,
-                    hintText: AppLocalizations.of(context)!.username,
-                    controller: username,
-                    validatorText: AppLocalizations.of(context)!.emptyUsername,
-                    type: LoginOnboardingTextFieldEnum.userName,
-                  ),
-                  const SizedBox(height: 20),
-                  LoginTextField(
-                    key: LoginPageKeys.passwordField,
-                    hintText: AppLocalizations.of(context)!.password,
-                    controller: password,
-                    validatorText: AppLocalizations.of(context)!.emptyPassword,
-                    type: LoginOnboardingTextFieldEnum.password,
-                  ),
-                  const SizedBox(height: 40),
-                  Container(
-                    key: LoginPageKeys.forgotPassBtn,
-                    margin: const EdgeInsets.only(right: 20),
-                    width: double.infinity,
-                    alignment: Alignment.bottomRight,
-                    child: TextButton(
-                      onPressed: () {},
-                      child: Text(AppLocalizations.of(context)!.forgotPassword),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: SvgPicture.asset('assets/icon/acter.svg'),
                     ),
-                  ),
-                  const SizedBox(height: 40),
-                  authState
-                      ? const CircularProgressIndicator()
-                      : CustomButton(
-                          key: LoginPageKeys.submitBtn,
-                          onPressed: () => handleSubmit(context),
-                          title: AppLocalizations.of(context)!.logIn,
-                        ),
-                  const SizedBox(height: 40),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(AppLocalizations.of(context)!.noAccount),
-                      const SizedBox(width: 2),
-                      InkWell(
-                        key: LoginPageKeys.signUpBtn,
-                        onTap: () => context.goNamed(Routes.authRegister.name),
-                        child: Text(
-                          AppLocalizations.of(context)!.register,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.tertiary,
+                    const SizedBox(height: 20),
+                    Text(AppLocalizations.of(context)!.welcomeBack),
+                    const SizedBox(height: 20),
+                    Text(AppLocalizations.of(context)!.loginContinue),
+                    const SizedBox(height: 40),
+                    LoginTextField(
+                      key: LoginPageKeys.usernameField,
+                      hintText: AppLocalizations.of(context)!.username,
+                      controller: username,
+                      validatorText:
+                          AppLocalizations.of(context)!.emptyUsername,
+                      type: LoginOnboardingTextFieldEnum.userName,
+                    ),
+                    const SizedBox(height: 20),
+                    LoginTextField(
+                      key: LoginPageKeys.passwordField,
+                      hintText: AppLocalizations.of(context)!.password,
+                      controller: password,
+                      validatorText:
+                          AppLocalizations.of(context)!.emptyPassword,
+                      type: LoginOnboardingTextFieldEnum.password,
+                    ),
+                    const SizedBox(height: 40),
+                    Container(
+                      key: LoginPageKeys.forgotPassBtn,
+                      margin: const EdgeInsets.only(right: 20),
+                      width: double.infinity,
+                      alignment: Alignment.bottomRight,
+                      child: TextButton(
+                        onPressed: () {},
+                        child:
+                            Text(AppLocalizations.of(context)!.forgotPassword),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    authState
+                        ? const CircularProgressIndicator()
+                        : CustomButton(
+                            key: LoginPageKeys.submitBtn,
+                            onPressed: () => handleSubmit(context),
+                            title: AppLocalizations.of(context)!.logIn,
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                    const SizedBox(height: 40),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(AppLocalizations.of(context)!.noAccount),
+                        const SizedBox(width: 2),
+                        InkWell(
+                          key: LoginPageKeys.signUpBtn,
+                          onTap: () =>
+                              context.goNamed(Routes.authRegister.name),
+                          child: Text(
+                            AppLocalizations.of(context)!.register,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ],

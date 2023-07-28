@@ -54,7 +54,10 @@ final tabsProvider =
           semanticsLabel: 'tasks',
           width: 24,
           height: 24,
-          color: Theme.of(context).colorScheme.onSurface,
+          colorFilter: ColorFilter.mode(
+            Theme.of(context).colorScheme.onSurface,
+            BlendMode.srcIn,
+          ),
         ),
         target: Routes.space.name,
       ),
@@ -86,6 +89,15 @@ final tabsProvider =
       label: 'Spaces',
       icon: const Icon(Atlas.connection_thin),
       target: Routes.spaceRelatedSpaces.name,
+    ),
+  );
+
+  tabs.add(
+    TabEntry(
+      key: const Key('members'),
+      label: 'Members',
+      icon: const Icon(Atlas.group_team_collective_thin),
+      target: Routes.spaceMembers.name,
     ),
   );
   return tabs;
