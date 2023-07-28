@@ -86,9 +86,9 @@ class EmojiRow extends StatelessWidget {
   void _showBottomSheet(BuildContext context) => showModalBottomSheet<void>(
         context: context,
         builder: (context) => EmojiPickerWidget(
-          onSelected: (emoji) {
+          onEmojiSelected: (category, emoji) {
             Navigator.pop(context);
-            onEmojiTap(emoji);
+            onEmojiTap(emoji.emoji);
           },
         ),
       );

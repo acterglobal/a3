@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -14,22 +15,24 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
-class CustomChatInput extends ConsumerWidget {
+class CustomChatInput extends ConsumerStatefulWidget {
+  const CustomChatInput({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _CustomChatInputState();
+}
+
+class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   static const List<Icon> _attachmentIcons = [
     Icon(Atlas.camera_photo),
     Icon(Atlas.folder),
     Icon(Atlas.location),
   ];
 
-  const CustomChatInput({
-    Key? key,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final client = ref.watch(clientProvider)!;
     final chatInputState = ref.watch(chatInputProvider);
     Size size = MediaQuery.of(context).size;
@@ -142,11 +145,19 @@ class CustomChatInput extends ConsumerWidget {
               ),
             ],
           ),
-          EmojiPickerWidget(
-            size: size,
+          Visibility(
+            visible: ref.watch(chatInputProvider).emojiPickerVisible,
+            child: EmojiPickerWidget(
+              size: Size(
+                MediaQuery.of(context).size.width,
+                MediaQuery.of(context).size.height / 2,
+              ),
+              onEmojiSelected: handleEmojiSelected,
+              onBackspacePressed: handleBackspacePressed,
+            ),
           ),
           AttachmentWidget(
-            icons: CustomChatInput._attachmentIcons,
+            icons: _attachmentIcons,
             size: size,
           ),
         ],
@@ -169,6 +180,21 @@ class CustomChatInput extends ConsumerWidget {
         );
     ref.read(messageMarkDownProvider.notifier).update((state) => {});
     ref.read(mentionKeyProvider).currentState!.controller!.clear();
+  }
+
+  void handleEmojiSelected(Category? category, Emoji emoji) {
+    var mentionKey = ref.watch(mentionKeyProvider);
+    mentionKey.currentState!.controller!.text += emoji.emoji;
+    ref.read(chatInputProvider.notifier).showSendBtn(true);
+  }
+
+  void handleBackspacePressed() {
+    var mentionKey = ref.watch(mentionKeyProvider);
+    mentionKey.currentState!.controller!.text =
+        mentionKey.currentState!.controller!.text.characters.skipLast(1).string;
+    if (mentionKey.currentState!.controller!.text.isEmpty) {
+      ref.read(chatInputProvider.notifier).showSendBtn(false);
+    }
   }
 }
 
@@ -564,67 +590,5 @@ class _BuildSendBtn extends StatelessWidget {
       onTap: onButtonPressed,
       child: const Icon(Atlas.paper_airplane),
     );
-  }
-}
-
-class EmojiPickerWidget extends ConsumerStatefulWidget {
-  final Size size;
-
-  const EmojiPickerWidget({
-    Key? key,
-    required this.size,
-  }) : super(key: key);
-
-  @override
-  ConsumerState<EmojiPickerWidget> createState() =>
-      _EmojiPickerWidgetConsumerState();
-}
-
-class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return Offstage(
-      offstage:
-          !ref.watch(chatInputProvider.select((ci) => ci.emojiPickerVisible)),
-      child: SizedBox(
-        height: widget.size.height * 0.3,
-        child: EmojiPicker(
-          onEmojiSelected: handleEmojiSelected,
-          onBackspacePressed: handleBackspacePressed,
-          config: Config(
-            columns: 8,
-            bgColor: Theme.of(context).colorScheme.neutral,
-            emojiTextStyle: GoogleFonts.notoColorEmoji(),
-            initCategory: Category.RECENT,
-            emojiSizeMax: 32 * ((!kIsWeb && Platform.isIOS) ? 1.30 : 1.0),
-            verticalSpacing: 0,
-            horizontalSpacing: 0,
-            recentTabBehavior: RecentTabBehavior.RECENT,
-            recentsLimit: 28,
-            noRecents: Text(
-              AppLocalizations.of(context)!.noRecents,
-            ),
-            tabIndicatorAnimDuration: kTabScrollDuration,
-            categoryIcons: const CategoryIcons(),
-            buttonMode: ButtonMode.MATERIAL,
-          ),
-        ),
-      ),
-    );
-  }
-
-  void handleEmojiSelected(Category? category, Emoji emoji) {
-    var mentionKey = ref.watch(mentionKeyProvider);
-    mentionKey.currentState!.controller!.text += emoji.emoji;
-    ref.read(chatInputProvider.notifier).showSendBtn(true);
-  }
-
-  void handleBackspacePressed() {
-    var mentionKey = ref.watch(mentionKeyProvider);
-    mentionKey.currentState!.controller!.text =
-        mentionKey.currentState!.controller!.text.characters.skipLast(1).string;
-    if (mentionKey.currentState!.controller!.text.isEmpty) {
-      ref.read(chatInputProvider.notifier).showSendBtn(false);
-    }
   }
 }
