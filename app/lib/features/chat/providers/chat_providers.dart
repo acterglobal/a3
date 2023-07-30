@@ -59,7 +59,7 @@ final messagesProvider =
 );
 
 final chatInputProvider =
-    StateNotifierProvider.autoDispose<ChatInputNotifier, ChatInputState>(
+    StateNotifierProvider<ChatInputNotifier, ChatInputState>(
   (ref) => ChatInputNotifier(),
 );
 

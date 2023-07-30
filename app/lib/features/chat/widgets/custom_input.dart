@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -305,7 +304,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           await ref.read(chatRoomProvider.notifier).typingNotice(false);
         }
       },
-      style: Theme.of(context).textTheme.bodySmall,
+      style: EmojiConfig.emojiTextStyle,
       cursorColor: Theme.of(context).colorScheme.tertiary,
       maxLines:
           MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
@@ -363,10 +362,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
               ),
               title: Row(
                 children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
+                  Text(title, style: Theme.of(context).textTheme.bodySmall),
                   const SizedBox(width: 15),
                   Text(
                     roomMember['link'],
