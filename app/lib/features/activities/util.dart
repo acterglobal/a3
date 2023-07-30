@@ -1,16 +1,19 @@
 import 'package:acter/common/notifications/models.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:flutter/material.dart';
 
 NotificationBrief briefForChat(ffi.Notification notification) {
   final convo = notification.convo();
   final message = notification.roomMessage();
+  final route = Routes.chatroom;
   if (convo == null || message == null) {
-    return const NotificationBrief(title: 'unsupported chat message');
+    return NotificationBrief(title: 'unsupported chat message', route: route);
   }
 
   ffi.RoomEventItem? eventItem = message.eventItem();
   if (eventItem == null) {
-    return const NotificationBrief(title: 'unknown chat message');
+    return NotificationBrief(title: 'unknown chat message', route: route);
   }
 
   // String sender = eventItem.sender();
@@ -58,20 +61,20 @@ NotificationBrief briefForChat(ffi.Notification notification) {
         case 'm.notice':
         case 'm.server_notice':
         case 'm.text':
-          return NotificationBrief.fromTextDesc(eventItem.textDesc());
+          return NotificationBrief.fromTextDesc(eventItem.textDesc(), route);
       }
-      return NotificationBrief(title: subType ?? eventType);
+      return NotificationBrief(title: subType ?? eventType, route: route);
 
     case 'm.reaction':
     case 'm.sticker':
     case 'm.room.member':
-      return NotificationBrief.fromTextDesc(eventItem.textDesc());
+      return NotificationBrief.fromTextDesc(eventItem.textDesc(), route);
     case 'm.room.redaction':
-      return const NotificationBrief(title: 'Message deleted');
+      return NotificationBrief(title: 'Message deleted', route: route);
     case 'm.room.encrypted':
-      return const NotificationBrief(title: 'encrypted message');
+      return NotificationBrief(title: 'encrypted message', route: route);
     default:
-      return NotificationBrief(title: eventType);
+      return NotificationBrief(title: eventType, route: route);
   }
 }
 

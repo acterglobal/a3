@@ -116,7 +116,20 @@ class NotificationCard extends ConsumerWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.all(15),
         leading: SizedBox(height: 50, width: 50, child: avatar),
-        onTap: () => notify(brief),
+        onTap: () {
+          switch (brief.route) {
+            case Routes.chatroom:
+              context.pushNamed(
+                Routes.chatroom.name,
+                pathParameters: {
+                  'roomId': roomId
+                }, // FIXME: fails at the moment
+              );
+              return;
+            default:
+            // nothing for now.
+          }
+        },
         title: Text(brief.title),
         subtitle: room,
       ),

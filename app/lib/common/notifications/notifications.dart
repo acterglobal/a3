@@ -93,6 +93,7 @@ Future<void> notify(NotificationBrief brief) async {
       id: 10,
       channelKey: 'basic_channel',
       actionType: ActionType.Default,
+      category: NotificationCategory.Message,
       title: brief.title,
     ),
   );
