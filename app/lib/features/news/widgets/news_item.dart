@@ -178,7 +178,9 @@ class _ImageSlideState extends State<ImageSlide> {
   Future<void> getNewsImage() async {
     newsImage = widget.slide.imageBinary();
     imageDesc = widget.slide.imageDesc();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override

@@ -131,7 +131,9 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                         controller.forward();
                       } else {
                         LikeAnimation.likedIndex.remove(widget.index);
-                        setState(() {});
+                        if (mounted) {
+                          setState(() {});
+                        }
                       }
                     },
                     child: LikeAnimation.likedIndex.contains(widget.index)

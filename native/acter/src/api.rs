@@ -35,6 +35,7 @@ mod pins;
 mod profile;
 mod receipt;
 mod room;
+mod rsvp;
 mod search;
 mod spaces;
 mod stream;
@@ -73,6 +74,7 @@ pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, MemberPermission, MembershipStatus, Room};
+pub use rsvp::{Rsvp, RsvpDraft, RsvpManager};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
