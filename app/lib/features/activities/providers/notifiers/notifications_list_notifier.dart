@@ -1,5 +1,8 @@
 import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/activities/util.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -76,7 +79,14 @@ class NotificationsListNotifier extends StateNotifier<NotificationListState>
         debugPrint(
           ' --- - - ----------------- new notification received',
         );
-        notify('New message in ${ev.roomIdStr()}');
+
+        final provider = ref.watch(featuresProvider);
+        if (provider.isActive(LabsFeature.showNotifications)) {
+          if (!ev.read()) {
+            final brief = extractBrief(ev);
+            notify(brief);
+          }
+        }
         state = state.addNotification(ev);
       });
       ref.onDispose(() => _poller != null ? _poller!.cancel() : null);

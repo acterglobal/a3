@@ -16215,6 +16215,16 @@ class Api {
       _NotificationSpaceReturn Function(
         int,
       )>();
+  late final _notificationRoomMessagePtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationRoomMessageReturn Function(
+            ffi.Int64,
+          )>>("__Notification_room_message");
+
+  late final _notificationRoomMessage = _notificationRoomMessagePtr.asFunction<
+      _NotificationRoomMessageReturn Function(
+        int,
+      )>();
   late final _notificationConvoPtr = _lookup<
       ffi.NativeFunction<
           _NotificationConvoReturn Function(
@@ -34910,6 +34920,24 @@ class Notification {
     return tmp2;
   }
 
+  RoomMessage? roomMessage() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationRoomMessage(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomMessage");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomMessage._(_api, tmp4_1);
+    return tmp2;
+  }
+
   Convo? convo() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -39988,6 +40016,13 @@ class _NotificationRoomIdStrReturn extends ffi.Struct {
 }
 
 class _NotificationSpaceReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _NotificationRoomMessageReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

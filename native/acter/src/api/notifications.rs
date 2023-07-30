@@ -33,10 +33,11 @@ use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tracing::{error, trace};
 
-use crate::{Convo, Space};
+use crate::{Convo, RoomMessage, Space};
 
 use super::{
     client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
+    message::sync_event_to_message,
     room::{Member, Room},
     RUNTIME,
 };
@@ -45,6 +46,7 @@ pub struct Notification {
     notification: RumaNotification,
     client: Client,
     room: Option<Room>,
+    room_message: Option<RoomMessage>,
     is_space: bool,
     is_acter_space: bool,
 }
@@ -56,10 +58,15 @@ impl Notification {
             if room.is_space() {
                 (true, room.is_acter_space().await)
             } else {
-                (true, false)
+                (false, false)
             }
         } else {
             (false, false)
+        };
+        let room_message = if is_space {
+            None
+        } else {
+            sync_event_to_message(&notification.event, notification.room_id.clone())
         };
         let mut me = Notification {
             notification,
@@ -67,6 +74,7 @@ impl Notification {
             room,
             is_space,
             is_acter_space,
+            room_message,
         };
 
         me
@@ -76,6 +84,9 @@ impl Notification {
     }
     pub fn room_id(&self) -> OwnedRoomId {
         self.notification.room_id.clone()
+    }
+    pub fn room_message(&self) -> Option<RoomMessage> {
+        self.room_message.clone()
     }
     pub fn room_id_str(&self) -> String {
         self.notification.room_id.to_string()

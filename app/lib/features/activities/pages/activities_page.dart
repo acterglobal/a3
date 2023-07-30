@@ -8,6 +8,7 @@ import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter/features/activities/providers/notifications_providers.dart';
 import 'package:acter/features/activities/providers/notifiers/notifications_list_notifier.dart';
+import 'package:acter/features/activities/util.dart';
 import 'package:acter/features/activities/widgets/invitation_card.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -28,8 +29,9 @@ class NotificationCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final unread = !notification.read();
     final Widget? avatar;
-    final Widget title;
+    final Widget room;
     final roomId = notification.roomIdStr();
+    final brief = extractBrief(notification);
     if (notification.hasRoom()) {
       if (notification.isActerSpace()) {
         final space = notification.space()!;
@@ -56,7 +58,7 @@ class NotificationCard extends ConsumerWidget {
             );
           },
         );
-        title = Consumer(
+        room = Consumer(
           builder: (context, ref, child) {
             final spaceProfile = ref.watch(spaceProfileDataProvider(space));
             return spaceProfile.when(
@@ -93,7 +95,7 @@ class NotificationCard extends ConsumerWidget {
             );
           },
         );
-        title = Consumer(
+        room = Consumer(
           builder: (context, ref, child) {
             final profile = ref.watch(chatProfileDataProvider(convo));
             return profile.when(
@@ -107,21 +109,18 @@ class NotificationCard extends ConsumerWidget {
       }
     } else {
       avatar = null;
-      title = Text(roomId);
+      room = Text(roomId);
     }
     return Card(
       elevation: unread ? 1 : 0,
       child: ListTile(
         contentPadding: const EdgeInsets.all(15),
         leading: SizedBox(height: 50, width: 50, child: avatar),
-        onTap: alert,
-        title: title,
+        onTap: () => notify(brief),
+        title: Text(brief.title),
+        subtitle: room,
       ),
     );
-  }
-
-  void alert() {
-    notify(null);
   }
 }
 

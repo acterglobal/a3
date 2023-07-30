@@ -1,3 +1,4 @@
+import 'package:acter/common/notifications/models.dart';
 import 'package:acter/router/router.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
@@ -86,13 +87,13 @@ Future<void> setupNotificationsListeners() async {
           NotificationController.onDismissActionReceivedMethod);
 }
 
-Future<void> notify(String? text) async {
+Future<void> notify(NotificationBrief brief) async {
   AwesomeNotifications().createNotification(
     content: NotificationContent(
       id: 10,
       channelKey: 'basic_channel',
       actionType: ActionType.Default,
-      title: text,
+      title: brief.title,
     ),
   );
 }

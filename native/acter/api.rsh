@@ -1437,6 +1437,7 @@ object Notification {
     fn is_space() -> bool;
     fn is_acter_space() -> bool;
     fn space() -> Option<Space>;
+    fn room_message() -> Option<RoomMessage>;
     fn convo() -> Option<Convo>;
 }
 
