@@ -38,7 +38,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     roomId = id;
     room = await ref.read(chatProvider(roomId).future);
     timeline = await room.timelineStream();
-    StreamSubscription<TimelineDiff?>? subscription;
+    StreamSubscription<TimelineDiff>? subscription;
     subscription = timeline.diffRx().listen((event) async {
       await _parseEvent(event);
     });
