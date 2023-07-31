@@ -414,11 +414,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           author: author,
           createdAt: createdAt,
           id: eventId,
-          metadata: {
-            'itemType': 'event',
-            'eventType': eventType,
-            'repliedTo': inReplyTo,
-          },
+          metadata: metadata,
         );
       case 'm.room.member':
         TextDesc? description = eventItem.textDesc();
