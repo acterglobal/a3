@@ -68,16 +68,14 @@ impl Notification {
         } else {
             sync_event_to_message(&notification.event, notification.room_id.clone())
         };
-        let mut me = Notification {
+        Notification {
             notification,
             client,
             room,
             is_space,
             is_acter_space,
             room_message,
-        };
-
-        me
+        }
     }
     pub fn read(&self) -> bool {
         self.notification.read
@@ -126,9 +124,9 @@ impl NotificationListResult {
         Ok(RUNTIME
             .spawn(async move {
                 futures::future::join_all(
-                    notifs.into_iter().map(|notification| {
-                        Notification::new(notification.clone(), client.clone())
-                    }),
+                    notifs
+                        .into_iter()
+                        .map(|notification| Notification::new(notification, client.clone())),
                 )
                 .await
             })
