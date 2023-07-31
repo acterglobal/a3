@@ -253,7 +253,6 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   @override
   Widget build(BuildContext context) {
     final mentionList = ref.watch(mentionListProvider);
-    debugPrint('$mentionList');
     return FlutterMentions(
       key: ref.watch(mentionKeyProvider),
       suggestionPosition: SuggestionPosition.Top,
