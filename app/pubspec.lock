@@ -68,9 +68,11 @@ packages:
   awesome_notifications:
     dependency: "direct main"
     description:
-      path: "../../awesome_notifications"
-      relative: true
-    source: path
+      path: "."
+      ref: acter-main
+      resolved-ref: de072718e11024cdab7cba966ecac725a4c0c939
+      url: "https://github.com/acterglobal/awesome_notifications"
+    source: git
     version: "0.7.5-acter.main.0"
   boolean_selector:
     dependency: transitive
