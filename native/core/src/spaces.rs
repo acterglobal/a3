@@ -278,9 +278,13 @@ impl CoreClient {
         let mut parents = Vec::new();
         let mut children = Vec::new();
 
-        let parents_events = room.get_state_events_static::<SpaceParentEventContent>().await?;
+        let parents_events = room
+            .get_state_events_static::<SpaceParentEventContent>()
+            .await?;
 
-        let children_events = room.get_state_events_static::<SpaceChildEventContent>().await?;
+        let children_events = room
+            .get_state_events_static::<SpaceChildEventContent>()
+            .await?;
 
         for raw in parents_events {
             let ev = match raw.deserialize() {
@@ -370,10 +374,7 @@ impl CoreClient {
                 RelationTargetType::Unknown
             };
 
-            let order = original
-                .order
-                .clone()
-                .unwrap_or_else(|| target.to_string());
+            let order = original.order.clone().unwrap_or_else(|| target.to_string());
             let me = SpaceRelation {
                 target_type,
                 room_id: target.to_owned(),

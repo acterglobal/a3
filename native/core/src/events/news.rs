@@ -4,9 +4,8 @@ use matrix_sdk::ruma::{
     events::{
         macros::EventContent,
         room::message::{
-            AudioMessageEventContent, FileMessageEventContent,
-            ImageMessageEventContent, TextMessageEventContent,
-            VideoMessageEventContent,
+            AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+            TextMessageEventContent, VideoMessageEventContent,
         },
     },
     OwnedMxcUri,

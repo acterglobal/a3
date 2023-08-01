@@ -250,10 +250,7 @@ impl AttachmentsManager {
         let url = Box::<MxcUri>::from(url.as_str());
         let mut builder = self.inner.draft_builder();
 
-        let mut image_content = ImageMessageEventContent::plain(
-            body,
-            url.into(),
-        );
+        let mut image_content = ImageMessageEventContent::plain(body, url.into());
         image_content.info = Some(Box::new(info));
         builder.content(AttachmentContent::Image(image_content));
         Ok(AttachmentDraft {
@@ -282,10 +279,7 @@ impl AttachmentsManager {
         let url = Box::<MxcUri>::from(url.as_str());
         let mut builder = self.inner.draft_builder();
 
-        let mut audio_content = AudioMessageEventContent::plain(
-            body,
-            url.into(),
-        );
+        let mut audio_content = AudioMessageEventContent::plain(body, url.into());
         audio_content.info = Some(Box::new(info));
         builder.content(AttachmentContent::Audio(audio_content));
         Ok(AttachmentDraft {
@@ -321,10 +315,7 @@ impl AttachmentsManager {
         let url = Box::<MxcUri>::from(url.as_str());
         let mut builder = self.inner.draft_builder();
 
-        let mut video_content = VideoMessageEventContent::plain(
-            body,
-            url.into(),
-        );
+        let mut video_content = VideoMessageEventContent::plain(body, url.into());
         video_content.info = Some(Box::new(info));
         builder.content(AttachmentContent::Video(video_content));
         Ok(AttachmentDraft {
@@ -347,10 +338,7 @@ impl AttachmentsManager {
         let mut builder = self.inner.draft_builder();
         let size = size.and_then(UInt::new);
         let info = assign!(FileInfo::new(), {mimetype, size});
-        let mut file_content = FileMessageEventContent::plain(
-            body,
-            url.into(),
-        );
+        let mut file_content = FileMessageEventContent::plain(body, url.into());
         file_content.info = Some(Box::new(info));
         builder.content(AttachmentContent::File(file_content));
         Ok(AttachmentDraft {
