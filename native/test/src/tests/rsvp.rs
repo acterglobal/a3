@@ -63,7 +63,7 @@ async fn rsvp_last_status() -> Result<()> {
 
     // send 1st RSVP
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
-    let rsvp_1_id = rsvp_manager
+    let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
         .status("Yes".to_string())
         .send()
@@ -83,7 +83,7 @@ async fn rsvp_last_status() -> Result<()> {
 
     // send 2nd RSVP
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
-    let rsvp_2_id = rsvp_manager
+    let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
         .status("No".to_string())
         .send()
@@ -132,7 +132,7 @@ async fn rsvp_my_status() -> Result<()> {
 
     // send 1st RSVP
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
-    let rsvp_1_id = rsvp_manager
+    let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
         .status("Yes".to_string())
         .send()
@@ -152,7 +152,7 @@ async fn rsvp_my_status() -> Result<()> {
 
     // send 2nd RSVP
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
-    let rsvp_2_id = rsvp_manager
+    let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
         .status("No".to_string())
         .send()
@@ -206,7 +206,7 @@ async fn rsvp_count_at_status() -> Result<()> {
 
     // send 1st RSVP
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
-    let rsvp_1_id = rsvp_manager
+    let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
         .status("Yes".to_string())
         .send()
@@ -226,7 +226,7 @@ async fn rsvp_count_at_status() -> Result<()> {
 
     // send 2nd RSVP
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
-    let rsvp_2_id = rsvp_manager
+    let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
         .status("No".to_string())
         .send()
@@ -280,7 +280,7 @@ async fn rsvp_users_at_status() -> Result<()> {
 
     // send 1st RSVP
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
-    let rsvp_1_id = rsvp_manager
+    let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
         .status("Yes".to_string())
         .send()
@@ -300,7 +300,7 @@ async fn rsvp_users_at_status() -> Result<()> {
 
     // send 2nd RSVP
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
-    let rsvp_2_id = rsvp_manager
+    let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
         .status("No".to_string())
         .send()

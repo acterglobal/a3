@@ -35,7 +35,10 @@ Future<ProfileData> getProfileData(Account account) async {
 }
 
 final accountProvider = FutureProvider((ref) async {
-  final client = ref.watch(clientProvider)!;
+  final client = ref.watch(clientProvider);
+  if (client == null) {
+    throw 'No Client found';
+  }
   return client.account();
 });
 
