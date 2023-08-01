@@ -26,7 +26,6 @@ class ConvoCard extends ConsumerStatefulWidget {
 }
 
 class _ConvoCardState extends ConsumerState<ConvoCard> {
-  // final ReceiptController recieptController = Get.find<ReceiptController>();
   List<Member> activeMembers = [];
 
   @override
@@ -123,7 +122,6 @@ class _SubtitleWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final typingEvent = ref.watch(typingProvider);
-    debugPrint('$typingEvent');
     if (typingEvent.isNotEmpty) {
       debugPrint('$typingEvent');
       if (typingEvent['roomId'] == room.getRoomIdStr()) {

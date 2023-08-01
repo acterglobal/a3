@@ -24,7 +24,6 @@ class SyncNotifier extends StateNotifier<LocalSyncState> {
   Stream<String>? get notificationsStream => notifications;
 
   Future<void> startSync(Client client, Ref ref) async {
-    // Get.put(ReceiptController(client: state!));
     // on release we have a really weird behavior, where, if we schedule
     // any async call in rust too early, they just pend forever. this
     // hack unfortunately means we have two wait a bit but that means

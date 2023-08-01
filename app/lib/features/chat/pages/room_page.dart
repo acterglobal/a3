@@ -44,14 +44,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     });
   }
 
-  @override
-  void dispose() {
-    debugPrint('Disposing message stream');
-    // making sure we dispose stream before loading next room.
-    ref.invalidate(chatRoomProvider);
-    super.dispose();
-  }
-
   void onAttach(BuildContext context) {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
