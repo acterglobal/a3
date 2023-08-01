@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
@@ -27,127 +26,136 @@ class CustomChatInput extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider)!;
     final chatInputState = ref.watch(chatInputProvider);
+    final repliedToMessage =
+        ref.watch(chatRoomProvider.notifier).repliedToMessage;
     Size size = MediaQuery.of(context).size;
-    return Container(
-      color: Theme.of(context).colorScheme.onPrimary,
-      child: Column(
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Visibility(
-                visible: ref
-                    .watch(chatInputProvider.select((ci) => ci.showReplyView)),
-                child: Container(
-                  color: Theme.of(context).colorScheme.neutral,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 12.0,
-                      left: 16.0,
-                      right: 16.0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                client.userId().toString() ==
-                                        ref
-                                            .watch(chatRoomProvider.notifier)
-                                            .repliedToMessage
-                                            ?.id
-                                    ? 'Replying to you'
-                                    : 'Replying to ${toBeginningOfSentenceCase(ref.watch(chatRoomProvider.notifier).repliedToMessage?.author.firstName)}',
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              if (ref
+    return Column(
+      children: [
+        Visibility(
+          visible:
+              ref.watch(chatInputProvider.select((ci) => ci.showReplyView)),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 12.0,
+                left: 16.0,
+                right: 16.0,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  repliedToMessage != null
+                      ? Row(
+                          children: [
+                            ActerAvatar(
+                              uniqueId: repliedToMessage.author.id,
+                              mode: DisplayMode.User,
+                              displayName: repliedToMessage.author.firstName,
+                              avatar: ref
+                                  .watch(chatRoomProvider.notifier)
+                                  .getUserProfile(
+                                    repliedToMessage.author.id,
+                                  )
+                                  ?.getAvatarImage(),
+                              size: ref
                                           .watch(chatRoomProvider.notifier)
-                                          .repliedToMessage !=
-                                      null &&
-                                  chatInputState.replyWidget != null)
-                                _ReplyContentWidget(
-                                  msg: ref
-                                      .watch(chatRoomProvider.notifier)
-                                      .repliedToMessage,
-                                  messageWidget: chatInputState.replyWidget,
-                                ),
-                            ],
-                          ),
-                        ),
-                        Flexible(
-                          flex: 2,
-                          child: GestureDetector(
-                            onTap: () {
-                              ref
-                                  .read(chatInputProvider.notifier)
-                                  .toggleReplyView();
-                              ref
-                                  .read(chatInputProvider.notifier)
-                                  .setReplyWidget(null);
-                            },
-                            child: const Icon(
-                              Atlas.xmark_circle,
-                              color: Colors.white,
+                                          .getUserProfile(
+                                            repliedToMessage.author.id,
+                                          )!
+                                          .getAvatarImage() ==
+                                      null
+                                  ? 24
+                                  : 12,
                             ),
-                          ),
+                            const SizedBox(width: 5),
+                            Text(
+                              'Reply to ${toBeginningOfSentenceCase(repliedToMessage.author.id)}',
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            ),
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: () {
+                                ref
+                                    .read(chatInputProvider.notifier)
+                                    .toggleReplyView();
+                                ref
+                                    .read(chatInputProvider.notifier)
+                                    .setReplyWidget(null);
+                              },
+                              child: const Icon(
+                                Atlas.xmark_circle,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        const _BuildAttachmentBtn(),
-                        const Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: _TextInputWidget(),
-                          ),
+                      : const SizedBox.shrink(),
+                  if (repliedToMessage != null &&
+                      chatInputState.replyWidget != null)
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      constraints: const BoxConstraints(maxHeight: 100),
+                      child: SingleChildScrollView(
+                        child: _ReplyContentWidget(
+                          msg: ref
+                              .watch(chatRoomProvider.notifier)
+                              .repliedToMessage,
+                          messageWidget: chatInputState.replyWidget,
                         ),
-                        if (chatInputState.sendBtnVisible)
-                          _BuildSendBtn(
-                            onButtonPressed: () => onSendButtonPressed(ref),
-                          ),
-                        if (!chatInputState.sendBtnVisible) _BuildImageBtn(),
-                        if (!chatInputState.sendBtnVisible)
-                          const SizedBox(width: 10),
-                        if (!chatInputState.sendBtnVisible)
-                          const _BuildAudioBtn(),
-                      ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          color: Theme.of(context).colorScheme.onPrimary,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const _BuildAttachmentBtn(),
+                  const Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: _TextInputWidget(),
                     ),
                   ),
-                ),
+                  if (chatInputState.sendBtnVisible)
+                    _BuildSendBtn(
+                      onButtonPressed: () => onSendButtonPressed(ref),
+                    ),
+                  if (!chatInputState.sendBtnVisible) _BuildImageBtn(),
+                  if (!chatInputState.sendBtnVisible) const SizedBox(width: 10),
+                  if (!chatInputState.sendBtnVisible) const _BuildAudioBtn(),
+                ],
               ),
-            ],
+            ),
           ),
-          EmojiPickerWidget(
-            size: size,
-          ),
-          AttachmentWidget(
-            icons: CustomChatInput._attachmentIcons,
-            size: size,
-          ),
-        ],
-      ),
+        ),
+        EmojiPickerWidget(
+          size: size,
+        ),
+        AttachmentWidget(
+          icons: CustomChatInput._attachmentIcons,
+          size: size,
+        ),
+      ],
     );
   }
 
@@ -318,7 +326,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           matchAll: true,
           suggestionBuilder: (Map<String, dynamic> roomMember) {
             String title =
-                roomMember['display'] ?? simplifyUserId(roomMember['id']);
+                roomMember['display'] ?? simplifyUserId(roomMember['link']);
             return ListTile(
               leading: SizedBox(
                 width: 35,

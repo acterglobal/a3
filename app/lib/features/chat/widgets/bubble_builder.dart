@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:bubble/bubble.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
@@ -11,8 +12,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ReactionDesc;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:swipe_to/swipe_to.dart';
 
-class BubbleBuilder extends StatelessWidget {
+class BubbleBuilder extends ConsumerWidget {
   final String userId;
   final Widget child;
   final types.Message message;
@@ -33,108 +35,78 @@ class BubbleBuilder extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    String msgType = '';
-    if (message.metadata!.containsKey('eventType')) {
-      msgType = message.metadata?['eventType'];
-    }
-    bool isMemberEvent = msgType == 'm.room.member';
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment:
-          isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      children: [
-        !isMemberEvent
-            ? _EmojiRow(
-                isAuthor: isAuthor(),
-                message: message,
-              )
-            : const SizedBox.shrink(),
-        _ChatBubble(
-          isAuthor: isAuthor(),
-          userId: userId,
-          message: message,
-          nextMessageInGroup: nextMessageInGroup,
-          enlargeEmoji: enlargeEmoji,
-          isMemberEvent: isMemberEvent,
-          child: child,
-        ),
-        !isMemberEvent
-            ? Align(
-                alignment:
-                    !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
-                child: _EmojiContainer(
-                  isAuthor: isAuthor(),
-                  message: message,
-                  nextMessageInGroup: nextMessageInGroup,
-                ),
-              )
-            : const SizedBox.shrink(),
-      ],
-    );
-  }
-}
-
-class _ChatBubble extends ConsumerWidget {
-  final bool isAuthor;
-  final String userId;
-  final types.Message message;
-  final bool nextMessageInGroup;
-  final Widget child;
-  final bool enlargeEmoji;
-  final bool isMemberEvent;
-
-  const _ChatBubble({
-    required this.isAuthor,
-    required this.userId,
-    required this.message,
-    required this.nextMessageInGroup,
-    required this.child,
-    required this.enlargeEmoji,
-    required this.isMemberEvent,
-  });
-
-  @override
   Widget build(BuildContext context, WidgetRef ref) {
     String msgType = '';
     if (message.metadata!.containsKey('eventType')) {
       msgType = message.metadata?['eventType'];
     }
     bool isMemberEvent = msgType == 'm.room.member';
+
+    return isMemberEvent
+        ? child
+        : SwipeTo(
+            onLeftSwipe: isMemberEvent || !isAuthor()
+                ? null
+                : () {
+                    ref.read(chatInputProvider.notifier).setReplyWidget(child);
+                    ref.read(chatRoomProvider.notifier).repliedToMessage =
+                        message;
+                    if (!ref.read(chatInputProvider).showReplyView) {
+                      ref.read(chatInputProvider.notifier).toggleReplyView();
+                    }
+                  },
+            onRightSwipe: isMemberEvent || isAuthor()
+                ? null
+                : () {
+                    ref.read(chatInputProvider.notifier).setReplyWidget(child);
+                    ref.read(chatRoomProvider.notifier).repliedToMessage =
+                        message;
+
+                    if (!ref.read(chatInputProvider).showReplyView) {
+                      ref.read(chatInputProvider.notifier).toggleReplyView();
+                    }
+                  },
+            child: _ChatBubble(
+              isAuthor: isAuthor(),
+              message: message,
+              nextMessageInGroup: nextMessageInGroup,
+              enlargeEmoji: enlargeEmoji,
+              child: child,
+            ),
+          );
+  }
+}
+
+class _ChatBubble extends ConsumerWidget {
+  final bool isAuthor;
+  final types.Message message;
+  final bool nextMessageInGroup;
+  final Widget child;
+  final bool enlargeEmoji;
+
+  const _ChatBubble({
+    required this.isAuthor,
+    required this.message,
+    required this.nextMessageInGroup,
+    required this.child,
+    required this.enlargeEmoji,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       crossAxisAlignment:
           isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
-        (message.repliedMessage != null)
-            ? Text(
-                userId == message.repliedMessage?.author.id
-                    ? 'Replied to you'
-                    : 'Replied to ${message.repliedMessage?.author.id}',
-                style: Theme.of(context).textTheme.labelSmall,
-              )
-            : const SizedBox(),
-        const SizedBox(height: 8),
-        //reply bubble
-        (message.repliedMessage != null)
-            ? Bubble(
-                color: Theme.of(context).colorScheme.neutral2,
-                margin: nextMessageInGroup
-                    ? const BubbleEdges.symmetric(horizontal: 2)
-                    : null,
-                radius: const Radius.circular(22),
-                padding: message.repliedMessage is types.ImageMessage
-                    ? const BubbleEdges.all(0)
-                    : null,
-                nip: BubbleNip.no,
-                child: _OriginalMessageBuilder(message: message),
-              )
-            : const SizedBox(),
+        _EmojiRow(
+          isAuthor: isAuthor,
+          message: message,
+        ),
         const SizedBox(height: 4),
-        (enlargeEmoji || isMemberEvent)
+        enlargeEmoji
             ? child
             : Bubble(
-                color: userId == message.author.id
+                color: isAuthor
                     ? Theme.of(context).colorScheme.inversePrimary
                     : Theme.of(context).colorScheme.onPrimary,
                 style: BubbleStyle(
@@ -154,8 +126,77 @@ class _ChatBubble extends ConsumerWidget {
                   nipWidth: 0.5,
                   nipRadius: 0,
                 ),
-                child: child,
+                child: message.repliedMessage != null
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .neutral
+                                  .withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(22),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 10,
+                                    top: 15,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      ActerAvatar(
+                                        uniqueId:
+                                            message.repliedMessage!.author.id,
+                                        mode: DisplayMode.User,
+                                        displayName: message
+                                            .repliedMessage!.author.firstName,
+                                        avatar: ref
+                                            .watch(
+                                              chatRoomProvider.notifier,
+                                            )
+                                            .getUserProfile(
+                                              message.repliedMessage!.author.id,
+                                            )
+                                            ?.getAvatarImage(),
+                                        size: 12,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        '${message.repliedMessage?.author.firstName}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .tertiary,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                _OriginalMessageBuilder(message: message),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          child,
+                        ],
+                      )
+                    : child,
               ),
+        Align(
+          alignment: !isAuthor ? Alignment.bottomLeft : Alignment.bottomRight,
+          child: _EmojiContainer(
+            isAuthor: isAuthor,
+            message: message,
+            nextMessageInGroup: nextMessageInGroup,
+          ),
+        ),
       ],
     );
   }
