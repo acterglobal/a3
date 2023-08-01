@@ -1,4 +1,3 @@
-import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
@@ -53,7 +52,7 @@ class NotificationCard extends ConsumerWidget {
                 ),
               ),
               error: (error, stackTrace) => Text(
-                  'Failed to load space due to $error'), // FIXME: fallback would be nice
+                  'Failed to load space due to $error',), // FIXME: fallback would be nice
               loading: () => const Center(child: CircularProgressIndicator()),
             );
           },

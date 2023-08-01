@@ -52,8 +52,8 @@ class Acter extends ConsumerStatefulWidget {
 class _ActerState extends ConsumerState<Acter> {
   @override
   void initState() {
-    setupNotificationsListeners();
     super.initState();
+    setupNotificationsListeners();
   }
 
   @override

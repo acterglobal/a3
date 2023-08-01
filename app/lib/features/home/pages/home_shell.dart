@@ -9,7 +9,6 @@ import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';

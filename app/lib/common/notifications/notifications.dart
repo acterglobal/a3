@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class NotificationController {
   /// Use this method to detect when a new notification or a schedule is created
-  @pragma("vm:entry-point")
+  @pragma('vm:entry-point')
   static Future<void> onNotificationCreatedMethod(
     ReceivedNotification receivedNotification,
   ) async {
@@ -13,7 +13,7 @@ class NotificationController {
   }
 
   /// Use this method to detect every time that a new notification is displayed
-  @pragma("vm:entry-point")
+  @pragma('vm:entry-point')
   static Future<void> onNotificationDisplayedMethod(
     ReceivedNotification receivedNotification,
   ) async {
@@ -21,7 +21,7 @@ class NotificationController {
   }
 
   /// Use this method to detect if the user dismissed a notification
-  @pragma("vm:entry-point")
+  @pragma('vm:entry-point')
   static Future<void> onDismissActionReceivedMethod(
     ReceivedAction receivedAction,
   ) async {
@@ -29,7 +29,7 @@ class NotificationController {
   }
 
   /// Use this method to detect when the user taps on a notification or action button
-  @pragma("vm:entry-point")
+  @pragma('vm:entry-point')
   static Future<void> onActionReceivedMethod(
     ReceivedAction receivedAction,
   ) async {
@@ -51,14 +51,14 @@ Future<void> initializeNotifications() async {
           channelKey: 'basic_channel',
           channelName: 'Basic notifications',
           channelDescription: 'Notification channel for basic tests',
-          defaultColor: Color(0xFF9D50DD),
-          ledColor: Colors.white)
+          defaultColor: const Color(0xFF9D50DD),
+          ledColor: Colors.white,)
     ],
     // Channel groups are only visual and are not required
     channelGroups: [
       NotificationChannelGroup(
           channelGroupKey: 'basic_channel_group',
-          channelGroupName: 'Basic group')
+          channelGroupName: 'Basic group',)
     ],
     debug: true,
   );
@@ -84,7 +84,7 @@ Future<void> setupNotificationsListeners() async {
       onNotificationDisplayedMethod:
           NotificationController.onNotificationDisplayedMethod,
       onDismissActionReceivedMethod:
-          NotificationController.onDismissActionReceivedMethod);
+          NotificationController.onDismissActionReceivedMethod,);
 }
 
 Future<void> notify(NotificationBrief brief) async {

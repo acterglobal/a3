@@ -1,19 +1,18 @@
 import 'package:acter/common/notifications/models.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
-import 'package:flutter/material.dart';
 
 NotificationBrief briefForChat(ffi.Notification notification) {
   final convo = notification.convo();
   final message = notification.roomMessage();
-  final route = Routes.chatroom;
+  const route = Routes.chatroom;
   if (convo == null || message == null) {
-    return NotificationBrief(title: 'unsupported chat message', route: route);
+    return const NotificationBrief(title: 'unsupported chat message', route: route);
   }
 
   ffi.RoomEventItem? eventItem = message.eventItem();
   if (eventItem == null) {
-    return NotificationBrief(title: 'unknown chat message', route: route);
+    return const NotificationBrief(title: 'unknown chat message', route: route);
   }
 
   // String sender = eventItem.sender();
@@ -70,9 +69,9 @@ NotificationBrief briefForChat(ffi.Notification notification) {
     case 'm.room.member':
       return NotificationBrief.fromTextDesc(eventItem.textDesc(), route);
     case 'm.room.redaction':
-      return NotificationBrief(title: 'Message deleted', route: route);
+      return const NotificationBrief(title: 'Message deleted', route: route);
     case 'm.room.encrypted':
-      return NotificationBrief(title: 'encrypted message', route: route);
+      return const NotificationBrief(title: 'encrypted message', route: route);
     default:
       return NotificationBrief(title: eventType, route: route);
   }

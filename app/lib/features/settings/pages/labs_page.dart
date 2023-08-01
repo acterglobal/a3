@@ -45,7 +45,7 @@ class SettingsLabsPage extends ConsumerWidget {
                     description: const Text('not yet supported'),
                     enabled: false,
                     initialValue: false,
-                    onToggle: (newVal) {}),
+                    onToggle: (newVal) {},),
               ],
             ),
             SettingsSection(

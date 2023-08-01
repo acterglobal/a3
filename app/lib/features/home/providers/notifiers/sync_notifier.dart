@@ -40,8 +40,6 @@ class SyncNotifier extends StateNotifier<LocalSyncState> {
       }
     });
 
-    // final notificationsPoller = syncState.notificationsStream();
-
     final errorPoller = syncState.syncErrorRx();
     errorPoller.listen((error) {
       if (mounted) {
