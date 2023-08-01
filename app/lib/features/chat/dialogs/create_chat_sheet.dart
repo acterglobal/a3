@@ -58,14 +58,14 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
     final currentParentSpace = ref.watch(parentSpaceProvider);
     final avatarUpload = ref.watch(_avatarProvider);
     return SideSheet(
-      header: 'Create Chat Room',
+      header: 'Create Chat',
       addActions: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text('Create a new group chat'),
+            const Text('Create a chat'),
             const SizedBox(height: 15),
             Row(
               children: <Widget>[
@@ -104,10 +104,10 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                     children: <Widget>[
                       const Padding(
                         padding: EdgeInsets.only(bottom: 5),
-                        child: Text('Group Name'),
+                        child: Text('Chat Name'),
                       ),
                       InputTextField(
-                        hintText: 'Type Group Name',
+                        hintText: 'Type Chat Name',
                         textInputType: TextInputType.multiline,
                         controller: _titleController,
                         onInputChanged: _handleTitleChange,
@@ -220,7 +220,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
-          child: const Text('Create Room'),
+          child: const Text('Create Chat'),
         ),
       ],
     );
