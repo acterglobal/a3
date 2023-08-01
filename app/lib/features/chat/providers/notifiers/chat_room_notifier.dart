@@ -42,9 +42,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     subscription = timeline.diffRx().listen((event) async {
       await _parseEvent(event);
     });
-    while (ref.read(messagesProvider).length < 10) {
-      await timeline.paginateBackwards(10);
-    }
+    await timeline.paginateBackwards(10);
     ref.onDispose(() async {
       debugPrint('disposing message stream');
       await subscription?.cancel();
@@ -171,6 +169,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         ref.read(messagesProvider.notifier).reset();
         break;
       case 'Reset':
+        break;
+      default:
         break;
     }
   }
@@ -395,26 +395,26 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
       case 'm.reaction':
       case 'm.room.encrypted':
+        var metadata = {'itemType': 'event', 'eventType': eventType};
+        if (inReplyTo != null) {
+          metadata['repliedTo'] = inReplyTo;
+        }
         return types.CustomMessage(
           author: author,
           createdAt: createdAt,
           id: eventId,
-          metadata: {
-            'itemType': 'event',
-            'eventType': eventType,
-            'repliedTo': inReplyTo,
-          },
+          metadata: metadata,
         );
       case 'm.room.redaction':
+        var metadata = {'itemType': 'event', 'eventType': eventType};
+        if (inReplyTo != null) {
+          metadata['repliedTo'] = inReplyTo;
+        }
         return types.CustomMessage(
           author: author,
           createdAt: createdAt,
           id: eventId,
-          metadata: {
-            'itemType': 'event',
-            'eventType': eventType,
-            'repliedTo': inReplyTo,
-          },
+          metadata: metadata,
         );
       case 'm.room.member':
         TextDesc? description = eventItem.textDesc();
@@ -701,15 +701,17 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   ) {
     var messages = ref.read(messagesProvider);
     final index = messages.indexWhere((x) => x.id == message.id);
-    final updatedMessage = (messages[index] as types.TextMessage).copyWith(
-      previewData: previewData,
-    );
+    if (index != -1) {
+      final updatedMessage = (messages[index] as types.TextMessage).copyWith(
+        previewData: previewData,
+      );
 
-    WidgetsBinding.instance.addPostFrameCallback(
-      (Duration duration) => ref
-          .read(messagesProvider.notifier)
-          .replaceMessage(index, updatedMessage),
-    );
+      WidgetsBinding.instance.addPostFrameCallback(
+        (Duration duration) => ref
+            .read(messagesProvider.notifier)
+            .replaceMessage(index, updatedMessage),
+      );
+    }
   }
 
   // image selection
