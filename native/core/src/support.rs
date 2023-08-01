@@ -1,4 +1,4 @@
-use matrix_sdk::Session;
+use matrix_sdk::AuthSession;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -10,5 +10,5 @@ pub struct RestoreToken {
     /// Server homebase url
     pub homeurl: Url,
     /// Session to hand to client
-    pub session: Session,
+    pub session: AuthSession,
 }

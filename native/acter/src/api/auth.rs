@@ -1,11 +1,12 @@
 use acter_core::RestoreToken;
 use anyhow::{bail, Context, Result};
 use matrix_sdk::{
+    matrix_auth::{Session, SessionTokens},
     ruma::{
         api::client::{account::register, session::login, uiaa},
         assign, OwnedUserId,
     },
-    Client as SdkClient, ClientBuilder, Session,
+    Client as SdkClient, ClientBuilder, SessionMeta,
 };
 use tracing::{error, info};
 
@@ -69,16 +70,20 @@ pub async fn guest_client(
             let mut request = register::v3::Request::new();
             request.kind = register::RegistrationKind::Guest;
             request.initial_device_display_name = device_name;
-            let response = client.register(request).await?;
+            let response = client.matrix_auth().register(request).await?;
             let device_id = response
                 .device_id
                 .clone()
                 .context("device id is given by server")?;
             let session = Session {
-                access_token: response.access_token.context("no access token given")?,
-                user_id: response.user_id.clone(),
-                refresh_token: response.refresh_token.clone(),
-                device_id,
+                meta: SessionMeta {
+                    user_id: response.user_id.clone(),
+                    device_id,
+                },
+                tokens: SessionTokens {
+                    access_token: response.access_token.context("no access token given")?,
+                    refresh_token: response.refresh_token.clone(),
+                },
             };
             client.restore_session(session).await?;
             let state = ClientStateBuilder::default().is_guest(true).build()?;
@@ -99,7 +104,7 @@ pub async fn login_with_token_under_config(
         homeurl,
         is_guest,
     } = serde_json::from_str(&restore_token)?;
-    let user_id = session.user_id.to_string();
+    let user_id = session.meta().user_id.to_string();
     RUNTIME
         .spawn(async move {
             let client = config.homeserver_url(homeurl).build().await?;
@@ -121,7 +126,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         homeurl,
         is_guest,
     } = serde_json::from_str(&restore_token)?;
-    let user_id = session.user_id.to_string();
+    let user_id = session.meta().user_id.to_string();
     let config = platform::new_client_config(base_path, user_id.clone(), false).await?;
     login_with_token_under_config(restore_token, config).await
 }
@@ -132,7 +137,7 @@ async fn login_client(
     password: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let mut login_builder = client.login_username(&user_id, &password);
+    let mut login_builder = client.matrix_auth().login_username(&user_id, &password);
     let name; // to capture the inner string for login-builder lifetime
     if let Some(s) = device_name {
         name = s;
@@ -225,7 +230,7 @@ pub async fn register_under_config(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            if let Err(resp) = client.register(register::v3::Request::new()).await {
+            if let Err(resp) = client.matrix_auth().register(register::v3::Request::new()).await {
                 // FIXME: do actually check the registration types...
                 if let Some(_response) = resp.as_uiaa_response() {
                     let request = assign!(register::v3::Request::new(), {
@@ -234,7 +239,7 @@ pub async fn register_under_config(
                         initial_device_display_name: Some(user_agent.clone()),
                         auth: Some(uiaa::AuthData::Dummy(uiaa::Dummy::new())),
                     });
-                    client.register(request).await?;
+                    client.matrix_auth().register(request).await?;
                 } else {
                     error!(?resp, "Not a UIAA response");
                     bail!("No a uiaa response");
@@ -290,7 +295,7 @@ pub async fn register_with_token_under_config(
                     auth: Some(uiaa::AuthData::Dummy(uiaa::Dummy::new())),
                 });
 
-                if let Err(err) = client.register(request).await {
+                if let Err(err) = client.matrix_auth().register(request).await {
                     let Some(response) = err.as_uiaa_response() else {
                         bail!("Server did not indicate how to allow registration.");
                     };
@@ -303,7 +308,7 @@ pub async fn register_with_token_under_config(
                             assign!(uiaa::RegistrationToken::new(registration_token), {session: response.session.clone()}),
                         )),
                     });
-                    client.register(token_request).await?;
+                    client.matrix_auth().register(token_request).await?;
                 } // else all went well.
                 client
             };

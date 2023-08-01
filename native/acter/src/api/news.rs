@@ -407,18 +407,18 @@ impl NewsEntryDraft {
                     anyhow::Ok(ImageMessageEventContent::plain(
                         body,
                         upload_resp.content_uri,
-                        None,
                     ))
                 }
             })
             .await??;
-        image_content.info = Some(Box::new(assign!(ImageInfo::new(), {
+        let info = assign!(ImageInfo::new(), {
             height: height.and_then(UInt::new),
             width: width.and_then(UInt::new),
             mimetype: Some(mimetype),
             size: size.and_then(UInt::new),
             blurhash,
-        })));
+        });
+        image_content.info = Some(Box::new(info));
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
@@ -431,78 +431,159 @@ impl NewsEntryDraft {
         Ok(true)
     }
 
-    pub fn add_audio_slide(
+    pub async fn add_audio_slide(
         &mut self,
         body: String,
-        url: String,
+        uri: String,
+        mimetype: String,
         secs: Option<u64>,
-        mimetype: Option<String>,
         size: Option<u64>,
-    ) -> &mut Self {
+    ) -> Result<bool> {
+        trace!("add audio slide");
+        let client = self.client.clone();
+        let room = self.room.clone();
+
+        let path = PathBuf::from(uri);
+        let mime_type = mimetype.parse::<mime::Mime>()?;
+        let mut audio_content = RUNTIME
+            .spawn(async move {
+                if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&mime_type, &mut reader)
+                        .await?;
+                    anyhow::Ok(AudioMessageEventContent::encrypted(body, encrypted_file))
+                } else {
+                    let data = std::fs::read(path)?;
+                    let upload_resp = client.media().upload(&mime_type, data).await?;
+                    anyhow::Ok(AudioMessageEventContent::plain(
+                        body,
+                        upload_resp.content_uri,
+                    ))
+                }
+            })
+            .await??;
         let info = assign!(AudioInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            mimetype,
+            mimetype: Some(mimetype),
+            duration: secs.map(|x| Duration::from_secs(x as u64)),
             size: size.and_then(UInt::new),
         });
-        let url = Box::<MxcUri>::from(url.as_str());
+        audio_content.info = Some(Box::new(info));
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_audio(body, (*url).to_owned(), Some(Box::new(info))),
+            inner: news::NewsSlide {
+                content: news::NewsContent::Audio(audio_content),
+                references: Default::default(),
+            },
         });
-        self
+        Ok(true)
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn add_video_slide(
+    pub async fn add_video_slide(
         &mut self,
         body: String,
-        url: String,
+        uri: String,
+        mimetype: String,
         secs: Option<u64>,
         height: Option<u64>,
         width: Option<u64>,
-        mimetype: Option<String>,
         size: Option<u64>,
         blurhash: Option<String>,
-    ) -> &mut Self {
+    ) -> Result<bool> {
+        trace!("add video slide");
+        let client = self.client.clone();
+        let room = self.room.clone();
+
+        let path = PathBuf::from(uri);
+        let mime_type = mimetype.parse::<mime::Mime>()?;
+        let mut video_content = RUNTIME
+            .spawn(async move {
+                if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&mime_type, &mut reader)
+                        .await?;
+                    anyhow::Ok(VideoMessageEventContent::encrypted(body, encrypted_file))
+                } else {
+                    let data = std::fs::read(path)?;
+                    let upload_resp = client.media().upload(&mime_type, data).await?;
+                    anyhow::Ok(VideoMessageEventContent::plain(
+                        body,
+                        upload_resp.content_uri,
+                    ))
+                }
+            })
+            .await??;
         let info = assign!(VideoInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
+            duration: secs.map(|x| Duration::from_secs(x as u64)),
             height: height.and_then(UInt::new),
             width: width.and_then(UInt::new),
-            mimetype,
+            mimetype: Some(mimetype),
             size: size.and_then(UInt::new),
             blurhash,
         });
-        let url = Box::<MxcUri>::from(url.as_str());
+        video_content.info = Some(Box::new(info));
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_video(body, (*url).to_owned(), Some(Box::new(info))),
+            inner: news::NewsSlide {
+                content: news::NewsContent::Video(video_content),
+                references: Default::default(),
+            },
         });
-        self
+        Ok(true)
     }
 
-    pub fn add_file_slide(
+    pub async fn add_file_slide(
         &mut self,
         body: String,
-        url: String,
-        mimetype: Option<String>,
+        uri: String,
+        mimetype: String,
         size: Option<u64>,
-    ) -> &mut Self {
+    ) -> Result<bool> {
+        trace!("add file slide");
+        let client = self.client.clone();
+        let room = self.room.clone();
+
+        let path = PathBuf::from(uri);
+        let mime_type = mimetype.parse::<mime::Mime>()?;
+        let mut file_content = RUNTIME
+            .spawn(async move {
+                if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&mime_type, &mut reader)
+                        .await?;
+                    anyhow::Ok(FileMessageEventContent::encrypted(body, encrypted_file))
+                } else {
+                    let data = std::fs::read(path)?;
+                    let upload_resp = client.media().upload(&mime_type, data).await?;
+                    anyhow::Ok(FileMessageEventContent::plain(
+                        body,
+                        upload_resp.content_uri,
+                    ))
+                }
+            })
+            .await??;
         let info = assign!(FileInfo::new(), {
-            mimetype,
+            mimetype: Some(mimetype),
             size: size.and_then(UInt::new),
         });
-        let url = Box::<MxcUri>::from(url.as_str());
+        file_content.info = Some(Box::new(info));
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_file(body, (*url).to_owned(), Some(Box::new(info))),
+            inner: news::NewsSlide {
+                content: news::NewsContent::File(file_content),
+                references: Default::default(),
+            },
         });
-        self
+        Ok(true)
     }
 
     pub fn unset_slides(&mut self) -> &mut Self {

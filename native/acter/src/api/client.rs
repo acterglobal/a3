@@ -820,7 +820,7 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
-                match client.logout().await {
+                match client.matrix_auth().logout().await {
                     Ok(resp) => Ok(true),
                     Err(e) => {
                         error!("logout error: {:?}", e);

@@ -250,11 +250,12 @@ impl AttachmentsManager {
         let url = Box::<MxcUri>::from(url.as_str());
         let mut builder = self.inner.draft_builder();
 
-        builder.content(AttachmentContent::Image(ImageMessageEventContent::plain(
+        let mut image_content = ImageMessageEventContent::plain(
             body,
             url.into(),
-            Some(Box::new(info)),
-        )));
+        );
+        image_content.info = Some(Box::new(info));
+        builder.content(AttachmentContent::Image(image_content));
         Ok(AttachmentDraft {
             client: self.client.clone(),
             room: joined.clone(),
@@ -281,11 +282,12 @@ impl AttachmentsManager {
         let url = Box::<MxcUri>::from(url.as_str());
         let mut builder = self.inner.draft_builder();
 
-        builder.content(AttachmentContent::Audio(AudioMessageEventContent::plain(
+        let mut audio_content = AudioMessageEventContent::plain(
             body,
             url.into(),
-            Some(Box::new(info)),
-        )));
+        );
+        audio_content.info = Some(Box::new(info));
+        builder.content(AttachmentContent::Audio(audio_content));
         Ok(AttachmentDraft {
             client: self.client.clone(),
             room: joined.clone(),
@@ -319,11 +321,12 @@ impl AttachmentsManager {
         let url = Box::<MxcUri>::from(url.as_str());
         let mut builder = self.inner.draft_builder();
 
-        builder.content(AttachmentContent::Video(VideoMessageEventContent::plain(
+        let mut video_content = VideoMessageEventContent::plain(
             body,
             url.into(),
-            Some(Box::new(info)),
-        )));
+        );
+        video_content.info = Some(Box::new(info));
+        builder.content(AttachmentContent::Video(video_content));
         Ok(AttachmentDraft {
             client: self.client.clone(),
             room: joined.clone(),
@@ -343,11 +346,13 @@ impl AttachmentsManager {
         };
         let mut builder = self.inner.draft_builder();
         let size = size.and_then(UInt::new);
-        builder.content(AttachmentContent::File(FileMessageEventContent::plain(
+        let info = assign!(FileInfo::new(), {mimetype, size});
+        let mut file_content = FileMessageEventContent::plain(
             body,
             url.into(),
-            Some(Box::new(assign!(FileInfo::new(), {mimetype, size}))),
-        )));
+        );
+        file_content.info = Some(Box::new(info));
+        builder.content(AttachmentContent::File(file_content));
         Ok(AttachmentDraft {
             client: self.client.clone(),
             room: joined.clone(),

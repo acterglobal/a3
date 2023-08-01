@@ -15,10 +15,11 @@ cbindgen = []
 dart = []
 
 [patch.crates-io]
-proc-macro2 = "=1.0.55" # fix issue 'Your compiler does not support spans which is required by genco'
+# fix issue 'Your compiler does not support spans which is required by genco'
+proc-macro2 = { version = "=1.0.55", features = ["span-locations"] }
 
 [build-dependencies]
-ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "leaking-no-drop"}
+ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "leaking-no-drop" }
 cbindgen = "0.24.3"
 
 [dependencies]
