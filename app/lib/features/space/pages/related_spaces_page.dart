@@ -2,7 +2,10 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
+import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
@@ -10,6 +13,8 @@ import 'package:go_router/go_router.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
 class ChildItem extends StatelessWidget {
   final SpaceItem space;
@@ -210,17 +215,55 @@ class RelatedSpacesPage extends ConsumerWidget {
 
               if (spaces.children.isNotEmpty) {
                 items.add(
-                  SliverGrid.builder(
-                    itemCount: spaces.children.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: max(1, min(widthCount, minCount)),
-                      childAspectRatio: 4,
+                  RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
+                    firstPageKey: const Next(isStart: true),
+                    provider: spaceHierarchyProvider(spaces.rel),
+                    itemBuilder: (context, item, index) => Card(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      color: Theme.of(context).colorScheme.surface,
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(15),
+                        title: Text(
+                          item.name() ?? item.roomIdStr(),
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        subtitle: Text(item.topic() ?? ''),
+                      ),
                     ),
-                    itemBuilder: (context, index) {
-                      final space = spaces.children[index];
-                      return ChildItem(key: Key(space.roomId), space: space);
-                    },
+                    // noItemsFoundIndicatorBuilder: (context, controller) =>
+                    //     weAreEmpty
+                    //         ? SizedBox(
+                    //             // nothing found, even in the section before. Show nice fallback
+                    //             height: 250,
+                    //             child: Center(
+                    //               child: SvgPicture.asset(
+                    //                 'assets/images/undraw_project_completed_re_jr7u.svg',
+                    //               ),
+                    //             ),
+                    //           )
+                    //         : const Text(''),
+                    pagedBuilder: (controller, builder) => PagedSliverList(
+                      pagingController: controller,
+                      builderDelegate: builder,
+                    ),
                   ),
+                  // SliverGrid.builder(
+                  //   itemCount: spaces.children.length,
+                  //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  //     crossAxisCount: max(1, min(widthCount, minCount)),
+                  //     childAspectRatio: 4,
+                  //   ),
+                  //   itemBuilder: (context, index) {
+                  //     final space = spaces.children[index];
+                  //     return;
+                  //   },
+                  // ),
                 );
               }
 

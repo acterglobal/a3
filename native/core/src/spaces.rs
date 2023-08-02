@@ -241,10 +241,13 @@ impl CoreClient {
                     blurhash: upload_resp.blurhash,
                     mimetype: Some(content_type.to_string()),
                 });
-                assign!(RoomAvatarEventContent::new(), {
-                    url: Some(upload_resp.content_uri),
-                    info: Some(Box::new(info)),
-                })
+                assign!(
+                    RoomAvatarEventContent::new(),
+                    {
+                        url: Some(upload_resp.content_uri),
+                        info: Some(Box::new(info)),
+                    }
+                )
             };
             initial_states.push(InitialRoomAvatarEvent::new(avatar_content).to_raw_any());
         };

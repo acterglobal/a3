@@ -1174,11 +1174,32 @@ object TaskListUpdateBuilder {
     fn send() -> Future<Result<EventId>>;
 }
 
+
 enum RelationTargetType {
     Unknown,
     ChatRoom,
     Space,
     ActerSpace
+}
+
+/// remote info
+object SpaceHierarchyRoomInfo {
+    fn name() -> Option<string>;
+    //fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
+    fn topic() -> Option<string>;
+    fn num_joined_members() -> u64;
+    fn world_readable() -> bool;
+    fn guest_can_join() -> bool;
+    fn avatar_url_str() -> Option<string>;
+    fn join_rule_str() -> string;
+}
+
+object SpaceHierarchyListResult {
+    /// to be used for the next `since`
+    fn next_batch() -> Option<string>;
+    /// get the chunk of items in this response
+    fn rooms() -> Future<Result<Vec<SpaceHierarchyRoomInfo>>>;
 }
 
 object SpaceRelation {
@@ -1199,6 +1220,8 @@ object SpaceRelations {
     fn other_parents() -> Vec<SpaceRelation>;
     /// children
     fn children() -> Vec<SpaceRelation>;
+    /// query for children from the server
+    fn query_hierarchy(from: Option<string>) -> Future<Result<SpaceHierarchyListResult>>;
 }
 
 object Space {
@@ -1427,7 +1450,6 @@ object PublicSearchResult {
     /// get the chunk of items in this response
     fn chunks() -> Vec<PublicSearchResultItem>;
 }
-
 
 object Notification {
     fn read() -> bool;

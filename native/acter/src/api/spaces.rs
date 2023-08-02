@@ -1,6 +1,6 @@
 pub use acter_core::spaces::{
     CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
-    SpaceRelations,
+    SpaceRelations as CoreSpaceRelations,
 };
 use acter_core::{
     events::{
@@ -35,7 +35,13 @@ use matrix_sdk::{
     },
     Client as SdkClient,
 };
-use ruma::assign;
+use ruma::{
+    api::client::space::{SpaceHierarchyRoomsChunk, SpaceRoomJoinRule},
+    assign,
+    events::space::child::HierarchySpaceChildEvent,
+    room::RoomType,
+    OwnedMxcUri,
+};
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, thread::JoinHandle};
 use tokio::sync::broadcast::Receiver;
@@ -398,6 +404,135 @@ impl Space {
     }
 }
 
+pub struct SpaceRelations {
+    core: CoreSpaceRelations,
+    space: Space,
+}
+
+impl Deref for SpaceRelations {
+    type Target = CoreSpaceRelations;
+    fn deref(&self) -> &Self::Target {
+        &self.core
+    }
+}
+
+pub struct SpaceHierarchyRoomInfo {
+    chunk: SpaceHierarchyRoomsChunk,
+    client: Client,
+}
+
+impl SpaceHierarchyRoomInfo {
+    pub fn canonical_alias(&self) -> Option<OwnedRoomAliasId> {
+        self.chunk.canonical_alias.clone()
+    }
+
+    /// The name of the room, if any.
+    pub fn name(&self) -> Option<String> {
+        self.chunk.name.clone()
+    }
+
+    /// The number of members joined to the room.
+    pub fn num_joined_members(&self) -> u64 {
+        self.chunk.num_joined_members.into()
+    }
+
+    /// The ID of the room.
+    pub fn room_id(&self) -> OwnedRoomId {
+        self.chunk.room_id.clone()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.room_id().to_string()
+    }
+
+    pub fn topic(&self) -> Option<String> {
+        self.chunk.topic.clone()
+    }
+
+    /// Whether the room may be viewed by guest users without joining.
+    pub fn world_readable(&self) -> bool {
+        self.chunk.world_readable.clone()
+    }
+
+    pub fn guest_can_join(&self) -> bool {
+        self.chunk.guest_can_join.clone()
+    }
+
+    pub fn avatar_url(&self) -> Option<OwnedMxcUri> {
+        self.chunk.avatar_url.clone()
+    }
+
+    pub fn avatar_url_str(&self) -> Option<String> {
+        self.avatar_url().map(|a| a.to_string())
+    }
+
+    /// The join rule of the room.
+    pub fn join_rule(&self) -> SpaceRoomJoinRule {
+        self.chunk.join_rule.clone()
+    }
+
+    pub fn join_rule_str(&self) -> String {
+        self.join_rule().to_string()
+    }
+
+    /// The type of room from `m.room.create`, if any.
+    pub fn room_type(&self) -> Option<RoomType> {
+        self.chunk.room_type.clone()
+    }
+
+    /// The stripped `m.space.child` events of the space-room.
+    ///
+    /// If the room is not a space-room, this should be empty.
+    pub fn children_state(&self) -> Vec<Raw<HierarchySpaceChildEvent>> {
+        self.chunk.children_state.clone()
+    }
+}
+
+impl SpaceHierarchyRoomInfo {
+    pub(crate) async fn new(chunk: SpaceHierarchyRoomsChunk, client: Client) -> Self {
+        SpaceHierarchyRoomInfo { chunk, client }
+    }
+}
+
+pub struct SpaceHierarchyListResult {
+    resp: ruma::api::client::space::get_hierarchy::v1::Response,
+    client: Client,
+}
+
+impl SpaceHierarchyListResult {
+    pub fn next_batch(&self) -> Option<String> {
+        self.resp.next_batch.clone()
+    }
+    pub async fn rooms(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
+        let client = self.client.clone();
+        let chunks = self.resp.rooms.clone();
+        Ok(RUNTIME
+            .spawn(async move {
+                futures::future::join_all(
+                    chunks
+                        .into_iter()
+                        .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, client.clone())),
+                )
+                .await
+            })
+            .await?)
+    }
+}
+
+impl SpaceRelations {
+    pub async fn query_hierarchy(&self, from: Option<String>) -> Result<SpaceHierarchyListResult> {
+        let c = self.space.client.clone();
+        let room_id = self.space.room_id().to_owned();
+        RUNTIME
+            .spawn(async move {
+                let request = assign!(ruma::api::client::space::get_hierarchy::v1::Request::new(room_id), { from, max_depth: Some(1u32.into())});
+                let resp = c.send(request, None).await?;
+                Ok(SpaceHierarchyListResult{ resp, client: c.clone() })
+            })
+            .await?
+    }
+}
+
 // External API
 
 impl Space {
@@ -479,11 +614,11 @@ impl Space {
 
     pub async fn space_relations(&self) -> Result<SpaceRelations> {
         let c = self.client.core.clone();
-        let room = self.room.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let relations = c.space_relations(&room).await?;
-                Ok(relations)
+                let core = c.space_relations(&me.room).await?;
+                Ok(SpaceRelations { core, space: me })
             })
             .await?
     }

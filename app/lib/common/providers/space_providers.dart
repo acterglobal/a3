@@ -105,6 +105,7 @@ class SpaceItem {
 }
 
 class SpaceRelationsOverview {
+  SpaceRelations rel;
   Member? membership;
   List<SpaceItem> children;
   SpaceItem? mainParent;
@@ -112,6 +113,7 @@ class SpaceRelationsOverview {
   List<SpaceItem> otherRelations;
 
   SpaceRelationsOverview({
+    required this.rel,
     required this.membership,
     required this.children,
     required this.mainParent,
@@ -347,6 +349,7 @@ final relatedSpaceItemsProvider = FutureProvider.autoDispose
     }
   }
   return SpaceRelationsOverview(
+    rel: relatedSpaces,
     membership: membership,
     parents: parents,
     children: children,
