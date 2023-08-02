@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -11,6 +13,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 class CustomChatInput extends ConsumerWidget {
@@ -29,6 +32,7 @@ class CustomChatInput extends ConsumerWidget {
     final chatInputState = ref.watch(chatInputProvider);
     final repliedToMessage =
         ref.watch(chatRoomProvider.notifier).repliedToMessage;
+    final isAuthor = ref.watch(chatRoomProvider.notifier).isAuthor();
     Size size = MediaQuery.of(context).size;
     return Column(
       children: [
@@ -86,7 +90,7 @@ class CustomChatInput extends ConsumerWidget {
                               onTap: () {
                                 ref
                                     .read(chatInputProvider.notifier)
-                                    .toggleReplyView();
+                                    .setReplyView(false);
                                 ref
                                     .read(chatInputProvider.notifier)
                                     .setReplyWidget(null);
@@ -106,9 +110,7 @@ class CustomChatInput extends ConsumerWidget {
                       constraints: const BoxConstraints(maxHeight: 100),
                       child: SingleChildScrollView(
                         child: _ReplyContentWidget(
-                          msg: ref
-                              .watch(chatRoomProvider.notifier)
-                              .repliedToMessage,
+                          msg: repliedToMessage,
                           messageWidget: chatInputState.replyWidget,
                         ),
                       ),
@@ -118,32 +120,112 @@ class CustomChatInput extends ConsumerWidget {
             ),
           ),
         ),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          color: Theme.of(context).colorScheme.onPrimary,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const _BuildAttachmentBtn(),
-                  const Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: _TextInputWidget(),
+        Visibility(
+          visible:
+              !ref.watch(chatInputProvider.select((ci) => ci.emojiRowVisible)),
+          replacement: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            color: Theme.of(context).colorScheme.onPrimary,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                InkWell(
+                  onTap: () {
+                    if (isAuthor) {
+                      popUpDialog(
+                        context: context,
+                        title: const Text(
+                          'Are you sure you want to delete this message? This action cannot be undone.',
+                        ),
+                        btnText: 'No',
+                        btn2Text: 'Yes',
+                        btn2Color: Theme.of(context).colorScheme.onError,
+                        onPressedBtn: () => context.pop(),
+                        onPressedBtn2: () async {
+                          final messageId = ref
+                              .read(chatRoomProvider.notifier)
+                              .currentMessageId;
+                          if (messageId != null) {
+                            try {
+                              await ref
+                                  .read(chatRoomProvider.notifier)
+                                  .redactRoomMessage(messageId);
+                              ref
+                                  .read(chatInputProvider.notifier)
+                                  .emojiRowVisible(false);
+                              ref
+                                  .read(chatRoomProvider.notifier)
+                                  .currentMessageId = null;
+                              if (context.mounted) {
+                                context.pop();
+                              }
+                            } catch (e) {
+                              context.pop();
+                              customMsgSnackbar(
+                                context,
+                                e.toString(),
+                              );
+                            }
+                          } else {
+                            debugPrint(messageId);
+                          }
+                        },
+                      );
+                    } else {
+                      customMsgSnackbar(
+                        context,
+                        'Report message isn\'t implemented yet',
+                      );
+                    }
+                  },
+                  child: Text(
+                    isAuthor ? 'Unsend' : 'Report',
+                    style: const TextStyle(
+                      color: Colors.white,
                     ),
                   ),
-                  if (chatInputState.sendBtnVisible)
-                    _BuildSendBtn(
-                      onButtonPressed: () => onSendButtonPressed(ref),
+                ),
+                InkWell(
+                  onTap: () => customMsgSnackbar(
+                    context,
+                    'More options not implemented yet',
+                  ),
+                  child: const Text(
+                    'More',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            color: Theme.of(context).colorScheme.onPrimary,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const _BuildAttachmentBtn(),
+                    const Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: _TextInputWidget(),
+                      ),
                     ),
-                  if (!chatInputState.sendBtnVisible) _BuildImageBtn(),
-                  if (!chatInputState.sendBtnVisible) const SizedBox(width: 10),
-                  if (!chatInputState.sendBtnVisible) const _BuildAudioBtn(),
-                ],
+                    if (chatInputState.sendBtnVisible)
+                      _BuildSendBtn(
+                        onButtonPressed: () => onSendButtonPressed(ref),
+                      ),
+                    if (!chatInputState.sendBtnVisible) _BuildImageBtn(),
+                    if (!chatInputState.sendBtnVisible)
+                      const SizedBox(width: 10),
+                    if (!chatInputState.sendBtnVisible) const _BuildAudioBtn(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -231,7 +313,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
       ref.watch(chatInputFocusProvider).addListener(() {
         if (focusNode.hasFocus) {
           if (ref.watch(chatInputProvider).emojiRowVisible) {
-            ref.read(chatInputProvider.notifier).emojiRowVisible();
+            ref.read(chatInputProvider.notifier).emojiRowVisible(false);
           }
           if (ref.watch(chatInputProvider).attachmentVisible) {
             ref.read(chatInputProvider.notifier).toggleAttachment();
@@ -294,7 +376,13 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         fillColor: Theme.of(context).colorScheme.primaryContainer,
         suffixIcon: InkWell(
           onTap: () {
-            ref.read(chatInputProvider.notifier).emojiPickerVisible();
+            if (ref.read(
+              chatInputProvider.select((value) => value.emojiPickerVisible),
+            )) {
+              ref.read(chatInputProvider.notifier).emojiPickerVisible(false);
+            } else {
+              ref.read(chatInputProvider.notifier).emojiPickerVisible(true);
+            }
           },
           child: const Icon(Icons.emoji_emotions),
         ),
