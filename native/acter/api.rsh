@@ -1428,6 +1428,26 @@ object PublicSearchResult {
     fn chunks() -> Vec<PublicSearchResultItem>;
 }
 
+
+object Notification {
+    fn read() -> bool;
+    // fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
+    fn has_room() -> bool;
+    fn is_space() -> bool;
+    fn is_acter_space() -> bool;
+    fn space() -> Option<Space>;
+    fn room_message() -> Option<RoomMessage>;
+    fn convo() -> Option<Convo>;
+}
+
+object NotificationListResult {
+    /// to be used for the next `since`
+    fn next_batch() -> Option<string>;
+    /// get the chunk of items in this response
+    fn notifications() -> Future<Result<Vec<Notification>>>;
+}
+
 /// make convo settings builder
 fn new_convo_settings_builder() -> CreateConvoSettingsBuilder;
 
@@ -1633,6 +1653,13 @@ object Client {
 
     /// Fetch the calendar event or use its event_id to wait for it to come down the wire
     fn wait_for_calendar_event(key: string, timeout: Option<EfkDuration>) -> Future<Result<CalendarEvent>>;
+
+    /// list the currently queued notifications
+    fn list_notifications(since: Option<string>, only: Option<string>) -> Future<Result<NotificationListResult>>;
+
+    /// listen to incoming notifications
+    fn notifications_stream() -> Stream<Notification>;
+
 }
 
 object OptionText {

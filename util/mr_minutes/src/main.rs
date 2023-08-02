@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 use git2::Repository;
-use log;
+
 use std::{fs::read_dir, io::Write, path::PathBuf};
 
 /// Simple program to greet a person
@@ -73,8 +73,8 @@ fn main() -> anyhow::Result<()> {
             }
 
             let content = std::fs::read(file.path())?;
-            writer.write(&content)?;
-            write!(writer, "\n")?;
+            writer.write_all(&content)?;
+            writeln!(writer)?;
         }
     }
     Ok(())
