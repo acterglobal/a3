@@ -230,7 +230,7 @@ enum LabsFeature {
   discussions,
 
   // searchOptions
-  searchSpaces,
+  showNotifications,
   ;
 
   static List<LabsFeature> get defaults =>

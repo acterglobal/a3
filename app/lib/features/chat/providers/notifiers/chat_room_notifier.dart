@@ -21,7 +21,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   final Ref ref;
-  late TimelineStream timeline;
+  TimelineStream? timeline;
   String? emojiCurrentId;
   types.Message? repliedToMessage;
   final List<PlatformFile> _imageFileList = [];
@@ -39,12 +39,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     room = await ref.read(chatProvider(roomId).future);
     timeline = await room.timelineStream();
     StreamSubscription<TimelineDiff>? subscription;
-    subscription = timeline.diffRx().listen((event) async {
+    subscription = timeline?.diffRx().listen((event) async {
       await _parseEvent(event);
     });
-    while (ref.read(messagesProvider).length < 10) {
-      await timeline.paginateBackwards(10);
-    }
+    await timeline?.paginateBackwards(10);
     ref.onDispose(() async {
       debugPrint('disposing message stream');
       await subscription?.cancel();
@@ -172,28 +170,27 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
       case 'Reset':
         break;
+      default:
+        break;
     }
   }
 
   Future<void> fetchUserProfiles() async {
-    final activeMembers = await ref.watch(chatMembersProvider(roomId).future);
+    final activeMembers = await ref.read(chatMembersProvider(roomId).future);
     Map<String, ProfileData> userProfiles = {};
     List<Map<String, dynamic>> mentionRecords = [];
     for (int i = 0; i < activeMembers.length; i++) {
       String userId = activeMembers[i].userId().toString();
       var profile = activeMembers[i].getProfile();
       Map<String, dynamic> record = {};
+      var userName = (await profile.getDisplayName()).text();
       if (await profile.hasAvatar()) {
         var userAvatar = (await profile.getThumbnail(62, 60)).data()!;
-        var userName = (await profile.getDisplayName()).text();
-        userProfiles[userId] = ProfileData(userName, userAvatar);
+        userProfiles[userId] =
+            ProfileData(userName ?? simplifyUserId(userId), userAvatar);
         record['avatar'] = userProfiles[userId]?.getAvatarImage();
       }
-      var dispName = await profile.getDisplayName();
-      String? name = dispName.text();
-      if (name != null) {
-        record['display'] = name;
-      }
+      record['display'] = userName ?? simplifyUserId(userId);
       record['link'] = userId;
       mentionRecords.add(record);
       if (i % 3 == 0 || i == activeMembers.length - 1) {
@@ -225,7 +222,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             'messageLength': body.length,
           };
           repliedTo = types.TextMessage(
-            author: types.User(id: orgEventItem.sender()),
+            author: types.User(
+              id: orgEventItem.sender(),
+              firstName: simplifyUserId(orgEventItem.sender()),
+            ),
             id: originalId,
             createdAt: orgEventItem.originServerTs(),
             text: body,
@@ -240,7 +240,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             repliedToContent['content'] = base64Encode(data.asTypedList());
           });
           repliedTo = types.ImageMessage(
-            author: types.User(id: orgEventItem.sender()),
+            author: types.User(
+              id: orgEventItem.sender(),
+              firstName: simplifyUserId(orgEventItem.sender()),
+            ),
             id: originalId,
             createdAt: orgEventItem.originServerTs(),
             name: description.name(),
@@ -257,7 +260,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             repliedToContent['content'] = base64Encode(data.asTypedList());
           });
           repliedTo = types.AudioMessage(
-            author: types.User(id: orgEventItem.sender()),
+            author: types.User(
+              id: orgEventItem.sender(),
+              firstName: simplifyUserId(orgEventItem.sender()),
+            ),
             id: originalId,
             createdAt: orgEventItem.originServerTs(),
             name: description.name(),
@@ -275,7 +281,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             repliedToContent['content'] = base64Encode(data.asTypedList());
           });
           repliedTo = types.VideoMessage(
-            author: types.User(id: orgEventItem.sender()),
+            author: types.User(
+              id: orgEventItem.sender(),
+              firstName: simplifyUserId(orgEventItem.sender()),
+            ),
             id: originalId,
             createdAt: orgEventItem.originServerTs(),
             name: description.name(),
@@ -292,7 +301,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             'content': description.name(),
           };
           repliedTo = types.FileMessage(
-            author: types.User(id: orgEventItem.sender()),
+            author: types.User(
+              id: orgEventItem.sender(),
+              firstName: simplifyUserId(orgEventItem.sender()),
+            ),
             id: originalId,
             createdAt: orgEventItem.originServerTs(),
             name: description.name(),
@@ -395,26 +407,26 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
       case 'm.reaction':
       case 'm.room.encrypted':
+        var metadata = {'itemType': 'event', 'eventType': eventType};
+        if (inReplyTo != null) {
+          metadata['repliedTo'] = inReplyTo;
+        }
         return types.CustomMessage(
           author: author,
           createdAt: createdAt,
           id: eventId,
-          metadata: {
-            'itemType': 'event',
-            'eventType': eventType,
-            'repliedTo': inReplyTo,
-          },
+          metadata: metadata,
         );
       case 'm.room.redaction':
+        var metadata = {'itemType': 'event', 'eventType': eventType};
+        if (inReplyTo != null) {
+          metadata['repliedTo'] = inReplyTo;
+        }
         return types.CustomMessage(
           author: author,
           createdAt: createdAt,
           id: eventId,
-          metadata: {
-            'itemType': 'event',
-            'eventType': eventType,
-            'repliedTo': inReplyTo,
-          },
+          metadata: metadata,
         );
       case 'm.room.member':
         TextDesc? description = eventItem.textDesc();
@@ -690,7 +702,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // Pagination Control
   Future<void> handleEndReached() async {
-    bool hasMore = await timeline.paginateBackwards(10);
+    bool hasMore = await timeline!.paginateBackwards(10);
     debugPrint('backward pagination has more: $hasMore');
   }
 
@@ -701,15 +713,17 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   ) {
     var messages = ref.read(messagesProvider);
     final index = messages.indexWhere((x) => x.id == message.id);
-    final updatedMessage = (messages[index] as types.TextMessage).copyWith(
-      previewData: previewData,
-    );
+    if (index != -1) {
+      final updatedMessage = (messages[index] as types.TextMessage).copyWith(
+        previewData: previewData,
+      );
 
-    WidgetsBinding.instance.addPostFrameCallback(
-      (Duration duration) => ref
-          .read(messagesProvider.notifier)
-          .replaceMessage(index, updatedMessage),
-    );
+      WidgetsBinding.instance.addPostFrameCallback(
+        (Duration duration) => ref
+            .read(messagesProvider.notifier)
+            .replaceMessage(index, updatedMessage),
+      );
+    }
   }
 
   // image selection

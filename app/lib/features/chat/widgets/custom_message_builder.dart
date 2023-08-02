@@ -44,7 +44,7 @@ class CustomMessageBuilder extends StatelessWidget {
             ? const SizedBox.shrink()
             : Container(
                 width: sqrt(text.length) * 38.5,
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(18),
                 constraints: const BoxConstraints(minWidth: 57),
                 child: Text(
                   text,
@@ -72,7 +72,7 @@ class CustomMessageBuilder extends StatelessWidget {
             '***Failed to decrypt message. Re-request session keys.***';
         return Container(
           width: sqrt(text.length) * 38.5,
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(18),
           constraints: const BoxConstraints(minWidth: 57),
           child: Text(
             text,
@@ -83,7 +83,7 @@ class CustomMessageBuilder extends StatelessWidget {
         String text = '***This message has been deleted.***';
         return Container(
           width: sqrt(text.length) * 38.5,
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(18),
           constraints: const BoxConstraints(minWidth: 57),
           child: Text(
             text,
@@ -93,7 +93,7 @@ class CustomMessageBuilder extends StatelessWidget {
       case 'm.sticker':
         return Container(
           width: message.metadata?['width'],
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(18),
           constraints: const BoxConstraints(minWidth: 57),
           child: Image.memory(
             base64Decode(message.metadata?['base64']),

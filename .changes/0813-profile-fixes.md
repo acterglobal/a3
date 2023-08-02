@@ -1,0 +1,1 @@
+- Chat name and my profile page clean up

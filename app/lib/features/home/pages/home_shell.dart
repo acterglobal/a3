@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/activities/providers/notifications_providers.dart';
 // import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
@@ -69,6 +70,11 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     final syncState = ref.watch(syncStateProvider);
     final hasFirstSynced = !syncState.syncing;
     final errorMsg = syncState.errorMsg;
+
+    // we also need to globally hook the notifications list so it can issue
+    // desktop notifications if configured.
+    // ignore: unused_local_variable
+    final notifications = ref.watch(notificationsListProvider);
 
     if (errorMsg != null) {
       final softLogout = errorMsg == 'SoftLogout';

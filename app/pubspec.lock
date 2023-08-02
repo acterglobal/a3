@@ -65,6 +65,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.12"
+  awesome_notifications:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: acter-main
+      resolved-ref: de072718e11024cdab7cba966ecac725a4c0c939
+      url: "https://github.com/acterglobal/awesome_notifications"
+    source: git
+    version: "0.7.5-acter.main.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -297,6 +306,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.8"
+  desktop_notifications:
+    dependency: transitive
+    description:
+      name: desktop_notifications
+      sha256: "6d92694ad6e9297a862c5ff7dd6b8ff64c819972557754769f819d2209612927"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.3"
   diffutil_dart:
     dependency: transitive
     description:
@@ -471,7 +488,7 @@ packages:
     dependency: "direct dev"
     description:
       path: "."
-      ref: HEAD
+      ref: main
       resolved-ref: a8e7066aca4fbda06bd7e2a9c31f4f14d94b044c
       url: "https://github.com/acterglobal/flutter_gherkin"
     source: git
@@ -983,7 +1000,7 @@ packages:
     source: hosted
     version: "1.0.4"
   mockito:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: mockito
       sha256: dd61809f04da1838a680926de50a9e87385c1de91c6579629c3d1723946e8059
@@ -1744,10 +1761,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: dfdf0136e0aa7a1b474ea133e67cb0154a0acd2599c4f3ada3b49d38d38793ee
+      sha256: f2add6fa510d3ae152903412227bda57d0d5a8da61d2c39c1fb022c9429a41c0
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.5"
+    version: "5.0.6"
   xdg_directories:
     dependency: transitive
     description:

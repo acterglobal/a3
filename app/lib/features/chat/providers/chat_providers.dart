@@ -17,25 +17,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 // chats stream provider
-final chatStreamProvider =
-    StreamProvider.autoDispose<List<Convo>>((ref) async* {
+final chatStreamProvider = StreamProvider<List<Convo>>((ref) async* {
   final client = ref.watch(clientProvider)!;
   StreamSubscription<FfiListConvo>? subscription;
+  StreamController<List<Convo>> controller = StreamController<List<Convo>>();
   List<Convo> conversations = [];
   subscription = client.convosRx().listen((event) {
-    conversations.addAll(event.toList());
+    controller.add(event.toList());
     debugPrint('Acter Conversations Stream');
   });
+  await for (var convoList in controller.stream) {
+    conversations.addAll(convoList);
+    //FIXME: how to check empty chats ?
+    if (conversations.isNotEmpty) {
+      yield conversations;
+    }
+  }
   ref.onDispose(() async {
     debugPrint('disposing conversation stream');
     await subscription?.cancel();
   });
-  yield conversations;
 });
 
 // CHAT PAGE state provider
-final chatListProvider =
-    StateNotifierProvider.autoDispose<ChatListNotifier, ChatListState>(
+final chatListProvider = StateNotifierProvider<ChatListNotifier, ChatListState>(
   (ref) => ChatListNotifier(
     ref: ref,
     asyncChats: ref.watch(chatStreamProvider),
