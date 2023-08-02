@@ -690,7 +690,7 @@ class _GroupLinkSwitch extends StatelessWidget {
             child: Icon(Atlas.link, color: Colors.white),
           ),
           Text(
-            'Group Link',
+            'Chat Link',
             style: TextStyle(color: Colors.white),
           ),
           Spacer(),
@@ -730,7 +730,7 @@ class _CreateRoomInviteButton extends StatelessWidget {
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(bottom: 12, left: 16),
         child: const Text(
-          'Create Room Invite',
+          'Create Chat Invite',
           style: TextStyle(color: Colors.red),
         ),
       ),
@@ -764,7 +764,7 @@ class _CreateRoomInviteButton extends StatelessWidget {
                           vertical: 8,
                         ),
                         child: Text(
-                          'Invite a Friend to this room',
+                          'Invite a Friend to this chat',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,

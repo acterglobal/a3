@@ -149,13 +149,12 @@ class MyProfile extends ConsumerWidget {
               },
             ),
             PopupMenuButton(
-              color: Theme.of(context).colorScheme.surface,
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                 PopupMenuItem(
                   onTap: () => logoutConfirmationDialog(context, ref),
                   child: Row(
                     children: [
-                      const Icon(Atlas.exit_thin),
+                      const Icon(Atlas.exit_thin,),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: Text(
@@ -244,38 +243,6 @@ class MyProfile extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 25),
-              DefaultTabController(
-                length: 3,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    const TabBar(
-                      tabs: [
-                        Tab(
-                          child: Text('News'),
-                        ),
-                        Tab(
-                          child: Text('Feed'),
-                        ),
-                        Tab(
-                          child: Text('More details'),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height - 100,
-                      child: const TabBarView(
-                        physics: NeverScrollableScrollPhysics(),
-                        children: [
-                          Text(''),
-                          Text(''),
-                          Text(''),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              )
             ],
           ),
         ),
