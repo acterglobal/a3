@@ -480,6 +480,10 @@ impl SpaceHierarchyRoomInfo {
         self.chunk.room_type.clone()
     }
 
+    pub fn is_space(&self) -> bool {
+        matches!(self.chunk.room_type, Some(RoomType::Space))
+    }
+
     /// The stripped `m.space.child` events of the space-room.
     ///
     /// If the room is not a space-room, this should be empty.

@@ -15349,6 +15349,17 @@ class Api {
           int Function(
             int,
           )>();
+  late final _spaceHierarchyRoomInfoIsSpacePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_is_space");
+
+  late final _spaceHierarchyRoomInfoIsSpace =
+      _spaceHierarchyRoomInfoIsSpacePtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _spaceHierarchyRoomInfoAvatarUrlStrPtr = _lookup<
       ffi.NativeFunction<
           _SpaceHierarchyRoomInfoAvatarUrlStrReturn Function(
@@ -33147,6 +33158,17 @@ class SpaceHierarchyRoomInfo {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._spaceHierarchyRoomInfoGuestCanJoin(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  bool isSpace() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoIsSpace(
       tmp0,
     );
     final tmp3 = tmp1;

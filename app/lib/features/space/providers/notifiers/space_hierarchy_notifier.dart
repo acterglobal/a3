@@ -1,10 +1,4 @@
-import 'package:acter/common/notifications/notifications.dart';
-import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/activities/util.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 import 'dart:async';
@@ -15,6 +9,9 @@ class Next {
 
   const Next({this.isStart = false, this.next});
 }
+
+/// True or False whether this item matches the required filter;
+typedef bool FilterFn(ffi.SpaceHierarchyRoomInfo element);
 
 class SpaceHierarchyListState
     extends PagedState<Next?, ffi.SpaceHierarchyRoomInfo> {
@@ -47,6 +44,10 @@ class SpaceHierarchyListState
       previousPageKeys: sup.previousPageKeys,
     );
   }
+
+  SpaceHierarchyListState copyWithFilter(FilterFn filter) {
+    return copyWith(records: records?.where(filter).toList());
+  }
 }
 
 class SpaceHierarchyNotifier extends StateNotifier<SpaceHierarchyListState>
@@ -54,8 +55,9 @@ class SpaceHierarchyNotifier extends StateNotifier<SpaceHierarchyListState>
         PagedNotifierMixin<Next?, ffi.SpaceHierarchyRoomInfo,
             SpaceHierarchyListState> {
   final ffi.SpaceRelations spaceRel;
+  final FilterFn? filter;
 
-  SpaceHierarchyNotifier(this.spaceRel)
+  SpaceHierarchyNotifier(this.spaceRel, this.filter)
       : super(const SpaceHierarchyListState());
 
   @override
@@ -67,12 +69,15 @@ class SpaceHierarchyNotifier extends StateNotifier<SpaceHierarchyListState>
     final pageReq = page.next ?? '';
     try {
       final res = await spaceRel.queryHierarchy(pageReq);
-      final entries = await res.rooms();
+      var entries = (await res.rooms()).toList();
       final next = res.nextBatch();
       Next? finalPageKey;
       if (next != null) {
         // we are not at the end
         finalPageKey = Next(next: next);
+      }
+      if (filter != null) {
+        entries = entries.where(filter!).toList();
       }
       state = state.copyWith(
         records: page.isStart

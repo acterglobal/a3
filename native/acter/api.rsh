@@ -1191,6 +1191,7 @@ object SpaceHierarchyRoomInfo {
     fn num_joined_members() -> u64;
     fn world_readable() -> bool;
     fn guest_can_join() -> bool;
+    fn is_space() -> bool;
     fn avatar_url_str() -> Option<string>;
     fn join_rule_str() -> string;
 }
