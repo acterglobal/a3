@@ -12,7 +12,7 @@ use matrix_sdk::{
     },
     Client,
 };
-use matrix_sdk_ui::timeline::{PaginationOptions, Timeline, TimelineItem, VirtualTimelineItem};
+use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
 use std::sync::Arc;
 use tracing::{error, info};
 
@@ -165,36 +165,21 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
+                let mut back_pagination_status = timeline.back_pagination_status();
                 let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
                 timeline
                     .paginate_backwards(PaginationOptions::single_request(count))
                     .await?;
-
-                let mut is_loading_indicator = false;
-                if let Some(VectorDiff::Insert { index: 0, value }) = timeline_stream.next().await {
-                    if let TimelineItem::Virtual(VirtualTimelineItem::LoadingIndicator) =
-                        value.as_ref()
-                    {
-                        is_loading_indicator = true;
+                loop {
+                    if let Some(status) = back_pagination_status.next().await {
+                        if status == BackPaginationStatus::Idle {
+                            return Ok(true); // has more
+                        }
+                        if status == BackPaginationStatus::TimelineStartReached {
+                            return Ok(false); // no more
+                        }
                     }
                 }
-                if !is_loading_indicator {
-                    return Ok(true);
-                }
-
-                let mut is_timeline_start = false;
-                if let Some(VectorDiff::Set { index: 0, value }) = timeline_stream.next().await {
-                    if let TimelineItem::Virtual(VirtualTimelineItem::TimelineStart) =
-                        value.as_ref()
-                    {
-                        is_timeline_start = true;
-                    }
-                }
-                if !is_timeline_start {
-                    return Ok(true);
-                }
-
-                Ok(false)
             })
             .await?
     }

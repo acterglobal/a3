@@ -81,8 +81,7 @@ use matrix_sdk::{
     },
 };
 use matrix_sdk_ui::timeline::{
-    EventTimelineItem, MemberProfileChange, MembershipChange, TimelineDetails, TimelineItem,
-    TimelineItemContent, VirtualTimelineItem,
+    EventTimelineItem, MembershipChange, TimelineItem, TimelineItemContent, VirtualTimelineItem,
 };
 use ruma::serde::Raw;
 use std::{collections::HashMap, sync::Arc};
@@ -3107,23 +3106,11 @@ impl RoomMessage {
                     Some(RoomVirtualItem::new("DayDivider".to_string(), desc)),
                 )
             }
-            VirtualTimelineItem::LoadingIndicator => RoomMessage::new(
-                "virtual".to_string(),
-                room_id,
-                None,
-                Some(RoomVirtualItem::new("LoadingIndicator".to_string(), None)),
-            ),
             VirtualTimelineItem::ReadMarker => RoomMessage::new(
                 "virtual".to_string(),
                 room_id,
                 None,
                 Some(RoomVirtualItem::new("ReadMarker".to_string(), None)),
-            ),
-            VirtualTimelineItem::TimelineStart => RoomMessage::new(
-                "virtual".to_string(),
-                room_id,
-                None,
-                Some(RoomVirtualItem::new("TimelineStart".to_string(), None)),
             ),
         }
     }

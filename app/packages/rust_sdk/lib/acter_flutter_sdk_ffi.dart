@@ -26152,7 +26152,7 @@ class RoomVirtualItem {
 
   RoomVirtualItem._(this._api, this._box);
 
-  /// one of DayDivider/LoadingIndicator/ReadMarker/TimelineStart
+  /// DayDivider or ReadMarker
   String eventType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -27270,7 +27270,7 @@ class TimelineStream {
     return tmp2;
   }
 
-  /// Get the next count messages backwards,
+  /// Get the next count messages backwards, and return whether it has more items
   Future<bool> paginateBackwards(
     int count,
   ) {

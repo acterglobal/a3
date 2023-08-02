@@ -463,7 +463,7 @@ object RoomEventItem {
 }
 
 object RoomVirtualItem {
-    /// one of DayDivider/LoadingIndicator/ReadMarker/TimelineStart
+    /// DayDivider or ReadMarker
     fn event_type() -> string;
 
     /// contains description text
@@ -618,7 +618,7 @@ object TimelineStream {
     /// Fires whenever new event arrived
     fn next() -> Future<Result<RoomMessage>>;
 
-    /// Get the next count messages backwards,
+    /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
     /// modify the room message
