@@ -75,7 +75,7 @@ pub async fn guest_client(
                 .device_id
                 .clone()
                 .context("device id is given by server")?;
-            let session = Session {
+            let auth_session = Session {
                 meta: SessionMeta {
                     user_id: response.user_id.clone(),
                     device_id,
@@ -85,7 +85,7 @@ pub async fn guest_client(
                     refresh_token: response.refresh_token.clone(),
                 },
             };
-            client.restore_session(session).await?;
+            client.restore_session(auth_session).await?;
             let state = ClientStateBuilder::default().is_guest(true).build()?;
             let c = Client::new(client, state).await?;
             info!("Successfully created guest login: {:?}", response.user_id);
@@ -104,11 +104,21 @@ pub async fn login_with_token_under_config(
         homeurl,
         is_guest,
     } = serde_json::from_str(&restore_token)?;
-    let user_id = session.meta().user_id.to_string();
+    let user_id = session.user_id.to_string();
     RUNTIME
         .spawn(async move {
             let client = config.homeserver_url(homeurl).build().await?;
-            client.restore_session(session).await?;
+            let auth_session = Session {
+                meta: SessionMeta {
+                    user_id: session.user_id.clone(),
+                    device_id: session.device_id.clone(),
+                },
+                tokens: SessionTokens {
+                    access_token: session.access_token.clone(),
+                    refresh_token: None,
+                },
+            };
+            client.restore_session(auth_session).await?;
             let state = ClientStateBuilder::default().is_guest(is_guest).build()?;
             let c = Client::new(client.clone(), state).await?;
             info!(
@@ -126,8 +136,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         homeurl,
         is_guest,
     } = serde_json::from_str(&restore_token)?;
-    let user_id = session.meta().user_id.to_string();
-    let config = platform::new_client_config(base_path, user_id.clone(), false).await?;
+    let config = platform::new_client_config(base_path, session.user_id.to_string(), false).await?;
     login_with_token_under_config(restore_token, config).await
 }
 

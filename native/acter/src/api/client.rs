@@ -1,6 +1,6 @@
 use acter_core::{
     client::CoreClient, executor::Executor, models::AnyActerModel, spaces::is_acter_space,
-    store::Store, templates::Engine, RestoreToken,
+    store::Store, templates::Engine, CustomAuthSession, RestoreToken,
 };
 use anyhow::{Context, Result};
 use core::time::Duration;
@@ -672,7 +672,11 @@ impl Client {
             Err(e) => false,
         };
         let result = serde_json::to_string(&RestoreToken {
-            session,
+            session: CustomAuthSession {
+                user_id: session.meta().user_id.clone(),
+                device_id: session.meta().device_id.clone(),
+                access_token: session.access_token().to_string(),
+            },
             homeurl,
             is_guest,
         })?;
