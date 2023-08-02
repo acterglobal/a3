@@ -128,13 +128,13 @@ object NewsEntryDraft {
     fn add_image_slide(body: string, url: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> Future<Result<bool>>;
 
     /// create news slide for audio msg
-    fn add_audio_slide(body: string, url: string, mimetype: string, secs: Option<u32>, size: Option<u32>);
+    fn add_audio_slide(body: string, url: string, secs: Option<u32>, mimetype: Option<string>, size: Option<u32>);
 
     /// create news slide for video msg
-    fn add_video_slide(body: string, url: string, mimetype: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, size: Option<u32>, blurhash: Option<string>);
+    fn add_video_slide(body: string, url: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, mimetype: Option<string>, size: Option<u32>, blurhash: Option<string>);
 
     /// create news slide for file msg
-    fn add_file_slide(body: string, url: string, mimetype: string, size: Option<u32>);
+    fn add_file_slide(body: string, url: string, mimetype: Option<string>, size: Option<u32>);
 
     /// clear slides
     fn unset_slides();
