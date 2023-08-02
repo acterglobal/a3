@@ -355,7 +355,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     Map<String, dynamic> reactions = {};
     for (var key in eventItem.reactionKeys()) {
       String k = key.toDartString();
-      reactions[k] = eventItem.reactionDesc(k);
+      reactions[k] = eventItem.reactionItems(k);
     }
     // state event
     switch (eventType) {

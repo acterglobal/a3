@@ -4,7 +4,7 @@ use matrix_sdk::ruma::{
         message::{AudioInfo, FileInfo, VideoInfo},
         ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
     },
-    OwnedUserId,
+    MilliSecondsSinceUnixEpoch, OwnedUserId,
 };
 
 use super::api::FfiBuffer;
@@ -381,21 +381,24 @@ impl FileDesc {
 }
 
 #[derive(Clone, Debug)]
-pub struct ReactionDesc {
-    count: u32,
-    senders: Vec<OwnedUserId>,
+pub struct ReactionItem {
+    sender_id: OwnedUserId,
+    timestamp: MilliSecondsSinceUnixEpoch,
 }
 
-impl ReactionDesc {
-    pub(crate) fn new(count: u32, senders: Vec<OwnedUserId>) -> Self {
-        ReactionDesc { count, senders }
+impl ReactionItem {
+    pub(crate) fn new(sender_id: OwnedUserId, timestamp: MilliSecondsSinceUnixEpoch) -> Self {
+        ReactionItem {
+            sender_id,
+            timestamp,
+        }
     }
 
-    pub fn count(&self) -> u32 {
-        self.count
+    pub fn sender_id(&self) -> OwnedUserId {
+        self.sender_id.clone()
     }
 
-    pub fn senders(&self) -> Vec<String> {
-        self.senders.iter().map(|x| x.to_string()).collect()
+    pub fn timestamp(&self) -> u64 {
+        self.timestamp.get().into()
     }
 }

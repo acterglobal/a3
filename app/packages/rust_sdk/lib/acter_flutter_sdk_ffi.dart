@@ -11810,18 +11810,18 @@ class Api {
           int Function(
             int,
           )>();
-  late final _roomEventItemReactionDescPtr = _lookup<
+  late final _roomEventItemReactionItemsPtr = _lookup<
       ffi.NativeFunction<
-          _RoomEventItemReactionDescReturn Function(
+          _RoomEventItemReactionItemsReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__RoomEventItem_reaction_desc");
+          )>>("__RoomEventItem_reaction_items");
 
-  late final _roomEventItemReactionDesc =
-      _roomEventItemReactionDescPtr.asFunction<
-          _RoomEventItemReactionDescReturn Function(
+  late final _roomEventItemReactionItems =
+      _roomEventItemReactionItemsPtr.asFunction<
+          _RoomEventItemReactionItemsReturn Function(
             int,
             int,
             int,
@@ -12210,23 +12210,23 @@ class Api {
       _FileDescThumbnailSourceReturn Function(
         int,
       )>();
-  late final _reactionDescCountPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Uint32 Function(
-            ffi.Int64,
-          )>>("__ReactionDesc_count");
-
-  late final _reactionDescCount = _reactionDescCountPtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _reactionDescSendersPtr = _lookup<
+  late final _reactionItemSenderIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__ReactionDesc_senders");
+          )>>("__ReactionItem_sender_id");
 
-  late final _reactionDescSenders = _reactionDescSendersPtr.asFunction<
+  late final _reactionItemSenderId = _reactionItemSenderIdPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _reactionItemTimestampPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__ReactionItem_timestamp");
+
+  late final _reactionItemTimestamp = _reactionItemTimestampPtr.asFunction<
       int Function(
         int,
       )>();
@@ -21426,6 +21426,55 @@ class Api {
   late final _ffiListPublicSearchResultItemInsert =
       _ffiListPublicSearchResultItemInsertPtr
           .asFunction<void Function(int, int, int)>();
+  FfiListReactionItem createFfiListReactionItem() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListReactionItemCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListReactionItem");
+    return FfiListReactionItem._(this, list_box);
+  }
+
+  late final _ffiListReactionItemCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListReactionItemCreate");
+
+  late final _ffiListReactionItemCreate =
+      _ffiListReactionItemCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListReactionItemLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListReactionItemLen");
+
+  late final _ffiListReactionItemLen =
+      _ffiListReactionItemLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListReactionItemElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListReactionItemElementAt");
+
+  late final _ffiListReactionItemElementAt =
+      _ffiListReactionItemElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListReactionItemRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListReactionItemRemove");
+
+  late final _ffiListReactionItemRemove =
+      _ffiListReactionItemRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListReactionItemAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListReactionItemAdd");
+
+  late final _ffiListReactionItemAdd =
+      _ffiListReactionItemAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListReactionItemInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListReactionItemInsert");
+
+  late final _ffiListReactionItemInsert =
+      _ffiListReactionItemInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListReceiptRecord createFfiListReceiptRecord() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListReceiptRecordCreate());
@@ -26092,7 +26141,7 @@ class RoomEventItem {
   }
 
   /// the details that users reacted using this emote key in this message
-  ReactionDesc? reactionDesc(
+  FfiListReactionItem? reactionItems(
     String key,
   ) {
     final tmp1 = key;
@@ -26110,7 +26159,7 @@ class RoomEventItem {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._roomEventItemReactionDesc(
+    final tmp5 = _api._roomEventItemReactionItems(
       tmp0,
       tmp2,
       tmp3,
@@ -26122,9 +26171,10 @@ class RoomEventItem {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-    final tmp8_1 = _Box(_api, tmp8_0, "drop_box_ReactionDesc");
+    final tmp8_1 = _Box(_api, tmp8_0, "drop_box_FfiListReactionItem");
     tmp8_1._finalizer = _api._registerFinalizer(tmp8_1);
-    final tmp6 = ReactionDesc._(_api, tmp8_1);
+    final tmp9 = FfiListReactionItem._(_api, tmp8_1);
+    final tmp6 = tmp9;
     return tmp6;
   }
 
@@ -27094,37 +27144,36 @@ class FileDesc {
   }
 }
 
-class ReactionDesc {
+class ReactionItem {
   final Api _api;
   final _Box _box;
 
-  ReactionDesc._(this._api, this._box);
+  ReactionItem._(this._api, this._box);
 
-  /// how many times this key was clicked
-  int count() {
+  /// who sent reaction
+  UserId senderId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._reactionDescCount(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3;
-    return tmp2;
-  }
-
-  /// which users selected this key
-  FfiListFfiString senders() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._reactionDescSenders(
+    final tmp1 = _api._reactionItemSenderId(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp4 = FfiListFfiString._(_api, tmp3_1);
-    final tmp2 = tmp4;
+    final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// when reaction was sent
+  int timestamp() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionItemTimestamp(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
     return tmp2;
   }
 
@@ -39485,7 +39534,7 @@ class _RoomEventItemInReplyToReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _RoomEventItemReactionDescReturn extends ffi.Struct {
+class _RoomEventItemReactionItemsReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -44238,6 +44287,67 @@ class FfiListPublicSearchResultItem extends Iterable<PublicSearchResultItem>
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, PublicSearchResultItem element) {
     _api._ffiListPublicSearchResultItemInsert(
+        _box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListReactionItem extends Iterable<ReactionItem>
+    implements CustomIterable<ReactionItem> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListReactionItem._(this._api, this._box);
+
+  @override
+  Iterator<ReactionItem> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListReactionItemLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  ReactionItem elementAt(int index) {
+    final address = _api._ffiListReactionItemElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return ReactionItem._(_api, reference);
+  }
+
+  ReactionItem operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  ReactionItem remove(int index) {
+    final address = _api._ffiListReactionItemRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_ReactionItem");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return ReactionItem._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(ReactionItem element) {
+    _api._ffiListReactionItemAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, ReactionItem element) {
+    _api._ffiListReactionItemInsert(
         _box.borrow(), index, element._box.borrow());
     element._box.move();
   }
