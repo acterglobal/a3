@@ -45,7 +45,7 @@ class BubbleBuilder extends ConsumerWidget {
     return isMemberEvent
         ? child
         : SwipeTo(
-            onLeftSwipe: isMemberEvent || !isAuthor()
+            onLeftSwipe: !isAuthor()
                 ? null
                 : () {
                     ref.read(chatInputProvider.notifier).setReplyWidget(child);
@@ -55,7 +55,7 @@ class BubbleBuilder extends ConsumerWidget {
                       ref.read(chatInputProvider.notifier).toggleReplyView();
                     }
                   },
-            onRightSwipe: isMemberEvent || isAuthor()
+            onRightSwipe: isAuthor()
                 ? null
                 : () {
                     ref.read(chatInputProvider.notifier).setReplyWidget(child);
