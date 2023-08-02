@@ -2736,7 +2736,7 @@ impl RoomMessage {
         for (key, value) in event.reactions().iter() {
             let reaction_items = value
                 .senders()
-                .map(|x| ReactionItem::new(x.sender_id.clone(), x.timestamp.clone()))
+                .map(|x| ReactionItem::new(x.sender_id.clone(), x.timestamp))
                 .collect::<Vec<ReactionItem>>();
             reactions.insert(key.clone(), reaction_items);
         }
