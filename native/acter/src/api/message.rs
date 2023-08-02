@@ -374,7 +374,10 @@ impl RoomMessage {
         )
     }
 
-    pub(crate) fn call_hangup_from_event(event: OriginalCallHangupEvent, room_id: OwnedRoomId) -> Self {
+    pub(crate) fn call_hangup_from_event(
+        event: OriginalCallHangupEvent,
+        room_id: OwnedRoomId,
+    ) -> Self {
         let text_desc = TextDesc::new(
             format!("hangup this call because {}", event.content.reason),
             None,
