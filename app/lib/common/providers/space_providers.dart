@@ -34,8 +34,11 @@ final maybeSpaceProvider =
 /// Get the user's membership for a specific space based off the spaceId
 /// will throw if the client doesn't kow the space
 final spaceMembershipProvider =
-    FutureProvider.autoDispose.family<Member, String>((ref, spaceId) async {
+    FutureProvider.autoDispose.family<Member?, String>((ref, spaceId) async {
   final space = await ref.watch(spaceProvider(spaceId).future);
+  if (!space.isJoined()) {
+    return null;
+  }
   return await space.getMyMembership();
 });
 
@@ -44,8 +47,7 @@ final spaceMembershipProvider =
 final maybeSpaceInfoProvider =
     FutureProvider.autoDispose.family<SpaceItem?, String>((ref, spaceId) async {
   final space = await ref.watch(maybeSpaceProvider(spaceId).future);
-  if (space == null) {
-    // we are doing a cheeky on here and assume that means, we aren't a member
+  if (space == null || !space.isJoined()) {
     return null;
   }
   final profileData = await ref.watch(spaceProfileDataProvider(space).future);
@@ -105,6 +107,7 @@ class SpaceItem {
 }
 
 class SpaceRelationsOverview {
+  bool hasMoreChildren;
   SpaceRelations rel;
   Member? membership;
   List<SpaceItem> children;
@@ -119,6 +122,7 @@ class SpaceRelationsOverview {
     required this.mainParent,
     required this.parents,
     required this.otherRelations,
+    required this.hasMoreChildren,
   });
 }
 
@@ -182,7 +186,7 @@ final briefSpaceItemWithMembershipProvider =
   return SpaceItem(
     roomId: space.getRoomId().toString(),
     space: space,
-    membership: await space.getMyMembership(),
+    membership: space.isJoined() ? await space.getMyMembership() : null,
     activeMembers: [],
     spaceProfileData: profileData,
   );
@@ -196,10 +200,15 @@ final spaceItemsProvider =
   final spaces = await ref.watch(spacesProvider.future);
   List<SpaceItem> items = [];
   for (final element in spaces) {
-    List<Member> members = (await element.activeMembers()).toList();
     final profileData = await ref.watch(
       spaceProfileDataProvider(element).future,
     );
+    late List<Member> members;
+    if (element.isJoined()) {
+      members = (await element.activeMembers()).toList();
+    } else {
+      members = [];
+    }
     var item = SpaceItem(
       roomId: element.getRoomId().toString(),
       activeMembers: members,
@@ -216,6 +225,9 @@ final spaceItemsProvider =
 final spaceMembersProvider = FutureProvider.autoDispose
     .family<List<Member>, String>((ref, roomIdOrAlias) async {
   final space = await ref.watch(spaceProvider(roomIdOrAlias).future);
+  if (!space.isJoined()) {
+    return [];
+  }
   final members = await space.activeMembers();
   return members.toList();
 });
@@ -226,6 +238,9 @@ final spaceMembersProvider = FutureProvider.autoDispose
 final spaceInvitedMembersProvider = FutureProvider.autoDispose
     .family<List<Member>, String>((ref, roomIdOrAlias) async {
   final space = await ref.watch(spaceProvider(roomIdOrAlias).future);
+  if (!space.isJoined()) {
+    return [];
+  }
   final members = await space.invitedMembers();
   return members.toList();
 });
@@ -281,28 +296,37 @@ final relatedSpaceItemsProvider = FutureProvider.autoDispose
     .family<SpaceRelationsOverview, String>((ref, spaceId) async {
   final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
   final membership = await ref.watch(spaceMembershipProvider(spaceId).future);
+  bool hasMoreChildren = false;
   final List<SpaceItem> children = [];
   List<SpaceItem> otherRelated = [];
   for (final related in relatedSpaces.children()) {
     String targetType = related.targetType();
     if (targetType != 'ChatRoom') {
       final roomId = related.roomId().toString();
-      final space = await ref.watch(spaceProvider(roomId).future);
+      try {
+        final space = await ref.watch(spaceProvider(roomId).future);
+        if (!space.isJoined()) {
+          hasMoreChildren = true;
+          continue;
+        }
 
-      List<Member> members = (await space.activeMembers()).toList();
-      final profileData = await ref.watch(
-        spaceProfileDataProvider(space).future,
-      );
-      var item = SpaceItem(
-        space: space,
-        roomId: space.getRoomId().toString(),
-        activeMembers: members,
-        spaceProfileData: profileData,
-      );
-      if (await space.isChildSpaceOf(spaceId)) {
-        children.add(item);
-      } else {
-        otherRelated.add(item);
+        List<Member> members = (await space.activeMembers()).toList();
+        final profileData = await ref.watch(
+          spaceProfileDataProvider(space).future,
+        );
+        var item = SpaceItem(
+          space: space,
+          roomId: space.getRoomId().toString(),
+          activeMembers: members,
+          spaceProfileData: profileData,
+        );
+        if (await space.isChildSpaceOf(spaceId)) {
+          children.add(item);
+        } else {
+          otherRelated.add(item);
+        }
+      } catch (e) {
+        hasMoreChildren = true;
       }
     }
   }
@@ -314,18 +338,25 @@ final relatedSpaceItemsProvider = FutureProvider.autoDispose
     String targetType = mainSpace.targetType();
     if (targetType != 'ChatRoom') {
       final roomId = mainSpace.roomId().toString();
-      final space = await ref.watch(spaceProvider(roomId).future);
-
-      List<Member> members = (await space.activeMembers()).toList();
-      final profileData = await ref.watch(
-        spaceProfileDataProvider(space).future,
-      );
-      mainParent = SpaceItem(
-        space: space,
-        roomId: space.getRoomId().toString(),
-        activeMembers: members,
-        spaceProfileData: profileData,
-      );
+      try {
+        final space = await ref.watch(spaceProvider(roomId).future);
+        if (space.isJoined()) {
+          List<Member> members = (await space.activeMembers()).toList();
+          final profileData = await ref.watch(
+            spaceProfileDataProvider(space).future,
+          );
+          mainParent = SpaceItem(
+            space: space,
+            roomId: space.getRoomId().toString(),
+            activeMembers: members,
+            spaceProfileData: profileData,
+          );
+          // } else {
+          //   hasMoreParents = true;
+        }
+      } catch (e) {
+        debugPrint('Loading main Parent of $spaceId failed: $e');
+      }
     }
   }
 
@@ -333,19 +364,24 @@ final relatedSpaceItemsProvider = FutureProvider.autoDispose
     String targetType = related.targetType();
     if (targetType != 'ChatRoom') {
       final roomId = related.roomId().toString();
-      final space = await ref.watch(spaceProvider(roomId).future);
-
-      List<Member> members = (await space.activeMembers()).toList();
-      final profileData = await ref.watch(
-        spaceProfileDataProvider(space).future,
-      );
-      var item = SpaceItem(
-        space: space,
-        roomId: space.getRoomId().toString(),
-        activeMembers: members,
-        spaceProfileData: profileData,
-      );
-      parents.add(item);
+      try {
+        final space = await ref.watch(spaceProvider(roomId).future);
+        if (space.isJoined()) {
+          List<Member> members = (await space.activeMembers()).toList();
+          final profileData = await ref.watch(
+            spaceProfileDataProvider(space).future,
+          );
+          var item = SpaceItem(
+            space: space,
+            roomId: space.getRoomId().toString(),
+            activeMembers: members,
+            spaceProfileData: profileData,
+          );
+          parents.add(item);
+        }
+      } catch (e) {
+        debugPrint('Loading other Parents of $spaceId failed: $e');
+      }
     }
   }
   return SpaceRelationsOverview(
@@ -355,5 +391,6 @@ final relatedSpaceItemsProvider = FutureProvider.autoDispose
     children: children,
     otherRelations: otherRelated,
     mainParent: mainParent,
+    hasMoreChildren: hasMoreChildren,
   );
 });

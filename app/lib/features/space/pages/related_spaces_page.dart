@@ -80,6 +80,56 @@ class RelatedSpacesPage extends ConsumerWidget {
               }
 
               final canLinkSpace = checkPermission('CanLinkSpaces');
+              void addSubspaceHeading(String title) {
+                List<Widget> children = [Expanded(child: Text(title))];
+                if (canLinkSpace) {
+                  children.add(
+                    PopupMenuButton(
+                      icon: Icon(
+                        Atlas.plus_circle,
+                        color: Theme.of(context).colorScheme.neutral5,
+                      ),
+                      iconSize: 28,
+                      color: Theme.of(context).colorScheme.surface,
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                        PopupMenuItem(
+                          onTap: () => context.pushNamed(
+                            Routes.createSpace.name,
+                            queryParameters: {'parentSpaceId': spaceIdOrAlias},
+                          ),
+                          child: const Row(
+                            children: <Widget>[
+                              Text('Create Subspace'),
+                              Spacer(),
+                              Icon(Atlas.connection),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          onTap: () => customMsgSnackbar(
+                            context,
+                            'Link space feature isn\'t implemented yet',
+                          ),
+                          child: const Row(
+                            children: <Widget>[
+                              Text('Add existing Space'),
+                              Spacer(),
+                              Icon(Atlas.link_chain_thin),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                items.add(
+                  SliverToBoxAdapter(
+                    child: Row(
+                      children: children,
+                    ),
+                  ),
+                );
+              }
 
               if (spaces.parents.isNotEmpty || spaces.mainParent != null) {
                 List<Widget> children = [
@@ -159,61 +209,32 @@ class RelatedSpacesPage extends ConsumerWidget {
                   );
                 }
               }
-
-              if (spaces.children.isNotEmpty || canLinkSpace) {
-                List<Widget> children = [
-                  const Expanded(child: Text('Subspaces'))
-                ];
-                if (canLinkSpace) {
-                  children.add(
-                    PopupMenuButton(
-                      icon: Icon(
-                        Atlas.plus_circle,
-                        color: Theme.of(context).colorScheme.neutral5,
-                      ),
-                      iconSize: 28,
-                      color: Theme.of(context).colorScheme.surface,
-                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                        PopupMenuItem(
-                          onTap: () => context.pushNamed(
-                            Routes.createSpace.name,
-                            queryParameters: {'parentSpaceId': spaceIdOrAlias},
-                          ),
-                          child: const Row(
-                            children: <Widget>[
-                              Text('Create Subspace'),
-                              Spacer(),
-                              Icon(Atlas.connection),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          onTap: () => customMsgSnackbar(
-                            context,
-                            'Link space feature isn\'t implemented yet',
-                          ),
-                          child: const Row(
-                            children: <Widget>[
-                              Text('Add existing Space'),
-                              Spacer(),
-                              Icon(Atlas.link_chain_thin),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
+              if (spaces.children.isNotEmpty) {
+                if (spaces.hasMoreChildren) {
+                  addSubspaceHeading('My Subspaces');
+                } else {
+                  addSubspaceHeading('Subspaces');
                 }
                 items.add(
-                  SliverToBoxAdapter(
-                    child: Row(
-                      children: children,
+                  SliverGrid.builder(
+                    itemCount: spaces.children.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: max(1, min(widthCount, minCount)),
+                      childAspectRatio: 4,
                     ),
+                    itemBuilder: (context, index) {
+                      final space = spaces.children[index];
+                      return ChildItem(key: Key(space.roomId), space: space);
+                    },
                   ),
                 );
               }
-
-              if (spaces.children.isNotEmpty) {
+              if (spaces.hasMoreChildren) {
+                if (spaces.children.isEmpty) {
+                  addSubspaceHeading('Subspaces');
+                } else {
+                  addSubspaceHeading('More Subspaces');
+                }
                 items.add(
                   RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
                     firstPageKey: const Next(isStart: true),
@@ -265,6 +286,13 @@ class RelatedSpacesPage extends ConsumerWidget {
                   //   },
                   // ),
                 );
+              }
+
+              if (spaces.children.isEmpty &&
+                  !spaces.hasMoreChildren &&
+                  canLinkSpace) {
+                // fallback if there are no subspaces show, allow admins to access the buttons
+                addSubspaceHeading('Subspaces');
               }
 
               if (spaces.otherRelations.isNotEmpty || canLinkSpace) {

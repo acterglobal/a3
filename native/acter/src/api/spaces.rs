@@ -580,6 +580,10 @@ impl Space {
         self.room_id().to_string()
     }
 
+    pub fn is_joined(&self) -> bool {
+        matches!(self.inner.room, SdkRoom::Joined(_))
+    }
+
     pub async fn set_acter_space_states(&self) -> Result<()> {
         let SdkRoom::Joined(ref joined) = self.inner.room else {
             bail!("You can't convert a space you didn't join");
