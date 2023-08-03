@@ -1474,7 +1474,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen"
 version = "0.1.13"
-source = "git+https://github.com/acterglobal/ffi-gen?branch=leaking-no-drop#781f49b0c242cfdba2f2c7d39eee2a8e737dd23d"
+source = "git+https://github.com/acterglobal/ffi-gen?branch=leaking-no-drop#a28c123e440e6d32bf9b6e97f02debbbae3f38bd"
 dependencies = [
  "anyhow",
  "genco",
@@ -1487,7 +1487,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen-macro"
 version = "0.1.2"
-source = "git+https://github.com/acterglobal/ffi-gen?branch=leaking-no-drop#781f49b0c242cfdba2f2c7d39eee2a8e737dd23d"
+source = "git+https://github.com/acterglobal/ffi-gen?branch=leaking-no-drop#a28c123e440e6d32bf9b6e97f02debbbae3f38bd"
 dependencies = [
  "ffi-gen",
  "proc-macro2 1.0.55",
