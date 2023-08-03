@@ -4,6 +4,7 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
@@ -204,56 +205,21 @@ class _ShellHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Row(
         children: <Widget>[
-          Wrap(
-            direction: Axis.horizontal,
-            spacing: -20,
-            children: [
-              ActerAvatar(
-                mode: DisplayMode.Space,
-                displayName: spaceProfile.displayName,
-                tooltip: TooltipStyle.None,
-                uniqueId: spaceId,
-                avatar: spaceProfile.getAvatarImage(),
-                size: 80,
-              ),
-              canonicalParent.when(
-                data: (parent) {
-                  if (parent == null) {
-                    return const SizedBox(width: 20);
-                  }
-                  return Column(
-                    children: <Widget>[
-                      const SizedBox(height: 50),
-                      Tooltip(
-                        message: parent.profile.displayName,
-                        child: InkWell(
-                          onTap: () {
-                            final roomId = parent.space.getRoomId();
-                            context.go('/$roomId');
-                          },
-                          child: ActerAvatar(
-                            mode: DisplayMode.Space,
-                            displayName: parent.profile.displayName,
-                            uniqueId: parent.space.getRoomId().toString(),
-                            avatar: parent.profile.getAvatarImage(),
-                            size: 40,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-                error: (error, stackTrace) => Text(
-                  'Failed to load canonical parent due to $error',
-                ),
-                loading: () => const CircularProgressIndicator(),
-              ),
-            ],
+          SpaceParentBadge(
+            spaceId: spaceId,
+            badgeSize: 40,
+            child: ActerAvatar(
+              mode: DisplayMode.Space,
+              displayName: spaceProfile.displayName,
+              tooltip: TooltipStyle.None,
+              uniqueId: spaceId,
+              avatar: spaceProfile.getAvatarImage(),
+              size: 80,
+            ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
