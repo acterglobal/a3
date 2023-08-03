@@ -2,6 +2,7 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -15,43 +16,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
-
-class ChildItem extends StatelessWidget {
-  final SpaceItem space;
-  const ChildItem({Key? key, required this.space}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final profile = space.spaceProfileData;
-    final roomId = space.roomId;
-    return Card(
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.inversePrimary,
-          width: 1.5,
-        ),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      color: Theme.of(context).colorScheme.surface,
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(15),
-        onTap: () => context.go('/$roomId'),
-        title: Text(
-          profile.displayName ?? roomId,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        leading: ActerAvatar(
-          mode: DisplayMode.Space,
-          displayName: profile.displayName,
-          uniqueId: roomId,
-          avatar: profile.getAvatarImage(),
-          size: 48,
-        ),
-        trailing: const Icon(Icons.more_vert),
-      ),
-    );
-  }
-}
 
 class RelatedSpacesPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -188,7 +152,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                 final space = spaces.mainParent!;
                 items.add(
                   SliverToBoxAdapter(
-                    child: ChildItem(key: Key(space.roomId), space: space),
+                    child:
+                        SpaceCard(key: Key(space.roomId), space: space.space!),
                   ),
                 );
               }
@@ -203,7 +168,10 @@ class RelatedSpacesPage extends ConsumerWidget {
                       ),
                       itemBuilder: (context, index) {
                         final space = spaces.parents[index];
-                        return ChildItem(key: Key(space.roomId), space: space);
+                        return SpaceCard(
+                          key: Key(space.roomId),
+                          space: space.space!,
+                        );
                       },
                     ),
                   );
@@ -224,7 +192,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                     ),
                     itemBuilder: (context, index) {
                       final space = spaces.children[index];
-                      return ChildItem(key: Key(space.roomId), space: space);
+                      return SpaceCard(
+                          key: Key(space.roomId), space: space.space!);
                     },
                   ),
                 );
@@ -333,7 +302,10 @@ class RelatedSpacesPage extends ConsumerWidget {
                     ),
                     itemBuilder: (context, index) {
                       final space = spaces.otherRelations[index];
-                      return ChildItem(key: Key(space.roomId), space: space);
+                      return SpaceCard(
+                        key: Key(space.roomId),
+                        space: space.space!,
+                      );
                     },
                   ),
                 );
