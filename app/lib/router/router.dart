@@ -40,6 +40,7 @@ import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/related_spaces_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
+import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/tasks/pages/create_task_sidesheet.dart';
 import 'package:acter/features/tasks/pages/tasks_page.dart';
@@ -632,6 +633,22 @@ List<RouteBase> makeRoutes(Ref ref) {
                 return NoTransitionPage(
                   key: state.pageKey,
                   child: SpaceChatsPage(
+                    spaceIdOrAlias: state.pathParameters['spaceId']!,
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: Routes.spaceTasks.name,
+              path: Routes.spaceTasks.route,
+              redirect: authGuardRedirect,
+              pageBuilder: (context, state) {
+                ref
+                    .read(selectedTabKeyProvider.notifier)
+                    .switchTo(const Key('tasks'));
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: SpaceTasksPage(
                     spaceIdOrAlias: state.pathParameters['spaceId']!,
                   ),
                 );

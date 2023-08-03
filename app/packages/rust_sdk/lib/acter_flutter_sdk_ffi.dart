@@ -14980,6 +14980,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _taskListSpaceIdPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListSpaceIdReturn Function(
+            ffi.Int64,
+          )>>("__TaskList_space_id");
+
+  late final _taskListSpaceId = _taskListSpaceIdPtr.asFunction<
+      _TaskListSpaceIdReturn Function(
+        int,
+      )>();
   late final _taskListDraftNamePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -32365,6 +32375,36 @@ class TaskList {
     return tmp2;
   }
 
+  /// the id of the space this TaskList belongs to
+  String spaceId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListSpaceId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -39924,6 +39964,15 @@ class _TaskListUpdateBuilderReturn extends ffi.Struct {
   external int arg3;
   @ffi.Int64()
   external int arg4;
+}
+
+class _TaskListSpaceIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _SpaceRelationTargetTypeReturn extends ffi.Struct {

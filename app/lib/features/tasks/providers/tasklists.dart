@@ -31,3 +31,9 @@ final tasksListsProvider =
     AsyncNotifierProvider<AsyncTaskListsNotifier, List<TaskList>>(() {
   return AsyncTaskListsNotifier();
 });
+
+final spaceTasksListsProvider =
+    FutureProvider.family<List<TaskList>, String>((ref, spaceId) async {
+  final taskLists = await ref.watch(tasksListsProvider.future);
+  return taskLists.where((t) => t.spaceId() == spaceId).toList();
+});

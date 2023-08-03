@@ -1,8 +1,5 @@
 use acter_core::{
-    events::{
-        tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-        UtcDateTime,
-    },
+    events::tasks::{self, Priority, TaskBuilder, TaskListBuilder},
     models::{self, ActerModel, AnyActerModel, Color, TaskStats},
     statics::KEYS,
 };
@@ -331,6 +328,10 @@ impl TaskList {
                 room: self.room.clone(),
             },
         )
+    }
+
+    pub fn space_id(&self) -> String {
+        self.room.room_id().to_string()
     }
 }
 

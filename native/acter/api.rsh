@@ -1105,6 +1105,9 @@ object TaskList {
 
     /// the space this TaskList belongs to
     fn space() -> Space;
+
+    /// the id of the space this TaskList belongs to
+    fn space_id() -> string;
 }
 
 object TaskListDraft {
