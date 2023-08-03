@@ -575,6 +575,7 @@ impl Client {
             inner: room,
         })
     }
+
     pub async fn public_spaces(
         &self,
         search_term: Option<String>,
