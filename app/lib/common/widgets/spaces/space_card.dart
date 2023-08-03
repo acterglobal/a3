@@ -69,6 +69,10 @@ class SpaceCard extends ConsumerWidget {
   /// the default border.
   final bool withBorder;
 
+  /// Whether or not to render the parent Icon
+  ///
+  final bool showParent;
+
   const SpaceCard({
     super.key,
     required this.space,
@@ -83,6 +87,7 @@ class SpaceCard extends ConsumerWidget {
     this.contentPadding = const EdgeInsets.all(15),
     this.shape,
     this.withBorder = true,
+    this.showParent = true,
   });
 
   const SpaceCard.small({
@@ -99,6 +104,7 @@ class SpaceCard extends ConsumerWidget {
     this.contentPadding = const EdgeInsets.all(5),
     this.shape,
     this.withBorder = false,
+    this.showParent = false,
   });
 
   @override
@@ -119,6 +125,7 @@ class SpaceCard extends ConsumerWidget {
         contentPadding: contentPadding,
         shape: shape,
         withBorder: withBorder,
+        showParent: showParent,
       ),
       error: (error, stack) => ListTile(
         title: Text('Error loading: $roomId'),

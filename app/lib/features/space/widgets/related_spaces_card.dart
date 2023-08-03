@@ -42,6 +42,7 @@ class RelatedSpacesCard extends ConsumerWidget {
                   space: space,
                   titleTextStyle: Theme.of(context).textTheme.bodySmall,
                   subtitleTextStyle: Theme.of(context).textTheme.bodySmall,
+                  showParent: false,
                 ),
               ),
               error: (error, stack) => [Text('Loading spaces failed: $error')],

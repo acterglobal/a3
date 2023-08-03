@@ -1,4 +1,5 @@
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +22,11 @@ class ConvoWithProfileCard extends ConsumerWidget {
   ///
   /// Inoperative if [enabled] is false.
   final GestureTapCallback? onTap;
+
+  /// Whether or not to render the parent Icon
+  ///
+  final bool showParent;
+
   const ConvoWithProfileCard({
     super.key,
     required this.roomId,
@@ -30,10 +36,19 @@ class ConvoWithProfileCard extends ConsumerWidget {
     this.onFocusChange,
     this.subtitle,
     this.trailing,
+    this.showParent = true,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final avatar = ActerAvatar(
+      uniqueId: roomId,
+      mode: DisplayMode.GroupChat,
+      displayName: profile.displayName ?? roomId,
+      avatar: profile.getAvatarImage(),
+      size: 36,
+    );
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -41,13 +56,9 @@ class ConvoWithProfileCard extends ConsumerWidget {
           onTap: onTap,
           onFocusChange: onFocusChange,
           onLongPress: onLongPress,
-          leading: ActerAvatar(
-            uniqueId: roomId,
-            mode: DisplayMode.GroupChat,
-            displayName: profile.displayName ?? roomId,
-            avatar: profile.getAvatarImage(),
-            size: 36,
-          ),
+          leading: showParent
+              ? SpaceParentBadge(spaceId: roomId, child: avatar)
+              : avatar,
           title: Text(
             profile.displayName ?? roomId,
             style: Theme.of(context)

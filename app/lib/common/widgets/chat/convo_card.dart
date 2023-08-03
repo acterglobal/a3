@@ -15,9 +15,14 @@ import 'package:intl/intl.dart';
 class ConvoCard extends ConsumerStatefulWidget {
   final Convo room;
 
+  /// Whether or not to render the parent Icon
+  ///
+  final bool showParent;
+
   const ConvoCard({
     Key? key,
     required this.room,
+    this.showParent = true,
   }) : super(key: key);
 
   @override
@@ -42,6 +47,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     return convoProfile.when(
       data: (profile) => ConvoWithProfileCard(
         roomId: roomId,
+        showParent: widget.showParent,
         profile: profile,
         onTap: () => context.pushNamed(
           Routes.chatroom.name,

@@ -171,6 +171,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                         return SpaceCard(
                           key: Key(space.getRoomIdStr()),
                           space: space,
+                          showParent: false,
                         );
                       },
                     ),
@@ -193,7 +194,10 @@ class RelatedSpacesPage extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final space = spaces.children[index];
                       return SpaceCard(
-                          key: Key(space.getRoomIdStr()), space: space);
+                        key: Key(space.getRoomIdStr()),
+                        space: space,
+                        showParent: false,
+                      );
                     },
                   ),
                 );

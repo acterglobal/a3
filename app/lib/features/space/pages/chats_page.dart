@@ -58,7 +58,7 @@ class SpaceChatsPage extends ConsumerWidget {
                   initialItemCount: rooms.length,
                   itemBuilder: (context, index, animation) => SizeTransition(
                     sizeFactor: animation,
-                    child: ConvoCard(room: rooms[index]),
+                    child: ConvoCard(room: rooms[index], showParent: false),
                   ),
                 );
               }

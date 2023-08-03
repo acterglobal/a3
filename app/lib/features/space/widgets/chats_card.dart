@@ -37,8 +37,10 @@ class ChatsCard extends ConsumerWidget {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: chats.length > 3 ? 3 : chats.length,
-                      itemBuilder: (context, index) =>
-                          ConvoCard(room: chats[index]),
+                      itemBuilder: (context, index) => ConvoCard(
+                        room: chats[index],
+                        showParent: false,
+                      ),
                     ),
                     chats.length > 3
                         ? Padding(

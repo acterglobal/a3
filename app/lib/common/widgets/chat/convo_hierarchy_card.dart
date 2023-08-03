@@ -91,6 +91,7 @@ class ConvoHierarchyCard extends ConsumerWidget {
 
     return profile.when(
       data: (profile) => ConvoWithProfileCard(
+        showParent: false,
         roomId: roomId,
         profile: profile,
         subtitle: subtitle,

@@ -1,4 +1,5 @@
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,6 +69,10 @@ class SpaceWithProfileCard extends ConsumerWidget {
   /// the default border.
   final bool withBorder;
 
+  /// Whether or not to render the parent Icon
+  ///
+  final bool showParent;
+
   const SpaceWithProfileCard({
     super.key,
     required this.roomId,
@@ -81,6 +86,7 @@ class SpaceWithProfileCard extends ConsumerWidget {
     this.leadingAndTrailingTextStyle,
     this.shape,
     this.withBorder = true,
+    this.showParent = true,
     required this.avatarSize,
     required this.contentPadding,
   });
@@ -88,6 +94,13 @@ class SpaceWithProfileCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final displayName = profile.displayName ?? roomId;
+    final avatar = ActerAvatar(
+      mode: DisplayMode.Space,
+      uniqueId: roomId,
+      displayName: displayName,
+      avatar: profile.getAvatarImage(),
+      size: avatarSize,
+    );
 
     ShapeBorder? renderShape() {
       return shape ??
@@ -115,20 +128,9 @@ class SpaceWithProfileCard extends ConsumerWidget {
         leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
         title: Text(profile.displayName ?? roomId),
         subtitle: subtitle,
-        leading: profile.hasAvatar()
-            ? ActerAvatar(
-                mode: DisplayMode.Space,
-                uniqueId: roomId,
-                displayName: displayName,
-                avatar: profile.getAvatarImage(),
-                size: avatarSize,
-              )
-            : ActerAvatar(
-                mode: DisplayMode.Space,
-                uniqueId: roomId,
-                displayName: displayName,
-                size: avatarSize,
-              ),
+        leading: showParent
+            ? SpaceParentBadge(spaceId: roomId, child: avatar)
+            : avatar,
       ),
     );
   }
