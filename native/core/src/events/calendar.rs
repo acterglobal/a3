@@ -10,16 +10,7 @@ use crate::util::deserialize_some;
 /// modeled after [JMAP Calendar Events](https://jmap.io/spec-calendars.html#calendar-events), extensions to
 /// [ietf rfc8984](https://www.rfc-editor.org/rfc/rfc8984.html#name-event).
 ///
-use super::{BelongsTo, Color, Icon, Update, UtcDateTime};
-
-/// Event Location
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(tag = "type")]
-pub enum RsvpState {
-    Yes,
-    Maybe,
-    No,
-}
+use super::{Color, Icon, Update, UtcDateTime};
 
 /// Event Location
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -91,11 +82,11 @@ pub struct CalendarEventEventContent {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<TextMessageEventContent>,
 
-    /// When will this events start?
+    /// When will this event start?
     #[builder(setter(into))]
     pub utc_start: UtcDateTime,
 
-    /// When will this events end
+    /// When will this event end?
     #[builder(setter(into))]
     pub utc_end: UtcDateTime,
 
@@ -276,17 +267,4 @@ impl CalendarEventUpdateEventContent {
 
         Ok(updated)
     }
-}
-
-/// The RSVP Event
-#[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder)]
-#[ruma_event(type = "global.acter.dev.rsvp", kind = MessageLike)]
-#[builder(name = "RsvpBuilder", derive(Debug))]
-pub struct RsvpEventContent {
-    #[builder(setter(into))]
-    #[serde(rename = "m.relates_to")]
-    pub calendar_event: BelongsTo,
-
-    /// The the response by this user
-    pub rsvp: RsvpState,
 }

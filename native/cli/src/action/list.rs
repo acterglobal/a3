@@ -1,5 +1,5 @@
 use acter_core::spaces::SpaceRelation;
-use anyhow::{Context, Result};
+use anyhow::Result;
 use clap::Parser;
 use futures::StreamExt;
 use tracing::info;
@@ -29,7 +29,7 @@ impl List {
         info!(" - Syncing -");
         let sync_state = client.start_sync();
 
-        let mut is_synced = sync_state.first_synced_rx().context("not yet read")?;
+        let mut is_synced = sync_state.first_synced_rx();
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         info!(" - First Sync finished - ");
 
@@ -151,8 +151,8 @@ impl List {
 
         if self.list_chats {
             println!("## Chat rooms:");
-            for sp in client.conversations().await? {
-                println!(" * {} : {}", sp.room_id(), sp.display_name().await?);
+            for convo in client.convos().await? {
+                println!(" * {} : {}", convo.room_id(), convo.display_name().await?);
             }
         }
         Ok(())

@@ -1,5 +1,6 @@
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
+import 'package:cross_file_image/cross_file_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
@@ -7,12 +8,11 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
-import 'package:cross_file_image/cross_file_image.dart';
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'dart:typed_data';
 
@@ -46,7 +46,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
   @override
   Widget build(BuildContext context) {
     final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final _selectedSpace = currentSelectedSpace != null;
+    final selectedSpace = currentSelectedSpace != null;
     return SideSheet(
       header: 'Create new Update',
       addActions: true,
@@ -99,6 +99,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               ),
               Expanded(
                 child: TextFormField(
+                  textAlignVertical: TextAlignVertical.top,
                   decoration: InputDecoration(
                     hintText:
                         (ref.read(selectedImageProvider.notifier).state == null)
@@ -125,7 +126,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               FormField(
                 builder: (state) => ListTile(
                   title: Text(
-                    _selectedSpace ? 'Space' : 'Please select a space',
+                    selectedSpace ? 'Space' : 'Please select a space',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   subtitle: state.errorText != null
@@ -137,7 +138,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                                   ),
                         )
                       : null,
-                  trailing: _selectedSpace
+                  trailing: selectedSpace
                       ? Consumer(
                           builder: (context, ref, child) =>
                               ref.watch(selectedSpaceDetailsProvider).when(
@@ -174,18 +175,14 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
           onPressed: () => context.canPop()
               ? context.pop()
               : context.goNamed(Routes.main.name),
-          child: const Text('Cancel'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.neutral,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
-            ),
-            side: BorderSide(
-              color: Theme.of(context).colorScheme.success,
             ),
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Cancel'),
         ),
         const SizedBox(width: 10),
         ElevatedButton(
@@ -232,6 +229,11 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                       null,
                     );
                   } else {
+                    // We are doing as expected, but the lints triggers.
+                    // ignore: use_build_context_synchronously
+                    if (!context.mounted) {
+                      return;
+                    }
                     customMsgSnackbar(
                       context,
                       'Posting of $mimeType not yet supported',
@@ -239,6 +241,11 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                     return;
                   }
                 } else {
+                  // We are doing as expected, but the lints triggers.
+                  // ignore: use_build_context_synchronously
+                  if (!context.mounted) {
+                    return;
+                  }
                   customMsgSnackbar(
                     context,
                     'Detecting mimetype failed. not supported.',
@@ -253,11 +260,22 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 ref.read(textProvider.notifier).state = '';
                 ref.read(selectedImageProvider.notifier).state = null;
                 // close both
+
+                // We are doing as expected, but the lints triggers.
+                // ignore: use_build_context_synchronously
+                if (!context.mounted) {
+                  return;
+                }
                 Navigator.of(context, rootNavigator: true).pop();
                 Navigator.of(context, rootNavigator: true).pop();
                 // FIXME due to #718. well lets at least try forcing a refresh upon route.
                 ref.invalidate(newsListProvider);
               } catch (err) {
+                // We are doing as expected, but the lints triggers.
+                // ignore: use_build_context_synchronously
+                if (!context.mounted) {
+                  return;
+                }
                 Navigator.of(context, rootNavigator: true).pop();
                 popUpDialog(
                   context: context,
@@ -274,17 +292,15 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               }
             }
           },
-          child: const Text('Post Update'),
           style: ElevatedButton.styleFrom(
-            // backgroundColor: _titleInput.isNotEmpty
-            //     ? Theme.of(context).colorScheme.success
-            //     : Theme.of(context).colorScheme.success.withOpacity(0.6),
+            backgroundColor: Theme.of(context).colorScheme.success,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
             ),
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Post Update'),
         ),
       ],
     );

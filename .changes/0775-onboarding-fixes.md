@@ -1,0 +1,4 @@
+- Renamed sidebar entry from Search to "Jump" and "Overview" to "Home" to align on the concept
+- Fix typos in onboarding pages
+- Special character limitation for username in registration form
+- Fix colors for registration buttons and defaults in the system

@@ -24,21 +24,31 @@ enum Routes {
 
   // --- chat
   chat('/chat'),
-  chatroom(r'/chat/(?<roomId>([!#][^/]+)'), // !roomId, #roomName
+  createChat('/chat/create'),
+  chatroom('/chat/:roomId([!#][^/]+)'), // !roomId, #roomName
 
   // -- spaces
   spaces('/spaces'),
   joinSpace('/spaces/join'),
   createSpace('/spaces/create'),
   editSpace('/:spaceId([!#][^/]+)/edit'),
+  spaceInvite('/:spaceId([!#][^/]+)/invite'),
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
   spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),
+  spaceMembers('/:spaceId([!#][^/]+)/members'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
+  spaceEvents('/:spaceId([!#][^/]+)/events'),
+  spaceChats('/:spaceId([!#][^/]+)/chats'),
 
   // -- pins
 
   pins('/pins'),
   pin('/pins/:pinId'),
+
+  // -- events
+  createEvent('/events/create'),
+  calendarEvent('/events/:calendarId'),
+  editCalendarEvent('/events/:calendarId/edit'),
 
   // -- settings
   settings('/settings'),

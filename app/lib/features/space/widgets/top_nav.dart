@@ -22,6 +22,7 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
 
   @override
   void initState() {
+    super.initState();
     recentWatchScreenTabStateTestProvider = Provider.autoDispose
         .family<TabController, BuildContext>((ref, context) {
       final tabs = ref.watch(tabsProvider(context));
@@ -31,21 +32,25 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
         initialIndex: 0,
       );
     });
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final tabs = ref.watch(tabsProvider(context));
 
-    final _tabController =
+    final tabController =
         ref.watch(recentWatchScreenTabStateTestProvider(context));
     final selectedIndex = ref.watch(selectedTabIdxProvider(context));
-    _tabController.animateTo(selectedIndex);
+    tabController.animateTo(selectedIndex);
     return LayoutBuilder(
       builder: (context, constraints) {
         final useCols = constraints.maxWidth < (150 * tabs.length);
         int minItemWidth = useCols ? 90 : 150;
+        final minTotalWidth = minItemWidth * tabs.length;
+        bool scrollBar = false;
+        if (minTotalWidth > constraints.maxWidth) {
+          scrollBar = true;
+        }
         return Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
@@ -57,8 +62,8 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
           ),
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: TabBar(
-            controller: _tabController,
-            // isScrollable: scrollBar,
+            controller: tabController,
+            isScrollable: scrollBar,
             onTap: (idx) {
               final target = tabs[idx].target;
               context.goNamed(

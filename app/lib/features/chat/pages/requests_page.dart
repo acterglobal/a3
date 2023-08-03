@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class RequestsPage extends StatefulWidget {
   final Client client;
-  final Conversation room;
+  final Convo room;
 
   const RequestsPage({
     Key? key,

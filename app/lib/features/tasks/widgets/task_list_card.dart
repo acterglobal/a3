@@ -39,7 +39,7 @@ class TasksNotifier extends FamilyAsyncNotifier<TasksOverview, TaskList> {
     // Load initial todo list from the remote repository
     final taskList = arg;
     final retState = _refresh(taskList);
-    subscriber = taskList.subscribe();
+    subscriber = taskList.subscribeStream();
     subscriber.forEach((element) async {
       state = const AsyncValue.loading();
       state = await AsyncValue.guard(() async {

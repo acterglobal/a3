@@ -16,7 +16,7 @@ class AsyncTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
     // Load initial todo list from the remote repository
     final client = ref.watch(clientProvider)!;
     final retState = _refresh(client);
-    subscriber = client.subscribe('tasks');
+    subscriber = client.subscribeStream('tasks');
     subscriber.forEach((element) async {
       state = const AsyncValue.loading();
       state = await AsyncValue.guard(() async {

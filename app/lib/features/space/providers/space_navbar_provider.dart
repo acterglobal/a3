@@ -54,7 +54,10 @@ final tabsProvider =
           semanticsLabel: 'tasks',
           width: 24,
           height: 24,
-          color: Theme.of(context).colorScheme.onSurface,
+          colorFilter: ColorFilter.mode(
+            Theme.of(context).colorScheme.onSurface,
+            BlendMode.srcIn,
+          ),
         ),
         target: Routes.space.name,
       ),
@@ -67,7 +70,7 @@ final tabsProvider =
         key: const Key('events'),
         label: 'Events',
         icon: const Icon(Atlas.calendar_schedule_thin),
-        target: Routes.space.name,
+        target: Routes.spaceEvents.name,
       ),
     );
   }
@@ -75,9 +78,9 @@ final tabsProvider =
   tabs.add(
     TabEntry(
       key: const Key('chat'),
-      label: 'Chat',
+      label: 'Chats',
       icon: const Icon(Atlas.chats_thin),
-      target: Routes.space.name,
+      target: Routes.spaceChats.name,
     ),
   );
   tabs.add(
@@ -86,6 +89,15 @@ final tabsProvider =
       label: 'Spaces',
       icon: const Icon(Atlas.connection_thin),
       target: Routes.spaceRelatedSpaces.name,
+    ),
+  );
+
+  tabs.add(
+    TabEntry(
+      key: const Key('members'),
+      label: 'Members',
+      icon: const Icon(Atlas.group_team_collective_thin),
+      target: Routes.spaceMembers.name,
     ),
   );
   return tabs;

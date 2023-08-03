@@ -6,18 +6,18 @@ void popUpDialog({
   Widget? subtitle,
   Widget? description,
   String? btnText,
+  String? btn2Text,
   void Function()? onPressedBtn,
   void Function()? onPressedBtn2,
-  String? btn2Text,
   Color? btnColor,
   Color? btn2Color,
   Color? btnBorderColor,
   bool isLoader = false,
 }) async {
-  await showDialog(
+  showDialog(
     barrierDismissible: false,
     context: context,
-    builder: (context) {
+    builder: (ctx) {
       return Dialog(
         child: Padding(
           padding: const EdgeInsets.all(8.0),

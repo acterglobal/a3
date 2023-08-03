@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -31,35 +32,29 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
-  void validateLogin(BuildContext context) {
-    final isLoggedIn = ref.watch(isLoggedInProvider);
-
-    if (isLoggedIn) {
-      context.goNamed(Routes.main.name);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          key: LoginPageKeys.snackbarFailed,
-          backgroundColor: Theme.of(context).colorScheme.error,
-          content: Text(AppLocalizations.of(context)!.loginFailed),
-          duration: const Duration(seconds: 4),
-        ),
-      );
-    }
-  }
-
-  Future<void> handleSubmit() async {
+  Future<void> handleSubmit(BuildContext context) async {
     if (formKey.currentState!.validate()) {
-      var network = ref.read(networkAwareProvider);
+      final network = ref.read(networkAwareProvider);
       if (!inCI && network == NetworkStatus.Off) {
         showNoInternetNotification();
       } else {
-        var notifier = ref.read(authStateProvider.notifier);
-        await notifier.login(
+        final notifier = ref.read(authStateProvider.notifier);
+        final loginSuccess = await notifier.login(
           username.text,
           password.text,
         );
-        validateLogin(context);
+
+        // We are doing as expected, but the lints triggers.
+        // ignore: use_build_context_synchronously
+        if (!context.mounted) {
+          return;
+        }
+        if (loginSuccess == null) {
+          // no message means, login was successful.
+          context.goNamed(Routes.main.name);
+        } else {
+          customMsgSnackbar(context, loginSuccess);
+        }
       }
     }
   }
@@ -67,83 +62,98 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
-    return SimpleDialog(
-      title: AppBar(
+    return Scaffold(
+      primary: false,
+      appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.logIn),
       ),
-      children: [
-        Form(
-          key: formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 50,
-                width: 50,
-                child: SvgPicture.asset('assets/icon/acter.svg'),
-              ),
-              const SizedBox(height: 20),
-              Text(AppLocalizations.of(context)!.welcomeBack),
-              const SizedBox(height: 20),
-              Text(AppLocalizations.of(context)!.loginContinue),
-              const SizedBox(height: 40),
-              LoginTextField(
-                key: LoginPageKeys.usernameField,
-                hintText: AppLocalizations.of(context)!.username,
-                controller: username,
-                validatorText: AppLocalizations.of(context)!.emptyUsername,
-                type: LoginOnboardingTextFieldEnum.userName,
-              ),
-              const SizedBox(height: 20),
-              LoginTextField(
-                key: LoginPageKeys.passwordField,
-                hintText: AppLocalizations.of(context)!.password,
-                controller: password,
-                validatorText: AppLocalizations.of(context)!.emptyPassword,
-                type: LoginOnboardingTextFieldEnum.password,
-              ),
-              const SizedBox(height: 40),
-              Container(
-                key: LoginPageKeys.forgotPassBtn,
-                margin: const EdgeInsets.only(right: 20),
-                width: double.infinity,
-                alignment: Alignment.bottomRight,
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text(AppLocalizations.of(context)!.forgotPassword),
-                ),
-              ),
-              const SizedBox(height: 40),
-              authState
-                  ? const CircularProgressIndicator()
-                  : CustomButton(
-                      key: LoginPageKeys.submitBtn,
-                      onPressed: handleSubmit,
-                      title: AppLocalizations.of(context)!.logIn,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 5,
+        ),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: SvgPicture.asset('assets/icon/acter.svg'),
                     ),
-              const SizedBox(height: 40),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(AppLocalizations.of(context)!.noAccount),
-                  const SizedBox(width: 2),
-                  InkWell(
-                    key: LoginPageKeys.signUpBtn,
-                    onTap: () => context.goNamed(Routes.authRegister.name),
-                    child: Text(
-                      AppLocalizations.of(context)!.register,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.tertiary,
+                    const SizedBox(height: 20),
+                    Text(AppLocalizations.of(context)!.welcomeBack),
+                    const SizedBox(height: 20),
+                    Text(AppLocalizations.of(context)!.loginContinue),
+                    const SizedBox(height: 40),
+                    LoginTextField(
+                      key: LoginPageKeys.usernameField,
+                      hintText: AppLocalizations.of(context)!.username,
+                      controller: username,
+                      validatorText:
+                          AppLocalizations.of(context)!.emptyUsername,
+                      type: LoginOnboardingTextFieldEnum.userName,
+                    ),
+                    const SizedBox(height: 20),
+                    LoginTextField(
+                      key: LoginPageKeys.passwordField,
+                      hintText: AppLocalizations.of(context)!.password,
+                      controller: password,
+                      validatorText:
+                          AppLocalizations.of(context)!.emptyPassword,
+                      type: LoginOnboardingTextFieldEnum.password,
+                    ),
+                    const SizedBox(height: 40),
+                    Container(
+                      key: LoginPageKeys.forgotPassBtn,
+                      margin: const EdgeInsets.only(right: 20),
+                      width: double.infinity,
+                      alignment: Alignment.bottomRight,
+                      child: TextButton(
+                        onPressed: () {},
+                        child:
+                            Text(AppLocalizations.of(context)!.forgotPassword),
                       ),
                     ),
-                  )
-                ],
+                    const SizedBox(height: 40),
+                    authState
+                        ? const CircularProgressIndicator()
+                        : CustomButton(
+                            key: LoginPageKeys.submitBtn,
+                            onPressed: () => handleSubmit(context),
+                            title: AppLocalizations.of(context)!.logIn,
+                          ),
+                    const SizedBox(height: 40),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(AppLocalizations.of(context)!.noAccount),
+                        const SizedBox(width: 2),
+                        InkWell(
+                          key: LoginPageKeys.signUpBtn,
+                          onTap: () =>
+                              context.goNamed(Routes.authRegister.name),
+                          child: Text(
+                            AppLocalizations.of(context)!.register,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
-              const SizedBox(height: 20),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

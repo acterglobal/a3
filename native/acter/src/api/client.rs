@@ -9,38 +9,51 @@ use futures::{
     future::{join_all, ready},
     pin_mut, stream, Stream, StreamExt,
 };
-use futures_signals::signal::{
-    channel, Mutable, MutableSignalCloned, Receiver, SignalExt, SignalStream,
-};
+use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
     config::SyncSettings,
-    event_handler::{Ctx, EventHandlerHandle},
+    event_handler::EventHandlerHandle,
     media::{MediaFormat, MediaRequest},
     room::Room as SdkRoom,
     Client as SdkClient, LoopCtrl, RumaApiError,
 };
 use ruma::{
-    device_id, events::room::MediaSource, OwnedDeviceId, OwnedRoomId, OwnedRoomOrAliasId,
-    OwnedServerName, OwnedUserId, RoomId, UserId,
+    api::client::{
+        error::{ErrorBody, ErrorKind},
+        push::get_notifications::v3::Notification as RumaNotification,
+        Error,
+    },
+    device_id,
+    events::room::MediaSource,
+    OwnedDeviceId, OwnedMxcUri, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId,
+    RoomId, UserId,
 };
 use std::{
     collections::{BTreeMap, HashMap},
+    fs,
     ops::Deref,
+    path::PathBuf,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
     },
 };
 use tokio::{
-    sync::{Mutex, RwLock},
+    sync::{
+        broadcast::{channel, Receiver, Sender},
+        Mutex, RwLock,
+    },
     task::JoinHandle,
 };
+use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
+
+use crate::Notification;
 
 use super::{
     account::Account,
     api::FfiBuffer,
-    conversation::{Conversation, ConversationController},
+    convo::{Convo, ConvoController},
     device::DeviceController,
     invitation::InvitationController,
     profile::UserProfile,
@@ -51,7 +64,6 @@ use super::{
     verification::VerificationController,
     RUNTIME,
 };
-use crate::FileDesc;
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
@@ -77,7 +89,8 @@ pub struct Client {
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
     pub(crate) receipt_controller: ReceiptController,
-    pub(crate) conversation_controller: ConversationController,
+    pub(crate) convo_controller: ConvoController,
+    pub(crate) notifications: Arc<Sender<RumaNotification>>,
 }
 
 impl Deref for Client {
@@ -98,11 +111,11 @@ pub struct SpaceFilter {
 }
 
 impl SpaceFilter {
-    pub fn should_include(&self, room: &matrix_sdk::room::Room) -> bool {
+    pub fn should_include(&self, room: &SdkRoom) -> bool {
         match room {
-            matrix_sdk::room::Room::Joined(_) => self.include_joined,
-            matrix_sdk::room::Room::Left(_) => self.include_left,
-            matrix_sdk::room::Room::Invited(_) => self.include_invited,
+            SdkRoom::Joined(r) => self.include_joined,
+            SdkRoom::Left(r) => self.include_left,
+            SdkRoom::Invited(r) => self.include_invited,
         }
     }
 }
@@ -120,22 +133,22 @@ impl Default for SpaceFilter {
 pub(crate) async fn devide_spaces_from_convos(
     client: Client,
     filter: Option<SpaceFilter>,
-) -> (Vec<Space>, Vec<Conversation>) {
+) -> (Vec<Space>, Vec<Convo>) {
     let filter = filter.unwrap_or_default();
     let (spaces, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .filter(|room| ready(filter.should_include(room)))
         .fold(
             (Vec::new(), Vec::new(), client),
-            async move |(mut spaces, mut conversations, client), room| {
+            async move |(mut spaces, mut convos, client), room| {
                 let inner = Room { room: room.clone() };
 
                 if inner.is_space() {
                     spaces.push(Space::new(client.clone(), inner));
                 } else {
-                    conversations.push(Conversation::new(inner));
+                    convos.push(Convo::new(inner));
                 }
 
-                (spaces, conversations, client)
+                (spaces, convos, client)
             },
         )
         .await;
@@ -187,19 +200,61 @@ impl HistoryLoadState {
 type RoomHandlers = Arc<Mutex<HashMap<OwnedRoomId, Vec<EventHandlerHandle>>>>;
 
 #[derive(Clone)]
+pub enum SyncError {
+    Unauthorized { soft_logout: bool },
+    Other { msg: Option<String> },
+    DeserializationFailed,
+}
+
+impl From<&Error> for SyncError {
+    fn from(value: &Error) -> Self {
+        match &value.body {
+            ErrorBody::Standard {
+                kind: ErrorKind::UnknownToken { soft_logout },
+                ..
+            } => SyncError::Unauthorized {
+                soft_logout: *soft_logout,
+            },
+            ErrorBody::Standard { ref message, .. } => SyncError::Other {
+                msg: Some(message.clone()),
+            },
+            ErrorBody::Json(value) => SyncError::Other { msg: None },
+            ErrorBody::NotJson { .. } => SyncError::DeserializationFailed,
+        }
+    }
+}
+
+impl SyncError {
+    fn ffi_string(&self) -> String {
+        match &self {
+            SyncError::Unauthorized { soft_logout } => {
+                if *soft_logout {
+                    "SoftLogout".to_owned()
+                } else {
+                    "Unauthorized".to_owned()
+                }
+            }
+            SyncError::DeserializationFailed => "DeserializationFailed".to_owned(),
+            SyncError::Other { msg } => msg.clone().unwrap_or("Other".to_owned()),
+        }
+    }
+}
+
+#[derive(Clone)]
 pub struct SyncState {
     handle: Mutable<Option<JoinHandle<()>>>,
     first_sync_task: Mutable<Option<JoinHandle<Result<()>>>>,
-    first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
+    first_synced_rx: Arc<Receiver<bool>>,
+    sync_error: Arc<Receiver<SyncError>>,
     history_loading: Mutable<HistoryLoadState>,
     room_handles: RoomHandlers,
 }
 
 impl SyncState {
-    pub fn new(first_synced_rx: Receiver<bool>) -> Self {
-        let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
+    pub fn new(first_synced_rx: Receiver<bool>, sync_error: Receiver<SyncError>) -> Self {
         Self {
-            first_synced_rx,
+            first_synced_rx: Arc::new(first_synced_rx),
+            sync_error: Arc::new(sync_error),
             history_loading: Default::default(),
             first_sync_task: Default::default(),
             handle: Default::default(),
@@ -207,11 +262,17 @@ impl SyncState {
         }
     }
 
-    pub fn first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
-        match self.first_synced_rx.try_lock() {
-            Ok(mut l) => l.take().map(|t| t.to_stream()),
-            Err(e) => None,
-        }
+    pub fn first_synced_rx(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.first_synced_rx.resubscribe()).map(|o| o.unwrap_or_default())
+    }
+
+    pub fn sync_error_rx_typed(&self) -> BroadcastStream<SyncError> {
+        BroadcastStream::new(self.sync_error.resubscribe())
+    }
+
+    pub fn sync_error_rx(&self) -> impl Stream<Item = String> {
+        self.sync_error_rx_typed()
+            .map(|o| o.map(|f| f.ffi_string()).unwrap_or_default())
     }
 
     // FIXE: This is not save. History state is copied and thus not all known_spaces are tracked
@@ -389,7 +450,8 @@ impl Client {
             device_controller: DeviceController::new(),
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
-            conversation_controller: ConversationController::new(),
+            convo_controller: ConvoController::new(),
+            notifications: Arc::new(channel(25).0),
         };
         Ok(cl)
     }
@@ -417,7 +479,7 @@ impl Client {
         self.invitation_controller.add_event_handler(&client);
         self.typing_controller.add_event_handler(&client);
         self.receipt_controller.add_event_handler(&client);
-        self.conversation_controller.add_event_handler(&client);
+        self.convo_controller.add_event_handler(&client);
 
         self.verification_controller
             .add_to_device_event_handler(&client);
@@ -428,13 +490,17 @@ impl Client {
 
         let mut invitation_controller = self.invitation_controller.clone();
         let mut device_controller = self.device_controller.clone();
-        let mut conversation_controller = self.conversation_controller.clone();
+        let mut convo_controller = self.convo_controller.clone();
+        let notifications = self.notifications.clone();
 
-        let (first_synced_tx, first_synced_rx) = channel(false);
+        let (first_synced_tx, first_synced_rx) = channel(1);
         let first_synced_arc = Arc::new(first_synced_tx);
 
+        let (sync_error_tx, sync_error_rx) = channel(1);
+        let sync_error_arc = Arc::new(sync_error_tx);
+
         let initial_arc = Arc::new(AtomicBool::from(true));
-        let sync_state = SyncState::new(first_synced_rx);
+        let sync_state = SyncState::new(first_synced_rx, sync_error_rx);
         let history_loading = sync_state.history_loading.clone();
         let first_sync_task = sync_state.first_sync_task.clone();
         let room_handles = sync_state.room_handles.clone();
@@ -446,11 +512,12 @@ impl Client {
 
             let mut invitation_controller = invitation_controller.clone();
             let mut device_controller = device_controller.clone();
-            let mut conversation_controller = conversation_controller.clone();
+            let mut convo_controller = convo_controller.clone();
 
             let history_loading = history_loading.clone();
             let first_sync_task = first_sync_task.clone();
             let room_handles = room_handles.clone();
+            let notifications = notifications.clone();
 
             // fetch the events that received when offline
             client
@@ -464,9 +531,10 @@ impl Client {
 
                     let mut invitation_controller = invitation_controller.clone();
                     let mut device_controller = device_controller.clone();
-                    let mut conversation_controller = conversation_controller.clone();
+                    let mut convo_controller = convo_controller.clone();
 
                     let first_synced_arc = first_synced_arc.clone();
+                    let sync_error_arc = sync_error_arc.clone();
                     let history_loading = history_loading.clone();
                     let initial = initial_arc.clone();
 
@@ -475,6 +543,7 @@ impl Client {
                         Err(err) => {
                             if let Some(RumaApiError::ClientApi(e)) = err.as_ruma_api_error() {
                                 error!(?e, "Client error");
+                                sync_error_arc.send(e.into());
                                 return Ok(LoopCtrl::Break);
                             }
                             error!(?err, "Other error, continuing");
@@ -497,7 +566,7 @@ impl Client {
                         // divide_spaces_from_convos must be called after first sync
                         let (spaces, convos) =
                             devide_spaces_from_convos(me.clone(), Some(filter)).await;
-                        conversation_controller.load_rooms(&convos).await;
+                        convo_controller.load_rooms(&convos).await;
                         // load invitations after first sync
                         invitation_controller.load_invitations(&client).await;
 
@@ -567,6 +636,12 @@ impl Client {
                             w.is_syncing = true;
                         }
                     }
+                    for ev in response.notifications.into_values() {
+                        for item in ev {
+                            trace!("Sending notification");
+                            notifications.send(item);
+                        }
+                    }
 
                     trace!("ready for the next round");
                     Ok(LoopCtrl::Continue)
@@ -617,13 +692,13 @@ impl Client {
         Ok(result)
     }
 
-    pub async fn conversations(&self) -> Result<Vec<Conversation>> {
+    pub async fn convos(&self) -> Result<Vec<Convo>> {
         let client = self.clone();
         let filter = SpaceFilterBuilder::default().build()?;
         RUNTIME
             .spawn(async move {
-                let (spaces, conversations) = devide_spaces_from_convos(client, Some(filter)).await;
-                Ok(conversations)
+                let (spaces, convos) = devide_spaces_from_convos(client, Some(filter)).await;
+                Ok(convos)
             })
             .await?
     }
@@ -635,6 +710,21 @@ impl Client {
     //         Ok(user_id.to_string())
     //     }).await?
     // }
+
+    pub async fn upload_media(&self, uri: String) -> Result<OwnedMxcUri> {
+        let client = self.core.client().clone();
+        let path = PathBuf::from(uri);
+
+        RUNTIME
+            .spawn(async move {
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().context("MIME type should be given")?;
+                let buf = fs::read(path).context("File should be read")?;
+                let response = client.media().upload(&content_type, buf).await?;
+                Ok(response.content_uri)
+            })
+            .await?
+    }
 
     pub fn user_id(&self) -> Result<OwnedUserId> {
         self.core
@@ -648,16 +738,46 @@ impl Client {
         self.core.client().user_id()
     }
 
-    pub(crate) fn room(&self, room_name: String) -> Result<Room> {
-        let room_id = RoomId::parse(room_name)?;
+    pub(crate) fn room(&self, room_id: String) -> Result<Room> {
+        self.room_typed(&RoomId::parse(room_id)?)
+            .context("Room not found")
+    }
+
+    pub fn room_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
         self.core
             .client()
-            .get_room(&room_id)
-            .context("Room not found")
+            .get_room(room_id)
             .map(|room| Room { room })
     }
 
-    pub fn subscribe(&self, key: String) -> async_broadcast::Receiver<()> {
+    pub fn notifications_stream(&self) -> impl Stream<Item = Notification> {
+        let client = self.clone();
+        BroadcastStream::new(self.notifications.subscribe())
+            .then(move |r| {
+                let client = client.clone();
+                RUNTIME
+                    .spawn(async move { anyhow::Ok(Notification::new(r?, client.clone()).await) })
+            })
+            .filter_map(|r| async {
+                match r {
+                    Ok(Ok(n)) => Some(n),
+                    Ok(Err(e)) => {
+                        error!(?e, "Failure in notifications stream");
+                        None
+                    }
+                    Err(e) => {
+                        error!(?e, "Failure in notifications stream processing");
+                        None
+                    }
+                }
+            })
+    }
+
+    pub fn subscribe_stream(&self, key: String) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe(key)).map(|_| true)
+    }
+
+    pub fn subscribe(&self, key: String) -> Receiver<()> {
         self.executor().subscribe(key)
     }
 
@@ -735,7 +855,7 @@ impl Client {
             .remove_sync_event_handler(&client);
         self.typing_controller.remove_event_handler(&client);
         self.receipt_controller.remove_event_handler(&client);
-        self.conversation_controller.remove_event_handler(&client);
+        self.convo_controller.remove_event_handler(&client);
 
         RUNTIME
             .spawn(async move {

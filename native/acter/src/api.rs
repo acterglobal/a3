@@ -25,15 +25,17 @@ mod calendar_events;
 mod client;
 mod comments;
 mod common;
-mod conversation;
+mod convo;
 mod device;
 mod invitation;
 mod message;
 mod news;
+mod notifications;
 mod pins;
 mod profile;
 mod receipt;
 mod room;
+mod rsvp;
 mod search;
 mod spaces;
 mod stream;
@@ -52,27 +54,31 @@ pub use auth::{
     login_with_token_under_config, make_client_config, register_under_config, register_with_token,
     register_with_token_under_config, sanitize_user,
 };
-pub use calendar_events::CalendarEvent;
+pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
     duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, OptionBuffer, OptionText,
     ReactionDesc, TextDesc, ThumbnailInfo, VideoDesc,
 };
-pub use conversation::{Conversation, CreateConversationSettingsBuilder};
+pub use convo::{
+    new_convo_settings_builder, Convo, CreateConvoSettings, CreateConvoSettingsBuilder,
+};
 pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use invitation::Invitation;
 pub use message::{RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
+pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
-pub use room::{Member, MemberPermission, Room};
+pub use room::{Member, MemberPermission, MembershipStatus, Room};
+pub use rsvp::{Rsvp, RsvpDraft, RsvpManager};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use spaces::{
-    new_space_settings, CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, Space,
-    SpaceRelation, SpaceRelations,
+    new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
+    RelationTargetType, Space, SpaceRelation, SpaceRelations,
 };
 pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{

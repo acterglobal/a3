@@ -15,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 
+// interface data providers
 final editTitleProvider = StateProvider.autoDispose<String>((ref) => '');
 final editTopicProvider = StateProvider.autoDispose<String>((ref) => '');
 // upload avatar path
@@ -35,11 +36,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   @override
   void initState() {
     super.initState();
-    editSpaceData();
+    _editSpaceData();
   }
 
   // apply existing data to fields
-  void editSpaceData() async {
+  void _editSpaceData() async {
     final space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
     final profileData = await ref.read(spaceProfileDataProvider(space).future);
 
@@ -50,7 +51,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
     if (profileData.hasAvatar()) {
       Directory appDocDirectory = await getApplicationDocumentsDirectory();
-      Directory(appDocDirectory.path + '/' + 'dir')
+      Directory('${appDocDirectory.path}/dir')
           .create(recursive: true)
           .then((Directory directory) {});
 
@@ -66,7 +67,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   @override
   Widget build(BuildContext context) {
-    final _titleInput = ref.watch(editTitleProvider);
+    final titleInput = ref.watch(editTitleProvider);
     return SideSheet(
       header: 'Edit Space',
       addActions: true,
@@ -116,16 +117,16 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                     ),
                     Consumer(
                       builder: (context, ref, child) {
-                        final _avatarUpload = ref.watch(editAvatarProvider);
+                        final avatarUpload = ref.watch(editAvatarProvider);
                         return GestureDetector(
                           onTap: _handleAvatarUpload,
                           child: Container(
                             height: 75,
                             width: 75,
                             decoration: BoxDecoration(
-                              image: _avatarUpload.isNotEmpty
+                              image: avatarUpload.isNotEmpty
                                   ? DecorationImage(
-                                      image: FileImage(File(_avatarUpload)),
+                                      image: FileImage(File(avatarUpload)),
                                       fit: BoxFit.cover,
                                     )
                                   : null,
@@ -134,7 +135,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                                   .primaryContainer,
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            child: _avatarUpload.isEmpty
+                            child: avatarUpload.isEmpty
                                 ? Icon(
                                     Atlas.up_arrow_from_bracket_thin,
                                     color:
@@ -221,7 +222,6 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
           onPressed: () => context.canPop()
               ? context.pop()
               : context.goNamed(Routes.main.name),
-          child: const Text('Cancel'),
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.neutral,
             shape: RoundedRectangleBorder(
@@ -233,11 +233,12 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Cancel'),
         ),
         const SizedBox(width: 10),
         ElevatedButton(
           onPressed: () async {
-            if (_titleInput.isEmpty) {
+            if (titleInput.isEmpty) {
               customMsgSnackbar(
                 context,
                 'Please enter space name',
@@ -246,6 +247,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
             }
             // check permissions before updating space
             bool havePermission = await permissionCheck();
+            // We are doing as expected, but the lints triggers.
+            // ignore: use_build_context_synchronously
+            if (!context.mounted) {
+              return;
+            }
             if (!havePermission) {
               popUpDialog(
                 context: context,
@@ -266,6 +272,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
             }
             final roomId = await _handleUpdateSpace(context);
             debugPrint('Space Updated: $roomId');
+            // We are doing as expected, but the lints triggers.
+            // ignore: use_build_context_synchronously
+            if (!context.mounted) {
+              return;
+            }
             context.goNamed(
               Routes.space.name,
               pathParameters: {
@@ -273,9 +284,8 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
               },
             );
           },
-          child: const Text('Save changes'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: _titleInput.isNotEmpty
+            backgroundColor: titleInput.isNotEmpty
                 ? Theme.of(context).colorScheme.success
                 : Theme.of(context).colorScheme.success.withOpacity(0.6),
             shape: RoundedRectangleBorder(
@@ -284,6 +294,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
+          child: const Text('Save changes'),
         ),
       ],
     );

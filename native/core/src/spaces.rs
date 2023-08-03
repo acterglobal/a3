@@ -15,11 +15,11 @@ use matrix_sdk::{
         },
         room::RoomType,
         serde::Raw,
-        OwnedRoomId, OwnedUserId, UserId,
+        MxcUri, OwnedRoomId, OwnedUserId, RoomId, UserId,
     },
 };
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::{fs, path::PathBuf};
 use strum::Display;
 use tracing::error;
 
@@ -77,35 +77,52 @@ pub struct CreateSpaceSettings {
     parent: Option<OwnedRoomId>,
 }
 
-impl CreateSpaceSettings {
-    pub fn visibility(&mut self, value: String) {
+// helper for built-in setters
+impl CreateSpaceSettingsBuilder {
+    pub fn set_name(&mut self, value: String) {
+        self.name(value);
+    }
+
+    pub fn set_visibility(&mut self, value: String) {
         match value.as_str() {
             "Public" => {
-                self.visibility = Visibility::Public;
+                self.visibility(Visibility::Public);
             }
             "Private" => {
-                self.visibility = Visibility::Private;
+                self.visibility(Visibility::Private);
             }
             _ => {}
         }
     }
 
-    pub fn add_invitee(&mut self, value: String) {
+    pub fn add_invitee(&mut self, value: String) -> Result<()> {
         if let Ok(user_id) = UserId::parse(value) {
-            self.invites.push(user_id);
+            if let Some(mut invites) = self.invites.clone() {
+                invites.push(user_id);
+                self.invites = Some(invites);
+            } else {
+                self.invites = Some(vec![user_id]);
+            }
         }
+        Ok(())
     }
 
-    pub fn alias(&mut self, value: String) {
-        self.alias = Some(value);
+    pub fn set_alias(&mut self, value: String) {
+        self.alias(value);
     }
 
-    pub fn topic(&mut self, value: String) {
-        self.topic = Some(value);
+    pub fn set_topic(&mut self, value: String) {
+        self.topic(value);
     }
 
-    pub fn avatar_uri(&mut self, value: String) {
-        self.avatar_uri = Some(value);
+    pub fn set_avatar_uri(&mut self, value: String) {
+        self.avatar_uri(value);
+    }
+
+    pub fn set_parent(&mut self, value: String) {
+        if let Ok(parent) = RoomId::parse(value) {
+            self.parent(parent);
+        }
     }
 }
 
@@ -200,24 +217,36 @@ impl CoreClient {
             invites,
             alias,
             topic,
-            avatar_uri,
+            avatar_uri, // remote or local
             parent,
         } = settings;
         let mut initial_states = default_acter_space_states();
 
-        if let Some(uri) = avatar_uri {
-            let path = PathBuf::from(uri);
-            let guess = mime_guess::from_path(path.clone());
-            let content_type = guess.first().expect("MIME type should be given");
-            let buf = std::fs::read(path).expect("File should be read");
-            let upload_resp = client.media().upload(&content_type, buf).await?;
+        if let Some(avatar_uri) = avatar_uri {
+            let uri = Box::<MxcUri>::from(avatar_uri.as_str());
+            let avatar_content = if uri.is_valid() {
+                // remote uri
+                assign!(RoomAvatarEventContent::new(), {
+                    url: Some((*uri).to_owned()),
+                })
+            } else {
+                // local uri
+                let path = PathBuf::from(avatar_uri);
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().expect("MIME type should be given");
+                let buf = fs::read(path).expect("File should be read");
+                let upload_resp = client.media().upload(&content_type, buf).await?;
 
-            let info = assign!(ImageInfo::new(), {
-                blurhash: upload_resp.blurhash,
-                mimetype: Some(content_type.to_string()),
-            });
-            let room_avatar_content = assign!(RoomAvatarEventContent::new(), { url : Some(upload_resp.content_uri), info: Some(Box::new(info)) } );
-            initial_states.push(InitialRoomAvatarEvent::new(room_avatar_content).to_raw_any());
+                let info = assign!(ImageInfo::new(), {
+                    blurhash: upload_resp.blurhash,
+                    mimetype: Some(content_type.to_string()),
+                });
+                assign!(RoomAvatarEventContent::new(), {
+                    url: Some(upload_resp.content_uri),
+                    info: Some(Box::new(info)),
+                })
+            };
+            initial_states.push(InitialRoomAvatarEvent::new(avatar_content).to_raw_any());
         };
 
         if let Some(parent) = parent {
@@ -239,7 +268,6 @@ impl CoreClient {
             topic: topic,
         });
         let room = client.create_room(request).await?;
-
         Ok(room.room_id().to_owned())
     }
 

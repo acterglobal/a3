@@ -7,28 +7,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/providers/notifiers/space_profile_notifier.dart';
 
 /// Provider the profile data of a the given space, keeps up to date with underlying client
-final spaceProfileDataProvider = AsyncNotifierProvider.autoDispose
-    .family<AsyncSpaceProfileDataNotifier, ProfileData, Space>(
+final spaceProfileDataProvider = AsyncNotifierProvider.family<
+    AsyncSpaceProfileDataNotifier, ProfileData, Space>(
   () => AsyncSpaceProfileDataNotifier(),
 );
 
 /// Provider a list of the users Space(s), keeps up to date with underlying client
-final spacesProvider =
-    AsyncNotifierProvider.autoDispose<AsyncSpacesNotifier, List<Space>>(
+final spacesProvider = AsyncNotifierProvider<AsyncSpacesNotifier, List<Space>>(
   () => AsyncSpacesNotifier(),
 );
 
 /// Map a spaceId to the space, keeps up to date with underlying client
 /// throws is the space isn't found.
 final spaceProvider =
-    AsyncNotifierProvider.autoDispose.family<AsyncSpaceNotifier, Space, String>(
+    AsyncNotifierProvider.family<AsyncSpaceNotifier, Space, String>(
   () => AsyncSpaceNotifier(),
 );
 
 /// Attempts to map a spaceId to the space, but could come back empty (null) rather than throw.
 /// keeps up to date with underlying client even if the space wasn't found initially,
-final maybeSpaceProvider = AsyncNotifierProvider.autoDispose
-    .family<AsyncMaybeSpaceNotifier, Space?, String>(
+final maybeSpaceProvider =
+    AsyncNotifierProvider.family<AsyncMaybeSpaceNotifier, Space?, String>(
   () => AsyncMaybeSpaceNotifier(),
 );
 
@@ -51,6 +50,7 @@ final maybeSpaceInfoProvider =
   }
   final profileData = await ref.watch(spaceProfileDataProvider(space).future);
   return SpaceItem(
+    space: space,
     roomId: space.getRoomId().toString(),
     membership: await space.getMyMembership(),
     activeMembers: [],
@@ -58,14 +58,46 @@ final maybeSpaceInfoProvider =
   );
 });
 
-class SpaceItem {
-  Member? membership;
-  String roomId;
-  ProfileData spaceProfileData;
-  List<Member> activeMembers;
+/// gives current context space id
+final selectedSpaceIdProvider = StateProvider<String?>((ref) => null);
 
-  SpaceItem({
+/// gives current context space details based on id, will throw null if id is null
+final selectedSpaceDetailsProvider =
+    FutureProvider.autoDispose<SpaceItem?>((ref) async {
+  final selectedSpaceId = ref.watch(selectedSpaceIdProvider);
+  if (selectedSpaceId == null) {
+    return null;
+  }
+
+  final spaces = await ref.watch(briefSpaceItemsProviderWithMembership.future);
+  return spaces.firstWhere((element) => element.roomId == selectedSpaceId);
+});
+
+// gives current context parent space id
+final parentSpaceProvider = StateProvider<String?>((ref) => null);
+
+/// gives current context parent space details based on id, will throw null if id is null
+final parentSpaceDetailsProvider =
+    FutureProvider.autoDispose<SpaceItem?>((ref) async {
+  final parentSpaceId = ref.watch(parentSpaceProvider);
+  if (parentSpaceId == null) {
+    return null;
+  }
+
+  final spaces = await ref.watch(briefSpaceItemsProviderWithMembership.future);
+  return spaces.firstWhere((element) => element.roomId == parentSpaceId);
+});
+
+class SpaceItem {
+  final Member? membership;
+  final Space? space;
+  final String roomId;
+  final ProfileData spaceProfileData;
+  final List<Member> activeMembers;
+
+  const SpaceItem({
     this.membership,
+    this.space,
     required this.roomId,
     required this.activeMembers,
     required this.spaceProfileData,
@@ -123,7 +155,7 @@ final briefSpaceItemsProviderWithMembership =
   return items;
 });
 
-/// Get the list of known spaces as SpaceItem filled in brief form
+/// Get the SpaceItem of the given sapceId filled in brief form
 /// (only spaceProfileData, no activeMembers). Stays up to date with underlying
 /// client info
 final briefSpaceItemProvider =
@@ -138,6 +170,22 @@ final briefSpaceItemProvider =
   );
 });
 
+/// Get the SpaceItem of the given sapceId filled in brief form
+/// (only spaceProfileData, no activeMembers) with Membership.
+/// Stays up to date with underlying client info
+final briefSpaceItemWithMembershipProvider =
+    FutureProvider.autoDispose.family<SpaceItem, String>((ref, spaceId) async {
+  final space = await ref.watch(spaceProvider(spaceId).future);
+  final profileData = await ref.watch(spaceProfileDataProvider(space).future);
+  return SpaceItem(
+    roomId: space.getRoomId().toString(),
+    space: space,
+    membership: await space.getMyMembership(),
+    activeMembers: [],
+    spaceProfileData: profileData,
+  );
+});
+
 /// Fetch the SpaceItems of spaces the user knows about, including profileData,
 /// and activeMembers (but without Membership). Stays up to date with underlying
 /// client info.
@@ -146,10 +194,10 @@ final spaceItemsProvider =
   final spaces = await ref.watch(spacesProvider.future);
   List<SpaceItem> items = [];
   for (final element in spaces) {
-    List<Member> members =
-        await element.activeMembers().then((ffiList) => ffiList.toList());
-    final profileData =
-        await ref.watch(spaceProfileDataProvider(element).future);
+    List<Member> members = (await element.activeMembers()).toList();
+    final profileData = await ref.watch(
+      spaceProfileDataProvider(element).future,
+    );
     var item = SpaceItem(
       roomId: element.getRoomId().toString(),
       activeMembers: members,
@@ -170,6 +218,16 @@ final spaceMembersProvider = FutureProvider.autoDispose
   return members.toList();
 });
 
+/// Get the members invited of a given roomId the user knows about. Errors
+/// if the space isn't found. Stays up to date with underlying client data
+/// if a space was found.
+final spaceInvitedMembersProvider = FutureProvider.autoDispose
+    .family<List<Member>, String>((ref, roomIdOrAlias) async {
+  final space = await ref.watch(spaceProvider(roomIdOrAlias).future);
+  final members = await space.invitedMembers();
+  return members.toList();
+});
+
 /// Get the relations of the given SpaceId.  Throws
 /// if the space isn't found. Stays up to date with underlying client data
 /// if a space was found.
@@ -177,14 +235,6 @@ final spaceRelationsProvider = FutureProvider.autoDispose
     .family<SpaceRelations, String>((ref, spaceId) async {
   final space = await ref.watch(spaceProvider(spaceId).future);
   return await space.spaceRelations();
-});
-
-/// Get the events of the space. Errors if the space isn't found. Stays up
-/// to date with underlying client data if a space was found.
-final spaceEventsProvider = FutureProvider.autoDispose
-    .family<List<CalendarEvent>, String>((ref, spaceId) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
-  return (await space.calendarEvents()).toList();
 });
 
 /// Get the canonical parent of the space. Errors if the space isn't found. Stays up
@@ -237,11 +287,12 @@ final relatedSpaceItemsProvider = FutureProvider.autoDispose
       final roomId = related.roomId().toString();
       final space = await ref.watch(spaceProvider(roomId).future);
 
-      List<Member> members =
-          await space.activeMembers().then((ffiList) => ffiList.toList());
-      final profileData =
-          await ref.watch(spaceProfileDataProvider(space).future);
+      List<Member> members = (await space.activeMembers()).toList();
+      final profileData = await ref.watch(
+        spaceProfileDataProvider(space).future,
+      );
       var item = SpaceItem(
+        space: space,
         roomId: space.getRoomId().toString(),
         activeMembers: members,
         spaceProfileData: profileData,
@@ -263,11 +314,12 @@ final relatedSpaceItemsProvider = FutureProvider.autoDispose
       final roomId = mainSpace.roomId().toString();
       final space = await ref.watch(spaceProvider(roomId).future);
 
-      List<Member> members =
-          await space.activeMembers().then((ffiList) => ffiList.toList());
-      final profileData =
-          await ref.watch(spaceProfileDataProvider(space).future);
+      List<Member> members = (await space.activeMembers()).toList();
+      final profileData = await ref.watch(
+        spaceProfileDataProvider(space).future,
+      );
       mainParent = SpaceItem(
+        space: space,
         roomId: space.getRoomId().toString(),
         activeMembers: members,
         spaceProfileData: profileData,
@@ -281,11 +333,12 @@ final relatedSpaceItemsProvider = FutureProvider.autoDispose
       final roomId = related.roomId().toString();
       final space = await ref.watch(spaceProvider(roomId).future);
 
-      List<Member> members =
-          await space.activeMembers().then((ffiList) => ffiList.toList());
-      final profileData =
-          await ref.watch(spaceProfileDataProvider(space).future);
+      List<Member> members = (await space.activeMembers()).toList();
+      final profileData = await ref.watch(
+        spaceProfileDataProvider(space).future,
+      );
       var item = SpaceItem(
+        space: space,
         roomId: space.getRoomId().toString(),
         activeMembers: members,
         spaceProfileData: profileData,

@@ -1,5 +1,5 @@
 +++
-title = "Docs"
+title = "Developer Docs"
 
 sort_by = "weight"
 weight = 1

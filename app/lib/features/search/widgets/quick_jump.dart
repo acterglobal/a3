@@ -79,7 +79,10 @@ class QuickJump extends ConsumerWidget {
                       semanticsLabel: 'tasks',
                       width: 32,
                       height: 32,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.onSurface,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   )
                 : null,
@@ -119,11 +122,14 @@ class QuickJump extends ConsumerWidget {
   }
 
   Widget quickActions(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(featuresProvider);
+    final features = ref.watch(featuresProvider);
+    bool isActive(f) => features.isActive(f);
     final canPostNews =
         ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
             false;
-    bool isActive(f) => provider.isActive(f);
+    final canPostPin = isActive(LabsFeature.pins) &&
+        (ref.watch(hasSpaceWithPermissionProvider('CanPostPin')).valueOrNull ??
+            false);
     return Wrap(
       alignment: WrapAlignment.spaceBetween,
       spacing: 8,
@@ -138,10 +144,10 @@ class QuickJump extends ConsumerWidget {
                   ),
                   onPressed: () {
                     navigateTo(route: Routes.actionAddUpdate, push: true);
-                    debugPrint('News');
+                    debugPrint('Update');
                   },
                   icon: const Icon(Atlas.plus_circle_thin),
-                  label: const Text('News'),
+                  label: const Text('Update'),
                 )
               : null,
           isActive(LabsFeature.tasks)
@@ -158,15 +164,13 @@ class QuickJump extends ConsumerWidget {
                   label: const Text('Task'),
                 )
               : null,
-          isActive(LabsFeature.pins)
+          canPostPin
               ? OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.purple,
                     side: const BorderSide(width: 2, color: Colors.purple),
                   ),
-                  onPressed: () {
-                    context.pushNamed(Routes.actionAddPin.name);
-                  },
+                  onPressed: () => context.pushNamed(Routes.actionAddPin.name),
                   icon: const Icon(Atlas.plus_circle_thin),
                   label: const Text('Pin'),
                 )
@@ -177,9 +181,7 @@ class QuickJump extends ConsumerWidget {
                     foregroundColor: Colors.purple,
                     side: const BorderSide(width: 2, color: Colors.purple),
                   ),
-                  onPressed: () {
-                    debugPrint('Add Event');
-                  },
+                  onPressed: () => context.pushNamed(Routes.createEvent.name),
                   icon: const Icon(Atlas.plus_circle_thin),
                   label: const Text('Event'),
                 )

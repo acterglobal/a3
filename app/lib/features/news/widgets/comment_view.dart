@@ -119,7 +119,9 @@ class CommentViewState extends State<CommentView> {
           ),
           GestureDetector(
             onTap: () {
-              setState(() => replyView = !replyView);
+              if (mounted) {
+                setState(() => replyView = !replyView);
+              }
             },
             child: Padding(
               padding: const EdgeInsets.fromLTRB(52, 12, 0, 8),

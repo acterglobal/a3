@@ -15,7 +15,7 @@ class CustomSelectedIcon extends StatelessWidget {
         color: Theme.of(context).navigationRailTheme.indicatorColor,
         borderRadius: BorderRadius.circular(14),
       ),
-      child: icon,
+      child: Center(child: icon),
     );
   }
 }

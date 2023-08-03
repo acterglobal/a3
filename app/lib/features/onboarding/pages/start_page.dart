@@ -1,4 +1,3 @@
-
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 
@@ -25,7 +24,7 @@ class _StartPageState extends State<StartPage> {
       title: RichText(
         textAlign: TextAlign.center,
         text: const TextSpan(
-          text: 'Organise & Collaborate Through ',
+          text: 'Organize & Collaborate Through ',
           style: TextStyle(color: Colors.green, fontSize: 24),
           children: <TextSpan>[
             TextSpan(
@@ -66,7 +65,7 @@ class _StartPageState extends State<StartPage> {
             height: 15,
           ),
           const Text(
-            'Gather people in one or multiple spaces & create your own organizational strutcure.',
+            'Gather people in one or multiple spaces & create your own organizational structure.',
             style: TextStyle(fontSize: 17, color: Colors.white),
           )
         ],
@@ -88,7 +87,9 @@ class _StartPageState extends State<StartPage> {
               ),
             ),
             TextSpan(
-                text: ' without compromise.', style: TextStyle(fontSize: 24),),
+              text: ' without compromise.',
+              style: TextStyle(fontSize: 24),
+            ),
           ],
         ),
       ),
@@ -106,8 +107,7 @@ class _StartPageState extends State<StartPage> {
                   ),
                 ),
                 TextSpan(
-                  text:
-                      ' individually or acreoss endless organizations.',
+                  text: ' individually or across endless organizations.',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 17,
@@ -131,8 +131,7 @@ class _StartPageState extends State<StartPage> {
                   ),
                 ),
                 TextSpan(
-                  text:
-                      ' by default, no adds and no data mining.',
+                  text: ' by default, no ads and no data mining.',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 17,
@@ -149,8 +148,11 @@ class _StartPageState extends State<StartPage> {
       title: RichText(
         textAlign: TextAlign.center,
         text: const TextSpan(
-          text: 'Reduce noice & increase engagement with ',
-          style: TextStyle(color: Colors.green, fontSize: 24,),
+          text: 'Reduce noise & increase engagement with ',
+          style: TextStyle(
+            color: Colors.green,
+            fontSize: 24,
+          ),
           children: <TextSpan>[
             TextSpan(
               text: 'updates',
@@ -170,13 +172,15 @@ class _StartPageState extends State<StartPage> {
             TextSpan(
               text: 'see and engage with important updates',
               style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                  fontSize: 17,),
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+                fontSize: 17,
+              ),
             ),
             TextSpan(
-                text: ', by separating them from casual conversations.',
-                style: TextStyle(color: Colors.white, fontSize: 17),),
+              text: ', by separating them from casual conversations.',
+              style: TextStyle(color: Colors.white, fontSize: 17),
+            ),
           ],
         ),
       ),
@@ -197,34 +201,34 @@ class _StartPageState extends State<StartPage> {
               ),
             ),
             TextSpan(
-                text: ' - add features as needed.',
-                style: TextStyle(fontSize: 24),),
+              text: ' - add features as needed.',
+              style: TextStyle(fontSize: 24),
+            ),
           ],
         ),
       ),
-      description: 
-      RichText(
-            text: const TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Customize Acter',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                    fontSize: 17,
-                  ),
-                ),
-                TextSpan(
-                  text:
-                      ' to your needs as you grow from a small group into global movement of thousands.',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                  ),
-                ),
-              ],
+      description: RichText(
+        text: const TextSpan(
+          children: [
+            TextSpan(
+              text: 'Customize Acter',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+                fontSize: 17,
+              ),
             ),
-          ),
+            TextSpan(
+              text:
+                  ' to your needs as you grow from a small group into global movement of thousands.',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 17,
+              ),
+            ),
+          ],
+        ),
+      ),
     ),
   ];
 
@@ -232,7 +236,6 @@ class _StartPageState extends State<StartPage> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
-  
   }
 
   @override
@@ -244,37 +247,40 @@ class _StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-      padding: const EdgeInsets.only(top: kToolbarHeight),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color(0xff121F2B),
-            Color(0xff122334),
-            Color(0xff121315),
-            Color(0xff121315),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: [0.2, 0.4, 0.6, 1.0],
-          tileMode: TileMode.decal,
+      body: Container(
+        padding: const EdgeInsets.only(top: kToolbarHeight),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xff121F2B),
+              Color(0xff122334),
+              Color(0xff121315),
+              Color(0xff121315),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.2, 0.4, 0.6, 1.0],
+            tileMode: TileMode.decal,
+          ),
         ),
-      ),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Column(
           children: [
             Expanded(
               child: PageView.builder(
-                  onPageChanged: (index) {
-                    setState(() {
-                      _pageIndex = index;
-                    });
-                  },
-                  itemCount: onBoardingPages.length,
-                  controller: _pageController,
-                  itemBuilder: (context, index) {
-                    return Column(
+                onPageChanged: (index) {
+                  if (mounted) {
+                    setState(() => _pageIndex = index);
+                  }
+                },
+                itemCount: onBoardingPages.length,
+                controller: _pageController,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const SizedBox(
@@ -292,75 +298,81 @@ class _StartPageState extends State<StartPage> {
                           height: 20,
                         )
                       ],
-                    );
-                  },),
+                    ),
+                  );
+                },
+              ),
             ),
             GestureDetector(
-              onTap: ()=> context.goNamed(Routes.introProfile.name),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 16.0),
-                    child: Text('Skip'),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ...List.generate(
-                          onBoardingPages.length,
-                          (index) => Padding(
-                            padding: const EdgeInsets.only(right: 4),
-                            child: DotIndicator(
-                              isActive: index == _pageIndex,
-                            ),
-                          ),
-                        ),
-                      ],
+              onTap: () => context.goNamed(Routes.introProfile.name),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 16.0),
+                      child: Text('Skip'),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      next();
-                    },
-                    child: Padding(
+                    Padding(
                       padding: const EdgeInsets.only(bottom: 16.0),
                       child: Row(
-                        children: const [
-                          Text('Next'),
-                          SizedBox(
-                            width: 8,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ...List.generate(
+                            onBoardingPages.length,
+                            (index) => Padding(
+                              padding: const EdgeInsets.only(right: 4),
+                              child: DotIndicator(
+                                isActive: index == _pageIndex,
+                              ),
+                            ),
                           ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                          )
                         ],
                       ),
                     ),
-                  ),
-                ],
+                    GestureDetector(
+                      onTap: () {
+                        next();
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.only(bottom: 16.0),
+                        child: Row(
+                          children: [
+                            Text('Next'),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 16,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
-    ),);
+    );
   }
 
-  void next(){
-     if (_pageController.page! < onBoardingPages.length - 1) { 
-      _pageController.nextPage(duration: const Duration(seconds: 1),curve: Curves.ease,);
-      
+  void next() {
+    if (_pageController.page! < onBoardingPages.length - 1) {
+      _pageController.nextPage(
+        duration: const Duration(seconds: 1),
+        curve: Curves.ease,
+      );
     } else {
-    
-      context.goNamed(Routes.introProfile.name);
+      context.pushNamed(Routes.introProfile.name);
     }
   }
 }
-
 
 // Dot indicator widget
 class DotIndicator extends StatelessWidget {

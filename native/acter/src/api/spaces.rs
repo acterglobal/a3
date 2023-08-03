@@ -9,6 +9,7 @@ use acter_core::{
         comments::{SyncCommentEvent, SyncCommentUpdateEvent},
         news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
         pins::{SyncPinEvent, SyncPinUpdateEvent},
+        rsvp::SyncRsvpEvent,
         tasks::{SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskUpdateEvent},
     },
     executor::Executor,
@@ -18,7 +19,6 @@ use acter_core::{
     templates::Engine,
 };
 use anyhow::{bail, Context, Result};
-use async_broadcast::Receiver;
 use futures::stream::StreamExt;
 use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
@@ -38,9 +38,8 @@ use matrix_sdk::{
 use ruma::assign;
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, thread::JoinHandle};
-use tracing::{error, trace};
-
-use crate::Conversation;
+use tokio::sync::broadcast::Receiver;
+use tracing::{error, trace, warn};
 
 use super::{
     client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
@@ -155,7 +154,7 @@ impl Space {
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::CommentUpdate(t.into()))
-                            .await  {
+                            .await {
                             error!(?error, "execution failed");
                         }
                     }
@@ -187,7 +186,7 @@ impl Space {
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::AttachmentUpdate(t.into()))
-                            .await  {
+                            .await {
                             error!(?error, "execution failed");
                         }
                     }
@@ -235,7 +234,7 @@ impl Space {
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::CalendarEvent(t.into()))
-                            .await  {
+                            .await {
                             error!(?error, "execution failed");
                         }
                     }
@@ -251,7 +250,25 @@ impl Space {
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::CalendarEventUpdate(t.into()))
-                            .await  {
+                            .await {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
+
+            // RSVPs
+            self.room.add_event_handler(
+                |ev: SyncRsvpEvent,
+                room: SdkRoom,
+                c: SdkClient,
+                Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor
+                            .handle(AnyActerModel::Rsvp(t.into()))
+                            .await {
                             error!(?error, "execution failed");
                         }
                     }
@@ -283,7 +300,7 @@ impl Space {
                 if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                     if let Err(error) = executor
                         .handle(AnyActerModel::NewsEntryUpdate(t.into()))
-                        .await  {
+                        .await {
                             error!(?error, "execution failed");
                         }
                 }
@@ -332,7 +349,7 @@ impl Space {
                     Ok(model) => model,
                     Err(m) => {
                         if let Ok(state_key) = msg.event.get_field::<String>("state_key") {
-                            trace!(state_key, "ignoring state event");
+                            trace!(state_key=?state_key, "ignoring state event");
                             // ignore state keys
                         } else {
                             error!(event=?msg.event, "Model didn't parse {:}", m);
@@ -407,7 +424,11 @@ impl Space {
         Ok(())
     }
 
-    pub fn subscribe(&self) -> Receiver<()> {
+    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
+        tokio_stream::wrappers::BroadcastStream::new(self.subscribe()).map(|_| true)
+    }
+
+    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
         self.client.subscribe(format!("{}", self.room_id()))
     }
 
@@ -494,14 +515,14 @@ impl Space {
 
     pub async fn is_child_space_of(&self, room_id: String) -> bool {
         let Ok(room_id) = OwnedRoomId::try_from(room_id) else {
-            tracing::warn!("Asked for a not proper room id");
+            warn!("Asked for a not proper room id");
             return false
         };
 
         let space_relations = match self.space_relations().await {
             Ok(s) => s,
             Err(error) => {
-                tracing::error!(?error, room_id=?self.room_id(), "Fetching space relation failed");
+                error!(?error, room_id=?self.room_id(), "Fetching space relation failed");
                 return false;
             }
         };
@@ -519,31 +540,8 @@ impl Deref for Space {
     }
 }
 
-// impl CreateSpaceSettingsBuilder {
-//     pub fn add_invite(&mut self, user_id: OwnedUserId) {
-//         self.invites.get_or_insert_with(Vec::new).push(user_id);
-//     }
-// }
-
-pub fn new_space_settings(
-    name: String,
-    topic: Option<String>,
-    avatar_uri: Option<String>,
-    parent: Option<String>,
-) -> Result<CreateSpaceSettings> {
-    let mut builder = CreateSpaceSettingsBuilder::default();
-    builder.name(name);
-    if let Some(topic) = topic {
-        builder.topic(topic);
-    }
-    if let Some(avatar_uri) = avatar_uri {
-        builder.avatar_uri(avatar_uri);
-    }
-    if let Some(parent) = parent {
-        let owned_parent = OwnedRoomId::try_from(parent)?;
-        builder.parent(owned_parent);
-    }
-    Ok(builder.build()?)
+pub fn new_space_settings_builder() -> CreateSpaceSettingsBuilder {
+    CreateSpaceSettingsBuilder::default()
 }
 
 // External API

@@ -38,7 +38,7 @@ class _IntroProfileState extends State<IntroProfile> {
                     margin: const EdgeInsets.symmetric(vertical: 19),
                     height: 100,
                     width: 100,
-                    child: Image.asset('asspets/icon/logo_foreground.png'),
+                    child: Image.asset('assets/icon/logo_foreground.png'),
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 30),
@@ -54,14 +54,14 @@ class _IntroProfileState extends State<IntroProfile> {
                         Container(
                           margin: const EdgeInsets.symmetric(vertical: 10),
                           child: const Text(
-                            'Ready to start organizing and collaborating in safe space ?',
+                            'Ready to start organizing and collaborating in safe space?',
                             style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                         ),
                         Container(
                           margin: const EdgeInsets.symmetric(vertical: 10),
                           child: const Text(
-                            'Log in or create a new profile and start organizing! ?',
+                            'Log in or create a new profile and start organizing!',
                             style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                         ),
@@ -70,22 +70,23 @@ class _IntroProfileState extends State<IntroProfile> {
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 10,),
+                      horizontal: 30,
+                      vertical: 10,
+                    ),
                     child: Column(
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            //Navigate to Create Profile
-                          },
+                          onTap: () =>
+                              context.pushNamed(Routes.authRegister.name),
                           child: Container(
                             height: 54,
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Row(
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
+                              children: [
                                 Text(
                                   'Create Profile',
                                   style: TextStyle(
@@ -109,7 +110,7 @@ class _IntroProfileState extends State<IntroProfile> {
                           height: 25,
                         ),
                         GestureDetector(
-                          onTap: () => context.goNamed(Routes.authLogin.name),
+                          onTap: () => context.pushNamed(Routes.authLogin.name),
                           child: Container(
                             height: 54,
                             decoration: BoxDecoration(

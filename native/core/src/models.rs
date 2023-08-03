@@ -5,6 +5,7 @@ mod comments;
 mod common;
 mod news;
 mod pins;
+mod rsvp;
 mod tag;
 mod tasks;
 #[cfg(test)]
@@ -25,6 +26,7 @@ use matrix_sdk::ruma::{
 };
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
+pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
 pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
@@ -54,9 +56,11 @@ use crate::{
             SyncNewsEntryUpdateEvent,
         },
         pins::{OriginalPinEvent, OriginalPinUpdateEvent, SyncPinEvent, SyncPinUpdateEvent},
+        rsvp::{OriginalRsvpEvent, SyncRsvpEvent},
         tasks::{
-            OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskUpdateEvent, SyncTaskEvent,
-            SyncTaskListEvent, SyncTaskUpdateEvent,
+            OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskListUpdateEvent,
+            OriginalTaskUpdateEvent, SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent,
+            SyncTaskUpdateEvent,
         },
     },
 };
@@ -176,6 +180,9 @@ pub enum AnyActerModel {
 
     Attachment,
     AttachmentUpdate,
+
+    Rsvp,
+
     #[cfg(test)]
     TestModel,
 }
@@ -185,6 +192,8 @@ impl AnyActerModel {
         let Ok(Some(model_type)) = raw.get_field("type") else {
             return Err(Error::UnknownModel(None));
         };
+
+        trace!("from raw timeline event: {}", model_type);
 
         match model_type {
             // -- CALENDAR
@@ -202,9 +211,9 @@ impl AnyActerModel {
             "global.acter.dev.calendar_event.update" => Ok(AnyActerModel::CalendarEventUpdate(
                 raw.deserialize_as::<OriginalCalendarEventUpdateEvent>()
                     .map_err(|error| {
-                        error!(?error, ?raw, "parsing pin update event failed");
+                        error!(?error, ?raw, "parsing calendar_event update event failed");
                         Error::FailedToParse {
-                            model_type: "global.acter.dev.pin.update".to_string(),
+                            model_type: "global.acter.dev.calendar_event.update".to_string(),
                             msg: error.to_string(),
                         }
                     })?
@@ -218,6 +227,17 @@ impl AnyActerModel {
                         error!(?error, ?raw, "parsing task list event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.tasklist".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+            "global.acter.dev.tasklist.update" => Ok(AnyActerModel::TaskListUpdate(
+                raw.deserialize_as::<OriginalTaskListUpdateEvent>()
+                    .map_err(|error| {
+                        error!(?error, ?raw, "parsing task list update event failed");
+                        Error::FailedToParse {
+                            model_type: "global.acter.dev.tasklist.update".to_string(),
                             msg: error.to_string(),
                         }
                     })?
@@ -344,6 +364,19 @@ impl AnyActerModel {
                     .into(),
             )),
 
+            // rsvp
+            "global.acter.dev.rsvp" => Ok(AnyActerModel::Rsvp(
+                raw.deserialize_as::<OriginalRsvpEvent>()
+                    .map_err(|error| {
+                        error!(?error, ?raw, "parsing rsvp event failed");
+                        Error::FailedToParse {
+                            model_type: "global.acter.dev.rsvp".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+
             _ => {
                 if model_type.starts_with("global.acter.") {
                     error!(?raw, "{model_type} not implemented");
@@ -406,6 +439,20 @@ impl AnyActerModel {
                 .into_full_event(room_id.to_owned())
             {
                 MessageLikeEvent::Original(t) => Ok(AnyActerModel::TaskList(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+            "global.acter.dev.tasklist.update" => match raw
+                .deserialize_as::<SyncTaskListUpdateEvent>()
+                .map_err(|error| {
+                    error!(?error, ?raw, "parsing task list update event failed");
+                    Error::FailedToParse {
+                        model_type: "global.acter.dev.tasklist.update".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::TaskListUpdate(t.into())),
                 _ => Err(Error::UnknownModel(None)),
             },
             "global.acter.dev.task" => match raw
@@ -556,6 +603,22 @@ impl AnyActerModel {
                 .into_full_event(room_id.to_owned())
             {
                 MessageLikeEvent::Original(t) => Ok(AnyActerModel::AttachmentUpdate(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+
+            // RSVP events
+            "global.acter.dev.rsvp" => match raw
+                .deserialize_as::<SyncRsvpEvent>()
+                .map_err(|error| {
+                    error!(?error, ?raw, "parsing RSVP event failed");
+                    Error::FailedToParse {
+                        model_type: "global.acter.dev.rsvp".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::Rsvp(t.into())),
                 _ => Err(Error::UnknownModel(None)),
             },
 

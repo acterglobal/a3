@@ -1,0 +1,2 @@
+- [fix] Updates from Spaces are now properly propagated to the UI. Should remove the need to restart the App before seeing updates to e.g. the Avatar or users invited.
+- [fix] The +-button on the space-members page now correctly starts the invite dialog
