@@ -2,7 +2,7 @@ import 'dart:core';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/chat/widgets/convo_card.dart';
+import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

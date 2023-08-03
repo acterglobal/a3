@@ -2,8 +2,8 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
-import 'package:acter/features/chat/widgets/convo_card.dart';
+import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
+import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -62,11 +62,7 @@ class SpaceChatsPage extends ConsumerWidget {
                   ),
                 );
               }
-              return const SliverToBoxAdapter(
-                child: Center(
-                  child: Text('There are no chats related to this space'),
-                ),
-              );
+              return const SliverToBoxAdapter(child: SizedBox.shrink());
             },
             error: (error, stackTrace) => SliverToBoxAdapter(
               child: Center(child: Text('Failed to load events due to $error')),
@@ -76,21 +72,23 @@ class SpaceChatsPage extends ConsumerWidget {
             ),
           ),
           related.when(
-              data: (spaces) =>
-                  RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
-                    firstPageKey: const Next(isStart: true),
-                    provider: chatHierarchyProvider(spaces),
-                    itemBuilder: (context, item, index) =>
-                        SpaceHierarchyCard(space: item, withBorder: false),
-                    noItemsFoundIndicatorBuilder: (context, controller) =>
-                        const SizedBox.shrink(),
-                    pagedBuilder: (controller, builder) => PagedSliverList(
-                      pagingController: controller,
-                      builderDelegate: builder,
-                    ),
-                  ),
-              error: (e, s) => Text('Error loading related spaces: $e'),
-              loading: () => const Text('loading other chats')),
+            // FIXME: filter these for entries we are already members of
+            data: (spaces) =>
+                RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
+              firstPageKey: const Next(isStart: true),
+              provider: chatHierarchyProvider(spaces),
+              itemBuilder: (context, item, index) =>
+                  ConvoHierarchyCard(space: item),
+              noItemsFoundIndicatorBuilder: (context, controller) =>
+                  const SizedBox.shrink(),
+              pagedBuilder: (controller, builder) => PagedSliverList(
+                pagingController: controller,
+                builderDelegate: builder,
+              ),
+            ),
+            error: (e, s) => Text('Error loading related spaces: $e'),
+            loading: () => const Text('loading other chats'),
+          ),
         ],
       ),
     );

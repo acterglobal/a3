@@ -283,8 +283,12 @@ final relatedSpacesProvider = FutureProvider.autoDispose
     String targetType = related.targetType();
     if (targetType != 'ChatRoom') {
       final roomId = related.roomId().toString();
-      final space = await ref.watch(spaceProvider(roomId).future);
-      spaces.add(space);
+      try {
+        final space = await ref.watch(spaceProvider(roomId).future);
+        spaces.add(space);
+      } catch (e) {
+        continue;
+      }
     }
   }
   return List<Space>.from(spaces);
