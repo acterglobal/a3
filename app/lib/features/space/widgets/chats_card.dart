@@ -50,8 +50,7 @@ class ChatsCard extends ConsumerWidget {
                                   pathParameters: {'spaceId': spaceId},
                                 );
                               },
-                              child:
-                                  Text('see all my ${chats.length - 3} chats'),
+                              child: Text('see all my ${chats.length} chats'),
                             ),
                           )
                         : const SizedBox.shrink()
