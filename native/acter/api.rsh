@@ -1194,6 +1194,11 @@ object SpaceHierarchyRoomInfo {
     fn is_space() -> bool;
     fn avatar_url_str() -> Option<string>;
     fn join_rule_str() -> string;
+    /// whether to have avatar
+    fn has_avatar() -> bool;
+
+    /// get the binary data of avatar
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
 }
 
 object SpaceHierarchyListResult {

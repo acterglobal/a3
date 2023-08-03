@@ -1,14 +1,13 @@
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/common/models/profile_data.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-typedef Widget? SubtitleFn(Space);
-
-class SpaceCard extends ConsumerWidget {
-  final Space space;
-  final SubtitleFn? subtitleFn;
+class SpaceWithProfileCard extends ConsumerWidget {
+  final String roomId;
+  final ProfileData profile;
+  final Widget? subtitle;
   final double avatarSize;
 
   /// Called when the user taps this list tile.
@@ -69,64 +68,67 @@ class SpaceCard extends ConsumerWidget {
   /// the default border.
   final bool withBorder;
 
-  const SpaceCard({
+  const SpaceWithProfileCard({
     super.key,
-    required this.space,
-    this.subtitleFn,
+    required this.roomId,
+    required this.profile,
+    this.subtitle,
     this.onTap,
     this.onLongPress,
     this.onFocusChange,
     this.titleTextStyle,
     this.subtitleTextStyle,
     this.leadingAndTrailingTextStyle,
-    this.avatarSize = 48,
-    this.contentPadding = const EdgeInsets.all(15),
     this.shape,
     this.withBorder = true,
-  });
-
-  const SpaceCard.small({
-    super.key,
-    required this.space,
-    this.subtitleFn,
-    this.onTap,
-    this.onLongPress,
-    this.onFocusChange,
-    this.titleTextStyle,
-    this.subtitleTextStyle,
-    this.leadingAndTrailingTextStyle,
-    this.avatarSize = 24,
-    this.contentPadding = const EdgeInsets.all(5),
-    this.shape,
-    this.withBorder = false,
+    required this.avatarSize,
+    required this.contentPadding,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = space.getRoomId().toString();
-    final profile = ref.watch(spaceProfileDataProvider(space));
-    final subtitle = subtitleFn != null ? subtitleFn!(space) : null;
+    final displayName = profile.displayName ?? roomId;
 
-    return profile.when(
-      data: (profile) => SpaceWithProfileCard(
-        roomId: roomId,
-        profile: profile,
-        subtitle: subtitle,
-        onTap: onTap,
+    ShapeBorder? renderShape() {
+      return shape ??
+          (withBorder
+              ? RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                    width: 1.5,
+                  ),
+                  borderRadius: BorderRadius.circular(6),
+                )
+              : null);
+    }
+
+    return Card(
+      shape: renderShape(),
+      color: Theme.of(context).colorScheme.surface,
+      child: ListTile(
+        contentPadding: contentPadding,
+        onTap: onTap ?? () => context.go('/$roomId'),
         onFocusChange: onFocusChange,
         onLongPress: onLongPress,
-        avatarSize: avatarSize,
-        contentPadding: contentPadding,
-        shape: shape,
-        withBorder: withBorder,
-      ),
-      error: (error, stack) => ListTile(
-        title: Text('Error loading: $roomId'),
-        subtitle: Text('$error'),
-      ),
-      loading: () => ListTile(
-        title: Text(roomId),
-        subtitle: const Text('loading'),
+        titleTextStyle: titleTextStyle,
+        subtitleTextStyle: subtitleTextStyle,
+        leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
+        title: Text(profile.displayName ?? roomId),
+        subtitle: subtitle,
+        leading: profile.hasAvatar()
+            ? ActerAvatar(
+                mode: DisplayMode.Space,
+                uniqueId: roomId,
+                displayName: displayName,
+                avatar: profile.getAvatarImage(),
+                size: avatarSize,
+              )
+            : ActerAvatar(
+                mode: DisplayMode.Space,
+                uniqueId: roomId,
+                displayName: displayName,
+                size: avatarSize,
+              ),
       ),
     );
   }

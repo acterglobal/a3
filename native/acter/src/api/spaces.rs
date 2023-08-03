@@ -1,3 +1,10 @@
+use super::{
+    client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
+    common::{OptionBuffer, OptionText},
+    room::{Member, Room},
+    search::PublicSearchResult,
+    RUNTIME,
+};
 pub use acter_core::spaces::{
     CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
     SpaceRelations as CoreSpaceRelations,
@@ -23,6 +30,7 @@ use futures::stream::StreamExt;
 use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
     event_handler::{Ctx, EventHandlerHandle},
+    media::{MediaFormat, MediaRequest, MediaThumbnailSize},
     room::{Messages, MessagesOptions, Room as SdkRoom},
     ruma::{
         api::client::state::send_state_event::v3::Request as SendStateEventRequest,
@@ -35,9 +43,11 @@ use matrix_sdk::{
     },
     Client as SdkClient,
 };
+
 use ruma::{
     api::client::space::{SpaceHierarchyRoomsChunk, SpaceRoomJoinRule},
     assign,
+    events::room::MediaSource,
     events::space::child::HierarchySpaceChildEvent,
     room::RoomType,
     OwnedMxcUri,
@@ -46,13 +56,6 @@ use serde::{Deserialize, Serialize};
 use std::{ops::Deref, thread::JoinHandle};
 use tokio::sync::broadcast::Receiver;
 use tracing::{error, trace, warn};
-
-use super::{
-    client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
-    room::{Member, Room},
-    search::PublicSearchResult,
-    RUNTIME,
-};
 
 #[derive(Debug, Clone)]
 pub struct Space {
@@ -489,6 +492,27 @@ impl SpaceHierarchyRoomInfo {
     /// If the room is not a space-room, this should be empty.
     pub fn children_state(&self) -> Vec<Raw<HierarchySpaceChildEvent>> {
         self.chunk.children_state.clone()
+    }
+
+    pub fn has_avatar(&self) -> bool {
+        self.chunk.avatar_url.is_some()
+    }
+
+    pub async fn get_avatar(&self) -> Result<OptionBuffer> {
+        let client = self.client.clone();
+        if let Some(url) = self.chunk.avatar_url.clone() {
+            return RUNTIME
+                .spawn(async move {
+                    let request = MediaRequest {
+                        source: ruma::events::room::MediaSource::Plain(url),
+                        format: MediaFormat::File,
+                    };
+                    let buf = client.media().get_media_content(&request, true).await?;
+                    Ok(OptionBuffer::new(Some(buf)))
+                })
+                .await?;
+        }
+        Ok(OptionBuffer::new(None))
     }
 }
 

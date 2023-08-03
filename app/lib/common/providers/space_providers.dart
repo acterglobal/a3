@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -393,4 +394,16 @@ final relatedSpaceItemsProvider = FutureProvider.autoDispose
     mainParent: mainParent,
     hasMoreChildren: hasMoreChildren,
   );
+});
+
+/// Fill the Profile data for the given space-hierarchy-info
+final spaceHierarchyProfileProvider = FutureProvider.autoDispose
+    .family<ProfileData, SpaceHierarchyRoomInfo>((ref, space) async {
+  final client = ref.watch(clientProvider);
+  if (client == null) {
+    throw 'Client missing';
+  }
+
+  final avatar = await space.getAvatar();
+  return ProfileData(space.name(), avatar.data());
 });

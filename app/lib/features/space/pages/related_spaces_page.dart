@@ -3,9 +3,9 @@ import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -208,24 +208,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                   RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
                     firstPageKey: const Next(isStart: true),
                     provider: spaceHierarchyProvider(spaces.rel),
-                    itemBuilder: (context, item, index) => Card(
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.inversePrimary,
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      color: Theme.of(context).colorScheme.surface,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(15),
-                        title: Text(
-                          item.name() ?? item.roomIdStr(),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        subtitle: Text(item.topic() ?? ''),
-                      ),
-                    ),
+                    itemBuilder: (context, item, index) =>
+                        SpaceHierarchyCard(space: item),
                     // noItemsFoundIndicatorBuilder: (context, controller) =>
                     //     weAreEmpty
                     //         ? SizedBox(

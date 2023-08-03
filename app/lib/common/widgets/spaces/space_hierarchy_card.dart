@@ -4,11 +4,8 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-typedef Widget? SubtitleFn(Space);
-
-class SpaceCard extends ConsumerWidget {
-  final Space space;
-  final SubtitleFn? subtitleFn;
+class SpaceHierarchyCard extends ConsumerWidget {
+  final SpaceHierarchyRoomInfo space;
   final double avatarSize;
 
   /// Called when the user taps this list tile.
@@ -69,10 +66,9 @@ class SpaceCard extends ConsumerWidget {
   /// the default border.
   final bool withBorder;
 
-  const SpaceCard({
+  const SpaceHierarchyCard({
     super.key,
     required this.space,
-    this.subtitleFn,
     this.onTap,
     this.onLongPress,
     this.onFocusChange,
@@ -84,28 +80,13 @@ class SpaceCard extends ConsumerWidget {
     this.shape,
     this.withBorder = true,
   });
-
-  const SpaceCard.small({
-    super.key,
-    required this.space,
-    this.subtitleFn,
-    this.onTap,
-    this.onLongPress,
-    this.onFocusChange,
-    this.titleTextStyle,
-    this.subtitleTextStyle,
-    this.leadingAndTrailingTextStyle,
-    this.avatarSize = 24,
-    this.contentPadding = const EdgeInsets.all(5),
-    this.shape,
-    this.withBorder = false,
-  });
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = space.getRoomId().toString();
-    final profile = ref.watch(spaceProfileDataProvider(space));
-    final subtitle = subtitleFn != null ? subtitleFn!(space) : null;
+    final roomId = space.roomIdStr();
+    final profile = ref.watch(spaceHierarchyProfileProvider(space));
+    final topic = space.topic();
+    final Widget? subtitle =
+        topic != null && topic.isNotEmpty ? Text(topic) : null;
 
     return profile.when(
       data: (profile) => SpaceWithProfileCard(
