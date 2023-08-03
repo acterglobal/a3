@@ -2,6 +2,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
 import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
@@ -79,36 +80,10 @@ class SpaceChatsPage extends ConsumerWidget {
                   RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
                     firstPageKey: const Next(isStart: true),
                     provider: chatHierarchyProvider(spaces),
-                    itemBuilder: (context, item, index) => Card(
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.inversePrimary,
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      color: Theme.of(context).colorScheme.surface,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(15),
-                        title: Text(
-                          item.name() ?? item.roomIdStr(),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        subtitle: Text(item.topic() ?? ''),
-                      ),
-                    ),
-                    // noItemsFoundIndicatorBuilder: (context, controller) =>
-                    //     weAreEmpty
-                    //         ? SizedBox(
-                    //             // nothing found, even in the section before. Show nice fallback
-                    //             height: 250,
-                    //             child: Center(
-                    //               child: SvgPicture.asset(
-                    //                 'assets/images/undraw_project_completed_re_jr7u.svg',
-                    //               ),
-                    //             ),
-                    //           )
-                    //         : const Text(''),
+                    itemBuilder: (context, item, index) =>
+                        SpaceHierarchyCard(space: item, withBorder: false),
+                    noItemsFoundIndicatorBuilder: (context, controller) =>
+                        const SizedBox.shrink(),
                     pagedBuilder: (controller, builder) => PagedSliverList(
                       pagingController: controller,
                       builderDelegate: builder,

@@ -46,7 +46,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              onTap: () => context.goNamed(
+              onTap: () => context.pushNamed(
                 Routes.chatroom.name,
                 pathParameters: {'roomId': roomId},
                 extra: widget.room,

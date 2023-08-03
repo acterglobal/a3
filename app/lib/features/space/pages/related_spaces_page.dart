@@ -23,7 +23,7 @@ class RelatedSpacesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaces = ref.watch(relatedSpaceItemsProvider(spaceIdOrAlias));
+    final spaces = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
     // get platform of context.
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -153,7 +153,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                 items.add(
                   SliverToBoxAdapter(
                     child:
-                        SpaceCard(key: Key(space.roomId), space: space.space!),
+                        SpaceCard(key: Key(space.getRoomIdStr()), space: space),
                   ),
                 );
               }
@@ -169,8 +169,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                       itemBuilder: (context, index) {
                         final space = spaces.parents[index];
                         return SpaceCard(
-                          key: Key(space.roomId),
-                          space: space.space!,
+                          key: Key(space.getRoomIdStr()),
+                          space: space,
                         );
                       },
                     ),
@@ -193,7 +193,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final space = spaces.children[index];
                       return SpaceCard(
-                          key: Key(space.roomId), space: space.space!);
+                          key: Key(space.getRoomIdStr()), space: space);
                     },
                   ),
                 );
@@ -210,34 +210,11 @@ class RelatedSpacesPage extends ConsumerWidget {
                     provider: spaceHierarchyProvider(spaces.rel),
                     itemBuilder: (context, item, index) =>
                         SpaceHierarchyCard(space: item),
-                    // noItemsFoundIndicatorBuilder: (context, controller) =>
-                    //     weAreEmpty
-                    //         ? SizedBox(
-                    //             // nothing found, even in the section before. Show nice fallback
-                    //             height: 250,
-                    //             child: Center(
-                    //               child: SvgPicture.asset(
-                    //                 'assets/images/undraw_project_completed_re_jr7u.svg',
-                    //               ),
-                    //             ),
-                    //           )
-                    //         : const Text(''),
                     pagedBuilder: (controller, builder) => PagedSliverList(
                       pagingController: controller,
                       builderDelegate: builder,
                     ),
                   ),
-                  // SliverGrid.builder(
-                  //   itemCount: spaces.children.length,
-                  //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  //     crossAxisCount: max(1, min(widthCount, minCount)),
-                  //     childAspectRatio: 4,
-                  //   ),
-                  //   itemBuilder: (context, index) {
-                  //     final space = spaces.children[index];
-                  //     return;
-                  //   },
-                  // ),
                 );
               }
 
@@ -287,8 +264,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final space = spaces.otherRelations[index];
                       return SpaceCard(
-                        key: Key(space.roomId),
-                        space: space.space!,
+                        key: Key(space.getRoomIdStr()),
+                        space: space,
                       );
                     },
                   ),
