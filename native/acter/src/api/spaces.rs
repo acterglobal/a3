@@ -603,7 +603,7 @@ impl Client {
     }
 
     pub async fn get_space(&self, room_id: String) -> Result<Space> {
-        if let Ok(room_id) = OwnedRoomId::try_from(room_id.clone()) {
+        if let Ok(room_id) = OwnedRoomId::try_from(room_id) {
             self.get_room(&room_id)
                 .context("Room not found")
                 .map(|room| Space::new(self.clone(), Room { room }))
