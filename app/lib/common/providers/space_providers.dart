@@ -7,6 +7,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/providers/notifiers/space_profile_notifier.dart';
+import 'package:logging/logging.dart';
+
+final log = Logger('SpaceProviders');
 
 /// Provider the profile data of a the given space, keeps up to date with underlying client
 final spaceProfileDataProvider = AsyncNotifierProvider.family<
@@ -268,17 +271,23 @@ final spaceRelationsProvider = FutureProvider.autoDispose
 /// to date with underlying client data if a space was found.
 final canonicalParentProvider = FutureProvider.autoDispose
     .family<SpaceWithProfileData?, String>((ref, spaceId) async {
-  final relations = await ref.watch(spaceRelationsProvider(spaceId).future);
-  final parent = relations.mainParent();
-  if (parent == null) {
-    debugPrint('no parent');
+  try {
+    final relations = await ref.watch(spaceRelationsProvider(spaceId).future);
+    final parent = relations.mainParent();
+    if (parent == null) {
+      debugPrint('no parent');
+      return null;
+    }
+
+    final parentSpace =
+        await ref.watch(spaceProvider(parent.roomId().toString()).future);
+    final profile =
+        await ref.watch(spaceProfileDataProvider(parentSpace).future);
+    return SpaceWithProfileData(parentSpace, profile);
+  } catch (e) {
+    log.warning('Failed to load canonical parent for $spaceId');
     return null;
   }
-
-  final parentSpace =
-      await ref.watch(spaceProvider(parent.roomId().toString()).future);
-  final profile = await ref.watch(spaceProfileDataProvider(parentSpace).future);
-  return SpaceWithProfileData(parentSpace, profile);
 });
 
 /// Get the List of related of the spaces for the space. Errors if the space or any
