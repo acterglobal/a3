@@ -10,14 +10,10 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:mime/mime.dart';
-import 'package:open_app_file/open_app_file.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   final Ref ref;
@@ -305,7 +301,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             ImageDesc? description = orgEventItem.imageDesc();
             if (description != null) {
               room.imageBinary(originalId).then((data) {
-                repliedToContent['content'] = base64Encode(data.asTypedList());
+                repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
               repliedTo = types.ImageMessage(
                 author: types.User(id: orgEventItem.sender()),
@@ -314,6 +310,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 name: description.name(),
                 size: description.size() ?? 0,
                 uri: description.source().url(),
+                width: description.width()?.toDouble() ?? 0,
                 metadata: repliedToContent,
               );
             }
@@ -812,7 +809,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       );
       final chatInputState = ref.read(chatInputProvider.notifier);
       repliedToMessage = null;
-      chatInputState.setReplyView(false);
+      chatInputState.toggleReplyView(false);
       chatInputState.setReplyWidget(null);
     } else {
       await room.sendImageMessage(
@@ -865,7 +862,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       );
       final chatInputState = ref.read(chatInputProvider.notifier);
       repliedToMessage = null;
-      chatInputState.setReplyView(false);
+      chatInputState.toggleReplyView(false);
       chatInputState.setReplyWidget(null);
     } else {
       await room.sendFileMessage(
@@ -893,7 +890,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       );
       repliedToMessage = null;
       final chatInputState = ref.read(chatInputProvider.notifier);
-      chatInputState.setReplyView(false);
+      chatInputState.toggleReplyView(false);
       chatInputState.setReplyWidget(null);
     } else {
       await room.sendFormattedMessage(markdownMessage);
@@ -906,46 +903,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     types.Message message,
   ) async {
     if (ref.read(chatInputProvider).showReplyView) {
-      ref.read(chatInputProvider.notifier).setReplyView(false);
+      ref.read(chatInputProvider.notifier).toggleReplyView(false);
       ref.read(chatInputProvider.notifier).setReplyWidget(null);
     }
     ref.read(chatRoomProvider.notifier).currentMessageId = message.id;
     ref.read(chatInputProvider.notifier).emojiRowVisible(true);
-    if (message is types.ImageMessage ||
-        message is types.AudioMessage ||
-        message is types.VideoMessage ||
-        message is types.FileMessage) {
-      String mediaPath = await room.mediaPath(message.id);
-      if (mediaPath.isEmpty) {
-        Directory? rootPath = await getApplicationSupportDirectory();
-        // ignore: use_build_context_synchronously
-        String? dirPath = await FilesystemPicker.open(
-          title: 'Save to folder',
-          context: context,
-          rootDirectory: rootPath,
-          fsType: FilesystemType.folder,
-          pickText: 'Save file to this folder',
-          folderIconColor: Colors.teal,
-          // ignore: use_build_context_synchronously
-          requestPermission: !isDesktop(context)
-              ? () async => await Permission.storage.request().isGranted
-              : null,
-        );
-        if (dirPath != null) {
-          await room.downloadMedia(message.id, dirPath);
-        }
-      } else {
-        final result = await OpenAppFile.open(mediaPath);
-        if (result.message.isNotEmpty) {
-          // ignore: use_build_context_synchronously
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.message),
-            ),
-          );
-        }
-      }
-    }
   }
 
   // send message event with image media
@@ -974,7 +936,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       );
       repliedToMessage = null;
       final chatInputState = ref.read(chatInputProvider.notifier);
-      chatInputState.setReplyView(false);
+      chatInputState.toggleReplyView(false);
       chatInputState.setReplyWidget(null);
     } else {
       await room.sendImageMessage(
@@ -989,15 +951,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-  ProfileData? getUserProfile(String? userId) {
+  ProfileData? getUserProfile(String userId) {
     final chatProfiles = ref.watch(chatProfilesProvider);
-    if (userId != null) {
-      if (chatProfiles.containsKey(userId)) {
-        return chatProfiles[userId];
-      }
+    if (chatProfiles.containsKey(userId)) {
+      return chatProfiles[userId];
     }
-
-    return null;
+    return ProfileData('', null);
   }
 
   void updateEmojiState(types.Message message) {
