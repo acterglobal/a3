@@ -24,6 +24,12 @@ class SpaceHierarchyListState
     List<Next?>? previousPageKeys,
   }) : super(records: records, error: error, nextPageKey: nextPageKey);
 
+  SpaceHierarchyListState filtered(FilterFn filter) {
+    return copyWith(
+      records: (records ?? []).where(filter).toList(),
+    );
+  }
+
   @override
   SpaceHierarchyListState copyWith({
     List<ffi.SpaceHierarchyRoomInfo>? records,
@@ -46,7 +52,7 @@ class SpaceHierarchyListState
   }
 
   SpaceHierarchyListState copyWithFilter(FilterFn filter) {
-    return copyWith(records: records?.where(filter).toList());
+    return copyWith(records: (records ?? []).where(filter).toList());
   }
 }
 
@@ -55,9 +61,8 @@ class SpaceHierarchyNotifier extends StateNotifier<SpaceHierarchyListState>
         PagedNotifierMixin<Next?, ffi.SpaceHierarchyRoomInfo,
             SpaceHierarchyListState> {
   final ffi.SpaceRelations spaceRel;
-  final FilterFn? filter;
 
-  SpaceHierarchyNotifier(this.spaceRel, this.filter)
+  SpaceHierarchyNotifier(this.spaceRel)
       : super(const SpaceHierarchyListState());
 
   @override
@@ -76,9 +81,6 @@ class SpaceHierarchyNotifier extends StateNotifier<SpaceHierarchyListState>
         // we are not at the end
         finalPageKey = Next(next: next);
       }
-      if (filter != null) {
-        entries = entries.where(filter!).toList();
-      }
       state = state.copyWith(
         records: page.isStart
             ? [...entries]
@@ -90,5 +92,44 @@ class SpaceHierarchyNotifier extends StateNotifier<SpaceHierarchyListState>
     }
 
     return null;
+  }
+}
+
+// Only spaces coming from this paginating spaces provider
+final fullSpaceHierarchyProvider = StateNotifierProvider.family<
+    SpaceHierarchyNotifier,
+    PagedState<Next?, ffi.SpaceHierarchyRoomInfo>,
+    ffi.SpaceRelations>((ref, spaceRel) {
+  return SpaceHierarchyNotifier(
+    spaceRel,
+  );
+});
+
+class FilteredSpaceHierarchyNotifier
+    extends StateNotifier<SpaceHierarchyListState>
+    with
+        PagedNotifierMixin<Next?, ffi.SpaceHierarchyRoomInfo,
+            SpaceHierarchyListState> {
+  final Ref ref;
+  final ffi.SpaceRelations spaceRel;
+  final FilterFn filter;
+  late Function listener;
+
+  FilteredSpaceHierarchyNotifier(this.ref, this.spaceRel, this.filter)
+      : super(const SpaceHierarchyListState()) {
+    listener = ref
+        .read(fullSpaceHierarchyProvider(spaceRel).notifier)
+        .addListener((newState) {
+      if (mounted) {
+        state = newState.filtered(filter);
+      }
+    });
+  }
+
+  @override
+  Future<List<ffi.SpaceHierarchyRoomInfo>?> load(Next? page, int limit) async {
+    return await ref
+        .read(fullSpaceHierarchyProvider(spaceRel).notifier)
+        .load(page, limit);
   }
 }

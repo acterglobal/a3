@@ -211,7 +211,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                 items.add(
                   RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
                     firstPageKey: const Next(isStart: true),
-                    provider: spaceHierarchyProvider(spaces.rel),
+                    provider: remoteSpaceHierarchyProvider(spaces),
                     itemBuilder: (context, item, index) =>
                         SpaceHierarchyCard(space: item),
                     pagedBuilder: (controller, builder) => PagedSliverList(

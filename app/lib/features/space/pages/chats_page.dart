@@ -22,7 +22,7 @@ class SpaceChatsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(relatedChatsProvider(spaceIdOrAlias));
-    final related = ref.watch(spaceRelationsProvider(spaceIdOrAlias));
+    final related = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
     return Padding(
       padding: const EdgeInsets.all(20),
       child: CustomScrollView(
@@ -76,7 +76,7 @@ class SpaceChatsPage extends ConsumerWidget {
             data: (spaces) =>
                 RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
               firstPageKey: const Next(isStart: true),
-              provider: chatHierarchyProvider(spaces),
+              provider: remoteChatHierarchyProvider(spaces),
               itemBuilder: (context, item, index) =>
                   ConvoHierarchyCard(space: item),
               noItemsFoundIndicatorBuilder: (context, controller) =>
@@ -86,8 +86,11 @@ class SpaceChatsPage extends ConsumerWidget {
                 builderDelegate: builder,
               ),
             ),
-            error: (e, s) => Text('Error loading related spaces: $e'),
-            loading: () => const Text('loading other chats'),
+            error: (e, s) => SliverToBoxAdapter(
+              child: Text('Error loading related chats: $e'),
+            ),
+            loading: () =>
+                const SliverToBoxAdapter(child: Text('loading other chats')),
           ),
         ],
       ),
