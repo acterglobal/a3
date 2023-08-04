@@ -15460,6 +15460,17 @@ class Api {
           int Function(
             int,
           )>();
+  late final _spaceHierarchyRoomInfoViaServerNamePtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceHierarchyRoomInfoViaServerNameReturn Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_via_server_name");
+
+  late final _spaceHierarchyRoomInfoViaServerName =
+      _spaceHierarchyRoomInfoViaServerNamePtr.asFunction<
+          _SpaceHierarchyRoomInfoViaServerNameReturn Function(
+            int,
+          )>();
   late final _spaceHierarchyListResultNextBatchPtr = _lookup<
       ffi.NativeFunction<
           _SpaceHierarchyListResultNextBatchReturn Function(
@@ -33383,6 +33394,40 @@ class SpaceHierarchyRoomInfo {
     return tmp2;
   }
 
+  String? viaServerName() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoViaServerName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -40695,6 +40740,17 @@ class _SpaceHierarchyRoomInfoJoinRuleStrReturn extends ffi.Struct {
   external int arg1;
   @ffi.Uint64()
   external int arg2;
+}
+
+class _SpaceHierarchyRoomInfoViaServerNameReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class _SpaceHierarchyListResultNextBatchReturn extends ffi.Struct {

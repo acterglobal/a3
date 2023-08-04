@@ -498,6 +498,17 @@ impl SpaceHierarchyRoomInfo {
         self.chunk.avatar_url.is_some()
     }
 
+    pub fn via_server_name(&self) -> Option<String> {
+        for v in &self.chunk.children_state {
+            let Ok(h) = v.deserialize() else { continue };
+            let Some(via) = h.content.via else { continue };
+            for v in via {
+                return Some(v.to_string());
+            }
+        }
+        return None;
+    }
+
     pub async fn get_avatar(&self) -> Result<OptionBuffer> {
         let client = self.client.clone();
         if let Some(url) = self.chunk.avatar_url.clone() {

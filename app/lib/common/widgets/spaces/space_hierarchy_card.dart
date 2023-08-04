@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/rooms.dart';
 import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RoomHierarchyJoinButtons extends ConsumerWidget {
   final SpaceHierarchyRoomInfo space;
-  RoomHierarchyJoinButtons({required this.space});
+  const RoomHierarchyJoinButtons({super.key, required this.space});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,20 +16,49 @@ class RoomHierarchyJoinButtons extends ConsumerWidget {
       case 'private':
       case 'invite':
         return const Tooltip(
-            message: 'You need be invited to join this room',
-            child: Chip(label: Text('Private')));
+          message: 'You need be invited to join this room',
+          child: Chip(label: Text('Private')),
+        );
+      case 'restricted':
+        return Tooltip(
+          message: 'You are able to join this room',
+          child: OutlinedButton(
+            onPressed: () async {
+              await joinRoom(
+                context,
+                ref,
+                'Trying to join ${space.name()}',
+                space.roomIdStr(),
+                space.viaServerName(),
+              );
+            },
+            child: const Text('join'),
+          ),
+        );
       case 'public':
-      case 'invite':
-        return ButtonBar(children: [
-          const Tooltip(
+        return ButtonBar(
+          children: [
+            const Tooltip(
               message: 'You need be invited to join this room',
-              child: Chip(label: Text('public'))),
-          OutlinedButton(onPressed: () {}, child: Text('join now'))
-        ]);
+              child: Chip(label: Text('public')),
+            ),
+            OutlinedButton(
+            onPressed: () async {
+              await joinRoom(
+                context,
+                ref,
+                'Trying to join ${space.name()}',
+                space.roomIdStr(),
+                space.viaServerName(),
+              );
+            }, child: const Text('join'))
+          ],
+        );
       default:
         return Tooltip(
-            message: 'Unclear join rule $joinRule',
-            child: const Chip(label: Text('unknown')));
+          message: 'Unclear join rule $joinRule',
+          child: const Chip(label: Text('unknown')),
+        );
     }
   }
 }

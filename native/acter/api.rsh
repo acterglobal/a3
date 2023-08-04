@@ -1201,6 +1201,8 @@ object SpaceHierarchyRoomInfo {
 
     /// get the binary data of avatar
     fn get_avatar() -> Future<Result<OptionBuffer>>;
+    // recommended server to try to join via
+    fn via_server_name() -> Option<string>;
 }
 
 object SpaceHierarchyListResult {
