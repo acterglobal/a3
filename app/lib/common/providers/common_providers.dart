@@ -84,22 +84,8 @@ final chatMembersProvider =
 
 final relatedChatsProvider = FutureProvider.autoDispose
     .family<List<Convo>, String>((ref, spaceId) async {
-  List<Convo> conversations = [];
-  ref.watch(chatStreamProvider).whenData((value) => conversations = value);
-  final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
-  final chats = [];
-  final children = relatedSpaces.children();
-  for (Convo room in conversations) {
-    for (final related in children) {
-      if (related.targetType() == 'ChatRoom') {
-        final roomId = related.roomId().toString();
-        if (room.getRoomIdStr() == roomId) {
-          chats.add(room);
-        }
-      }
-    }
-  }
-  return List<Convo>.from(chats);
+  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
+      .chats;
 });
 
 // Member Providers

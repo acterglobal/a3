@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -108,10 +109,12 @@ class SpaceItem {
 }
 
 class SpaceRelationsOverview {
-  bool hasMoreChildren;
+  bool hasMoreSubspaces;
+  bool hasMoreChats;
   SpaceRelations rel;
   Member? membership;
-  List<Space> children;
+  List<Space> subspaces;
+  List<Convo> chats;
   Space? mainParent;
   List<Space> parents;
   List<Space> otherRelations;
@@ -119,11 +122,13 @@ class SpaceRelationsOverview {
   SpaceRelationsOverview({
     required this.rel,
     required this.membership,
-    required this.children,
+    required this.subspaces,
+    required this.chats,
     required this.mainParent,
     required this.parents,
     required this.otherRelations,
-    required this.hasMoreChildren,
+    required this.hasMoreSubspaces,
+    required this.hasMoreChats,
   });
 }
 
@@ -301,26 +306,36 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
     .family<SpaceRelationsOverview, String>((ref, spaceId) async {
   final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
   final membership = await ref.watch(spaceMembershipProvider(spaceId).future);
-  bool hasMoreChildren = false;
-  final List<Space> children = [];
+  bool hasMoreSubspaces = false;
+  bool hasMoreChats = false;
+  final List<Space> subspaces = [];
+  final List<Convo> chats = [];
   List<Space> otherRelated = [];
   for (final related in relatedSpaces.children()) {
     String targetType = related.targetType();
-    if (targetType != 'ChatRoom') {
+    if (targetType == 'ChatRoom') {
+      final roomId = related.roomId().toString();
+      try {
+        final chat = await ref.watch(chatProvider(roomId).future);
+        chats.add(chat);
+      } catch (e) {
+        hasMoreChats = true;
+      }
+    } else {
       final roomId = related.roomId().toString();
       try {
         final space = await ref.watch(spaceProvider(roomId).future);
         if (!space.isJoined()) {
-          hasMoreChildren = true;
+          hasMoreSubspaces = true;
           continue;
         }
         if (await space.isChildSpaceOf(spaceId)) {
-          children.add(space);
+          subspaces.add(space);
         } else {
           otherRelated.add(space);
         }
       } catch (e) {
-        hasMoreChildren = true;
+        hasMoreSubspaces = true;
       }
     }
   }
@@ -361,10 +376,12 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
     rel: relatedSpaces,
     membership: membership,
     parents: parents,
-    children: children,
+    chats: chats,
+    subspaces: subspaces,
     otherRelations: otherRelated,
     mainParent: mainParent,
-    hasMoreChildren: hasMoreChildren,
+    hasMoreSubspaces: hasMoreSubspaces,
+    hasMoreChats: hasMoreChats,
   );
 });
 

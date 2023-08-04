@@ -178,21 +178,21 @@ class RelatedSpacesPage extends ConsumerWidget {
                   );
                 }
               }
-              if (spaces.children.isNotEmpty) {
-                if (spaces.hasMoreChildren) {
+              if (spaces.subspaces.isNotEmpty) {
+                if (spaces.hasMoreSubspaces) {
                   addSubspaceHeading('My Subspaces');
                 } else {
                   addSubspaceHeading('Subspaces');
                 }
                 items.add(
                   SliverGrid.builder(
-                    itemCount: spaces.children.length,
+                    itemCount: spaces.subspaces.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: max(1, min(widthCount, minCount)),
                       childAspectRatio: 4,
                     ),
                     itemBuilder: (context, index) {
-                      final space = spaces.children[index];
+                      final space = spaces.subspaces[index];
                       return SpaceCard(
                         key: Key(space.getRoomIdStr()),
                         space: space,
@@ -202,8 +202,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                   ),
                 );
               }
-              if (spaces.hasMoreChildren) {
-                if (spaces.children.isEmpty) {
+              if (spaces.hasMoreSubspaces) {
+                if (spaces.subspaces.isEmpty) {
                   addSubspaceHeading('Subspaces');
                 } else {
                   addSubspaceHeading('More Subspaces');
@@ -222,8 +222,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                 );
               }
 
-              if (spaces.children.isEmpty &&
-                  !spaces.hasMoreChildren &&
+              if (spaces.subspaces.isEmpty &&
+                  !spaces.hasMoreSubspaces &&
                   canLinkSpace) {
                 // fallback if there are no subspaces show, allow admins to access the buttons
                 addSubspaceHeading('Subspaces');

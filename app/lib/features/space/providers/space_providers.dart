@@ -9,7 +9,7 @@ final remoteSpaceHierarchyProvider = StateNotifierProvider.autoDispose.family<
     FilteredSpaceHierarchyNotifier,
     PagedState<Next?, ffi.SpaceHierarchyRoomInfo>,
     SpaceRelationsOverview>((ref, spaceOverview) {
-  final knownChildren = spaceOverview.children.map((e) => e.getRoomIdStr());
+  final knownChildren = spaceOverview.subspaces.map((e) => e.getRoomIdStr());
   return FilteredSpaceHierarchyNotifier(
     ref,
     spaceOverview.rel,
@@ -22,7 +22,7 @@ final remoteChatHierarchyProvider = StateNotifierProvider.autoDispose.family<
     FilteredSpaceHierarchyNotifier,
     PagedState<Next?, ffi.SpaceHierarchyRoomInfo>,
     SpaceRelationsOverview>((ref, spaceOverview) {
-  final knownChildren = spaceOverview.children.map((e) => e.getRoomIdStr());
+  final knownChildren = spaceOverview.chats.map((e) => e.getRoomIdStr());
   return FilteredSpaceHierarchyNotifier(
     ref,
     spaceOverview.rel,
