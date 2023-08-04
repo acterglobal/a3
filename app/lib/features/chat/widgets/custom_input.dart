@@ -9,6 +9,7 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -444,6 +445,28 @@ class _ReplyContentWidget extends StatelessWidget {
           messageWidth: imageMsg.size.toInt(),
           isReplyContent: true,
         ),
+      );
+    } else if (msg is TextMessage) {
+      var textMsg = msg as TextMessage;
+      bool enlargeEmoji = false;
+      if (textMsg.metadata!.containsKey('enlargeEmoji')) {
+        enlargeEmoji = textMsg.metadata!['enlargeEmoji'];
+      }
+      return Container(
+        alignment: Alignment.center,
+        constraints: const BoxConstraints(maxHeight: 120),
+        padding: const EdgeInsets.all(8),
+        child: enlargeEmoji
+            ? Text(textMsg.text, maxLines: 3, overflow: TextOverflow.ellipsis)
+            : Html(
+                // ignore: prefer_single_quotes, unnecessary_string_interpolations
+                data: """${textMsg.text}""",
+                defaultTextStyle: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(overflow: TextOverflow.ellipsis),
+                maxLines: 3,
+              ),
       );
     }
     return messageWidget ?? const SizedBox.shrink();

@@ -92,11 +92,14 @@ class _TextMessageBuilderConsumerState
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       );
     }
-    return _TextWidget(
-      message: widget.message,
-      enlargeEmoji: enlargeEmoji,
-      isNotice: isNotice,
-      isReply: widget.isReply,
+    return Padding(
+      padding: const EdgeInsets.all(18),
+      child: _TextWidget(
+        message: widget.message,
+        enlargeEmoji: enlargeEmoji,
+        isNotice: isNotice,
+        isReply: widget.isReply,
+      ),
     );
   }
 
@@ -147,8 +150,6 @@ class _TextWidget extends ConsumerWidget {
           : Html(
               // ignore: prefer_single_quotes, unnecessary_string_interpolations
               data: """${message.text}""",
-              shrinkToFit: true,
-              padding: const EdgeInsets.all(5),
               defaultTextStyle: Theme.of(context)
                   .textTheme
                   .bodySmall!
