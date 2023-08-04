@@ -548,6 +548,14 @@ impl SpaceHierarchyListResult {
 }
 
 impl SpaceRelations {
+    pub fn room_id(&self) -> OwnedRoomId {
+        self.space.room_id().to_owned()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.space.room_id().to_string()
+    }
+
     pub async fn query_hierarchy(&self, from: Option<String>) -> Result<SpaceHierarchyListResult> {
         let c = self.space.client.clone();
         let room_id = self.space.room_id().to_owned();

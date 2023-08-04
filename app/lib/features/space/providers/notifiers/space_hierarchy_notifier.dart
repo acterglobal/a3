@@ -74,7 +74,11 @@ class SpaceHierarchyNotifier extends StateNotifier<SpaceHierarchyListState>
     final pageReq = page.next ?? '';
     try {
       final res = await spaceRel.queryHierarchy(pageReq);
-      var entries = (await res.rooms()).toList();
+      // the current space is also returned as part of the response
+      // filter that out:
+      final myId = spaceRel.roomIdStr();
+      var entries =
+          (await res.rooms()).where((x) => x.roomIdStr() != myId).toList();
       final next = res.nextBatch();
       Next? finalPageKey;
       if (next != null) {

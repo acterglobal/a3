@@ -1222,6 +1222,8 @@ object SpaceRelation {
 }
 
 object SpaceRelations {
+    //fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
     /// do we have a canonical parent?!?
     fn main_parent() -> Option<SpaceRelation>;
     /// other parents we belong to
