@@ -654,10 +654,19 @@ impl Space {
         };
         let room = joined.clone();
 
+        let Some(Ok(homeserver)) = self.client.homeserver().await.host_str().map(|h|h.try_into()) else {
+            return Err(acter_core::Error::HomeserverMissesHostname)?;
+          };
+
         RUNTIME
             .spawn(async move {
                 let res_id = room
-                    .send_state_event_for_key(&room_id, SpaceChildEventContent::new())
+                    .send_state_event_for_key(
+                        &room_id,
+                        assign!(SpaceChildEventContent::new(), {
+                            via: Some(vec![homeserver])
+                        }),
+                    )
                     .await?;
                 Ok(res_id.event_id.to_string())
             })
