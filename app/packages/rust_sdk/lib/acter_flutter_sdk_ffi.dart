@@ -13329,6 +13329,16 @@ class Api {
         int,
         int,
       )>();
+  late final _convoIsJoinedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Convo_is_joined");
+
+  late final _convoIsJoined = _convoIsJoinedPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _commentDraftContentTextPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -29695,6 +29705,17 @@ class Convo {
     tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
     final tmp8 = _nativeFuture(tmp9_1, _api.__convoUpdatePowerLevelFuturePoll);
     return tmp8;
+  }
+
+  bool isJoined() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoIsJoined(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.

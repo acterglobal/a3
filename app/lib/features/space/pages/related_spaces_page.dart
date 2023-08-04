@@ -44,9 +44,9 @@ class RelatedSpacesPage extends ConsumerWidget {
               }
 
               final canLinkSpace = checkPermission('CanLinkSpaces');
-              void addSubspaceHeading(String title) {
+              void addSubspaceHeading(String title, bool withTools) {
                 List<Widget> children = [Expanded(child: Text(title))];
-                if (canLinkSpace) {
+                if (canLinkSpace && withTools) {
                   children.add(
                     PopupMenuButton(
                       icon: Icon(
@@ -178,21 +178,21 @@ class RelatedSpacesPage extends ConsumerWidget {
                   );
                 }
               }
-              if (spaces.subspaces.isNotEmpty) {
+              if (spaces.knownSubspaces.isNotEmpty) {
                 if (spaces.hasMoreSubspaces) {
-                  addSubspaceHeading('My Subspaces');
+                  addSubspaceHeading('My Subspaces', false);
                 } else {
-                  addSubspaceHeading('Subspaces');
+                  addSubspaceHeading('Subspaces', true);
                 }
                 items.add(
                   SliverGrid.builder(
-                    itemCount: spaces.subspaces.length,
+                    itemCount: spaces.knownSubspaces.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: max(1, min(widthCount, minCount)),
                       childAspectRatio: 4,
                     ),
                     itemBuilder: (context, index) {
-                      final space = spaces.subspaces[index];
+                      final space = spaces.knownSubspaces[index];
                       return SpaceCard(
                         key: Key(space.getRoomIdStr()),
                         space: space,
@@ -203,10 +203,10 @@ class RelatedSpacesPage extends ConsumerWidget {
                 );
               }
               if (spaces.hasMoreSubspaces) {
-                if (spaces.subspaces.isEmpty) {
-                  addSubspaceHeading('Subspaces');
+                if (spaces.knownSubspaces.isEmpty) {
+                  addSubspaceHeading('Subspaces', true);
                 } else {
-                  addSubspaceHeading('More Subspaces');
+                  addSubspaceHeading('More Subspaces', true);
                 }
                 items.add(
                   RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
@@ -222,11 +222,11 @@ class RelatedSpacesPage extends ConsumerWidget {
                 );
               }
 
-              if (spaces.subspaces.isEmpty &&
+              if (spaces.knownSubspaces.isEmpty &&
                   !spaces.hasMoreSubspaces &&
                   canLinkSpace) {
                 // fallback if there are no subspaces show, allow admins to access the buttons
-                addSubspaceHeading('Subspaces');
+                addSubspaceHeading('Subspaces', true);
               }
 
               if (spaces.otherRelations.isNotEmpty || canLinkSpace) {

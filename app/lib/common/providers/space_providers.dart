@@ -113,8 +113,10 @@ class SpaceRelationsOverview {
   bool hasMoreChats;
   SpaceRelations rel;
   Member? membership;
-  List<Space> subspaces;
-  List<Convo> chats;
+  List<Space> knownSubspaces;
+  List<Convo> knownChats;
+  List<Space> formerlyKnownSubspaces;
+  List<Convo> formerlyKnownChats;
   Space? mainParent;
   List<Space> parents;
   List<Space> otherRelations;
@@ -122,8 +124,10 @@ class SpaceRelationsOverview {
   SpaceRelationsOverview({
     required this.rel,
     required this.membership,
-    required this.subspaces,
-    required this.chats,
+    required this.knownSubspaces,
+    required this.knownChats,
+    required this.formerlyKnownSubspaces,
+    required this.formerlyKnownChats,
     required this.mainParent,
     required this.parents,
     required this.otherRelations,
@@ -282,21 +286,8 @@ final canonicalParentProvider = FutureProvider.autoDispose
 /// a space was found.
 final relatedSpacesProvider = FutureProvider.autoDispose
     .family<List<Space>, String>((ref, spaceId) async {
-  final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
-  final spaces = [];
-  for (final related in relatedSpaces.children()) {
-    String targetType = related.targetType();
-    if (targetType != 'ChatRoom') {
-      final roomId = related.roomId().toString();
-      try {
-        final space = await ref.watch(spaceProvider(roomId).future);
-        spaces.add(space);
-      } catch (e) {
-        continue;
-      }
-    }
-  }
-  return List<Space>.from(spaces);
+  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
+      .knownSubspaces;
 });
 
 /// Get the SpaceRelationsOverview of related SpaceItem for the space. Errors if
@@ -308,29 +299,34 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
   final membership = await ref.watch(spaceMembershipProvider(spaceId).future);
   bool hasMoreSubspaces = false;
   bool hasMoreChats = false;
-  final List<Space> subspaces = [];
-  final List<Convo> chats = [];
+  final List<Space> knownSubspaces = [];
+  final List<Space> formerlyKnownSubspaces = [];
+  final List<Convo> knownChats = [];
+  final List<Convo> formerlyKnownChats = [];
   List<Space> otherRelated = [];
   for (final related in relatedSpaces.children()) {
     String targetType = related.targetType();
+    final roomId = related.roomId().toString();
     if (targetType == 'ChatRoom') {
-      final roomId = related.roomId().toString();
       try {
         final chat = await ref.watch(chatProvider(roomId).future);
-        chats.add(chat);
+        if (!chat.isJoined()) {
+          formerlyKnownChats.add(chat);
+          continue;
+        }
+        knownChats.add(chat);
       } catch (e) {
         hasMoreChats = true;
       }
     } else {
-      final roomId = related.roomId().toString();
       try {
         final space = await ref.watch(spaceProvider(roomId).future);
         if (!space.isJoined()) {
-          hasMoreSubspaces = true;
+          formerlyKnownSubspaces.add(space);
           continue;
         }
         if (await space.isChildSpaceOf(spaceId)) {
-          subspaces.add(space);
+          knownSubspaces.add(space);
         } else {
           otherRelated.add(space);
         }
@@ -376,8 +372,10 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
     rel: relatedSpaces,
     membership: membership,
     parents: parents,
-    chats: chats,
-    subspaces: subspaces,
+    knownChats: knownChats,
+    formerlyKnownChats: formerlyKnownChats,
+    knownSubspaces: knownSubspaces,
+    formerlyKnownSubspaces: formerlyKnownSubspaces,
     otherRelations: otherRelated,
     mainParent: mainParent,
     hasMoreSubspaces: hasMoreSubspaces,

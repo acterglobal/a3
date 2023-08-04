@@ -768,6 +768,8 @@ object Convo {
 
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
+
+    fn is_joined() -> bool;
 }
 
 object CommentDraft {

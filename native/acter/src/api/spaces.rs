@@ -608,10 +608,6 @@ impl Space {
         self.room_id().to_string()
     }
 
-    pub fn is_joined(&self) -> bool {
-        matches!(self.inner.room, SdkRoom::Joined(_))
-    }
-
     pub async fn set_acter_space_states(&self) -> Result<()> {
         let SdkRoom::Joined(ref joined) = self.inner.room else {
             bail!("You can't convert a space you didn't join");
@@ -644,17 +640,6 @@ impl Space {
         Ok(())
     }
 
-    pub async fn space_relations(&self) -> Result<SpaceRelations> {
-        let c = self.client.core.clone();
-        let me = self.clone();
-        RUNTIME
-            .spawn(async move {
-                let core = c.space_relations(&me.room).await?;
-                Ok(SpaceRelations { core, space: me })
-            })
-            .await?
-    }
-
     pub async fn add_child_space(&self, room_id: String) -> Result<String> {
         let room_id = OwnedRoomId::try_from(room_id)?;
         if !self
@@ -669,7 +654,6 @@ impl Space {
         };
         let room = joined.clone();
 
-        let mut room_child_event = SpaceChildEventContent::new();
         RUNTIME
             .spawn(async move {
                 let res_id = room
@@ -680,6 +664,16 @@ impl Space {
             .await?
     }
 
+    pub async fn space_relations(&self) -> Result<SpaceRelations> {
+        let c = self.client.core.clone();
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let core = c.space_relations(&me.room).await?;
+                Ok(SpaceRelations { core, space: me })
+            })
+            .await?
+    }
     pub async fn is_child_space_of(&self, room_id: String) -> bool {
         let Ok(room_id) = OwnedRoomId::try_from(room_id) else {
             warn!("Asked for a not proper room id");

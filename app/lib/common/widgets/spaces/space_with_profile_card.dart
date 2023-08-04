@@ -9,6 +9,7 @@ class SpaceWithProfileCard extends ConsumerWidget {
   final String roomId;
   final ProfileData profile;
   final Widget? subtitle;
+  final Widget? trailing;
   final double avatarSize;
 
   /// Called when the user taps this list tile.
@@ -78,6 +79,7 @@ class SpaceWithProfileCard extends ConsumerWidget {
     required this.roomId,
     required this.profile,
     this.subtitle,
+    this.trailing,
     this.onTap,
     this.onLongPress,
     this.onFocusChange,
@@ -131,6 +133,7 @@ class SpaceWithProfileCard extends ConsumerWidget {
         leading: showParent
             ? SpaceParentBadge(spaceId: roomId, child: avatar)
             : avatar,
+        trailing: trailing,
       ),
     );
   }

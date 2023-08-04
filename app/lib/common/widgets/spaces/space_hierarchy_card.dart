@@ -4,6 +4,35 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+class RoomHierarchyJoinButtons extends ConsumerWidget {
+  final SpaceHierarchyRoomInfo space;
+  RoomHierarchyJoinButtons({required this.space});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final joinRule = space.joinRuleStr().toLowerCase();
+    switch (joinRule) {
+      case 'private':
+      case 'invite':
+        return const Tooltip(
+            message: 'You need be invited to join this room',
+            child: Chip(label: Text('Private')));
+      case 'public':
+      case 'invite':
+        return ButtonBar(children: [
+          const Tooltip(
+              message: 'You need be invited to join this room',
+              child: Chip(label: Text('public'))),
+          OutlinedButton(onPressed: () {}, child: Text('join now'))
+        ]);
+      default:
+        return Tooltip(
+            message: 'Unclear join rule $joinRule',
+            child: const Chip(label: Text('unknown')));
+    }
+  }
+}
+
 class SpaceHierarchyCard extends ConsumerWidget {
   final SpaceHierarchyRoomInfo space;
   final double avatarSize;
@@ -80,6 +109,7 @@ class SpaceHierarchyCard extends ConsumerWidget {
     this.shape,
     this.withBorder = true,
   });
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = space.roomIdStr();
@@ -93,13 +123,14 @@ class SpaceHierarchyCard extends ConsumerWidget {
         roomId: roomId,
         profile: profile,
         subtitle: subtitle,
-        onTap: onTap,
+        onTap: onTap ?? () {},
         onFocusChange: onFocusChange,
         onLongPress: onLongPress,
         avatarSize: avatarSize,
         contentPadding: contentPadding,
         shape: shape,
         withBorder: withBorder,
+        trailing: RoomHierarchyJoinButtons(space: space),
       ),
       error: (error, stack) => ListTile(
         title: Text('Error loading: $roomId'),

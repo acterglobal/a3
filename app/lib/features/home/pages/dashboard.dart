@@ -18,7 +18,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'dart:math';
-import 'dart:async';
 
 class Dashboard extends ConsumerStatefulWidget {
   const Dashboard({super.key});
@@ -28,6 +27,7 @@ class Dashboard extends ConsumerStatefulWidget {
 }
 
 class _DashboardState extends ConsumerState<Dashboard> {
+  Function? firstSyncListener;
   @override
   void initState() {
     super.initState();
@@ -35,17 +35,14 @@ class _DashboardState extends ConsumerState<Dashboard> {
   }
 
   void _checkIfSpacesPresent() {
-    ref.read(syncStateProvider.notifier).addListener((syncState) async {
+    firstSyncListener =
+        ref.read(syncStateProvider.notifier).addListener((syncState) async {
       final hasFirstSynced = !syncState.syncing;
       if (!hasFirstSynced) {
-        Future.delayed(
-          const Duration(milliseconds: 250),
-          () => _checkIfSpacesPresent(),
-        );
-        // we are still syncing, check again later
         return;
       }
       final spaces = await ref.watch(spacesProvider.future);
+      clearFirstSyncListener();
       if (spaces.isEmpty && context.mounted) {
         onBoardingDialog(
           context: context,
@@ -57,6 +54,19 @@ class _DashboardState extends ConsumerState<Dashboard> {
         );
       }
     });
+  }
+
+  void clearFirstSyncListener() {
+    if (firstSyncListener != null) {
+      firstSyncListener!();
+      firstSyncListener = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    clearFirstSyncListener();
+    super.dispose();
   }
 
   @override

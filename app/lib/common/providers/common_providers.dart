@@ -85,7 +85,7 @@ final chatMembersProvider =
 final relatedChatsProvider = FutureProvider.autoDispose
     .family<List<Convo>, String>((ref, spaceId) async {
   return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
-      .chats;
+      .knownChats;
 });
 
 // Member Providers
