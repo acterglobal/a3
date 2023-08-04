@@ -325,7 +325,7 @@ impl<'a> Mock<'a> {
                         bail!("Invalid room alias id");
                     };
                     let response = cloned_odo.resolve_room_alias(&alias_id).await?;
-                    let space = cloned_odo.get_space(response.room_id).await?;
+                    let space = cloned_odo.get_space(response.room_id.to_string()).await?;
                     Ok(Some(space))
                 }
             }).await? else {
