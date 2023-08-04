@@ -31,7 +31,7 @@ use matrix_sdk::{
             StateEventType,
         },
         serde::Raw,
-        OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
+        OwnedRoomId, OwnedUserId,
     },
     Client as SdkClient,
 };
@@ -602,22 +602,13 @@ impl Client {
             .await?
     }
 
-    pub async fn get_space(&self, alias_or_id: String) -> Result<Space> {
-        if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
+    pub async fn get_space(&self, room_id: String) -> Result<Space> {
+        if let Ok(room_id) = OwnedRoomId::try_from(room_id.clone()) {
             self.get_room(&room_id)
                 .context("Room not found")
                 .map(|room| Space::new(self.clone(), Room { room }))
-        } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
-            for space in self.spaces().await?.into_iter() {
-                if let Some(space_alias) = space.inner.room.canonical_alias() {
-                    if space_alias == alias_id {
-                        return Ok(space);
-                    }
-                }
-            }
-            bail!("Room with alias not found");
         } else {
-            bail!("Neither roomId nor alias provided");
+            bail!("roomId not provided");
         }
     }
 }

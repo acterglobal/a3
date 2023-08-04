@@ -36358,12 +36358,11 @@ class Client {
     return tmp20;
   }
 
-  /// Get the following space the user is part of by
-  /// roomId or room alias;
+  /// Get the space that user belongs to
   Future<Space> getSpace(
-    String idOrAlias,
+    String roomId,
   ) {
-    final tmp1 = idOrAlias;
+    final tmp1 = roomId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;

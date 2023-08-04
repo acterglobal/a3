@@ -1566,9 +1566,8 @@ object Client {
     /// search the public directory for spaces
     fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
 
-    /// Get the following space the user is part of by
-    /// roomId or room alias;
-    fn get_space(id_or_alias: string) -> Future<Result<Space>>;
+    /// Get the space that user belongs to
+    fn get_space(room_id: string) -> Future<Result<Space>>;
 
     /// Get the Pinned Links for the client
     fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
