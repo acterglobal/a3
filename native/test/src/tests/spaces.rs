@@ -221,7 +221,8 @@ async fn create_subspace() -> Result<()> {
 #[tokio::test]
 async fn update_name() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("space-update-name-", TMPL).await?;
+    let (user, _sync_state, _engine) =
+        random_user_with_template("space-update-name-", TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -326,7 +327,8 @@ async fn update_name() -> Result<()> {
 #[ignore = "topic updating seems broken"]
 async fn update_topic() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("space-update-topic-", TMPL).await?;
+    let (user, _sync_state, _engine) =
+        random_user_with_template("space-update-topic-", TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
