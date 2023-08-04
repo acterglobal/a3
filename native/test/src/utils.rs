@@ -31,54 +31,6 @@ pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, Owne
     Ok((user, room_id))
 }
 
-pub async fn random_users_with_random_space(prefix: &str) -> Result<(Client, Client, OwnedRoomId)> {
-    let uuid = uuid::Uuid::new_v4().to_string();
-    let alice = ensure_user(
-        option_env!("DEFAULT_HOMESERVER_URL")
-            .unwrap_or("http://localhost:8118")
-            .to_string(),
-        option_env!("DEFAULT_HOMESERVER_NAME")
-            .unwrap_or("localhost")
-            .to_string(),
-        format!("it-{prefix}-{uuid}"),
-        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
-        "acter-integration-tests".to_owned(),
-        StoreConfig::default(),
-    )
-    .await?;
-
-    let uuid = uuid::Uuid::new_v4().to_string();
-    let bob = ensure_user(
-        option_env!("DEFAULT_HOMESERVER_URL")
-            .unwrap_or("http://localhost:8118")
-            .to_string(),
-        option_env!("DEFAULT_HOMESERVER_NAME")
-            .unwrap_or("localhost")
-            .to_string(),
-        format!("it-{prefix}-{uuid}"),
-        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
-        "acter-integration-tests".to_owned(),
-        StoreConfig::default(),
-    )
-    .await?;
-
-    let settings = CreateSpaceSettingsBuilder::default()
-        .name(format!("it-room-{prefix}-{uuid}"))
-        .build()?;
-    let room_id = alice.create_acter_space(Box::new(settings)).await?;
-
-    let room = alice.get_joined_room(&room_id).unwrap();
-    let user_id = bob.user_id()?;
-    room.invite_user_by_id(&user_id).await?;
-
-    bob.sync_once(Default::default()).await?;
-    for invited in bob.invited_rooms().iter() {
-        invited.accept_invitation().await?;
-    }
-
-    Ok((alice, bob, room_id))
-}
-
 pub fn default_user_password(username: &str) -> String {
     match option_env!("REGISTRATION_TOKEN") {
         Some(t) => format!("{t}:{username}"),
