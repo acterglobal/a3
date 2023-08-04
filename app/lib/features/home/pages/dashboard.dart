@@ -35,8 +35,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
   }
 
   void _checkIfSpacesPresent() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      final syncState = ref.watch(syncStateProvider);
+    ref.read(syncStateProvider.notifier).addListener((syncState) async {
       final hasFirstSynced = !syncState.syncing;
       if (!hasFirstSynced) {
         Future.delayed(
