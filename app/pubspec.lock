@@ -70,7 +70,7 @@ packages:
     description:
       path: "."
       ref: acter-main
-      resolved-ref: de072718e11024cdab7cba966ecac725a4c0c939
+      resolved-ref: "749cf41ddd1dfe24475fab5d4fa741a17115acd5"
       url: "https://github.com/acterglobal/awesome_notifications"
     source: git
     version: "0.7.5-acter.main.0"
