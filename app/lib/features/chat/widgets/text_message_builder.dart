@@ -16,11 +16,13 @@ class TextMessageBuilder extends ConsumerStatefulWidget {
   final void Function(types.TextMessage, types.PreviewData)?
       onPreviewDataFetched;
   final int messageWidth;
+  final bool isReply;
 
   const TextMessageBuilder({
     Key? key,
     required this.message,
     this.onPreviewDataFetched,
+    this.isReply = false,
     required this.messageWidth,
   }) : super(key: key);
 
@@ -84,6 +86,7 @@ class _TextMessageBuilderConsumerState
           enlargeEmoji:
               widget.message.metadata!['enlargeEmoji'] ?? enlargeEmoji,
           isNotice: isNotice,
+          isReply: widget.isReply,
         ),
         width: widget.messageWidth.toDouble(),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -93,6 +96,7 @@ class _TextMessageBuilderConsumerState
       message: widget.message,
       enlargeEmoji: enlargeEmoji,
       isNotice: isNotice,
+      isReply: widget.isReply,
     );
   }
 
@@ -110,11 +114,13 @@ class _TextWidget extends ConsumerWidget {
   final types.TextMessage message;
   final bool enlargeEmoji;
   final bool isNotice;
+  final bool isReply;
 
   const _TextWidget({
     required this.message,
     required this.enlargeEmoji,
     required this.isNotice,
+    required this.isReply,
   });
 
   @override
@@ -133,14 +139,21 @@ class _TextWidget extends ConsumerWidget {
       child: enlargeEmoji
           ? Text(
               message.text,
-              style: emojiTextStyle,
+              style: emojiTextStyle.copyWith(
+                overflow: isReply ? TextOverflow.ellipsis : null,
+              ),
+              maxLines: isReply ? 3 : null,
             )
           : Html(
               // ignore: prefer_single_quotes, unnecessary_string_interpolations
               data: """${message.text}""",
               shrinkToFit: true,
               padding: const EdgeInsets.all(5),
-              defaultTextStyle: Theme.of(context).textTheme.bodySmall,
+              defaultTextStyle: Theme.of(context)
+                  .textTheme
+                  .bodySmall!
+                  .copyWith(overflow: isReply ? TextOverflow.ellipsis : null),
+              maxLines: isReply ? 3 : null,
             ),
     );
   }

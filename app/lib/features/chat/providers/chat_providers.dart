@@ -27,7 +27,7 @@ final chatStreamProvider = StreamProvider<List<Convo>>((ref) async* {
     debugPrint('Acter Conversations Stream');
   });
   await for (var convoList in controller.stream) {
-    conversations.addAll(convoList);
+    conversations = convoList;
     //FIXME: how to check empty chats ?
     if (conversations.isNotEmpty) {
       yield conversations;
@@ -75,9 +75,6 @@ final chatProfilesProvider =
 // chat room mention list
 final mentionListProvider =
     StateProvider<List<Map<String, dynamic>>>((ref) => []);
-
-// emoji row preview toggler
-final toggleEmojiRowProvider = StateProvider<bool>((ref) => false);
 
 final messageMarkDownProvider = StateProvider<Map<String, String>>((ref) => {});
 

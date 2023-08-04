@@ -6,9 +6,7 @@ class MessagesNotifier extends StateNotifier<List<types.Message>> {
   MessagesNotifier() : super([]);
 
   // Messages CRUD
-  void addMessage(types.Message m) {
-    state = [...state, m];
-  }
+  void addMessage(types.Message m) => state = [...state, m];
 
   void insertMessage(int to, types.Message m) {
     try {
@@ -51,7 +49,5 @@ class MessagesNotifier extends StateNotifier<List<types.Message>> {
     }
   }
 
-  void reset() {
-    state.clear();
-  }
+  void reset() => state.clear();
 }
