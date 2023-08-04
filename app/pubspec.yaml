@@ -119,6 +119,7 @@ dependencies:
     git:
       url: https://github.com/acterglobal/awesome_notifications
       ref: acter-main
+  logging: ^1.2.0
 
 dev_dependencies:
   flutter_test:

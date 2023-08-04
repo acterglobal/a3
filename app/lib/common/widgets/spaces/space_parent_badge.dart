@@ -3,6 +3,9 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final log = Logger('SpaceParentBadge');
 
 class SpaceParentBadge extends ConsumerWidget {
   final String spaceId;
@@ -62,9 +65,14 @@ class SpaceParentBadge extends ConsumerWidget {
                   ],
                 );
               },
-              error: (error, stackTrace) => Text(
-                'Failed to load canonical parent due to $error',
-              ),
+              error: (error, stackTrace) {
+                log.severe(
+                  'Failed to load canonical parent of $spaceId',
+                  error,
+                  stackTrace,
+                );
+                return const SizedBox.shrink();
+              },
               loading: () => const CircularProgressIndicator(),
             ),
           ),
