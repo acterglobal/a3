@@ -259,7 +259,7 @@ final spaceRelationsProvider = FutureProvider.autoDispose
 /// to date with underlying client data if a space was found.
 final canonicalParentProvider = FutureProvider.autoDispose
     .family<SpaceWithProfileData?, String>((ref, spaceId) async {
-  final relations = ref.watch(spaceRelationsProvider(spaceId)).requireValue;
+  final relations = await ref.watch(spaceRelationsProvider(spaceId).future);
   final parent = relations.mainParent();
   if (parent == null) {
     debugPrint('no parent');
