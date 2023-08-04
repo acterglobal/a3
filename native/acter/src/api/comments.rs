@@ -144,6 +144,7 @@ impl CommentsManager {
             inner,
         }
     }
+
     pub fn stats(&self) -> models::CommentsStats {
         self.inner.stats().clone()
     }
@@ -167,10 +168,10 @@ impl CommentsManager {
                     .comments()
                     .await?
                     .into_iter()
-                    .map(|inner| Comment {
+                    .map(|comment| Comment {
                         client: client.clone(),
                         room: room.clone(),
-                        inner,
+                        inner: comment,
                     })
                     .collect();
                 Ok(res)

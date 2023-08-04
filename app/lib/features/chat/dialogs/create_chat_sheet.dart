@@ -21,8 +21,6 @@ import 'package:go_router/go_router.dart';
 final _titleProvider = StateProvider<String>((ref) => '');
 // upload avatar path
 final _avatarProvider = StateProvider.autoDispose<String>((ref) => '');
-// final _roomVisibilityProvider =
-//     StateProvider<RoomVisibility>((ref) => RoomVisibility.Private);
 
 class CreateChatSheet extends ConsumerStatefulWidget {
   final String? initialSelectedSpaceId;

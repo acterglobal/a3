@@ -49,7 +49,8 @@
             "type": "dart",
             "flutterMode": "debug",
             "toolArgs": [
-                "--dart-define=RAGESHAKE_URL=http://localhost/api/submit",
+                "--dart-define",
+                "RAGESHAKE_URL=http://localhost/api/submit"
             ]
         },
         {
@@ -60,7 +61,7 @@
             "flutterMode": "release",
             "toolArgs": [
                 "--dart-define",
-                "RAGESHAKE_URL=http://localhost/api/submit",
+                "RAGESHAKE_URL=http://localhost/api/submit"
             ]
         },
         {
@@ -71,7 +72,7 @@
             "flutterMode": "profile",
             "toolArgs": [
                 "--dart-define",
-                "RAGESHAKE_URL=http://localhost/api/submit",
+                "RAGESHAKE_URL=http://localhost/api/submit"
             ]
         },
         {

@@ -24,11 +24,12 @@ class SettingsMenu extends ConsumerWidget {
     return SettingsList(
       sections: [
         SettingsSection(
-          title: const Text('App'),
+          title: const Text('App Settings'),
           tiles: [
             CustomSettingsTile(
               child: ListTile(
                 title: const Text('Labs'),
+                subtitle: const Text('Experimental Acter features'),
                 leading: const Icon(Atlas.lab_appliance_thin),
                 selected: isSelected(Routes.settingsLabs),
                 onTap: () => context.pushNamed(Routes.settingsLabs.name),

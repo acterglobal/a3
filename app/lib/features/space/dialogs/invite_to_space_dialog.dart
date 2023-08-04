@@ -141,13 +141,13 @@ class _InviteButtonState extends ConsumerState<InviteButton> {
 
     return OutlinedButton.icon(
       onPressed: () async {
-        setState(() {
-          _loading = true;
-        });
+        if (mounted) {
+          setState(() => _loading = true);
+        }
         await widget.space.inviteUser(widget.userId);
-        setState(() {
-          _success = true;
-        });
+        if (mounted) {
+          setState(() => _success = true);
+        }
       },
       icon: const Icon(Atlas.paper_airplane_thin),
       label: const Text('invite'),

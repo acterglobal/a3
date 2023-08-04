@@ -30,10 +30,12 @@ mod device;
 mod invitation;
 mod message;
 mod news;
+mod notifications;
 mod pins;
 mod profile;
 mod receipt;
 mod room;
+mod rsvp;
 mod search;
 mod spaces;
 mod stream;
@@ -67,10 +69,12 @@ pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use invitation::Invitation;
 pub use message::{RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
+pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, MemberPermission, MembershipStatus, Room};
+pub use rsvp::{Rsvp, RsvpDraft, RsvpManager};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,

@@ -16,12 +16,55 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ChatListState {
-  bool get showSearch => throw _privateConstructorUsedError;
-  List<JoinedRoom> get searchData => throw _privateConstructorUsedError;
-  bool get initialLoaded => throw _privateConstructorUsedError;
-
-  @JsonKey(ignore: true)
-  $ChatListStateCopyWith<ChatListState> get copyWith =>
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() loading,
+    required TResult Function(List<Convo> chats) data,
+    required TResult Function(String? error) error,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function(List<Convo> chats)? data,
+    TResult? Function(String? error)? error,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function(List<Convo> chats)? data,
+    TResult Function(String? error)? error,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_ChatListStateInitial value) initial,
+    required TResult Function(_ChatListStateLoading value) loading,
+    required TResult Function(_ChatListStateData value) data,
+    required TResult Function(_ChatListStateError value) error,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ChatListStateInitial value)? initial,
+    TResult? Function(_ChatListStateLoading value)? loading,
+    TResult? Function(_ChatListStateData value)? data,
+    TResult? Function(_ChatListStateError value)? error,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ChatListStateInitial value)? initial,
+    TResult Function(_ChatListStateLoading value)? loading,
+    TResult Function(_ChatListStateData value)? data,
+    TResult Function(_ChatListStateError value)? error,
+    required TResult orElse(),
+  }) =>
       throw _privateConstructorUsedError;
 }
 
@@ -30,8 +73,6 @@ abstract class $ChatListStateCopyWith<$Res> {
   factory $ChatListStateCopyWith(
           ChatListState value, $Res Function(ChatListState) then) =
       _$ChatListStateCopyWithImpl<$Res, ChatListState>;
-  @useResult
-  $Res call({bool showSearch, List<JoinedRoom> searchData, bool initialLoaded});
 }
 
 /// @nodoc
@@ -43,135 +84,533 @@ class _$ChatListStateCopyWithImpl<$Res, $Val extends ChatListState>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+}
 
-  @pragma('vm:prefer-inline')
+/// @nodoc
+abstract class _$$_ChatListStateInitialCopyWith<$Res> {
+  factory _$$_ChatListStateInitialCopyWith(_$_ChatListStateInitial value,
+          $Res Function(_$_ChatListStateInitial) then) =
+      __$$_ChatListStateInitialCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$_ChatListStateInitialCopyWithImpl<$Res>
+    extends _$ChatListStateCopyWithImpl<$Res, _$_ChatListStateInitial>
+    implements _$$_ChatListStateInitialCopyWith<$Res> {
+  __$$_ChatListStateInitialCopyWithImpl(_$_ChatListStateInitial _value,
+      $Res Function(_$_ChatListStateInitial) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$_ChatListStateInitial implements _ChatListStateInitial {
+  const _$_ChatListStateInitial();
+
   @override
-  $Res call({
-    Object? showSearch = null,
-    Object? searchData = null,
-    Object? initialLoaded = null,
+  String toString() {
+    return 'ChatListState.initial()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$_ChatListStateInitial);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() loading,
+    required TResult Function(List<Convo> chats) data,
+    required TResult Function(String? error) error,
   }) {
-    return _then(_value.copyWith(
-      showSearch: null == showSearch
-          ? _value.showSearch
-          : showSearch // ignore: cast_nullable_to_non_nullable
-              as bool,
-      searchData: null == searchData
-          ? _value.searchData
-          : searchData // ignore: cast_nullable_to_non_nullable
-              as List<JoinedRoom>,
-      initialLoaded: null == initialLoaded
-          ? _value.initialLoaded
-          : initialLoaded // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
+    return initial();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function(List<Convo> chats)? data,
+    TResult? Function(String? error)? error,
+  }) {
+    return initial?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function(List<Convo> chats)? data,
+    TResult Function(String? error)? error,
+    required TResult orElse(),
+  }) {
+    if (initial != null) {
+      return initial();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_ChatListStateInitial value) initial,
+    required TResult Function(_ChatListStateLoading value) loading,
+    required TResult Function(_ChatListStateData value) data,
+    required TResult Function(_ChatListStateError value) error,
+  }) {
+    return initial(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ChatListStateInitial value)? initial,
+    TResult? Function(_ChatListStateLoading value)? loading,
+    TResult? Function(_ChatListStateData value)? data,
+    TResult? Function(_ChatListStateError value)? error,
+  }) {
+    return initial?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ChatListStateInitial value)? initial,
+    TResult Function(_ChatListStateLoading value)? loading,
+    TResult Function(_ChatListStateData value)? data,
+    TResult Function(_ChatListStateError value)? error,
+    required TResult orElse(),
+  }) {
+    if (initial != null) {
+      return initial(this);
+    }
+    return orElse();
   }
 }
 
-/// @nodoc
-abstract class _$$_ChatListStateCopyWith<$Res>
-    implements $ChatListStateCopyWith<$Res> {
-  factory _$$_ChatListStateCopyWith(
-          _$_ChatListState value, $Res Function(_$_ChatListState) then) =
-      __$$_ChatListStateCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({bool showSearch, List<JoinedRoom> searchData, bool initialLoaded});
+abstract class _ChatListStateInitial implements ChatListState {
+  const factory _ChatListStateInitial() = _$_ChatListStateInitial;
 }
 
 /// @nodoc
-class __$$_ChatListStateCopyWithImpl<$Res>
-    extends _$ChatListStateCopyWithImpl<$Res, _$_ChatListState>
-    implements _$$_ChatListStateCopyWith<$Res> {
-  __$$_ChatListStateCopyWithImpl(
-      _$_ChatListState _value, $Res Function(_$_ChatListState) _then)
+abstract class _$$_ChatListStateLoadingCopyWith<$Res> {
+  factory _$$_ChatListStateLoadingCopyWith(_$_ChatListStateLoading value,
+          $Res Function(_$_ChatListStateLoading) then) =
+      __$$_ChatListStateLoadingCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$_ChatListStateLoadingCopyWithImpl<$Res>
+    extends _$ChatListStateCopyWithImpl<$Res, _$_ChatListStateLoading>
+    implements _$$_ChatListStateLoadingCopyWith<$Res> {
+  __$$_ChatListStateLoadingCopyWithImpl(_$_ChatListStateLoading _value,
+      $Res Function(_$_ChatListStateLoading) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$_ChatListStateLoading implements _ChatListStateLoading {
+  const _$_ChatListStateLoading();
+
+  @override
+  String toString() {
+    return 'ChatListState.loading()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$_ChatListStateLoading);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() loading,
+    required TResult Function(List<Convo> chats) data,
+    required TResult Function(String? error) error,
+  }) {
+    return loading();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function(List<Convo> chats)? data,
+    TResult? Function(String? error)? error,
+  }) {
+    return loading?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function(List<Convo> chats)? data,
+    TResult Function(String? error)? error,
+    required TResult orElse(),
+  }) {
+    if (loading != null) {
+      return loading();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_ChatListStateInitial value) initial,
+    required TResult Function(_ChatListStateLoading value) loading,
+    required TResult Function(_ChatListStateData value) data,
+    required TResult Function(_ChatListStateError value) error,
+  }) {
+    return loading(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ChatListStateInitial value)? initial,
+    TResult? Function(_ChatListStateLoading value)? loading,
+    TResult? Function(_ChatListStateData value)? data,
+    TResult? Function(_ChatListStateError value)? error,
+  }) {
+    return loading?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ChatListStateInitial value)? initial,
+    TResult Function(_ChatListStateLoading value)? loading,
+    TResult Function(_ChatListStateData value)? data,
+    TResult Function(_ChatListStateError value)? error,
+    required TResult orElse(),
+  }) {
+    if (loading != null) {
+      return loading(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _ChatListStateLoading implements ChatListState {
+  const factory _ChatListStateLoading() = _$_ChatListStateLoading;
+}
+
+/// @nodoc
+abstract class _$$_ChatListStateDataCopyWith<$Res> {
+  factory _$$_ChatListStateDataCopyWith(_$_ChatListStateData value,
+          $Res Function(_$_ChatListStateData) then) =
+      __$$_ChatListStateDataCopyWithImpl<$Res>;
+  @useResult
+  $Res call({List<Convo> chats});
+}
+
+/// @nodoc
+class __$$_ChatListStateDataCopyWithImpl<$Res>
+    extends _$ChatListStateCopyWithImpl<$Res, _$_ChatListStateData>
+    implements _$$_ChatListStateDataCopyWith<$Res> {
+  __$$_ChatListStateDataCopyWithImpl(
+      _$_ChatListStateData _value, $Res Function(_$_ChatListStateData) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? showSearch = null,
-    Object? searchData = null,
-    Object? initialLoaded = null,
+    Object? chats = null,
   }) {
-    return _then(_$_ChatListState(
-      showSearch: null == showSearch
-          ? _value.showSearch
-          : showSearch // ignore: cast_nullable_to_non_nullable
-              as bool,
-      searchData: null == searchData
-          ? _value.searchData
-          : searchData // ignore: cast_nullable_to_non_nullable
-              as List<JoinedRoom>,
-      initialLoaded: null == initialLoaded
-          ? _value.initialLoaded
-          : initialLoaded // ignore: cast_nullable_to_non_nullable
-              as bool,
+    return _then(_$_ChatListStateData(
+      chats: null == chats
+          ? _value._chats
+          : chats // ignore: cast_nullable_to_non_nullable
+              as List<Convo>,
     ));
   }
 }
 
 /// @nodoc
 
-class _$_ChatListState implements _ChatListState {
-  const _$_ChatListState(
-      {this.showSearch = false,
-      this.searchData = const [],
-      this.initialLoaded = false});
+class _$_ChatListStateData implements _ChatListStateData {
+  const _$_ChatListStateData({required final List<Convo> chats})
+      : _chats = chats;
 
+  final List<Convo> _chats;
   @override
-  @JsonKey()
-  final bool showSearch;
-  @override
-  @JsonKey()
-  final List<JoinedRoom> searchData;
-  @override
-  @JsonKey()
-  final bool initialLoaded;
+  List<Convo> get chats {
+    if (_chats is EqualUnmodifiableListView) return _chats;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_chats);
+  }
 
   @override
   String toString() {
-    return 'ChatListState(showSearch: $showSearch, searchData: $searchData, initialLoaded: $initialLoaded)';
+    return 'ChatListState.data(chats: $chats)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ChatListState &&
-            (identical(other.showSearch, showSearch) ||
-                other.showSearch == showSearch) &&
-            const DeepCollectionEquality()
-                .equals(other.searchData, searchData) &&
-            (identical(other.initialLoaded, initialLoaded) ||
-                other.initialLoaded == initialLoaded));
+            other is _$_ChatListStateData &&
+            const DeepCollectionEquality().equals(other._chats, _chats));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, showSearch,
-      const DeepCollectionEquality().hash(searchData), initialLoaded);
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(_chats));
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ChatListStateCopyWith<_$_ChatListState> get copyWith =>
-      __$$_ChatListStateCopyWithImpl<_$_ChatListState>(this, _$identity);
+  _$$_ChatListStateDataCopyWith<_$_ChatListStateData> get copyWith =>
+      __$$_ChatListStateDataCopyWithImpl<_$_ChatListStateData>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() loading,
+    required TResult Function(List<Convo> chats) data,
+    required TResult Function(String? error) error,
+  }) {
+    return data(chats);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function(List<Convo> chats)? data,
+    TResult? Function(String? error)? error,
+  }) {
+    return data?.call(chats);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function(List<Convo> chats)? data,
+    TResult Function(String? error)? error,
+    required TResult orElse(),
+  }) {
+    if (data != null) {
+      return data(chats);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_ChatListStateInitial value) initial,
+    required TResult Function(_ChatListStateLoading value) loading,
+    required TResult Function(_ChatListStateData value) data,
+    required TResult Function(_ChatListStateError value) error,
+  }) {
+    return data(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ChatListStateInitial value)? initial,
+    TResult? Function(_ChatListStateLoading value)? loading,
+    TResult? Function(_ChatListStateData value)? data,
+    TResult? Function(_ChatListStateError value)? error,
+  }) {
+    return data?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ChatListStateInitial value)? initial,
+    TResult Function(_ChatListStateLoading value)? loading,
+    TResult Function(_ChatListStateData value)? data,
+    TResult Function(_ChatListStateError value)? error,
+    required TResult orElse(),
+  }) {
+    if (data != null) {
+      return data(this);
+    }
+    return orElse();
+  }
 }
 
-abstract class _ChatListState implements ChatListState {
-  const factory _ChatListState(
-      {final bool showSearch,
-      final List<JoinedRoom> searchData,
-      final bool initialLoaded}) = _$_ChatListState;
+abstract class _ChatListStateData implements ChatListState {
+  const factory _ChatListStateData({required final List<Convo> chats}) =
+      _$_ChatListStateData;
+
+  List<Convo> get chats;
+  @JsonKey(ignore: true)
+  _$$_ChatListStateDataCopyWith<_$_ChatListStateData> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$_ChatListStateErrorCopyWith<$Res> {
+  factory _$$_ChatListStateErrorCopyWith(_$_ChatListStateError value,
+          $Res Function(_$_ChatListStateError) then) =
+      __$$_ChatListStateErrorCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String? error});
+}
+
+/// @nodoc
+class __$$_ChatListStateErrorCopyWithImpl<$Res>
+    extends _$ChatListStateCopyWithImpl<$Res, _$_ChatListStateError>
+    implements _$$_ChatListStateErrorCopyWith<$Res> {
+  __$$_ChatListStateErrorCopyWithImpl(
+      _$_ChatListStateError _value, $Res Function(_$_ChatListStateError) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? error = freezed,
+  }) {
+    return _then(_$_ChatListStateError(
+      freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_ChatListStateError implements _ChatListStateError {
+  const _$_ChatListStateError([this.error]);
 
   @override
-  bool get showSearch;
+  final String? error;
+
   @override
-  List<JoinedRoom> get searchData;
+  String toString() {
+    return 'ChatListState.error(error: $error)';
+  }
+
   @override
-  bool get initialLoaded;
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_ChatListStateError &&
+            (identical(other.error, error) || other.error == error));
+  }
+
   @override
+  int get hashCode => Object.hash(runtimeType, error);
+
   @JsonKey(ignore: true)
-  _$$_ChatListStateCopyWith<_$_ChatListState> get copyWith =>
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_ChatListStateErrorCopyWith<_$_ChatListStateError> get copyWith =>
+      __$$_ChatListStateErrorCopyWithImpl<_$_ChatListStateError>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() loading,
+    required TResult Function(List<Convo> chats) data,
+    required TResult Function(String? error) error,
+  }) {
+    return error(this.error);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function(List<Convo> chats)? data,
+    TResult? Function(String? error)? error,
+  }) {
+    return error?.call(this.error);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function(List<Convo> chats)? data,
+    TResult Function(String? error)? error,
+    required TResult orElse(),
+  }) {
+    if (error != null) {
+      return error(this.error);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_ChatListStateInitial value) initial,
+    required TResult Function(_ChatListStateLoading value) loading,
+    required TResult Function(_ChatListStateData value) data,
+    required TResult Function(_ChatListStateError value) error,
+  }) {
+    return error(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ChatListStateInitial value)? initial,
+    TResult? Function(_ChatListStateLoading value)? loading,
+    TResult? Function(_ChatListStateData value)? data,
+    TResult? Function(_ChatListStateError value)? error,
+  }) {
+    return error?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ChatListStateInitial value)? initial,
+    TResult Function(_ChatListStateLoading value)? loading,
+    TResult Function(_ChatListStateData value)? data,
+    TResult Function(_ChatListStateError value)? error,
+    required TResult orElse(),
+  }) {
+    if (error != null) {
+      return error(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _ChatListStateError implements ChatListState {
+  const factory _ChatListStateError([final String? error]) =
+      _$_ChatListStateError;
+
+  String? get error;
+  @JsonKey(ignore: true)
+  _$$_ChatListStateErrorCopyWith<_$_ChatListStateError> get copyWith =>
       throw _privateConstructorUsedError;
 }

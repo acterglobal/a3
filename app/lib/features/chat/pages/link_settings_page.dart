@@ -49,7 +49,7 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
     profile.getDisplayName().then((value) {
       if (mounted) {
         String? name = value.text();
-        if (name != null) {
+        if (name != null && mounted) {
           setState(() => displayName = name);
         }
       }
@@ -96,13 +96,15 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
                 itemBuilder: (BuildContext content, index) {
                   return GestureDetector(
                     onTap: () {
-                      setState(() {
-                        timeIndexing = index;
-                        selectedTimeIndexList.clear();
-                        if (!selectedTimeIndexList.contains(index)) {
-                          selectedTimeIndexList.add(index);
-                        }
-                      });
+                      if (mounted) {
+                        setState(() {
+                          timeIndexing = index;
+                          selectedTimeIndexList.clear();
+                          if (!selectedTimeIndexList.contains(index)) {
+                            selectedTimeIndexList.add(index);
+                          }
+                        });
+                      }
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -137,13 +139,15 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
               itemBuilder: (BuildContext content, index) {
                 return GestureDetector(
                   onTap: () {
-                    setState(() {
-                      usesIndexing = index;
-                      selectedUsesIndexList.clear();
-                      if (!selectedUsesIndexList.contains(index)) {
-                        selectedUsesIndexList.add(index);
-                      }
-                    });
+                    if (mounted) {
+                      setState(() {
+                        usesIndexing = index;
+                        selectedUsesIndexList.clear();
+                        if (!selectedUsesIndexList.contains(index)) {
+                          selectedUsesIndexList.add(index);
+                        }
+                      });
+                    }
                   },
                   child: Container(
                     decoration: BoxDecoration(
