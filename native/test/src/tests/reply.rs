@@ -57,7 +57,9 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
         .get_space(response.room_id.to_string())
         .await
         .expect("sisko should belong to ops");
-    let event_id = sisko_space.send_plain_message("Hi, everyone".to_string()).await?;
+    let event_id = sisko_space
+        .send_plain_message("Hi, everyone".to_string())
+        .await?;
 
     let response = kyra.resolve_room_alias(&alias_id).await?;
     let kyra_space = kyra
