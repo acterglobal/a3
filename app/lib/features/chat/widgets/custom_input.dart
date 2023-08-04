@@ -1,9 +1,8 @@
-import 'dart:convert';
-
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
@@ -102,15 +101,9 @@ class CustomChatInput extends ConsumerWidget {
                       : const SizedBox.shrink(),
                   if (repliedToMessage != null &&
                       chatInputState.replyWidget != null)
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      constraints: const BoxConstraints(maxHeight: 100),
-                      child: SingleChildScrollView(
-                        child: _ReplyContentWidget(
-                          msg: repliedToMessage,
-                          messageWidget: chatInputState.replyWidget,
-                        ),
-                      ),
+                    _ReplyContentWidget(
+                      msg: repliedToMessage,
+                      messageWidget: chatInputState.replyWidget,
                     ),
                 ],
               ),
@@ -442,30 +435,18 @@ class _ReplyContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (msg is TextMessage) {
-      return messageWidget!;
-    } else if (msg is ImageMessage) {
+    if (msg is ImageMessage) {
+      var imageMsg = msg as ImageMessage;
       return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 100, maxWidth: 125),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(6.33),
-            child: Image.memory(
-              base64Decode(msg?.metadata?['base64']),
-              fit: BoxFit.fill,
-              cacheWidth: 125,
-            ),
-          ),
+        child: ImageMessageBuilder(
+          message: imageMsg,
+          messageWidth: imageMsg.size.toInt(),
+          isReplyContent: true,
         ),
       );
-    } else if (msg is FileMessage) {
-      return messageWidget!;
-    } else if (msg is CustomMessage) {
-      return messageWidget!;
-    } else {
-      return const SizedBox.shrink();
     }
+    return messageWidget ?? const SizedBox.shrink();
   }
 }
 
