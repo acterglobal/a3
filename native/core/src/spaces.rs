@@ -13,14 +13,16 @@ use matrix_sdk::{
                 join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
             },
             space::{
-              parent::{SpaceParentEventContent, SyncSpaceParentEvent},
-              child::SyncSpaceChildEvent},
+                child::SyncSpaceChildEvent,
+                parent::{SpaceParentEventContent, SyncSpaceParentEvent},
+            },
             InitialStateEvent,
         },
         room::RoomType,
         serde::Raw,
         MxcUri, OwnedRoomId, OwnedUserId, RoomId, UserId,
-    }, OwnedServerName,
+    },
+    OwnedServerName,
 };
 use serde::{Deserialize, Serialize};
 use std::{fs, path::PathBuf};
@@ -238,7 +240,7 @@ impl CoreClient {
               return Err(crate::Error::HomeserverMissesHostname);
             };
             let parent_event = InitialStateEvent::<SpaceParentEventContent> {
-                content: assign!(SpaceParentEventContent::new(true), { 
+                content: assign!(SpaceParentEventContent::new(true), {
                   via: Some(vec![homeserver]), }),
                 state_key: parent.clone(),
             };
@@ -246,7 +248,7 @@ impl CoreClient {
             // if we have a parent, by default we allow access to the subspace.
             let join_rule =
                 InitialRoomJoinRulesEvent::new(RoomJoinRulesEventContent::restricted(vec![
-                    AllowRule::room_membership(parent.clone()),
+                    AllowRule::room_membership(parent),
                 ]));
             initial_states.push(join_rule.to_raw_any());
         };
@@ -272,11 +274,9 @@ impl CoreClient {
         let mut parents = Vec::new();
         let mut children = Vec::new();
 
-        let parents_events: Vec<Raw<SyncSpaceParentEvent>> =
-            room.get_state_events_static().await?;
+        let parents_events: Vec<Raw<SyncSpaceParentEvent>> = room.get_state_events_static().await?;
 
-        let children_events: Vec<Raw<SyncSpaceChildEvent>> =
-            room.get_state_events_static().await?;
+        let children_events: Vec<Raw<SyncSpaceChildEvent>> = room.get_state_events_static().await?;
 
         for raw in parents_events {
             let ev = match raw.deserialize() {
