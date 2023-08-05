@@ -57,7 +57,11 @@ class ConvoWithProfileCard extends ConsumerWidget {
           onFocusChange: onFocusChange,
           onLongPress: onLongPress,
           leading: showParent
-              ? SpaceParentBadge(spaceId: roomId, child: avatar)
+              ? SpaceParentBadge(
+                  spaceId: roomId,
+                  badgeSize: 20,
+                  child: avatar,
+                )
               : avatar,
           title: Text(
             profile.displayName ?? roomId,
