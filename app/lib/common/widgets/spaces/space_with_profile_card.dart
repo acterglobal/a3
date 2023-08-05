@@ -95,7 +95,10 @@ class SpaceWithProfileCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final displayName = profile.displayName ?? roomId;
+    final displayName =
+        profile.displayName != null && profile.displayName!.isNotEmpty
+            ? profile.displayName!
+            : roomId;
     final avatar = ActerAvatar(
       mode: DisplayMode.Space,
       uniqueId: roomId,
@@ -128,7 +131,7 @@ class SpaceWithProfileCard extends ConsumerWidget {
         titleTextStyle: titleTextStyle,
         subtitleTextStyle: subtitleTextStyle,
         leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-        title: Text(profile.displayName ?? roomId),
+        title: Text(displayName),
         subtitle: subtitle,
         leading: showParent
             ? SpaceParentBadge(spaceId: roomId, child: avatar)

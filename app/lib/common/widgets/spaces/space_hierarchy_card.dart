@@ -36,13 +36,9 @@ class RoomHierarchyJoinButtons extends ConsumerWidget {
           ),
         );
       case 'public':
-        return ButtonBar(
-          children: [
-            const Tooltip(
-              message: 'You need be invited to join this room',
-              child: Chip(label: Text('public')),
-            ),
-            OutlinedButton(
+        return Tooltip(
+          message: 'You need be invited to join this room',
+          child: OutlinedButton(
             onPressed: () async {
               await joinRoom(
                 context,
@@ -51,8 +47,9 @@ class RoomHierarchyJoinButtons extends ConsumerWidget {
                 space.roomIdStr(),
                 space.viaServerName(),
               );
-            }, child: const Text('join'))
-          ],
+            },
+            child: const Text('join'),
+          ),
         );
       default:
         return Tooltip(
