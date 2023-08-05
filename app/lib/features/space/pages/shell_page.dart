@@ -54,8 +54,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                     ],
                   ),
                 ),
-                child: ListView(
-                  shrinkWrap: true,
+                child: Column(
                   children: <Widget>[
                     _ShellToolbar(space, widget.spaceIdOrAlias),
                     _ShellHeader(widget.spaceIdOrAlias, profile),
@@ -63,8 +62,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                       spaceId: widget.spaceIdOrAlias,
                       key: Key('${widget.spaceIdOrAlias}::top-nav'),
                     ),
-                    SizedBox(
-                      height: !isDesktop ? h * 2 : h,
+                    Expanded(
                       child: widget.child,
                     ),
                   ],
