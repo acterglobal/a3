@@ -25,9 +25,13 @@ final spacesProvider = AsyncNotifierProvider<AsyncSpacesNotifier, List<Space>>(
 /// Map a spaceId to the space, keeps up to date with underlying client
 /// throws is the space isn't found.
 final spaceProvider =
-    AsyncNotifierProvider.family<AsyncSpaceNotifier, Space, String>(
-  () => AsyncSpaceNotifier(),
-);
+    FutureProvider.family<Space, String>((ref, spaceId) async {
+  final maybeSpace = await ref.watch(maybeSpaceProvider(spaceId).future);
+  if (maybeSpace != null) {
+    return maybeSpace;
+  }
+  throw 'Space not found';
+});
 
 /// Attempts to map a spaceId to the space, but could come back empty (null) rather than throw.
 /// keeps up to date with underlying client even if the space wasn't found initially,
@@ -262,8 +266,11 @@ final spaceInvitedMembersProvider = FutureProvider.autoDispose
 /// if the space isn't found. Stays up to date with underlying client data
 /// if a space was found.
 final spaceRelationsProvider = FutureProvider.autoDispose
-    .family<SpaceRelations, String>((ref, spaceId) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
+    .family<SpaceRelations?, String>((ref, spaceId) async {
+  final space = await ref.watch(maybeSpaceProvider(spaceId).future);
+  if (space == null) {
+    return null;
+  }
   return await space.spaceRelations();
 });
 
@@ -273,6 +280,9 @@ final canonicalParentProvider = FutureProvider.autoDispose
     .family<SpaceWithProfileData?, String>((ref, spaceId) async {
   try {
     final relations = await ref.watch(spaceRelationsProvider(spaceId).future);
+    if (relations == null) {
+      return null;
+    }
     final parent = relations.mainParent();
     if (parent == null) {
       debugPrint('no parent');
@@ -305,6 +315,9 @@ final relatedSpacesProvider = FutureProvider.autoDispose
 final spaceRelationsOverviewProvider = FutureProvider.autoDispose
     .family<SpaceRelationsOverview, String>((ref, spaceId) async {
   final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
+  if (relatedSpaces == null) {
+    throw 'Space not found';
+  }
   final membership = await ref.watch(spaceMembershipProvider(spaceId).future);
   bool hasMoreSubspaces = false;
   bool hasMoreChats = false;
