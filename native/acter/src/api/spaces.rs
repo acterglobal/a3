@@ -454,11 +454,11 @@ impl SpaceHierarchyRoomInfo {
 
     /// Whether the room may be viewed by guest users without joining.
     pub fn world_readable(&self) -> bool {
-        self.chunk.world_readable.clone()
+        self.chunk.world_readable
     }
 
     pub fn guest_can_join(&self) -> bool {
-        self.chunk.guest_can_join.clone()
+        self.chunk.guest_can_join
     }
 
     pub fn avatar_url(&self) -> Option<OwnedMxcUri> {
@@ -502,11 +502,11 @@ impl SpaceHierarchyRoomInfo {
         for v in &self.chunk.children_state {
             let Ok(h) = v.deserialize() else { continue };
             let Some(via) = h.content.via else { continue };
-            for v in via {
+            if let Some(v) = via.into_iter().next() {
                 return Some(v.to_string());
             }
         }
-        return None;
+        None
     }
 
     pub async fn get_avatar(&self) -> Result<OptionBuffer> {

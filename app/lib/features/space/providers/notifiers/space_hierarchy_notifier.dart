@@ -11,7 +11,7 @@ class Next {
 }
 
 /// True or False whether this item matches the required filter;
-typedef bool FilterFn(ffi.SpaceHierarchyRoomInfo element);
+typedef FilterFn = bool Function(ffi.SpaceHierarchyRoomInfo element);
 
 class SpaceHierarchyListState
     extends PagedState<Next?, ffi.SpaceHierarchyRoomInfo> {

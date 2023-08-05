@@ -2,7 +2,6 @@ import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
@@ -33,8 +32,6 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
   @override
   Widget build(BuildContext context) {
     // get platform of context.
-    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
-    final h = MediaQuery.of(context).size.height;
     final space = ref.watch(spaceProvider(widget.spaceIdOrAlias));
     return space.when(
       data: (space) {

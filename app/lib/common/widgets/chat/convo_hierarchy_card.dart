@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
-import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
