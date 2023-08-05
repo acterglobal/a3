@@ -27,57 +27,54 @@ class SpaceParentBadge extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
-    final badgeOverflow = badgeSize / 3;
-    return Padding(
-      padding: EdgeInsets.only(right: badgeOverflow, bottom: badgeOverflow),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: <Widget>[
-          child,
-          Positioned(
-            bottom: -badgeOverflow,
-            right: -badgeOverflow,
-            child: canonicalParent.when(
-              data: (parent) {
-                if (parent == null) {
-                  return const SizedBox.shrink();
-                }
-                final parentId = parent.space.getRoomIdStr();
-                return Column(
-                  children: <Widget>[
-                    SizedBox(height: badgeSize * 1.25),
-                    Tooltip(
-                      message: parent.profile.displayName,
-                      child: InkWell(
-                        onTap: onTap ??
-                            () {
-                              context.push('/$parentId');
-                            },
-                        child: ActerAvatar(
-                          mode: DisplayMode.Space,
-                          displayName: parent.profile.displayName,
-                          uniqueId: parentId,
-                          avatar: parent.profile.getAvatarImage(),
-                          size: badgeSize,
-                        ),
+    final badgeOverflow = badgeSize / 5;
+    return Stack(
+      clipBehavior: Clip.none,
+      children: <Widget>[
+        child,
+        Positioned(
+          bottom: -badgeOverflow,
+          right: -badgeOverflow,
+          child: canonicalParent.when(
+            data: (parent) {
+              if (parent == null) {
+                return SizedBox(height: badgeSize + badgeOverflow);
+              }
+              final parentId = parent.space.getRoomIdStr();
+              return Column(
+                children: <Widget>[
+                  SizedBox(height: badgeSize + badgeOverflow),
+                  Tooltip(
+                    message: parent.profile.displayName,
+                    child: InkWell(
+                      onTap: onTap ??
+                          () {
+                            context.push('/$parentId');
+                          },
+                      child: ActerAvatar(
+                        mode: DisplayMode.Space,
+                        displayName: parent.profile.displayName,
+                        uniqueId: parentId,
+                        avatar: parent.profile.getAvatarImage(),
+                        size: badgeSize,
                       ),
                     ),
-                  ],
-                );
-              },
-              error: (error, stackTrace) {
-                log.severe(
-                  'Failed to load canonical parent of $spaceId',
-                  error,
-                  stackTrace,
-                );
-                return const SizedBox.shrink();
-              },
-              loading: () => const CircularProgressIndicator(),
-            ),
+                  ),
+                ],
+              );
+            },
+            error: (error, stackTrace) {
+              log.severe(
+                'Failed to load canonical parent of $spaceId',
+                error,
+                stackTrace,
+              );
+              return const SizedBox.shrink();
+            },
+            loading: () => const CircularProgressIndicator(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

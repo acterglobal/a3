@@ -134,7 +134,11 @@ class SpaceWithProfileCard extends ConsumerWidget {
         title: Text(displayName),
         subtitle: subtitle,
         leading: showParent
-            ? SpaceParentBadge(spaceId: roomId, child: avatar)
+            ? SpaceParentBadge(
+                spaceId: roomId,
+                badgeSize: avatarSize / 2,
+                child: avatar,
+              )
             : avatar,
         trailing: trailing,
       ),
