@@ -26,7 +26,7 @@ use ruma::{
     device_id,
     events::room::MediaSource,
     OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName,
-    OwnedUserId, RoomId, UserId,
+    OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
 };
 use std::{
     collections::{BTreeMap, HashMap},
@@ -742,30 +742,54 @@ impl Client {
         self.core.client().user_id()
     }
 
-    pub(crate) async fn room(&self, room_id_or_alias: String) -> Result<Room> {
-        if let Ok(room_id) = OwnedRoomId::try_from(room_id_or_alias.clone()) {
-            // alias passes here too
-            if let Some(room) = self.core.client().get_room(&room_id) {
-                return Ok(Room { room });
-            }
-        }
-        // if None, it is alias
-        if let Ok(alias_id) = OwnedRoomAliasId::try_from(room_id_or_alias) {
-            let response = self.core.client().resolve_room_alias(&alias_id).await?;
-            if let Some(room) = self.core.client().get_room(&response.room_id) {
-                return Ok(Room { room });
-            }
-            bail!("Room with alias not found");
-        } else {
-            bail!("Neither roomId nor alias provided");
-        }
+    pub async fn room(&self, room_id_or_alias: String) -> Result<Room> {
+        self.room_typed(OwnedRoomOrAliasId::try_from(room_id_or_alias)?.as_ref())
+            .await
     }
 
-    pub(crate) fn room_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
+    pub async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
+        if room_id_or_alias.is_room_id() {
+            return self
+                .room_by_id_typed(
+                    &OwnedRoomId::try_from(room_id_or_alias.as_str()).expect("just checked"),
+                )
+                .await
+                .context("Room not found");
+        }
+
+        self.room_by_alias_typed(
+            &OwnedRoomAliasId::try_from(room_id_or_alias.as_str()).expect("just checked"),
+        )
+        .await
+    }
+
+    pub async fn room_by_id_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
         self.core
             .client()
             .get_room(room_id)
             .map(|room| Room { room })
+    }
+
+    pub async fn room_by_alias_typed(&self, room_alias: &OwnedRoomAliasId) -> Result<Room> {
+        for r in self.core.client().rooms() {
+            // looping locally first
+            if let Some(con_alias) = r.canonical_alias() {
+                if &con_alias == room_alias {
+                    return Ok(Room { room: r });
+                }
+            }
+            for alt_alias in r.alt_aliases() {
+                if &alt_alias == room_alias {
+                    return Ok(Room { room: r });
+                }
+            }
+        }
+        // nothing found, try remote:
+        let response = self.core.client().resolve_room_alias(room_alias).await?;
+        self
+            .room_by_id_typed(&response.room_id)
+            .await
+            .context("Room not found")
     }
 
     pub fn notifications_stream(&self) -> impl Stream<Item = Notification> {
