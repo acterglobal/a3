@@ -277,40 +277,61 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       ),
       isLoader: true,
     );
+    try {
+      final sdk = await ref.watch(sdkProvider.future);
+      var config = sdk.newSpaceSettingsBuilder();
+      config.setName(spaceName);
+      if (description.isNotEmpty) {
+        config.setTopic(description);
+      }
+      var localUri = ref.read(avatarProvider);
+      if (localUri.isNotEmpty) {
+        config.setAvatarUri(localUri); // space creation will upload it
+      }
+      final parentRoomId = ref.watch(parentSpaceProvider);
+      if (parentRoomId != null) {
+        config.setParent(parentRoomId);
+      }
+      final client = ref.read(clientProvider)!;
+      final roomId = await client.createActerSpace(config.build());
+      if (parentRoomId != null) {
+        final space = await ref.read(spaceProvider(parentRoomId).future);
+        await space.addChildSpace(roomId.toString());
+      }
 
-    final sdk = await ref.watch(sdkProvider.future);
-    var config = sdk.newSpaceSettingsBuilder();
-    config.setName(spaceName);
-    if (description.isNotEmpty) {
-      config.setTopic(description);
-    }
-    var localUri = ref.read(avatarProvider);
-    if (localUri.isNotEmpty) {
-      config.setAvatarUri(localUri); // space creation will upload it
-    }
-    final parentRoomId = ref.watch(parentSpaceProvider);
-    if (parentRoomId != null) {
-      config.setParent(parentRoomId);
-    }
-    final client = ref.read(clientProvider)!;
-    final roomId = await client.createActerSpace(config.build());
-    if (parentRoomId != null) {
-      final space = await ref.read(spaceProvider(parentRoomId).future);
-      await space.addChildSpace(roomId.toString());
-    }
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
 
-    // We are doing as expected, but the lints triggers.
-    // ignore: use_build_context_synchronously
-    if (!context.mounted) {
-      return;
-    }
+      Navigator.of(context, rootNavigator: true).pop();
+      context.goNamed(
+        Routes.space.name,
+        pathParameters: {
+          'spaceId': roomId.toString(),
+        },
+      );
+    } catch (err) {
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
+      Navigator.of(context, rootNavigator: true).pop();
 
-    Navigator.of(context, rootNavigator: true).pop();
-    context.goNamed(
-      Routes.space.name,
-      pathParameters: {
-        'spaceId': roomId.toString(),
-      },
-    );
+      popUpDialog(
+        context: context,
+        title: Text(
+          'Creating Space failed: \n $err"',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        isLoader: false,
+        btnText: 'Close',
+        onPressedBtn: () {
+          Navigator.of(context, rootNavigator: true).pop();
+        },
+      );
+    }
   }
 }

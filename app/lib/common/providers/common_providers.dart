@@ -4,7 +4,6 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/network_notifier.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Account, Convo, Member, OptionText, UserProfile;
@@ -84,24 +83,8 @@ final chatMembersProvider =
 
 final relatedChatsProvider = FutureProvider.autoDispose
     .family<List<Convo>, String>((ref, spaceId) async {
-  List<Convo> conversations = [];
-  ref
-      .watch(chatStreamProvider)
-      .whenData((value) => conversations.addAll(value));
-  final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
-  final chats = [];
-  final children = relatedSpaces.children();
-  for (Convo room in conversations) {
-    for (final related in children) {
-      if (related.targetType() == 'ChatRoom') {
-        final roomId = related.roomId().toString();
-        if (room.getRoomIdStr() == roomId) {
-          chats.add(room);
-        }
-      }
-    }
-  }
-  return List<Convo>.from(chats);
+  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
+      .knownChats;
 });
 
 // Member Providers

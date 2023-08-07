@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat/widgets/convo_card.dart';
+import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

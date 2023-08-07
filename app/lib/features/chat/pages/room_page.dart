@@ -2,7 +2,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/chat_theme.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/pages/profile_page.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/bubble_builder.dart';
@@ -19,8 +19,6 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
 class RoomPage extends ConsumerStatefulWidget {
   final Convo convo;
@@ -171,12 +169,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           elevation: 1,
           centerTitle: true,
           toolbarHeight: 70,
-          leading: IconButton(
-            onPressed: () => context.canPop()
-                ? context.pop()
-                : context.goNamed(Routes.chat.name),
-            icon: const Icon(Atlas.arrow_left),
-          ),
           title: Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -248,32 +240,21 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                   final convoProfile = ref.watch(
                     chatProfileDataProvider(widget.convo),
                   );
+                  final roomId = widget.convo.getRoomIdStr();
                   return convoProfile.when(
                     data: (profile) => Padding(
                       padding: const EdgeInsets.only(right: 10),
-                      child: profile.hasAvatar()
-                          ? ActerAvatar(
-                              uniqueId: widget.convo.getRoomIdStr(),
-                              mode: DisplayMode.GroupChat,
-                              displayName: profile.displayName ??
-                                  widget.convo.getRoomIdStr(),
-                              avatar: profile.getAvatarImage(),
-                              size: 36,
-                            )
-                          : Container(
-                              height: 36,
-                              width: 36,
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color:
-                                    Theme.of(context).colorScheme.onSecondary,
-                                borderRadius: BorderRadius.circular(6),
-                                shape: BoxShape.rectangle,
-                              ),
-                              child: SvgPicture.asset(
-                                'assets/icon/acter.svg',
-                              ),
-                            ),
+                      child: SpaceParentBadge(
+                        spaceId: roomId,
+                        badgeSize: 20,
+                        child: ActerAvatar(
+                          uniqueId: roomId,
+                          mode: DisplayMode.GroupChat,
+                          displayName: profile.displayName ?? roomId,
+                          avatar: profile.getAvatarImage(),
+                          size: 36,
+                        ),
+                      ),
                     ),
                     error: (error, stackTrace) => Text(
                       'Failed to load avatar due to $error',

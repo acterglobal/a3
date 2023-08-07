@@ -1,7 +1,6 @@
 use anyhow::{bail, Context, Result};
-use matrix_sdk::media::MediaRequest;
 use matrix_sdk::{
-    media::{MediaFormat, MediaThumbnailSize},
+    media::{MediaFormat, MediaRequest, MediaThumbnailSize},
     room::RoomMember,
     ruma::{api::client::media::get_content_thumbnail::v3::Method, OwnedRoomId, OwnedUserId, UInt},
     Account, Client, DisplayName,

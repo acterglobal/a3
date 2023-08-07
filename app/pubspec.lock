@@ -14,10 +14,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "219ee11261a5f7eec19e9deb8549f67f1501b82d"
+      resolved-ref: "2153866e9213ceaf11d1b2990560cda197b6b5c9"
       url: "https://github.com/acterglobal/acter-avatar"
     source: git
-    version: "0.0.8+2"
+    version: "0.0.8+4"
   acter_flutter_sdk:
     dependency: "direct main"
     description:
@@ -218,14 +218,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.17.1"
-  colorize_text_avatar:
-    dependency: "direct main"
-    description:
-      name: colorize_text_avatar
-      sha256: "4948938a86eef2389ded457650d943b237aa643165dc88546a164ae9b09f726d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.2"
   connectivity_plus:
     dependency: "direct main"
     description:
@@ -494,7 +486,7 @@ packages:
     source: git
     version: "3.0.0-rc.17"
   flutter_highlight:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_highlight
       sha256: "7b96333867aa07e122e245c033b8ad622e4e3a42a1a2372cbb098a2541d8782c"
@@ -952,7 +944,7 @@ packages:
     source: hosted
     version: "2.1.1"
   logging:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: logging
       sha256: "623a88c9594aa774443aa3eb2d41807a48486b5613e67599fb4c41c0ad47c340"
@@ -1008,7 +1000,7 @@ packages:
     source: hosted
     version: "5.4.0"
   multiavatar:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: multiavatar
       sha256: "8fc089ea8421aef04361663af4319b487e2ffa47035cc617bd94cd10e36d5db6"
@@ -1295,14 +1287,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
-  searchbar_animation:
-    dependency: "direct main"
-    description:
-      name: searchbar_animation
-      sha256: "8c9b82e666dae343f8ec34137da18f0de3f019da42691ec8b2c492ee434cc0ba"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.4"
   sensors_plus:
     dependency: transitive
     description:
