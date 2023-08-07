@@ -523,11 +523,11 @@ impl Client {
         })
     }
 
-    pub async fn convo(&self, name_or_id: String) -> Result<Convo> {
+    pub async fn convo(&self, room_id_or_alias: String) -> Result<Convo> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let Ok(room) = me.room(name_or_id) else {
+                let Ok(room) = me.room(room_id_or_alias).await else {
                     bail!("Neither roomId nor alias provided");
                 };
                 if room.is_acter_space().await {

@@ -36012,9 +36012,9 @@ class Client {
 
   /// get convo room
   Future<Convo> convo(
-    String roomOrId,
+    String roomIdOrAlias,
   ) {
-    final tmp1 = roomOrId;
+    final tmp1 = roomIdOrAlias;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -36360,9 +36360,9 @@ class Client {
 
   /// Get the space that user belongs to
   Future<Space> getSpace(
-    String roomId,
+    String roomIdOrAlias,
   ) {
-    final tmp1 = roomId;
+    final tmp1 = roomIdOrAlias;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;

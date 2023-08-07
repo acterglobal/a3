@@ -1,9 +1,6 @@
 use acter::{
     api::login_new_client,
-    matrix_sdk::ruma::{
-        events::{AnyMessageLikeEvent, AnyTimelineEvent, MessageLikeEvent},
-        OwnedRoomAliasId,
-    },
+    matrix_sdk::ruma::events::{AnyMessageLikeEvent, AnyTimelineEvent, MessageLikeEvent},
 };
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
@@ -49,21 +46,16 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     let mut synced = syncer.first_synced_rx();
     while synced.next().await != Some(true) {} // let's wait for it to have synced
 
-    let Ok(alias_id) = OwnedRoomAliasId::try_from(format!("#ops:{homeserver_name}")) else {
-        bail!("Invalid room alias id");
-    };
-    let response = sisko.resolve_room_alias(&alias_id).await?;
     let sisko_space = sisko
-        .get_space(response.room_id.to_string())
+        .get_space(format!("#ops:{homeserver_name}"))
         .await
         .expect("sisko should belong to ops");
     let event_id = sisko_space
         .send_plain_message("Hi, everyone".to_string())
         .await?;
 
-    let response = kyra.resolve_room_alias(&alias_id).await?;
     let kyra_space = kyra
-        .get_space(response.room_id.to_string())
+        .get_space(format!("#ops:{homeserver_name}"))
         .await
         .expect("kyra should belong to ops");
     let reply_id = kyra_space

@@ -7,7 +7,7 @@ use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
 use matrix_sdk::{
-    ruma::{api::client::room::Visibility, OwnedRoomAliasId, OwnedUserId},
+    ruma::{api::client::room::Visibility, OwnedUserId},
     HttpError,
 };
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
@@ -321,11 +321,7 @@ impl<'a> Mock<'a> {
                 let alias = alias.clone();
                 async move {
                     println!("tasks get_space {alias}");
-                    let Ok(alias_id) = OwnedRoomAliasId::try_from(alias) else {
-                        bail!("Invalid room alias id");
-                    };
-                    let response = cloned_odo.resolve_room_alias(&alias_id).await?;
-                    let space = cloned_odo.get_space(response.room_id.to_string()).await?;
+                    let space = cloned_odo.get_space(alias).await?;
                     Ok(Some(space))
                 }
             }).await? else {

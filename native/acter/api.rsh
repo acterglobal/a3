@@ -1540,7 +1540,7 @@ object Client {
     fn user_id() -> Result<UserId>;
 
     /// get convo room
-    fn convo(room_or_id: string) -> Future<Result<Convo>>;
+    fn convo(room_id_or_alias: string) -> Future<Result<Convo>>;
 
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Result<UserProfile>;
@@ -1567,7 +1567,7 @@ object Client {
     fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
 
     /// Get the space that user belongs to
-    fn get_space(room_id: string) -> Future<Result<Space>>;
+    fn get_space(room_id_or_alias: string) -> Future<Result<Space>>;
 
     /// Get the Pinned Links for the client
     fn pinned_links() -> Future<Result<Vec<ActerPin>>>;

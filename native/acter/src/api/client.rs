@@ -2,7 +2,7 @@ use acter_core::{
     client::CoreClient, executor::Executor, models::AnyActerModel, spaces::is_acter_space,
     store::Store, templates::Engine, CustomAuthSession, RestoreToken,
 };
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
 use futures::{
@@ -25,8 +25,8 @@ use ruma::{
     },
     device_id,
     events::room::MediaSource,
-    OwnedDeviceId, OwnedMxcUri, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId,
-    RoomId, UserId,
+    OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName,
+    OwnedUserId, RoomId, UserId,
 };
 use std::{
     collections::{BTreeMap, HashMap},
@@ -742,12 +742,26 @@ impl Client {
         self.core.client().user_id()
     }
 
-    pub(crate) fn room(&self, room_id: String) -> Result<Room> {
-        self.room_typed(&RoomId::parse(room_id)?)
-            .context("Room not found")
+    pub(crate) async fn room(&self, room_id_or_alias: String) -> Result<Room> {
+        if let Ok(room_id) = OwnedRoomId::try_from(room_id_or_alias.clone()) {
+            // alias passes here too
+            if let Some(room) = self.core.client().get_room(&room_id) {
+                return Ok(Room { room });
+            }
+        }
+        // if None, it is alias
+        if let Ok(alias_id) = OwnedRoomAliasId::try_from(room_id_or_alias) {
+            let response = self.core.client().resolve_room_alias(&alias_id).await?;
+            if let Some(room) = self.core.client().get_room(&response.room_id) {
+                return Ok(Room { room });
+            }
+            bail!("Room with alias not found");
+        } else {
+            bail!("Neither roomId nor alias provided");
+        }
     }
 
-    pub fn room_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
+    pub(crate) fn room_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
         self.core
             .client()
             .get_room(room_id)

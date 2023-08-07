@@ -1,5 +1,5 @@
-use acter::{api::login_new_client, matrix_sdk::ruma::OwnedRoomAliasId};
-use anyhow::{bail, Result};
+use acter::api::login_new_client;
+use anyhow::Result;
 use futures::stream::StreamExt;
 use tempfile::TempDir;
 
@@ -28,12 +28,8 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     let sisko_syncer = sisko.start_sync();
     let mut sisko_synced = sisko_syncer.first_synced_rx();
     while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let Ok(alias_id) = OwnedRoomAliasId::try_from(format!("#ops:{homeserver_name}")) else {
-        bail!("Invalid room alias id");
-    };
-    let response = sisko.resolve_room_alias(&alias_id).await?;
     let sisko_space = sisko
-        .get_space(response.room_id.to_string())
+        .get_space(format!("#ops:{homeserver_name}"))
         .await
         .expect("sisko should belong to ops");
     let event_id = sisko_space
@@ -53,12 +49,8 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     let kyra_syncer = kyra.start_sync();
     let mut first_synced = kyra_syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let Ok(alias_id) = OwnedRoomAliasId::try_from(format!("#ops:{homeserver_name}")) else {
-        bail!("Invalid room alias id");
-    };
-    let response = kyra.resolve_room_alias(&alias_id).await?;
     let kyra_space = kyra
-        .get_space(response.room_id.to_string())
+        .get_space(format!("#ops:{homeserver_name}"))
         .await
         .expect("kyra should belong to ops");
     kyra_space.read_receipt(event_id.to_string()).await?;
