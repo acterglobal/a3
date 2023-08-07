@@ -245,7 +245,7 @@ pub async fn register_under_config(
             let client = config.build().await?;
             if let Err(resp) = client.matrix_auth().register(RegisterRequest::new()).await {
                 // FIXME: do actually check the registration types...
-                if let Some(_) = resp.as_uiaa_response() {
+                if resp.as_uiaa_response().is_some() {
                     let request = assign!(RegisterRequest::new(), {
                         username: Some(user_id.localpart().to_owned()),
                         password: Some(password.clone()),
