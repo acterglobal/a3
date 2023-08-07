@@ -747,7 +747,7 @@ impl Client {
         self.room_typed(&id_or_alias).await
     }
 
-    pub(crate) async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
+    pub async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
         if room_id_or_alias.is_room_id() {
             let room_id = OwnedRoomId::try_from(room_id_or_alias.as_str()).expect("just checked");
             return self
@@ -761,14 +761,14 @@ impl Client {
         self.room_by_alias_typed(&room_alias).await
     }
 
-    pub(crate) async fn room_by_id_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
+    pub async fn room_by_id_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
         self.core
             .client()
             .get_room(room_id)
             .map(|room| Room { room })
     }
 
-    pub(crate) async fn room_by_alias_typed(&self, room_alias: &OwnedRoomAliasId) -> Result<Room> {
+    pub async fn room_by_alias_typed(&self, room_alias: &OwnedRoomAliasId) -> Result<Room> {
         for r in self.core.client().rooms() {
             // looping locally first
             if let Some(con_alias) = r.canonical_alias() {
