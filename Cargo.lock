@@ -1511,7 +1511,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen"
 version = "0.1.13"
-source = "git+https://github.com/acterglobal/ffi-gen?branch=span-support#b21135dd9fade0a8ab4b1840918e4054003db904"
+source = "git+https://github.com/acterglobal/ffi-gen?branch=span-support#b04f1bf9b3ff24f7f94d635fdbc86979fe764e04"
 dependencies = [
  "anyhow",
  "genco",
@@ -1524,7 +1524,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen-macro"
 version = "0.1.2"
-source = "git+https://github.com/acterglobal/ffi-gen?branch=span-support#b21135dd9fade0a8ab4b1840918e4054003db904"
+source = "git+https://github.com/acterglobal/ffi-gen?branch=span-support#b04f1bf9b3ff24f7f94d635fdbc86979fe764e04"
 dependencies = [
  "ffi-gen",
  "proc-macro2 1.0.55",
