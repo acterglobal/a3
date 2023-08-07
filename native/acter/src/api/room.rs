@@ -885,6 +885,10 @@ impl Room {
         }
     }
 
+    pub fn is_joined(&self) -> bool {
+        matches!(self.room, SdkRoom::Joined(_))
+    }
+
     pub async fn invite_user(&self, user_id: String) -> Result<bool> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()

@@ -4863,6 +4863,146 @@ class Api {
     return tmp7;
   }
 
+  OptionBuffer? __spaceHierarchyRoomInfoGetAvatarFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceHierarchyRoomInfoGetAvatarFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionBuffer._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiListSpaceHierarchyRoomInfo? __spaceHierarchyListResultRoomsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceHierarchyListResultRoomsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 =
+        _Box(this, tmp13_0, "drop_box_FfiListSpaceHierarchyRoomInfo");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListSpaceHierarchyRoomInfo._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  SpaceHierarchyListResult? __spaceRelationsQueryHierarchyFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceRelationsQueryHierarchyFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SpaceHierarchyListResult");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = SpaceHierarchyListResult._(this, tmp13_1);
+    return tmp7;
+  }
+
   SpaceRelations? __spaceSpaceRelationsFuturePoll(
     int boxed,
     int postCobject,
@@ -13220,6 +13360,16 @@ class Api {
         int,
         int,
       )>();
+  late final _convoIsJoinedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Convo_is_joined");
+
+  late final _convoIsJoined = _convoIsJoinedPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _commentDraftContentTextPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -15220,6 +15370,160 @@ class Api {
           int Function(
             int,
           )>();
+  late final _spaceHierarchyRoomInfoNamePtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceHierarchyRoomInfoNameReturn Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_name");
+
+  late final _spaceHierarchyRoomInfoName =
+      _spaceHierarchyRoomInfoNamePtr.asFunction<
+          _SpaceHierarchyRoomInfoNameReturn Function(
+            int,
+          )>();
+  late final _spaceHierarchyRoomInfoRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceHierarchyRoomInfoRoomIdStrReturn Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_room_id_str");
+
+  late final _spaceHierarchyRoomInfoRoomIdStr =
+      _spaceHierarchyRoomInfoRoomIdStrPtr.asFunction<
+          _SpaceHierarchyRoomInfoRoomIdStrReturn Function(
+            int,
+          )>();
+  late final _spaceHierarchyRoomInfoTopicPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceHierarchyRoomInfoTopicReturn Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_topic");
+
+  late final _spaceHierarchyRoomInfoTopic =
+      _spaceHierarchyRoomInfoTopicPtr.asFunction<
+          _SpaceHierarchyRoomInfoTopicReturn Function(
+            int,
+          )>();
+  late final _spaceHierarchyRoomInfoNumJoinedMembersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_num_joined_members");
+
+  late final _spaceHierarchyRoomInfoNumJoinedMembers =
+      _spaceHierarchyRoomInfoNumJoinedMembersPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _spaceHierarchyRoomInfoWorldReadablePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_world_readable");
+
+  late final _spaceHierarchyRoomInfoWorldReadable =
+      _spaceHierarchyRoomInfoWorldReadablePtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _spaceHierarchyRoomInfoGuestCanJoinPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_guest_can_join");
+
+  late final _spaceHierarchyRoomInfoGuestCanJoin =
+      _spaceHierarchyRoomInfoGuestCanJoinPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _spaceHierarchyRoomInfoIsSpacePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_is_space");
+
+  late final _spaceHierarchyRoomInfoIsSpace =
+      _spaceHierarchyRoomInfoIsSpacePtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _spaceHierarchyRoomInfoAvatarUrlStrPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceHierarchyRoomInfoAvatarUrlStrReturn Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_avatar_url_str");
+
+  late final _spaceHierarchyRoomInfoAvatarUrlStr =
+      _spaceHierarchyRoomInfoAvatarUrlStrPtr.asFunction<
+          _SpaceHierarchyRoomInfoAvatarUrlStrReturn Function(
+            int,
+          )>();
+  late final _spaceHierarchyRoomInfoJoinRuleStrPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceHierarchyRoomInfoJoinRuleStrReturn Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_join_rule_str");
+
+  late final _spaceHierarchyRoomInfoJoinRuleStr =
+      _spaceHierarchyRoomInfoJoinRuleStrPtr.asFunction<
+          _SpaceHierarchyRoomInfoJoinRuleStrReturn Function(
+            int,
+          )>();
+  late final _spaceHierarchyRoomInfoHasAvatarPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_has_avatar");
+
+  late final _spaceHierarchyRoomInfoHasAvatar =
+      _spaceHierarchyRoomInfoHasAvatarPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _spaceHierarchyRoomInfoGetAvatarPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_get_avatar");
+
+  late final _spaceHierarchyRoomInfoGetAvatar =
+      _spaceHierarchyRoomInfoGetAvatarPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _spaceHierarchyRoomInfoViaServerNamePtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceHierarchyRoomInfoViaServerNameReturn Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_via_server_name");
+
+  late final _spaceHierarchyRoomInfoViaServerName =
+      _spaceHierarchyRoomInfoViaServerNamePtr.asFunction<
+          _SpaceHierarchyRoomInfoViaServerNameReturn Function(
+            int,
+          )>();
+  late final _spaceHierarchyListResultNextBatchPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceHierarchyListResultNextBatchReturn Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyListResult_next_batch");
+
+  late final _spaceHierarchyListResultNextBatch =
+      _spaceHierarchyListResultNextBatchPtr.asFunction<
+          _SpaceHierarchyListResultNextBatchReturn Function(
+            int,
+          )>();
+  late final _spaceHierarchyListResultRoomsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__SpaceHierarchyListResult_rooms");
+
+  late final _spaceHierarchyListResultRooms =
+      _spaceHierarchyListResultRoomsPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _spaceRelationRoomIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -15260,6 +15564,16 @@ class Api {
       _SpaceRelationTargetTypeReturn Function(
         int,
       )>();
+  late final _spaceRelationsRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceRelationsRoomIdStrReturn Function(
+            ffi.Int64,
+          )>>("__SpaceRelations_room_id_str");
+
+  late final _spaceRelationsRoomIdStr = _spaceRelationsRoomIdStrPtr.asFunction<
+      _SpaceRelationsRoomIdStrReturn Function(
+        int,
+      )>();
   late final _spaceRelationsMainParentPtr = _lookup<
       ffi.NativeFunction<
           _SpaceRelationsMainParentReturn Function(
@@ -15292,6 +15606,25 @@ class Api {
       int Function(
         int,
       )>();
+  late final _spaceRelationsQueryHierarchyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__SpaceRelations_query_hierarchy");
+
+  late final _spaceRelationsQueryHierarchy =
+      _spaceRelationsQueryHierarchyPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _spaceGetProfilePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -15378,6 +15711,16 @@ class Api {
 
   late final _spaceTopic = _spaceTopicPtr.asFunction<
       _SpaceTopicReturn Function(
+        int,
+      )>();
+  late final _spaceIsJoinedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Space_is_joined");
+
+  late final _spaceIsJoined = _spaceIsJoinedPtr.asFunction<
+      int Function(
         int,
       )>();
   late final _spaceSetTopicPtr = _lookup<
@@ -19042,6 +19385,51 @@ class Api {
             int,
             int,
           )>();
+  late final _spaceHierarchyRoomInfoGetAvatarFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceHierarchyRoomInfoGetAvatarFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__SpaceHierarchyRoomInfo_get_avatar_future_poll");
+
+  late final _spaceHierarchyRoomInfoGetAvatarFuturePoll =
+      _spaceHierarchyRoomInfoGetAvatarFuturePollPtr.asFunction<
+          _SpaceHierarchyRoomInfoGetAvatarFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _spaceHierarchyListResultRoomsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceHierarchyListResultRoomsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__SpaceHierarchyListResult_rooms_future_poll");
+
+  late final _spaceHierarchyListResultRoomsFuturePoll =
+      _spaceHierarchyListResultRoomsFuturePollPtr.asFunction<
+          _SpaceHierarchyListResultRoomsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _spaceRelationsQueryHierarchyFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceRelationsQueryHierarchyFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__SpaceRelations_query_hierarchy_future_poll");
+
+  late final _spaceRelationsQueryHierarchyFuturePoll =
+      _spaceRelationsQueryHierarchyFuturePollPtr.asFunction<
+          _SpaceRelationsQueryHierarchyFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _spaceSpaceRelationsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _SpaceSpaceRelationsFuturePollReturn Function(
@@ -21670,6 +22058,60 @@ class Api {
 
   late final _ffiListSpaceInsert =
       _ffiListSpaceInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListSpaceHierarchyRoomInfo createFfiListSpaceHierarchyRoomInfo() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListSpaceHierarchyRoomInfoCreate());
+    final list_box =
+        _Box(this, list_ptr, "drop_box_FfiListSpaceHierarchyRoomInfo");
+    return FfiListSpaceHierarchyRoomInfo._(this, list_box);
+  }
+
+  late final _ffiListSpaceHierarchyRoomInfoCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListSpaceHierarchyRoomInfoCreate");
+
+  late final _ffiListSpaceHierarchyRoomInfoCreate =
+      _ffiListSpaceHierarchyRoomInfoCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListSpaceHierarchyRoomInfoLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListSpaceHierarchyRoomInfoLen");
+
+  late final _ffiListSpaceHierarchyRoomInfoLen =
+      _ffiListSpaceHierarchyRoomInfoLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListSpaceHierarchyRoomInfoElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListSpaceHierarchyRoomInfoElementAt");
+
+  late final _ffiListSpaceHierarchyRoomInfoElementAt =
+      _ffiListSpaceHierarchyRoomInfoElementAtPtr
+          .asFunction<int Function(int, int)>();
+
+  late final _ffiListSpaceHierarchyRoomInfoRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListSpaceHierarchyRoomInfoRemove");
+
+  late final _ffiListSpaceHierarchyRoomInfoRemove =
+      _ffiListSpaceHierarchyRoomInfoRemovePtr
+          .asFunction<int Function(int, int)>();
+
+  late final _ffiListSpaceHierarchyRoomInfoAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListSpaceHierarchyRoomInfoAdd");
+
+  late final _ffiListSpaceHierarchyRoomInfoAdd =
+      _ffiListSpaceHierarchyRoomInfoAddPtr
+          .asFunction<void Function(int, int)>();
+
+  late final _ffiListSpaceHierarchyRoomInfoInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListSpaceHierarchyRoomInfoInsert");
+
+  late final _ffiListSpaceHierarchyRoomInfoInsert =
+      _ffiListSpaceHierarchyRoomInfoInsertPtr
+          .asFunction<void Function(int, int, int)>();
   FfiListSpaceRelation createFfiListSpaceRelation() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListSpaceRelationCreate());
@@ -29528,6 +29970,17 @@ class Convo {
     return tmp8;
   }
 
+  bool isJoined() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoIsJoined(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -32990,6 +33443,359 @@ class TaskListUpdateBuilder {
   }
 }
 
+/// remote info
+class SpaceHierarchyRoomInfo {
+  final Api _api;
+  final _Box _box;
+
+  SpaceHierarchyRoomInfo._(this._api, this._box);
+
+  String? name() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String roomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? topic() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoTopic(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int numJoinedMembers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoNumJoinedMembers(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  bool worldReadable() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoWorldReadable(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  bool guestCanJoin() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoGuestCanJoin(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  bool isSpace() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoIsSpace(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  String? avatarUrlStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoAvatarUrlStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String joinRuleStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoJoinRuleStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// whether to have avatar
+  bool hasAvatar() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoHasAvatar(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// get the binary data of avatar
+  Future<OptionBuffer> getAvatar() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoGetAvatar(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__SpaceHierarchyRoomInfo_get_avatar_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__spaceHierarchyRoomInfoGetAvatarFuturePoll);
+    return tmp2;
+  }
+
+  String? viaServerName() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoViaServerName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class SpaceHierarchyListResult {
+  final Api _api;
+  final _Box _box;
+
+  SpaceHierarchyListResult._(this._api, this._box);
+
+  /// to be used for the next `since`
+  String? nextBatch() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyListResultNextBatch(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp4, tmp5);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp4_buf);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// get the chunk of items in this response
+  Future<FfiListSpaceHierarchyRoomInfo> rooms() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyListResultRooms(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__SpaceHierarchyListResult_rooms_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__spaceHierarchyListResultRoomsFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class SpaceRelation {
   final Api _api;
   final _Box _box;
@@ -33083,6 +33889,37 @@ class SpaceRelations {
 
   SpaceRelations._(this._api, this._box);
 
+  String roomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceRelationsRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "empty string";
+    }
+    debugAllocation("lift string", tmp3, tmp4);
+    final utf8Decoder = utf8.decoder;
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8Decoder.convert(tmp3_buf);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// do we have a canonical parent?!?
   SpaceRelation? mainParent() {
     var tmp0 = 0;
@@ -33132,6 +33969,49 @@ class SpaceRelations {
     final tmp4 = FfiListSpaceRelation._(_api, tmp3_1);
     final tmp2 = tmp4;
     return tmp2;
+  }
+
+  /// query for children from the server
+  Future<SpaceHierarchyListResult> queryHierarchy(
+    String? from,
+  ) {
+    final tmp1 = from;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+      debugAllocation("lower string", tmp4, tmp5);
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    final tmp7 = _api._spaceRelationsQueryHierarchy(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+    );
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 =
+        _Box(_api, tmp9_0, "__SpaceRelations_query_hierarchy_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 =
+        _nativeFuture(tmp9_1, _api.__spaceRelationsQueryHierarchyFuturePoll);
+    return tmp8;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -33323,6 +34203,17 @@ class Space {
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
+    return tmp2;
+  }
+
+  bool isJoined() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceIsJoined(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 
@@ -40195,7 +41086,89 @@ class _TaskListUpdateBuilderReturn extends ffi.Struct {
   external int arg4;
 }
 
+class _SpaceHierarchyRoomInfoNameReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _SpaceHierarchyRoomInfoRoomIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _SpaceHierarchyRoomInfoTopicReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _SpaceHierarchyRoomInfoAvatarUrlStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _SpaceHierarchyRoomInfoJoinRuleStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _SpaceHierarchyRoomInfoViaServerNameReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _SpaceHierarchyListResultNextBatchReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
 class _SpaceRelationTargetTypeReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _SpaceRelationsRoomIdStrReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -41908,6 +42881,51 @@ class _TaskListDraftSendFuturePollReturn extends ffi.Struct {
 }
 
 class _TaskListUpdateBuilderSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceHierarchyRoomInfoGetAvatarFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceHierarchyListResultRoomsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceRelationsQueryHierarchyFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -44587,6 +45605,70 @@ class FfiListSpace extends Iterable<Space> implements CustomIterable<Space> {
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Space element) {
     _api._ffiListSpaceInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListSpaceHierarchyRoomInfo extends Iterable<SpaceHierarchyRoomInfo>
+    implements CustomIterable<SpaceHierarchyRoomInfo> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListSpaceHierarchyRoomInfo._(this._api, this._box);
+
+  @override
+  Iterator<SpaceHierarchyRoomInfo> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListSpaceHierarchyRoomInfoLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  SpaceHierarchyRoomInfo elementAt(int index) {
+    final address =
+        _api._ffiListSpaceHierarchyRoomInfoElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return SpaceHierarchyRoomInfo._(_api, reference);
+  }
+
+  SpaceHierarchyRoomInfo operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  SpaceHierarchyRoomInfo remove(int index) {
+    final address =
+        _api._ffiListSpaceHierarchyRoomInfoRemove(_box.borrow(), index);
+    final reference = _Box(_api, ffi.Pointer.fromAddress(address),
+        "drop_box_SpaceHierarchyRoomInfo");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return SpaceHierarchyRoomInfo._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(SpaceHierarchyRoomInfo element) {
+    _api._ffiListSpaceHierarchyRoomInfoAdd(
+        _box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, SpaceHierarchyRoomInfo element) {
+    _api._ffiListSpaceHierarchyRoomInfoInsert(
+        _box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

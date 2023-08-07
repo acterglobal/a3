@@ -5,23 +5,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ChatInputNotifier extends StateNotifier<ChatInputState> {
   ChatInputNotifier() : super(const ChatInputState());
 
-  void toggleReplyView() {
-    state = state.copyWith(showReplyView: !state.showReplyView);
-  }
+  void toggleReplyView(bool value) =>
+      state = state.copyWith(showReplyView: value);
 
-  void showSendBtn(bool value) {
-    state = state.copyWith(sendBtnVisible: value);
-  }
+  void showSendBtn(bool value) => state = state.copyWith(sendBtnVisible: value);
 
-  void toggleAttachment() {
-    state = state.copyWith(attachmentVisible: !state.attachmentVisible);
-  }
+  void toggleAttachment(bool value) =>
+      state = state.copyWith(attachmentVisible: value);
 
-  void emojiRowVisible() =>
-      state = state.copyWith(emojiRowVisible: !state.emojiRowVisible);
+  void emojiRowVisible(bool value) =>
+      state = state.copyWith(emojiRowVisible: value);
 
-  void emojiPickerVisible() =>
-      state = state.copyWith(emojiPickerVisible: !state.emojiPickerVisible);
+  void emojiPickerVisible(bool value) =>
+      state = state.copyWith(emojiPickerVisible: value);
 
   void setReplyWidget(Widget? child) {
     state = state.copyWith(replyWidget: child);

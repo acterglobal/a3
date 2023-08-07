@@ -2,7 +2,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/chat_theme.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/pages/profile_page.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/bubble_builder.dart';
@@ -19,8 +19,6 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
 class RoomPage extends ConsumerStatefulWidget {
   final Convo convo;
@@ -106,70 +104,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     );
   }
 
-  Widget customBottomWidget(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, child) {
-        final client = ref.watch(clientProvider)!;
-        final messageId =
-            ref.watch(chatRoomProvider.notifier).repliedToMessage?.id;
-        final bool isAuthor = client.userId().toString() == messageId;
-        if (!ref.watch(chatInputProvider.select((ci) => ci.emojiRowVisible))) {
-          return const CustomChatInput();
-        }
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          color: Theme.of(context).colorScheme.onPrimary,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              InkWell(
-                onTap: () {
-                  ref.read(chatInputProvider.notifier).emojiRowVisible();
-                  ref.read(chatInputProvider.notifier).toggleReplyView();
-                },
-                child: const Text(
-                  'Reply',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  if (isAuthor) {
-                    ref
-                        .read(chatRoomProvider.notifier)
-                        .redactRoomMessage(messageId!);
-                    ref.read(chatInputProvider.notifier).toggleReplyView();
-                  } else {
-                    customMsgSnackbar(
-                      context,
-                      'Report message isn\'t implemented yet',
-                    );
-                  }
-                },
-                child: Text(
-                  isAuthor ? 'Unsend' : 'Report',
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () => customMsgSnackbar(
-                  context,
-                  'More options not implemented yet',
-                ),
-                child: const Text(
-                  'More',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   Widget textMessageBuilder(
     types.TextMessage p1, {
     required int messageWidth,
@@ -235,12 +169,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           elevation: 1,
           centerTitle: true,
           toolbarHeight: 70,
-          leading: IconButton(
-            onPressed: () => context.canPop()
-                ? context.pop()
-                : context.goNamed(Routes.chat.name),
-            icon: const Icon(Atlas.arrow_left),
-          ),
           title: Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -312,32 +240,21 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                   final convoProfile = ref.watch(
                     chatProfileDataProvider(widget.convo),
                   );
+                  final roomId = widget.convo.getRoomIdStr();
                   return convoProfile.when(
                     data: (profile) => Padding(
                       padding: const EdgeInsets.only(right: 10),
-                      child: profile.hasAvatar()
-                          ? ActerAvatar(
-                              uniqueId: widget.convo.getRoomIdStr(),
-                              mode: DisplayMode.GroupChat,
-                              displayName: profile.displayName ??
-                                  widget.convo.getRoomIdStr(),
-                              avatar: profile.getAvatarImage(),
-                              size: 36,
-                            )
-                          : Container(
-                              height: 36,
-                              width: 36,
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color:
-                                    Theme.of(context).colorScheme.onSecondary,
-                                borderRadius: BorderRadius.circular(6),
-                                shape: BoxShape.rectangle,
-                              ),
-                              child: SvgPicture.asset(
-                                'assets/icon/acter.svg',
-                              ),
-                            ),
+                      child: SpaceParentBadge(
+                        spaceId: roomId,
+                        badgeSize: 20,
+                        child: ActerAvatar(
+                          uniqueId: roomId,
+                          mode: DisplayMode.GroupChat,
+                          displayName: profile.displayName ?? roomId,
+                          avatar: profile.getAvatarImage(),
+                          size: 36,
+                        ),
+                      ),
                     ),
                     error: (error, stackTrace) => Text(
                       'Failed to load avatar due to $error',
@@ -359,7 +276,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           ),
           error: (e) => Text('Failed to load messages due to $e'),
           loaded: () => Chat(
-            customBottomWidget: customBottomWidget(context),
+            customBottomWidget: const CustomChatInput(),
             textMessageBuilder: textMessageBuilder,
             l10n: ChatL10nEn(
               emptyChatPlaceholder: '',
@@ -408,9 +325,8 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               if (ref.watch(
                 chatInputProvider.select((ci) => ci.emojiRowVisible),
               )) {
-                ref.read(chatRoomProvider.notifier).repliedToMessage = null;
-                ref.read(chatInputProvider.notifier).emojiRowVisible();
-                ref.read(chatInputProvider.notifier).setReplyWidget(null);
+                ref.read(chatRoomProvider.notifier).currentMessageId = null;
+                ref.read(chatInputProvider.notifier).emojiRowVisible(false);
               }
             },
             //Custom Theme class, see lib/common/store/chatTheme.dart

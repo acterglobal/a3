@@ -78,7 +78,8 @@ pub use rsvp::{Rsvp, RsvpDraft, RsvpManager};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
-    RelationTargetType, Space, SpaceRelation, SpaceRelations,
+    RelationTargetType, Space, SpaceHierarchyListResult, SpaceHierarchyRoomInfo, SpaceRelation,
+    SpaceRelations,
 };
 pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{

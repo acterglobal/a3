@@ -8,8 +8,10 @@ use matrix_sdk::{
         },
         assign,
         events::{
-            macros::EventContent,
-            room::avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+            room::{
+                avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+                join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+            },
             space::{child::SpaceChildEventContent, parent::SpaceParentEventContent},
             InitialStateEvent,
         },
@@ -182,29 +184,6 @@ impl SpaceRelations {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(type = "m.space.child", kind = State, state_key_type = OwnedRoomId)]
-struct SpaceChildStateEventContent {
-    #[serde(default)]
-    suggested: bool,
-
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    order: Option<String>,
-
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    via: Vec<String>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(type = "m.space.parent", kind = State, state_key_type = OwnedRoomId)]
-struct SpaceParentStateEventContent {
-    #[serde(default)]
-    canonical: bool,
-
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    via: Vec<String>,
-}
-
 impl CoreClient {
     pub async fn create_acter_space(&self, settings: CreateSpaceSettings) -> Result<OwnedRoomId> {
         let client = self.client();
@@ -241,20 +220,33 @@ impl CoreClient {
                     blurhash: upload_resp.blurhash,
                     mimetype: Some(content_type.to_string()),
                 });
-                assign!(RoomAvatarEventContent::new(), {
-                    url: Some(upload_resp.content_uri),
-                    info: Some(Box::new(info)),
-                })
+                assign!(
+                    RoomAvatarEventContent::new(),
+                    {
+                        url: Some(upload_resp.content_uri),
+                        info: Some(Box::new(info)),
+                    }
+                )
             };
             initial_states.push(InitialRoomAvatarEvent::new(avatar_content).to_raw_any());
         };
 
         if let Some(parent) = parent {
+            let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
+              return Err(crate::Error::HomeserverMissesHostname);
+            };
             let parent_event = InitialStateEvent::<SpaceParentEventContent> {
-                content: SpaceParentEventContent::new(true),
-                state_key: parent,
+                content: assign!(SpaceParentEventContent::new(true), {
+                  via: Some(vec![homeserver]), }),
+                state_key: parent.clone(),
             };
             initial_states.push(parent_event.to_raw_any());
+            // if we have a parent, by default we allow access to the subspace.
+            let join_rule =
+                InitialRoomJoinRulesEvent::new(RoomJoinRulesEventContent::restricted(vec![
+                    AllowRule::room_membership(parent),
+                ]));
+            initial_states.push(join_rule.to_raw_any());
         };
 
         let request = assign!(CreateRoomRequest::new(), {
