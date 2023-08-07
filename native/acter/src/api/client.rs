@@ -756,7 +756,8 @@ impl Client {
                 .context("Room not found");
         }
 
-        let room_alias = OwnedRoomAliasId::try_from(room_id_or_alias.as_str()).expect("just checked");
+        let room_alias =
+            OwnedRoomAliasId::try_from(room_id_or_alias.as_str()).expect("just checked");
         self.room_by_alias_typed(&room_alias).await
     }
 
@@ -783,8 +784,7 @@ impl Client {
         }
         // nothing found, try remote:
         let response = self.core.client().resolve_room_alias(room_alias).await?;
-        self
-            .room_by_id_typed(&response.room_id)
+        self.room_by_id_typed(&response.room_id)
             .await
             .context("Room not found")
     }
