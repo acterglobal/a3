@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter/common/utils/logging.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/l10n/l10n.dart';
 import 'package:acter/router/providers/router_providers.dart';
@@ -36,6 +37,7 @@ Future<void> startAppInner() async {
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
   await initializeNotifications();
+  await initLogging();
   runApp(const ProviderScope(child: Acter()));
 }
 

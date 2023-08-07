@@ -768,6 +768,8 @@ object Convo {
 
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
+
+    fn is_joined() -> bool;
 }
 
 object CommentDraft {
@@ -1174,11 +1176,40 @@ object TaskListUpdateBuilder {
     fn send() -> Future<Result<EventId>>;
 }
 
+
 enum RelationTargetType {
     Unknown,
     ChatRoom,
     Space,
     ActerSpace
+}
+
+/// remote info
+object SpaceHierarchyRoomInfo {
+    fn name() -> Option<string>;
+    //fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
+    fn topic() -> Option<string>;
+    fn num_joined_members() -> u64;
+    fn world_readable() -> bool;
+    fn guest_can_join() -> bool;
+    fn is_space() -> bool;
+    fn avatar_url_str() -> Option<string>;
+    fn join_rule_str() -> string;
+    /// whether to have avatar
+    fn has_avatar() -> bool;
+
+    /// get the binary data of avatar
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
+    // recommended server to try to join via
+    fn via_server_name() -> Option<string>;
+}
+
+object SpaceHierarchyListResult {
+    /// to be used for the next `since`
+    fn next_batch() -> Option<string>;
+    /// get the chunk of items in this response
+    fn rooms() -> Future<Result<Vec<SpaceHierarchyRoomInfo>>>;
 }
 
 object SpaceRelation {
@@ -1193,12 +1224,16 @@ object SpaceRelation {
 }
 
 object SpaceRelations {
+    //fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
     /// do we have a canonical parent?!?
     fn main_parent() -> Option<SpaceRelation>;
     /// other parents we belong to
     fn other_parents() -> Vec<SpaceRelation>;
     /// children
     fn children() -> Vec<SpaceRelation>;
+    /// query for children from the server
+    fn query_hierarchy(from: Option<string>) -> Future<Result<SpaceHierarchyListResult>>;
 }
 
 object Space {
@@ -1222,6 +1257,8 @@ object Space {
 
     /// what is the description / topic
     fn topic() -> Option<string>;
+
+    fn is_joined() -> bool;
 
     /// set description / topic of the room
     fn set_topic(topic: string) -> Future<Result<EventId>>;
@@ -1427,7 +1464,6 @@ object PublicSearchResult {
     /// get the chunk of items in this response
     fn chunks() -> Vec<PublicSearchResultItem>;
 }
-
 
 object Notification {
     fn read() -> bool;

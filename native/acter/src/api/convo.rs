@@ -30,6 +30,9 @@ use matrix_sdk::{
     },
     Client as SdkClient, RoomMemberships,
 };
+use ruma::events::room::join_rules::{
+    AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent,
+};
 use std::{fs, ops::Deref, path::PathBuf, sync::Arc};
 use tokio::sync::Mutex;
 use tracing::{error, info};
@@ -483,11 +486,21 @@ impl Client {
                 }
 
                 if let Some(parent) = settings.parent {
+                    let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
+                      return Err(acter_core::Error::HomeserverMissesHostname)?;
+                    };
                     let parent_event = InitialStateEvent::<SpaceParentEventContent> {
-                        content: SpaceParentEventContent::new(true),
-                        state_key: parent,
+                        content:  assign!(SpaceParentEventContent::new(true), {
+                            via: Some(vec![homeserver]), }),
+                        state_key: parent.clone(),
                     };
                     initial_states.push(parent_event.to_raw_any());
+                    // if we have a parent, by default we allow access to the subspace.
+                    let join_rule =
+                        InitialRoomJoinRulesEvent::new(RoomJoinRulesEventContent::restricted(vec![
+                            AllowRule::room_membership(parent),
+                        ]));
+                    initial_states.push(join_rule.to_raw_any());
                 };
 
                 let request = assign!(CreateRoomRequest::new(), {
