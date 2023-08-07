@@ -23,7 +23,7 @@ pub struct Notification {
 
 impl Notification {
     pub(crate) async fn new(notification: RumaNotification, client: Client) -> Self {
-        let room = client.room_typed(&notification.room_id);
+        let room = client.room_by_id_typed(&notification.room_id).await;
         let (is_space, is_acter_space) = if let Some(room) = &room {
             if room.is_space() {
                 (true, room.is_acter_space().await)
