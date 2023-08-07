@@ -1290,9 +1290,6 @@ object Space {
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
 
-    /// whether or not this space has been marked as an 'acter' one
-    fn is_acter_space() -> Future<Result<bool>>;
-
     /// the Tasks lists of this Space
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
 
