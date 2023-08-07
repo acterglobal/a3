@@ -220,24 +220,22 @@ impl CoreClient {
                     blurhash: upload_resp.blurhash,
                     mimetype: Some(content_type.to_string()),
                 });
-                assign!(
-                    RoomAvatarEventContent::new(),
-                    {
-                        url: Some(upload_resp.content_uri),
-                        info: Some(Box::new(info)),
-                    }
-                )
+                assign!(RoomAvatarEventContent::new(), {
+                    url: Some(upload_resp.content_uri),
+                    info: Some(Box::new(info)),
+                })
             };
             initial_states.push(InitialRoomAvatarEvent::new(avatar_content).to_raw_any());
         };
 
         if let Some(parent) = parent {
             let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
-              return Err(crate::Error::HomeserverMissesHostname);
+                return Err(crate::Error::HomeserverMissesHostname);
             };
             let parent_event = InitialStateEvent::<SpaceParentEventContent> {
                 content: assign!(SpaceParentEventContent::new(true), {
-                  via: Some(vec![homeserver]), }),
+                    via: Some(vec![homeserver]),
+                }),
                 state_key: parent.clone(),
             };
             initial_states.push(parent_event.to_raw_any());
@@ -255,9 +253,9 @@ impl CoreClient {
             is_direct: false,
             invite: invites,
             room_alias_name: alias,
-            name: name,
-            visibility: visibility,
-            topic: topic,
+            name,
+            visibility,
+            topic,
         });
         let room = client.create_room(request).await?;
         Ok(room.room_id().to_owned())

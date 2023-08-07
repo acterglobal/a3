@@ -337,7 +337,7 @@ impl AttachmentsManager {
         };
         let mut builder = self.inner.draft_builder();
         let size = size.and_then(UInt::new);
-        let info = assign!(FileInfo::new(), {mimetype, size});
+        let info = assign!(FileInfo::new(), { mimetype, size });
         let mut file_content = FileMessageEventContent::plain(body, url.into());
         file_content.info = Some(Box::new(info));
         builder.content(AttachmentContent::File(file_content));

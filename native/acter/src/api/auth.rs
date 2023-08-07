@@ -3,7 +3,10 @@ use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     matrix_auth::{Session, SessionTokens},
     ruma::{
-        api::client::{account::register, session::login, uiaa},
+        api::client::{
+            account::register::{v3::Request as RegisterRequest, RegistrationKind},
+            uiaa::{AuthData, Dummy, RegistrationToken},
+        },
         assign, OwnedUserId,
     },
     Client as SdkClient, ClientBuilder, SessionMeta,
@@ -67,9 +70,10 @@ pub async fn guest_client(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            let mut request = register::v3::Request::new();
-            request.kind = register::RegistrationKind::Guest;
-            request.initial_device_display_name = device_name;
+            let request = assign!(RegisterRequest::new(), {
+                kind: RegistrationKind::Guest,
+                initial_device_display_name: device_name,
+            });
             let response = client.matrix_auth().register(request).await?;
             let device_id = response
                 .device_id
@@ -239,18 +243,14 @@ pub async fn register_under_config(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            if let Err(resp) = client
-                .matrix_auth()
-                .register(register::v3::Request::new())
-                .await
-            {
+            if let Err(resp) = client.matrix_auth().register(RegisterRequest::new()).await {
                 // FIXME: do actually check the registration types...
-                if let Some(_response) = resp.as_uiaa_response() {
-                    let request = assign!(register::v3::Request::new(), {
+                if let Some(_) = resp.as_uiaa_response() {
+                    let request = assign!(RegisterRequest::new(), {
                         username: Some(user_id.localpart().to_owned()),
                         password: Some(password.clone()),
                         initial_device_display_name: Some(user_agent.clone()),
-                        auth: Some(uiaa::AuthData::Dummy(uiaa::Dummy::new())),
+                        auth: Some(AuthData::Dummy(Dummy::new())),
                     });
                     client.matrix_auth().register(request).await?;
                 } else {
@@ -301,11 +301,11 @@ pub async fn register_with_token_under_config(
         .spawn(async move {
             let client = {
                 let client = config.build().await?;
-                let request = assign!(register::v3::Request::new(), {
+                let request = assign!(RegisterRequest::new(), {
                     username: Some(user_id.localpart().to_owned()),
                     password: Some(password.clone()),
                     initial_device_display_name: Some(user_agent.clone()),
-                    auth: Some(uiaa::AuthData::Dummy(uiaa::Dummy::new())),
+                    auth: Some(AuthData::Dummy(Dummy::new())),
                 });
 
                 if let Err(err) = client.matrix_auth().register(request).await {
@@ -316,16 +316,17 @@ pub async fn register_with_token_under_config(
                     info!("Acceptable auth flows: {response:?}");
 
                     // FIXME: do actually check the registration types...
-                    let token_request = assign!(register::v3::Request::new(), {
-                        auth: Some(uiaa::AuthData::RegistrationToken(
-                            assign!(uiaa::RegistrationToken::new(registration_token), {session: response.session.clone()}),
+                    let token_request = assign!(RegisterRequest::new(), {
+                        auth: Some(AuthData::RegistrationToken(
+                            assign!(RegistrationToken::new(registration_token), {
+                                session: response.session.clone(),
+                            }),
                         )),
                     });
                     client.matrix_auth().register(token_request).await?;
                 } // else all went well.
                 client
             };
-
 
             login_client(client, user_id, password, Some(user_agent)).await
         })
