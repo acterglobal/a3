@@ -5568,6 +5568,49 @@ class Api {
     return tmp7;
   }
 
+  bool? __spaceIsActerSpaceFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceIsActerSpaceFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   FfiListTaskList? __spaceTaskListsFuturePoll(
     int boxed,
     int postCobject,
@@ -15818,6 +15861,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _spaceIsActerSpacePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Space_is_acter_space");
+
+  late final _spaceIsActerSpace = _spaceIsActerSpacePtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _spaceTaskListsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -19588,6 +19641,21 @@ class Api {
   late final _spaceIsEncryptedFuturePoll =
       _spaceIsEncryptedFuturePollPtr.asFunction<
           _SpaceIsEncryptedFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _spaceIsActerSpaceFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceIsActerSpaceFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Space_is_acter_space_future_poll");
+
+  late final _spaceIsActerSpaceFuturePoll =
+      _spaceIsActerSpaceFuturePollPtr.asFunction<
+          _SpaceIsActerSpaceFuturePollReturn Function(
             int,
             int,
             int,
@@ -34154,6 +34222,21 @@ class Space {
     return tmp2;
   }
 
+  /// whether or not this space has been marked as an 'acter' one
+  Future<bool> isActerSpace() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceIsActerSpace(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Space_is_acter_space_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__spaceIsActerSpaceFuturePoll);
+    return tmp2;
+  }
+
   /// the Tasks lists of this Space
   Future<FfiListTaskList> taskLists() {
     var tmp0 = 0;
@@ -42722,6 +42805,21 @@ class _SpaceGetMyMembershipFuturePollReturn extends ffi.Struct {
 }
 
 class _SpaceIsEncryptedFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _SpaceIsActerSpaceFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
