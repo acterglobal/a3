@@ -743,34 +743,31 @@ impl Client {
     }
 
     pub async fn room(&self, room_id_or_alias: String) -> Result<Room> {
-        self.room_typed(OwnedRoomOrAliasId::try_from(room_id_or_alias)?.as_ref())
-            .await
+        let id_or_alias = OwnedRoomOrAliasId::try_from(room_id_or_alias).expect("just checked");
+        self.room_typed(&id_or_alias).await
     }
 
-    pub async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
+    pub(crate) async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
         if room_id_or_alias.is_room_id() {
+            let room_id = OwnedRoomId::try_from(room_id_or_alias.as_str()).expect("just checked");
             return self
-                .room_by_id_typed(
-                    &OwnedRoomId::try_from(room_id_or_alias.as_str()).expect("just checked"),
-                )
+                .room_by_id_typed(&room_id)
                 .await
                 .context("Room not found");
         }
 
-        self.room_by_alias_typed(
-            &OwnedRoomAliasId::try_from(room_id_or_alias.as_str()).expect("just checked"),
-        )
-        .await
+        let room_alias = OwnedRoomAliasId::try_from(room_id_or_alias.as_str()).expect("just checked");
+        self.room_by_alias_typed(&room_alias).await
     }
 
-    pub async fn room_by_id_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
+    pub(crate) async fn room_by_id_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
         self.core
             .client()
             .get_room(room_id)
             .map(|room| Room { room })
     }
 
-    pub async fn room_by_alias_typed(&self, room_alias: &OwnedRoomAliasId) -> Result<Room> {
+    pub(crate) async fn room_by_alias_typed(&self, room_alias: &OwnedRoomAliasId) -> Result<Room> {
         for r in self.core.client().rooms() {
             // looping locally first
             if let Some(con_alias) = r.canonical_alias() {
