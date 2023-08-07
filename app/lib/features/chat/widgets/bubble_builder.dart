@@ -434,12 +434,12 @@ class _OriginalMessageBuilder extends ConsumerWidget {
         isReply: true,
       );
     } else if (message.repliedMessage is types.ImageMessage) {
-      final imageMessage = message.repliedMessage as types.ImageMessage;
+      var imageMsg = message.repliedMessage as types.ImageMessage;
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: ImageMessageBuilder(
-          message: imageMessage,
-          messageWidth: imageMessage.size.toInt(),
+          message: imageMsg,
+          messageWidth: imageMsg.size.toInt(),
         ),
       );
     } else if (message.repliedMessage is types.FileMessage) {
