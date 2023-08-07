@@ -448,25 +448,18 @@ class _ReplyContentWidget extends StatelessWidget {
       );
     } else if (msg is TextMessage) {
       var textMsg = msg as TextMessage;
-      bool enlargeEmoji = false;
-      if (textMsg.metadata!.containsKey('enlargeEmoji')) {
-        enlargeEmoji = textMsg.metadata!['enlargeEmoji'];
-      }
       return Container(
-        alignment: Alignment.center,
-        constraints: const BoxConstraints(maxHeight: 120),
-        padding: const EdgeInsets.all(8),
-        child: enlargeEmoji
-            ? Text(textMsg.text, maxLines: 3, overflow: TextOverflow.ellipsis)
-            : Html(
-                // ignore: prefer_single_quotes, unnecessary_string_interpolations
-                data: """${textMsg.text}""",
-                defaultTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(overflow: TextOverflow.ellipsis),
-                maxLines: 3,
-              ),
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.2),
+        padding: const EdgeInsets.all(12),
+        child: Html(
+          data: textMsg.text,
+          defaultTextStyle: Theme.of(context)
+              .textTheme
+              .bodySmall!
+              .copyWith(overflow: TextOverflow.ellipsis),
+          maxLines: 3,
+        ),
       );
     }
     return messageWidget ?? const SizedBox.shrink();

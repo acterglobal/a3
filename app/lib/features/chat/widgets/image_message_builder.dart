@@ -46,7 +46,10 @@ class _ImageMessageBuilderConsumerState
         return ClipRRect(
           borderRadius: BorderRadius.circular(15),
           child: Container(
-            constraints: const BoxConstraints(maxHeight: 200, maxWidth: 200),
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.2,
+              maxWidth: MediaQuery.of(context).size.width * 0.2,
+            ),
             child: Image.memory(
               decodedImage!,
               errorBuilder: (

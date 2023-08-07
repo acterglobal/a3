@@ -148,8 +148,7 @@ class _TextWidget extends ConsumerWidget {
               maxLines: isReply ? 3 : null,
             )
           : Html(
-              // ignore: prefer_single_quotes, unnecessary_string_interpolations
-              data: """${message.text}""",
+              data: message.text,
               defaultTextStyle: Theme.of(context)
                   .textTheme
                   .bodySmall!
