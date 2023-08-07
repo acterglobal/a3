@@ -49,8 +49,6 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
               ),
             ),
           ],
-          //   ),
-          // ],
         ),
       ),
       actions: <Widget>[
@@ -176,100 +174,88 @@ class MyProfile extends ConsumerWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              Stack(
-                children: <Widget>[
-                  Wrap(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.fromLTRB(20, 15, 20, 0),
+              Container(
+                margin: const EdgeInsets.fromLTRB(20, 15, 20, 0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                width: double.infinity,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(25),
+                  child: const SizedBox(),
+                ),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width - 100,
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () => _handleAvatarUpload(
+                        account,
+                        context,
+                        ref,
+                      ),
+                      child: Container(
+                        margin: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(width: 5),
                         ),
-                        width: double.infinity,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(25),
-                          child: const SizedBox(),
-                        ),
-                      ),
-                      Positioned(
-                        left: 50,
-                        top: 40,
-                        child: Container(
-                          width: MediaQuery.of(context).size.width - 100,
-                          alignment: Alignment.center,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: () => _handleAvatarUpload(
-                                  account,
-                                  context,
-                                  ref,
-                                ),
-                                child: Container(
-                                  margin: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100),
-                                    border: Border.all(width: 5),
-                                  ),
-                                  child: ActerAvatar(
-                                    mode: DisplayMode.User,
-                                    uniqueId:
-                                        account.account.userId().toString(),
-                                    avatar: account.profile.getAvatarImage(),
-                                    displayName: account.profile.displayName,
-                                    size: 100,
-                                  ),
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(account.profile.displayName ?? ''),
-                                  IconButton(
-                                    iconSize: 14,
-                                    icon: const Icon(Atlas.pencil_edit_thin),
-                                    onPressed: () async {
-                                      await updateDisplayName(
-                                        account,
-                                        context,
-                                        ref,
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(account.account.userId().toString()),
-                                  IconButton(
-                                    iconSize: 14,
-                                    icon: const Icon(Atlas.pages),
-                                    onPressed: () async {
-                                      Clipboard.setData(
-                                        ClipboardData(
-                                          text: account.account
-                                              .userId()
-                                              .toString(),
-                                        ),
-                                      );
-                                      customMsgSnackbar(
-                                        context,
-                                        'Username copied to clipboard',
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                        child: ActerAvatar(
+                          mode: DisplayMode.User,
+                          uniqueId:
+                              account.account.userId().toString(),
+                          avatar: account.profile.getAvatarImage(),
+                          displayName: account.profile.displayName,
+                          size: 100,
                         ),
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(account.profile.displayName ?? ''),
+                        IconButton(
+                          iconSize: 14,
+                          icon: const Icon(Atlas.pencil_edit_thin),
+                          onPressed: () async {
+                            await updateDisplayName(
+                              account,
+                              context,
+                              ref,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(account.account.userId().toString()),
+                        IconButton(
+                          iconSize: 14,
+                          icon: const Icon(Atlas.pages),
+                          onPressed: () async {
+                            Clipboard.setData(
+                              ClipboardData(
+                                text: account.account
+                                    .userId()
+                                    .toString(),
+                              ),
+                            );
+                            customMsgSnackbar(
+                              context,
+                              'Username copied to clipboard',
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 25),
             ],
