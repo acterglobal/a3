@@ -543,8 +543,8 @@ impl Client {
                 let Ok(room) = me.room(room_id_or_alias).await else {
                     bail!("Neither roomId nor alias provided");
                 };
-                if room.is_acter_space().await {
-                    bail!("Not a regular convo but an acter space!");
+                if room.is_space() {
+                    bail!("Not a regular convo but an (acter) space!");
                 }
                 Ok(Convo::new(room))
             })
