@@ -407,18 +407,18 @@ impl NewsEntryDraft {
                     anyhow::Ok(ImageMessageEventContent::plain(
                         body,
                         upload_resp.content_uri,
-                        None,
                     ))
                 }
             })
             .await??;
-        image_content.info = Some(Box::new(assign!(ImageInfo::new(), {
+        let info = assign!(ImageInfo::new(), {
             height: height.and_then(UInt::new),
             width: width.and_then(UInt::new),
             mimetype: Some(mimetype),
             size: size.and_then(UInt::new),
             blurhash,
-        })));
+        });
+        image_content.info = Some(Box::new(info));
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
@@ -439,17 +439,12 @@ impl NewsEntryDraft {
         mimetype: Option<String>,
         size: Option<u64>,
     ) -> &mut Self {
-        let info = assign!(AudioInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            mimetype,
-            size: size.and_then(UInt::new),
-        });
         let url = Box::<MxcUri>::from(url.as_str());
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_audio(body, (*url).to_owned(), Some(Box::new(info))),
+            inner: news::NewsSlide::new_audio(body, (*url).to_owned()),
         });
         self
     }
@@ -466,20 +461,12 @@ impl NewsEntryDraft {
         size: Option<u64>,
         blurhash: Option<String>,
     ) -> &mut Self {
-        let info = assign!(VideoInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            mimetype,
-            size: size.and_then(UInt::new),
-            blurhash,
-        });
         let url = Box::<MxcUri>::from(url.as_str());
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_video(body, (*url).to_owned(), Some(Box::new(info))),
+            inner: news::NewsSlide::new_video(body, (*url).to_owned()),
         });
         self
     }
@@ -491,16 +478,12 @@ impl NewsEntryDraft {
         mimetype: Option<String>,
         size: Option<u64>,
     ) -> &mut Self {
-        let info = assign!(FileInfo::new(), {
-            mimetype,
-            size: size.and_then(UInt::new),
-        });
         let url = Box::<MxcUri>::from(url.as_str());
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_file(body, (*url).to_owned(), Some(Box::new(info))),
+            inner: news::NewsSlide::new_file(body, (*url).to_owned()),
         });
         self
     }

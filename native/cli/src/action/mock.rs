@@ -125,6 +125,7 @@ impl<'a> Mock<'a> {
             }
         }
     }
+
     pub fn new(opts: &'a MockOpts) -> Result<Self> {
         Ok(Mock {
             opts,
@@ -144,6 +145,7 @@ impl<'a> Mock<'a> {
             self.client("odo".to_owned()).await.unwrap(),
         ]
     }
+
     async fn civilians(&mut self) -> [Client; 4] {
         [
             self.client("quark".to_owned()).await.unwrap(),
@@ -315,16 +317,16 @@ impl<'a> Mock<'a> {
 
             let cloned_odo = odo.clone();
             let Some(odo_ops) = wait_for(move || {
-                    let cloned_odo = cloned_odo.clone();
-                    let alias = alias.clone();
-                    async move {
-                        println!("tasks get_space {alias}");
-                        let space = cloned_odo.get_space(alias).await?;
-                        Ok(Some(space))
-                    }
-                }).await? else {
-                    bail!("Odo couldn't be found in Ops");
-                };
+                let cloned_odo = cloned_odo.clone();
+                let alias = alias.clone();
+                async move {
+                    println!("tasks get_space {alias}");
+                    let space = cloned_odo.get_space(alias).await?;
+                    Ok(Some(space))
+                }
+            }).await? else {
+                bail!("Odo couldn't be found in Ops");
+            };
             let mut draft = odo_ops.task_list_draft()?;
 
             let task_list_id = draft

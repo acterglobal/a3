@@ -18,6 +18,7 @@ use matrix_sdk::{
             room::{
                 avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
                 encrypted::OriginalSyncRoomEncryptedEvent,
+                join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
                 member::{MembershipState, OriginalSyncRoomMemberEvent},
                 message::OriginalSyncRoomMessageEvent,
                 redaction::SyncRoomRedactionEvent,
@@ -29,9 +30,6 @@ use matrix_sdk::{
         MxcUri, OwnedRoomId, OwnedUserId, RoomId, UserId,
     },
     Client as SdkClient, RoomMemberships,
-};
-use ruma::events::room::join_rules::{
-    AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent,
 };
 use std::{fs, ops::Deref, path::PathBuf, sync::Arc};
 use tokio::sync::Mutex;
@@ -491,7 +489,8 @@ impl Client {
                     };
                     let parent_event = InitialStateEvent::<SpaceParentEventContent> {
                         content:  assign!(SpaceParentEventContent::new(true), {
-                            via: Some(vec![homeserver]), }),
+                            via: Some(vec![homeserver]),
+                        }),
                         state_key: parent.clone(),
                     };
                     initial_states.push(parent_event.to_raw_any());
@@ -536,15 +535,15 @@ impl Client {
         })
     }
 
-    pub async fn convo(&self, name_or_id: String) -> Result<Convo> {
+    pub async fn convo(&self, room_id_or_alias: String) -> Result<Convo> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let Ok(room) = me.room(name_or_id) else {
+                let Ok(room) = me.room(room_id_or_alias).await else {
                     bail!("Neither roomId nor alias provided");
                 };
-                if room.is_acter_space().await {
-                    bail!("Not a regular convo but an acter space!");
+                if room.is_space() {
+                    bail!("Not a regular convo but an (acter) space!");
                 }
                 Ok(Convo::new(room))
             })

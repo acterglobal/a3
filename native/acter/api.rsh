@@ -456,14 +456,14 @@ object RoomEventItem {
     fn reaction_keys() -> Vec<string>;
 
     /// the details that users reacted using this emote key in this message
-    fn reaction_desc(key: string) -> Option<ReactionDesc>;
+    fn reaction_items(key: string) -> Option<Vec<ReactionItem>>;
 
     /// Whether this message is editable
     fn is_editable() -> bool;
 }
 
 object RoomVirtualItem {
-    /// one of DayDivider/LoadingIndicator/ReadMarker/TimelineStart
+    /// DayDivider or ReadMarker
     fn event_type() -> string;
 
     /// contains description text
@@ -588,12 +588,12 @@ object FileDesc {
     fn thumbnail_source() -> Option<MediaSource>;
 }
 
-object ReactionDesc {
-    /// how many times this key was clicked
-    fn count() -> u32;
+object ReactionItem {
+    /// who sent reaction
+    fn sender_id() -> UserId;
 
-    /// which users selected this key
-    fn senders() -> Vec<string>;
+    /// when reaction was sent
+    fn timestamp() -> u64;
 }
 
 object TimelineDiff {
@@ -618,7 +618,7 @@ object TimelineStream {
     /// Fires whenever new event arrived
     fn next() -> Future<Result<RoomMessage>>;
 
-    /// Get the next count messages backwards,
+    /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
     /// modify the room message
@@ -1576,7 +1576,7 @@ object Client {
     fn user_id() -> Result<UserId>;
 
     /// get convo room
-    fn convo(room_or_id: string) -> Future<Result<Convo>>;
+    fn convo(room_id_or_alias: string) -> Future<Result<Convo>>;
 
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Result<UserProfile>;
@@ -1602,9 +1602,8 @@ object Client {
     /// search the public directory for spaces
     fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
 
-    /// Get the following space the user is part of by
-    /// roomId or room alias;
-    fn get_space(id_or_alias: string) -> Future<Result<Space>>;
+    /// Get the space that user belongs to
+    fn get_space(room_id_or_alias: string) -> Future<Result<Space>>;
 
     /// Get the Pinned Links for the client
     fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
