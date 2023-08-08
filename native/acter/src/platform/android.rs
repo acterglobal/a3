@@ -8,10 +8,10 @@ use super::native;
 
 pub async fn new_client_config(
     base_path: String,
-    home: String,
+    home_dir: String,
     reset_if_existing: bool,
 ) -> Result<ClientBuilder> {
-    let builder = native::new_client_config(base_path, home, reset_if_existing)
+    let builder = native::new_client_config(base_path, home_dir, reset_if_existing)
         .await?
         .user_agent(format!("acter-android/{:}", env!("CARGO_PKG_VERSION")));
     Ok(builder)

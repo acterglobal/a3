@@ -23,6 +23,9 @@ pub enum Error {
     #[error("Index not found.")]
     IndexNotFound,
 
+    #[error("Your Homeserver doesn't have a hostname, that is required for this action.")]
+    HomeserverMissesHostname,
+
     #[error("Model {0:?} unknown")]
     UnknownModel(Option<String>),
 

@@ -74,10 +74,8 @@ class EventsCalendar extends ConsumerWidget {
                   // onDaySelected: _onDaySelected,
                   // onRangeSelected: _onRangeSelected,
                   // onFormatChanged: (format) {
-                  //   if (_calendarFormat != format) {
-                  //     setState(() {
-                  //       _calendarFormat = format;
-                  //     });
+                  //   if (_calendarFormat != format && mounted) {
+                  //     setState(() => _calendarFormat = format);
                   //   }
                   // },
                   onPageChanged: (focusedDay) {

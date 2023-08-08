@@ -1,13 +1,25 @@
-import 'package:acter/features/chat/models/joined_room/joined_room.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Convo;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'chat_list_state.freezed.dart';
 
-@Freezed(makeCollectionsUnmodifiable: false)
+///Extension Method for easy comparison
+extension ChatListStateGetters on ChatListState {
+  bool get isLoading => this is _ChatListStateLoading;
+}
+
+@freezed
 class ChatListState with _$ChatListState {
-  const factory ChatListState({
-    @Default(false) bool showSearch,
-    @Default([]) List<JoinedRoom> searchData,
-    @Default(false) bool initialLoaded,
-  }) = _ChatListState;
+  ///Initial
+  const factory ChatListState.initial() = _ChatListStateInitial;
+
+  ///Loading
+  const factory ChatListState.loading() = _ChatListStateLoading;
+
+  ///Data
+  const factory ChatListState.data({required List<Convo> chats}) =
+      _ChatListStateData;
+
+  ///Error
+  const factory ChatListState.error([String? error]) = _ChatListStateError;
 }

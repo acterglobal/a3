@@ -1,241 +1,357 @@
-import 'dart:convert';
-
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
-class CustomChatInput extends StatelessWidget {
+class CustomChatInput extends ConsumerWidget {
   static const List<Icon> _attachmentIcons = [
     Icon(Atlas.camera_photo),
     Icon(Atlas.folder),
     Icon(Atlas.location),
   ];
-  final ChatRoomController roomController;
-  final Function()? onButtonPressed;
-  final bool isChatScreen;
-  final String roomName;
 
   const CustomChatInput({
     Key? key,
-    required this.roomController,
-    required this.isChatScreen,
-    this.onButtonPressed,
-    required this.roomName,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
+    final chatInputState = ref.watch(chatInputProvider);
+    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
+    final repliedToMessage =
+        ref.watch(chatRoomProvider.notifier).repliedToMessage;
+    final isAuthor = ref.watch(chatRoomProvider.notifier).isAuthor();
     Size size = MediaQuery.of(context).size;
     return Column(
       children: [
-        GetBuilder<ChatRoomController>(
-          id: 'chat-input',
-          builder: (ChatRoomController controller) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Visibility(
-                  visible: controller.showReplyView,
-                  child: Container(
-                    color: Theme.of(context).colorScheme.neutral,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 12.0,
-                        left: 16.0,
-                        right: 16.0,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  controller.isAuthor()
-                                      ? 'Replying to you'
-                                      : 'Replying to ${toBeginningOfSentenceCase(controller.repliedToMessage?.author.firstName)}',
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                if (controller.repliedToMessage != null &&
-                                    controller.replyMessageWidget != null)
-                                  _ReplyContentWidget(
-                                    msg: controller.repliedToMessage,
-                                    messageWidget:
-                                        controller.replyMessageWidget,
-                                  ),
-                              ],
+        Visibility(
+          visible:
+              ref.watch(chatInputProvider.select((ci) => ci.showReplyView)),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 12.0,
+                left: 16.0,
+                right: 16.0,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  repliedToMessage != null
+                      ? Row(
+                          children: [
+                            ActerAvatar(
+                              uniqueId: repliedToMessage.author.id,
+                              mode: DisplayMode.User,
+                              displayName: repliedToMessage.author.firstName,
+                              avatar: ref
+                                  .watch(chatRoomProvider.notifier)
+                                  .getUserProfile(
+                                    repliedToMessage.author.id,
+                                  )
+                                  ?.getAvatarImage(),
+                              size: ref
+                                          .watch(chatRoomProvider.notifier)
+                                          .getUserProfile(
+                                            repliedToMessage.author.id,
+                                          )!
+                                          .getAvatarImage() ==
+                                      null
+                                  ? 24
+                                  : 12,
                             ),
-                          ),
-                          Flexible(
-                            flex: 2,
-                            child: GestureDetector(
+                            const SizedBox(width: 5),
+                            Text(
+                              'Reply to ${toBeginningOfSentenceCase(repliedToMessage.author.id)}',
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            ),
+                            const Spacer(),
+                            GestureDetector(
                               onTap: () {
-                                controller.showReplyView = false;
-                                controller.replyMessageWidget = null;
-                                controller.update(['chat-input']);
+                                chatInputNotifier.toggleReplyView(false);
+                                chatInputNotifier.setReplyWidget(null);
                               },
                               child: const Icon(
                                 Atlas.xmark_circle,
                                 color: Colors.white,
                               ),
                             ),
-                          )
-                        ],
-                      ),
+                          ],
+                        )
+                      : const SizedBox.shrink(),
+                  if (repliedToMessage != null &&
+                      chatInputState.replyWidget != null)
+                    _ReplyContentWidget(
+                      msg: repliedToMessage,
+                      messageWidget: chatInputState.replyWidget,
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Visibility(
+          visible: !chatInputState.emojiRowVisible,
+          replacement: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            color: Theme.of(context).colorScheme.onPrimary,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                InkWell(
+                  onTap: () {
+                    if (isAuthor) {
+                      popUpDialog(
+                        context: context,
+                        title: const Text(
+                          'Are you sure you want to delete this message? This action cannot be undone.',
+                        ),
+                        btnText: 'No',
+                        btn2Text: 'Yes',
+                        btn2Color: Theme.of(context).colorScheme.onError,
+                        onPressedBtn: () => context.pop(),
+                        onPressedBtn2: () async {
+                          final messageId = ref
+                              .read(chatRoomProvider.notifier)
+                              .currentMessageId;
+                          if (messageId != null) {
+                            try {
+                              await chatRoomNotifier
+                                  .redactRoomMessage(messageId);
+                              chatInputNotifier.emojiRowVisible(false);
+                              chatRoomNotifier.currentMessageId = null;
+                              if (context.mounted) {
+                                context.pop();
+                              }
+                            } catch (e) {
+                              context.pop();
+                              customMsgSnackbar(
+                                context,
+                                e.toString(),
+                              );
+                            }
+                          } else {
+                            debugPrint(messageId);
+                          }
+                        },
+                      );
+                    } else {
+                      customMsgSnackbar(
+                        context,
+                        'Report message isn\'t implemented yet',
+                      );
+                    }
+                  },
+                  child: Text(
+                    isAuthor ? 'Unsend' : 'Report',
+                    style: const TextStyle(
+                      color: Colors.white,
                     ),
                   ),
                 ),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          if (isChatScreen)
-                            _BuildAttachmentBtn(controller: controller),
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: _TextInputWidget(
-                                isChatScreen: isChatScreen,
-                                roomName: roomName,
-                                controller: controller,
-                              ),
-                            ),
-                          ),
-                          if (controller.isSendButtonVisible || !isChatScreen)
-                            _BuildSendBtn(onButtonPressed: onButtonPressed),
-                          if (!controller.isSendButtonVisible && isChatScreen)
-                            _BuildImageBtn(
-                              roomName: roomName,
-                              controller: controller,
-                            ),
-                          if (!controller.isSendButtonVisible && isChatScreen)
-                            const SizedBox(width: 10),
-                          if (!controller.isSendButtonVisible && isChatScreen)
-                            const _BuildAudioBtn(),
-                        ],
-                      ),
-                    ),
+                InkWell(
+                  onTap: () => customMsgSnackbar(
+                    context,
+                    'More options not implemented yet',
+                  ),
+                  child: const Text(
+                    'More',
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ],
-            );
-          },
+            ),
+          ),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            color: Theme.of(context).colorScheme.onPrimary,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const _BuildAttachmentBtn(),
+                    const Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: _TextInputWidget(),
+                      ),
+                    ),
+                    if (chatInputState.sendBtnVisible)
+                      _BuildSendBtn(
+                        onButtonPressed: () => onSendButtonPressed(ref),
+                      ),
+                    if (!chatInputState.sendBtnVisible) _BuildImageBtn(),
+                    if (!chatInputState.sendBtnVisible)
+                      const SizedBox(width: 10),
+                    if (!chatInputState.sendBtnVisible) const _BuildAudioBtn(),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
         EmojiPickerWidget(
           size: size,
-          controller: roomController,
         ),
         AttachmentWidget(
-          controller: roomController,
-          icons: _attachmentIcons,
-          roomName: roomName,
+          icons: CustomChatInput._attachmentIcons,
           size: size,
         ),
       ],
     );
   }
+
+  Future<void> onSendButtonPressed(WidgetRef ref) async {
+    final chatInputNotifier = ref.read(chatInputProvider.notifier);
+    chatInputNotifier.showSendBtn(false);
+    String markdownText =
+        ref.read(mentionKeyProvider).currentState!.controller!.text;
+    int messageLength = markdownText.length;
+    ref.read(messageMarkDownProvider).forEach((key, value) {
+      markdownText = markdownText.replaceAll(key, value);
+    });
+    await ref.read(chatRoomProvider.notifier).handleSendPressed(
+          markdownText,
+          messageLength,
+        );
+    ref.read(messageMarkDownProvider.notifier).update((state) => {});
+    ref.read(mentionKeyProvider).currentState!.controller!.clear();
+  }
 }
 
-class _BuildAttachmentBtn extends StatelessWidget {
-  const _BuildAttachmentBtn({required this.controller});
-
-  final ChatRoomController controller;
+class _BuildAttachmentBtn extends ConsumerWidget {
+  const _BuildAttachmentBtn();
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final inputNotifier = ref.watch(chatInputProvider.notifier);
+    final chatInputState = ref.watch(chatInputProvider);
+    final chatInputFocus = ref.watch(chatInputFocusProvider);
     return InkWell(
       onTap: () {
-        controller.isEmojiVisible.value = false;
-        controller.isAttachmentVisible.value =
-            !controller.isAttachmentVisible.value;
-        controller.focusNode.unfocus();
-        controller.focusNode.canRequestFocus = true;
+        chatInputState.attachmentVisible
+            ? inputNotifier.toggleAttachment(false)
+            : inputNotifier.toggleAttachment(true);
+        chatInputFocus.unfocus();
+        chatInputFocus.canRequestFocus = true;
       },
-      child: _BuildPlusBtn(controller: controller),
+      child: const _BuildPlusBtn(),
     );
   }
 }
 
-class _BuildPlusBtn extends StatelessWidget {
-  const _BuildPlusBtn({required this.controller});
-
-  final ChatRoomController controller;
+class _BuildPlusBtn extends ConsumerWidget {
+  const _BuildPlusBtn();
 
   @override
-  Widget build(BuildContext context) {
-    return Obx(
-      () => Visibility(
-        visible: controller.isAttachmentVisible.value,
-        replacement: const Icon(Atlas.plus_circle),
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: const Icon(Atlas.xmark_circle),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final chatInputState = ref.watch(chatInputProvider);
+    return Visibility(
+      visible: chatInputState.attachmentVisible,
+      replacement: const Icon(Atlas.plus_circle),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
         ),
+        child: const Icon(Atlas.xmark_circle),
       ),
     );
   }
 }
 
-class _TextInputWidget extends StatelessWidget {
-  const _TextInputWidget({
-    required this.controller,
-    required this.isChatScreen,
-    required this.roomName,
-  });
-  final ChatRoomController controller;
-  final bool isChatScreen;
-  final String roomName;
+class _TextInputWidget extends ConsumerStatefulWidget {
+  const _TextInputWidget();
+
+  @override
+  ConsumerState<_TextInputWidget> createState() =>
+      _TextInputWidgetConsumerState();
+}
+
+class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
+  Future<void> onSendButtonPressed(WidgetRef ref) async {
+    final chatInputNotifier = ref.read(chatInputProvider.notifier);
+    chatInputNotifier.showSendBtn(false);
+    String markdownText =
+        ref.read(mentionKeyProvider).currentState!.controller!.text;
+    int messageLength = markdownText.length;
+    ref.read(messageMarkDownProvider).forEach((key, value) {
+      markdownText = markdownText.replaceAll(key, value);
+    });
+    await ref.read(chatRoomProvider.notifier).handleSendPressed(
+          markdownText,
+          messageLength,
+        );
+    ref.read(messageMarkDownProvider.notifier).update((state) => {});
+    ref.read(mentionKeyProvider).currentState!.controller!.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final mentionList = ref.watch(mentionListProvider);
+    final mentionKey = ref.watch(mentionKeyProvider);
+    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
+    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
+    final chatInputState = ref.watch(chatInputProvider);
     return FlutterMentions(
-      key: controller.mentionKey,
+      key: mentionKey,
       suggestionPosition: SuggestionPosition.Top,
       onMentionAdd: (Map<String, dynamic> roomMember) {
-        _handleMentionAdd(controller, roomMember);
+        _handleMentionAdd(roomMember, ref);
       },
-      onChanged: (String value) {
-        controller.sendButtonUpdate();
-        controller.typingNotice(true);
+      suggestionListDecoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.neutral2,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      onChanged: (String value) async {
+        if (!ref.read(chatInputFocusProvider).hasFocus) {
+          ref.read(chatInputFocusProvider).requestFocus();
+        }
+        if (value.isNotEmpty) {
+          chatInputNotifier.showSendBtn(true);
+          await chatRoomNotifier.typingNotice(true);
+        } else {
+          chatInputNotifier.showSendBtn(false);
+          await chatRoomNotifier.typingNotice(false);
+        }
       },
       style: Theme.of(context).textTheme.bodySmall,
       cursorColor: Theme.of(context).colorScheme.tertiary,
       maxLines:
           MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
       minLines: 1,
-      focusNode: controller.focusNode,
+      focusNode: ref.watch(chatInputFocusProvider),
       decoration: InputDecoration(
         isCollapsed: true,
+        fillColor: Theme.of(context).colorScheme.primaryContainer,
         suffixIcon: InkWell(
-          onTap: () {
-            controller.isAttachmentVisible.value = false;
-            controller.isEmojiVisible.value = !controller.isEmojiVisible.value;
-            controller.focusNode.unfocus();
-            controller.focusNode.canRequestFocus = true;
-          },
+          onTap: () => chatInputState.emojiPickerVisible
+              ? chatInputNotifier.emojiPickerVisible(false)
+              : chatInputNotifier.emojiPickerVisible(true),
           child: const Icon(Icons.emoji_emotions),
         ),
         border: OutlineInputBorder(
@@ -247,41 +363,51 @@ class _TextInputWidget extends StatelessWidget {
           borderSide: const BorderSide(width: 0, style: BorderStyle.none),
         ),
         filled: true,
-        hintText: isChatScreen
-            ? AppLocalizations.of(context)!.newMessage
-            : '${AppLocalizations.of(context)!.messageTo} $roomName',
+        hintText: AppLocalizations.of(context)!.newMessage,
         contentPadding: const EdgeInsets.all(15),
         hintMaxLines: 1,
       ),
       mentions: [
         Mention(
           trigger: '@',
-          data: controller.mentionList,
-          matchAll: false,
+          style: TextStyle(
+            height: 0.5,
+            background: Paint()
+              ..color = Theme.of(context).colorScheme.neutral2
+              ..strokeWidth = 13
+              ..strokeJoin = StrokeJoin.round
+              ..style = PaintingStyle.stroke,
+          ),
+          data: mentionList,
+          matchAll: true,
           suggestionBuilder: (Map<String, dynamic> roomMember) {
-            String title = roomMember.containsKey('display')
-                ? roomMember['display']
-                : simplifyUserId(roomMember['link']);
-            return Container(
-              color: Theme.of(context).colorScheme.neutral2,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: ListTile(
-                contentPadding: const EdgeInsets.only(left: 50),
-                leading: SizedBox(
-                  width: 35,
-                  height: 35,
-                  child: ActerAvatar(
-                    mode: DisplayMode.User,
-                    uniqueId: roomMember['link'],
-                    size: 20,
-                    avatar: roomMember['avatar'],
-                    displayName: roomMember['display'],
+            String title = roomMember['display'] ?? roomMember['link'];
+            return ListTile(
+              leading: SizedBox(
+                width: 35,
+                height: 35,
+                child: ActerAvatar(
+                  mode: DisplayMode.User,
+                  uniqueId: roomMember['link'],
+                  size: 20,
+                  avatar: roomMember['avatar'],
+                  displayName: roomMember['display'],
+                ),
+              ),
+              title: Row(
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
-                ),
-                title: Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+                  const SizedBox(width: 15),
+                  Text(
+                    roomMember['link'],
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color: Theme.of(context).colorScheme.neutral5,
+                        ),
+                  ),
+                ],
               ),
             );
           },
@@ -290,19 +416,11 @@ class _TextInputWidget extends StatelessWidget {
     );
   }
 
-  void _handleMentionAdd(
-    ChatRoomController controller,
-    Map<String, dynamic> roomMember,
-  ) {
+  void _handleMentionAdd(Map<String, dynamic> roomMember, WidgetRef ref) {
     String userId = roomMember['link'];
-    String displayName = roomMember.containsKey('display')
-        ? roomMember['display']
-        : simplifyUserId(roomMember['link']);
-    controller.messageTextMapMarkDown.addAll({
+    String displayName = roomMember['display'] ?? userId;
+    ref.read(messageMarkDownProvider).addAll({
       '@$displayName': '[$displayName](https://matrix.to/#/$userId)',
-    });
-    controller.messageTextMapHtml.addAll({
-      '@$displayName': '<a href="https://matrix.to/#/$userId">$displayName</a>',
     });
   }
 }
@@ -318,129 +436,130 @@ class _ReplyContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (msg is TextMessage) {
-      return messageWidget!;
-    } else if (msg is ImageMessage) {
+    if (msg is ImageMessage) {
+      var imageMsg = msg as ImageMessage;
       return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 100, maxWidth: 125),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(6.33),
-            child: Image.memory(
-              base64Decode(msg?.metadata?['base64']),
-              fit: BoxFit.fill,
-              cacheWidth: 125,
-            ),
-          ),
+        child: ImageMessageBuilder(
+          message: imageMsg,
+          messageWidth: imageMsg.size.toInt(),
+          isReplyContent: true,
         ),
       );
-    } else if (msg is FileMessage) {
-      return messageWidget!;
-    } else if (msg is CustomMessage) {
-      return messageWidget!;
-    } else {
-      return const SizedBox.shrink();
+    } else if (msg is TextMessage) {
+      var textMsg = msg as TextMessage;
+      return Container(
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.2),
+        padding: const EdgeInsets.all(12),
+        child: Html(
+          data: textMsg.text,
+          defaultTextStyle: Theme.of(context)
+              .textTheme
+              .bodySmall!
+              .copyWith(overflow: TextOverflow.ellipsis),
+          maxLines: 3,
+        ),
+      );
     }
+    return messageWidget ?? const SizedBox.shrink();
   }
 }
 
-class AttachmentWidget extends StatelessWidget {
-  final ChatRoomController controller;
+class AttachmentWidget extends ConsumerWidget {
   final List<Icon> icons;
-  final String roomName;
   final Size size;
 
   const AttachmentWidget({
     Key? key,
-    required this.controller,
     required this.icons,
-    required this.roomName,
     required this.size,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Obx(
-      () => Offstage(
-        offstage: !controller.isAttachmentVisible.value,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          width: double.infinity,
-          height: size.height * 0.3,
-          child: Column(
-            children: <Widget>[
-              Container(
-                width: double.infinity,
-                height: size.height * 0.172,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: const _BuildSettingBtn(),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final chatInputState = ref.watch(chatInputProvider);
+    return Offstage(
+      offstage: !chatInputState.attachmentVisible,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        width: double.infinity,
+        height: size.height * 0.3,
+        child: Column(
+          children: <Widget>[
+            Container(
+              width: double.infinity,
+              height: size.height * 0.172,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
               ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      InkWell(
-                        onTap: () {
-                          controller.isAttachmentVisible.value = false;
-                          controller.handleMultipleImageSelection(
-                            context,
-                            roomName,
-                          );
-                        },
-                        child: const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Atlas.camera),
-                            SizedBox(height: 6),
-                            Text(
-                              'Camera',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
+              child: const _BuildSettingBtn(),
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    InkWell(
+                      onTap: () => onClickCamera(context, ref),
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Atlas.camera),
+                          SizedBox(height: 6),
+                          Text(
+                            'Camera',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
                       ),
-                      InkWell(
-                        onTap: () {
-                          controller.handleFileSelection(context);
-                        },
-                        child: const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Atlas.folder),
-                            SizedBox(height: 6),
-                            Text('File', style: TextStyle(color: Colors.white)),
-                          ],
-                        ),
+                    ),
+                    InkWell(
+                      onTap: () => onClickFile(context, ref),
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Atlas.folder),
+                          SizedBox(height: 6),
+                          Text(
+                            'File',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
                       ),
-                      InkWell(
-                        onTap: () {},
-                        child: const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Atlas.location),
-                            SizedBox(height: 6),
-                            Text(
-                              'Location',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
+                    ),
+                    InkWell(
+                      onTap: () => onClickLocation(context, ref),
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Atlas.location),
+                          SizedBox(height: 6),
+                          Text(
+                            'Location',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
+
+  void onClickCamera(BuildContext context, WidgetRef ref) =>
+      ref.read(chatRoomProvider.notifier).handleMultipleImageSelection(context);
+
+  void onClickFile(BuildContext context, WidgetRef ref) =>
+      ref.read(chatRoomProvider.notifier).handleFileSelection(context);
+
+  void onClickLocation(BuildContext context, WidgetRef ref) {}
 }
 
 class _BuildAudioBtn extends StatelessWidget {
@@ -452,23 +571,17 @@ class _BuildAudioBtn extends StatelessWidget {
   }
 }
 
-class _BuildImageBtn extends StatelessWidget {
-  const _BuildImageBtn({
-    required this.controller,
-    required this.roomName,
-  });
-
-  final String roomName;
-  final ChatRoomController controller;
+class _BuildImageBtn extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
-      onTap: () {
-        controller.handleMultipleImageSelection(context, roomName);
-      },
+      onTap: () => onClick(context, ref),
       child: const Icon(Atlas.camera_photo),
     );
   }
+
+  void onClick(BuildContext context, WidgetRef ref) =>
+      ref.read(chatRoomProvider.notifier).handleMultipleImageSelection(context);
 }
 
 class _BuildSettingBtn extends StatelessWidget {
@@ -496,11 +609,11 @@ class _BuildSettingBtn extends StatelessWidget {
 }
 
 class _BuildSendBtn extends StatelessWidget {
+  final Function()? onButtonPressed;
+
   const _BuildSendBtn({
     required this.onButtonPressed,
   });
-
-  final Function()? onButtonPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -511,25 +624,34 @@ class _BuildSendBtn extends StatelessWidget {
   }
 }
 
-class EmojiPickerWidget extends StatelessWidget {
-  final ChatRoomController controller;
+class EmojiPickerWidget extends ConsumerStatefulWidget {
   final Size size;
+
   const EmojiPickerWidget({
     Key? key,
     required this.size,
-    required this.controller,
   }) : super(key: key);
 
   @override
+  ConsumerState<EmojiPickerWidget> createState() =>
+      _EmojiPickerWidgetConsumerState();
+}
+
+class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
+  @override
   Widget build(BuildContext context) {
+    final chatInputState = ref.watch(chatInputProvider);
     return Offstage(
+      offstage: !chatInputState.emojiPickerVisible,
       child: SizedBox(
-        height: size.height * 0.3,
+        height: widget.size.height * 0.3,
         child: EmojiPicker(
-          onEmojiSelected: _handleEmojiSelected,
-          onBackspacePressed: _handleBackspacePressed,
+          onEmojiSelected: handleEmojiSelected,
+          onBackspacePressed: handleBackspacePressed,
           config: Config(
-            columns: 7,
+            columns: 8,
+            bgColor: Theme.of(context).colorScheme.neutral,
+            emojiSizeMax: 36,
             verticalSpacing: 0,
             horizontalSpacing: 0,
             initCategory: Category.SMILEYS,
@@ -538,24 +660,27 @@ class EmojiPickerWidget extends StatelessWidget {
             noRecents: Text(
               AppLocalizations.of(context)!.noRecents,
             ),
+            tabIndicatorAnimDuration: kTabScrollDuration,
+            categoryIcons: const CategoryIcons(),
+            buttonMode: ButtonMode.MATERIAL,
           ),
         ),
       ),
     );
   }
 
-  void _handleEmojiSelected(Category? category, Emoji emoji) {
-    controller.mentionKey.currentState!.controller!.text += emoji.emoji;
-    controller.sendButtonUpdate();
+  void handleEmojiSelected(Category? category, Emoji emoji) {
+    var mentionKey = ref.watch(mentionKeyProvider);
+    mentionKey.currentState!.controller!.text += emoji.emoji;
+    ref.read(chatInputProvider.notifier).showSendBtn(true);
   }
 
-  void _handleBackspacePressed() {
-    controller.mentionKey.currentState!.controller!.text = controller
-        .mentionKey.currentState!.controller!.text.characters
-        .skipLast(1)
-        .string;
-    if (controller.mentionKey.currentState!.controller!.text.isEmpty) {
-      controller.sendButtonUpdate();
+  void handleBackspacePressed() {
+    var mentionKey = ref.watch(mentionKeyProvider);
+    mentionKey.currentState!.controller!.text =
+        mentionKey.currentState!.controller!.text.characters.skipLast(1).string;
+    if (mentionKey.currentState!.controller!.text.isEmpty) {
+      ref.read(chatInputProvider.notifier).showSendBtn(false);
     }
   }
 }

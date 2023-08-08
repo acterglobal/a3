@@ -1,0 +1,2 @@
+- [fix] fixed My profile page widget tree errors 
+- [fix] fixed Events page card display errors 
