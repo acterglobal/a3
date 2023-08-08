@@ -1,8 +1,11 @@
 use acter::api::{login_new_client, login_with_token, Client};
 use anyhow::Result;
-use clap::{crate_version, Parser};
+use clap::{crate_version, Parser, ValueHint};
 use dialoguer::{theme::ColorfulTheme, Password};
-use std::path::PathBuf;
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 use tracing::{error, info, warn};
 
 use crate::action::Action;
@@ -37,7 +40,7 @@ pub struct LoginConfig {
     #[clap(
         short = 'u',
         long = "user",
-        value_hint = clap::ValueHint::Username,
+        value_hint = ValueHint::Username,
         env = ENV_USER
     )]
     login_username: String,
@@ -72,21 +75,21 @@ impl LoginConfig {
         warn!("Logging in as {}", username);
         let base_path = format!(".local/{username}/");
 
-        if self.force_login && std::path::Path::new(&base_path).exists() {
-            std::fs::remove_dir_all(&base_path)?;
+        if self.force_login && Path::new(&base_path).exists() {
+            fs::remove_dir_all(&base_path)?;
         }
         // FIXME: this should be encrypted.
         let token_path_string = self
             .token_path
             .clone()
             .unwrap_or_else(|| PathBuf::from(format!("{base_path}/access_token.json")));
-        let access_token_path = std::path::Path::new(&token_path_string);
+        let access_token_path = Path::new(&token_path_string);
         if access_token_path.exists() && access_token_path.is_file() {
             info!(
                 "Reusing previous access token from {}",
                 token_path_string.display()
             );
-            let token = std::fs::read_to_string(access_token_path)?;
+            let token = fs::read_to_string(access_token_path)?;
             return login_with_token(base_path, token).await;
         }
 
@@ -113,7 +116,7 @@ impl LoginConfig {
         if !self.dont_store_token {
             match client.restore_token().await {
                 Ok(token) => {
-                    std::fs::write(access_token_path, token)?;
+                    fs::write(access_token_path, token)?;
                 }
                 Err(e) => error!(error = ?e, "No access token found on client."),
             }

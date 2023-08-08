@@ -7,9 +7,14 @@ use anyhow::Result;
 use app_dirs2::{app_root, AppDataType, AppInfo};
 use clap::Parser;
 use config::ActerTuiConfig;
-use futures::{future::Either, pin_mut, StreamExt};
-use std::sync::mpsc::channel;
+use futures::{
+    future::Either,
+    pin_mut,
+    stream::{self, StreamExt},
+};
+use std::{fs, path::PathBuf, sync::mpsc::channel};
 use tracing::{error, info, warn};
+use tui_logger::Drain;
 use ui::AppUpdate;
 
 const APP_INFO: AppInfo = AppInfo {
@@ -22,7 +27,7 @@ async fn main() -> Result<()> {
     let cli = ActerTuiConfig::parse();
 
     // Set max_log_level to Trace
-    let drain = tui_logger::Drain::new();
+    let drain = Drain::new();
     // instead of tui_logger::init_logger, we use `env_logger`
     env_logger::Builder::default()
         .parse_filters(&cli.log)
@@ -36,13 +41,13 @@ async fn main() -> Result<()> {
 
     let (sender, rx) = channel::<AppUpdate>();
     let app_dir = if cli.local {
-        std::path::PathBuf::new().join(".local")
+        PathBuf::new().join(".local")
     } else {
         app_root(AppDataType::UserData, &APP_INFO)?
     };
 
     if cli.fresh {
-        std::fs::remove_dir_all(app_dir.clone())?;
+        fs::remove_dir_all(app_dir.clone())?;
     }
 
     let mut client = cli.login.client(app_dir).await?;
@@ -61,7 +66,7 @@ async fn main() -> Result<()> {
         let sync_stream = sync_state.first_synced_rx();
         let history_loaded = sync_state.get_history_loading_rx();
 
-        let main_stream = futures::stream::select(
+        let main_stream = stream::select(
             history_loaded.map(Either::Right),
             sync_stream.map(Either::Left),
         );

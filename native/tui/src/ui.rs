@@ -9,10 +9,10 @@ use crossterm::{
 };
 use std::{
     io,
-    sync::mpsc::{Receiver, TryRecvError},
+    sync::mpsc::{Receiver as MpscReceiver, TryRecvError},
     time::{Duration, Instant},
 };
-use tokio::sync::broadcast::Receiver as Subscription;
+use tokio::sync::broadcast::Receiver as BroadcastReceiver;
 use tracing::{error, info, trace};
 use tui::{
     backend::{Backend, CrosstermBackend},
@@ -60,7 +60,7 @@ struct TasksState {
     tasks_list_state: ListState,
     selected: Option<TaskList>,
     task_lists: Vec<TaskList>,
-    receivers: Vec<Subscription<()>>,
+    receivers: Vec<BroadcastReceiver<()>>,
     tasks: Vec<Task>,
 }
 
@@ -505,7 +505,7 @@ impl App {
     }
 }
 
-pub async fn run_ui(rx: Receiver<AppUpdate>, logs_fullscreen: bool) -> Result<()> {
+pub async fn run_ui(rx: MpscReceiver<AppUpdate>, logs_fullscreen: bool) -> Result<()> {
     // setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -536,7 +536,7 @@ pub async fn run_ui(rx: Receiver<AppUpdate>, logs_fullscreen: bool) -> Result<()
 async fn run_app<B: Backend>(
     terminal: &mut Terminal<B>,
     mut app: App,
-    rx: Receiver<AppUpdate>,
+    rx: MpscReceiver<AppUpdate>,
 ) -> io::Result<()> {
     let tick_rate = Duration::from_millis(250);
     let mut last_tick = Instant::now();

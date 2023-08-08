@@ -8,7 +8,7 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
-use futures::{io::Cursor, stream::StreamExt};
+use futures::stream::StreamExt;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Joined, Room},
@@ -27,10 +27,12 @@ use matrix_sdk::{
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
+    fs,
     ops::Deref,
     path::PathBuf,
 };
 use tokio::sync::broadcast::Receiver;
+use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::trace;
 
 use super::{
@@ -321,11 +323,11 @@ impl NewsEntry {
         })
     }
 
-    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
-        tokio_stream::wrappers::BroadcastStream::new(self.subscribe()).map(|_| true)
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe()).map(|_| true)
     }
 
-    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
+    pub fn subscribe(&self) -> Receiver<()> {
         let key = self.content.event_id().to_string();
         self.client.subscribe(key)
     }
@@ -396,13 +398,13 @@ impl NewsEntryDraft {
         let mut image_content = RUNTIME
             .spawn(async move {
                 if room.is_encrypted().await? {
-                    let mut reader = std::fs::File::open(path)?;
+                    let mut reader = fs::File::open(path)?;
                     let encrypted_file = client
                         .prepare_encrypted_file(&mime_type, &mut reader)
                         .await?;
                     anyhow::Ok(ImageMessageEventContent::encrypted(body, encrypted_file))
                 } else {
-                    let data = std::fs::read(path)?;
+                    let data = fs::read(path)?;
                     let upload_resp = client.media().upload(&mime_type, data).await?;
                     anyhow::Ok(ImageMessageEventContent::plain(
                         body,
@@ -424,7 +426,7 @@ impl NewsEntryDraft {
             client: self.client.clone(),
             room: self.room.clone().into(),
             inner: news::NewsSlide {
-                content: news::NewsContent::Image(image_content),
+                content: NewsContent::Image(image_content),
                 references: Default::default(),
             },
         });

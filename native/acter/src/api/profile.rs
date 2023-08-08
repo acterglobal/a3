@@ -5,7 +5,7 @@ use matrix_sdk::{
     ruma::{
         api::client::{
             media::get_content_thumbnail::v3::Method as ThumbnailMethod,
-            user_directory::search_users::v3::User as SearchedUser,
+            user_directory::search_users::v3::User,
         },
         events::room::MediaSource,
         OwnedRoomId, OwnedUserId, UInt,
@@ -21,12 +21,12 @@ use super::{
 
 #[derive(Clone)]
 pub struct PublicProfile {
-    inner: SearchedUser,
+    inner: User,
     client: Client,
 }
 
 impl PublicProfile {
-    pub fn new(inner: SearchedUser, client: Client) -> Self {
+    pub fn new(inner: User, client: Client) -> Self {
         PublicProfile { inner, client }
     }
 
@@ -36,12 +36,12 @@ impl PublicProfile {
             source: MediaSource::Plain(url.to_owned()),
             format,
         };
-        Ok(Some(
-            self.client
-                .media()
-                .get_media_content(&request, true)
-                .await?,
-        ))
+        let buf = self
+            .client
+            .media()
+            .get_media_content(&request, true)
+            .await?;
+        Ok(Some(buf))
     }
 }
 

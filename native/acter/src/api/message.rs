@@ -77,6 +77,7 @@ use matrix_sdk::{
             AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
             SyncStateEvent,
         },
+        serde::Raw,
         OwnedEventId, OwnedRoomId, OwnedUserId,
     },
 };
@@ -84,7 +85,6 @@ use matrix_sdk_ui::timeline::{
     EventSendState, EventTimelineItem, MembershipChange, TimelineItem, TimelineItemContent,
     VirtualTimelineItem,
 };
-use ruma::serde::Raw;
 use std::{collections::HashMap, sync::Arc};
 use tracing::info;
 

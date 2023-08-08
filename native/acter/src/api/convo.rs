@@ -1,4 +1,4 @@
-use acter_core::statics::default_acter_convo_states;
+use acter_core::{statics::default_acter_convo_states, Error};
 use anyhow::{bail, Result};
 use derive_builder::Builder;
 use futures::channel::mpsc::{channel, Receiver, Sender};
@@ -247,8 +247,7 @@ impl ConvoController {
                 let ev = raw_event
                     .deserialize_as::<OriginalSyncRoomEncryptedEvent>()
                     .unwrap();
-                let msg =
-                    RoomMessage::room_encrypted_from_sync_event(ev, room.room_id().to_owned());
+                let msg = RoomMessage::room_encrypted_from_sync_event(ev, room_id.to_owned());
                 convo.set_latest_message(msg.clone());
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
@@ -332,12 +331,13 @@ impl ConvoController {
         let mut convos = self.convos.lock_mut();
 
         if let Some(prev_content) = ev.unsigned.prev_content {
+            let room_id = room.room_id();
             match (prev_content.membership, ev.content.membership) {
                 (MembershipState::Invite, MembershipState::Join) => {
                     // when user accepted invitation, this event is called twice
                     // i don't know that reason
                     // anyway i prevent this event from being called twice
-                    if !convos.iter().any(|x| x.room_id() == room.room_id()) {
+                    if !convos.iter().any(|x| x.room_id() == room_id) {
                         // add new room
                         let convo = Convo::new(Room { room: room.clone() });
                         convos.insert(0, convo);
@@ -345,7 +345,6 @@ impl ConvoController {
                 }
                 (MembershipState::Join, MembershipState::Leave) => {
                     // remove existing room
-                    let room_id = room.room_id();
                     if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                         convos.remove(idx);
                     }
@@ -485,10 +484,10 @@ impl Client {
 
                 if let Some(parent) = settings.parent {
                     let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
-                      return Err(acter_core::Error::HomeserverMissesHostname)?;
+                      return Err(Error::HomeserverMissesHostname)?;
                     };
                     let parent_event = InitialStateEvent::<SpaceParentEventContent> {
-                        content:  assign!(SpaceParentEventContent::new(true), {
+                        content: assign!(SpaceParentEventContent::new(true), {
                             via: Some(vec![homeserver]),
                         }),
                         state_key: parent.clone(),

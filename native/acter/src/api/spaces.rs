@@ -3,6 +3,7 @@ pub use acter_core::spaces::{
     SpaceRelations as CoreSpaceRelations,
 };
 use acter_core::{
+    error::Error,
     events::{
         attachments::{SyncAttachmentEvent, SyncAttachmentUpdateEvent},
         calendar::{SyncCalendarEventEvent, SyncCalendarEventUpdateEvent},
@@ -19,7 +20,7 @@ use acter_core::{
     templates::Engine,
 };
 use anyhow::{bail, Context, Result};
-use futures::stream::StreamExt;
+use futures::{future::join_all, stream::StreamExt};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     media::{MediaFormat, MediaRequest},
@@ -35,6 +36,7 @@ use matrix_sdk::{
             state::send_state_event::v3::Request as SendStateEventRequest,
         },
         assign,
+        directory::RoomTypeFilter,
         events::{
             room::MediaSource,
             space::child::{HierarchySpaceChildEvent, SpaceChildEventContent},
@@ -49,6 +51,7 @@ use matrix_sdk::{
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, thread::JoinHandle};
 use tokio::sync::broadcast::Receiver;
+use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
 
 use super::{
@@ -517,7 +520,7 @@ impl SpaceHierarchyRoomInfo {
             return RUNTIME
                 .spawn(async move {
                     let request = MediaRequest {
-                        source: ruma::events::room::MediaSource::Plain(url),
+                        source: MediaSource::Plain(url),
                         format: MediaFormat::File,
                     };
                     let buf = client.media().get_media_content(&request, true).await?;
@@ -548,16 +551,14 @@ impl SpaceHierarchyListResult {
     pub async fn rooms(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
         let client = self.client.clone();
         let chunks = self.resp.rooms.clone();
-        Ok(RUNTIME
+        RUNTIME
             .spawn(async move {
-                futures::future::join_all(
-                    chunks
-                        .into_iter()
-                        .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, client.clone())),
-                )
-                .await
+                let iter = chunks
+                    .into_iter()
+                    .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, client.clone()));
+                Ok(join_all(iter).await)
             })
-            .await?)
+            .await?
     }
 }
 
@@ -609,11 +610,11 @@ impl Space {
         Ok(())
     }
 
-    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
-        tokio_stream::wrappers::BroadcastStream::new(self.subscribe()).map(|_| true)
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe()).map(|_| true)
     }
 
-    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
+    pub fn subscribe(&self) -> Receiver<()> {
         self.client.subscribe(format!("{}", self.room_id()))
     }
 
@@ -677,12 +678,12 @@ impl Space {
         let room = joined.clone();
 
         let Some(Ok(homeserver)) = self.client.homeserver().await.host_str().map(|h|h.try_into()) else {
-            return Err(acter_core::Error::HomeserverMissesHostname)?;
-          };
+            return Err(Error::HomeserverMissesHostname)?;
+        };
 
         RUNTIME
             .spawn(async move {
-                let res_id = room
+                let response = room
                     .send_state_event_for_key(
                         &room_id,
                         assign!(SpaceChildEventContent::new(), {
@@ -690,7 +691,7 @@ impl Space {
                         }),
                     )
                     .await?;
-                Ok(res_id.event_id.to_string())
+                Ok(response.event_id.to_string())
             })
             .await?
     }
@@ -775,13 +776,8 @@ impl Client {
         server: Option<String>,
         since: Option<String>,
     ) -> Result<PublicSearchResult> {
-        self.search_public(
-            search_term,
-            server,
-            since,
-            Some(ruma::directory::RoomTypeFilter::Space),
-        )
-        .await
+        self.search_public(search_term, server, since, Some(RoomTypeFilter::Space))
+            .await
     }
 
     pub async fn spaces(&self) -> Result<Vec<Space>> {

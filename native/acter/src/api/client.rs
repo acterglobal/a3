@@ -7,7 +7,8 @@ use core::time::Duration;
 use derive_builder::Builder;
 use futures::{
     future::{join_all, ready},
-    pin_mut, stream, Stream, StreamExt,
+    pin_mut,
+    stream::{self, Stream, StreamExt},
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
@@ -15,18 +16,18 @@ use matrix_sdk::{
     event_handler::EventHandlerHandle,
     media::{MediaFormat, MediaRequest},
     room::Room as SdkRoom,
-    Client as SdkClient, LoopCtrl, RumaApiError,
-};
-use ruma::{
-    api::client::{
-        error::{ErrorBody, ErrorKind},
-        push::get_notifications::v3::Notification as RumaNotification,
-        Error,
+    ruma::{
+        api::client::{
+            error::{ErrorBody, ErrorKind},
+            push::get_notifications::v3::Notification as RumaNotification,
+            Error,
+        },
+        device_id,
+        events::room::MediaSource,
+        OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
+        OwnedServerName, OwnedUserId, RoomOrAliasId, UserId,
     },
-    device_id,
-    events::room::MediaSource,
-    OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName,
-    OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
+    Client as SdkClient, LoopCtrl, RumaApiError,
 };
 use std::{
     collections::{BTreeMap, HashMap},
@@ -44,6 +45,7 @@ use tokio::{
         Mutex, RwLock,
     },
     task::JoinHandle,
+    time,
 };
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
@@ -794,8 +796,10 @@ impl Client {
         BroadcastStream::new(self.notifications.subscribe())
             .then(move |r| {
                 let client = client.clone();
-                RUNTIME
-                    .spawn(async move { anyhow::Ok(Notification::new(r?, client.clone()).await) })
+                RUNTIME.spawn(async move {
+                    let res = Notification::new(r?, client.clone()).await;
+                    anyhow::Ok(res)
+                })
             })
             .filter_map(|r| async {
                 match r {
@@ -833,7 +837,7 @@ impl Client {
                 let Some(tm) = timeout else {
                     return Ok(waiter.await?);
                 };
-                Ok(tokio::time::timeout(*Box::leak(tm), waiter).await??)
+                Ok(time::timeout(*Box::leak(tm), waiter).await??)
             })
             .await?
     }

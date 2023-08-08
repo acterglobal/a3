@@ -6,13 +6,14 @@ use acter::{
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
+use futures::future::try_join_all;
 use matrix_sdk::{
     ruma::{api::client::room::Visibility, OwnedUserId},
     HttpError,
 };
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sqlite::make_store_config;
-use std::collections::HashMap;
+use std::{collections::HashMap, fs};
 use tracing::{error, info, trace};
 
 use crate::config::{ENV_DEFAULT_HOMESERVER_NAME, ENV_DEFAULT_HOMESERVER_URL, ENV_REG_TOKEN};
@@ -382,9 +383,9 @@ impl<'a> Mock<'a> {
     }
 
     pub async fn export(&mut self) -> Result<()> {
-        std::fs::create_dir_all(".local")?;
+        fs::create_dir_all(".local")?;
 
-        futures::future::try_join_all(self.users.values().map(|cl| async move {
+        try_join_all(self.users.values().map(|cl| async move {
             let full_username = cl.user_id().expect("You seem to be not logged in");
             let user_export_file = sanitize(".local", &format!("mock_export_{full_username:}"));
 
