@@ -1,0 +1,6 @@
+- [chat] Invites are now enabled for chat. After room creation, you can invite other users by going to room profile and adding them. (if have permissions).
+- [fix] Earlier some messages with mentions were getting overflow in some scenarios. This should not be happening now.
+- [fix] Chat pagination. Messages timeline should now correctly identify the end of history.
+- [enhance] Server messages, redacted and encrypted events are now distinct.
+- [fix] remove unimplemented features.
+- [enhance] room member events will present more info.
