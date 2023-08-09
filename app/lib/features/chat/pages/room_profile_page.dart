@@ -1,4 +1,3 @@
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -60,7 +59,6 @@ class RoomProfilePage extends ConsumerWidget {
                 icon: const Icon(Atlas.dots_vertical, size: 22),
                 itemBuilder: (context) => [
                   PopupMenuItem<int>(
-                    onTap: () => _handleLeaveRoom(context),
                     value: 0,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -144,9 +142,5 @@ class RoomProfilePage extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  void _handleLeaveRoom(BuildContext context) {
-    popUpDialog(context: context, title: Text('Are you sure?'));
   }
 }
