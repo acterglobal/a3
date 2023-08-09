@@ -10,6 +10,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:markdown/markdown.dart' as md;
 
 class TextMessageBuilder extends ConsumerStatefulWidget {
   final types.TextMessage message;
@@ -148,7 +149,7 @@ class _TextWidget extends ConsumerWidget {
               maxLines: isReply ? 3 : null,
             )
           : Html(
-              data: message.text,
+              data: md.markdownToHtml(message.text),
               defaultTextStyle: Theme.of(context)
                   .textTheme
                   .bodySmall!
