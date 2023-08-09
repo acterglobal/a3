@@ -1,7 +1,6 @@
 use acter_core::{statics::default_acter_convo_states, Error};
 use anyhow::{bail, Result};
 use derive_builder::Builder;
-use futures::channel::mpsc::{channel, Receiver, Sender};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
@@ -31,9 +30,8 @@ use matrix_sdk::{
     },
     Client as SdkClient, RoomMemberships,
 };
-use std::{fs, ops::Deref, path::PathBuf, sync::Arc};
-use tokio::sync::Mutex;
-use tracing::{error, info};
+use std::{fs, ops::Deref, path::PathBuf};
+use tracing::info;
 
 use super::{
     client::Client,
@@ -129,8 +127,6 @@ impl Deref for Convo {
 #[derive(Clone, Debug)]
 pub(crate) struct ConvoController {
     convos: Mutable<Vec<Convo>>,
-    incoming_event_tx: Sender<RoomMessage>,
-    incoming_event_rx: Arc<Mutex<Option<Receiver<RoomMessage>>>>,
     encrypted_event_handle: Option<EventHandlerHandle>,
     message_event_handle: Option<EventHandlerHandle>,
     member_event_handle: Option<EventHandlerHandle>,
@@ -139,11 +135,8 @@ pub(crate) struct ConvoController {
 
 impl ConvoController {
     pub fn new() -> Self {
-        let (incoming_tx, incoming_rx) = channel::<RoomMessage>(10); // dropping after more than 10 items queued
         ConvoController {
             convos: Default::default(),
-            incoming_event_tx: incoming_tx,
-            incoming_event_rx: Arc::new(Mutex::new(Some(incoming_rx))),
             encrypted_event_handle: None,
             message_event_handle: None,
             member_event_handle: None,
@@ -253,9 +246,6 @@ impl ConvoController {
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                     convos.remove(idx);
                     convos.insert(0, convo);
-                    if let Err(e) = self.incoming_event_tx.try_send(msg) {
-                        error!("Dropping ephemeral event for {}: {}", room_id, e);
-                    }
                 } else {
                     convos.insert(0, convo);
                 }
@@ -287,9 +277,6 @@ impl ConvoController {
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                 convos.remove(idx);
                 convos.insert(0, convo);
-                if let Err(e) = self.incoming_event_tx.try_send(msg) {
-                    error!("Dropping ephemeral event for {}: {}", room_id, e);
-                }
             } else {
                 convos.insert(0, convo);
             }
@@ -317,9 +304,6 @@ impl ConvoController {
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                     convos.remove(idx);
                     convos.insert(0, convo);
-                    if let Err(e) = self.incoming_event_tx.try_send(msg) {
-                        error!("Dropping ephemeral event for {}: {}", room_id, e);
-                    }
                 } else {
                     convos.insert(0, convo);
                 }
@@ -373,9 +357,6 @@ impl ConvoController {
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                 convos.remove(idx);
                 convos.insert(0, convo);
-                if let Err(e) = self.incoming_event_tx.try_send(msg) {
-                    error!("Dropping ephemeral event for {}: {}", room_id, e);
-                }
             } else {
                 convos.insert(0, convo);
             }
@@ -551,12 +532,5 @@ impl Client {
 
     pub fn convos_rx(&self) -> SignalStream<MutableSignalCloned<Vec<Convo>>> {
         self.convo_controller.convos.signal_cloned().to_stream()
-    }
-
-    pub fn incoming_message_rx(&self) -> Option<Receiver<RoomMessage>> {
-        match self.convo_controller.incoming_event_rx.try_lock() {
-            Ok(mut r) => r.take(),
-            Err(e) => None,
-        }
     }
 }

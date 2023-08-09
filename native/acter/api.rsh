@@ -1638,9 +1638,6 @@ object Client {
     /// Return the receipt event receiver
     fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 
-    /// Return the message receiver
-    fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
-
     /// create convo
     fn create_convo(settings: CreateConvoSettings) -> Future<Result<RoomId>>;
 
