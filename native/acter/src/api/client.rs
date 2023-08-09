@@ -754,7 +754,6 @@ impl Client {
             let room_id = OwnedRoomId::try_from(room_id_or_alias.as_str()).expect("just checked");
             return self
                 .room_by_id_typed(&room_id)
-                .await
                 .context("Room not found");
         }
 
@@ -763,7 +762,7 @@ impl Client {
         self.room_by_alias_typed(&room_alias).await
     }
 
-    pub async fn room_by_id_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
+    pub fn room_by_id_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
         self.core
             .client()
             .get_room(room_id)
@@ -787,7 +786,6 @@ impl Client {
         // nothing found, try remote:
         let response = self.core.client().resolve_room_alias(room_alias).await?;
         self.room_by_id_typed(&response.room_id)
-            .await
             .context("Room not found")
     }
 

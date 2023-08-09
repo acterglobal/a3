@@ -339,7 +339,7 @@ impl ConvoController {
     }
 
     // reorder room list on OriginalSyncRoomRedactionEvent
-    async fn process_room_redaction(
+    fn process_room_redaction(
         &mut self,
         ev: SyncRoomRedactionEvent,
         room: &SdkRoom,
