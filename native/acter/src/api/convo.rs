@@ -18,6 +18,7 @@ use matrix_sdk::{
             room::{
                 avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
                 encrypted::OriginalSyncRoomEncryptedEvent,
+                join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
                 member::{MembershipState, OriginalSyncRoomMemberEvent},
                 message::OriginalSyncRoomMessageEvent,
                 redaction::SyncRoomRedactionEvent,
@@ -68,12 +69,12 @@ impl Convo {
             for event in events {
                 // show only message event as latest message in chat room list
                 // skip the state event
-                if let Ok(AnySyncTimelineEvent::MessageLike(m)) = event.event.deserialize() {
-                    if let Some(msg) = sync_event_to_message(event.clone(), room.clone()) {
-                        self.set_latest_message(msg);
-                        return;
-                    }
+                // if let Ok(AnySyncTimelineEvent::MessageLike(m)) = event.event.deserialize() {
+                if let Some(msg) = sync_event_to_message(&event.event, room.room_id().to_owned()) {
+                    self.set_latest_message(msg);
+                    return;
                 }
+                // }
             }
         }
     }
@@ -246,7 +247,8 @@ impl ConvoController {
                 let ev = raw_event
                     .deserialize_as::<OriginalSyncRoomEncryptedEvent>()
                     .unwrap();
-                let msg = RoomMessage::room_encrypted_from_sync_event(ev, room);
+                let msg =
+                    RoomMessage::room_encrypted_from_sync_event(ev, room.room_id().to_owned());
                 convo.set_latest_message(msg.clone());
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
@@ -273,9 +275,14 @@ impl ConvoController {
         if let SdkRoom::Joined(joined) = room {
             let mut convos = self.convos.lock_mut();
             let room_id = room.room_id();
+            let sent_by_me = if let Some(user_id) = room.client().user_id() {
+                ev.sender == user_id
+            } else {
+                false
+            };
 
             let mut convo = Convo::new(Room { room: room.clone() });
-            let msg = RoomMessage::room_message_from_sync_event(ev, room, true);
+            let msg = RoomMessage::room_message_from_sync_event(ev, room_id.to_owned(), sent_by_me);
             convo.set_latest_message(msg.clone());
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
@@ -305,7 +312,7 @@ impl ConvoController {
                 let room_id = room.room_id();
 
                 let mut convo = Convo::new(Room { room: room.clone() });
-                let msg = RoomMessage::room_member_from_sync_event(ev, room);
+                let msg = RoomMessage::room_member_from_sync_event(ev, room_id.to_owned());
                 convo.set_latest_message(msg.clone());
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
@@ -361,7 +368,7 @@ impl ConvoController {
             let room_id = room.room_id();
 
             let mut convo = Convo::new(Room { room: room.clone() });
-            let msg = RoomMessage::room_redaction_from_sync_event(ev, room);
+            let msg = RoomMessage::room_redaction_from_sync_event(ev, room_id.to_owned());
             convo.set_latest_message(msg.clone());
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
@@ -477,11 +484,22 @@ impl Client {
                 }
 
                 if let Some(parent) = settings.parent {
+                    let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
+                      return Err(acter_core::Error::HomeserverMissesHostname)?;
+                    };
                     let parent_event = InitialStateEvent::<SpaceParentEventContent> {
-                        content: SpaceParentEventContent::new(true),
-                        state_key: parent,
+                        content:  assign!(SpaceParentEventContent::new(true), {
+                            via: Some(vec![homeserver]),
+                        }),
+                        state_key: parent.clone(),
                     };
                     initial_states.push(parent_event.to_raw_any());
+                    // if we have a parent, by default we allow access to the subspace.
+                    let join_rule =
+                        InitialRoomJoinRulesEvent::new(RoomJoinRulesEventContent::restricted(vec![
+                            AllowRule::room_membership(parent),
+                        ]));
+                    initial_states.push(join_rule.to_raw_any());
                 };
 
                 let request = assign!(CreateRoomRequest::new(), {
@@ -517,15 +535,15 @@ impl Client {
         })
     }
 
-    pub async fn convo(&self, name_or_id: String) -> Result<Convo> {
+    pub async fn convo(&self, room_id_or_alias: String) -> Result<Convo> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let Ok(room) = me.room(name_or_id) else {
+                let Ok(room) = me.room(room_id_or_alias).await else {
                     bail!("Neither roomId nor alias provided");
                 };
-                if room.is_acter_space().await {
-                    bail!("Not a regular convo but an acter space!");
+                if room.is_space() {
+                    bail!("Not a regular convo but an (acter) space!");
                 }
                 Ok(Convo::new(room))
             })

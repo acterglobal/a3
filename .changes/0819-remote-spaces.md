@@ -1,0 +1,4 @@
+- Overall on the entire subspace / related chats section; "Room not found"-issue should be gone now
+- Chats and Spaces created with a parent are now set up to be seen and accessible by their parent (by default)
+- Canonical Parent is shown everywhere (it makes sense): sidebar, chat listing, etc
+- Joining subspaces with public or restricted mode now possible

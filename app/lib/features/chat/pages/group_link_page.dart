@@ -42,9 +42,9 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                       Switch(
                         value: showLink,
                         onChanged: (bool newValue) {
-                          setState(() {
-                            showLink = newValue;
-                          });
+                          if (mounted) {
+                            setState(() => showLink = newValue);
+                          }
                         },
                       )
                     ],

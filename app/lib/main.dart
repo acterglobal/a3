@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter/common/utils/logging.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/l10n/l10n.dart';
 import 'package:acter/router/providers/router_providers.dart';
@@ -34,15 +36,32 @@ Future<void> startAppInner() async {
     final license = await rootBundle.loadString('google_fonts/LICENSE.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
+  await initializeNotifications();
+  await initLogging();
   runApp(const ProviderScope(child: Acter()));
 }
 
-class Acter extends ConsumerWidget {
-  const Acter({Key? key}) : super(key: key);
+class Acter extends ConsumerStatefulWidget {
+  static const String name = 'Awesome Notifications - Example App';
+  static const Color mainColor = Colors.deepPurple;
+
+  const Acter({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _ActerState();
+}
+
+class _ActerState extends ConsumerState<Acter> {
+  @override
+  void initState() {
+    super.initState();
+    setupNotificationsListeners();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final appRouter = ref.watch(goRouterProvider);
+    requestNotificationsPermissions();
     return Portal(
       child: OverlaySupport.global(
         child: MaterialApp.router(

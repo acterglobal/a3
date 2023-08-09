@@ -38,15 +38,21 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
   }
 
   void _updateMembershipStatus(String? value) {
-    setState(() {
-      currentMemberStatus = value;
-    });
+    if (mounted) {
+      setState(() => currentMemberStatus = value);
+    }
   }
 
   void _newCustomLevel(String? value) {
-    setState(() {
-      customValue = value != null ? int.tryParse(value) : null;
-    });
+    if (mounted) {
+      setState(() {
+        if (value != null) {
+          customValue = int.tryParse(value);
+        } else {
+          customValue = null;
+        }
+      });
+    }
   }
 
   @override

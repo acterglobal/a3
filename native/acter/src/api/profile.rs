@@ -1,12 +1,17 @@
 use anyhow::{bail, Context, Result};
-use matrix_sdk::media::MediaRequest;
 use matrix_sdk::{
-    media::{MediaFormat, MediaThumbnailSize},
+    media::{MediaFormat, MediaRequest, MediaThumbnailSize},
     room::RoomMember,
-    ruma::{api::client::media::get_content_thumbnail::v3::Method, OwnedRoomId, OwnedUserId, UInt},
+    ruma::{
+        api::client::{
+            media::get_content_thumbnail::v3::Method as ThumbnailMethod,
+            user_directory::search_users::v3::User as SearchedUser,
+        },
+        events::room::MediaSource,
+        OwnedRoomId, OwnedUserId, UInt,
+    },
     Account, Client, DisplayName,
 };
-use ruma::{api::client::user_directory::search_users::v3::User, events::room::MediaSource};
 
 use super::{
     api::FfiBuffer,
@@ -16,14 +21,15 @@ use super::{
 
 #[derive(Clone)]
 pub struct PublicProfile {
-    inner: User,
+    inner: SearchedUser,
     client: Client,
 }
 
 impl PublicProfile {
-    pub fn new(inner: User, client: Client) -> Self {
+    pub fn new(inner: SearchedUser, client: Client) -> Self {
         PublicProfile { inner, client }
     }
+
     pub async fn avatar(&self, format: MediaFormat) -> Result<Option<Vec<u8>>> {
         let Some(url) = self.inner.avatar_url.as_ref() else { return Ok(None) };
         let request = MediaRequest {
@@ -132,7 +138,7 @@ impl UserProfile {
             return RUNTIME
                 .spawn(async move {
                     let size = MediaThumbnailSize {
-                        method: Method::Scale,
+                        method: ThumbnailMethod::Scale,
                         width: UInt::from(width),
                         height: UInt::from(height),
                     };
@@ -145,7 +151,7 @@ impl UserProfile {
             return RUNTIME
                 .spawn(async move {
                     let size = MediaThumbnailSize {
-                        method: Method::Scale,
+                        method: ThumbnailMethod::Scale,
                         width: UInt::from(width),
                         height: UInt::from(height),
                     };
@@ -218,7 +224,7 @@ impl RoomProfile {
         RUNTIME
             .spawn(async move {
                 let size = MediaThumbnailSize {
-                    method: Method::Scale,
+                    method: ThumbnailMethod::Scale,
                     width: UInt::from(width),
                     height: UInt::from(height),
                 };

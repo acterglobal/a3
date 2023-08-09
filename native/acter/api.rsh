@@ -456,14 +456,14 @@ object RoomEventItem {
     fn reaction_keys() -> Vec<string>;
 
     /// the details that users reacted using this emote key in this message
-    fn reaction_desc(key: string) -> Option<ReactionDesc>;
+    fn reaction_items(key: string) -> Option<Vec<ReactionItem>>;
 
     /// Whether this message is editable
     fn is_editable() -> bool;
 }
 
 object RoomVirtualItem {
-    /// one of DayDivider/LoadingIndicator/ReadMarker/TimelineStart
+    /// DayDivider or ReadMarker
     fn event_type() -> string;
 
     /// contains description text
@@ -588,12 +588,12 @@ object FileDesc {
     fn thumbnail_source() -> Option<MediaSource>;
 }
 
-object ReactionDesc {
-    /// how many times this key was clicked
-    fn count() -> u32;
+object ReactionItem {
+    /// who sent reaction
+    fn sender_id() -> UserId;
 
-    /// which users selected this key
-    fn senders() -> Vec<string>;
+    /// when reaction was sent
+    fn timestamp() -> u64;
 }
 
 object TimelineDiff {
@@ -618,7 +618,7 @@ object TimelineStream {
     /// Fires whenever new event arrived
     fn next() -> Future<Result<RoomMessage>>;
 
-    /// Get the next count messages backwards,
+    /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
     /// modify the room message
@@ -768,6 +768,8 @@ object Convo {
 
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
+
+    fn is_joined() -> bool;
 }
 
 object CommentDraft {
@@ -1174,11 +1176,40 @@ object TaskListUpdateBuilder {
     fn send() -> Future<Result<EventId>>;
 }
 
+
 enum RelationTargetType {
     Unknown,
     ChatRoom,
     Space,
     ActerSpace
+}
+
+/// remote info
+object SpaceHierarchyRoomInfo {
+    fn name() -> Option<string>;
+    //fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
+    fn topic() -> Option<string>;
+    fn num_joined_members() -> u64;
+    fn world_readable() -> bool;
+    fn guest_can_join() -> bool;
+    fn is_space() -> bool;
+    fn avatar_url_str() -> Option<string>;
+    fn join_rule_str() -> string;
+    /// whether to have avatar
+    fn has_avatar() -> bool;
+
+    /// get the binary data of avatar
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
+    // recommended server to try to join via
+    fn via_server_name() -> Option<string>;
+}
+
+object SpaceHierarchyListResult {
+    /// to be used for the next `since`
+    fn next_batch() -> Option<string>;
+    /// get the chunk of items in this response
+    fn rooms() -> Future<Result<Vec<SpaceHierarchyRoomInfo>>>;
 }
 
 object SpaceRelation {
@@ -1193,12 +1224,16 @@ object SpaceRelation {
 }
 
 object SpaceRelations {
+    //fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
     /// do we have a canonical parent?!?
     fn main_parent() -> Option<SpaceRelation>;
     /// other parents we belong to
     fn other_parents() -> Vec<SpaceRelation>;
     /// children
     fn children() -> Vec<SpaceRelation>;
+    /// query for children from the server
+    fn query_hierarchy(from: Option<string>) -> Future<Result<SpaceHierarchyListResult>>;
 }
 
 object Space {
@@ -1222,6 +1257,8 @@ object Space {
 
     /// what is the description / topic
     fn topic() -> Option<string>;
+
+    fn is_joined() -> bool;
 
     /// set description / topic of the room
     fn set_topic(topic: string) -> Future<Result<EventId>>;
@@ -1428,6 +1465,25 @@ object PublicSearchResult {
     fn chunks() -> Vec<PublicSearchResultItem>;
 }
 
+object Notification {
+    fn read() -> bool;
+    // fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
+    fn has_room() -> bool;
+    fn is_space() -> bool;
+    fn is_acter_space() -> bool;
+    fn space() -> Option<Space>;
+    fn room_message() -> Option<RoomMessage>;
+    fn convo() -> Option<Convo>;
+}
+
+object NotificationListResult {
+    /// to be used for the next `since`
+    fn next_batch() -> Option<string>;
+    /// get the chunk of items in this response
+    fn notifications() -> Future<Result<Vec<Notification>>>;
+}
+
 /// make convo settings builder
 fn new_convo_settings_builder() -> CreateConvoSettingsBuilder;
 
@@ -1520,7 +1576,7 @@ object Client {
     fn user_id() -> Result<UserId>;
 
     /// get convo room
-    fn convo(room_or_id: string) -> Future<Result<Convo>>;
+    fn convo(room_id_or_alias: string) -> Future<Result<Convo>>;
 
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Result<UserProfile>;
@@ -1546,9 +1602,8 @@ object Client {
     /// search the public directory for spaces
     fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
 
-    /// Get the following space the user is part of by
-    /// roomId or room alias;
-    fn get_space(id_or_alias: string) -> Future<Result<Space>>;
+    /// Get the space that user belongs to
+    fn get_space(room_id_or_alias: string) -> Future<Result<Space>>;
 
     /// Get the Pinned Links for the client
     fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
@@ -1633,6 +1688,13 @@ object Client {
 
     /// Fetch the calendar event or use its event_id to wait for it to come down the wire
     fn wait_for_calendar_event(key: string, timeout: Option<EfkDuration>) -> Future<Result<CalendarEvent>>;
+
+    /// list the currently queued notifications
+    fn list_notifications(since: Option<string>, only: Option<string>) -> Future<Result<NotificationListResult>>;
+
+    /// listen to incoming notifications
+    fn notifications_stream() -> Stream<Notification>;
+
 }
 
 object OptionText {

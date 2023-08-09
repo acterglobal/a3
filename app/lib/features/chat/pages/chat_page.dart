@@ -11,25 +11,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+// interface providers
+final _searchToggleProvider = StateProvider.autoDispose<bool>((ref) => false);
+
 class ChatPage extends ConsumerWidget {
   const ChatPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(clientProvider)!;
-    final chatList = ref.watch(chatListProvider);
+    final showSearch = ref.watch(_searchToggleProvider);
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        backgroundColor: Theme.of(context).colorScheme.neutral,
         body: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
             SliverAppBar(
-              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              backgroundColor: Theme.of(context).colorScheme.neutral,
               pinned: false,
               snap: false,
               floating: true,
-              flexibleSpace: chatList.showSearch
+              flexibleSpace: showSearch
                   ? Padding(
                       padding: const EdgeInsets.only(
                         top: 5,
@@ -47,8 +50,8 @@ class ChatPage extends ConsumerWidget {
                           hintStyle: const TextStyle(color: Colors.white),
                           suffixIcon: GestureDetector(
                             onTap: () => ref
-                                .read(chatListProvider.notifier)
-                                .toggleSearchView(),
+                                .read(_searchToggleProvider.notifier)
+                                .update((state) => !state),
                             child: const Icon(
                               Icons.close,
                               color: Colors.white,
@@ -69,13 +72,13 @@ class ChatPage extends ConsumerWidget {
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ),
-              actions: chatList.showSearch
+              actions: showSearch
                   ? []
                   : [
                       IconButton(
                         onPressed: () => ref
-                            .read(chatListProvider.notifier)
-                            .toggleSearchView(),
+                            .read(_searchToggleProvider.notifier)
+                            .update((state) => !state),
                         padding: const EdgeInsets.only(right: 10, left: 5),
                         icon: const Icon(Atlas.magnifying_glass),
                       ),
