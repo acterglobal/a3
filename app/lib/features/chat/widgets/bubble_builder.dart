@@ -7,7 +7,8 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:bubble/bubble.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ReactionItem;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show ReactionRecord;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -289,7 +290,7 @@ class _EmojiContainerState extends State<_EmojiContainer>
               String key = keys[index];
               Map<String, dynamic> reactions =
                   widget.message.metadata!['reactions'];
-              List<ReactionItem>? reactionItems = reactions[key];
+              List<ReactionRecord>? reactionRecords = reactions[key];
               return GestureDetector(
                 onTap: () {
                   showEmojiReactionsSheet(reactions);
@@ -299,7 +300,7 @@ class _EmojiContainerState extends State<_EmojiContainer>
                   children: [
                     Text(key),
                     const SizedBox(width: 2),
-                    Text(reactionItems!.length.toString()),
+                    Text(reactionRecords!.length.toString()),
                   ],
                 ),
               );

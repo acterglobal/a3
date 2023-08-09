@@ -59,7 +59,7 @@ pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
     duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, OptionalBuffer,
-    OptionalString, ReactionItem, TextDesc, ThumbnailInfo, VideoDesc,
+    OptionalString, ReactionRecord, TextDesc, ThumbnailInfo, VideoDesc,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, CreateConvoSettings, CreateConvoSettingsBuilder,

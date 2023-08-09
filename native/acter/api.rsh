@@ -456,7 +456,7 @@ object RoomEventItem {
     fn reaction_keys() -> Vec<string>;
 
     /// the details that users reacted using this emote key in this message
-    fn reaction_items(key: string) -> Option<Vec<ReactionItem>>;
+    fn reaction_items(key: string) -> Option<Vec<ReactionRecord>>;
 
     /// Whether this message is editable
     fn is_editable() -> bool;
@@ -588,7 +588,7 @@ object FileDesc {
     fn thumbnail_source() -> Option<MediaSource>;
 }
 
-object ReactionItem {
+object ReactionRecord {
     /// who sent reaction
     fn sender_id() -> UserId;
 

@@ -381,14 +381,14 @@ impl FileDesc {
 }
 
 #[derive(Clone, Debug)]
-pub struct ReactionItem {
+pub struct ReactionRecord {
     sender_id: OwnedUserId,
     timestamp: MilliSecondsSinceUnixEpoch,
 }
 
-impl ReactionItem {
+impl ReactionRecord {
     pub(crate) fn new(sender_id: OwnedUserId, timestamp: MilliSecondsSinceUnixEpoch) -> Self {
-        ReactionItem {
+        ReactionRecord {
             sender_id,
             timestamp,
         }
