@@ -56,7 +56,7 @@ use tracing::{error, trace, warn};
 
 use super::{
     client::{devide_spaces_from_convos, Client, SpaceFilterBuilder},
-    common::OptionBuffer,
+    common::OptionalBuffer,
     room::Room,
     search::PublicSearchResult,
     RUNTIME,
@@ -514,7 +514,7 @@ impl SpaceHierarchyRoomInfo {
         None
     }
 
-    pub async fn get_avatar(&self) -> Result<OptionBuffer> {
+    pub async fn get_avatar(&self) -> Result<OptionalBuffer> {
         let client = self.client.clone();
         if let Some(url) = self.chunk.avatar_url.clone() {
             return RUNTIME
@@ -524,11 +524,11 @@ impl SpaceHierarchyRoomInfo {
                         format: MediaFormat::File,
                     };
                     let buf = client.media().get_media_content(&request, true).await?;
-                    Ok(OptionBuffer::new(Some(buf)))
+                    Ok(OptionalBuffer::new(Some(buf)))
                 })
                 .await?;
         }
-        Ok(OptionBuffer::new(None))
+        Ok(OptionalBuffer::new(None))
     }
 }
 
