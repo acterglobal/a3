@@ -28,6 +28,7 @@ final chatStreamProvider = StreamProvider<List<Convo>>((ref) async* {
   });
   await for (var convoList in controller.stream) {
     conversations = convoList;
+    conversations.retainWhere((room) => room.isJoined());
     //FIXME: how to check empty chats ?
     if (conversations.isNotEmpty) {
       yield conversations;
