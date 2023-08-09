@@ -1,0 +1,1 @@
+- [fix] chat should properly handle markdown content of messages now.
