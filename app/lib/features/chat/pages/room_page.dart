@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -105,12 +104,12 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   }
 
   Widget textMessageBuilder(
-    types.TextMessage p1, {
+    types.TextMessage m, {
     required int messageWidth,
     required bool showName,
   }) {
     return TextMessageBuilder(
-      message: p1,
+      message: m,
       onPreviewDataFetched:
           ref.watch(chatRoomProvider.notifier).handlePreviewDataFetched,
       messageWidth: messageWidth,
@@ -182,11 +181,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                         );
                         return convoProfile.when(
                           data: (profile) {
-                            if (profile.displayName == null) {
-                              return Text(
-                                AppLocalizations.of(context)!.loadingName,
-                              );
-                            }
                             var roomId = convo.getRoomIdStr();
                             return Text(
                               profile.displayName ?? roomId,
@@ -271,6 +265,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                 loaded: () => Chat(
                   customBottomWidget: const CustomChatInput(),
                   textMessageBuilder: textMessageBuilder,
+
                   l10n: ChatL10nEn(
                     emptyChatPlaceholder: '',
                     attachmentButtonAccessibilityLabel: '',
@@ -298,7 +293,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                           uniqueId: userId,
                           displayName: profile?.displayName,
                           avatar: profile?.getAvatarImage(),
-                          size: 50,
                         ),
                       ),
                     );
@@ -308,10 +302,8 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                   customMessageBuilder: customMessageBuilder,
                   showUserAvatars: true,
                   onAttachmentPressed: () => onAttach(context),
-                  onAvatarTap: (types.User user) => customMsgSnackbar(
-                    context,
-                    'Chat Profile view is not implemented yet',
-                  ),
+                  onMessageLongPress:
+                      ref.read(chatRoomProvider.notifier).handleMessageTap,
                   onMessageTap:
                       ref.read(chatRoomProvider.notifier).handleMessageTap,
                   onEndReached:

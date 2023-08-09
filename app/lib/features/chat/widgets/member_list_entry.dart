@@ -131,18 +131,17 @@ class MemberListEntry extends ConsumerWidget {
     final userId = member.userId().toString();
     final memberStatus = member.membershipStatusStr();
     final List<Widget> trailing = [];
-    debugPrint(memberStatus);
     if (memberStatus == 'Admin') {
       trailing.add(
         const Tooltip(
-          message: 'Space Admin',
+          message: 'Room Admin',
           child: Icon(Atlas.crown_winner_thin),
         ),
       );
     } else if (memberStatus == 'Mod') {
       trailing.add(
         const Tooltip(
-          message: 'Space Moderator',
+          message: 'Room Moderator',
           child: Icon(Atlas.shield_star_win_thin),
         ),
       );
@@ -163,7 +162,7 @@ class MemberListEntry extends ConsumerWidget {
           data: (data) => ActerAvatar(
             mode: DisplayMode.User,
             uniqueId: member.userId().toString(),
-            size: 18,
+            size: data.hasAvatar() ? 18 : 36,
             avatar: data.getAvatarImage(),
             displayName: data.displayName,
           ),
@@ -171,11 +170,20 @@ class MemberListEntry extends ConsumerWidget {
           error: (e, t) => Text('loading avatar failed: $e'),
         ),
         title: profile.when(
-          data: (data) => Text(data.displayName ?? userId),
+          data: (data) => Text(
+            data.displayName ?? userId,
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
           loading: () => Text(userId),
           error: (e, s) => Text('loading profile failed: $e'),
         ),
-        subtitle: Text(userId),
+        subtitle: Text(
+          userId,
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium!
+              .copyWith(color: Theme.of(context).colorScheme.neutral5),
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,

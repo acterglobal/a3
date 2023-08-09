@@ -109,6 +109,7 @@ class _ChatBubble extends ConsumerWidget {
     return Column(
       crossAxisAlignment:
           isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         _EmojiRow(
           isAuthor: isAuthor,
@@ -434,17 +435,30 @@ class _OriginalMessageBuilder extends ConsumerWidget {
       );
     } else if (message.repliedMessage is types.ImageMessage) {
       var imageMsg = message.repliedMessage as types.ImageMessage;
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ImageMessageBuilder(
-          message: imageMsg,
-          messageWidth: imageMsg.size.toInt(),
-        ),
+      return Row(
+        children: [
+          Container(
+            constraints: const BoxConstraints(maxHeight: 50),
+            margin: const EdgeInsets.all(12),
+            child: ImageMessageBuilder(
+              message: imageMsg,
+              messageWidth: imageMsg.size.toInt(),
+              isReplyContent: true,
+            ),
+          ),
+          Text(
+            'sent an image.',
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+        ],
       );
     } else if (message.repliedMessage is types.FileMessage) {
-      return Text(
-        message.repliedMessage!.metadata?['content'],
-        style: Theme.of(context).textTheme.bodySmall,
+      return Padding(
+        padding: const EdgeInsets.all(12),
+        child: Text(
+          message.repliedMessage!.metadata?['content'],
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
       );
     } else if (message.repliedMessage is types.CustomMessage) {
       return CustomMessageBuilder(

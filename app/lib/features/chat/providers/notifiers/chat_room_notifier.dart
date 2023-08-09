@@ -38,7 +38,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     subscription = timeline?.diffRx().listen((event) async {
       await _parseEvent(event);
     });
-    await timeline?.paginateBackwards(10);
+    bool hasMore = false;
+    do {
+      hasMore = await timeline!.paginateBackwards(10);
+      // wait for diffRx to be finished
+      sleep(const Duration(milliseconds: 100));
+    } while (hasMore && ref.read(messagesProvider).length < 10);
     ref.onDispose(() async {
       debugPrint('disposing message stream');
       await subscription?.cancel();
@@ -409,7 +414,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     Map<String, dynamic> reactions = {};
     for (var key in eventItem.reactionKeys()) {
       String k = key.toDartString();
-      reactions[k] = eventItem.reactionItems(k);
+      reactions[k] = eventItem.reactionItems(k)?.toList();
     }
     // state event
     switch (eventType) {
@@ -495,7 +500,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               'itemType': 'event',
               'eventType': eventType,
               'subType': eventItem.subType(),
-              'messageLength': body.length,
               'body': formattedBody ?? body,
             },
           );
@@ -590,7 +594,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                   'itemType': 'event',
                   'msgType': eventItem.subType(),
                   'eventType': eventType,
-                  'messageLength': body.length,
                 },
               );
             }
@@ -609,7 +612,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                   'itemType': 'event',
                   'eventType': eventType,
                   'msgType': eventItem.subType(),
-                  'messageLength': body.length,
                 },
               );
             }
@@ -619,9 +621,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             if (description != null) {
               String? formattedBody = description.formattedBody();
               String body = description.body(); // always exists
-              Map<String, dynamic> metadata = {
-                'messageLength': body.length,
-              };
+              Map<String, dynamic> metadata = {};
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }

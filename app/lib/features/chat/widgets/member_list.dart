@@ -39,10 +39,13 @@ class MemberList extends ConsumerWidget {
           ),
           itemBuilder: (context, index) {
             final member = members[index];
-            return MemberListEntry(
-              member: member,
-              convo: convo,
-              myMembership: myMembership.valueOrNull,
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: MemberListEntry(
+                member: member,
+                convo: convo,
+                myMembership: myMembership.valueOrNull,
+              ),
             );
           },
         );
