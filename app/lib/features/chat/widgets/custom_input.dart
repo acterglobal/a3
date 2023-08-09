@@ -3,6 +3,7 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
@@ -16,24 +17,20 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 class CustomChatInput extends ConsumerWidget {
-  static const List<Icon> _attachmentIcons = [
-    Icon(Atlas.camera_photo),
-    Icon(Atlas.folder),
-    Icon(Atlas.location),
-  ];
-
   const CustomChatInput({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userId = ref.watch(clientProvider)!.userId().toString();
     final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     final chatInputState = ref.watch(chatInputProvider);
     final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
     final repliedToMessage =
         ref.watch(chatRoomProvider.notifier).repliedToMessage;
     final isAuthor = ref.watch(chatRoomProvider.notifier).isAuthor();
+    final userProfile = chatRoomNotifier.getUserProfile(userId);
     Size size = MediaQuery.of(context).size;
     return Column(
       children: [
@@ -194,7 +191,13 @@ class CustomChatInput extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    const _BuildAttachmentBtn(),
+                    ActerAvatar(
+                      uniqueId: userId,
+                      mode: DisplayMode.User,
+                      displayName: userProfile?.displayName ?? userId,
+                      avatar: userProfile?.getAvatarImage(),
+                      size: userProfile!.hasAvatar() ? 18 : 36,
+                    ),
                     const Expanded(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -205,10 +208,6 @@ class CustomChatInput extends ConsumerWidget {
                       _BuildSendBtn(
                         onButtonPressed: () => onSendButtonPressed(ref),
                       ),
-                    if (!chatInputState.sendBtnVisible) _BuildImageBtn(),
-                    if (!chatInputState.sendBtnVisible)
-                      const SizedBox(width: 10),
-                    if (!chatInputState.sendBtnVisible) const _BuildAudioBtn(),
                   ],
                 ),
               ),
@@ -216,10 +215,6 @@ class CustomChatInput extends ConsumerWidget {
           ),
         ),
         EmojiPickerWidget(
-          size: size,
-        ),
-        AttachmentWidget(
-          icons: CustomChatInput._attachmentIcons,
           size: size,
         ),
       ],
@@ -241,46 +236,6 @@ class CustomChatInput extends ConsumerWidget {
         );
     ref.read(messageMarkDownProvider.notifier).update((state) => {});
     ref.read(mentionKeyProvider).currentState!.controller!.clear();
-  }
-}
-
-class _BuildAttachmentBtn extends ConsumerWidget {
-  const _BuildAttachmentBtn();
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final inputNotifier = ref.watch(chatInputProvider.notifier);
-    final chatInputState = ref.watch(chatInputProvider);
-    final chatInputFocus = ref.watch(chatInputFocusProvider);
-    return InkWell(
-      onTap: () {
-        chatInputState.attachmentVisible
-            ? inputNotifier.toggleAttachment(false)
-            : inputNotifier.toggleAttachment(true);
-        chatInputFocus.unfocus();
-        chatInputFocus.canRequestFocus = true;
-      },
-      child: const _BuildPlusBtn(),
-    );
-  }
-}
-
-class _BuildPlusBtn extends ConsumerWidget {
-  const _BuildPlusBtn();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final chatInputState = ref.watch(chatInputProvider);
-    return Visibility(
-      visible: chatInputState.attachmentVisible,
-      replacement: const Icon(Atlas.plus_circle),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: const Icon(Atlas.xmark_circle),
-      ),
-    );
   }
 }
 
@@ -463,148 +418,6 @@ class _ReplyContentWidget extends StatelessWidget {
       );
     }
     return messageWidget ?? const SizedBox.shrink();
-  }
-}
-
-class AttachmentWidget extends ConsumerWidget {
-  final List<Icon> icons;
-  final Size size;
-
-  const AttachmentWidget({
-    Key? key,
-    required this.icons,
-    required this.size,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final chatInputState = ref.watch(chatInputProvider);
-    return Offstage(
-      offstage: !chatInputState.attachmentVisible,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        width: double.infinity,
-        height: size.height * 0.3,
-        child: Column(
-          children: <Widget>[
-            Container(
-              width: double.infinity,
-              height: size.height * 0.172,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: const _BuildSettingBtn(),
-            ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () => onClickCamera(context, ref),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Atlas.camera),
-                          SizedBox(height: 6),
-                          Text(
-                            'Camera',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () => onClickFile(context, ref),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Atlas.folder),
-                          SizedBox(height: 6),
-                          Text(
-                            'File',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () => onClickLocation(context, ref),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Atlas.location),
-                          SizedBox(height: 6),
-                          Text(
-                            'Location',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void onClickCamera(BuildContext context, WidgetRef ref) =>
-      ref.read(chatRoomProvider.notifier).handleMultipleImageSelection(context);
-
-  void onClickFile(BuildContext context, WidgetRef ref) =>
-      ref.read(chatRoomProvider.notifier).handleFileSelection(context);
-
-  void onClickLocation(BuildContext context, WidgetRef ref) {}
-}
-
-class _BuildAudioBtn extends StatelessWidget {
-  const _BuildAudioBtn();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Icon(Atlas.microphone);
-  }
-}
-
-class _BuildImageBtn extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return InkWell(
-      onTap: () => onClick(context, ref),
-      child: const Icon(Atlas.camera_photo),
-    );
-  }
-
-  void onClick(BuildContext context, WidgetRef ref) =>
-      ref.read(chatRoomProvider.notifier).handleMultipleImageSelection(context);
-}
-
-class _BuildSettingBtn extends StatelessWidget {
-  const _BuildSettingBtn();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Text(AppLocalizations.of(context)!.grantAccessText),
-        ),
-        ElevatedButton(
-          onPressed: () {},
-          child: Text(
-            AppLocalizations.of(context)!.settings,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ),
-      ],
-    );
   }
 }
 
