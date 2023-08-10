@@ -14,7 +14,7 @@ use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
-use toml::{map::Map as TomlMap, Table, Value as TomlValue};
+use toml::{Table, Value as TomlValue};
 use tracing::trace;
 
 pub mod filters;
@@ -209,7 +209,7 @@ fn execute_value_template(
             Ok(TomlValue::Array(items))
         }
         TomlValue::Table(t) => {
-            let mut new_table = TomlMap::with_capacity(t.len());
+            let mut new_table = toml::map::Map::with_capacity(t.len());
             for (key, value) in t.into_iter() {
                 let val = execute_value_template(value, env, context)
                     .map_err(|e| Error::Remap(key.clone(), e.to_string()))?;
