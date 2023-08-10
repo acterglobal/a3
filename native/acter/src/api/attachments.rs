@@ -4,24 +4,26 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
-use matrix_sdk::room::{Joined, Room};
-use ruma::{
-    assign,
-    events::room::{
-        message::{
-            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-            ImageMessageEventContent, VideoInfo, VideoMessageEventContent,
+use futures::stream::StreamExt;
+use matrix_sdk::{
+    room::{Joined, Room},
+    ruma::{
+        assign,
+        events::room::{
+            message::{
+                AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+                ImageMessageEventContent, VideoInfo, VideoMessageEventContent,
+            },
+            ImageInfo,
         },
-        ImageInfo,
+        MxcUri, OwnedEventId, OwnedUserId, UInt,
     },
-    MxcUri, OwnedEventId, OwnedUserId, UInt,
 };
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
+use tokio_stream::Stream;
 
 use super::{api::FfiBuffer, client::Client, RUNTIME};
-use futures::stream::StreamExt;
-
 use crate::{AudioDesc, FileDesc, ImageDesc, VideoDesc};
 
 impl Client {
@@ -348,11 +350,11 @@ impl AttachmentsManager {
         })
     }
 
-    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
         self.client.subscribe_stream(self.inner.update_key())
     }
 
-    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
+    pub fn subscribe(&self) -> Receiver<()> {
         self.client.subscribe(self.inner.update_key())
     }
 }

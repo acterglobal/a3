@@ -4,7 +4,7 @@ use matrix_sdk::ruma::events::{macros::EventContent, room::message::TextMessageE
 use serde::{Deserialize, Serialize};
 use tracing::trace;
 
-use crate::util::deserialize_some;
+use crate::{util::deserialize_some, Result};
 
 /// Calendar Events
 /// modeled after [JMAP Calendar Events](https://jmap.io/spec-calendars.html#calendar-events), extensions to
@@ -211,7 +211,7 @@ pub struct CalendarEventUpdateEventContent {
 }
 
 impl CalendarEventUpdateEventContent {
-    pub fn apply(&self, calendar_event: &mut CalendarEventEventContent) -> crate::Result<bool> {
+    pub fn apply(&self, calendar_event: &mut CalendarEventEventContent) -> Result<bool> {
         let mut updated = false;
         if let Some(title) = &self.title {
             calendar_event.title = title.clone();

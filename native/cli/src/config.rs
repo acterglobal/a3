@@ -1,8 +1,8 @@
 use acter::api::{login_new_client, login_with_token, Client};
 use anyhow::Result;
-use clap::{crate_version, Parser};
+use clap::{crate_version, Parser, ValueHint};
 use dialoguer::{theme::ColorfulTheme, Password};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use tracing::{error, info, warn};
 
 use crate::action::Action;
@@ -37,7 +37,7 @@ pub struct LoginConfig {
     #[clap(
         short = 'u',
         long = "user",
-        value_hint = clap::ValueHint::Username,
+        value_hint = ValueHint::Username,
         env = ENV_USER
     )]
     login_username: String,
@@ -72,7 +72,7 @@ impl LoginConfig {
         warn!("Logging in as {}", username);
         let base_path = format!(".local/{username}/");
 
-        if self.force_login && std::path::Path::new(&base_path).exists() {
+        if self.force_login && Path::new(&base_path).exists() {
             std::fs::remove_dir_all(&base_path)?;
         }
         // FIXME: this should be encrypted.
@@ -80,7 +80,7 @@ impl LoginConfig {
             .token_path
             .clone()
             .unwrap_or_else(|| PathBuf::from(format!("{base_path}/access_token.json")));
-        let access_token_path = std::path::Path::new(&token_path_string);
+        let access_token_path = Path::new(&token_path_string);
         if access_token_path.exists() && access_token_path.is_file() {
             info!(
                 "Reusing previous access token from {}",

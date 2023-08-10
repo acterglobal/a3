@@ -1,5 +1,5 @@
 use acter::new_space_settings_builder;
-use anyhow::{bail, Ok, Result};
+use anyhow::{bail, Result};
 use tokio::sync::broadcast::error::TryRecvError;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -91,7 +91,7 @@ async fn spaces_deleted() -> Result<()> {
             // not yet.
             bail!("First still empty");
         }
-        anyhow::Ok(())
+        Ok(())
     });
 
     assert!(first_listener.try_recv().is_ok());
@@ -120,7 +120,7 @@ async fn spaces_deleted() -> Result<()> {
             // this was empty, try again
             bail!("all listeners still empty");
         }
-        anyhow::Ok(())
+        Ok(())
     })
     .await?;
 
@@ -129,7 +129,7 @@ async fn spaces_deleted() -> Result<()> {
             // this was empty, try again
             bail!("second listener still empty");
         }
-        anyhow::Ok(())
+        Ok(())
     })
     .await?;
 
@@ -183,7 +183,8 @@ async fn create_subspace() -> Result<()> {
     cfg.set_name("subspace".to_owned());
     cfg.set_parent(first.room_id().to_string());
 
-    let subspace_id = user.create_acter_space(Box::new(cfg.build()?)).await?;
+    let settings = cfg.build()?;
+    let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
     let fetcher_client = user.clone();
     Retry::spawn(retry_strategy.clone(), move || {

@@ -5,7 +5,7 @@ use matrix_sdk::ruma::{
 use serde::{Deserialize, Serialize};
 
 use super::EventMeta;
-use crate::models::ActerModel;
+use crate::{models::ActerModel, Result};
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, Builder)]
 pub struct TestModel {
@@ -53,11 +53,11 @@ impl ActerModel for TestModel {
         Some(self.belongs_to.clone())
     }
 
-    fn transition(&mut self, _model: &super::AnyActerModel) -> crate::Result<bool> {
+    fn transition(&mut self, _model: &super::AnyActerModel) -> Result<bool> {
         Ok(true)
     }
 
-    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &super::Store) -> Result<Vec<String>> {
         super::default_model_execute(store, self.into()).await
     }
 }

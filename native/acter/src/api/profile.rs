@@ -5,7 +5,7 @@ use matrix_sdk::{
     ruma::{
         api::client::{
             media::get_content_thumbnail::v3::Method as ThumbnailMethod,
-            user_directory::search_users::v3::User as SearchedUser,
+            user_directory::search_users::v3::User,
         },
         events::room::MediaSource,
         OwnedRoomId, OwnedUserId, UInt,
@@ -15,18 +15,18 @@ use matrix_sdk::{
 
 use super::{
     api::FfiBuffer,
-    common::{OptionBuffer, OptionText},
+    common::{OptionBuffer, OptionString},
     RUNTIME,
 };
 
 #[derive(Clone)]
 pub struct PublicProfile {
-    inner: SearchedUser,
+    inner: User,
     client: Client,
 }
 
 impl PublicProfile {
-    pub fn new(inner: SearchedUser, client: Client) -> Self {
+    pub fn new(inner: User, client: Client) -> Self {
         PublicProfile { inner, client }
     }
 
@@ -36,12 +36,12 @@ impl PublicProfile {
             source: MediaSource::Plain(url.to_owned()),
             format,
         };
-        Ok(Some(
-            self.client
-                .media()
-                .get_media_content(&request, true)
-                .await?,
-        ))
+        let buf = self
+            .client
+            .media()
+            .get_media_content(&request, true)
+            .await?;
+        Ok(Some(buf))
     }
 }
 
@@ -163,24 +163,24 @@ impl UserProfile {
         Ok(OptionBuffer::new(None))
     }
 
-    pub async fn get_display_name(&self) -> Result<OptionText> {
+    pub async fn get_display_name(&self) -> Result<OptionString> {
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
                     let text = account.get_display_name().await?;
-                    Ok(OptionText::new(text))
+                    Ok(OptionString::new(text))
                 })
                 .await?;
         }
         if let Some(member) = self.member.clone() {
             let text = member.display_name().map(|x| x.to_string());
-            return Ok(OptionText::new(text));
+            return Ok(OptionString::new(text));
         }
         if let Some(public_profile) = self.public_profile.clone() {
             let text = public_profile.inner.display_name;
-            return Ok(OptionText::new(text));
+            return Ok(OptionString::new(text));
         }
-        Ok(OptionText::new(None))
+        Ok(OptionString::new(None))
     }
 }
 
@@ -234,7 +234,7 @@ impl RoomProfile {
             .await?
     }
 
-    pub async fn get_display_name(&self) -> Result<OptionText> {
+    pub async fn get_display_name(&self) -> Result<OptionString> {
         let room = self
             .client
             .get_room(&self.room_id)
@@ -243,11 +243,11 @@ impl RoomProfile {
             .spawn(async move {
                 let result = room.display_name().await?;
                 match result {
-                    DisplayName::Named(name) => Ok(OptionText::new(Some(name))),
-                    DisplayName::Aliased(name) => Ok(OptionText::new(Some(name))),
-                    DisplayName::Calculated(name) => Ok(OptionText::new(Some(name))),
-                    DisplayName::EmptyWas(name) => Ok(OptionText::new(Some(name))),
-                    DisplayName::Empty => Ok(OptionText::new(None)),
+                    DisplayName::Named(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Aliased(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Calculated(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::EmptyWas(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Empty => Ok(OptionString::new(None)),
                 }
             })
             .await?
