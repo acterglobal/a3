@@ -11,6 +11,7 @@ use crate::{
         AttachmentUpdateEventContent,
     },
     store::Store,
+    Result,
 };
 
 static ATTACHMENTS_FIELD: &str = "attachments";
@@ -48,7 +49,7 @@ impl AttachmentsManager {
         }
     }
 
-    pub async fn attachments(&self) -> crate::Result<Vec<Attachment>> {
+    pub async fn attachments(&self) -> Result<Vec<Attachment>> {
         let attachments = self
             .store
             .get_list(&Attachment::index_for(&self.event_id))
@@ -61,7 +62,7 @@ impl AttachmentsManager {
         Ok(attachments)
     }
 
-    pub(crate) async fn add_attachment(&mut self, _attachment: &Attachment) -> crate::Result<bool> {
+    pub(crate) async fn add_attachment(&mut self, _attachment: &Attachment) -> Result<bool> {
         self.stats.has_attachments = true;
         self.stats.total_attachments_count += 1;
         Ok(true)
@@ -81,7 +82,7 @@ impl AttachmentsManager {
         Self::stats_field_for(&self.event_id)
     }
 
-    pub async fn save(&self) -> crate::Result<String> {
+    pub async fn save(&self) -> Result<String> {
         let update_key = self.update_key();
         self.store.set_raw(&update_key, &self.stats).await?;
         Ok(update_key)
@@ -138,7 +139,7 @@ impl super::ActerModel for Attachment {
         &[]
     }
 
-    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
         let belongs_to = self.belongs_to().unwrap();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying attachment");
 
@@ -171,7 +172,7 @@ impl super::ActerModel for Attachment {
         Some(vec![self.inner.on.event_id.to_string()])
     }
 
-    fn transition(&mut self, model: &super::AnyActerModel) -> crate::Result<bool> {
+    fn transition(&mut self, model: &super::AnyActerModel) -> Result<bool> {
         let AnyActerModel::AttachmentUpdate(update) = model else {
             return Ok(false)
         };
@@ -221,7 +222,7 @@ impl super::ActerModel for AttachmentUpdate {
         Some(vec![self.inner.attachment.event_id.to_string()])
     }
 
-    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &super::Store) -> Result<Vec<String>> {
         super::default_model_execute(store, self.into()).await
     }
 }

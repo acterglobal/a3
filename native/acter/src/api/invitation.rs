@@ -4,12 +4,12 @@ use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::{Room, RoomMember},
     ruma::{
+        api::client::user_directory::search_users::v3::User,
         events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
         OwnedRoomId, OwnedUserId, RoomId,
     },
     Client as SdkClient, RoomMemberships,
 };
-use ruma::api::client::user_directory::search_users::v3::User;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
 use tracing::{error, info};

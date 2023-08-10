@@ -23,7 +23,7 @@ pub struct Notification {
 
 impl Notification {
     pub(crate) async fn new(notification: RumaNotification, client: Client) -> Self {
-        let room = client.room_by_id_typed(&notification.room_id).await;
+        let room = client.room_by_id_typed(&notification.room_id);
         let (is_space, is_acter_space) = if let Some(room) = &room {
             if room.is_space() {
                 (true, room.is_acter_space().await)
@@ -100,17 +100,15 @@ impl NotificationListResult {
 
     pub async fn notifications(&self) -> Result<Vec<Notification>> {
         let client = self.client.clone();
-        let notifs = self.resp.notifications.clone();
-        Ok(RUNTIME
+        let ruma_notifications = self.resp.notifications.clone();
+        RUNTIME
             .spawn(async move {
-                futures::future::join_all(
-                    notifs
-                        .into_iter()
-                        .map(|notification| Notification::new(notification, client.clone())),
-                )
-                .await
+                let notifications = ruma_notifications
+                    .into_iter()
+                    .map(|notification| Notification::new(notification, client.clone()));
+                Ok(futures::future::join_all(notifications).await)
             })
-            .await?)
+            .await?
     }
 }
 

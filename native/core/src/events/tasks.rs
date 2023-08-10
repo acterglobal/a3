@@ -1,4 +1,5 @@
 use chrono_tz::Tz;
+use core::result::Result as CoreResult;
 use derive_builder::Builder;
 use derive_getters::Getters;
 use matrix_sdk::ruma::{
@@ -14,7 +15,7 @@ use tracing::trace;
 /// [ietf rfc8984](https://www.rfc-editor.org/rfc/rfc8984.html#name-task).
 ///
 use super::{BelongsTo, Color, Update, UtcDateTime};
-use crate::util::deserialize_some;
+use crate::{util::deserialize_some, Result as ActerResult};
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub enum SpecialTaskListRole {
@@ -179,7 +180,7 @@ pub struct TaskListUpdateEventContent {
 }
 
 impl TaskListUpdateEventContent {
-    pub fn apply(&self, task_list: &mut TaskListEventContent) -> crate::Result<bool> {
+    pub fn apply(&self, task_list: &mut TaskListEventContent) -> ActerResult<bool> {
         let mut updated = false;
         if let Some(name) = &self.name {
             task_list.name = name.clone();
@@ -306,7 +307,7 @@ pub struct TaskEventContent {
 }
 
 impl TaskBuilder {
-    fn validate(&self) -> Result<(), String> {
+    fn validate(&self) -> CoreResult<(), String> {
         if let Some(Some(percent)) = &self.progress_percent {
             if *percent > 100 {
                 return Err("Progress Precent can't be higher than 100".to_string());
@@ -448,7 +449,7 @@ pub struct TaskUpdateEventContent {
 }
 
 impl TaskUpdateEventContent {
-    pub fn apply(&self, task: &mut TaskEventContent) -> crate::Result<bool> {
+    pub fn apply(&self, task: &mut TaskEventContent) -> ActerResult<bool> {
         let mut updated = false;
         if let Some(title) = &self.title {
             task.title = title.clone();

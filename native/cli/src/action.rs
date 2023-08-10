@@ -1,4 +1,5 @@
 use anyhow::Result;
+use clap::Subcommand;
 
 mod execute;
 mod history;
@@ -12,7 +13,7 @@ pub use list::List;
 pub use manage::Manage;
 pub use mock::MockOpts;
 
-#[derive(clap::Subcommand, Debug)]
+#[derive(Subcommand, Debug)]
 pub enum Action {
     /// List rooms
     List(List),

@@ -4,6 +4,7 @@ use matrix_sdk::ruma::events::{macros::EventContent, room::message::TextMessageE
 use serde::{Deserialize, Serialize};
 
 use super::{BelongsTo, References, Update};
+use crate::Result;
 
 /// Comment Event
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
@@ -34,7 +35,7 @@ pub struct CommentUpdateEventContent {
 }
 
 impl CommentUpdateEventContent {
-    pub fn apply(&self, task: &mut CommentEventContent) -> crate::Result<bool> {
+    pub fn apply(&self, task: &mut CommentEventContent) -> Result<bool> {
         task.content = self.content.clone();
         Ok(true)
     }

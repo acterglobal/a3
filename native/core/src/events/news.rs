@@ -13,7 +13,7 @@ use matrix_sdk::ruma::{
 use serde::{Deserialize, Serialize};
 
 use super::{Colorize, ObjRef, Update};
-use crate::util::deserialize_some;
+use crate::{util::deserialize_some, Result};
 
 // if you change the order of these enum variables, enum value will change and parsing of old content will fail
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -177,7 +177,7 @@ pub struct NewsEntryUpdateEventContent {
 }
 
 impl NewsEntryUpdateEventContent {
-    pub fn apply(&self, task: &mut NewsEntryEventContent) -> crate::Result<bool> {
+    pub fn apply(&self, task: &mut NewsEntryEventContent) -> Result<bool> {
         let mut updated = false;
         if let Some(slides) = &self.slides {
             task.slides = slides.clone();

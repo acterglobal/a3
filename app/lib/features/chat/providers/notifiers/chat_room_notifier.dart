@@ -192,7 +192,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       Map<String, dynamic> record = {};
       var userName = (await profile.getDisplayName()).text();
       if (await profile.hasAvatar()) {
-        var userAvatar = (await profile.getThumbnail(62, 60)).data()!;
+        var userAvatar = (await profile.getThumbnail(62, 60)).data();
         userProfiles[userId] =
             ProfileData(userName ?? simplifyUserId(userId), userAvatar);
         record['avatar'] = userProfiles[userId]?.getAvatarImage();
