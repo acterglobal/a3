@@ -3,6 +3,7 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/spaces/space_info.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -138,7 +139,9 @@ class _ShellToolbar extends ConsumerWidget {
       child: Row(
         children: [
           InkWell(
-            onTap: () => context.goNamed(Routes.dashboard.name),
+            onTap: () => context.canPop()
+                ? context.pop()
+                : context.goNamed(Routes.dashboard.name),
             child: Icon(
               Atlas.arrow_left,
               color: Theme.of(context).colorScheme.neutral5,
@@ -220,11 +223,15 @@ class _ShellHeader extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.only(left: 8.0),
                 child: Text(
                   spaceProfile.displayName ?? spaceId,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10, left: 10),
+                child: SpaceInfo(spaceId: spaceId),
               ),
               Consumer(
                 builder: (context, ref, child) {
@@ -239,7 +246,7 @@ class _ShellHeader extends ConsumerWidget {
                         members = members.sublist(0, 5);
                       }
                       return Padding(
-                        padding: const EdgeInsets.only(left: 8),
+                        padding: const EdgeInsets.only(left: 14),
                         child: Wrap(
                           direction: Axis.horizontal,
                           spacing: -6,

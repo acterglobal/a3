@@ -1292,6 +1292,15 @@ object Space {
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
 
+    /// whether or not this space is public
+    fn is_public() -> bool;
+
+    /// join rules for this space.
+    fn join_rule_str() -> string;
+
+    /// the ids of the rooms the restriction applies to
+    fn restricted_room_ids_str() -> Vec<string>;
+
     /// whether or not this space has been marked as an 'acter' one
     fn is_acter_space() -> Future<Result<bool>>;
 
@@ -1363,7 +1372,7 @@ object Space {
     /// leave this room
     fn leave() -> Future<Result<bool>>;
     
-       /// update the power levels of specified member
+    /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
 
 }

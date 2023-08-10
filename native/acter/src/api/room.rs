@@ -40,7 +40,10 @@ use matrix_sdk::{
     Client, RoomMemberships, RoomState,
 };
 use matrix_sdk_ui::timeline::RoomExt;
-use ruma::events::{EventContent, StaticEventContent};
+use ruma::events::{
+    room::join_rules::{AllowRule, JoinRule},
+    EventContent, StaticEventContent,
+};
 use std::{fs, io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tracing::{error, info};
 
@@ -1105,6 +1108,32 @@ impl Room {
                 Ok(encrypted)
             })
             .await?
+    }
+
+    pub fn join_rule_str(&self) -> String {
+        match self.room.join_rule() {
+            JoinRule::Invite => "invite".to_owned(),
+            JoinRule::Knock => "knock".to_owned(),
+            JoinRule::KnockRestricted(_) => "knock_restricted".to_owned(),
+            JoinRule::Restricted(_) => "restricted".to_owned(),
+            JoinRule::Private => "private".to_owned(),
+            JoinRule::Public => "public".to_owned(),
+            _ => "unknown".to_owned(),
+        }
+    }
+
+    pub fn restricted_room_ids_str(&self) -> Vec<String> {
+        match self.room.join_rule() {
+            JoinRule::KnockRestricted(res) | JoinRule::Restricted(res) => res
+                .allow
+                .into_iter()
+                .filter_map(|a| match a {
+                    AllowRule::RoomMembership(o) => Some(o.room_id.to_string()),
+                    _ => None,
+                })
+                .collect(),
+            _ => vec![],
+        }
     }
 
     pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
