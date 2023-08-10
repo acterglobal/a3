@@ -1487,11 +1487,8 @@ impl Room {
 
                 let response = client.media().upload(&content_type, image_buf).await?;
 
-                let image_content = ImageMessageEventContent::plain(
-                    name,
-                    response.content_uri,
-                    Some(Box::new(info)),
-                );
+                let mut image_content = ImageMessageEventContent::plain(name, response.content_uri);
+                image_content.info = Some(Box::new(info));
                 let content = RoomMessageEventContent::new(MessageType::Image(image_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 
@@ -1553,11 +1550,8 @@ impl Room {
 
                 let response = client.media().upload(&content_type, image_buf).await?;
 
-                let audio_content = AudioMessageEventContent::plain(
-                    name,
-                    response.content_uri,
-                    Some(Box::new(info)),
-                );
+                let mut audio_content = AudioMessageEventContent::plain(name, response.content_uri);
+                audio_content.info = Some(Box::new(info));
                 let content = RoomMessageEventContent::new(MessageType::Audio(audio_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 
@@ -1625,11 +1619,8 @@ impl Room {
 
                 let response = client.media().upload(&content_type, video_buf).await?;
 
-                let video_content = VideoMessageEventContent::plain(
-                    name,
-                    response.content_uri,
-                    Some(Box::new(info)),
-                );
+                let mut video_content = VideoMessageEventContent::plain(name, response.content_uri);
+                video_content.info = Some(Box::new(info));
                 let content = RoomMessageEventContent::new(MessageType::Video(video_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 
@@ -1688,11 +1679,8 @@ impl Room {
 
                 let response = client.media().upload(&content_type, file_buf).await?;
 
-                let file_content = FileMessageEventContent::plain(
-                    name,
-                    response.content_uri,
-                    Some(Box::new(info)),
-                );
+                let mut file_content = FileMessageEventContent::plain(name, response.content_uri);
+                file_content.info = Some(Box::new(info));
                 let content = RoomMessageEventContent::new(MessageType::File(file_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 

@@ -1,8 +1,8 @@
 use acter_core::{
     client::CoreClient, executor::Executor, models::AnyActerModel, spaces::is_acter_space,
-    store::Store, templates::Engine, RestoreToken,
+    store::Store, templates::Engine, CustomAuthSession, RestoreToken,
 };
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
 use futures::{
@@ -25,8 +25,8 @@ use ruma::{
     },
     device_id,
     events::room::MediaSource,
-    OwnedDeviceId, OwnedMxcUri, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId,
-    RoomId, UserId,
+    OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName,
+    OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
 };
 use std::{
     collections::{BTreeMap, HashMap},
@@ -692,7 +692,11 @@ impl Client {
             Err(e) => false,
         };
         let result = serde_json::to_string(&RestoreToken {
-            session,
+            session: CustomAuthSession {
+                user_id: session.meta().user_id.clone(),
+                device_id: session.meta().device_id.clone(),
+                access_token: session.access_token().to_string(),
+            },
             homeurl,
             is_guest,
         })?;
@@ -745,16 +749,51 @@ impl Client {
         self.core.client().user_id()
     }
 
-    pub(crate) fn room(&self, room_id: String) -> Result<Room> {
-        self.room_typed(&RoomId::parse(room_id)?)
-            .context("Room not found")
+    pub async fn room(&self, room_id_or_alias: String) -> Result<Room> {
+        let id_or_alias = OwnedRoomOrAliasId::try_from(room_id_or_alias).expect("just checked");
+        self.room_typed(&id_or_alias).await
     }
 
-    pub fn room_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
+    pub async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
+        if room_id_or_alias.is_room_id() {
+            let room_id = OwnedRoomId::try_from(room_id_or_alias.as_str()).expect("just checked");
+            return self
+                .room_by_id_typed(&room_id)
+                .await
+                .context("Room not found");
+        }
+
+        let room_alias =
+            OwnedRoomAliasId::try_from(room_id_or_alias.as_str()).expect("just checked");
+        self.room_by_alias_typed(&room_alias).await
+    }
+
+    pub async fn room_by_id_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
         self.core
             .client()
             .get_room(room_id)
             .map(|room| Room { room })
+    }
+
+    pub async fn room_by_alias_typed(&self, room_alias: &OwnedRoomAliasId) -> Result<Room> {
+        for r in self.core.client().rooms() {
+            // looping locally first
+            if let Some(con_alias) = r.canonical_alias() {
+                if &con_alias == room_alias {
+                    return Ok(Room { room: r });
+                }
+            }
+            for alt_alias in r.alt_aliases() {
+                if &alt_alias == room_alias {
+                    return Ok(Room { room: r });
+                }
+            }
+        }
+        // nothing found, try remote:
+        let response = self.core.client().resolve_room_alias(room_alias).await?;
+        self.room_by_id_typed(&response.room_id)
+            .await
+            .context("Room not found")
     }
 
     pub fn notifications_stream(&self) -> impl Stream<Item = Notification> {
@@ -866,7 +905,7 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
-                match client.logout().await {
+                match client.matrix_auth().logout().await {
                     Ok(resp) => Ok(true),
                     Err(e) => {
                         error!("logout error: {:?}", e);

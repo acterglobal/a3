@@ -1,10 +1,3 @@
-use super::{
-    client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
-    common::{OptionBuffer, OptionText},
-    room::{Member, Room},
-    search::PublicSearchResult,
-    RUNTIME,
-};
 pub use acter_core::spaces::{
     CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
     SpaceRelations as CoreSpaceRelations,
@@ -28,34 +21,43 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{
-    deserialized_responses::EncryptionInfo,
     event_handler::{Ctx, EventHandlerHandle},
-    media::{MediaFormat, MediaRequest, MediaThumbnailSize},
+    media::{MediaFormat, MediaRequest},
     room::{Messages, MessagesOptions, Room as SdkRoom},
     ruma::{
-        api::client::state::send_state_event::v3::Request as SendStateEventRequest,
-        events::{
-            space::child::SpaceChildEventContent, AnyStateEventContent, MessageLikeEvent,
-            StateEventType,
+        api::client::{
+            space::{
+                get_hierarchy::v1::{
+                    Request as GetHierarchyRequest, Response as GetHierarchyResponse,
+                },
+                SpaceHierarchyRoomsChunk, SpaceRoomJoinRule,
+            },
+            state::send_state_event::v3::Request as SendStateEventRequest,
         },
+        assign,
+        events::{
+            room::MediaSource,
+            space::child::{HierarchySpaceChildEvent, SpaceChildEventContent},
+            AnyStateEventContent, MessageLikeEvent, StateEventType,
+        },
+        room::RoomType,
         serde::Raw,
-        OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
+        OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
     },
     Client as SdkClient,
-};
-
-use ruma::{
-    api::client::space::{SpaceHierarchyRoomsChunk, SpaceRoomJoinRule},
-    assign,
-    events::room::MediaSource,
-    events::space::child::HierarchySpaceChildEvent,
-    room::RoomType,
-    OwnedMxcUri,
 };
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, thread::JoinHandle};
 use tokio::sync::broadcast::Receiver;
 use tracing::{error, trace, warn};
+
+use super::{
+    client::{devide_spaces_from_convos, Client, SpaceFilterBuilder},
+    common::OptionBuffer,
+    room::Room,
+    search::PublicSearchResult,
+    RUNTIME,
+};
 
 #[derive(Debug, Clone)]
 pub struct Space {
@@ -534,7 +536,7 @@ impl SpaceHierarchyRoomInfo {
 }
 
 pub struct SpaceHierarchyListResult {
-    resp: ruma::api::client::space::get_hierarchy::v1::Response,
+    resp: GetHierarchyResponse,
     client: Client,
 }
 
@@ -542,6 +544,7 @@ impl SpaceHierarchyListResult {
     pub fn next_batch(&self) -> Option<String> {
         self.resp.next_batch.clone()
     }
+
     pub async fn rooms(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
         let client = self.client.clone();
         let chunks = self.resp.rooms.clone();
@@ -572,9 +575,9 @@ impl SpaceRelations {
         let room_id = self.space.room_id().to_owned();
         RUNTIME
             .spawn(async move {
-                let request = assign!(ruma::api::client::space::get_hierarchy::v1::Request::new(room_id), { from, max_depth: Some(1u32.into())});
+                let request = assign!(GetHierarchyRequest::new(room_id), { from, max_depth: Some(1u32.into()) });
                 let resp = c.send(request, None).await?;
-                Ok(SpaceHierarchyListResult{ resp, client: c.clone() })
+                Ok(SpaceHierarchyListResult { resp, client: c.clone() })
             })
             .await?
     }
@@ -686,7 +689,7 @@ impl Space {
                     .send_state_event_for_key(
                         &room_id,
                         assign!(SpaceChildEventContent::new(), {
-                            via: Some(vec![homeserver])
+                            via: Some(vec![homeserver]),
                         }),
                     )
                     .await?;
@@ -705,6 +708,7 @@ impl Space {
             })
             .await?
     }
+
     pub async fn is_child_space_of(&self, room_id: String) -> bool {
         let Ok(room_id) = OwnedRoomId::try_from(room_id) else {
             warn!("Asked for a not proper room id");
@@ -767,6 +771,7 @@ impl Client {
             inner: room,
         })
     }
+
     pub async fn public_spaces(
         &self,
         search_term: Option<String>,
@@ -793,20 +798,31 @@ impl Client {
             .await?
     }
 
-    pub async fn get_space(&self, alias_or_id: String) -> Result<Space> {
-        if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
-            self.get_room(&room_id)
-                .context("Room not found")
-                .map(|room| Space::new(self.clone(), Room { room }))
-        } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
-            for space in self.spaces().await?.into_iter() {
-                if let Some(space_alias) = space.inner.room.canonical_alias() {
-                    if space_alias == alias_id {
-                        return Ok(space);
-                    }
-                }
+    pub async fn get_space(&self, room_id_or_alias: String) -> Result<Space> {
+        if let Ok(room_id) = OwnedRoomId::try_from(room_id_or_alias.clone()) {
+            // alias passes here too
+            if let Some(room) = self.get_room(&room_id) {
+                let space = Space {
+                    client: self.clone(),
+                    inner: Room { room },
+                };
+                return Ok(space);
             }
-            bail!("Room with alias not found");
+        }
+        // if None, it is alias
+        if let Ok(alias_id) = OwnedRoomAliasId::try_from(room_id_or_alias) {
+            let me = self.clone();
+            RUNTIME
+                .spawn(async move {
+                    let response = me.resolve_room_alias(&alias_id).await?;
+                    for space in me.spaces().await?.into_iter() {
+                        if space.inner.room.room_id() == response.room_id {
+                            return Ok(space);
+                        }
+                    }
+                    bail!("Room with alias not found");
+                })
+                .await?
         } else {
             bail!("Neither roomId nor alias provided");
         }
