@@ -1,4 +1,3 @@
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/providers/space_providers.dart';

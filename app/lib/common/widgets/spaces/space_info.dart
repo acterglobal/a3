@@ -25,7 +25,7 @@ class SpaceInfo extends ConsumerWidget {
     final space = ref.watch(spaceProvider(spaceId));
     return space.when(
       data: (space) => Consumer(
-        builder: (context, ref, _child) {
+        builder: (context, ref, child) {
           final isEncrypted = ref.watch(isEncryptedForSpace(space));
           final isActerSpace = ref.watch(isActerSpaceForSpace(space));
           final joinRuleStr = space.joinRuleStr();
