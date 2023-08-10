@@ -241,7 +241,7 @@ impl ConvoController {
                     .deserialize_as::<OriginalSyncRoomEncryptedEvent>()
                     .unwrap();
                 let msg = RoomMessage::room_encrypted_from_sync_event(ev, room_id.to_owned());
-                convo.set_latest_message(msg.clone());
+                convo.set_latest_message(msg);
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                     convos.remove(idx);
@@ -272,7 +272,7 @@ impl ConvoController {
 
             let mut convo = Convo::new(Room { room: room.clone() });
             let msg = RoomMessage::room_message_from_sync_event(ev, room_id.to_owned(), sent_by_me);
-            convo.set_latest_message(msg.clone());
+            convo.set_latest_message(msg);
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                 convos.remove(idx);
@@ -299,7 +299,7 @@ impl ConvoController {
 
                 let mut convo = Convo::new(Room { room: room.clone() });
                 let msg = RoomMessage::room_member_from_sync_event(ev, room_id.to_owned());
-                convo.set_latest_message(msg.clone());
+                convo.set_latest_message(msg);
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                     convos.remove(idx);
@@ -352,7 +352,7 @@ impl ConvoController {
 
             let mut convo = Convo::new(Room { room: room.clone() });
             let msg = RoomMessage::room_redaction_from_sync_event(ev, room_id.to_owned());
-            convo.set_latest_message(msg.clone());
+            convo.set_latest_message(msg);
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                 convos.remove(idx);
