@@ -6,7 +6,6 @@ use acter::{
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
-use futures::future::try_join_all;
 use matrix_sdk::{
     ruma::{api::client::room::Visibility, OwnedUserId},
     HttpError,
@@ -385,7 +384,7 @@ impl<'a> Mock<'a> {
     pub async fn export(&mut self) -> Result<()> {
         std::fs::create_dir_all(".local")?;
 
-        try_join_all(self.users.values().map(|cl| async move {
+        futures::future::try_join_all(self.users.values().map(|cl| async move {
             let full_username = cl.user_id().expect("You seem to be not logged in");
             let user_export_file = sanitize(".local", &format!("mock_export_{full_username:}"));
 

@@ -6,9 +6,8 @@ use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
 use futures::{
-    future::{join_all, ready},
     pin_mut,
-    stream::{self, Stream, StreamExt},
+    stream::{Stream, StreamExt},
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
@@ -136,8 +135,8 @@ pub(crate) async fn devide_spaces_from_convos(
     filter: Option<SpaceFilter>,
 ) -> (Vec<Space>, Vec<Convo>) {
     let filter = filter.unwrap_or_default();
-    let (spaces, convos, _) = stream::iter(client.clone().rooms().into_iter())
-        .filter(|room| ready(filter.should_include(room)))
+    let (spaces, convos, _) = futures::stream::iter(client.clone().rooms().into_iter())
+        .filter(|room| futures::future::ready(filter.should_include(room)))
         .fold(
             (Vec::new(), Vec::new(), client),
             async move |(mut spaces, mut convos, client), room| {
@@ -324,7 +323,7 @@ impl Client {
             let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
             history.lock_mut().start(space_ids);
 
-            join_all(spaces.iter_mut().map(|space| async {
+            futures::future::join_all(spaces.iter_mut().map(|space| async {
                 if !space.is_acter_space().await {
                     trace!(room_id=?space.room_id(), "not an acter space");
                     history.lock_mut().unknow_room(&space.room_id().to_owned());
@@ -359,7 +358,7 @@ impl Client {
     ) -> Result<()> {
         trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
 
-        join_all(
+        futures::future::join_all(
             new_spaces
                 .into_iter()
                 .map(|room| Space::new(self.clone(), Room { room }))

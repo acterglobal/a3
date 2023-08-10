@@ -1,6 +1,5 @@
 use acter_core::spaces::is_acter_space;
 use anyhow::Result;
-use futures::future::join_all;
 use matrix_sdk::ruma::{
     api::client::push::get_notifications::v3::{
         Notification as RumaNotification, Request as GetNotificationsRequest,
@@ -107,7 +106,7 @@ impl NotificationListResult {
                 let notifications = ruma_notifications
                     .into_iter()
                     .map(|notification| Notification::new(notification, client.clone()));
-                Ok(join_all(notifications).await)
+                Ok(futures::future::join_all(notifications).await)
             })
             .await?
     }

@@ -1,5 +1,4 @@
 use dashmap::{mapref::one::RefMut, DashMap, DashSet};
-use futures::future::{join_all, try_join_all};
 use matrix_sdk::Client;
 use serde::de::DeserializeOwned;
 use std::{iter::FromIterator, sync::Arc};
@@ -105,7 +104,7 @@ impl Store {
             let items = v
                 .iter()
                 .map(|k| get_from_store::<AnyActerModel>(client.clone(), k));
-            try_join_all(items).await?
+            futures::future::try_join_all(items).await?
         } else {
             vec![]
         };
@@ -159,7 +158,7 @@ impl Store {
 
     pub async fn get_many(&self, model_keys: Vec<String>) -> Vec<Option<AnyActerModel>> {
         let models = model_keys.iter().map(|k| async { self.get(k).await.ok() });
-        join_all(models).await
+        futures::future::join_all(models).await
     }
 
     #[instrument(skip(self))]

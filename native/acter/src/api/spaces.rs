@@ -20,7 +20,7 @@ use acter_core::{
     templates::Engine,
 };
 use anyhow::{bail, Context, Result};
-use futures::{future::join_all, stream::StreamExt};
+use futures::stream::StreamExt;
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     media::{MediaFormat, MediaRequest},
@@ -556,7 +556,7 @@ impl SpaceHierarchyListResult {
                 let iter = chunks
                     .into_iter()
                     .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, client.clone()));
-                Ok(join_all(iter).await)
+                Ok(futures::future::join_all(iter).await)
             })
             .await?
     }

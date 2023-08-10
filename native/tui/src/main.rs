@@ -7,11 +7,7 @@ use anyhow::Result;
 use app_dirs2::{app_root, AppDataType, AppInfo};
 use clap::Parser;
 use config::ActerTuiConfig;
-use futures::{
-    future::Either,
-    pin_mut,
-    stream::{self, StreamExt},
-};
+use futures::{future::Either, pin_mut, stream::StreamExt};
 use std::{path::PathBuf, sync::mpsc::channel};
 use tracing::{error, info, warn};
 use tui_logger::Drain;
@@ -66,7 +62,7 @@ async fn main() -> Result<()> {
         let sync_stream = sync_state.first_synced_rx();
         let history_loaded = sync_state.get_history_loading_rx();
 
-        let main_stream = stream::select(
+        let main_stream = futures::stream::select(
             history_loaded.map(Either::Right),
             sync_stream.map(Either::Left),
         );
