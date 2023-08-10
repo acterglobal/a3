@@ -6,7 +6,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Account, Convo, Member, OptionalString, UserProfile;
+    show Account, Convo, Member, OptionString, UserProfile;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Network/Connectivity Providers
@@ -91,7 +91,7 @@ final relatedChatsProvider = FutureProvider.autoDispose
 final memberProfileProvider =
     FutureProvider.family.autoDispose<ProfileData, Member>((ref, member) async {
   UserProfile profile = member.getProfile();
-  OptionalString displayName = await profile.getDisplayName();
+  OptionString displayName = await profile.getDisplayName();
   final avatar = await profile.getAvatar();
   return ProfileData(displayName.text(), avatar.data());
 });

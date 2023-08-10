@@ -15,7 +15,7 @@ class AsyncSpaceProfileDataNotifier
   Future<ProfileData> _getSpaceProfileData() async {
     final space = arg;
     final profile = space.getProfile();
-    OptionalString displayName = await profile.getDisplayName();
+    OptionString displayName = await profile.getDisplayName();
     final avatar = await profile.getAvatar();
     return ProfileData(displayName.text(), avatar.data());
   }

@@ -68,7 +68,7 @@ class _TabBarWidget extends StatefulWidget {
 class _UserItem {
   String userId;
   String? displayName;
-  Future<OptionalBuffer> avatar;
+  Future<OptionBuffer> avatar;
 
   _UserItem({
     required this.userId,
@@ -89,7 +89,7 @@ class _TabBarWidgetState extends State<_TabBarWidget> {
   void loadProfiles() async {
     List<_UserItem> items = [];
     for (var profile in widget.userProfiles) {
-      OptionalString displayName = await profile.getDisplayName();
+      OptionString displayName = await profile.getDisplayName();
       var item = _UserItem(
         userId: profile.userId().toString(),
         displayName: displayName.text(),

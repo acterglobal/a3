@@ -13,13 +13,13 @@ pub fn duration_from_secs(secs: u64) -> Duration {
     Duration::from_secs(secs)
 }
 
-pub struct OptionalString {
+pub struct OptionString {
     text: Option<String>,
 }
 
-impl OptionalString {
+impl OptionString {
     pub(crate) fn new(text: Option<String>) -> Self {
-        OptionalString { text }
+        OptionString { text }
     }
 
     pub fn text(&self) -> Option<String> {
@@ -27,13 +27,13 @@ impl OptionalString {
     }
 }
 
-pub struct OptionalBuffer {
+pub struct OptionBuffer {
     data: Option<Vec<u8>>,
 }
 
-impl OptionalBuffer {
+impl OptionBuffer {
     pub(crate) fn new(data: Option<Vec<u8>>) -> Self {
-        OptionalBuffer { data }
+        OptionBuffer { data }
     }
 
     pub fn data(&self) -> Option<FfiBuffer<u8>> {

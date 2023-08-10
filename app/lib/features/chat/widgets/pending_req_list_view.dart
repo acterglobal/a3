@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class PendingReqListView extends StatelessWidget {
   final String userId;
-  final Future<OptionalBuffer> avatar;
+  final Future<OptionBuffer> avatar;
   final String? displayName;
 
   const PendingReqListView({

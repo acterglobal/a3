@@ -752,9 +752,7 @@ impl Client {
     pub async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
         if room_id_or_alias.is_room_id() {
             let room_id = OwnedRoomId::try_from(room_id_or_alias.as_str()).expect("just checked");
-            return self
-                .room_by_id_typed(&room_id)
-                .context("Room not found");
+            return self.room_by_id_typed(&room_id).context("Room not found");
         }
 
         let room_alias =

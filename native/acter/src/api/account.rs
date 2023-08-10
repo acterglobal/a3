@@ -8,7 +8,7 @@ use std::{fs, ops::Deref, path::PathBuf};
 
 use super::{
     api::FfiBuffer,
-    common::{OptionalBuffer, OptionalString},
+    common::{OptionBuffer, OptionString},
     RUNTIME,
 };
 
@@ -34,12 +34,12 @@ impl Account {
         self.user_id.clone()
     }
 
-    pub async fn display_name(&self) -> Result<OptionalString> {
+    pub async fn display_name(&self) -> Result<OptionString> {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
                 let name = account.get_display_name().await?;
-                Ok(OptionalString::new(name))
+                Ok(OptionString::new(name))
             })
             .await?
     }
@@ -59,12 +59,12 @@ impl Account {
             .await?
     }
 
-    pub async fn avatar(&self) -> Result<OptionalBuffer> {
+    pub async fn avatar(&self) -> Result<OptionBuffer> {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
                 let buf = account.get_avatar(MediaFormat::File).await?;
-                Ok(OptionalBuffer::new(buf))
+                Ok(OptionBuffer::new(buf))
             })
             .await?
     }

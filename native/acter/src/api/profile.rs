@@ -15,7 +15,7 @@ use matrix_sdk::{
 
 use super::{
     api::FfiBuffer,
-    common::{OptionalBuffer, OptionalString},
+    common::{OptionBuffer, OptionString},
     RUNTIME,
 };
 
@@ -104,12 +104,12 @@ impl UserProfile {
         Ok(false)
     }
 
-    pub async fn get_avatar(&self) -> Result<OptionalBuffer> {
+    pub async fn get_avatar(&self) -> Result<OptionBuffer> {
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
                     let buf = account.get_avatar(MediaFormat::File).await?;
-                    Ok(OptionalBuffer::new(buf))
+                    Ok(OptionBuffer::new(buf))
                 })
                 .await?;
         }
@@ -117,7 +117,7 @@ impl UserProfile {
             return RUNTIME
                 .spawn(async move {
                     let buf = member.avatar(MediaFormat::File).await?;
-                    Ok(OptionalBuffer::new(buf))
+                    Ok(OptionBuffer::new(buf))
                 })
                 .await?;
         }
@@ -126,14 +126,14 @@ impl UserProfile {
             return RUNTIME
                 .spawn(async move {
                     let buf = public_profile.avatar(MediaFormat::File).await?;
-                    Ok(OptionalBuffer::new(buf))
+                    Ok(OptionBuffer::new(buf))
                 })
                 .await?;
         }
-        Ok(OptionalBuffer::new(None))
+        Ok(OptionBuffer::new(None))
     }
 
-    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<OptionalBuffer> {
+    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<OptionBuffer> {
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
@@ -143,7 +143,7 @@ impl UserProfile {
                         height: UInt::from(height),
                     };
                     let buf = account.get_avatar(MediaFormat::Thumbnail(size)).await?;
-                    Ok(OptionalBuffer::new(buf))
+                    Ok(OptionBuffer::new(buf))
                 })
                 .await?;
         }
@@ -156,31 +156,31 @@ impl UserProfile {
                         height: UInt::from(height),
                     };
                     let buf = member.avatar(MediaFormat::Thumbnail(size)).await?;
-                    Ok(OptionalBuffer::new(buf))
+                    Ok(OptionBuffer::new(buf))
                 })
                 .await?;
         }
-        Ok(OptionalBuffer::new(None))
+        Ok(OptionBuffer::new(None))
     }
 
-    pub async fn get_display_name(&self) -> Result<OptionalString> {
+    pub async fn get_display_name(&self) -> Result<OptionString> {
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
                     let text = account.get_display_name().await?;
-                    Ok(OptionalString::new(text))
+                    Ok(OptionString::new(text))
                 })
                 .await?;
         }
         if let Some(member) = self.member.clone() {
             let text = member.display_name().map(|x| x.to_string());
-            return Ok(OptionalString::new(text));
+            return Ok(OptionString::new(text));
         }
         if let Some(public_profile) = self.public_profile.clone() {
             let text = public_profile.inner.display_name;
-            return Ok(OptionalString::new(text));
+            return Ok(OptionString::new(text));
         }
-        Ok(OptionalString::new(None))
+        Ok(OptionString::new(None))
     }
 }
 
@@ -203,7 +203,7 @@ impl RoomProfile {
         Ok(room.avatar_url().is_some())
     }
 
-    pub async fn get_avatar(&self) -> Result<OptionalBuffer> {
+    pub async fn get_avatar(&self) -> Result<OptionBuffer> {
         let room = self
             .client
             .get_room(&self.room_id)
@@ -211,12 +211,12 @@ impl RoomProfile {
         RUNTIME
             .spawn(async move {
                 let buf = room.avatar(MediaFormat::File).await?;
-                Ok(OptionalBuffer::new(buf))
+                Ok(OptionBuffer::new(buf))
             })
             .await?
     }
 
-    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<OptionalBuffer> {
+    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<OptionBuffer> {
         let room = self
             .client
             .get_room(&self.room_id)
@@ -229,12 +229,12 @@ impl RoomProfile {
                     height: UInt::from(height),
                 };
                 let buf = room.avatar(MediaFormat::Thumbnail(size)).await?;
-                Ok(OptionalBuffer::new(buf))
+                Ok(OptionBuffer::new(buf))
             })
             .await?
     }
 
-    pub async fn get_display_name(&self) -> Result<OptionalString> {
+    pub async fn get_display_name(&self) -> Result<OptionString> {
         let room = self
             .client
             .get_room(&self.room_id)
@@ -243,11 +243,11 @@ impl RoomProfile {
             .spawn(async move {
                 let result = room.display_name().await?;
                 match result {
-                    DisplayName::Named(name) => Ok(OptionalString::new(Some(name))),
-                    DisplayName::Aliased(name) => Ok(OptionalString::new(Some(name))),
-                    DisplayName::Calculated(name) => Ok(OptionalString::new(Some(name))),
-                    DisplayName::EmptyWas(name) => Ok(OptionalString::new(Some(name))),
-                    DisplayName::Empty => Ok(OptionalString::new(None)),
+                    DisplayName::Named(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Aliased(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Calculated(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::EmptyWas(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Empty => Ok(OptionString::new(None)),
                 }
             })
             .await?

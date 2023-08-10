@@ -10,7 +10,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         Comment,
         CommentDraft,
         CommentsManager,
-        OptionalString,
+        OptionString,
         RoomId,
         RoomProfile,
         Space,
@@ -70,7 +70,7 @@ class ToDoController extends GetxController {
     if (listTeams.isNotEmpty) {
       for (var team in listTeams) {
         RoomProfile profile = team.getProfile();
-        OptionalString displayName = await profile.getDisplayName();
+        OptionString displayName = await profile.getDisplayName();
         // Team avatars are yet to be implemented.
         Team item = Team(
           id: team.getRoomId().toString(),
@@ -87,7 +87,7 @@ class ToDoController extends GetxController {
     List<Space> groups = (await client.spaces()).toList();
     for (var group in groups) {
       RoomProfile profile = group.getProfile();
-      OptionalString dispName = await profile.getDisplayName();
+      OptionString dispName = await profile.getDisplayName();
       Team team = Team(
         id: group.getRoomId().toString(),
         name: dispName.text(),
@@ -182,7 +182,7 @@ class ToDoController extends GetxController {
   ) async {
     final Space space = await client.getSpace(teamId);
     final RoomProfile profile = space.getProfile();
-    final OptionalString dispName = await profile.getDisplayName();
+    final OptionString dispName = await profile.getDisplayName();
     final Team team = Team(
       id: space.getRoomId().toString(),
       name: dispName.text(),

@@ -348,7 +348,7 @@ object RsvpManager {
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
     /// get Yes/Maybe/No/None for the user's own status
-    fn my_status() -> Future<Result<OptionalString>>;
+    fn my_status() -> Future<Result<OptionString>>;
 
     /// get the count of Yes/Maybe/No
     fn count_at_status(status: string) -> Future<Result<u32>>;
@@ -1200,7 +1200,7 @@ object SpaceHierarchyRoomInfo {
     fn has_avatar() -> bool;
 
     /// get the binary data of avatar
-    fn get_avatar() -> Future<Result<OptionalBuffer>>;
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
     // recommended server to try to join via
     fn via_server_name() -> Option<string>;
 }
@@ -1412,13 +1412,13 @@ object Account {
     fn user_id() -> UserId;
 
     /// The display_name of the account
-    fn display_name() -> Future<Result<OptionalString>>;
+    fn display_name() -> Future<Result<OptionString>>;
 
     /// Change the display name of the account
     fn set_display_name(name: string) -> Future<Result<bool>>;
 
     /// The avatar of the client
-    fn avatar() -> Future<Result<OptionalBuffer>>;
+    fn avatar() -> Future<Result<OptionBuffer>>;
 
     /// Change the avatar of the account with the provided
     /// local file path
@@ -1694,12 +1694,12 @@ object Client {
 
 }
 
-object OptionalString {
+object OptionString {
     /// get text
     fn text() -> Option<string>;
 }
 
-object OptionalBuffer {
+object OptionBuffer {
     /// get text
     fn data() -> Option<buffer<u8>>;
 }
@@ -1712,13 +1712,13 @@ object UserProfile {
     fn has_avatar() -> Future<Result<bool>>;
 
     /// get the binary data of avatar
-    fn get_avatar() -> Future<Result<OptionalBuffer>>;
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
 
     /// get the binary data of thumbnail
-    fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionalBuffer>>;
+    fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<OptionalString>>;
+    fn get_display_name() -> Future<Result<OptionString>>;
 }
 
 object RoomProfile {
@@ -1726,13 +1726,13 @@ object RoomProfile {
     fn has_avatar() -> Result<bool>;
 
     /// get the binary data of avatar
-    fn get_avatar() -> Future<Result<OptionalBuffer>>;
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
 
     /// get the binary data of thumbnail
-    fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionalBuffer>>;
+    fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<OptionalString>>;
+    fn get_display_name() -> Future<Result<OptionString>>;
 }
 
 object Invitation {

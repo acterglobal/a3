@@ -14,7 +14,7 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::trace;
 
-use super::{client::Client, common::OptionalString, RUNTIME};
+use super::{client::Client, common::OptionString, RUNTIME};
 
 impl Client {
     pub async fn wait_for_rsvp(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Rsvp> {
@@ -154,7 +154,7 @@ impl RsvpManager {
             .await?
     }
 
-    pub async fn my_status(&self) -> Result<OptionalString> {
+    pub async fn my_status(&self) -> Result<OptionString> {
         let manager = self.inner.clone();
         let my_id = self.client.user_id().context("User not found")?;
         RUNTIME
@@ -163,10 +163,10 @@ impl RsvpManager {
                 for entry in manager.rsvp_entries().await?.into_iter().rev() {
                     if entry.meta.sender == my_id {
                         let status = entry.status.to_string();
-                        return Ok(OptionalString::new(Some(status)));
+                        return Ok(OptionString::new(Some(status)));
                     }
                 }
-                Ok(OptionalString::new(None))
+                Ok(OptionString::new(None))
             })
             .await?
     }
