@@ -8,7 +8,6 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use std::{
-    io,
     sync::mpsc::{Receiver as MpscReceiver, TryRecvError},
     time::{Duration, Instant},
 };
@@ -508,7 +507,7 @@ impl App {
 pub async fn run_ui(rx: MpscReceiver<AppUpdate>, logs_fullscreen: bool) -> Result<()> {
     // setup terminal
     enable_raw_mode()?;
-    let mut stdout = io::stdout();
+    let mut stdout = std::io::stdout();
     execute!(stdout, EnterAlternateScreen, DisableMouseCapture)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;

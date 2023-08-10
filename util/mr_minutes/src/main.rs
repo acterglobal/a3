@@ -1,8 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 use git2::Repository;
-
-use std::{fs, io::Write, path::PathBuf};
+use std::{io::Write, path::PathBuf};
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
@@ -51,7 +50,7 @@ fn file_subset(reference: &str) -> Result<Vec<PathBuf>> {
 fn main() -> Result<()> {
     let args = Args::parse();
     let _ = env_logger::try_init();
-    let mut writer = fs::File::create(args.output)?;
+    let mut writer = std::fs::File::create(args.output)?;
     let included_files = match args.since {
         Some(e) => Some(file_subset(&e)?),
         _ => None,
@@ -59,7 +58,7 @@ fn main() -> Result<()> {
 
     log::trace!("File changes to check against: {included_files:#?}");
 
-    for entry in fs::read_dir(args.input_folder)? {
+    for entry in std::fs::read_dir(args.input_folder)? {
         let file = entry?;
         if file.metadata()?.is_file() {
             let path = file.path();
@@ -72,7 +71,7 @@ fn main() -> Result<()> {
                 }
             }
 
-            let content = fs::read(file.path())?;
+            let content = std::fs::read(file.path())?;
             writer.write_all(&content)?;
             writeln!(writer)?;
         }

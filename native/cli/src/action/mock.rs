@@ -13,7 +13,7 @@ use matrix_sdk::{
 };
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sqlite::make_store_config;
-use std::{collections::HashMap, fs};
+use std::collections::HashMap;
 use tracing::{error, info, trace};
 
 use crate::config::{ENV_DEFAULT_HOMESERVER_NAME, ENV_DEFAULT_HOMESERVER_URL, ENV_REG_TOKEN};
@@ -383,7 +383,7 @@ impl<'a> Mock<'a> {
     }
 
     pub async fn export(&mut self) -> Result<()> {
-        fs::create_dir_all(".local")?;
+        std::fs::create_dir_all(".local")?;
 
         try_join_all(self.users.values().map(|cl| async move {
             let full_username = cl.user_id().expect("You seem to be not logged in");

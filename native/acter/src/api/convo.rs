@@ -30,7 +30,7 @@ use matrix_sdk::{
     },
     Client as SdkClient, RoomMemberships,
 };
-use std::{fs, ops::Deref, path::PathBuf};
+use std::{ops::Deref, path::PathBuf};
 use tracing::info;
 
 use super::{
@@ -448,7 +448,7 @@ impl Client {
                         let path = PathBuf::from(avatar_uri);
                         let guess = mime_guess::from_path(path.clone());
                         let content_type = guess.first().expect("MIME type should be given");
-                        let buf = fs::read(path).expect("File should be read");
+                        let buf = std::fs::read(path).expect("File should be read");
                         let upload_resp = client.media().upload(&content_type, buf).await?;
 
                         let info = assign!(ImageInfo::new(), {

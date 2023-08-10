@@ -6,7 +6,6 @@ use matrix_sdk::{Client, ClientBuilder};
 use matrix_sdk_sqlite::make_store_config;
 use parse_env_filter::eager::{filters, Filter};
 use std::{
-    fs, io,
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
 };
@@ -30,10 +29,10 @@ pub async fn new_client_config(
                 tracing::warn!(
                     "{data_path:?} already existing. Moving to backup at {backup_path:?}."
                 );
-                fs::rename(&data_path, backup_path)?;
+                std::fs::rename(&data_path, backup_path)?;
             }
 
-            fs::create_dir_all(&data_path)?;
+            std::fs::create_dir_all(&data_path)?;
 
             let config = make_store_config(&data_path, None).await?;
             let builder = Client::builder()
@@ -95,7 +94,7 @@ pub fn init_logging(
     if let Some(console_logger) = console_logger {
         builder = builder.chain(console_logger);
     } else {
-        builder = builder.chain(io::stdout());
+        builder = builder.chain(std::io::stdout());
     }
 
     let mut path = PathBuf::from(log_dir.as_str());

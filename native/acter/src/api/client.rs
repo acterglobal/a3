@@ -31,7 +31,6 @@ use matrix_sdk::{
 };
 use std::{
     collections::{BTreeMap, HashMap},
-    fs,
     ops::Deref,
     path::PathBuf,
     sync::{
@@ -725,7 +724,7 @@ impl Client {
             .spawn(async move {
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("MIME type should be given")?;
-                let buf = fs::read(path).context("File should be read")?;
+                let buf = std::fs::read(path).context("File should be read")?;
                 let response = client.media().upload(&content_type, buf).await?;
                 Ok(response.content_uri)
             })

@@ -1,7 +1,7 @@
 use anyhow::{bail, Result};
 use clap::Parser;
 use futures::{pin_mut, stream::StreamExt};
-use std::{collections::HashMap, fs, path::PathBuf};
+use std::{collections::HashMap, path::PathBuf};
 use tracing::info;
 
 use crate::config::LoginConfig;
@@ -38,7 +38,7 @@ impl ExecuteOpts {
         }
 
         for tmpl_path in self.templates.iter() {
-            let template = fs::read_to_string(tmpl_path)?;
+            let template = std::fs::read_to_string(tmpl_path)?;
 
             let mut tmpl_engine = user.template_engine(&template).await?;
             let input_values = {

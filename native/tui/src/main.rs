@@ -12,7 +12,7 @@ use futures::{
     pin_mut,
     stream::{self, StreamExt},
 };
-use std::{fs, path::PathBuf, sync::mpsc::channel};
+use std::{path::PathBuf, sync::mpsc::channel};
 use tracing::{error, info, warn};
 use tui_logger::Drain;
 use ui::AppUpdate;
@@ -47,7 +47,7 @@ async fn main() -> Result<()> {
     };
 
     if cli.fresh {
-        fs::remove_dir_all(app_dir.clone())?;
+        std::fs::remove_dir_all(app_dir.clone())?;
     }
 
     let mut client = cli.login.client(app_dir).await?;

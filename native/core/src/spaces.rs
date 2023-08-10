@@ -21,7 +21,7 @@ use matrix_sdk::{
     },
 };
 use serde::{Deserialize, Serialize};
-use std::{fs, path::PathBuf};
+use std::path::PathBuf;
 use strum::Display;
 use tracing::error;
 
@@ -213,7 +213,7 @@ impl CoreClient {
                 let path = PathBuf::from(avatar_uri);
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().expect("MIME type should be given");
-                let buf = fs::read(path).expect("File should be read");
+                let buf = std::fs::read(path).expect("File should be read");
                 let upload_resp = client.media().upload(&content_type, buf).await?;
 
                 let info = assign!(ImageInfo::new(), {

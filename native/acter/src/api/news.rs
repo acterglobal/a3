@@ -27,7 +27,6 @@ use matrix_sdk::{
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
-    fs,
     ops::Deref,
     path::PathBuf,
 };
@@ -398,13 +397,13 @@ impl NewsEntryDraft {
         let mut image_content = RUNTIME
             .spawn(async move {
                 if room.is_encrypted().await? {
-                    let mut reader = fs::File::open(path)?;
+                    let mut reader = std::fs::File::open(path)?;
                     let encrypted_file = client
                         .prepare_encrypted_file(&mime_type, &mut reader)
                         .await?;
                     anyhow::Ok(ImageMessageEventContent::encrypted(body, encrypted_file))
                 } else {
-                    let data = fs::read(path)?;
+                    let data = std::fs::read(path)?;
                     let upload_resp = client.media().upload(&mime_type, data).await?;
                     anyhow::Ok(ImageMessageEventContent::plain(
                         body,
