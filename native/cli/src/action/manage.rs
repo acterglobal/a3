@@ -1,13 +1,13 @@
 use acter_core::spaces::CreateSpaceSettingsBuilder;
 use anyhow::Result;
-use clap::Parser;
-use futures::StreamExt;
+use clap::{Parser, Subcommand};
+use futures::stream::StreamExt;
 use matrix_sdk::ruma::OwnedRoomId;
 use tracing::{info, warn};
 
 use crate::config::LoginConfig;
 
-#[derive(clap::Subcommand, Debug, Clone)]
+#[derive(Subcommand, Debug, Clone)]
 pub enum Action {
     /// List rooms
     CreateOnboardingSpace,

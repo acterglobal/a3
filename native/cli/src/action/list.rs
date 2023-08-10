@@ -1,7 +1,7 @@
 use acter_core::spaces::SpaceRelation;
 use anyhow::Result;
 use clap::Parser;
-use futures::StreamExt;
+use futures::stream::StreamExt;
 use tracing::info;
 
 use crate::config::LoginConfig;

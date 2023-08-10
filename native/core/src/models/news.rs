@@ -6,6 +6,7 @@ use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventM
 use crate::{
     events::news::{NewsEntryEventContent, NewsEntryUpdateBuilder, NewsEntryUpdateEventContent},
     statics::KEYS,
+    Result,
 };
 
 static NEWS_KEY: &str = KEYS::NEWS;
@@ -55,7 +56,7 @@ impl ActerModel for NewsEntry {
         &[Capability::Commentable]
     }
 
-    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
         default_model_execute(store, self.into()).await
     }
 
@@ -63,7 +64,7 @@ impl ActerModel for NewsEntry {
         None
     }
 
-    fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
+    fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
         let AnyActerModel::NewsEntryUpdate(update) = model else {
             return Ok(false)
         };
@@ -109,7 +110,7 @@ impl ActerModel for NewsEntryUpdate {
         &self.meta.event_id
     }
 
-    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
         default_model_execute(store, self.into()).await
     }
 

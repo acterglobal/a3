@@ -1,5 +1,4 @@
-use dashmap::{mapref::one::RefMut, DashMap};
-use futures::future::{join_all, try_join_all};
+use dashmap::{mapref::one::RefMut, DashMap, DashSet};
 use matrix_sdk::Client;
 use std::{iter::FromIterator, sync::Arc};
 use tracing::{debug, instrument, trace, warn};
@@ -13,9 +12,9 @@ use crate::{
 pub struct Store {
     client: Client,
     fresh: bool,
-    models: Arc<dashmap::DashMap<String, AnyActerModel>>,
-    indizes: Arc<dashmap::DashMap<String, Vec<String>>>,
-    dirty: Arc<dashmap::DashSet<String>>,
+    models: Arc<DashMap<String, AnyActerModel>>,
+    indizes: Arc<DashMap<String, Vec<String>>>,
+    dirty: Arc<DashSet<String>>,
 }
 
 static ALL_MODELS_KEY: &str = "ACTER::ALL";
@@ -52,23 +51,20 @@ impl Store {
     }
 
     pub async fn new(client: Client) -> Result<Self> {
-        if client
+        let ver = client
             .store()
             .get_custom_value(DB_VERSION_KEY.as_bytes())
             .await
-            .map_err(|e| crate::Error::Custom(format!("failed to find DB version key: {e}")))?
+            .map_err(|e| Error::Custom(format!("failed to find DB version key: {e}")))?
             .map(|u| u32::from_le_bytes(u.as_chunks().0[0]))
-            .unwrap_or_default()
-            < CURRENT_DB_VERSION
-        {
+            .unwrap_or_default();
+        if ver < CURRENT_DB_VERSION {
             // "upgrading" by resetting
             client
                 .store()
                 .set_custom_value(ALL_MODELS_KEY.as_bytes(), vec![])
                 .await
-                .map_err(|e| {
-                    crate::Error::Custom(format!("setting all models to [] failed: {e}"))
-                })?;
+                .map_err(|e| Error::Custom(format!("setting all models to [] failed: {e}")))?;
 
             client
                 .store()
@@ -77,7 +73,7 @@ impl Store {
                     CURRENT_DB_VERSION.to_le_bytes().to_vec(),
                 )
                 .await
-                .map_err(|e| crate::Error::Custom(format!("setting db version failed: {e}")))?;
+                .map_err(|e| Error::Custom(format!("setting db version failed: {e}")))?;
 
             return Ok(Store {
                 fresh: true,
@@ -102,14 +98,12 @@ impl Store {
                 }
             })
             .transpose()
-            .map_err(|e| {
-                crate::Error::Custom(format!("deserializing all models index failed: {e}"))
-            })?;
+            .map_err(|e| Error::Custom(format!("deserializing all models index failed: {e}")))?;
         let models_vec = if let Some(v) = data {
             let items = v
                 .iter()
                 .map(|k| get_from_store::<AnyActerModel>(client.clone(), k));
-            try_join_all(items).await?
+            futures::future::try_join_all(items).await?
         } else {
             vec![]
         };
@@ -163,7 +157,7 @@ impl Store {
 
     pub async fn get_many(&self, model_keys: Vec<String>) -> Vec<Option<AnyActerModel>> {
         let models = model_keys.iter().map(|k| async { self.get(k).await.ok() });
-        join_all(models).await
+        futures::future::join_all(models).await
     }
 
     #[instrument(skip(self))]

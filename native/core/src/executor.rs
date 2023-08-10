@@ -1,6 +1,6 @@
 use dashmap::{mapref::entry::Entry, DashMap};
 use std::sync::Arc;
-use tokio::sync::broadcast::{channel as broadcast, Receiver, Sender};
+use tokio::sync::broadcast::{channel, Receiver, Sender};
 use tracing::{error, trace, trace_span};
 
 use crate::{
@@ -33,7 +33,7 @@ impl Executor {
                 let sender = o.get();
                 if sender.receiver_count() == 0 {
                     // replace the existing channel to reopen
-                    let (sender, receiver) = broadcast(1);
+                    let (sender, receiver) = channel(1);
                     o.replace_entry(sender);
                     receiver
                 } else {
@@ -41,14 +41,14 @@ impl Executor {
                 }
             }
             Entry::Vacant(v) => {
-                let (sender, receiver) = broadcast(1);
+                let (sender, receiver) = channel(1);
                 v.insert(sender);
                 receiver
             }
         }
     }
 
-    pub async fn wait_for(&self, key: String) -> crate::Result<AnyActerModel> {
+    pub async fn wait_for(&self, key: String) -> Result<AnyActerModel> {
         let mut subscribe = self.subscribe(key.clone());
         let Ok(model) = self.store.get(&key).await else {
             if let Err(e) = subscribe.recv().await {
@@ -101,8 +101,11 @@ impl Executor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::events::{comments::CommentEventContent, BelongsTo};
-    use crate::models::{Comment, TestModelBuilder};
+    use crate::{
+        events::{comments::CommentEventContent, BelongsTo},
+        models::{Comment, TestModelBuilder},
+        Result,
+    };
     use env_logger;
     use matrix_sdk::{
         ruma::{api::MatrixVersion, event_id, events::room::message::TextMessageEventContent},
@@ -110,7 +113,7 @@ mod tests {
     };
     use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 
-    async fn fresh_executor() -> crate::Result<Executor> {
+    async fn fresh_executor() -> Result<Executor> {
         let config = StoreConfig::default().state_store(MemoryStore::new());
         let client = Client::builder()
             .homeserver_url("http://localhost")
@@ -125,14 +128,14 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn smoke_test() -> crate::Result<()> {
+    async fn smoke_test() -> Result<()> {
         let _ = env_logger::try_init();
         let _ = fresh_executor().await?;
         Ok(())
     }
 
     #[tokio::test]
-    async fn subscribe_simle_model() -> crate::Result<()> {
+    async fn subscribe_simle_model() -> Result<()> {
         let _ = env_logger::try_init();
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
@@ -147,7 +150,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn subscribe_referenced_model() -> crate::Result<()> {
+    async fn subscribe_referenced_model() -> Result<()> {
         let _ = env_logger::try_init();
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
@@ -174,7 +177,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn subscribe_models_index() -> crate::Result<()> {
+    async fn subscribe_models_index() -> Result<()> {
         let _ = env_logger::try_init();
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
@@ -202,7 +205,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn subscribe_models_comments_index() -> crate::Result<()> {
+    async fn subscribe_models_comments_index() -> Result<()> {
         let _ = env_logger::try_init();
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
@@ -233,7 +236,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn wait_for_simple_model() -> crate::Result<()> {
+    async fn wait_for_simple_model() -> Result<()> {
         let _ = env_logger::try_init();
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();

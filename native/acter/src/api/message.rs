@@ -77,6 +77,7 @@ use matrix_sdk::{
             AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
             SyncStateEvent,
         },
+        serde::Raw,
         OwnedEventId, OwnedRoomId, OwnedUserId,
     },
 };
@@ -84,11 +85,10 @@ use matrix_sdk_ui::timeline::{
     EventSendState, EventTimelineItem, MembershipChange, TimelineItem, TimelineItemContent,
     VirtualTimelineItem,
 };
-use ruma::serde::Raw;
 use std::{collections::HashMap, sync::Arc};
 use tracing::info;
 
-use super::common::{AudioDesc, FileDesc, ImageDesc, ReactionItem, TextDesc, VideoDesc};
+use super::common::{AudioDesc, FileDesc, ImageDesc, ReactionRecord, TextDesc, VideoDesc};
 
 #[derive(Clone, Debug)]
 pub struct RoomEventItem {
@@ -103,7 +103,7 @@ pub struct RoomEventItem {
     video_desc: Option<VideoDesc>,
     file_desc: Option<FileDesc>,
     in_reply_to: Option<OwnedEventId>,
-    reactions: HashMap<String, Vec<ReactionItem>>,
+    reactions: HashMap<String, Vec<ReactionRecord>>,
     is_editable: bool,
 }
 
@@ -121,7 +121,7 @@ impl RoomEventItem {
         video_desc: Option<VideoDesc>,
         file_desc: Option<FileDesc>,
         in_reply_to: Option<OwnedEventId>,
-        reactions: HashMap<String, Vec<ReactionItem>>,
+        reactions: HashMap<String, Vec<ReactionRecord>>,
         is_editable: bool,
     ) -> Self {
         RoomEventItem {
@@ -196,7 +196,7 @@ impl RoomEventItem {
         keys
     }
 
-    pub fn reaction_items(&self, key: String) -> Option<Vec<ReactionItem>> {
+    pub fn reaction_items(&self, key: String) -> Option<Vec<ReactionRecord>> {
         if self.reactions.contains_key(&key) {
             Some(self.reactions[&key].clone())
         } else {
@@ -2732,12 +2732,12 @@ impl RoomMessage {
         let room_id = room.room_id().to_owned();
         let sender = event.sender().to_string();
         let origin_server_ts: u64 = event.timestamp().get().into();
-        let mut reactions: HashMap<String, Vec<ReactionItem>> = HashMap::new();
+        let mut reactions: HashMap<String, Vec<ReactionRecord>> = HashMap::new();
         for (key, value) in event.reactions().iter() {
             let reaction_items = value
                 .senders()
-                .map(|x| ReactionItem::new(x.sender_id.clone(), x.timestamp))
-                .collect::<Vec<ReactionItem>>();
+                .map(|x| ReactionRecord::new(x.sender_id.clone(), x.timestamp))
+                .collect::<Vec<ReactionRecord>>();
             reactions.insert(key.clone(), reaction_items);
         }
 

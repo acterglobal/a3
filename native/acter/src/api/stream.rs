@@ -1,6 +1,6 @@
 use anyhow::{bail, Result};
 use eyeball_im::VectorDiff;
-use futures::{Stream, StreamExt};
+use futures::stream::{Stream, StreamExt};
 use matrix_sdk::{
     room::Room,
     ruma::{
