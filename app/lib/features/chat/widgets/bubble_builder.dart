@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -161,38 +162,47 @@ class _ChatBubble extends ConsumerWidget {
                                   ),
                                   child: Consumer(
                                     builder: (context, ref, child) {
-                                      final replyProfile = ref
-                                          .watch(chatRoomProvider.notifier)
-                                          .getUserProfile(
-                                            message.repliedMessage!.author.id,
+                                      final replyProfile = ref.watch(
+                                        memberProfileProvider(
+                                          message.repliedMessage!.author.id,
+                                        ),
+                                      );
+                                      return replyProfile.when(
+                                        data: (profile) {
+                                          return Row(
+                                            children: [
+                                              ActerAvatar(
+                                                uniqueId: message
+                                                    .repliedMessage!.author.id,
+                                                displayName:
+                                                    profile.displayName,
+                                                mode: DisplayMode.User,
+                                                avatar:
+                                                    profile.getAvatarImage(),
+                                                size: profile.hasAvatar()
+                                                    ? 12
+                                                    : 24,
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Text(
+                                                profile.displayName ?? '',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall!
+                                                    .copyWith(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .tertiary,
+                                                    ),
+                                              ),
+                                            ],
                                           );
-                                      final displayName = replyProfile != null
-                                          ? replyProfile.displayName
-                                          : message.repliedMessage?.author.id;
-                                      return Row(
-                                        children: [
-                                          ActerAvatar(
-                                            uniqueId: message
-                                                .repliedMessage!.author.id,
-                                            displayName: displayName,
-                                            mode: DisplayMode.User,
-                                            avatar:
-                                                replyProfile?.getAvatarImage(),
-                                            size: 12,
-                                          ),
-                                          const SizedBox(width: 5),
-                                          Text(
-                                            displayName ?? '',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .copyWith(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .tertiary,
-                                                ),
-                                          ),
-                                        ],
+                                        },
+                                        error: (e, st) => Text(
+                                          'Failed to load profile due to ${e.toString()}',
+                                        ),
+                                        loading: () =>
+                                            const CircularProgressIndicator(),
                                       );
                                     },
                                   ),

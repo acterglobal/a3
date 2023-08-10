@@ -1,4 +1,5 @@
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -30,7 +31,7 @@ class CustomChatInput extends ConsumerWidget {
     final repliedToMessage =
         ref.watch(chatRoomProvider.notifier).repliedToMessage;
     final isAuthor = ref.watch(chatRoomProvider.notifier).isAuthor();
-    final userProfile = chatRoomNotifier.getUserProfile(userId);
+    final accountProfile = ref.watch(accountProfileProvider);
     Size size = MediaQuery.of(context).size;
     return Column(
       children: [
@@ -53,48 +54,55 @@ class CustomChatInput extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   repliedToMessage != null
-                      ? Row(
-                          children: [
-                            ActerAvatar(
-                              uniqueId: repliedToMessage.author.id,
-                              mode: DisplayMode.User,
-                              displayName: repliedToMessage.author.firstName,
-                              avatar: ref
-                                  .watch(chatRoomProvider.notifier)
-                                  .getUserProfile(
-                                    repliedToMessage.author.id,
-                                  )
-                                  ?.getAvatarImage(),
-                              size: ref
-                                          .watch(chatRoomProvider.notifier)
-                                          .getUserProfile(
-                                            repliedToMessage.author.id,
-                                          )!
-                                          .getAvatarImage() ==
-                                      null
-                                  ? 24
-                                  : 12,
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              'Reply to ${toBeginningOfSentenceCase(repliedToMessage.author.id)}',
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
+                      ? Consumer(
+                          builder: (context, ref, child) {
+                            final replyProfile = ref.watch(
+                              memberProfileProvider(
+                                repliedToMessage.author.id,
                               ),
-                            ),
-                            const Spacer(),
-                            GestureDetector(
-                              onTap: () {
-                                chatInputNotifier.toggleReplyView(false);
-                                chatInputNotifier.setReplyWidget(null);
-                              },
-                              child: const Icon(
-                                Atlas.xmark_circle,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
+                            );
+                            return Row(
+                              children: [
+                                replyProfile.when(
+                                  data: (profile) {
+                                    return ActerAvatar(
+                                      mode: DisplayMode.User,
+                                      uniqueId: repliedToMessage.author.id,
+                                      displayName: profile.displayName ??
+                                          repliedToMessage.author.id,
+                                      avatar: profile.getAvatarImage(),
+                                      size: profile.hasAvatar() ? 12 : 24,
+                                    );
+                                  },
+                                  error: (e, st) => Text(
+                                    'Error loading avatar due to ${e.toString()}',
+                                    textScaleFactor: 0.2,
+                                  ),
+                                  loading: () =>
+                                      const CircularProgressIndicator(),
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  'Reply to ${toBeginningOfSentenceCase(repliedToMessage.author.id)}',
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                const Spacer(),
+                                GestureDetector(
+                                  onTap: () {
+                                    chatInputNotifier.toggleReplyView(false);
+                                    chatInputNotifier.setReplyWidget(null);
+                                  },
+                                  child: const Icon(
+                                    Atlas.xmark_circle,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         )
                       : const SizedBox.shrink(),
                   if (repliedToMessage != null &&
@@ -191,12 +199,19 @@ class CustomChatInput extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    ActerAvatar(
-                      uniqueId: userId,
-                      mode: DisplayMode.User,
-                      displayName: userProfile?.displayName ?? userId,
-                      avatar: userProfile?.getAvatarImage(),
-                      size: userProfile!.hasAvatar() ? 18 : 36,
+                    accountProfile.when(
+                      data: (data) {
+                        return ActerAvatar(
+                          uniqueId: userId,
+                          mode: DisplayMode.User,
+                          displayName: data.profile.displayName ?? userId,
+                          avatar: data.profile.getAvatarImage(),
+                          size: data.profile.hasAvatar() ? 18 : 36,
+                        );
+                      },
+                      error: (e, st) =>
+                          Text('Error loading due to ${e.toString()}'),
+                      loading: () => const CircularProgressIndicator(),
                     ),
                     const Expanded(
                       child: Padding(
@@ -338,16 +353,27 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           suggestionBuilder: (Map<String, dynamic> roomMember) {
             String title = roomMember['display'] ?? roomMember['link'];
             return ListTile(
-              leading: SizedBox(
-                width: 35,
-                height: 35,
-                child: ActerAvatar(
-                  mode: DisplayMode.User,
-                  uniqueId: roomMember['link'],
-                  size: 20,
-                  avatar: roomMember['avatar'],
-                  displayName: roomMember['display'],
-                ),
+              leading: Consumer(
+                builder: (context, ref, child) {
+                  final mentionProfile =
+                      ref.watch(memberProfileProvider(roomMember['link']));
+                  return mentionProfile.when(
+                    data: (profile) {
+                      return ActerAvatar(
+                        mode: DisplayMode.User,
+                        uniqueId: roomMember['link'],
+                        avatar: profile.getAvatarImage(),
+                        displayName: title,
+                        size: profile.hasAvatar() ? 18 : 36,
+                      );
+                    },
+                    error: (e, st) => Text(
+                      'Error loading avatar due to ${e.toString()}',
+                      textScaleFactor: 0.2,
+                    ),
+                    loading: () => const CircularProgressIndicator(),
+                  );
+                },
               ),
               title: Row(
                 children: [

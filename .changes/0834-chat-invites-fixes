@@ -3,4 +3,4 @@
 - [fix] Chat pagination. Messages timeline should now correctly identify the end of history.
 - [enhance] Server messages, redacted and encrypted events are now distinct.
 - [fix] remove unimplemented features.
-- [enhance] room member events will present more info.
+- [enhance] chat room member events will present more info.

@@ -49,8 +49,9 @@ class CustomMessageBuilder extends StatelessWidget {
                     text: message.author.id,
                     style: Theme.of(context).textTheme.bodySmall,
                     children: [
+                      const WidgetSpan(child: SizedBox(width: 3)),
                       TextSpan(
-                        text: '\t$text',
+                        text: text,
                         style: Theme.of(context).textTheme.labelLarge,
                       ),
                     ],

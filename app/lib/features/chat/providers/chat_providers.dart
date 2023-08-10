@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -69,10 +67,6 @@ final chatInputProvider =
   (ref) => ChatInputNotifier(),
 );
 
-// chat room member profiles
-final chatProfilesProvider =
-    StateProvider<Map<String, ProfileData>>((ref) => {});
-
 // chat room mention list
 final mentionListProvider =
     StateProvider<List<Map<String, dynamic>>>((ref) => []);
@@ -86,3 +80,5 @@ final mentionKeyProvider = StateProvider<GlobalKey<FlutterMentionsState>>(
 final chatInputFocusProvider = StateProvider<FocusNode>((ref) => FocusNode());
 
 final currentConvoProvider = StateProvider<Convo?>((ref) => null);
+
+final paginationProvider = StateProvider.autoDispose<bool>((ref) => true);

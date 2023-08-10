@@ -29,18 +29,6 @@ class RoomPage extends ConsumerStatefulWidget {
 }
 
 class _RoomPageConsumerState extends ConsumerState<RoomPage> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final convo = ref.watch(currentConvoProvider);
-      if (convo != null) {
-        ref.watch(chatRoomProvider.notifier).init(convo.getRoomIdStr());
-        ref.watch(chatRoomProvider.notifier).fetchUserProfiles();
-      }
-    });
-  }
-
   void onAttach(BuildContext context) {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
@@ -153,182 +141,163 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   @override
   Widget build(BuildContext context) {
     final client = ref.watch(clientProvider);
-    final convo = ref.watch(currentConvoProvider);
     final chatRoomState = ref.watch(chatRoomProvider);
+    final convo = ref.watch(currentConvoProvider);
+    final convoProfile = ref.watch(chatProfileDataProvider(convo!));
+    final activeMembers = ref.watch(chatMembersProvider(convo.getRoomIdStr()));
     ref.listen(messagesProvider, (previous, next) {
       if (next.isNotEmpty) {
         ref.watch(chatRoomProvider.notifier).isLoaded();
       }
     });
-    return convo != null
-        ? OrientationBuilder(
-            builder: (context, orientation) => Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.neutral,
-              resizeToAvoidBottomInset: orientation == Orientation.portrait,
-              appBar: AppBar(
-                backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                elevation: 1,
-                centerTitle: true,
-                toolbarHeight: 70,
-                title: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Consumer(
-                      builder: (context, ref, child) {
-                        final convoProfile = ref.watch(
-                          chatProfileDataProvider(convo),
-                        );
-                        return convoProfile.when(
-                          data: (profile) {
-                            var roomId = convo.getRoomIdStr();
-                            return Text(
-                              profile.displayName ?? roomId,
-                              overflow: TextOverflow.clip,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            );
-                          },
-                          error: (error, stackTrace) => Text(
-                            'Error loading profile $error',
-                          ),
-                          loading: () => const CircularProgressIndicator(),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 5),
-                    Consumer(
-                      builder: (context, ref, child) {
-                        final activeMembers = ref
-                            .watch(chatMembersProvider(convo.getRoomIdStr()));
-                        return activeMembers.when(
-                          data: (members) {
-                            int count = members.length;
-                            return Text(
-                              '$count ${AppLocalizations.of(context)!.members}',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            );
-                          },
-                          error: (error, stackTrace) =>
-                              Text('Error loading members count $error'),
-                          loading: () => const CircularProgressIndicator(),
-                        );
-                      },
-                    ),
-                  ],
+    return OrientationBuilder(
+      builder: (context, orientation) => Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.neutral,
+        resizeToAvoidBottomInset: orientation == Orientation.portrait,
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.onPrimary,
+          elevation: 1,
+          centerTitle: true,
+          toolbarHeight: 70,
+          title: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              convoProfile.when(
+                data: (profile) {
+                  var roomId = convo.getRoomIdStr();
+                  return Text(
+                    profile.displayName ?? roomId,
+                    overflow: TextOverflow.clip,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  );
+                },
+                error: (error, stackTrace) => Text(
+                  'Error loading profile $error',
                 ),
-                actions: [
-                  GestureDetector(
-                    onTap: () => context.pushNamed(
-                      Routes.chatProfile.name,
-                      pathParameters: {'roomId': convo.getRoomIdStr()},
-                    ),
-                    child: Consumer(
-                      builder: (context, ref, child) {
-                        final convoProfile = ref.watch(
-                          chatProfileDataProvider(convo),
-                        );
-                        final roomId = convo.getRoomIdStr();
-                        return convoProfile.when(
-                          data: (profile) => Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: SpaceParentBadge(
-                              spaceId: roomId,
-                              badgeSize: 20,
-                              child: ActerAvatar(
-                                uniqueId: roomId,
-                                mode: DisplayMode.GroupChat,
-                                displayName: profile.displayName ?? roomId,
-                                avatar: profile.getAvatarImage(),
-                                size: 36,
-                              ),
-                            ),
-                          ),
-                          error: (error, stackTrace) => Text(
-                            'Failed to load avatar due to $error',
-                          ),
-                          loading: () => const CircularProgressIndicator(),
-                        );
-                      },
-                    ),
-                  ),
-                ],
+                loading: () => const CircularProgressIndicator(),
               ),
-              body: chatRoomState.when(
-                loading: () => const Center(
-                  child: SizedBox(
-                    height: 15,
-                    width: 15,
-                    child: CircularProgressIndicator(),
+              const SizedBox(height: 5),
+              activeMembers.when(
+                data: (members) {
+                  int count = members.length;
+                  return Text(
+                    '$count ${AppLocalizations.of(context)!.members}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  );
+                },
+                error: (error, stackTrace) =>
+                    Text('Error loading members count $error'),
+                loading: () => const CircularProgressIndicator(),
+              ),
+            ],
+          ),
+          actions: [
+            GestureDetector(
+              onTap: () => context.pushNamed(
+                Routes.chatProfile.name,
+                pathParameters: {'roomId': convo.getRoomIdStr()},
+              ),
+              child: convoProfile.when(
+                data: (profile) => Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: SpaceParentBadge(
+                    spaceId: convo.getRoomIdStr(),
+                    badgeSize: 20,
+                    child: ActerAvatar(
+                      uniqueId: convo.getRoomIdStr(),
+                      mode: DisplayMode.GroupChat,
+                      displayName: profile.displayName ?? convo.getRoomIdStr(),
+                      avatar: profile.getAvatarImage(),
+                      size: 36,
+                    ),
                   ),
                 ),
-                error: (e) => Text('Failed to load messages due to $e'),
-                loaded: () => Chat(
-                  customBottomWidget: const CustomChatInput(),
-                  textMessageBuilder: textMessageBuilder,
-
-                  l10n: ChatL10nEn(
-                    emptyChatPlaceholder: '',
-                    attachmentButtonAccessibilityLabel: '',
-                    fileButtonAccessibilityLabel: '',
-                    inputPlaceholder: AppLocalizations.of(context)!.message,
-                    sendButtonAccessibilityLabel: '',
-                  ),
-                  messages: ref.watch(messagesProvider),
-                  onSendPressed: (types.PartialText partialText) {},
-                  user: types.User(id: client!.userId().toString()),
-                  // disable image preview
-                  disableImageGallery: true,
-                  //custom avatar builder
-                  avatarBuilder: (userId) {
-                    var profile = ref
-                        .watch(chatRoomProvider.notifier)
-                        .getUserProfile(userId);
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: SizedBox(
-                        height: 28,
-                        width: 28,
-                        child: ActerAvatar(
-                          mode: DisplayMode.User,
-                          uniqueId: userId,
-                          displayName: profile?.displayName,
-                          avatar: profile?.getAvatarImage(),
-                        ),
-                      ),
-                    );
-                  },
-                  bubbleBuilder: bubbleBuilder,
-                  imageMessageBuilder: imageMessageBuilder,
-                  customMessageBuilder: customMessageBuilder,
-                  showUserAvatars: true,
-                  onAttachmentPressed: () => onAttach(context),
-                  onMessageLongPress:
-                      ref.read(chatRoomProvider.notifier).handleMessageTap,
-                  onMessageTap:
-                      ref.read(chatRoomProvider.notifier).handleMessageTap,
-                  onEndReached:
-                      ref.read(chatRoomProvider.notifier).handleEndReached,
-                  onEndReachedThreshold: 0.75,
-                  onBackgroundTap: () {
-                    if (ref.watch(
-                      chatInputProvider.select((ci) => ci.emojiRowVisible),
-                    )) {
-                      ref.read(chatRoomProvider.notifier).currentMessageId =
-                          null;
-                      ref
-                          .read(chatInputProvider.notifier)
-                          .emojiRowVisible(false);
-                    }
-                  },
-                  //Custom Theme class, see lib/common/store/chatTheme.dart
-                  theme: const ActerChatTheme(
-                    attachmentButtonIcon: Icon(Atlas.plus_circle),
-                    sendButtonIcon: Icon(Atlas.paper_airplane),
-                  ),
+                error: (error, stackTrace) => Text(
+                  'Failed to load avatar due to $error',
                 ),
+                loading: () => const CircularProgressIndicator(),
               ),
             ),
-          )
-        : const SizedBox.shrink();
+          ],
+        ),
+        body: chatRoomState.when(
+          loading: () => const Center(
+            child: SizedBox(
+              height: 15,
+              width: 15,
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (e) => Text('Failed to load messages due to $e'),
+          loaded: () => Chat(
+            customBottomWidget: const CustomChatInput(),
+            textMessageBuilder: textMessageBuilder,
+            l10n: ChatL10nEn(
+              emptyChatPlaceholder: '',
+              attachmentButtonAccessibilityLabel: '',
+              fileButtonAccessibilityLabel: '',
+              inputPlaceholder: AppLocalizations.of(context)!.message,
+              sendButtonAccessibilityLabel: '',
+            ),
+            messages: ref.watch(messagesProvider),
+            onSendPressed: (types.PartialText partialText) {},
+            user: types.User(id: client!.userId().toString()),
+            // disable image preview
+            disableImageGallery: true,
+            //custom avatar builder
+            avatarBuilder: (userId) {
+              var memberProfile = ref.watch(memberProfileProvider(userId));
+              return memberProfile.when(
+                data: (profile) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: SizedBox(
+                      height: 28,
+                      width: 28,
+                      child: ActerAvatar(
+                        mode: DisplayMode.User,
+                        uniqueId: userId,
+                        displayName: profile.displayName ?? userId,
+                        avatar: profile.getAvatarImage(),
+                      ),
+                    ),
+                  );
+                },
+                error: (e, st) => Text(
+                  'Error loading avatar due to ${e.toString()}',
+                  textScaleFactor: 0.2,
+                ),
+                loading: () => const CircularProgressIndicator(),
+              );
+            },
+            isLastPage: !ref.watch(paginationProvider),
+            bubbleBuilder: bubbleBuilder,
+            imageMessageBuilder: imageMessageBuilder,
+            customMessageBuilder: customMessageBuilder,
+            showUserAvatars: true,
+            onAttachmentPressed: () => onAttach(context),
+            onMessageLongPress:
+                ref.read(chatRoomProvider.notifier).handleMessageTap,
+            onMessageTap: ref.read(chatRoomProvider.notifier).handleMessageTap,
+            onEndReached: ref.read(chatRoomProvider.notifier).handleEndReached,
+            onEndReachedThreshold: 0.75,
+            onBackgroundTap: () {
+              if (ref.watch(
+                chatInputProvider.select((ci) => ci.emojiRowVisible),
+              )) {
+                ref.read(chatRoomProvider.notifier).currentMessageId = null;
+                ref.read(chatInputProvider.notifier).emojiRowVisible(false);
+              }
+            },
+            //Custom Theme class, see lib/common/store/chatTheme.dart
+            theme: const ActerChatTheme(
+              attachmentButtonIcon: Icon(Atlas.plus_circle),
+              sendButtonIcon: Icon(Atlas.paper_airplane),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

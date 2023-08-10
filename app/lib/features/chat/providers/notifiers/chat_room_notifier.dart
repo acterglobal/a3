@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -22,32 +21,38 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   types.Message? repliedToMessage;
   final List<PlatformFile> _imageFileList = [];
   late Client client;
-  late Convo room;
-  late String roomId;
 
   ChatRoomNotifier({
     required this.ref,
-  }) : super(const ChatRoomState.loading());
+  }) : super(const ChatRoomState.loading()) {
+    _init();
+    _fetchMentionRecords();
+  }
 
-  void init(String id) async {
+  void _init() async {
     client = ref.watch(clientProvider)!;
-    roomId = id;
-    room = await ref.read(chatProvider(roomId).future);
-    timeline = await room.timelineStream();
-    StreamSubscription<TimelineDiff>? subscription;
-    subscription = timeline?.diffRx().listen((event) async {
-      await _parseEvent(event);
-    });
-    bool hasMore = false;
-    do {
-      hasMore = await timeline!.paginateBackwards(10);
-      // wait for diffRx to be finished
-      sleep(const Duration(milliseconds: 100));
-    } while (hasMore && ref.read(messagesProvider).length < 10);
-    ref.onDispose(() async {
-      debugPrint('disposing message stream');
-      await subscription?.cancel();
-    });
+    try {
+      final room = ref.read(currentConvoProvider)!;
+      timeline = await room.timelineStream();
+      StreamSubscription<TimelineDiff>? subscription;
+      subscription = timeline?.diffRx().listen((event) async {
+        await _parseEvent(event);
+      });
+      bool hasMore = false;
+      do {
+        hasMore = await timeline!.paginateBackwards(10);
+        // wait for diffRx to be finished
+        sleep(const Duration(milliseconds: 100));
+      } while (hasMore && ref.read(messagesProvider).length < 10);
+      ref.onDispose(() async {
+        debugPrint('disposing message stream');
+        await subscription?.cancel();
+      });
+    } catch (e) {
+      state = ChatRoomState.error(
+        'Some error occured loading room ${e.toString()}',
+      );
+    }
   }
 
   void isLoaded() => state = const ChatRoomState.loaded();
@@ -187,26 +192,20 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-  Future<void> fetchUserProfiles() async {
-    final activeMembers = await ref.read(chatMembersProvider(roomId).future);
-    Map<String, ProfileData> userProfiles = {};
+  Future<void> _fetchMentionRecords() async {
+    final convo = ref.read(currentConvoProvider)!;
+    final activeMembers =
+        await ref.read(chatMembersProvider(convo.getRoomIdStr()).future);
     List<Map<String, dynamic>> mentionRecords = [];
     for (int i = 0; i < activeMembers.length; i++) {
       String userId = activeMembers[i].userId().toString();
       var profile = activeMembers[i].getProfile();
       Map<String, dynamic> record = {};
       var userName = (await profile.getDisplayName()).text();
-      if (await profile.hasAvatar()) {
-        var userAvatar = (await profile.getThumbnail(62, 60)).data()!;
-        userProfiles[userId] =
-            ProfileData(userName ?? simplifyUserId(userId), userAvatar);
-        record['avatar'] = userProfiles[userId]?.getAvatarImage();
-      }
       record['display'] = userName ?? simplifyUserId(userId);
       record['link'] = userId;
       mentionRecords.add(record);
       if (i % 3 == 0 || i == activeMembers.length - 1) {
-        ref.read(chatProfilesProvider.notifier).update((state) => userProfiles);
         ref
             .read(mentionListProvider.notifier)
             .update((state) => mentionRecords);
@@ -216,6 +215,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // fetch original content media for reply msg, i.e. text/image/file etc.
   Future<void> _fetchOriginalContent(String originalId, String replyId) async {
+    final room = ref.read(currentConvoProvider)!;
     var roomMsg = await room.getMessage(originalId);
 
     // reply is allowed for only EventItem not VirtualItem
@@ -711,6 +711,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // fetch image content for message.
   Future<void> _fetchImageContent(String eventId) async {
+    final room = ref.read(currentConvoProvider)!;
     var messages = ref.read(messagesProvider);
     var data = await room.imageBinary(eventId);
     int index = messages.indexWhere((x) => x.id == eventId);
@@ -726,6 +727,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // fetch audio content for message.
   Future<void> _fetchAudioContent(String eventId) async {
+    final room = ref.read(currentConvoProvider)!;
     var messages = ref.read(messagesProvider);
     var data = await room.audioBinary(eventId);
     int index = messages.indexWhere((x) => x.id == eventId);
@@ -741,6 +743,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // fetch video conent for message
   Future<void> _fetchVideoContent(String eventId) async {
+    final room = ref.read(currentConvoProvider)!;
     var messages = ref.read(messagesProvider);
     var data = await room.videoBinary(eventId);
     int index = messages.indexWhere((x) => x.id == eventId);
@@ -756,8 +759,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // Pagination Control
   Future<void> handleEndReached() async {
-    bool hasMore = await timeline!.paginateBackwards(10);
-    debugPrint('backward pagination has more: $hasMore');
+    bool hasMore = ref.read(paginationProvider);
+    if (hasMore) {
+      hasMore = await timeline!.paginateBackwards(10);
+      ref.read(paginationProvider.notifier).update((state) => hasMore);
+      debugPrint('backward pagination has more: $hasMore');
+    }
   }
 
   // preview message link
@@ -782,6 +789,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // image selection
   Future<void> handleImageSelection(BuildContext context) async {
+    final room = ref.read(currentConvoProvider)!;
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
     );
@@ -839,6 +847,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // file selection
   Future<void> handleFileSelection(BuildContext context) async {
+    final room = ref.read(currentConvoProvider)!;
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.any,
     );
@@ -879,6 +888,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     String markdownMessage,
     int messageLength,
   ) async {
+    final room = ref.read(currentConvoProvider)!;
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await room.typingNotice(false);
@@ -912,6 +922,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // send message event with image media
   Future<void> sendImage(PlatformFile file) async {
+    final room = ref.read(currentConvoProvider)!;
     String? path = file.path;
     if (path == null) {
       return;
@@ -951,14 +962,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-  ProfileData? getUserProfile(String userId) {
-    final chatProfiles = ref.watch(chatProfilesProvider);
-    if (chatProfiles.containsKey(userId)) {
-      return chatProfiles[userId];
-    }
-    return ProfileData('', null);
-  }
-
   void updateEmojiState(types.Message message) {
     final messages = ref.read(messagesProvider);
     int emojiMessageIndex = messages.indexWhere((x) => x.id == message.id);
@@ -970,15 +973,19 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // send typing event from client
   Future<bool> typingNotice(bool typing) async {
+    final room = ref.read(currentConvoProvider)!;
     return await room.typingNotice(typing);
   }
 
   // send emoji reaction to message event
   Future<void> sendEmojiReaction(String eventId, String emoji) async {
+    final room = ref.read(currentConvoProvider)!;
     await room.sendReaction(eventId, emoji);
   }
 
 // delete message event
-  Future<void> redactRoomMessage(String eventId) async =>
-      await room.redactMessage(eventId, '', null);
+  Future<void> redactRoomMessage(String eventId) async {
+    final room = ref.read(currentConvoProvider)!;
+    await room.redactMessage(eventId, '', null);
+  }
 }
