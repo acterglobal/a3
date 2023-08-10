@@ -808,13 +808,18 @@ impl Client {
         }
         // if None, it is alias
         if let Ok(alias_id) = OwnedRoomAliasId::try_from(room_id_or_alias) {
-            let response = self.resolve_room_alias(&alias_id).await?;
-            for space in self.spaces().await?.into_iter() {
-                if space.inner.room.room_id() == response.room_id {
-                    return Ok(space);
-                }
-            }
-            bail!("Room with alias not found");
+            let me = self.clone();
+            RUNTIME
+                .spawn(async move {
+                    let response = me.resolve_room_alias(&alias_id).await?;
+                    for space in me.spaces().await?.into_iter() {
+                        if space.inner.room.room_id() == response.room_id {
+                            return Ok(space);
+                        }
+                    }
+                    bail!("Room with alias not found");
+                })
+                .await?
         } else {
             bail!("Neither roomId nor alias provided");
         }
