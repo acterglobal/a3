@@ -1252,6 +1252,8 @@ object Space {
     /// Change the avatar of the room
     fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
 
+    fn set_acter_space_states() -> Future<Result<bool>>;
+
     /// Remove the avatar of the room
     fn remove_avatar() -> Future<Result<EventId>>;
 
@@ -1384,6 +1386,7 @@ enum MemberPermission {
     CanInvite,
     CanRedact,
     CanTriggerRoomNotification,
+    CanUpgradeToActerSpace,
     CanSetName,
     CanUpdateAvatar,
     CanSetTopic,

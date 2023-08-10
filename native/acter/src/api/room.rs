@@ -4,6 +4,7 @@ use acter_core::{
         pins::PinEventContent,
     },
     spaces::is_acter_space,
+    statics::PURPOSE_FIELD_DEV,
 };
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
@@ -78,6 +79,7 @@ pub enum MemberPermission {
     CanRedact,
     CanTriggerRoomNotification,
     // state events
+    CanUpgradeToActerSpace,
     CanSetName,
     CanUpdateAvatar,
     CanSetTopic,
@@ -162,6 +164,7 @@ impl Member {
             MemberPermission::CanLinkSpaces => StateEventType::SpaceChild.into(),
             MemberPermission::CanSetParentSpace => StateEventType::SpaceParent.into(),
             MemberPermission::CanUpdatePowerLevels => StateEventType::RoomPowerLevels.into(),
+
             // Acter specific
             MemberPermission::CanPostNews => PermissionTest::Message(MessageLikeEventType::from(
                 <NewsEntryEventContent as StaticEventContent>::TYPE,
@@ -169,6 +172,9 @@ impl Member {
             MemberPermission::CanPostPin => PermissionTest::Message(MessageLikeEventType::from(
                 <PinEventContent as StaticEventContent>::TYPE,
             )),
+            MemberPermission::CanUpgradeToActerSpace => {
+                StateEventType::from(PURPOSE_FIELD_DEV).into()
+            }
         };
         match tester {
             PermissionTest::Message(msg) => self.member.can_send_message(msg),

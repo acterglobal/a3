@@ -5,6 +5,7 @@ import 'package:acter/features/space/widgets/about_card.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
 import 'package:acter/features/space/widgets/links_card.dart';
+import 'package:acter/features/space/widgets/non_acter_space_card.dart';
 import 'package:acter/features/space/widgets/related_spaces_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,6 +51,11 @@ class SpaceOverview extends ConsumerWidget {
               axisDirection: AxisDirection.down,
               crossAxisCount: min(widthCount, minCount),
               children: <Widget>[
+                ActerSpaceChecker(
+                  spaceId: spaceIdOrAlias,
+                  expectation: false,
+                  child: NonActerSpaceCard(spaceId: spaceIdOrAlias),
+                ),
                 AboutCard(spaceId: spaceIdOrAlias),
                 ActerSpaceChecker(
                   spaceId: spaceIdOrAlias,

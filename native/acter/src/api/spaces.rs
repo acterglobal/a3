@@ -633,36 +633,51 @@ impl Space {
         self.room_id().to_string()
     }
 
-    pub async fn set_acter_space_states(&self) -> Result<()> {
-        let SdkRoom::Joined(ref joined) = self.inner.room else {
-            bail!("You can't convert a space you didn't join");
-        };
-        let client = joined.client();
-        let my_id = client.user_id().context("User not found")?.to_owned();
-        let member = joined
-            .get_member(&my_id)
-            .await?
-            .context("Couldn't find me among room members")?;
-        for state in default_acter_space_states() {
-            println!("{:?}", state);
-            let event_type = state.get_field("type")?.context("given")?;
-            let state_key = state.get_field("state_key")?.unwrap_or_default();
-            let body = state
-                .get_field::<Raw<AnyStateEventContent>>("content")?
-                .context("body is given")?;
-            if !member.can_send_state(StateEventType::RoomAvatar) {
-                bail!("No permission to change avatar of this room");
-            }
+    pub async fn set_acter_space_states(&self) -> Result<bool> {
+        let room = self.inner.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let SdkRoom::Joined(ref joined) = room else {
+                    bail!("You can't convert a space you didn't join");
+                };
+                let client = joined.client();
+                let my_id = client.user_id().context("User not found")?.to_owned();
+                let room_id = joined.room_id().to_owned();
+                let member = joined
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
 
-            let request = SendStateEventRequest::new_raw(
-                joined.room_id().to_owned(),
-                event_type,
-                state_key,
-                body,
-            );
-            client.send(request, None).await?;
-        }
-        Ok(())
+                let mut requests = Vec::new();
+
+                for state in default_acter_space_states() {
+                    println!("{:?}", state);
+                    let event_type: StateEventType = state.get_field("type")?.context("given")?;
+                    let state_key = state.get_field("state_key")?.unwrap_or_default();
+                    let body = state
+                        .get_field::<Raw<AnyStateEventContent>>("content")?
+                        .context("body is given")?;
+                    if !member.can_send_state(event_type.clone()) {
+                        bail!(
+                            "No permission to set {event_type} states of this room. Can't convert"
+                        );
+                    }
+
+                    requests.push(SendStateEventRequest::new_raw(
+                        room_id.clone(),
+                        event_type,
+                        state_key,
+                        body,
+                    ));
+                }
+
+                for request in requests {
+                    client.send(request, None).await?;
+                }
+
+                Ok(true)
+            })
+            .await?
     }
 
     pub async fn add_child_space(&self, room_id: String) -> Result<String> {

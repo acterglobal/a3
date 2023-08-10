@@ -22,7 +22,7 @@ class TopNavBar extends ConsumerStatefulWidget {
 }
 
 class _TopNavBarState extends ConsumerState<TopNavBar>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AutoDisposeFutureProviderFamily<TabsState, BuildContext>
       recentWatchScreenTabStateTestProvider;
 
@@ -37,6 +37,9 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
         vsync: this,
         initialIndex: 0,
       );
+      ref.onDispose(() {
+        ctrl.dispose(); // we need to clean this up.
+      });
       return TabsState(tabs, ctrl);
     });
   }
