@@ -13,13 +13,13 @@ pub fn duration_from_secs(secs: u64) -> Duration {
     Duration::from_secs(secs)
 }
 
-pub struct OptionText {
+pub struct OptionString {
     text: Option<String>,
 }
 
-impl OptionText {
+impl OptionString {
     pub(crate) fn new(text: Option<String>) -> Self {
-        OptionText { text }
+        OptionString { text }
     }
 
     pub fn text(&self) -> Option<String> {
@@ -381,14 +381,14 @@ impl FileDesc {
 }
 
 #[derive(Clone, Debug)]
-pub struct ReactionItem {
+pub struct ReactionRecord {
     sender_id: OwnedUserId,
     timestamp: MilliSecondsSinceUnixEpoch,
 }
 
-impl ReactionItem {
+impl ReactionRecord {
     pub(crate) fn new(sender_id: OwnedUserId, timestamp: MilliSecondsSinceUnixEpoch) -> Self {
-        ReactionItem {
+        ReactionRecord {
             sender_id,
             timestamp,
         }

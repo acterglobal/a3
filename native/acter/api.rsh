@@ -348,7 +348,7 @@ object RsvpManager {
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
     /// get Yes/Maybe/No/None for the user's own status
-    fn my_status() -> Future<Result<OptionText>>;
+    fn my_status() -> Future<Result<OptionString>>;
 
     /// get the count of Yes/Maybe/No
     fn count_at_status(status: string) -> Future<Result<u32>>;
@@ -456,7 +456,7 @@ object RoomEventItem {
     fn reaction_keys() -> Vec<string>;
 
     /// the details that users reacted using this emote key in this message
-    fn reaction_items(key: string) -> Option<Vec<ReactionItem>>;
+    fn reaction_items(key: string) -> Option<Vec<ReactionRecord>>;
 
     /// Whether this message is editable
     fn is_editable() -> bool;
@@ -588,7 +588,7 @@ object FileDesc {
     fn thumbnail_source() -> Option<MediaSource>;
 }
 
-object ReactionItem {
+object ReactionRecord {
     /// who sent reaction
     fn sender_id() -> UserId;
 
@@ -1427,7 +1427,7 @@ object Account {
     fn user_id() -> UserId;
 
     /// The display_name of the account
-    fn display_name() -> Future<Result<OptionText>>;
+    fn display_name() -> Future<Result<OptionString>>;
 
     /// Change the display name of the account
     fn set_display_name(name: string) -> Future<Result<bool>>;
@@ -1653,9 +1653,6 @@ object Client {
     /// Return the receipt event receiver
     fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 
-    /// Return the message receiver
-    fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
-
     /// create convo
     fn create_convo(settings: CreateConvoSettings) -> Future<Result<RoomId>>;
 
@@ -1712,7 +1709,7 @@ object Client {
 
 }
 
-object OptionText {
+object OptionString {
     /// get text
     fn text() -> Option<string>;
 }
@@ -1736,7 +1733,7 @@ object UserProfile {
     fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<OptionText>>;
+    fn get_display_name() -> Future<Result<OptionString>>;
 }
 
 object RoomProfile {
@@ -1750,7 +1747,7 @@ object RoomProfile {
     fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<OptionText>>;
+    fn get_display_name() -> Future<Result<OptionString>>;
 }
 
 object Invitation {

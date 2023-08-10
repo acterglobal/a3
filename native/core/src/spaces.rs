@@ -21,13 +21,13 @@ use matrix_sdk::{
     },
 };
 use serde::{Deserialize, Serialize};
-use std::{fs, path::PathBuf};
+use std::path::PathBuf;
 use strum::Display;
 use tracing::error;
 
 use crate::{
     client::CoreClient,
-    error::Result,
+    error::{Error, Result},
     statics::{default_acter_space_states, PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
 };
 
@@ -213,7 +213,7 @@ impl CoreClient {
                 let path = PathBuf::from(avatar_uri);
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().expect("MIME type should be given");
-                let buf = fs::read(path).expect("File should be read");
+                let buf = std::fs::read(path).expect("File should be read");
                 let upload_resp = client.media().upload(&content_type, buf).await?;
 
                 let info = assign!(ImageInfo::new(), {
@@ -230,7 +230,7 @@ impl CoreClient {
 
         if let Some(parent) = parent {
             let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
-                return Err(crate::Error::HomeserverMissesHostname);
+                return Err(Error::HomeserverMissesHostname);
             };
             let parent_event = InitialStateEvent::<SpaceParentEventContent> {
                 content: assign!(SpaceParentEventContent::new(true), {
