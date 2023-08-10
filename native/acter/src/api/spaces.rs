@@ -676,13 +676,13 @@ impl Space {
             bail!("You can't update a space you aren't part of");
         };
         let room = joined.clone();
-
-        let Some(Ok(homeserver)) = self.client.homeserver().await.host_str().map(|h|h.try_into()) else {
-            return Err(Error::HomeserverMissesHostname)?;
-        };
+        let client = self.client.clone();
 
         RUNTIME
             .spawn(async move {
+                let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
+                    return Err(Error::HomeserverMissesHostname)?;
+                };
                 let response = room
                     .send_state_event_for_key(
                         &room_id,
