@@ -1,10 +1,11 @@
 use derive_getters::Getters;
 use matrix_sdk::ruma::{OwnedEventId, OwnedRoomId};
 use serde::{Deserialize, Serialize};
+use strum::Display;
 
 use super::Position;
 
-#[derive(Eq, PartialEq, Clone, strum::Display, Debug, Deserialize, Serialize, Default)]
+#[derive(Eq, PartialEq, Clone, Display, Debug, Deserialize, Serialize, Default)]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
 pub enum TaskAction {
@@ -22,7 +23,7 @@ impl TaskAction {
     }
 }
 
-#[derive(Eq, PartialEq, strum::Display, Clone, Debug, Deserialize, Serialize, Default)]
+#[derive(Eq, PartialEq, Display, Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
 pub enum TaskListAction {
@@ -38,7 +39,7 @@ impl TaskListAction {
     }
 }
 
-#[derive(Eq, PartialEq, strum::Display, Clone, Debug, Deserialize, Serialize, Default)]
+#[derive(Eq, PartialEq, Display, Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
 pub enum CalendarEventAction {

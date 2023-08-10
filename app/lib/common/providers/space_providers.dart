@@ -285,12 +285,14 @@ final canonicalParentProvider = FutureProvider.autoDispose
     }
     final parent = relations.mainParent();
     if (parent == null) {
-      debugPrint('no parent');
       return null;
     }
 
     final parentSpace =
-        await ref.watch(spaceProvider(parent.roomId().toString()).future);
+        await ref.watch(maybeSpaceProvider(parent.roomId().toString()).future);
+    if (parentSpace == null) {
+      return null;
+    }
     final profile =
         await ref.watch(spaceProfileDataProvider(parentSpace).future);
     return SpaceWithProfileData(parentSpace, profile);

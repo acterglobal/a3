@@ -2078,7 +2078,7 @@ class Api {
     return tmp7;
   }
 
-  OptionText? __rsvpManagerMyStatusFuturePoll(
+  OptionString? __rsvpManagerMyStatusFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2119,9 +2119,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionText");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionString");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = OptionText._(this, tmp13_1);
+    final tmp7 = OptionString._(this, tmp13_1);
     return tmp7;
   }
 
@@ -6465,7 +6465,7 @@ class Api {
     return tmp7;
   }
 
-  OptionText? __accountDisplayNameFuturePoll(
+  OptionString? __accountDisplayNameFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -6506,9 +6506,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionText");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionString");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = OptionText._(this, tmp13_1);
+    final tmp7 = OptionString._(this, tmp13_1);
     return tmp7;
   }
 
@@ -8264,7 +8264,7 @@ class Api {
     return tmp7;
   }
 
-  OptionText? __userProfileGetDisplayNameFuturePoll(
+  OptionString? __userProfileGetDisplayNameFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -8305,9 +8305,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionText");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionString");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = OptionText._(this, tmp13_1);
+    final tmp7 = OptionString._(this, tmp13_1);
     return tmp7;
   }
 
@@ -8405,7 +8405,7 @@ class Api {
     return tmp7;
   }
 
-  OptionText? __roomProfileGetDisplayNameFuturePoll(
+  OptionString? __roomProfileGetDisplayNameFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -8446,9 +8446,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionText");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionString");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = OptionText._(this, tmp13_1);
+    final tmp7 = OptionString._(this, tmp13_1);
     return tmp7;
   }
 
@@ -9913,42 +9913,6 @@ class Api {
     final tmp11_1 = _Box(this, tmp11_0, "drop_box_ReceiptEvent");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
     final tmp9 = ReceiptEvent._(this, tmp11_1);
-    return tmp9;
-  }
-
-  RoomMessage? __clientIncomingMessageRxStreamPoll(
-    int boxed,
-    int postCobject,
-    int port,
-    int done,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    final tmp6 = done;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    var tmp7 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    tmp7 = tmp6;
-    final tmp8 = _clientIncomingMessageRxStreamPoll(
-      tmp1,
-      tmp3,
-      tmp5,
-      tmp7,
-    );
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
-    if (tmp10 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_RoomMessage");
-    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = RoomMessage._(this, tmp11_1);
     return tmp9;
   }
 
@@ -12491,23 +12455,23 @@ class Api {
       _FileDescThumbnailSourceReturn Function(
         int,
       )>();
-  late final _reactionItemSenderIdPtr = _lookup<
+  late final _reactionRecordSenderIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__ReactionItem_sender_id");
+          )>>("__ReactionRecord_sender_id");
 
-  late final _reactionItemSenderId = _reactionItemSenderIdPtr.asFunction<
+  late final _reactionRecordSenderId = _reactionRecordSenderIdPtr.asFunction<
       int Function(
         int,
       )>();
-  late final _reactionItemTimestampPtr = _lookup<
+  late final _reactionRecordTimestampPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint64 Function(
             ffi.Int64,
-          )>>("__ReactionItem_timestamp");
+          )>>("__ReactionRecord_timestamp");
 
-  late final _reactionItemTimestamp = _reactionItemTimestampPtr.asFunction<
+  late final _reactionRecordTimestamp = _reactionRecordTimestampPtr.asFunction<
       int Function(
         int,
       )>();
@@ -17406,16 +17370,6 @@ class Api {
       _ClientReceiptEventRxReturn Function(
         int,
       )>();
-  late final _clientIncomingMessageRxPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientIncomingMessageRxReturn Function(
-            ffi.Int64,
-          )>>("__Client_incoming_message_rx");
-
-  late final _clientIncomingMessageRx = _clientIncomingMessageRxPtr.asFunction<
-      _ClientIncomingMessageRxReturn Function(
-        int,
-      )>();
   late final _clientCreateConvoPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -17704,14 +17658,14 @@ class Api {
           int Function(
             int,
           )>();
-  late final _optionTextTextPtr = _lookup<
+  late final _optionStringTextPtr = _lookup<
       ffi.NativeFunction<
-          _OptionTextTextReturn Function(
+          _OptionStringTextReturn Function(
             ffi.Int64,
-          )>>("__OptionText_text");
+          )>>("__OptionString_text");
 
-  late final _optionTextText = _optionTextTextPtr.asFunction<
-      _OptionTextTextReturn Function(
+  late final _optionStringText = _optionStringTextPtr.asFunction<
+      _OptionStringTextReturn Function(
         int,
       )>();
   late final _optionBufferDataPtr = _lookup<
@@ -21213,23 +21167,6 @@ class Api {
             int,
             int,
           )>();
-  late final _clientIncomingMessageRxStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientIncomingMessageRxStreamPollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_incoming_message_rx_stream_poll");
-
-  late final _clientIncomingMessageRxStreamPoll =
-      _clientIncomingMessageRxStreamPollPtr.asFunction<
-          _ClientIncomingMessageRxStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
   late final _clientSubscribeStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
           _ClientSubscribeStreamStreamPollReturn Function(
@@ -21955,55 +21892,55 @@ class Api {
   late final _ffiListPublicSearchResultItemInsert =
       _ffiListPublicSearchResultItemInsertPtr
           .asFunction<void Function(int, int, int)>();
-  FfiListReactionItem createFfiListReactionItem() {
+  FfiListReactionRecord createFfiListReactionRecord() {
     final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListReactionItemCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListReactionItem");
-    return FfiListReactionItem._(this, list_box);
+        ffi.Pointer.fromAddress(_ffiListReactionRecordCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListReactionRecord");
+    return FfiListReactionRecord._(this, list_box);
   }
 
-  late final _ffiListReactionItemCreatePtr =
+  late final _ffiListReactionRecordCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-          "__FfiListReactionItemCreate");
+          "__FfiListReactionRecordCreate");
 
-  late final _ffiListReactionItemCreate =
-      _ffiListReactionItemCreatePtr.asFunction<int Function()>();
+  late final _ffiListReactionRecordCreate =
+      _ffiListReactionRecordCreatePtr.asFunction<int Function()>();
 
-  late final _ffiListReactionItemLenPtr =
+  late final _ffiListReactionRecordLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListReactionItemLen");
+          "__FfiListReactionRecordLen");
 
-  late final _ffiListReactionItemLen =
-      _ffiListReactionItemLenPtr.asFunction<int Function(int)>();
+  late final _ffiListReactionRecordLen =
+      _ffiListReactionRecordLenPtr.asFunction<int Function(int)>();
 
-  late final _ffiListReactionItemElementAtPtr =
+  late final _ffiListReactionRecordElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListReactionItemElementAt");
+          "__FfiListReactionRecordElementAt");
 
-  late final _ffiListReactionItemElementAt =
-      _ffiListReactionItemElementAtPtr.asFunction<int Function(int, int)>();
+  late final _ffiListReactionRecordElementAt =
+      _ffiListReactionRecordElementAtPtr.asFunction<int Function(int, int)>();
 
-  late final _ffiListReactionItemRemovePtr =
+  late final _ffiListReactionRecordRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListReactionItemRemove");
+          "__FfiListReactionRecordRemove");
 
-  late final _ffiListReactionItemRemove =
-      _ffiListReactionItemRemovePtr.asFunction<int Function(int, int)>();
+  late final _ffiListReactionRecordRemove =
+      _ffiListReactionRecordRemovePtr.asFunction<int Function(int, int)>();
 
-  late final _ffiListReactionItemAddPtr =
+  late final _ffiListReactionRecordAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-          "__FfiListReactionItemAdd");
+          "__FfiListReactionRecordAdd");
 
-  late final _ffiListReactionItemAdd =
-      _ffiListReactionItemAddPtr.asFunction<void Function(int, int)>();
+  late final _ffiListReactionRecordAdd =
+      _ffiListReactionRecordAddPtr.asFunction<void Function(int, int)>();
 
-  late final _ffiListReactionItemInsertPtr = _lookup<
+  late final _ffiListReactionRecordInsertPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListReactionItemInsert");
+              ffi.IntPtr)>>("__FfiListReactionRecordInsert");
 
-  late final _ffiListReactionItemInsert =
-      _ffiListReactionItemInsertPtr.asFunction<void Function(int, int, int)>();
+  late final _ffiListReactionRecordInsert = _ffiListReactionRecordInsertPtr
+      .asFunction<void Function(int, int, int)>();
   FfiListReceiptRecord createFfiListReceiptRecord() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListReceiptRecordCreate());
@@ -25723,7 +25660,7 @@ class RsvpManager {
   }
 
   /// get Yes/Maybe/No/None for the user's own status
-  Future<OptionText> myStatus() {
+  Future<OptionString> myStatus() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._rsvpManagerMyStatus(
@@ -26616,7 +26553,7 @@ class RoomEventItem {
   }
 
   /// the details that users reacted using this emote key in this message
-  FfiListReactionItem? reactionItems(
+  FfiListReactionRecord? reactionItems(
     String key,
   ) {
     final tmp1 = key;
@@ -26645,9 +26582,9 @@ class RoomEventItem {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-    final tmp8_1 = _Box(_api, tmp8_0, "drop_box_FfiListReactionItem");
+    final tmp8_1 = _Box(_api, tmp8_0, "drop_box_FfiListReactionRecord");
     tmp8_1._finalizer = _api._registerFinalizer(tmp8_1);
-    final tmp9 = FfiListReactionItem._(_api, tmp8_1);
+    final tmp9 = FfiListReactionRecord._(_api, tmp8_1);
     final tmp6 = tmp9;
     return tmp6;
   }
@@ -27590,17 +27527,17 @@ class FileDesc {
   }
 }
 
-class ReactionItem {
+class ReactionRecord {
   final Api _api;
   final _Box _box;
 
-  ReactionItem._(this._api, this._box);
+  ReactionRecord._(this._api, this._box);
 
   /// who sent reaction
   UserId senderId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._reactionItemSenderId(
+    final tmp1 = _api._reactionRecordSenderId(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -27615,7 +27552,7 @@ class ReactionItem {
   int timestamp() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._reactionItemTimestamp(
+    final tmp1 = _api._reactionRecordTimestamp(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -35341,7 +35278,7 @@ class Account {
   }
 
   /// The display_name of the account
-  Future<OptionText> displayName() {
+  Future<OptionString> displayName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._accountDisplayName(
@@ -37328,27 +37265,6 @@ class Client {
     return tmp2;
   }
 
-  /// Return the message receiver
-  Stream<RoomMessage>? incomingMessageRx() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._clientIncomingMessageRx(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 =
-        _Box(_api, tmp4_0, "__Client_incoming_message_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 =
-        _nativeStream(tmp4_1, _api.__clientIncomingMessageRxStreamPoll);
-    return tmp2;
-  }
-
   /// create convo
   Future<RoomId> createConvo(
     CreateConvoSettings settings,
@@ -37952,17 +37868,17 @@ class Client {
   }
 }
 
-class OptionText {
+class OptionString {
   final Api _api;
   final _Box _box;
 
-  OptionText._(this._api, this._box);
+  OptionString._(this._api, this._box);
 
   /// get text
   String? text() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._optionTextText(
+    final tmp1 = _api._optionStringText(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -38110,7 +38026,7 @@ class UserProfile {
   }
 
   /// get the display name
-  Future<OptionText> getDisplayName() {
+  Future<OptionString> getDisplayName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._userProfileGetDisplayName(
@@ -38210,7 +38126,7 @@ class RoomProfile {
   }
 
   /// get the display name
-  Future<OptionText> getDisplayName() {
+  Future<OptionString> getDisplayName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomProfileGetDisplayName(
@@ -41280,14 +41196,7 @@ class _ClientReceiptEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientIncomingMessageRxReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _OptionTextTextReturn extends ffi.Struct {
+class _OptionStringTextReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -44213,13 +44122,6 @@ class _ClientReceiptEventRxStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientIncomingMessageRxStreamPollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
 class _ClientSubscribeStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -45078,58 +44980,58 @@ class FfiListPublicSearchResultItem extends Iterable<PublicSearchResultItem>
   }
 }
 
-class FfiListReactionItem extends Iterable<ReactionItem>
-    implements CustomIterable<ReactionItem> {
+class FfiListReactionRecord extends Iterable<ReactionRecord>
+    implements CustomIterable<ReactionRecord> {
   final Api _api;
   final _Box _box;
 
-  FfiListReactionItem._(this._api, this._box);
+  FfiListReactionRecord._(this._api, this._box);
 
   @override
-  Iterator<ReactionItem> get iterator => CustomIterator(this);
+  Iterator<ReactionRecord> get iterator => CustomIterator(this);
 
   @override
   int get length {
-    return _api._ffiListReactionItemLen(_box.borrow());
+    return _api._ffiListReactionRecordLen(_box.borrow());
   }
 
   ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
-  ReactionItem elementAt(int index) {
-    final address = _api._ffiListReactionItemElementAt(_box.borrow(), index);
+  ReactionRecord elementAt(int index) {
+    final address = _api._ffiListReactionRecordElementAt(_box.borrow(), index);
     final reference = _Box(
       _api,
       ffi.Pointer.fromAddress(address),
       "drop_box_Leak",
       context: this,
     );
-    return ReactionItem._(_api, reference);
+    return ReactionRecord._(_api, reference);
   }
 
-  ReactionItem operator [](int index) {
+  ReactionRecord operator [](int index) {
     return elementAt(index);
   }
 
   /// Moves the element out of this list and returns it
-  ReactionItem remove(int index) {
-    final address = _api._ffiListReactionItemRemove(_box.borrow(), index);
+  ReactionRecord remove(int index) {
+    final address = _api._ffiListReactionRecordRemove(_box.borrow(), index);
     final reference =
-        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_ReactionItem");
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_ReactionRecord");
     reference._finalizer = _api._registerFinalizer(reference);
-    return ReactionItem._(_api, reference);
+    return ReactionRecord._(_api, reference);
   }
 
   ///The inserted element is moved into the list and must not be used again
   ///Although you can use the "elementAt" method to get a reference to the added element
-  void add(ReactionItem element) {
-    _api._ffiListReactionItemAdd(_box.borrow(), element._box.borrow());
+  void add(ReactionRecord element) {
+    _api._ffiListReactionRecordAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
   ///The inserted element is moved into the list and must not be used again
   ///Although you can use the "elementAt" method to get a reference to the added element
-  void insert(int index, ReactionItem element) {
-    _api._ffiListReactionItemInsert(
+  void insert(int index, ReactionRecord element) {
+    _api._ffiListReactionRecordInsert(
         _box.borrow(), index, element._box.borrow());
     element._box.move();
   }

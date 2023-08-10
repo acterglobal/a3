@@ -8,6 +8,7 @@ use super::{AnyActerModel, EventMeta};
 use crate::{
     events::rsvp::{RsvpBuilder, RsvpEventContent},
     store::Store,
+    Result,
 };
 
 static RSVP_FIELD: &str = "rsvp";
@@ -49,7 +50,7 @@ impl RsvpManager {
         self.event_id.clone()
     }
 
-    pub async fn rsvp_entries(&self) -> crate::Result<Vec<Rsvp>> {
+    pub async fn rsvp_entries(&self) -> Result<Vec<Rsvp>> {
         let entries = self
             .store
             .get_list(&Rsvp::index_for(&self.event_id))
@@ -62,7 +63,7 @@ impl RsvpManager {
         Ok(entries)
     }
 
-    pub(crate) async fn add_rsvp_entry(&mut self, _entry: &Rsvp) -> crate::Result<bool> {
+    pub(crate) async fn add_rsvp_entry(&mut self, _entry: &Rsvp) -> Result<bool> {
         self.stats.has_rsvp_entries = true;
         self.stats.total_rsvp_count += 1;
         Ok(true)
@@ -82,7 +83,7 @@ impl RsvpManager {
         Self::stats_field_for(&self.event_id)
     }
 
-    pub async fn save(&self) -> crate::Result<String> {
+    pub async fn save(&self) -> Result<String> {
         let update_key = self.update_key();
         self.store.set_raw(&update_key, &self.stats).await?;
         Ok(update_key)
@@ -133,7 +134,7 @@ impl super::ActerModel for Rsvp {
         &[super::Capability::Commentable]
     }
 
-    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
         let belongs_to = self.belongs_to().unwrap();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying rsvp");
 
