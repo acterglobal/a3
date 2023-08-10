@@ -536,7 +536,7 @@ async fn run_app<B: Backend>(
     terminal: &mut Terminal<B>,
     mut app: App,
     rx: MpscReceiver<AppUpdate>,
-) -> io::Result<()> {
+) -> std::io::Result<()> {
     let tick_rate = Duration::from_millis(250);
     let mut last_tick = Instant::now();
 
