@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -108,6 +109,7 @@ class _ChatBubble extends ConsumerWidget {
     return Column(
       crossAxisAlignment:
           isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         _EmojiRow(
           isAuthor: isAuthor,
@@ -159,38 +161,47 @@ class _ChatBubble extends ConsumerWidget {
                                   ),
                                   child: Consumer(
                                     builder: (context, ref, child) {
-                                      final replyProfile = ref
-                                          .watch(chatRoomProvider.notifier)
-                                          .getUserProfile(
-                                            message.repliedMessage!.author.id,
+                                      final replyProfile = ref.watch(
+                                        memberProfileProvider(
+                                          message.repliedMessage!.author.id,
+                                        ),
+                                      );
+                                      return replyProfile.when(
+                                        data: (profile) {
+                                          return Row(
+                                            children: [
+                                              ActerAvatar(
+                                                uniqueId: message
+                                                    .repliedMessage!.author.id,
+                                                displayName:
+                                                    profile.displayName,
+                                                mode: DisplayMode.User,
+                                                avatar:
+                                                    profile.getAvatarImage(),
+                                                size: profile.hasAvatar()
+                                                    ? 12
+                                                    : 24,
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Text(
+                                                profile.displayName ?? '',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall!
+                                                    .copyWith(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .tertiary,
+                                                    ),
+                                              ),
+                                            ],
                                           );
-                                      final displayName = replyProfile != null
-                                          ? replyProfile.displayName
-                                          : message.repliedMessage?.author.id;
-                                      return Row(
-                                        children: [
-                                          ActerAvatar(
-                                            uniqueId: message
-                                                .repliedMessage!.author.id,
-                                            displayName: displayName,
-                                            mode: DisplayMode.User,
-                                            avatar:
-                                                replyProfile?.getAvatarImage(),
-                                            size: 12,
-                                          ),
-                                          const SizedBox(width: 5),
-                                          Text(
-                                            displayName ?? '',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .copyWith(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .tertiary,
-                                                ),
-                                          ),
-                                        ],
+                                        },
+                                        error: (e, st) => Text(
+                                          'Failed to load profile due to ${e.toString()}',
+                                        ),
+                                        loading: () =>
+                                            const CircularProgressIndicator(),
                                       );
                                     },
                                   ),
@@ -433,17 +444,30 @@ class _OriginalMessageBuilder extends ConsumerWidget {
       );
     } else if (message.repliedMessage is types.ImageMessage) {
       var imageMsg = message.repliedMessage as types.ImageMessage;
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ImageMessageBuilder(
-          message: imageMsg,
-          messageWidth: imageMsg.size.toInt(),
-        ),
+      return Row(
+        children: [
+          Container(
+            constraints: const BoxConstraints(maxHeight: 50),
+            margin: const EdgeInsets.all(12),
+            child: ImageMessageBuilder(
+              message: imageMsg,
+              messageWidth: imageMsg.size.toInt(),
+              isReplyContent: true,
+            ),
+          ),
+          Text(
+            'sent an image.',
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+        ],
       );
     } else if (message.repliedMessage is types.FileMessage) {
-      return Text(
-        message.repliedMessage!.metadata?['content'],
-        style: Theme.of(context).textTheme.bodySmall,
+      return Padding(
+        padding: const EdgeInsets.all(12),
+        child: Text(
+          message.repliedMessage!.metadata?['content'],
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
       );
     } else if (message.repliedMessage is types.CustomMessage) {
       return CustomMessageBuilder(
