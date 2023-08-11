@@ -141,6 +141,7 @@ dev_dependencies:
       url: https://github.com/acterglobal/flutter_gherkin
       ref: main
   gherkin: ^3.1.0
+  msix: ^3.7.0
 
 icons_launcher:
   image_path: "assets/icon/logo.png"
@@ -207,16 +208,16 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
 
-  msix_config:
-    display_name: Acter
-    publisher_display_name: Acter
-    store: true
-    identity_name: 	47338Acter.Acter3
-    publisher: CN=EBDFB2F4-DCCB-4267-8EBA-6FADD88EAC81
-    msix_version: 1.0.0.0
-    logo_path: .\macos\Runner\Assets.xcassets\AppIcon.appiconset\app_icon_128.png
-    start_menu_icon_path: .\macos\Runner\Assets.xcassets\AppIcon.appiconset\app_icon_128.png
-    tile_icon_path: .\macos\Runner\Assets.xcassets\AppIcon.appiconset\app_icon_128.png
-    icons_background_color: transparent
-    architecture: x64
-    capabilities: "internetClient,picturesLibrary,videosLibrary,musicLibrary,removableStorage,location,microphone,webcam"
+msix_config:
+  display_name: Acter
+  publisher_display_name: Acter
+  identity_name: 	47338Acter.Acter3
+  publisher: CN=EBDFB2F4-DCCB-4267-8EBA-6FADD88EAC81
+  msix_version: 0.0.0.1
+  logo_path: .\macos\Runner\Assets.xcassets\AppIcon.appiconset\app_icon_512.png
+  trim_logo: false
+  start_menu_icon_path: .\macos\Runner\Assets.xcassets\AppIcon.appiconset\app_icon_512.png
+  tile_icon_path: .\macos\Runner\Assets.xcassets\AppIcon.appiconset\app_icon_512.png
+  icons_background_color: transparent
+  architecture: x64
+  capabilities: "internetClient,picturesLibrary,videosLibrary,musicLibrary,removableStorage,location,microphone,webcam"
