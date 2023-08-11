@@ -93,7 +93,7 @@ final memberProfileProvider =
     FutureProvider.family.autoDispose<ProfileData, String>((ref, userId) async {
   final member = await ref.watch(memberProvider(userId).future);
   UserProfile profile = member.getProfile();
-  OptionText displayName = await profile.getDisplayName();
+  OptionString displayName = await profile.getDisplayName();
   final avatar = await profile.getThumbnail(62, 60);
   return ProfileData(displayName.text(), avatar.data());
 });
