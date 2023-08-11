@@ -8,8 +8,6 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:bubble/bubble.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show ReactionRecord;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -301,7 +299,7 @@ class _EmojiContainerState extends State<_EmojiContainer>
               String key = keys[index];
               Map<String, dynamic> reactions =
                   widget.message.metadata!['reactions'];
-              List<ReactionRecord>? reactionRecords = reactions[key];
+              final recordsCount = reactions[key]?.length;
               return GestureDetector(
                 onTap: () {
                   showEmojiReactionsSheet(reactions);
@@ -311,7 +309,7 @@ class _EmojiContainerState extends State<_EmojiContainer>
                   children: [
                     Text(key),
                     const SizedBox(width: 2),
-                    Text(reactionRecords!.length.toString()),
+                    Text(recordsCount!.toString()),
                   ],
                 ),
               );
@@ -329,9 +327,9 @@ class _EmojiContainerState extends State<_EmojiContainer>
     if (mounted) {
       setState(() {
         reactions.forEach((key, value) {
-          count += value.count();
+          count += value.length;
           reactionTabs.add(
-            Tab(text: '$key+${value.count()}'),
+            Tab(text: '$key+${value.length}'),
           );
         });
         reactionTabs.insert(0, (Tab(text: 'All $count')));
