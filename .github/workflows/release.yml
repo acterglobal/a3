@@ -43,7 +43,7 @@ jobs:
       build_num: ${{ steps.build_num.outputs.build_num }}
     steps:
       - id: version
-        run: echo "version=`date +1.%y%m%d.0`" >> $GITHUB_OUTPUT
+        run: echo "version=`date +1.%y.%-m%d`" >> $GITHUB_OUTPUT
       - id: build_num
         run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
 
@@ -95,12 +95,15 @@ jobs:
             tar_files: "Acter.app"
           - name: Windows
             os: windows-latest
+            target: windows
             cargo_make_args: desktop
             flutter_config: "--enable-windows-desktop"
             flutter_build_args: "build windows"
+            rename_file: acter.msix
             artifact_prefix: acter-windows
-            artifact_path: app/build/windows/runner/
-            zip_files: "Release"
+            rename_suffix: .msix
+            artifact_path: app/build/windows/runner/Release/
+            zip_files: false
 
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -238,10 +241,18 @@ jobs:
       - name: Generate manifest
         if: matrix.target == 'ios'
         env:
-          TAG: ${{needs.tags.outputs.tag}}
+          VERSION: ${{needs.tags.outputs.tag}}
           VERSION: ${{ needs.tags.outputs.build_num }}
         run: |
           sed "s/__TAG__/$TAG/g ; s/__VERSION__/$VERSION/g" .github/templates/ios-manifest.plist.tmpl > ios-manifest.plist
+
+      - name: Generate manifest
+        if: matrix.target == 'windows'
+        env:
+          TAG: ${{needs.tags.outputs.tag}}
+        run: |
+          mkdir app/build/windows/runner/Release/Images
+          dart pub run msix:create --store --build-windows false --version $VERSION.0 -v
 
       - name: Rename file
         if: matrix.rename_file
@@ -305,7 +316,7 @@ jobs:
       - name: Generate Changelog
         run: |
           git fetch --prune --unshallow --tags
-          cargo run -p mr_minutes -- --since release-latest --output release-changes.md
+          cargo run -p mr_minutes -- --since release-latest --output CHANGELOG.md
 
       - name: "Generate docs"
         run: |
@@ -315,7 +326,7 @@ jobs:
           echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
           echo "+++" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
           echo "" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          cat release-changes.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
 
       - name: Tag for release
         run: |
@@ -324,9 +335,9 @@ jobs:
           git config --global user.email 'acter-sari@users.noreply.github.com'
           git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
           git commit -m "Add release ${{ needs.tags.outputs.tag }} to docs"
-          git tag release-${{ needs.tags.outputs.tag }}
+          git tag v${{ needs.tags.outputs.tag }}
           git tag -f release-latest
-          git push -f origin main release-${{ needs.tags.outputs.tag }} release-latest
+          git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
       - name: Release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -334,9 +345,10 @@ jobs:
           # publish this nightly release now
           draft: true
           generate_release_notes: false
-          name: Release ${{ needs.tags.outputs.tag }}
-          tag_name: release-${{ needs.tags.outputs.tag }}
-          body_path: release-changes.md
+          name: Release v${{ needs.tags.outputs.tag }}
+          tag_name: v${{ needs.tags.outputs.tag }}
+          body_path: CHANGELOG.md
+          files: CHANGELOG.md
       - uses: eregon/publish-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
