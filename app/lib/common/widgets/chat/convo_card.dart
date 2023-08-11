@@ -49,11 +49,15 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
         roomId: roomId,
         showParent: widget.showParent,
         profile: profile,
-        onTap: () => context.pushNamed(
-          Routes.chatroom.name,
-          pathParameters: {'roomId': roomId},
-          extra: widget.room,
-        ),
+        onTap: () {
+          ref
+              .read(currentConvoProvider.notifier)
+              .update((state) => widget.room);
+          context.pushNamed(
+            Routes.chatroom.name,
+            pathParameters: {'roomId': roomId},
+          );
+        },
         subtitle: _SubtitleWidget(
           room: widget.room,
           latestMessage: widget.room.latestMessage(),

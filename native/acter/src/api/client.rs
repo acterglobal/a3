@@ -6,8 +6,8 @@ use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
 use futures::{
-    future::{join_all, ready},
-    pin_mut, stream, Stream, StreamExt,
+    pin_mut,
+    stream::{Stream, StreamExt},
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
@@ -15,22 +15,21 @@ use matrix_sdk::{
     event_handler::EventHandlerHandle,
     media::{MediaFormat, MediaRequest},
     room::Room as SdkRoom,
-    Client as SdkClient, LoopCtrl, RumaApiError,
-};
-use ruma::{
-    api::client::{
-        error::{ErrorBody, ErrorKind},
-        push::get_notifications::v3::Notification as RumaNotification,
-        Error,
+    ruma::{
+        api::client::{
+            error::{ErrorBody, ErrorKind},
+            push::get_notifications::v3::Notification as RumaNotification,
+            Error,
+        },
+        device_id,
+        events::room::MediaSource,
+        OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
+        OwnedServerName, OwnedUserId, RoomOrAliasId, UserId,
     },
-    device_id,
-    events::room::MediaSource,
-    OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName,
-    OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
+    Client as SdkClient, LoopCtrl, RumaApiError,
 };
 use std::{
     collections::{BTreeMap, HashMap},
-    fs,
     ops::Deref,
     path::PathBuf,
     sync::{
@@ -44,6 +43,7 @@ use tokio::{
         Mutex, RwLock,
     },
     task::JoinHandle,
+    time,
 };
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
@@ -135,8 +135,8 @@ pub(crate) async fn devide_spaces_from_convos(
     filter: Option<SpaceFilter>,
 ) -> (Vec<Space>, Vec<Convo>) {
     let filter = filter.unwrap_or_default();
-    let (spaces, convos, _) = stream::iter(client.clone().rooms().into_iter())
-        .filter(|room| ready(filter.should_include(room)))
+    let (spaces, convos, _) = futures::stream::iter(client.clone().rooms().into_iter())
+        .filter(|room| futures::future::ready(filter.should_include(room)))
         .fold(
             (Vec::new(), Vec::new(), client),
             async move |(mut spaces, mut convos, client), room| {
@@ -323,7 +323,7 @@ impl Client {
             let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
             history.lock_mut().start(space_ids);
 
-            join_all(spaces.iter_mut().map(|space| async {
+            futures::future::join_all(spaces.iter_mut().map(|space| async {
                 if !space.is_acter_space().await {
                     trace!(room_id=?space.room_id(), "not an acter space");
                     history.lock_mut().unknow_room(&space.room_id().to_owned());
@@ -358,7 +358,7 @@ impl Client {
     ) -> Result<()> {
         trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
 
-        join_all(
+        futures::future::join_all(
             new_spaces
                 .into_iter()
                 .map(|room| Space::new(self.clone(), Room { room }))
@@ -723,7 +723,7 @@ impl Client {
             .spawn(async move {
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("MIME type should be given")?;
-                let buf = fs::read(path).context("File should be read")?;
+                let buf = std::fs::read(path).context("File should be read")?;
                 let response = client.media().upload(&content_type, buf).await?;
                 Ok(response.content_uri)
             })
@@ -750,10 +750,7 @@ impl Client {
     pub async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
         if room_id_or_alias.is_room_id() {
             let room_id = OwnedRoomId::try_from(room_id_or_alias.as_str()).expect("just checked");
-            return self
-                .room_by_id_typed(&room_id)
-                .await
-                .context("Room not found");
+            return self.room_by_id_typed(&room_id).context("Room not found");
         }
 
         let room_alias =
@@ -761,7 +758,7 @@ impl Client {
         self.room_by_alias_typed(&room_alias).await
     }
 
-    pub async fn room_by_id_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
+    pub fn room_by_id_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
         self.core
             .client()
             .get_room(room_id)
@@ -785,7 +782,6 @@ impl Client {
         // nothing found, try remote:
         let response = self.core.client().resolve_room_alias(room_alias).await?;
         self.room_by_id_typed(&response.room_id)
-            .await
             .context("Room not found")
     }
 
@@ -794,8 +790,10 @@ impl Client {
         BroadcastStream::new(self.notifications.subscribe())
             .then(move |r| {
                 let client = client.clone();
-                RUNTIME
-                    .spawn(async move { anyhow::Ok(Notification::new(r?, client.clone()).await) })
+                RUNTIME.spawn(async move {
+                    let res = Notification::new(r?, client.clone()).await;
+                    anyhow::Ok(res)
+                })
             })
             .filter_map(|r| async {
                 match r {
@@ -833,7 +831,7 @@ impl Client {
                 let Some(tm) = timeout else {
                     return Ok(waiter.await?);
                 };
-                Ok(tokio::time::timeout(*Box::leak(tm), waiter).await??)
+                Ok(time::timeout(*Box::leak(tm), waiter).await??)
             })
             .await?
     }

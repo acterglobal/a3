@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -7,7 +8,6 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:bubble/bubble.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ReactionItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -109,6 +109,7 @@ class _ChatBubble extends ConsumerWidget {
     return Column(
       crossAxisAlignment:
           isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         _EmojiRow(
           isAuthor: isAuthor,
@@ -160,38 +161,47 @@ class _ChatBubble extends ConsumerWidget {
                                   ),
                                   child: Consumer(
                                     builder: (context, ref, child) {
-                                      final replyProfile = ref
-                                          .watch(chatRoomProvider.notifier)
-                                          .getUserProfile(
-                                            message.repliedMessage!.author.id,
+                                      final replyProfile = ref.watch(
+                                        memberProfileProvider(
+                                          message.repliedMessage!.author.id,
+                                        ),
+                                      );
+                                      return replyProfile.when(
+                                        data: (profile) {
+                                          return Row(
+                                            children: [
+                                              ActerAvatar(
+                                                uniqueId: message
+                                                    .repliedMessage!.author.id,
+                                                displayName:
+                                                    profile.displayName,
+                                                mode: DisplayMode.User,
+                                                avatar:
+                                                    profile.getAvatarImage(),
+                                                size: profile.hasAvatar()
+                                                    ? 12
+                                                    : 24,
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Text(
+                                                profile.displayName ?? '',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall!
+                                                    .copyWith(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .tertiary,
+                                                    ),
+                                              ),
+                                            ],
                                           );
-                                      final displayName = replyProfile != null
-                                          ? replyProfile.displayName
-                                          : message.repliedMessage?.author.id;
-                                      return Row(
-                                        children: [
-                                          ActerAvatar(
-                                            uniqueId: message
-                                                .repliedMessage!.author.id,
-                                            displayName: displayName,
-                                            mode: DisplayMode.User,
-                                            avatar:
-                                                replyProfile?.getAvatarImage(),
-                                            size: 12,
-                                          ),
-                                          const SizedBox(width: 5),
-                                          Text(
-                                            displayName ?? '',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .copyWith(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .tertiary,
-                                                ),
-                                          ),
-                                        ],
+                                        },
+                                        error: (e, st) => Text(
+                                          'Failed to load profile due to ${e.toString()}',
+                                        ),
+                                        loading: () =>
+                                            const CircularProgressIndicator(),
                                       );
                                     },
                                   ),
@@ -289,7 +299,7 @@ class _EmojiContainerState extends State<_EmojiContainer>
               String key = keys[index];
               Map<String, dynamic> reactions =
                   widget.message.metadata!['reactions'];
-              List<ReactionItem>? reactionItems = reactions[key];
+              final recordsCount = reactions[key]?.length;
               return GestureDetector(
                 onTap: () {
                   showEmojiReactionsSheet(reactions);
@@ -299,7 +309,7 @@ class _EmojiContainerState extends State<_EmojiContainer>
                   children: [
                     Text(key),
                     const SizedBox(width: 2),
-                    Text(reactionItems!.length.toString()),
+                    Text(recordsCount!.toString()),
                   ],
                 ),
               );
@@ -317,9 +327,9 @@ class _EmojiContainerState extends State<_EmojiContainer>
     if (mounted) {
       setState(() {
         reactions.forEach((key, value) {
-          count += value.count();
+          count += value.length;
           reactionTabs.add(
-            Tab(text: '$key+${value.count()}'),
+            Tab(text: '$key+${value.length}'),
           );
         });
         reactionTabs.insert(0, (Tab(text: 'All $count')));
@@ -434,17 +444,30 @@ class _OriginalMessageBuilder extends ConsumerWidget {
       );
     } else if (message.repliedMessage is types.ImageMessage) {
       var imageMsg = message.repliedMessage as types.ImageMessage;
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ImageMessageBuilder(
-          message: imageMsg,
-          messageWidth: imageMsg.size.toInt(),
-        ),
+      return Row(
+        children: [
+          Container(
+            constraints: const BoxConstraints(maxHeight: 50),
+            margin: const EdgeInsets.all(12),
+            child: ImageMessageBuilder(
+              message: imageMsg,
+              messageWidth: imageMsg.size.toInt(),
+              isReplyContent: true,
+            ),
+          ),
+          Text(
+            'sent an image.',
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+        ],
       );
     } else if (message.repliedMessage is types.FileMessage) {
-      return Text(
-        message.repliedMessage!.metadata?['content'],
-        style: Theme.of(context).textTheme.bodySmall,
+      return Padding(
+        padding: const EdgeInsets.all(12),
+        child: Text(
+          message.repliedMessage!.metadata?['content'],
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
       );
     } else if (message.repliedMessage is types.CustomMessage) {
       return CustomMessageBuilder(

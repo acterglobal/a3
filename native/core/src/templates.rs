@@ -173,7 +173,7 @@ pub struct Object {
 pub struct TemplateV01 {
     name: Option<String>,
     inputs: IndexMap<String, Input>,
-    objects: IndexMap<String, toml::Table>,
+    objects: IndexMap<String, Table>,
 }
 
 #[derive(Deserialize)]
@@ -451,7 +451,7 @@ impl Engine {
                     .ok_or_else(|| Error::UnknownReference(format!("{key}.room"), room_name.clone(), key.to_string()))?;
 
                 match obj {
-                    ObjectInner::TaskList{ fields } => {
+                    ObjectInner::TaskList { fields } => {
                         trace!(?fields, "submitting task list");
                         let id = room
                             .send(fields, None)
@@ -465,7 +465,7 @@ impl Engine {
                         );
                         yield
                     }
-                    ObjectInner::Task{ fields } => {
+                    ObjectInner::Task { fields } => {
                         trace!(?fields, "submitting task");
                         let id = room
                             .send(fields, None)
@@ -479,7 +479,7 @@ impl Engine {
                         );
                         yield
                     }
-                    ObjectInner::CalendarEvent{ fields } => {
+                    ObjectInner::CalendarEvent { fields } => {
                         trace!(?fields, "submitting calendar event");
                         let id = room
                             .send(fields, None)
@@ -493,7 +493,7 @@ impl Engine {
                         );
                         yield
                     }
-                    ObjectInner::Pin{ fields } => {
+                    ObjectInner::Pin { fields } => {
                         trace!(?fields, "submitting pin");
                         let id = room
                             .send(fields, None)
@@ -507,7 +507,7 @@ impl Engine {
                         );
                         yield
                     }
-                    ObjectInner::NewsEntry{ fields } => {
+                    ObjectInner::NewsEntry { fields } => {
                         trace!(?fields, "submitting news entry");
                         let id = room
                             .send(fields, None)

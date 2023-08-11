@@ -9,11 +9,14 @@ use super::{
     },
     CALENDAR_KEY,
 };
-use crate::events::{
-    calendar::{
-        CalendarEventEventContent, CalendarEventUpdateBuilder, CalendarEventUpdateEventContent,
+use crate::{
+    events::{
+        calendar::{
+            CalendarEventEventContent, CalendarEventUpdateBuilder, CalendarEventUpdateEventContent,
+        },
+        UtcDateTime,
     },
-    UtcDateTime,
+    Result,
 };
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -80,7 +83,7 @@ impl ActerModel for CalendarEvent {
         &[Capability::Commentable]
     }
 
-    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
         default_model_execute(store, self.into()).await
     }
 
@@ -88,7 +91,7 @@ impl ActerModel for CalendarEvent {
         None
     }
 
-    fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
+    fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
         let AnyActerModel::CalendarEventUpdate(update) = model else {
             return Ok(false)
         };
@@ -134,7 +137,7 @@ impl ActerModel for CalendarEventUpdate {
         &self.meta.event_id
     }
 
-    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
         default_model_execute(store, self.into()).await
     }
 

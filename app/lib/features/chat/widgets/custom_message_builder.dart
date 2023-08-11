@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:math';
 
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -43,12 +43,19 @@ class CustomMessageBuilder extends StatelessWidget {
         return text == null
             ? const SizedBox.shrink()
             : Container(
-                width: sqrt(text.length) * 38.5,
-                padding: const EdgeInsets.all(18),
-                constraints: const BoxConstraints(minWidth: 57),
-                child: Text(
-                  text,
-                  style: Theme.of(context).textTheme.bodySmall,
+                padding: const EdgeInsets.only(left: 10, bottom: 5),
+                child: RichText(
+                  text: TextSpan(
+                    text: message.author.id,
+                    style: Theme.of(context).textTheme.bodySmall,
+                    children: [
+                      const WidgetSpan(child: SizedBox(width: 3)),
+                      TextSpan(
+                        text: text,
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ],
+                  ),
                 ),
               );
     }
@@ -71,23 +78,25 @@ class CustomMessageBuilder extends StatelessWidget {
         String text =
             '***Failed to decrypt message. Re-request session keys.***';
         return Container(
-          width: sqrt(text.length) * 38.5,
           padding: const EdgeInsets.all(18),
-          constraints: const BoxConstraints(minWidth: 57),
           child: Text(
             text,
-            style: Theme.of(context).textTheme.bodySmall,
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall!
+                .copyWith(color: Theme.of(context).colorScheme.neutral5),
           ),
         );
       case 'm.room.redaction':
         String text = '***This message has been deleted.***';
         return Container(
-          width: sqrt(text.length) * 38.5,
           padding: const EdgeInsets.all(18),
-          constraints: const BoxConstraints(minWidth: 57),
           child: Text(
             text,
-            style: Theme.of(context).textTheme.bodySmall,
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall!
+                .copyWith(color: Theme.of(context).colorScheme.neutral5),
           ),
         );
       case 'm.sticker':
