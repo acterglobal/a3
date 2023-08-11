@@ -44,7 +44,7 @@ class _ImageMessageBuilderConsumerState
     if (decodedImage != null && decodedImage!.isNotEmpty) {
       if (widget.isReplyContent) {
         return ClipRRect(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(6),
           child: Container(
             constraints: BoxConstraints(
               maxHeight: MediaQuery.of(context).size.height * 0.2,
