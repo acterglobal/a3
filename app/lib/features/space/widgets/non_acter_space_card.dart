@@ -51,7 +51,7 @@ class NonActerSpaceCard extends ConsumerWidget {
   }
 
   void upgradeSpace(BuildContext context, WidgetRef ref) async {
-    customMsgSnackbar(context, 'Converting to acetr space');
+    customMsgSnackbar(context, 'Converting to acter space');
 
     try {
       final space = await ref.watch(spaceProvider(spaceId).future);
