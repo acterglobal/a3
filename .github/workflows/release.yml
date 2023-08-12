@@ -52,53 +52,64 @@ jobs:
     strategy:
       matrix:
        include:
-          - name: Android Arm64
+          - name: Android
             target: android
             os: ubuntu-latest
             cargo_make_setup: setup-android
-            cargo_make_args: android-arm
+            cargo_make_args: android
             with_ndk_version: r25
-            flutter_build_args: "build apk --target-platform android-arm64"
-            artifact_prefix: acter-android-arm64
-            artifact_path:  app/build/app/outputs/apk/release/
-            rename_file: "app-release.apk"
-            rename_suffix: "apk"
-          - name: Linux x64
+            flutter_build_args: "build appbundle --split-debug-info=debug_symbols"
+            artifact_prefix: acter-android
+            artifact_path:  app/build/app/outputs/bundle/release/
+            rename_file: "app.aab"
+            rename_suffix: "aab"
+            extra_artifacts: app/debug_symbols/*
+          - name: Android apk
+            target: android
             os: ubuntu-latest
-            apt_install: ninja-build libgtk-3-dev
-            cargo_make_args: desktop
-            flutter_config: "--enable-linux-desktop"
-            flutter_build_args: "build linux"
-            artifact_prefix: acter-linux-x64
-            artifact_path: app/build/linux/x64/release/bundle/
-            tar_files: lib/ data/ acter
+            cargo_make_setup: setup-android
+            cargo_make_args: android
+            with_ndk_version: r25
+            flutter_build_args: "build apk --split-per-abi"
+            artifact_prefix: acter-android
+            artifact_path:  app/build/app/outputs/apk/release/
+            extra_artifacts: app/build/app/outputs/apk/release/*.apk
+          # - name: Linux x64
+          #   os: ubuntu-latest
+          #   apt_install: ninja-build libgtk-3-dev
+          #   cargo_make_args: desktop
+          #   flutter_config: "--enable-linux-desktop"
+          #   flutter_build_args: "build linux"
+          #   artifact_prefix: acter-linux-x64
+          #   artifact_path: app/build/linux/x64/release/bundle/
+          #   tar_files: lib/ data/ acter
           - name: iOS
             os: macos-latest
             target: ios
             with_apple_cert: true
             cargo_make_setup: setup-ios
             cargo_make_args: ios
-            flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_nightly_adhoc.plist --build-number=${{ needs.tags.outputs.build_num }}"
+            flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_release.plist"
             artifact_prefix: acter-ios
             artifact_path:  app/build/ios/ipa/
             rename_file: "acter.ipa"
             rename_suffix: "ipa"
             extra_artifacts: "ios-manifest.plist"
-          - name: Mac OSx 
-            os: macos-12
-            with_apple_cert: true
-            cargo_make_args: desktop
-            flutter_config: "--enable-macos-desktop"
-            flutter_build_args: "build macos"
-            artifact_prefix: acter-macosx
-            artifact_path: app/build/macos/Build/Products/Release/
-            tar_files: "Acter.app"
+          # - name: Mac OSx 
+          #   os: macos-12
+          #   with_apple_cert: true
+          #   cargo_make_args: desktop
+          #   flutter_config: "--enable-macos-desktop"
+          #   flutter_build_args: "build macos"
+          #   artifact_prefix: acter-macosx
+          #   artifact_path: app/build/macos/Build/Products/Release/
+          #   tar_files: "Acter.app"
           - name: Windows
             os: windows-latest
             target: windows
             cargo_make_args: desktop
             flutter_config: "--enable-windows-desktop"
-            flutter_build_args: "build windows"
+            flutter_build_args: "build windows --release"
             rename_file: acter.msix
             artifact_prefix: acter-windows
             rename_suffix: .msix
@@ -180,10 +191,10 @@ jobs:
       - name: Install the Apple certificate and provisioning profile
         if: matrix.with_apple_cert
         env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.NIGHTLY_ADHOC_CERT_BASE64 }}
-          P12_PASSWORD: ${{ secrets.NIGHTLY_ADHOC_CERT_PASSWORD }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.NIGHTLY_MOBILEPROVISION_BASE64 }}
-          KEYCHAIN_PASSWORD: ${{ secrets.NIGHTLY_KEYCHAIN_PASSWORD }}
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
           echo "starting in $RUNNER_TEMP"
           # create variables
