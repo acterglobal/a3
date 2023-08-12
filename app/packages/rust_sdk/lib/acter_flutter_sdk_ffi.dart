@@ -5244,6 +5244,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __spaceSetActerSpaceStatesFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetActerSpaceStatesFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   EventId? __spaceRemoveAvatarFuturePoll(
     int boxed,
     int postCobject,
@@ -5634,6 +5678,50 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _spaceIsEncryptedFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __spaceIsActerSpaceFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceIsActerSpaceFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -15798,6 +15886,17 @@ class Api {
         int,
         int,
       )>();
+  late final _spaceSetActerSpaceStatesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Space_set_acter_space_states");
+
+  late final _spaceSetActerSpaceStates =
+      _spaceSetActerSpaceStatesPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _spaceRemoveAvatarPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -15951,6 +16050,47 @@ class Api {
           )>>("__Space_is_encrypted");
 
   late final _spaceIsEncrypted = _spaceIsEncryptedPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _spaceIsPublicPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Space_is_public");
+
+  late final _spaceIsPublic = _spaceIsPublicPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _spaceJoinRuleStrPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceJoinRuleStrReturn Function(
+            ffi.Int64,
+          )>>("__Space_join_rule_str");
+
+  late final _spaceJoinRuleStr = _spaceJoinRuleStrPtr.asFunction<
+      _SpaceJoinRuleStrReturn Function(
+        int,
+      )>();
+  late final _spaceRestrictedRoomIdsStrPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Space_restricted_room_ids_str");
+
+  late final _spaceRestrictedRoomIdsStr =
+      _spaceRestrictedRoomIdsStrPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _spaceIsActerSpacePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Space_is_acter_space");
+
+  late final _spaceIsActerSpace = _spaceIsActerSpacePtr.asFunction<
       int Function(
         int,
       )>();
@@ -19585,6 +19725,21 @@ class Api {
             int,
             int,
           )>();
+  late final _spaceSetActerSpaceStatesFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceSetActerSpaceStatesFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Space_set_acter_space_states_future_poll");
+
+  late final _spaceSetActerSpaceStatesFuturePoll =
+      _spaceSetActerSpaceStatesFuturePollPtr.asFunction<
+          _SpaceSetActerSpaceStatesFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _spaceRemoveAvatarFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _SpaceRemoveAvatarFuturePollReturn Function(
@@ -19714,6 +19869,21 @@ class Api {
   late final _spaceIsEncryptedFuturePoll =
       _spaceIsEncryptedFuturePollPtr.asFunction<
           _SpaceIsEncryptedFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _spaceIsActerSpaceFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceIsActerSpaceFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Space_is_acter_space_future_poll");
+
+  late final _spaceIsActerSpaceFuturePoll =
+      _spaceIsActerSpaceFuturePollPtr.asFunction<
+          _SpaceIsActerSpaceFuturePollReturn Function(
             int,
             int,
             int,
@@ -33962,6 +34132,22 @@ class Space {
     return tmp6;
   }
 
+  Future<bool> setActerSpaceStates() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceSetActerSpaceStates(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Space_set_acter_space_states_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__spaceSetActerSpaceStatesFuturePoll);
+    return tmp2;
+  }
+
   /// Remove the avatar of the room
   Future<EventId> removeAvatar() {
     var tmp0 = 0;
@@ -34260,6 +34446,79 @@ class Space {
     final tmp3_1 = _Box(_api, tmp3_0, "__Space_is_encrypted_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__spaceIsEncryptedFuturePoll);
+    return tmp2;
+  }
+
+  /// whether or not this space is public
+  bool isPublic() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceIsPublic(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// join rules for this space.
+  String joinRuleStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceJoinRuleStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the ids of the rooms the restriction applies to
+  FfiListFfiString restrictedRoomIdsStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceRestrictedRoomIdsStr(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// whether or not this space has been marked as an 'acter' one
+  Future<bool> isActerSpace() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceIsActerSpace(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Space_is_acter_space_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__spaceIsActerSpaceFuturePoll);
     return tmp2;
   }
 
@@ -39359,6 +39618,7 @@ enum MemberPermissionTag {
   CanInvite,
   CanRedact,
   CanTriggerRoomNotification,
+  CanUpgradeToActerSpace,
   CanSetName,
   CanUpdateAvatar,
   CanSetTopic,
@@ -39418,26 +39678,30 @@ class MemberPermission {
 
         break;
       case 10:
-        this._tag = MemberPermissionTag.CanSetName;
+        this._tag = MemberPermissionTag.CanUpgradeToActerSpace;
 
         break;
       case 11:
-        this._tag = MemberPermissionTag.CanUpdateAvatar;
+        this._tag = MemberPermissionTag.CanSetName;
 
         break;
       case 12:
-        this._tag = MemberPermissionTag.CanSetTopic;
+        this._tag = MemberPermissionTag.CanUpdateAvatar;
 
         break;
       case 13:
-        this._tag = MemberPermissionTag.CanLinkSpaces;
+        this._tag = MemberPermissionTag.CanSetTopic;
 
         break;
       case 14:
-        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
+        this._tag = MemberPermissionTag.CanLinkSpaces;
 
         break;
       case 15:
+        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
+
+        break;
+      case 16:
         this._tag = MemberPermissionTag.CanSetParentSpace;
 
         break;
@@ -40877,6 +41141,15 @@ class _SpaceTopicReturn extends ffi.Struct {
 }
 
 class _SpaceGetRoomIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _SpaceJoinRuleStrReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -42670,6 +42943,21 @@ class _SpaceUploadAvatarFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _SpaceSetActerSpaceStatesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _SpaceRemoveAvatarFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -42791,6 +43079,21 @@ class _SpaceGetMyMembershipFuturePollReturn extends ffi.Struct {
 }
 
 class _SpaceIsEncryptedFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _SpaceIsActerSpaceFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

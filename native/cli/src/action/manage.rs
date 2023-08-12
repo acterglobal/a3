@@ -47,7 +47,7 @@ impl Manage {
         if !space.is_space() {
             warn!("{room_id} is not a space. quitting.");
             return Ok(());
-        } else if space.is_acter_space().await {
+        } else if space.is_acter_space().await? {
             warn!("{room_id} is already an acter space. quitting.");
             return Ok(());
         }
