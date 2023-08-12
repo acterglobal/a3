@@ -264,7 +264,7 @@ jobs:
       - name: Build MSIX
         if: matrix.target == 'windows'
         working-directory: app
-        run: dart pub run msix:create --store --build-windows false --version $VERSION.0 -v
+        run: dart pub run msix:create --store --build-windows false --version ${{ needs.tags.outputs.tag }}.0 -v
 
       - name: Rename file
         if: matrix.rename_file
