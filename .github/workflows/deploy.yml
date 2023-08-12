@@ -1,108 +1,478 @@
+name: Deploy App
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      new_tag:
+        description: 'Provide the tag name for this release'
+        required: true
+        type: string
+      prev_tag:
+        description: 'The tag to compare the changelog to'
+        type: string
 
-name: Deploy App 
-
-env:
-  RELEASE: true
+  # schedule:
+  #  - cron: 0 3 * * *
 
 jobs:
-
-  build-android:
+  run_checker:
     runs-on: ubuntu-latest
-    name: Build Android App
-    # FIXME: remove once tests don't fail
-    continue-on-error: true
+    name: Check latest commit
+    outputs:
+      should_run: ${{ steps.check-new-commits.outputs.has-new-commits }}
     steps:
       - uses: actions/checkout@v2
-      - name: Install supported toolchain
-        uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-04-10
-          components: clippy
-          override: true
-      - uses: Swatinem/rust-cache@v1
-      - uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r25
-      - name: Install cargo-make
-        uses: davidB/rust-cargo-make@v1
-      - run: cargo make setup-android
-      - uses: subosito/flutter-action@v2
-        name: Set up flutter
-        with:
-          flutter-version: '3.10.6'
-          channel: 'stable'
-      # - uses: actions-rs/cargo@v1
-      #   name: Clippy
-      #   with:
-      #     command: clippy
-      #     args: -p acter --target aarch64-linux-android -- -D warnings
-      # - uses: actions-rs/cargo@v1
-      #   name: Test
-      #   with:
-      #     command: test
-      #     args: -p acter --target aarch64-linux-android
-      - name: Build Android FFI
-        run: cargo make --profile release android
-      # - name: Ensure ffi-interface is up to date
-      #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
-      # FIXME: tests are not set up to work yet
-      # - run: flutter --pub test
-      #   working-directory: ./acter_flutter_sdk
-      #   name: Testing SDK
-      # # FIXME: tests are not set up to work yet
-      # - run: flutter --pub test
-      #   name: Testing App
-      #   working-directory: ./app
-      - run: flutter build appbundle --release
-        working-directory: ./app
-      # - run: flutter build appbundle
-      #   working-directory: ./app
+          fetch-depth: 0 # fetch all history and tags
+      - name: Check for new commits since last release
+        id: check-new-commits
+        shell: bash
+        run: |
+          if [ `git diff --name-only release-latest app native .changes | wc -l` -ne 0 ]; then
+            echo "has-new-commits=true"  >> $GITHUB_OUTPUT ;
+          else
+            echo "has-new-commits=false" >> $GITHUB_OUTPUT ;
+          fi
 
-  build-ios:
-    runs-on: macos-latest
-    name: Build iOS App
-    # FIXME: remove once tests don't fail
+  tags:
+    runs-on: ubuntu-latest
+    # Map a step output to a job output
+    outputs:
+      tag: ${{ inputs.new_tag || steps.version.outputs.version }}
+      build_num: ${{ steps.build_num.outputs.build_num }}
+      prev_tag: ${{ inputs.prev_tag || 'latest-release' }}
+    steps:
+      - id: version
+        run: echo "version=`date +1.%y.%-m%d`" >> $GITHUB_OUTPUT
+      - id: build_num
+        run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
+
+  build:
+    environment: release
+    strategy:
+      matrix:
+       include:
+          - name: Android
+            target: android
+            os: ubuntu-latest
+            exclude_from_release: true
+            cargo_make_setup: setup-android
+            cargo_make_args: android
+            with_ndk_version: r25
+            flutter_build_args: "build appbundle --split-debug-info=debug_symbols"
+            artifact_prefix: acter-android
+            artifact_path:  app/build/app/outputs/bundle/release/
+            rename_file: "app.aab"
+            rename_suffix: "aab"
+            extra_artifacts: app/debug_symbols/*
+          - name: Android apk
+            target: android
+            os: ubuntu-latest
+            cargo_make_setup: setup-android
+            cargo_make_args: android
+            with_ndk_version: r25
+            flutter_build_args: "build apk --split-per-abi"
+            artifact_prefix: acter-android
+            artifact_path:  app/build/app/outputs/apk/release/
+            extra_artifacts: app/build/app/outputs/apk/release/*.apk
+          # - name: Linux x64
+          #   os: ubuntu-latest
+          #   apt_install: ninja-build libgtk-3-dev
+          #   cargo_make_args: desktop
+          #   flutter_config: "--enable-linux-desktop"
+          #   flutter_build_args: "build linux"
+          #   artifact_prefix: acter-linux-x64
+          #   artifact_path: app/build/linux/x64/release/bundle/
+          #   tar_files: lib/ data/ acter
+          - name: iOS
+            os: macos-latest
+            target: ios
+            with_apple_cert: true
+            cargo_make_setup: setup-ios
+            cargo_make_args: ios
+            flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_release.plist -split-debug-info=debug_symbols"
+            artifact_prefix: acter-ios
+            artifact_path:  app/build/ios/ipa/
+            rename_file: "acter.ipa"
+            rename_suffix: "ipa"
+            extra_artifacts: app/debug_symbols/*
+          # - name: Mac OSx 
+          #   os: macos-12
+          #   with_apple_cert: true
+          #   cargo_make_args: desktop
+          #   flutter_config: "--enable-macos-desktop"
+          #   flutter_build_args: "build macos"
+          #   artifact_prefix: acter-macosx
+          #   artifact_path: app/build/macos/Build/Products/Release/
+          #   tar_files: "Acter.app"
+          - name: Windows
+            os: windows-latest
+            target: windows
+            cargo_make_args: desktop
+            flutter_config: "--enable-windows-desktop"
+            flutter_build_args: "build windows --release"
+            rename_file: acter.msix
+            artifact_prefix: acter-windows
+            rename_suffix: .msix
+            artifact_path: app/build/windows/runner/Release/
+            zip_files: false
+
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    needs:
+     - run_checker
+     - tags
+    if: ${{ needs.run_checker.outputs.should_run != 'false' }}
+
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
+
       - name: Install supported toolchain
+        id: rust_toolchain
         uses: actions-rs/toolchain@v1
         with:
-          override: true
-          toolchain: nightly-2023-04-10
+          toolchain: stable
+
+      - name: Cache Cargo
+        id: cache-cargo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+      - name: Cache Rust
+        uses: actions/cache@v2
+        with:
+          path: |
+            target
+          key: ${{ runner.os }}-${{matrix.artifact_prefix}}-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+      - name: Install extra deps
+        if: matrix.apt_install
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ${{ matrix.apt_install }}
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        if: matrix.with_ndk_version
+        with:
+          ndk-version: ${{ matrix.with_ndk_version }}
+
       - name: Install cargo-make
+        if: steps.cache-cargo.outputs.cache-hit != 'true'
         uses: davidB/rust-cargo-make@v1
-      - uses: Swatinem/rust-cache@v1
-      - run: cargo make setup-ios
+
+      - name: Rust Setup
+        if: matrix.cargo_make_setup
+        run: cargo make ${{ matrix.cargo_make_setup }}
+
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
           flutter-version: '3.10.6'
           channel: 'stable'
-      # - uses: actions-rs/cargo@v1
-      #   name: Clippy
-      #   with:
-      #     command: clippy
-      #     args: -p acter --target x86_64-apple-ios -- -D warnings
-      # - uses: actions-rs/cargo@v1
-      #   name: Test
-      #   with:
-      #     command: test
-      #     args: -p acter --target x86_64-apple-ios
-      - name: Build iOS FFI
-        run: cargo make --profile release ios
+
+      - name: Flutter info
+        run: flutter doctor -v
+
+      - name: Flutter config
+        if: matrix.flutter_config
+        run: flutter config ${{ matrix.flutter_config }}
+
+      - name: Build Rust Lib
+        run: cargo make --profile release ${{ matrix.cargo_make_args}}
+
       # - name: Ensure ffi-interface is up to date
       #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
-      # FIXME: tests are not set up to work yet
-      # - run: flutter --pub test
-      #   working-directory: ./acter_flutter_sdk
-      #   name: Testing SDK
-      # # FIXME: tests are not set up to work yet
-      # - run: flutter --pub test
-      #   name: Testing App
-      #   working-directory: ./app
-      - run: flutter build ios --release --no-codesign
+
+      # Install the Apple certificate and provisioning profile
+      - name: Install the Apple certificate and provisioning profile
+        if: matrix.with_apple_cert
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          echo "starting in $RUNNER_TEMP"
+          # create variables
+          CERTIFICATE_PATH="$RUNNER_TEMP/build_certificate.p12"
+          PP_PATH="$RUNNER_TEMP/build_pp.mobileprovision"
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          echo "vars set"
+          # import certificate and provisioning profile from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output "$CERTIFICATE_PATH"
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output "$PP_PATH"
+          # create temporary keychain
+          echo "creating keychain"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          echo "setting keychain"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          echo "unlocking keychain"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          # import certificate to keychain
+          echo "importing certificate"
+          security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          echo "listing keychains"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          # apply provisioning profile
+          echo "copying over"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+      - name: Expose JKS file
+        if: matrix.target == 'android'
+        working-directory: ./app/android
+        run: echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 --decode > key.jks
+
+      - name: Flutter Build
+        env:
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          flutter ${{ matrix.flutter_build_args }} \
+            --build-name=${{ needs.tags.outputs.tag }}" \
+            --build-number=${{ needs.tags.outputs.build_num }}" \
+            --dart-define VERSION_NAME="${{ needs.tags.outputs.tag }}" \
+            --dart-define RAGESHAKE_URL="${{ secrets.RAGESHAKE_URL }}" \
+            --dart-define RAGESHAKE_APP_NAME="${{ secrets.RAGESHAKE_APP_NAME }}" \
+            --dart-define RAGESHAKE_APP_VERSION="${{ needs.tags.outputs.tag }}/${{ matrix.name }}"
         working-directory: ./app
+
+      # Important! Cleanup: remove the certificate and provisioning profile from the runner!
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() && matrix.with_apple_cert }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
+
+      - name: Generate manifest
+        if: matrix.target == 'ios'
+        env:
+          VERSION: ${{needs.tags.outputs.tag}}
+        run: |
+          sed "s/__TAG__/$TAG/g ; s/__VERSION__/$VERSION/g" .github/templates/ios-manifest.plist.tmpl > ios-manifest.plist
+
+      - name: Generate manifest
+        if: matrix.target == 'windows'
+        env:
+          TAG: ${{needs.tags.outputs.tag}}
+        run: |
+          mkdir app/build/windows/runner/Release/Images
+          dart pub run msix:create --store --build-windows false --version $VERSION.0 -v
+
+      - name: Rename file
+        if: matrix.rename_file
+        working-directory: ${{ matrix.artifact_path }}
+        run: |
+          mv "${{matrix.rename_file}}" "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.${{matrix.rename_suffix}}"
+
+      - name: Package Tar file
+        if: matrix.tar_files
+        working-directory: ${{ matrix.artifact_path }}
+        run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.tar.bz2" ${{ matrix.tar_files }}
+
+      - name: Package Zip file
+        if: matrix.zip_files
+        working-directory: ${{ matrix.artifact_path }}
+        run: |
+          7z a "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.zip" ${{ matrix.zip_files }}
+
+      - uses: actions/upload-artifact@v3
+        name: "Upload artifacts"
+        with:
+          name: ${{ matrix.name }}
+          path: |
+            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
+            ${{ matrix.extra_artifacts }}
+
+      - name: Release
+        if: ${{! matrix.exclude_from_release }}
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          name: Release ${{ needs.tags.outputs.tag }}
+          tag_name: v${{ needs.tags.outputs.tag }}
+          generate_release_notes: false
+          files: |
+            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
+            ${{ matrix.extra_artifacts }}
+
+      - name: Report issue
+        if: ${{ github.event.schedule && failure() }}
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.tags.outputs.tag }}
+          NAME: ${{matrix.name}}
+          FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+          ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          assignees: gnunicorn
+          filename: .github/templates/failure-report-template.md.tmpl
+          update_existing: false
+
+
+  changelog:
+    environment: release
+    runs-on: ubuntu-latest
+    name: Generate Changelog
+    needs:
+      - tags
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PAT }}
+
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Generate Changelog
+        run: |
+          git fetch --prune --unshallow --tags
+          cargo run -p mr_minutes -- --since ${{ needs.tags.outputs.prev_tag }} --output CHANGELOG.md
+
+      - uses: actions/upload-artifact@v3
+        name: "Upload Changelog"
+        with:
+          name: Changelog
+          path: CHANGELOG.md
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          name: Release ${{ needs.tags.outputs.tag }}
+          tag_name: v${{ needs.tags.outputs.tag }}
+          generate_release_notes: false
+          files: CHANGELOG.md
+
+  publish:
+    environment: release
+    runs-on: ubuntu-latest
+    name: Publish
+    # if: ${{ github.event.schedule }}
+    needs:
+      - tags
+      - build
+      - changelog
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PAT }}
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Changelog
+
+      # - name: "Generate docs"
+      #   run: |
+      #     echo "+++" > docs/content/releases/${{ needs.tags.outputs.tag }}.md
+      #     echo "title = \" Nightly ${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+      #     echo "template = \"nightlies/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+      #     echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+      #     echo "+++" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
+      #     echo "" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
+      #     cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+
+      # - name: Tag for release
+      #   run: |
+
+      #     git config --global user.name 'Sari'
+      #     git config --global user.email 'acter-sari@users.noreply.github.com'
+      #     git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
+      #     git commit -m "Add release ${{ needs.tags.outputs.tag }} to docs"
+      #     git tag v${{ needs.tags.outputs.tag }}
+      #     git tag -f release-latest
+      #     git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
+      - name: Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          # publish this full release now
+          draft: true
+          generate_release_notes: false
+          name: Release v${{ needs.tags.outputs.tag }}
+          tag_name: v${{ needs.tags.outputs.tag }}
+          body_path: CHANGELOG.md
+      - uses: eregon/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ steps.create_release.outputs.id }}
+
+
+  microsoft-store:
+    runs-on: windows-latest
+    environment: release
+    needs:
+      - tags
+      - build
+    steps:
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Windows
+
+      - name: Setup MS Store Developer CLI
+        uses: microsoft/setup-msstore-cli@v1
+
+      - name: Configure MS Store credentials
+        run: msstore reconfigure --tenantId ${{ secrets.AZURE_AD_TENANT_ID }} --clientId ${{ secrets.AZURE_AD_CLIENT_ID }} --clientSecret ${{ secrets.AZURE_AD_CLIENT_SECRET }} --sellerId ${{ secrets.MS_STORE_SELLER_ID }}
+
+      - name: MS Store Publish
+        run: msstore publish -v "*.msix"
+
+
+  google-play-store:
+    runs-on: ubuntu-latest
+    environment: release
+    needs:
+      - tags
+      - Build
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: Android
+      - name: Release Build to playstore
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
+          packageName: global.acter.a3
+          releaseName: v${{ needs.tags.outputs.tag }}
+          releaseFiles: "*.aab"
+          debugSymbols: debug_symbols/
+          track: alpha
+          status: completed
+
+  apple-store-ios:
+    runs-on: macos-latest
+    environment: release
+    needs:
+      - tags
+      - build
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: iOS
+
+      - name: Upload to App Store
+        env:
+          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+        run: |
+          mkdir .private_keys
+          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output ".private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
+          xcrun altool --upload-app --type ios --file "*.ipa" \
+              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
+        shell: bash
