@@ -93,7 +93,7 @@ jobs:
             target: ios
             cargo_make_setup: setup-ios
             cargo_make_args: ios
-            flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_release.plist -split-debug-info=debug_symbols"
+            flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_release.plist --split-debug-info=debug_symbols"
             artifact_prefix: acter-ios
             artifact_path:  app/build/ios/ipa/
             rename_file: "acter.ipa"
