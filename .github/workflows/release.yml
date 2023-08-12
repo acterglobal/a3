@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       custom_tag:
-        description: 'Provide the tag name for this scenario'
+        description: 'Provide the tag name for this release'
         required: true
         type: string
 
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     # Map a step output to a job output
     outputs:
-      tag: ${{ inputs.custom_tag || steps.tag.outputs.version }}
+      tag: ${{ inputs.custom_tag || steps.version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
     steps:
       - id: version
@@ -89,12 +89,12 @@ jobs:
             with_apple_cert: true
             cargo_make_setup: setup-ios
             cargo_make_args: ios
-            flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_release.plist"
+            flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_release.plist -split-debug-info=debug_symbols"
             artifact_prefix: acter-ios
             artifact_path:  app/build/ios/ipa/
             rename_file: "acter.ipa"
             rename_suffix: "ipa"
-            extra_artifacts: "ios-manifest.plist"
+            extra_artifacts: app/debug_symbols/*
           # - name: Mac OSx 
           #   os: macos-12
           #   with_apple_cert: true
@@ -253,7 +253,6 @@ jobs:
         if: matrix.target == 'ios'
         env:
           VERSION: ${{needs.tags.outputs.tag}}
-          VERSION: ${{ needs.tags.outputs.build_num }}
         run: |
           sed "s/__TAG__/$TAG/g ; s/__VERSION__/$VERSION/g" .github/templates/ios-manifest.plist.tmpl > ios-manifest.plist
 
