@@ -349,6 +349,7 @@ jobs:
           name: Release ${{ needs.tags.outputs.tag }}
           tag_name: v${{ needs.tags.outputs.tag }}
           generate_release_notes: false
+          body_path: CHANGELOG.md
           files: CHANGELOG.md
 
   publish:
@@ -381,24 +382,16 @@ jobs:
 
       # - name: Tag for release
       #   run: |
-
       #     git config --global user.name 'Sari'
       #     git config --global user.email 'acter-sari@users.noreply.github.com'
       #     git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
-      #     git commit -m "Add release ${{ needs.tags.outputs.tag }} to docs"
+      #     echo "Add release ${{ needs.tags.outputs.tag }}"
+      #     git commit -m 
       #     git tag v${{ needs.tags.outputs.tag }}
       #     git tag -f release-latest
       #     git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
-      - name: Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        with:
-          # publish this full release now
-          draft: true
-          generate_release_notes: false
-          name: Release v${{ needs.tags.outputs.tag }}
-          tag_name: v${{ needs.tags.outputs.tag }}
-          body_path: CHANGELOG.md
+
+      # publish this full release now
       - uses: eregon/publish-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
