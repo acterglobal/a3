@@ -220,4 +220,4 @@ msix_config:
   tile_icon_path: .\macos\Runner\Assets.xcassets\AppIcon.appiconset\app_icon_512.png
   icons_background_color: transparent
   architecture: x64
-  capabilities: "internetClient,picturesLibrary,videosLibrary,musicLibrary,removableStorage,location,microphone,webcam"
+  capabilities: "internetClient,removableStorage"
