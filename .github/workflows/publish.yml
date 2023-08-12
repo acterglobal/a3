@@ -263,8 +263,6 @@ jobs:
 
       - name: Build MSIX
         if: matrix.target == 'windows'
-        env:
-          TAG: ${{needs.tags.outputs.tag}}
         working-directory: app
         run: dart pub run msix:create --store --build-windows false --version $VERSION.0 -v
 
