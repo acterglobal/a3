@@ -87,6 +87,7 @@ jobs:
           - name: Mac OSx 
             os: macos-12
             with_apple_cert: true
+            target: macos
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
             flutter_build_args: "build macos"
@@ -225,6 +226,11 @@ jobs:
             --dart-define RAGESHAKE_APP_NAME="${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }}" \
             --dart-define RAGESHAKE_APP_VERSION="Nightly-${{ needs.tags.outputs.tag }}/${{ matrix.name }}"
         working-directory: ./app
+
+      - name: Sign Acter.app
+        if: matrix.target == 'macos'
+        working-directory: ${{ matrix.artifact_path }}
+        run: codesign --deep --force --verbose --sign "${{ secrets.MAC_SIGNING_IDENTIY}}" Acter.app
 
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
       - name: Clean up keychain and provisioning profile
