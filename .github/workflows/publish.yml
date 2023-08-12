@@ -261,13 +261,12 @@ jobs:
         run: |
           sed "s/__TAG__/$TAG/g ; s/__VERSION__/$VERSION/g" .github/templates/ios-manifest.plist.tmpl > ios-manifest.plist
 
-      - name: Generate manifest
+      - name: Build MSIX
         if: matrix.target == 'windows'
         env:
           TAG: ${{needs.tags.outputs.tag}}
-        run: |
-          mkdir app/build/windows/runner/Release/Images
-          dart pub run msix:create --store --build-windows false --version $VERSION.0 -v
+        working-directory: app
+        run: dart pub run msix:create --store --build-windows false --version $VERSION.0 -v
 
       - name: Rename file
         if: matrix.rename_file
