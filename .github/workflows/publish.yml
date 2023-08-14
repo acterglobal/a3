@@ -65,17 +65,14 @@ jobs:
             with_ndk_version: r25
             flutter_build_args: "build appbundle --split-debug-info=debug_symbols"
             artifact_prefix: acter-android
-            artifact_path:  app/build/app/outputs/bundle/release/
-            rename_file: app-release.aab
-            rename_suffix: "aab"
-            extra_artifacts: app/debug_symbols/*
+            artifact_path:  app/build/app/outputs/bundle/release/app-release.aab
           - name: Android apk
             target: android
             os: ubuntu-latest
             cargo_make_setup: setup-android
             cargo_make_args: android
             with_ndk_version: r25
-            flutter_build_args: "build apk --split-per-abi"
+            flutter_build_args: "build apk --split-per-abi --split-debug-info=debug_symbols"
             artifact_prefix: acter-android
             artifact_path:  app/build/app/outputs/apk/release/
             extra_release_artifacts: app/build/app/outputs/apk/release/*.apk
@@ -98,13 +95,12 @@ jobs:
             artifact_path:  app/build/ios/ipa/
             rename_file: "acter.ipa"
             rename_suffix: "ipa"
-            extra_artifacts: app/debug_symbols/*
           - name: MacOS
             os: macos-12
             target: macos
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
-            flutter_build_args: "build macos"
+            flutter_build_args: "build macos --split-debug-info=debug_symbols"
             artifact_prefix: acter-macosx
             artifact_path: app/build/macos/Build/Products/Release/
             extra_artifacts: app/build/macos/Build/Products/Release/Acter.app
@@ -114,7 +110,7 @@ jobs:
             target: windows
             cargo_make_args: desktop
             flutter_config: "--enable-windows-desktop"
-            flutter_build_args: "build windows --release"
+            flutter_build_args: "build windows --split-debug-info=debug_symbols"
             rename_file: acter.msix
             artifact_prefix: acter-windows
             rename_suffix: .msix
@@ -290,6 +286,7 @@ jobs:
           name: ${{ matrix.name }}
           path: |
             ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
+            app/debug_symbols/*
             ${{ matrix.extra_artifacts }}
 
       - name: Release
