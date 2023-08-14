@@ -6,7 +6,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
-import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -117,20 +116,46 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     Text(
                       AppLocalizations.of(context)!.createAccountText,
                     ),
-                    const SizedBox(height: 20),
-                    RegisterTextField(
-                      hintText: AppLocalizations.of(context)!.name,
-                      controller: name,
-                      validatorText: AppLocalizations.of(context)!.missingName,
-                      type: RegisterOnboardingTextFieldEnum.name,
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
+                    SizedBox(
+                      height: 60,
+                      child: TextFormField(
+                        controller: name,
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context)!.name,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
+                        style: Theme.of(context).textTheme.labelLarge,
+                        cursorColor: Theme.of(context).colorScheme.tertiary2,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return AppLocalizations.of(context)!.missingName;
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          name.text = value;
+                          name.selection = TextSelection.fromPosition(
+                            TextPosition(offset: name.text.length),
+                          );
+                        },
+                      ),
                     ),
-                    RegisterTextField(
-                      hintText: AppLocalizations.of(context)!.username,
-                      controller: username,
-                      validatorText:
-                          AppLocalizations.of(context)!.emptyUsername,
-                      type: RegisterOnboardingTextFieldEnum.userName,
-                      inputFormatters: [
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 60,
+                      child: TextFormField(
+                        controller: username,
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context)!.username,
+                        ),
+                         inputFormatters: [
                         TextInputFormatter.withFunction((
                           TextEditingValue oldValue,
                           TextEditingValue newValue,
@@ -141,7 +166,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               : oldValue;
                         })
                       ],
-                      validator: (val) {
+                        style: Theme.of(context).textTheme.labelLarge,
+                        cursorColor: Theme.of(context).colorScheme.tertiary2,
+                         validator: (val) {
                         if (val == null || val.trim().isEmpty) {
                           return AppLocalizations.of(context)!.emptyUsername;
                         }
@@ -151,54 +178,105 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         }
                         return null;
                       },
+                        onChanged: (value) {
+                          username.text = value;
+                          username.selection = TextSelection.fromPosition(
+                            TextPosition(offset: username.text.length),
+                          );
+                        },
+                      ),
                     ),
-                    RegisterTextField(
-                      hintText: AppLocalizations.of(context)!.password,
-                      controller: password,
-                      validatorText:
-                          AppLocalizations.of(context)!.emptyPassword,
-                      type: RegisterOnboardingTextFieldEnum.password,
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 60,
+                      child: TextFormField(
+                        controller: password,
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context)!.password,
+                        ),
+                        obscureText: true,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
+                        style: Theme.of(context).textTheme.labelLarge,
+                        cursorColor: Theme.of(context).colorScheme.tertiary2,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return AppLocalizations.of(context)!.emptyPassword;
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          password.text = value;
+                          password.selection = TextSelection.fromPosition(
+                            TextPosition(offset: password.text.length),
+                          );
+                        },
+                      ),
                     ),
-                    RegisterTextField(
-                      hintText: AppLocalizations.of(context)!.token,
-                      controller: token,
-                      validatorText: AppLocalizations.of(context)!.emptyToken,
-                      type: RegisterOnboardingTextFieldEnum.token,
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 60,
+                      child: TextFormField(
+                        controller: token,
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context)!.token,
+                        ),
+                        obscureText: true,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
+                        style: Theme.of(context).textTheme.labelLarge,
+                        cursorColor: Theme.of(context).colorScheme.tertiary2,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return AppLocalizations.of(context)!.emptyToken;
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          token.text = value;
+                          token.selection = TextSelection.fromPosition(
+                            TextPosition(offset: token.text.length),
+                          ); 
+                        },
+                      ),
                     ),
                     const SizedBox(height: 30),
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: RichText(
-                        textAlign: TextAlign.start,
-                        text: TextSpan(
-                          // Note: Styles for TextSpans must be explicitly defined.
-                          // Child text spans will inherit styles from parent
+                    RichText(
+                      textAlign: TextAlign.start,
+                      text: TextSpan(
+                        // Note: Styles for TextSpans must be explicitly defined.
+                        // Child text spans will inherit styles from parent
 
-                          children: <TextSpan>[
-                            TextSpan(
-                              text:
-                                  '${AppLocalizations.of(context)!.termsText1} ',
-                            ),
-                            TextSpan(
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  debugPrint('Terms of Service"');
-                                },
-                              text: AppLocalizations.of(context)!.termsText2,
-                            ),
-                            TextSpan(
-                              text:
-                                  ' ${AppLocalizations.of(context)!.termsText3} ',
-                            ),
-                            TextSpan(
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  debugPrint('policy"');
-                                },
-                              text: AppLocalizations.of(context)!.termsText4,
-                            ),
-                          ],
-                        ),
+                        children: <TextSpan>[
+                          TextSpan(
+                            text:
+                                '${AppLocalizations.of(context)!.termsText1} ',
+                          ),
+                          TextSpan(
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                debugPrint('Terms of Service"');
+                              },
+                            text: AppLocalizations.of(context)!.termsText2,
+                          ),
+                          TextSpan(
+                            text:
+                                ' ${AppLocalizations.of(context)!.termsText3} ',
+                          ),
+                          TextSpan(
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                debugPrint('policy"');
+                              },
+                            text: AppLocalizations.of(context)!.termsText4,
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                        ],
                       ),
                     ),
                     const SizedBox(height: 40),

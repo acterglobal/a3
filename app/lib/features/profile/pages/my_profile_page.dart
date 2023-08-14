@@ -206,8 +206,7 @@ class MyProfile extends ConsumerWidget {
                         ),
                         child: ActerAvatar(
                           mode: DisplayMode.User,
-                          uniqueId:
-                              account.account.userId().toString(),
+                          uniqueId: account.account.userId().toString(),
                           avatar: account.profile.getAvatarImage(),
                           displayName: account.profile.displayName,
                           size: 100,
@@ -217,7 +216,14 @@ class MyProfile extends ConsumerWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(account.profile.displayName ?? ''),
+                        Text(
+                          account.profile.displayName != null
+                              ? account.profile.displayName!
+                              : 'Add Username',
+                          style: account.profile.displayName == null
+                              ? const TextStyle(fontStyle: FontStyle.italic)
+                              : const TextStyle(fontStyle: FontStyle.normal),
+                        ),
                         IconButton(
                           iconSize: 14,
                           icon: const Icon(Atlas.pencil_edit_thin),
@@ -241,9 +247,7 @@ class MyProfile extends ConsumerWidget {
                           onPressed: () async {
                             Clipboard.setData(
                               ClipboardData(
-                                text: account.account
-                                    .userId()
-                                    .toString(),
+                                text: account.account.userId().toString(),
                               ),
                             );
                             customMsgSnackbar(

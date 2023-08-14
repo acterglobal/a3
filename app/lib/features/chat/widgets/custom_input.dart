@@ -8,6 +8,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
@@ -345,10 +346,13 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           await chatRoomNotifier.typingNotice(false);
         }
       },
+      textInputAction: TextInputAction.send,
+      inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\n'))],
+      onSubmitted: (value) => onSendButtonPressed(ref),
       style: Theme.of(context).textTheme.bodySmall,
       cursorColor: Theme.of(context).colorScheme.tertiary,
       maxLines:
-          MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
+          MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,  
       minLines: 1,
       focusNode: ref.watch(chatInputFocusProvider),
       decoration: InputDecoration(
