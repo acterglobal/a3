@@ -65,7 +65,8 @@ jobs:
             with_ndk_version: r25
             flutter_build_args: "build appbundle --split-debug-info=debug_symbols"
             artifact_prefix: acter-android
-            artifact_path:  app/build/app/outputs/bundle/release/app-release.aab
+            artifact_path:  app/build/app/outputs/bundle/release/
+            extra_artifacts: app/build/app/outputs/bundle/release/app-release.aab
           - name: Android apk
             target: android
             os: ubuntu-latest
@@ -95,6 +96,7 @@ jobs:
             artifact_path:  app/build/ios/ipa/
             rename_file: "acter.ipa"
             rename_suffix: "ipa"
+            with_debug_symbols: true
           - name: MacOS
             os: macos-12
             target: macos
@@ -105,6 +107,7 @@ jobs:
             artifact_path: app/build/macos/Build/Products/Release/
             extra_artifacts: app/build/macos/Build/Products/Release/Acter.app
             tar_files: "Acter.app"
+            with_debug_symbols: true
           - name: Windows
             os: windows-latest
             target: windows
@@ -116,6 +119,7 @@ jobs:
             rename_suffix: .msix
             artifact_path: app/build/windows/runner/Release/
             zip_files: false
+            with_debug_symbols: true
 
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -435,7 +439,7 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
           packageName: global.acter.a3
           releaseName: v${{ needs.tags.outputs.tag }}
-          releaseFiles: "build/app/outputs/bundle/release/*.aab"
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
           debugSymbols: debug_symbols/
           track: beta
           status: completed
@@ -459,7 +463,7 @@ jobs:
         run: |
           mkdir .private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output ".private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
-          xcrun altool --upload-app --type ios --file "app/build/ios/ipa/*.ipa" \
+          xcrun altool --upload-app --type ios --file build/ios/ipa/*.ipa \
               --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
         shell: bash
 
@@ -482,6 +486,6 @@ jobs:
         run: |
           mkdir .private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output ".private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
-          xcrun altool --upload-app --type macos --file "app/build/macos/Build/Products/Release/Acter.app" \
+          xcrun altool --upload-app --type macos --file build/macos/Build/Products/Release/Acter.app \
               --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
         shell: bash
