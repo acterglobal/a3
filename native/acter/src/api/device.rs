@@ -16,7 +16,7 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 use tracing::{error, info};
 
-use super::{client::Client, RUNTIME};
+use super::{client::Client, common::DeviceRecord, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct DeviceChangedEvent {
@@ -52,12 +52,18 @@ impl DeviceChangedEvent {
                             .find(|e| e.device_id == device.device_id())
                         {
                             records.push(DeviceRecord::new(
-                                &device,
-                                dev.last_seen_ip.clone(),
+                                dev.device_id.clone(),
+                                dev.display_name.clone(),
                                 dev.last_seen_ts,
+                                dev.last_seen_ip.clone(),
                             ));
                         } else {
-                            records.push(DeviceRecord::new(&device, None, None));
+                            records.push(DeviceRecord::new(
+                                device.device_id().to_owned(),
+                                device.display_name().map(|x| x.to_string()),
+                                None,
+                                None,
+                            ));
                         }
                     }
                 }
@@ -183,67 +189,24 @@ impl DeviceLeftEvent {
                             .find(|e| e.device_id == device.device_id())
                         {
                             records.push(DeviceRecord::new(
-                                &device,
-                                dev.last_seen_ip.clone(),
+                                dev.device_id.clone(),
+                                dev.display_name.clone(),
                                 dev.last_seen_ts,
+                                dev.last_seen_ip.clone(),
                             ));
                         } else {
-                            records.push(DeviceRecord::new(&device, None, None));
+                            records.push(DeviceRecord::new(
+                                device.device_id().to_owned(),
+                                device.display_name().map(|x| x.to_string()),
+                                None,
+                                None,
+                            ));
                         }
                     }
                 }
                 Ok(records)
             })
             .await?
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct DeviceRecord {
-    device: Device,
-    last_seen_ip: Option<String>,
-    last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
-}
-
-impl DeviceRecord {
-    pub(crate) fn new(
-        device: &Device,
-        last_seen_ip: Option<String>,
-        last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
-    ) -> Self {
-        DeviceRecord {
-            device: device.clone(),
-            last_seen_ip,
-            last_seen_ts,
-        }
-    }
-
-    pub fn verified(&self) -> bool {
-        self.device.is_verified()
-    }
-
-    pub fn deleted(&self) -> bool {
-        self.device.is_deleted()
-    }
-
-    pub fn user_id(&self) -> OwnedUserId {
-        self.device.user_id().to_owned()
-    }
-
-    pub fn device_id(&self) -> OwnedDeviceId {
-        self.device.device_id().to_owned()
-    }
-
-    pub fn display_name(&self) -> Option<String> {
-        self.device.display_name().map(|s| s.to_string())
-    }
-
-    pub fn last_seen_ip(&self) -> Option<String> {
-        self.last_seen_ip.clone()
-    }
-
-    pub fn last_seen_ts(&self) -> Option<u64> {
-        self.last_seen_ts.map(|x| x.get().into())
     }
 }
 

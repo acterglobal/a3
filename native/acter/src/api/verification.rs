@@ -34,9 +34,9 @@ use matrix_sdk::{
 };
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use tracing::{error, info};
+use tracing::{error, info, warn};
 
-use super::{client::Client, RUNTIME};
+use super::{client::Client, common::DeviceRecord, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct VerificationEvent {
@@ -1105,11 +1105,126 @@ impl VerificationController {
     }
 }
 
+pub struct VerificationSessionManager {
+    client: SdkClient,
+}
+
+impl VerificationSessionManager {
+    pub async fn all_sessions(&self) -> Result<Vec<DeviceRecord>> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let response = client.devices().await?;
+                let mut records = vec![];
+                for device in response.devices {
+                    records.push(DeviceRecord::new(
+                        device.device_id,
+                        device.display_name,
+                        device.last_seen_ts,
+                        device.last_seen_ip,
+                    ));
+                }
+                warn!("all sessions: {:?}", records);
+                Ok(records)
+            })
+            .await?
+    }
+
+    pub async fn verified_sessions(&self) -> Result<Vec<DeviceRecord>> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let user_id = client.user_id().context("User not found")?;
+                let response = client.devices().await?;
+                let crypto_devices = client
+                    .encryption()
+                    .get_user_devices(user_id)
+                    .await
+                    .context("Couldn't get crypto devices")?;
+                let mut sessions = vec![];
+                for device in response.devices {
+                    let is_verified = crypto_devices
+                        .get(&device.device_id)
+                        .is_some_and(|d| d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing());
+                    if is_verified {
+                        sessions.push(DeviceRecord::new(
+                            device.device_id,
+                            device.display_name,
+                            device.last_seen_ts,
+                            device.last_seen_ip,
+                        ));
+                    }
+                }
+                warn!("verified sessions: {:?}", sessions);
+                Ok(sessions)
+            })
+            .await?
+    }
+
+    pub async fn unverified_sessions(&self) -> Result<Vec<DeviceRecord>> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let user_id = client.user_id().context("User not found")?;
+                let response = client.devices().await?;
+                let crypto_devices = client
+                    .encryption()
+                    .get_user_devices(user_id)
+                    .await
+                    .context("Couldn't get crypto devices")?;
+                let mut sessions = vec![];
+                for device in response.devices {
+                    let is_verified = crypto_devices
+                        .get(&device.device_id)
+                        .is_some_and(|d| d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing());
+                    if !is_verified {
+                        sessions.push(DeviceRecord::new(
+                            device.device_id,
+                            device.display_name,
+                            device.last_seen_ts,
+                            device.last_seen_ip,
+                        ));
+                    }
+                }
+                warn!("unverified sessions: {:?}", sessions);
+                Ok(sessions)
+            })
+            .await?
+    }
+
+    pub async fn inactive_sessions(&self) -> Result<Vec<DeviceRecord>> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let response = client.devices().await?;
+                let mut sessions = vec![];
+                for device in response.devices {
+                    if device.last_seen_ts.is_none() {
+                        sessions.push(DeviceRecord::new(
+                            device.device_id,
+                            device.display_name,
+                            device.last_seen_ts,
+                            device.last_seen_ip,
+                        ));
+                    }
+                }
+                warn!("inactive sessions: {:?}", sessions);
+                Ok(sessions)
+            })
+            .await?
+    }
+}
+
 impl Client {
     pub fn verification_event_rx(&self) -> Option<Receiver<VerificationEvent>> {
         match self.verification_controller.event_rx.try_lock() {
             Ok(mut r) => r.take(),
             Err(e) => None,
         }
+    }
+
+    pub fn verification_session_manager(&self) -> VerificationSessionManager {
+        let client = self.core.client().clone();
+        VerificationSessionManager { client }
     }
 }

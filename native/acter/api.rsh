@@ -1626,6 +1626,8 @@ object Client {
     /// Get the verification event receiver
     fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
 
+    fn verification_session_manager() -> VerificationSessionManager;
+
     /// Return the event handler of device changed
     fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
 
@@ -1819,6 +1821,13 @@ object VerificationEmoji {
     fn description() -> string;
 }
 
+object VerificationSessionManager {
+    fn all_sessions() -> Future<Result<Vec<DeviceRecord>>>;
+    fn verified_sessions() -> Future<Result<Vec<DeviceRecord>>>;
+    fn unverified_sessions() -> Future<Result<Vec<DeviceRecord>>>;
+    fn inactive_sessions() -> Future<Result<Vec<DeviceRecord>>>;
+}
+
 /// Deliver receipt event from rust to flutter
 object ReceiptEvent {
     /// Get transaction id or flow id
@@ -1866,15 +1875,6 @@ object DeviceLeftEvent {
 
 /// Provide various device infos
 object DeviceRecord {
-    /// whether this device was verified
-    fn verified() -> bool;
-
-    /// whether this device was deleted
-    fn deleted() -> bool;
-
-    /// get the id of this device user
-    fn user_id() -> UserId;
-
     /// get the id of this device
     fn device_id() -> DeviceId;
 
