@@ -78,7 +78,7 @@ jobs:
             flutter_build_args: "build apk --split-per-abi"
             artifact_prefix: acter-android
             artifact_path:  app/build/app/outputs/apk/release/
-            extra_artifacts: app/build/app/outputs/apk/release/*.apk
+            extra_release_artifacts: app/build/app/outputs/apk/release/*.apk
           # - name: Linux x64
           #   os: ubuntu-latest
           #   apt_install: ninja-build libgtk-3-dev
@@ -107,6 +107,7 @@ jobs:
             flutter_build_args: "build macos"
             artifact_prefix: acter-macosx
             artifact_path: app/build/macos/Build/Products/Release/
+            extra_artifacts: app/build/macos/Build/Products/Release/Acter.app
             tar_files: "Acter.app"
           - name: Windows
             os: windows-latest
@@ -301,7 +302,7 @@ jobs:
           generate_release_notes: false
           files: |
             ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
-            ${{ matrix.extra_artifacts }}
+            ${{ matrix.extra_release_artifacts }}
 
       - name: Report issue
         if: ${{ github.event.schedule && failure() }}
@@ -439,7 +440,7 @@ jobs:
           releaseName: v${{ needs.tags.outputs.tag }}
           releaseFiles: "build/app/outputs/bundle/release/*.aab"
           debugSymbols: debug_symbols/
-          track: alpha
+          track: beta
           status: completed
 
   apple-store-ios:
@@ -484,6 +485,6 @@ jobs:
         run: |
           mkdir .private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output ".private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
-          xcrun altool --upload-app --type macos --file "app/build/macos/Build/Products/Release/*.app" \
+          xcrun altool --upload-app --type macos --file "app/build/macos/Build/Products/Release/Acter.app" \
               --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
         shell: bash
