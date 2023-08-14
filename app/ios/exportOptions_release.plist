@@ -17,6 +17,8 @@
     <string>Apple Distribution</string>
     <key>signingStyle</key>
     <string>manual</string>
+    <key>allowProvisioningUpdates<key>
+    <true/>
     <key>stripSwiftSymbols</key>
     <false/>
     <key>uploadBitcode</key>
