@@ -1,24 +1,28 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class ConvoCard extends ConsumerStatefulWidget {
   final Convo room;
 
+  /// Whether or not to render the parent Icon
+  ///
+  final bool showParent;
+
   const ConvoCard({
     Key? key,
     required this.room,
+    this.showParent = true,
   }) : super(key: key);
 
   @override
@@ -41,66 +45,31 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
     // ToDo: UnreadCounter
     return convoProfile.when(
-      data: (profile) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              onTap: () => context.goNamed(
-                Routes.chatroom.name,
-                pathParameters: {'roomId': roomId},
-                extra: widget.room,
-              ),
-              leading: profile.hasAvatar()
-                  ? ActerAvatar(
-                      uniqueId: roomId,
-                      mode: DisplayMode.GroupChat,
-                      displayName: profile.displayName ?? roomId,
-                      avatar: profile.getAvatarImage(),
-                      size: 36,
-                    )
-                  : Container(
-                      height: 36,
-                      width: 36,
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onSecondary,
-                        borderRadius: BorderRadius.circular(6),
-                        shape: BoxShape.rectangle,
-                      ),
-                      child: SvgPicture.asset(
-                        'assets/icon/acter.svg',
-                      ),
-                    ),
-              title: Text(
-                profile.displayName ?? roomId,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.w700),
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: _SubtitleWidget(
-                room: widget.room,
-                latestMessage: widget.room.latestMessage(),
-              ),
-              trailing: _TrailingWidget(
-                // controller: recieptController,
-                room: widget.room,
-                latestMessage: widget.room.latestMessage(),
-                activeMembers: activeMembers,
-                userId: client!.userId().toString(),
-              ),
-            ),
-            Divider(
-              indent: 75,
-              endIndent: 10,
-              color: Theme.of(context).colorScheme.tertiary,
-            ),
-          ],
-        );
-      },
+      data: (profile) => ConvoWithProfileCard(
+        roomId: roomId,
+        showParent: widget.showParent,
+        profile: profile,
+        onTap: () {
+          ref
+              .read(currentConvoProvider.notifier)
+              .update((state) => widget.room);
+          context.pushNamed(
+            Routes.chatroom.name,
+            pathParameters: {'roomId': roomId},
+          );
+        },
+        subtitle: _SubtitleWidget(
+          room: widget.room,
+          latestMessage: widget.room.latestMessage(),
+        ),
+        trailing: _TrailingWidget(
+          // controller: receiptController,
+          room: widget.room,
+          latestMessage: widget.room.latestMessage(),
+          activeMembers: activeMembers,
+          userId: client!.userId().toString(),
+        ),
+      ),
       error: (error, stackTrace) => const Text('Failed to load Conversation'),
       loading: () => const CircularProgressIndicator(),
     );

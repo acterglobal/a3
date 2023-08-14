@@ -12,7 +12,8 @@ class MemberAvatar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(memberProfileProvider(member));
+    final userId = member.userId().toString();
+    final profile = ref.watch(memberProfileProvider(userId));
     return profile.when(
       data: (data) {
         return Column(

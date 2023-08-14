@@ -2,8 +2,9 @@ pub use csscolorparser::Color;
 use derive_getters::Getters;
 use matrix_sdk::ruma::events::room::ImageInfo;
 use serde::{Deserialize, Serialize};
+use strum::Display;
 
-#[derive(Clone, Debug, strum::Display, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, Display, Deserialize, Serialize, Default)]
 #[serde(rename_all = "kebab-case")]
 pub enum Position {
     TopLeft,

@@ -1,16 +1,21 @@
 use anyhow::{bail, Context, Result};
-use matrix_sdk::media::MediaRequest;
 use matrix_sdk::{
-    media::{MediaFormat, MediaThumbnailSize},
+    media::{MediaFormat, MediaRequest, MediaThumbnailSize},
     room::RoomMember,
-    ruma::{api::client::media::get_content_thumbnail::v3::Method, OwnedRoomId, OwnedUserId, UInt},
+    ruma::{
+        api::client::{
+            media::get_content_thumbnail::v3::Method as ThumbnailMethod,
+            user_directory::search_users::v3::User,
+        },
+        events::room::MediaSource,
+        OwnedRoomId, OwnedUserId, UInt,
+    },
     Account, Client, DisplayName,
 };
-use ruma::{api::client::user_directory::search_users::v3::User, events::room::MediaSource};
 
 use super::{
     api::FfiBuffer,
-    common::{OptionBuffer, OptionText},
+    common::{OptionBuffer, OptionString},
     RUNTIME,
 };
 
@@ -24,18 +29,19 @@ impl PublicProfile {
     pub fn new(inner: User, client: Client) -> Self {
         PublicProfile { inner, client }
     }
+
     pub async fn avatar(&self, format: MediaFormat) -> Result<Option<Vec<u8>>> {
         let Some(url) = self.inner.avatar_url.as_ref() else { return Ok(None) };
         let request = MediaRequest {
             source: MediaSource::Plain(url.to_owned()),
             format,
         };
-        Ok(Some(
-            self.client
-                .media()
-                .get_media_content(&request, true)
-                .await?,
-        ))
+        let buf = self
+            .client
+            .media()
+            .get_media_content(&request, true)
+            .await?;
+        Ok(Some(buf))
     }
 }
 
@@ -132,7 +138,7 @@ impl UserProfile {
             return RUNTIME
                 .spawn(async move {
                     let size = MediaThumbnailSize {
-                        method: Method::Scale,
+                        method: ThumbnailMethod::Scale,
                         width: UInt::from(width),
                         height: UInt::from(height),
                     };
@@ -145,7 +151,7 @@ impl UserProfile {
             return RUNTIME
                 .spawn(async move {
                     let size = MediaThumbnailSize {
-                        method: Method::Scale,
+                        method: ThumbnailMethod::Scale,
                         width: UInt::from(width),
                         height: UInt::from(height),
                     };
@@ -157,24 +163,24 @@ impl UserProfile {
         Ok(OptionBuffer::new(None))
     }
 
-    pub async fn get_display_name(&self) -> Result<OptionText> {
+    pub async fn get_display_name(&self) -> Result<OptionString> {
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
                     let text = account.get_display_name().await?;
-                    Ok(OptionText::new(text))
+                    Ok(OptionString::new(text))
                 })
                 .await?;
         }
         if let Some(member) = self.member.clone() {
             let text = member.display_name().map(|x| x.to_string());
-            return Ok(OptionText::new(text));
+            return Ok(OptionString::new(text));
         }
         if let Some(public_profile) = self.public_profile.clone() {
             let text = public_profile.inner.display_name;
-            return Ok(OptionText::new(text));
+            return Ok(OptionString::new(text));
         }
-        Ok(OptionText::new(None))
+        Ok(OptionString::new(None))
     }
 }
 
@@ -218,7 +224,7 @@ impl RoomProfile {
         RUNTIME
             .spawn(async move {
                 let size = MediaThumbnailSize {
-                    method: Method::Scale,
+                    method: ThumbnailMethod::Scale,
                     width: UInt::from(width),
                     height: UInt::from(height),
                 };
@@ -228,7 +234,7 @@ impl RoomProfile {
             .await?
     }
 
-    pub async fn get_display_name(&self) -> Result<OptionText> {
+    pub async fn get_display_name(&self) -> Result<OptionString> {
         let room = self
             .client
             .get_room(&self.room_id)
@@ -237,11 +243,11 @@ impl RoomProfile {
             .spawn(async move {
                 let result = room.display_name().await?;
                 match result {
-                    DisplayName::Named(name) => Ok(OptionText::new(Some(name))),
-                    DisplayName::Aliased(name) => Ok(OptionText::new(Some(name))),
-                    DisplayName::Calculated(name) => Ok(OptionText::new(Some(name))),
-                    DisplayName::EmptyWas(name) => Ok(OptionText::new(Some(name))),
-                    DisplayName::Empty => Ok(OptionText::new(None)),
+                    DisplayName::Named(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Aliased(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Calculated(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::EmptyWas(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Empty => Ok(OptionString::new(None)),
                 }
             })
             .await?

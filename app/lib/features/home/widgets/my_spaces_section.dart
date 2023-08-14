@@ -3,7 +3,7 @@ import 'dart:core';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,7 +50,7 @@ class MySpacesSection extends ConsumerWidget {
                     itemCount: subdata.length,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
-                      return _spaceBuilder(context, index, ref, data, subdata);
+                      return SpaceCard(space: subdata[index]);
                     },
                   ),
                   subdata.length != data.length
@@ -73,47 +73,6 @@ class MySpacesSection extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget? _spaceBuilder(
-    BuildContext context,
-    int index,
-    WidgetRef ref,
-    List<Space> data,
-    List<Space> subdata,
-  ) {
-    final roomId = subdata[index].getRoomId().toString();
-    final spaceProfile = ref.watch(spaceProfileDataProvider(data[index]));
-    return spaceProfile.when(
-      data: (profile) => Card(
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: Theme.of(context).colorScheme.inversePrimary,
-            width: 1.5,
-          ),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        color: Theme.of(context).colorScheme.surface,
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(15),
-          onTap: () => context.go('/$roomId'),
-          title: Text(
-            profile.displayName ?? roomId,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          leading: ActerAvatar(
-            mode: DisplayMode.Space,
-            displayName: profile.displayName,
-            uniqueId: roomId,
-            avatar: profile.getAvatarImage(),
-            size: 48,
-          ),
-          trailing: const Icon(Icons.more_vert),
-        ),
-      ),
-      error: (error, stackTrace) => Text('Failed to load space due to $error'),
-      loading: () => const Center(child: CircularProgressIndicator()),
     );
   }
 }

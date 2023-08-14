@@ -1,5 +1,4 @@
-import 'dart:math';
-
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -83,6 +82,7 @@ class _TextMessageBuilderConsumerState
         onPreviewDataFetched: _onPreviewDataFetched,
         textWidget: _TextWidget(
           message: widget.message,
+          messageWidth: widget.messageWidth,
           enlargeEmoji:
               widget.message.metadata!['enlargeEmoji'] ?? enlargeEmoji,
           isNotice: isNotice,
@@ -92,11 +92,15 @@ class _TextMessageBuilderConsumerState
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       );
     }
-    return _TextWidget(
-      message: widget.message,
-      enlargeEmoji: enlargeEmoji,
-      isNotice: isNotice,
-      isReply: widget.isReply,
+    return Padding(
+      padding: const EdgeInsets.all(18),
+      child: _TextWidget(
+        message: widget.message,
+        messageWidth: widget.messageWidth,
+        enlargeEmoji: enlargeEmoji,
+        isNotice: isNotice,
+        isReply: widget.isReply,
+      ),
     );
   }
 
@@ -112,12 +116,14 @@ class _TextMessageBuilderConsumerState
 
 class _TextWidget extends ConsumerWidget {
   final types.TextMessage message;
+  final int messageWidth;
   final bool enlargeEmoji;
   final bool isNotice;
   final bool isReply;
 
   const _TextWidget({
     required this.message,
+    required this.messageWidth,
     required this.enlargeEmoji,
     required this.isNotice,
     required this.isReply,
@@ -130,12 +136,7 @@ class _TextWidget extends ConsumerWidget {
         ? const ActerChatTheme().sentEmojiMessageTextStyle
         : const ActerChatTheme().receivedEmojiMessageTextStyle;
     return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: enlargeEmoji
-            ? double.infinity
-            : sqrt(message.metadata!['messageLength']) * 38.5,
-        maxHeight: double.infinity,
-      ),
+      constraints: BoxConstraints(maxWidth: messageWidth.toDouble()),
       child: enlargeEmoji
           ? Text(
               message.text,
@@ -145,14 +146,17 @@ class _TextWidget extends ConsumerWidget {
               maxLines: isReply ? 3 : null,
             )
           : Html(
-              // ignore: prefer_single_quotes, unnecessary_string_interpolations
-              data: """${message.text}""",
+              data: message.text,
               shrinkToFit: true,
-              padding: const EdgeInsets.all(5),
-              defaultTextStyle: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(overflow: isReply ? TextOverflow.ellipsis : null),
+              defaultTextStyle: Theme.of(context).textTheme.bodySmall!.copyWith(
+                    overflow: isReply ? TextOverflow.ellipsis : null,
+                    color: isNotice
+                        ? Theme.of(context)
+                            .colorScheme
+                            .neutral5
+                            .withOpacity(0.5)
+                        : null,
+                  ),
               maxLines: isReply ? 3 : null,
             ),
     );

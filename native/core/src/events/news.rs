@@ -3,13 +3,9 @@ use derive_getters::Getters;
 use matrix_sdk::ruma::{
     events::{
         macros::EventContent,
-        room::{
-            message::{
-                AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-                ImageMessageEventContent, TextMessageEventContent, VideoInfo,
-                VideoMessageEventContent,
-            },
-            ImageInfo,
+        room::message::{
+            AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+            TextMessageEventContent, VideoMessageEventContent,
         },
     },
     OwnedMxcUri,
@@ -17,7 +13,7 @@ use matrix_sdk::ruma::{
 use serde::{Deserialize, Serialize};
 
 use super::{Colorize, ObjRef, Update};
-use crate::util::deserialize_some;
+use crate::{util::deserialize_some, Result};
 
 // if you change the order of these enum variables, enum value will change and parsing of old content will fail
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -103,30 +99,30 @@ impl NewsSlide {
         }
     }
 
-    pub fn new_image(body: String, url: OwnedMxcUri, info: Option<Box<ImageInfo>>) -> Self {
+    pub fn new_image(body: String, url: OwnedMxcUri) -> Self {
         NewsSlide {
-            content: NewsContent::Image(ImageMessageEventContent::plain(body, url, info)),
+            content: NewsContent::Image(ImageMessageEventContent::plain(body, url)),
             references: vec![],
         }
     }
 
-    pub fn new_audio(body: String, url: OwnedMxcUri, info: Option<Box<AudioInfo>>) -> Self {
+    pub fn new_audio(body: String, url: OwnedMxcUri) -> Self {
         NewsSlide {
-            content: NewsContent::Audio(AudioMessageEventContent::plain(body, url, info)),
+            content: NewsContent::Audio(AudioMessageEventContent::plain(body, url)),
             references: vec![],
         }
     }
 
-    pub fn new_video(body: String, url: OwnedMxcUri, info: Option<Box<VideoInfo>>) -> Self {
+    pub fn new_video(body: String, url: OwnedMxcUri) -> Self {
         NewsSlide {
-            content: NewsContent::Video(VideoMessageEventContent::plain(body, url, info)),
+            content: NewsContent::Video(VideoMessageEventContent::plain(body, url)),
             references: vec![],
         }
     }
 
-    pub fn new_file(body: String, url: OwnedMxcUri, info: Option<Box<FileInfo>>) -> Self {
+    pub fn new_file(body: String, url: OwnedMxcUri) -> Self {
         NewsSlide {
-            content: NewsContent::File(FileMessageEventContent::plain(body, url, info)),
+            content: NewsContent::File(FileMessageEventContent::plain(body, url)),
             references: vec![],
         }
     }
@@ -181,7 +177,7 @@ pub struct NewsEntryUpdateEventContent {
 }
 
 impl NewsEntryUpdateEventContent {
-    pub fn apply(&self, task: &mut NewsEntryEventContent) -> crate::Result<bool> {
+    pub fn apply(&self, task: &mut NewsEntryEventContent) -> Result<bool> {
         let mut updated = false;
         if let Some(slides) = &self.slides {
             task.slides = slides.clone();

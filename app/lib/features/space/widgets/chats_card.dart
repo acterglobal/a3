@@ -2,7 +2,7 @@ import 'dart:core';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/chat/widgets/convo_card.dart';
+import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -37,8 +37,10 @@ class ChatsCard extends ConsumerWidget {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: chats.length > 3 ? 3 : chats.length,
-                      itemBuilder: (context, index) =>
-                          ConvoCard(room: chats[index]),
+                      itemBuilder: (context, index) => ConvoCard(
+                        room: chats[index],
+                        showParent: false,
+                      ),
                     ),
                     chats.length > 3
                         ? Padding(
@@ -50,8 +52,7 @@ class ChatsCard extends ConsumerWidget {
                                   pathParameters: {'spaceId': spaceId},
                                 );
                               },
-                              child:
-                                  Text('see all my ${chats.length - 3} chats'),
+                              child: Text('see all my ${chats.length} chats'),
                             ),
                           )
                         : const SizedBox.shrink()

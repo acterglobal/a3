@@ -8,11 +8,10 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use std::{
-    io,
-    sync::mpsc::{Receiver, TryRecvError},
+    sync::mpsc::{Receiver as MpscReceiver, TryRecvError},
     time::{Duration, Instant},
 };
-use tokio::sync::broadcast::Receiver as Subscription;
+use tokio::sync::broadcast::Receiver as BroadcastReceiver;
 use tracing::{error, info, trace};
 use tui::{
     backend::{Backend, CrosstermBackend},
@@ -60,7 +59,7 @@ struct TasksState {
     tasks_list_state: ListState,
     selected: Option<TaskList>,
     task_lists: Vec<TaskList>,
-    receivers: Vec<Subscription<()>>,
+    receivers: Vec<BroadcastReceiver<()>>,
     tasks: Vec<Task>,
 }
 
@@ -505,10 +504,10 @@ impl App {
     }
 }
 
-pub async fn run_ui(rx: Receiver<AppUpdate>, logs_fullscreen: bool) -> Result<()> {
+pub async fn run_ui(rx: MpscReceiver<AppUpdate>, logs_fullscreen: bool) -> Result<()> {
     // setup terminal
     enable_raw_mode()?;
-    let mut stdout = io::stdout();
+    let mut stdout = std::io::stdout();
     execute!(stdout, EnterAlternateScreen, DisableMouseCapture)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
@@ -536,8 +535,8 @@ pub async fn run_ui(rx: Receiver<AppUpdate>, logs_fullscreen: bool) -> Result<()
 async fn run_app<B: Backend>(
     terminal: &mut Terminal<B>,
     mut app: App,
-    rx: Receiver<AppUpdate>,
-) -> io::Result<()> {
+    rx: MpscReceiver<AppUpdate>,
+) -> std::io::Result<()> {
     let tick_rate = Duration::from_millis(250);
     let mut last_tick = Instant::now();
 

@@ -1,4 +1,3 @@
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -81,16 +80,6 @@ class ChatPage extends ConsumerWidget {
                             .update((state) => !state),
                         padding: const EdgeInsets.only(right: 10, left: 5),
                         icon: const Icon(Atlas.magnifying_glass),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          customMsgSnackbar(
-                            context,
-                            'Multiselect is not implemented yet',
-                          );
-                        },
-                        padding: const EdgeInsets.only(right: 10, left: 5),
-                        icon: const Icon(Atlas.menu_square),
                       ),
                       IconButton(
                         onPressed: () =>

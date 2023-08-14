@@ -14,15 +14,15 @@ pub struct UserValue {
 
 impl UserValue {
     pub(crate) async fn new(client: Arc<CoreClient>) -> Result<Self, Error> {
-        let user_id = client
-            .client()
+        let c = client.client();
+        let user_id = c
             .user_id()
             .ok_or(Error::Remap(
                 "user".to_string(),
                 "missing user_id".to_string(),
             ))?
             .to_string();
-        let display_name = match client.client().account().get_display_name().await {
+        let display_name = match c.account().get_display_name().await {
             Ok(Some(name)) => name,
             _ => user_id.clone(),
         };

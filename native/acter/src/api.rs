@@ -58,8 +58,8 @@ pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdate
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
-    duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, OptionBuffer, OptionText,
-    ReactionDesc, TextDesc, ThumbnailInfo, VideoDesc,
+    duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, OptionBuffer, OptionString,
+    ReactionRecord, TextDesc, ThumbnailInfo, VideoDesc,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, CreateConvoSettings, CreateConvoSettingsBuilder,
@@ -78,7 +78,8 @@ pub use rsvp::{Rsvp, RsvpDraft, RsvpManager};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
-    RelationTargetType, Space, SpaceRelation, SpaceRelations,
+    RelationTargetType, Space, SpaceHierarchyListResult, SpaceHierarchyRoomInfo, SpaceRelation,
+    SpaceRelations,
 };
 pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{
