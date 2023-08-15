@@ -462,7 +462,7 @@ jobs:
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
         run: |
           mkdir .private_keys
-          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output ".private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
+          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
           xcrun altool --upload-app --type ios --file build/ios/ipa/*.ipa \
               --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
         shell: bash
@@ -485,7 +485,7 @@ jobs:
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
         run: |
           mkdir .private_keys
-          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output ".private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
+          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
           xcrun altool --upload-app --type macos --file build/macos/Build/Products/Release/Acter.app \
               --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
         shell: bash
