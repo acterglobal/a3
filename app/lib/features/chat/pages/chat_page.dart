@@ -19,7 +19,9 @@ class ChatPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(clientProvider)!;
+    final chatsNotifier = ref.read(chatListProvider.notifier);
     final showSearch = ref.watch(_searchToggleProvider);
+    final searchNotifier = ref.read(_searchToggleProvider.notifier);
     return SafeArea(
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.neutral,
@@ -41,16 +43,14 @@ class ChatPage extends ConsumerWidget {
                       ),
                       child: TextFormField(
                         autofocus: true,
-                        onChanged: (value) => ref
-                            .read(chatListProvider.notifier)
-                            .searchRoom(value),
+                        onChanged: (value) => chatsNotifier.searchRoom(value),
                         cursorColor: Theme.of(context).colorScheme.tertiary2,
                         decoration: InputDecoration(
                           hintStyle: const TextStyle(color: Colors.white),
                           suffixIcon: GestureDetector(
-                            onTap: () => ref
-                                .read(_searchToggleProvider.notifier)
-                                .update((state) => !state),
+                            onTap: () {
+                              searchNotifier.update((state) => !state);
+                            },
                             child: const Icon(
                               Icons.close,
                               color: Colors.white,
@@ -75,9 +75,9 @@ class ChatPage extends ConsumerWidget {
                   ? []
                   : [
                       IconButton(
-                        onPressed: () => ref
-                            .read(_searchToggleProvider.notifier)
-                            .update((state) => !state),
+                        onPressed: () {
+                          searchNotifier.update((state) => !state);
+                        },
                         padding: const EdgeInsets.only(right: 10, left: 5),
                         icon: const Icon(Atlas.magnifying_glass),
                       ),

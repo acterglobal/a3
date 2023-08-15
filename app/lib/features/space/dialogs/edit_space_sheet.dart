@@ -43,22 +43,22 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   void _editSpaceData() async {
     var space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
     var profileData = await ref.read(spaceProfileDataProvider(space).future);
+    var titleNotifier = ref.read(editTitleProvider.notifier);
+    var topicNotifier = ref.read(editTopicProvider.notifier);
+    var avatarNotifier = ref.read(editAvatarProvider.notifier);
 
-    ref
-        .read(editTitleProvider.notifier)
-        .update((state) => profileData.displayName ?? '');
-    ref.read(editTopicProvider.notifier).update((state) => space.topic() ?? '');
+    titleNotifier.update((state) => profileData.displayName ?? '');
+    topicNotifier.update((state) => space.topic() ?? '');
 
     if (profileData.hasAvatar()) {
       Directory appDocDirectory = await getApplicationDocumentsDirectory();
       Directory('${appDocDirectory.path}/dir')
           .create(recursive: true)
           .then((Directory directory) {});
-
-      File imageFile =
-          await File('${appDocDirectory.path}/${widget.spaceId}.jpg')
-              .writeAsBytes(profileData.avatar!.asTypedList());
-      ref.read(editAvatarProvider.notifier).update((state) => imageFile.path);
+      String filePath = '${appDocDirectory.path}/${widget.spaceId}.jpg';
+      var imageFile = File(filePath);
+      imageFile.writeAsBytes(profileData.avatar!.asTypedList());
+      avatarNotifier.update((state) => imageFile.path);
     }
 
     _titleController.text = ref.read(editTitleProvider);
@@ -68,6 +68,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(editTitleProvider);
+    final avatarNotifier = ref.read(editAvatarProvider.notifier);
     return SideSheet(
       header: 'Edit Space',
       addActions: true,
@@ -95,9 +96,9 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                             ? Padding(
                                 padding: const EdgeInsets.only(bottom: 5),
                                 child: GestureDetector(
-                                  onTap: () => ref
-                                      .read(editAvatarProvider.notifier)
-                                      .update((state) => ''),
+                                  onTap: () {
+                                    avatarNotifier.update((state) => '');
+                                  },
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: Theme.of(context)

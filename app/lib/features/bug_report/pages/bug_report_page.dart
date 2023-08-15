@@ -22,23 +22,21 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   final formKey = GlobalKey<FormState>();
 
   Future<void> reportBug(BugReport report) async {
+    var reportNotifier = ref.read(bugReportProvider.notifier);
+    var loadingNotifier = ref.read(loadingProvider.notifier);
     try {
-      String reportUrl = await ref
-          .read(
-            bugReportNotifierProvider.notifier,
-          )
-          .report(
-            report.withScreenshot ? widget.imagePath : null,
-          );
+      String reportUrl = await reportNotifier.report(
+        report.withScreenshot ? widget.imagePath : null,
+      );
       String? issueId = getIssueId(reportUrl);
-      ref.read(loadingProvider.notifier).update((state) => !state);
+      loadingNotifier.update((state) => !state);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Reported the bug successfully! (#$issueId)')),
         );
       }
     } catch (e) {
-      ref.read(loadingProvider.notifier).update((state) => !state);
+      loadingNotifier.update((state) => !state);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Bug reporting failed: $e')),
@@ -49,7 +47,8 @@ class _BugReportState extends ConsumerState<BugReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bugReport = ref.watch(bugReportNotifierProvider);
+    final bugReport = ref.watch(bugReportProvider);
+    final reportNotifier = ref.read(bugReportProvider.notifier);
     final isLoading = ref.watch(loadingProvider);
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 350),
@@ -66,26 +65,20 @@ class _BugReportState extends ConsumerState<BugReportPage> {
               const SizedBox(height: 10),
               TextFormField(
                 style: const TextStyle(color: Colors.white),
-                onChanged: (value) => ref
-                    .read(bugReportNotifierProvider.notifier)
-                    .setDescription(value),
+                onChanged: (value) => reportNotifier.setDescription(value),
               ),
               const SizedBox(height: 10),
               CheckboxListTile(
                 title: const Text('Including log file'),
                 value: bugReport.withLog,
-                onChanged: (bool? value) => ref
-                    .read(bugReportNotifierProvider.notifier)
-                    .toggleWithLog(),
+                onChanged: (bool? value) => reportNotifier.toggleLog(),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
               const SizedBox(height: 10),
               CheckboxListTile(
                 title: const Text('Including screenshot'),
                 value: bugReport.withScreenshot,
-                onChanged: (bool? value) => ref
-                    .read(bugReportNotifierProvider.notifier)
-                    .toggleWithScreenshot(),
+                onChanged: (bool? value) => reportNotifier.toggleScreenshot(),
                 controlAffinity: ListTileControlAffinity.leading,
                 enabled: widget.imagePath != null,
               ),

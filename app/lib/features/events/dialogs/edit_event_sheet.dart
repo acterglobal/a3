@@ -45,25 +45,27 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
 
   // apply existing data to fields
   void _editEventData() async {
-    var calendarEvent =
-        await ref.read(calendarEventProvider(widget.calendarId!).future);
-    ref.read(_titleProvider.notifier).update((state) => calendarEvent.title());
+    var calendarEvent = await ref.read(
+      calendarEventProvider(widget.calendarId!).future,
+    );
+    var titleNotifier = ref.read(_titleProvider.notifier);
+    var dateNotifier = ref.read(_dateProvider.notifier);
+    var startTimeNotifier = ref.read(_startTimeProvider.notifier);
+    var endTimeNotifier = ref.read(_endTimeProvider.notifier);
+
+    titleNotifier.update((state) => calendarEvent.title());
     // parse RFC3393 date time
     var dartDateTime = toDartDatetime(calendarEvent.utcStart());
     var dartEndTime = toDartDatetime(calendarEvent.utcEnd());
-    ref.read(_dateProvider.notifier).update(
-          (state) => DateTime(
-            dartDateTime.year,
-            dartDateTime.month,
-            dartDateTime.day,
-          ),
-        );
-    ref
-        .read(_startTimeProvider.notifier)
-        .update((state) => TimeOfDay.fromDateTime(dartDateTime));
-    ref
-        .read(_endTimeProvider.notifier)
-        .update((state) => TimeOfDay.fromDateTime(dartEndTime));
+    dateNotifier.update(
+      (state) => DateTime(
+        dartDateTime.year,
+        dartDateTime.month,
+        dartDateTime.day,
+      ),
+    );
+    startTimeNotifier.update((state) => TimeOfDay.fromDateTime(dartDateTime));
+    endTimeNotifier.update((state) => TimeOfDay.fromDateTime(dartEndTime));
 
     _nameController.text = ref.read(_titleProvider);
     _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
@@ -387,7 +389,6 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
     );
     if (picked != null && context.mounted) {
       ref.read(_endTimeProvider.notifier).update((state) => picked);
-
       var time = ref.read(_endTimeProvider).format(context);
       _endTimeController.text = time;
     }

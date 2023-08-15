@@ -78,12 +78,13 @@ class PublicSearchState extends PagedState<Next?, PublicSearchResultItem> {
 final serverTypeAheadController =
     Provider.autoDispose<TextEditingController>((ref) {
   final controller = TextEditingController();
+  final typeNotifier = ref.read(serverTypeAheadProvider.notifier);
   controller.addListener(() {
-    ref.read(serverTypeAheadProvider.notifier).state = controller.text;
+    typeNotifier.state = controller.text;
   });
   ref.onDispose(() {
     controller.dispose();
-    ref.read(serverTypeAheadProvider.notifier).state = null;
+    typeNotifier.state = null;
   });
   return controller;
 });
@@ -294,6 +295,9 @@ class PublicSpaceSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final searchTextCtrl = ref.watch(searchController);
+    final searchValueNotifier = ref.read(searchValueProvider.notifier);
+    final selectedServer = ref.watch(selectedServerProvider);
+    final selectedServerNotifier = ref.read(selectedServerProvider.notifier);
     return CustomScrollView(
       slivers: [
         SliverAppBar(
@@ -317,8 +321,8 @@ class PublicSpaceSelector extends ConsumerWidget {
                       ),
                       labelText: 'search space',
                     ),
-                    onChanged: (String value) async {
-                      ref.read(searchValueProvider.notifier).state = value;
+                    onChanged: (String value) {
+                      searchValueNotifier.state = value;
                     },
                   ),
                 ),
@@ -348,14 +352,12 @@ class PublicSpaceSelector extends ConsumerWidget {
                       }
                       return DropdownMenu<String>(
                         controller: controller,
-                        initialSelection:
-                            ref.watch(selectedServerProvider.notifier).state,
+                        initialSelection: selectedServer,
                         label: const Text('Server'),
                         dropdownMenuEntries: menuItems,
                         onSelected: (String? typus) {
                           if (typus != null) {
-                            ref.read(selectedServerProvider.notifier).state =
-                                typus;
+                            selectedServerNotifier.state = typus;
                           }
                         },
                       );

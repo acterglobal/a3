@@ -48,6 +48,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   Widget build(BuildContext context) {
     final titleInput = ref.watch(titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
+    final parentNotifier = ref.read(parentSpaceProvider.notifier);
     final parentSelected = currentParentSpace != null;
     return SideSheet(
       header: parentSelected ? 'Create Subspace' : 'Create Space',
@@ -184,14 +185,12 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                         )
                       : null,
                   onTap: () async {
-                    var currentSpaceId = ref.read(parentSpaceProvider);
                     var newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
-                      currentSpaceId: currentSpaceId,
+                      currentSpaceId: ref.read(parentSpaceProvider),
                       title: const Text('Select parent space'),
                     );
-                    ref.read(parentSpaceProvider.notifier).state =
-                        newSelectedSpaceId;
+                    parentNotifier.state = newSelectedSpaceId;
                   },
                 )
               ],
@@ -257,8 +256,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
     if (result != null) {
       File file = File(result.files.single.path!);
-      String filepath = file.path;
-      ref.read(avatarProvider.notifier).update((state) => filepath);
+      ref.read(avatarProvider.notifier).update((state) => file.path);
     } else {
       // user cancelled the picker
     }

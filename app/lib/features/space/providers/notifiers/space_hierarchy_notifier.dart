@@ -121,9 +121,8 @@ class FilteredSpaceHierarchyNotifier
 
   FilteredSpaceHierarchyNotifier(this.ref, this.spaceRel, this.filter)
       : super(const SpaceHierarchyListState()) {
-    listener = ref
-        .read(fullSpaceHierarchyProvider(spaceRel).notifier)
-        .addListener((newState) {
+    var notifier = ref.read(fullSpaceHierarchyProvider(spaceRel).notifier);
+    listener = notifier.addListener((newState) {
       if (mounted) {
         state = newState.filtered(filter);
       }
@@ -132,8 +131,7 @@ class FilteredSpaceHierarchyNotifier
 
   @override
   Future<List<ffi.SpaceHierarchyRoomInfo>?> load(Next? page, int limit) async {
-    return await ref
-        .read(fullSpaceHierarchyProvider(spaceRel).notifier)
-        .load(page, limit);
+    var notifier = ref.read(fullSpaceHierarchyProvider(spaceRel).notifier);
+    return await notifier.load(page, limit);
   }
 }

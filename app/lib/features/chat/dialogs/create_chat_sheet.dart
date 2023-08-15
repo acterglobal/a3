@@ -45,8 +45,8 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
     if (widget.initialSelectedSpaceId != null) {
       isSpaceRoom = true;
       Future(() {
-        ref.read(parentSpaceProvider.notifier).state =
-            widget.initialSelectedSpaceId;
+        var notifier = ref.read(parentSpaceProvider.notifier);
+        notifier.state = widget.initialSelectedSpaceId;
       });
     }
   }
@@ -55,6 +55,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
+    final parentNotifier = ref.read(parentSpaceProvider.notifier);
     final avatarUpload = ref.watch(_avatarProvider);
     return SideSheet(
       header: 'Create Chat',
@@ -149,14 +150,12 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                       : null,
                   onTap: () async {
                     if (!isSpaceRoom) {
-                      var currentSpaceId = ref.read(parentSpaceProvider);
                       var newSelectedSpaceId = await selectSpaceDrawer(
                         context: context,
-                        currentSpaceId: currentSpaceId,
+                        currentSpaceId: ref.read(parentSpaceProvider),
                         title: const Text('Select space'),
                       );
-                      ref.read(parentSpaceProvider.notifier).state =
-                          newSelectedSpaceId;
+                      parentNotifier.state = newSelectedSpaceId;
                     } else {
                       return;
                     }

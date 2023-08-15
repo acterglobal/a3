@@ -23,11 +23,11 @@ class BugReportStateNotifier extends StateNotifier<BugReport> {
     state = state.copyWith(tags: tags);
   }
 
-  void toggleWithLog() {
+  void toggleLog() {
     state = state.copyWith(withLog: !state.withLog);
   }
 
-  void toggleWithScreenshot() {
+  void toggleScreenshot() {
     state = state.copyWith(withScreenshot: !state.withScreenshot);
   }
 

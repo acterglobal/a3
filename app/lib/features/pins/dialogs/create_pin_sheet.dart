@@ -42,8 +42,13 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(titleProvider);
+    final titleNotifier = ref.watch(titleProvider.notifier);
+    final textNotifier = ref.watch(textProvider.notifier);
     final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
+    final spaceNotifier = ref.watch(selectedSpaceIdProvider.notifier);
     final selectedSpace = currentSelectedSpace != null;
+    final typeNotifier = ref.read(selectedTypeProvider.notifier);
+    final linkNotifier = ref.read(linkProvider.notifier);
     return SideSheet(
       header: 'Create new Pin',
       addActions: true,
@@ -68,7 +73,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                       ],
                       onSelected: (String? typus) {
                         if (typus != null) {
-                          ref.read(selectedTypeProvider.notifier).state = typus;
+                          typeNotifier.state = typus;
                         }
                       },
                     ),
@@ -88,8 +93,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                           ),
                           controller: _titleController,
                           onChanged: (String? value) {
-                            ref.read(titleProvider.notifier).state =
-                                value ?? '';
+                            titleNotifier.state = value ?? '';
                           },
                           validator: (value) =>
                               (value != null && value.isNotEmpty)
@@ -124,7 +128,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                                 ? null
                                 : 'Please enter a text',
                         onChanged: (String? value) {
-                          ref.read(textProvider.notifier).state = value ?? '';
+                          textNotifier.state = value ?? '';
                         },
                       ),
                     );
@@ -142,7 +146,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                           ? null
                           : 'Please enter a link',
                       onChanged: (String? value) {
-                        ref.read(linkProvider.notifier).state = value ?? '';
+                        linkNotifier.state = value ?? '';
                       },
                     );
                   }
@@ -151,15 +155,13 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
               FormField(
                 builder: (state) => GestureDetector(
                   onTap: () async {
-                    var currentSpaceId = ref.read(selectedSpaceIdProvider);
                     var newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
-                      currentSpaceId: currentSpaceId,
+                      currentSpaceId: ref.read(selectedSpaceIdProvider),
                       canCheck: 'CanPostPin',
                       title: const Text('Select space'),
                     );
-                    ref.read(selectedSpaceIdProvider.notifier).state =
-                        newSelectedSpaceId;
+                    spaceNotifier.state = newSelectedSpaceId;
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,8 +248,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 }
                 var pinId = await pinDraft.send();
                 // reset providers
-                ref.read(titleProvider.notifier).state = '';
-                ref.read(textProvider.notifier).state = '';
+                titleNotifier.state = '';
+                textNotifier.state = '';
 
                 // We are doing as expected, but the lints triggers.
                 // ignore: use_build_context_synchronously

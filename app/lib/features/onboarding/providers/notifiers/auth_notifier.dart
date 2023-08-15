@@ -68,12 +68,14 @@ class AuthStateNotifier extends StateNotifier<bool> {
   Future<void> logout(BuildContext context) async {
     var sdk = await ref.read(sdkProvider.future);
     var stillHasClient = await sdk.logout();
+    var loggedInNotifier = ref.read(isLoggedInProvider.notifier);
+    var clientNotifier = ref.read(clientProvider.notifier);
     if (stillHasClient) {
       debugPrint('Still has clients, dropping back to other');
-      ref.read(isLoggedInProvider.notifier).update((state) => true);
+      loggedInNotifier.update((state) => true);
       ref.invalidate(clientProvider);
       ref.invalidate(spacesProvider);
-      ref.read(clientProvider.notifier).state = sdk.currentClient;
+      clientNotifier.state = sdk.currentClient;
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
       if (context.mounted) {
@@ -81,7 +83,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
       }
     } else {
       debugPrint('No clients left, redir to onboarding');
-      ref.read(isLoggedInProvider.notifier).update((state) => false);
+      loggedInNotifier.update((state) => false);
       ref.invalidate(clientProvider);
       ref.invalidate(spacesProvider);
 

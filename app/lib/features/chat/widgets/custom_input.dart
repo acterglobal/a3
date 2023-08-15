@@ -18,16 +18,14 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 class CustomChatInput extends ConsumerWidget {
-  const CustomChatInput({
-    Key? key,
-  }) : super(key: key);
+  const CustomChatInput({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userId = ref.watch(clientProvider)!.userId().toString();
-    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
+    final chatInputNotifier = ref.read(chatInputProvider.notifier);
     final chatInputState = ref.watch(chatInputProvider);
-    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
+    final chatRoomNotifier = ref.read(chatRoomProvider.notifier);
     final repliedToMessage =
         ref.watch(chatRoomProvider.notifier).repliedToMessage;
     final isAuthor = ref.watch(chatRoomProvider.notifier).isAuthor();
@@ -237,20 +235,21 @@ class CustomChatInput extends ConsumerWidget {
   }
 
   Future<void> onSendButtonPressed(WidgetRef ref) async {
-    var chatInputNotifier = ref.read(chatInputProvider.notifier);
-    chatInputNotifier.showSendBtn(false);
-    String markdownText =
-        ref.read(mentionKeyProvider).currentState!.controller!.text;
+    var inputNotifier = ref.read(chatInputProvider.notifier);
+    var roomNotifier = ref.read(chatRoomProvider.notifier);
+    var mentionState = ref.read(mentionKeyProvider).currentState!;
+    var markDownProvider = ref.read(messageMarkDownProvider);
+    var markDownNotifier = ref.read(messageMarkDownProvider.notifier);
+
+    inputNotifier.showSendBtn(false);
+    String markdownText = mentionState.controller!.text;
     int messageLength = markdownText.length;
-    ref.read(messageMarkDownProvider).forEach((key, value) {
+    markDownProvider.forEach((key, value) {
       markdownText = markdownText.replaceAll(key, value);
     });
-    await ref.read(chatRoomProvider.notifier).handleSendPressed(
-          markdownText,
-          messageLength,
-        );
-    ref.read(messageMarkDownProvider.notifier).update((state) => {});
-    ref.read(mentionKeyProvider).currentState!.controller!.clear();
+    await roomNotifier.handleSendPressed(markdownText, messageLength);
+    markDownNotifier.update((state) => {});
+    mentionState.controller!.clear();
   }
 }
 
@@ -264,28 +263,29 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   Future<void> onSendButtonPressed(WidgetRef ref) async {
-    var chatInputNotifier = ref.read(chatInputProvider.notifier);
-    chatInputNotifier.showSendBtn(false);
-    String markdownText =
-        ref.read(mentionKeyProvider).currentState!.controller!.text;
+    var inputNotifier = ref.read(chatInputProvider.notifier);
+    var mentionState = ref.read(mentionKeyProvider).currentState!;
+    var markDownProvider = ref.read(messageMarkDownProvider);
+    var markDownNotifier = ref.read(messageMarkDownProvider.notifier);
+    var roomNotifier = ref.read(chatRoomProvider.notifier);
+
+    inputNotifier.showSendBtn(false);
+    String markdownText = mentionState.controller!.text;
     int messageLength = markdownText.length;
-    ref.read(messageMarkDownProvider).forEach((key, value) {
+    markDownProvider.forEach((key, value) {
       markdownText = markdownText.replaceAll(key, value);
     });
-    await ref.read(chatRoomProvider.notifier).handleSendPressed(
-          markdownText,
-          messageLength,
-        );
-    ref.read(messageMarkDownProvider.notifier).update((state) => {});
-    ref.read(mentionKeyProvider).currentState!.controller!.clear();
+    await roomNotifier.handleSendPressed(markdownText, messageLength);
+    markDownNotifier.update((state) => {});
+    mentionState.controller!.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     final mentionList = ref.watch(mentionListProvider);
     final mentionKey = ref.watch(mentionKeyProvider);
-    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
-    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
+    final chatInputNotifier = ref.read(chatInputProvider.notifier);
+    final chatRoomNotifier = ref.read(chatRoomProvider.notifier);
     final chatInputState = ref.watch(chatInputProvider);
     return FlutterMentions(
       key: mentionKey,
@@ -515,10 +515,10 @@ class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
   }
 
   void handleBackspacePressed() {
-    var mentionKey = ref.watch(mentionKeyProvider);
-    mentionKey.currentState!.controller!.text =
-        mentionKey.currentState!.controller!.text.characters.skipLast(1).string;
-    if (mentionKey.currentState!.controller!.text.isEmpty) {
+    var mentionState = ref.watch(mentionKeyProvider).currentState!;
+    mentionState.controller!.text =
+        mentionState.controller!.text.characters.skipLast(1).string;
+    if (mentionState.controller!.text.isEmpty) {
       ref.read(chatInputProvider.notifier).showSendBtn(false);
     }
   }

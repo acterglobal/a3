@@ -30,6 +30,7 @@ class RoomPage extends ConsumerStatefulWidget {
 
 class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   void onAttach(BuildContext context) {
+    var roomNotifier = ref.read(chatRoomProvider.notifier);
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: context,
@@ -41,9 +42,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 GestureDetector(
-                  onTap: () => ref
-                      .read(chatRoomProvider.notifier)
-                      .handleImageSelection(context),
+                  onTap: () => roomNotifier.handleImageSelection(context),
                   child: Row(
                     children: <Widget>[
                       const Padding(
@@ -63,9 +62,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                 ),
                 const SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () => ref
-                      .read(chatRoomProvider.notifier)
-                      .handleFileSelection(context),
+                  onTap: () => roomNotifier.handleFileSelection(context),
                   child: Row(
                     children: <Widget>[
                       const Padding(
@@ -96,10 +93,10 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     required int messageWidth,
     required bool showName,
   }) {
+    final roomNotifier = ref.read(chatRoomProvider.notifier);
     return TextMessageBuilder(
       message: m,
-      onPreviewDataFetched:
-          ref.watch(chatRoomProvider.notifier).handlePreviewDataFetched,
+      onPreviewDataFetched: roomNotifier.handlePreviewDataFetched,
       messageWidth: messageWidth,
     );
   }
@@ -148,7 +145,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     final activeMembers = ref.watch(chatMembersProvider(convo.getRoomIdStr()));
     ref.listen(messagesProvider, (previous, next) {
       if (next.isNotEmpty) {
-        ref.watch(chatRoomProvider.notifier).isLoaded();
+        roomNotifier.isLoaded();
       }
     });
     return OrientationBuilder(

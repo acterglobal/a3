@@ -71,6 +71,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   // parses `RoomMessage` event to `types.Message` and updates messages list
   Future<void> _parseEvent(TimelineDiff timelineEvent) async {
     debugPrint('DiffRx: ${timelineEvent.action()}');
+    var messagesNotifier = ref.read(messagesProvider.notifier);
     switch (timelineEvent.action()) {
       case 'Append':
         List<RoomMessage> messages = timelineEvent.values()!.toList();
@@ -79,7 +80,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           if (message == null || message is types.UnsupportedMessage) {
             break;
           }
-          ref.read(messagesProvider.notifier).insertMessage(0, message);
+          messagesNotifier.insertMessage(0, message);
           if (message.metadata != null &&
               message.metadata!.containsKey('repliedTo')) {
             _fetchOriginalContent(
@@ -104,10 +105,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             .read(messagesProvider)
             .indexWhere((msg) => message.id == msg.id);
         if (index == -1) {
-          ref.read(messagesProvider.notifier).addMessage(message);
+          messagesNotifier.addMessage(message);
         } else {
           // update event may be fetched prior to insert event
-          ref.read(messagesProvider.notifier).replaceMessage(index, message);
+          messagesNotifier.replaceMessage(index, message);
         }
         if (message.metadata != null &&
             message.metadata!.containsKey('repliedTo')) {
@@ -125,9 +126,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         int index = timelineEvent.index()!;
         var messages = ref.read(messagesProvider);
         if (index < messages.length) {
-          ref
-              .read(messagesProvider.notifier)
-              .removeMessage(messages.length - 1 - index);
+          messagesNotifier.removeMessage(messages.length - 1 - index);
         }
         break;
       case 'PushBack':
@@ -136,7 +135,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (message == null || message is types.UnsupportedMessage) {
           break;
         }
-        ref.read(messagesProvider.notifier).insertMessage(0, message);
+        messagesNotifier.insertMessage(0, message);
         if (message.metadata != null &&
             message.metadata!.containsKey('repliedTo')) {
           _fetchOriginalContent(
@@ -155,7 +154,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (message == null || message is types.UnsupportedMessage) {
           break;
         }
-        ref.read(messagesProvider.notifier).addMessage(message);
+        messagesNotifier.addMessage(message);
         if (message.metadata != null &&
             message.metadata!.containsKey('repliedTo')) {
           _fetchOriginalContent(
@@ -171,19 +170,17 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'PopBack':
         var messages = ref.read(messagesProvider);
         if (messages.isNotEmpty) {
-          ref.read(messagesProvider.notifier).removeMessage(0);
+          messagesNotifier.removeMessage(0);
         }
         break;
       case 'PopFront':
         var messages = ref.read(messagesProvider);
         if (messages.isNotEmpty) {
-          ref
-              .read(messagesProvider.notifier)
-              .removeMessage(messages.length - 1);
+          messagesNotifier.removeMessage(messages.length - 1);
         }
         break;
       case 'Clear':
-        ref.read(messagesProvider.notifier).reset();
+        messagesNotifier.reset();
         break;
       case 'Reset':
         break;
@@ -778,12 +775,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       var updatedMessage = (messages[index] as types.TextMessage).copyWith(
         previewData: previewData,
       );
-
-      WidgetsBinding.instance.addPostFrameCallback(
-        (Duration duration) => ref
-            .read(messagesProvider.notifier)
-            .replaceMessage(index, updatedMessage),
-      );
+      var messagesNotifier = ref.read(messagesProvider.notifier);
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        messagesNotifier.replaceMessage(index, updatedMessage);
+      });
     }
   }
 
@@ -815,10 +810,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         repliedToMessage!.id,
         null,
       );
-      var chatInputState = ref.read(chatInputProvider.notifier);
       repliedToMessage = null;
-      chatInputState.toggleReplyView(false);
-      chatInputState.setReplyWidget(null);
+      var inputNotifier = ref.read(chatInputProvider.notifier);
+      inputNotifier.toggleReplyView(false);
+      inputNotifier.setReplyWidget(null);
     } else {
       await room.sendImageMessage(
         path,
@@ -869,10 +864,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         repliedToMessage!.id,
         null,
       );
-      var chatInputState = ref.read(chatInputProvider.notifier);
       repliedToMessage = null;
-      chatInputState.toggleReplyView(false);
-      chatInputState.setReplyWidget(null);
+      var inputNotifier = ref.read(chatInputProvider.notifier);
+      inputNotifier.toggleReplyView(false);
+      inputNotifier.setReplyWidget(null);
     } else {
       await room.sendFileMessage(
         path,
@@ -899,9 +894,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         null,
       );
       repliedToMessage = null;
-      var chatInputState = ref.read(chatInputProvider.notifier);
-      chatInputState.toggleReplyView(false);
-      chatInputState.setReplyWidget(null);
+      var inputNotifier = ref.read(chatInputProvider.notifier);
+      inputNotifier.toggleReplyView(false);
+      inputNotifier.setReplyWidget(null);
     } else {
       await room.sendFormattedMessage(markdownMessage);
     }
@@ -912,12 +907,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     BuildContext context,
     types.Message message,
   ) async {
+    var inputNotifier = ref.read(chatInputProvider.notifier);
+    var roomNotifier = ref.read(chatRoomProvider.notifier);
     if (ref.read(chatInputProvider).showReplyView) {
-      ref.read(chatInputProvider.notifier).toggleReplyView(false);
-      ref.read(chatInputProvider.notifier).setReplyWidget(null);
+      inputNotifier.toggleReplyView(false);
+      inputNotifier.setReplyWidget(null);
     }
-    ref.read(chatRoomProvider.notifier).currentMessageId = message.id;
-    ref.read(chatInputProvider.notifier).emojiRowVisible(true);
+    roomNotifier.currentMessageId = message.id;
+    inputNotifier.emojiRowVisible(true);
   }
 
   // send message event with image media

@@ -44,8 +44,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   void initState() {
     super.initState();
     Future(() {
-      ref.read(parentSpaceProvider.notifier).state =
-          widget.initialSelectedSpace;
+      var parentNotifier = ref.read(parentSpaceProvider.notifier);
+      parentNotifier.state = widget.initialSelectedSpace;
     });
   }
 

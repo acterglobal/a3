@@ -46,7 +46,10 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
   @override
   Widget build(BuildContext context) {
     final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
+    final spaceNotifier = ref.read(selectedSpaceIdProvider.notifier);
     final selectedSpace = currentSelectedSpace != null;
+    final imageNotifier = ref.read(selectedImageProvider.notifier);
+    final captionNotifier = ref.read(textProvider.notifier);
     return SideSheet(
       header: 'Create new Update',
       addActions: true,
@@ -66,9 +69,8 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                       return SizedBox(
                         height: 300,
                         child: InkWell(
-                          onTap: () async {
-                            ref.read(selectedImageProvider.notifier).state =
-                                null;
+                          onTap: () {
+                            imageNotifier.state = null;
                           },
                           child: Center(
                             child: Image(
@@ -83,11 +85,9 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                       height: 300,
                       child: InkWell(
                         onTap: () async {
-                          XFile? image = await picker.pickImage(
+                          imageNotifier.state = await picker.pickImage(
                             source: ImageSource.gallery,
                           );
-                          ref.read(selectedImageProvider.notifier).state =
-                              image;
                         },
                         child: const Center(
                           child: Text('select an image (optional)'),
@@ -101,25 +101,28 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 child: TextFormField(
                   textAlignVertical: TextAlignVertical.top,
                   decoration: InputDecoration(
-                    hintText:
-                        (ref.read(selectedImageProvider.notifier).state == null)
-                            ? 'The update you want to share'
-                            : 'Text caption',
-                    labelText:
-                        ref.read(selectedImageProvider.notifier).state == null
-                            ? 'Text Update'
-                            : 'Image Caption',
+                    hintText: imageNotifier.state == null
+                        ? 'The update you want to share'
+                        : 'Text caption',
+                    labelText: imageNotifier.state == null
+                        ? 'Text Update'
+                        : 'Image Caption',
                   ),
                   expands: true,
                   minLines: null,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
-                  validator: (value) => (value != null && value.isNotEmpty) ||
-                          ref.read(selectedImageProvider.notifier).state != null
-                      ? null
-                      : 'Please enter a text or add an image',
+                  validator: (value) {
+                    if (value != null && value.isNotEmpty) {
+                      return null;
+                    }
+                    if (imageNotifier.state != null) {
+                      return null;
+                    }
+                    return 'Please enter a text or add an image';
+                  },
                   onChanged: (String? value) {
-                    ref.read(textProvider.notifier).state = value ?? '';
+                    captionNotifier.state = value ?? '';
                   },
                 ),
               ),
@@ -151,15 +154,13 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                         )
                       : null,
                   onTap: () async {
-                    var currentSpaceId = ref.read(selectedSpaceIdProvider);
                     var newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
-                      currentSpaceId: currentSpaceId,
+                      currentSpaceId: ref.read(selectedSpaceIdProvider),
                       canCheck: 'CanPostNews',
                       title: const Text('Select space'),
                     );
-                    ref.read(selectedSpaceIdProvider.notifier).state =
-                        newSelectedSpaceId;
+                    spaceNotifier.state = newSelectedSpaceId;
                   },
                 ),
                 validator: (x) => (ref.read(selectedSpaceIdProvider) != null)
@@ -257,8 +258,8 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               try {
                 await draft.send();
                 // reset fields
-                ref.read(textProvider.notifier).state = '';
-                ref.read(selectedImageProvider.notifier).state = null;
+                captionNotifier.state = '';
+                imageNotifier.state = null;
                 // close both
 
                 // We are doing as expected, but the lints triggers.

@@ -76,15 +76,14 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
+    final authNotifier = ref.read(authStateProvider.notifier);
     return Scaffold(
       primary: false,
       appBar: AppBar(
         actions: [
           if (canGuestLogin)
             OutlinedButton(
-              onPressed: () async {
-                await ref.read(authStateProvider.notifier).makeGuest(context);
-              },
+              onPressed: () async => await authNotifier.makeGuest(context),
               child: const Text('Continue as guest'),
             ),
         ],

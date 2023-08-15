@@ -28,6 +28,7 @@ class Dashboard extends ConsumerStatefulWidget {
 
 class _DashboardState extends ConsumerState<Dashboard> {
   Function? firstSyncListener;
+
   @override
   void initState() {
     super.initState();

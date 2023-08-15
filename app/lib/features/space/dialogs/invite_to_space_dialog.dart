@@ -193,6 +193,7 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
     final suggestedUsers =
         ref.watch(filteredSuggestedUsersProvider(spaceId)).valueOrNull;
     final foundUsers = ref.watch(searchResultProvider);
+    final searchValueNotifier = ref.read(searchValueProvider.notifier);
     final children = [];
 
     bool isInvited(String userId) {
@@ -343,8 +344,8 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
                         ),
                         labelText: 'search user',
                       ),
-                      onChanged: (String value) async {
-                        ref.read(searchValueProvider.notifier).state = value;
+                      onChanged: (String value) {
+                        searchValueNotifier.state = value;
                       },
                     ),
                   ),
