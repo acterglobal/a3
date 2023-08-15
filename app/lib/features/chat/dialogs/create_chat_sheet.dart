@@ -21,11 +21,10 @@ import 'package:go_router/go_router.dart';
 final _titleProvider = StateProvider<String>((ref) => '');
 // upload avatar path
 final _avatarProvider = StateProvider.autoDispose<String>((ref) => '');
-// final _roomVisibilityProvider =
-//     StateProvider<RoomVisibility>((ref) => RoomVisibility.Private);
 
 class CreateChatSheet extends ConsumerStatefulWidget {
   final String? initialSelectedSpaceId;
+
   const CreateChatSheet({super.key, this.initialSelectedSpaceId});
 
   @override
@@ -58,14 +57,14 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
     final currentParentSpace = ref.watch(parentSpaceProvider);
     final avatarUpload = ref.watch(_avatarProvider);
     return SideSheet(
-      header: 'Create Chat Room',
+      header: 'Create Chat',
       addActions: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text('Create a new group chat'),
+            const Text('Create a chat'),
             const SizedBox(height: 15),
             Row(
               children: <Widget>[
@@ -104,10 +103,10 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                     children: <Widget>[
                       const Padding(
                         padding: EdgeInsets.only(bottom: 5),
-                        child: Text('Group Name'),
+                        child: Text('Chat Name'),
                       ),
                       InputTextField(
-                        hintText: 'Type Group Name',
+                        hintText: 'Type Chat Name',
                         textInputType: TextInputType.multiline,
                         controller: _titleController,
                         onInputChanged: _handleTitleChange,
@@ -150,8 +149,8 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                       : null,
                   onTap: () async {
                     if (!isSpaceRoom) {
-                      final currentSpaceId = ref.read(parentSpaceProvider);
-                      final newSelectedSpaceId = await selectSpaceDrawer(
+                      var currentSpaceId = ref.read(parentSpaceProvider);
+                      var newSelectedSpaceId = await selectSpaceDrawer(
                         context: context,
                         currentSpaceId: currentSpaceId,
                         title: const Text('Select space'),
@@ -220,7 +219,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
-          child: const Text('Create Room'),
+          child: const Text('Create Chat'),
         ),
       ],
     );
@@ -264,14 +263,14 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
       if (parentId != null) {
         config.setParent(parentId);
       }
-      final client = ref.read(clientProvider)!;
-      final roomId = await client.createConvo(config.build());
+      var client = ref.read(clientProvider)!;
+      var roomId = await client.createConvo(config.build());
       // add room to child of space (if given)
       if (parentId != null) {
         var space = await ref.read(spaceProvider(parentId).future);
         await space.addChildSpace(roomId.toString());
       }
-      final convo = await client.convo(roomId.toString());
+      var convo = await client.convo(roomId.toString());
       // We are doing as expected, but the lint still triggers.
       // ignore: use_build_context_synchronously
       if (!context.mounted) {

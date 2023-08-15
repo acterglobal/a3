@@ -1,4 +1,4 @@
-use matrix_sdk::Session;
+use matrix_sdk::ruma::{OwnedDeviceId, OwnedUserId};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -10,5 +10,15 @@ pub struct RestoreToken {
     /// Server homebase url
     pub homeurl: Url,
     /// Session to hand to client
-    pub session: Session,
+    pub session: CustomAuthSession,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct CustomAuthSession {
+    /// user id for login
+    pub user_id: OwnedUserId,
+    /// device id for login
+    pub device_id: OwnedDeviceId,
+    /// access token for login
+    pub access_token: String,
 }

@@ -5,11 +5,12 @@ use acter::{
 };
 use acter_core::templates::Engine;
 use anyhow::Result;
-use futures::{pin_mut, StreamExt};
+use futures::{pin_mut, stream::StreamExt};
 use tracing::trace;
+use uuid::Uuid;
 
 pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, OwnedRoomId)> {
-    let uuid = uuid::Uuid::new_v4().to_string();
+    let uuid = Uuid::new_v4().to_string();
     let user = ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
@@ -42,7 +43,7 @@ pub async fn random_user_with_template(
     prefix: &str,
     template: &str,
 ) -> Result<(Client, SyncState, Engine)> {
-    let uuid = uuid::Uuid::new_v4().to_string();
+    let uuid = Uuid::new_v4().to_string();
     let mut user = ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")

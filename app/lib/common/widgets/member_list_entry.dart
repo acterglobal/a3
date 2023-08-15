@@ -38,15 +38,21 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
   }
 
   void _updateMembershipStatus(String? value) {
-    setState(() {
-      currentMemberStatus = value;
-    });
+    if (mounted) {
+      setState(() => currentMemberStatus = value);
+    }
   }
 
   void _newCustomLevel(String? value) {
-    setState(() {
-      customValue = value != null ? int.tryParse(value) : null;
-    });
+    if (mounted) {
+      setState(() {
+        if (value != null) {
+          customValue = int.tryParse(value);
+        } else {
+          customValue = null;
+        }
+      });
+    }
   }
 
   @override
@@ -164,13 +170,15 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
 
 class MemberListEntry extends ConsumerWidget {
   final Member member;
-  final Space space;
+  final Space? space;
+  final Convo? convo;
   final Member? myMembership;
 
   const MemberListEntry({
     super.key,
     required this.member,
-    required this.space,
+    this.space,
+    this.convo,
     this.myMembership,
   });
 
@@ -196,7 +204,9 @@ class MemberListEntry extends ConsumerWidget {
         ),
         isLoader: true,
       );
-      await space.updatePowerLevel(userId, newPowerlevel);
+      space != null
+          ? convo?.updatePowerLevel(userId, newPowerlevel)
+          : space?.updatePowerLevel(userId, newPowerlevel);
 
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
@@ -290,8 +300,8 @@ class MemberListEntry extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(memberProfileProvider(member));
     final userId = member.userId().toString();
+    final profile = ref.watch(memberProfileProvider(userId));
     final memberStatus = member.membershipStatusStr();
     final List<Widget> trailing = [];
     debugPrint(memberStatus);
@@ -326,7 +336,7 @@ class MemberListEntry extends ConsumerWidget {
           data: (data) => ActerAvatar(
             mode: DisplayMode.User,
             uniqueId: member.userId().toString(),
-            size: 18,
+            size: data.hasAvatar() ? 18 : 36,
             avatar: data.getAvatarImage(),
             displayName: data.displayName,
           ),

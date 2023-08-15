@@ -1,26 +1,28 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/models/joined_room/joined_room.dart';
-// import 'package:acter/features/chat/providers/chat_providers.dart';
-// import 'package:acter/features/chat/providers/notifiers/receipt_notifier.dart';
+import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class ConvoCard extends ConsumerStatefulWidget {
-  final JoinedRoom room;
+  final Convo room;
+
+  /// Whether or not to render the parent Icon
+  ///
+  final bool showParent;
 
   const ConvoCard({
     Key? key,
     required this.room,
+    this.showParent = true,
   }) : super(key: key);
 
   @override
@@ -28,7 +30,6 @@ class ConvoCard extends ConsumerStatefulWidget {
 }
 
 class _ConvoCardState extends ConsumerState<ConvoCard> {
-  // final ReceiptController recieptController = Get.find<ReceiptController>();
   List<Member> activeMembers = [];
 
   @override
@@ -40,99 +41,67 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
   @override
   Widget build(BuildContext context) {
     final client = ref.watch(clientProvider);
-    String roomId = widget.room.id;
-    final convoProfile = ref.watch(chatProfileDataProvider(widget.room.convo));
+    String roomId = widget.room.getRoomIdStr();
+    final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
     // ToDo: UnreadCounter
     return convoProfile.when(
-      data: (profile) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              onTap: () => context.goNamed(
-                Routes.chatroom.name,
-                pathParameters: {'roomId': roomId},
-                extra: widget.room.convo,
-              ),
-              leading: profile.hasAvatar()
-                  ? ActerAvatar(
-                      uniqueId: roomId,
-                      mode: DisplayMode.GroupChat,
-                      displayName: profile.displayName ?? roomId,
-                      avatar: profile.getAvatarImage(),
-                      size: 36,
-                    )
-                  : Container(
-                      height: 36,
-                      width: 36,
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onSecondary,
-                        borderRadius: BorderRadius.circular(6),
-                        shape: BoxShape.rectangle,
-                      ),
-                      child: SvgPicture.asset(
-                        'assets/icon/acter.svg',
-                      ),
-                    ),
-              title: Text(
-                profile.displayName ?? roomId,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.w700),
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: _SubtitleWidget(
-                typingUsers: widget.room.typingUsers,
-                latestMessage: widget.room.latestMessage,
-              ),
-              trailing: _TrailingWidget(
-                // controller: recieptController,
-                room: widget.room.convo,
-                latestMessage: widget.room.latestMessage,
-                activeMembers: activeMembers,
-                userId: client!.userId().toString(),
-              ),
-            ),
-            Divider(
-              indent: 75,
-              endIndent: 10,
-              color: Theme.of(context).colorScheme.tertiary,
-            ),
-          ],
-        );
-      },
+      data: (profile) => ConvoWithProfileCard(
+        roomId: roomId,
+        showParent: widget.showParent,
+        profile: profile,
+        onTap: () {
+          ref
+              .read(currentConvoProvider.notifier)
+              .update((state) => widget.room);
+          context.pushNamed(
+            Routes.chatroom.name,
+            pathParameters: {'roomId': roomId},
+          );
+        },
+        subtitle: _SubtitleWidget(
+          room: widget.room,
+          latestMessage: widget.room.latestMessage(),
+        ),
+        trailing: _TrailingWidget(
+          // controller: receiptController,
+          room: widget.room,
+          latestMessage: widget.room.latestMessage(),
+          activeMembers: activeMembers,
+          userId: client!.userId().toString(),
+        ),
+      ),
       error: (error, stackTrace) => const Text('Failed to load Conversation'),
       loading: () => const CircularProgressIndicator(),
     );
   }
 
   Future<void> getActiveMembers() async {
-    activeMembers = (await widget.room.convo.activeMembers()).toList();
+    activeMembers = (await widget.room.activeMembers()).toList();
   }
 }
 
 class _SubtitleWidget extends ConsumerWidget {
-  final List<types.User> typingUsers;
-  final RoomMessage? latestMessage;
-
   const _SubtitleWidget({
-    required this.typingUsers,
+    required this.room,
     required this.latestMessage,
   });
+  final Convo room;
+  final RoomMessage? latestMessage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (typingUsers.isNotEmpty) {
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        child: Text(
-          getUserPlural(typingUsers),
-          style: Theme.of(context).textTheme.labelLarge,
-        ),
-      );
+    final typingEvent = ref.watch(typingProvider);
+    if (typingEvent.isNotEmpty) {
+      debugPrint('$typingEvent');
+      if (typingEvent['roomId'] == room.getRoomIdStr()) {
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            getUserPlural(typingEvent['typingUsers']),
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+        );
+      }
     }
     if (latestMessage == null) {
       return const SizedBox.shrink();
@@ -406,22 +375,8 @@ class _TrailingWidget extends ConsumerWidget {
     if (eventItem == null) {
       return const SizedBox.shrink();
     }
-    // String senderID = '';
-    // types.Status? messageStatus;
+
     int ts = eventItem.originServerTs();
-
-    // List<String> seenByList = ref.read(receiptProvider.notifier).getSeenByList(
-    //       room.getRoomId(),
-    //       ts,
-    //     );
-
-    // senderID = latestMessage!.eventItem()!.sender();
-
-    // messageStatus = seenByList.isEmpty
-    //     ? types.Status.sent
-    //     : seenByList.length < activeMembers.length
-    //         ? types.Status.delivered
-    //         : types.Status.seen;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -431,41 +386,7 @@ class _TrailingWidget extends ConsumerWidget {
           ),
           style: Theme.of(context).textTheme.labelMedium,
         ),
-        // senderID == userId
-        //     ? _CustomStatusWidget(status: messageStatus)
-        //     : const SizedBox.shrink(),
       ],
     );
   }
 }
-
-// class _CustomStatusWidget extends StatelessWidget {
-//   final types.Status status;
-
-//   const _CustomStatusWidget({
-//     required this.status,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     if (status == types.Status.delivered) {
-//       return SvgPicture.asset('assets/images/deliveredIcon.svg');
-//     } else if (status == types.Status.seen) {
-//       return SvgPicture.asset('assets/images/seenIcon.svg');
-//     } else if (status == types.Status.sending) {
-//       return const Center(
-//         child: SizedBox(
-//           height: 10,
-//           width: 10,
-//           child: CircularProgressIndicator(strokeWidth: 1.5),
-//         ),
-//       );
-//     } else {
-//       return SvgPicture.asset(
-//         'assets/images/sentIcon.svg',
-//         width: 12,
-//         height: 12,
-//       );
-//     }
-//   }
-// }

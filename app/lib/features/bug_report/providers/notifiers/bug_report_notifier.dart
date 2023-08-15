@@ -37,7 +37,7 @@ class BugReportStateNotifier extends StateNotifier<BugReport> {
 
   Future<String> report(String? screenshotPath) async {
     ref.read(loadingProvider.notifier).update((state) => !state);
-    final sdk = await ActerSdk.instance;
+    var sdk = await ActerSdk.instance;
     String logFile = sdk.rotateLogFile();
 
     var request = http.MultipartRequest('POST', Uri.parse(rageshakeUrl));
@@ -76,7 +76,7 @@ class BugReportStateNotifier extends StateNotifier<BugReport> {
       // example - https://github.com/bitfriend/acter-bugs/issues/9
       return json['report_url'];
     } else {
-      final String body = await resp.stream.bytesToString();
+      String body = await resp.stream.bytesToString();
       throw '${resp.statusCode}: $body';
     }
   }

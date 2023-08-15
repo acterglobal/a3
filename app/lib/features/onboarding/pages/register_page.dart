@@ -58,8 +58,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       if (!inCI && network == NetworkStatus.Off) {
         showNoInternetNotification();
       } else {
-        final notifier = ref.read(authStateProvider.notifier);
-        final errorMsg = await notifier.register(
+        var notifier = ref.read(authStateProvider.notifier);
+        var errorMsg = await notifier.register(
           username.text,
           password.text,
           name.text,
@@ -145,7 +145,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         if (val == null || val.trim().isEmpty) {
                           return AppLocalizations.of(context)!.emptyUsername;
                         }
-                        final cleanedVal = val.trim().toLowerCase();
+                        var cleanedVal = val.trim().toLowerCase();
                         if (!usernamePattern.hasMatch(cleanedVal)) {
                           return 'Username may only contain letters a-z, numbers and any of  ._=-/';
                         }

@@ -34,12 +34,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Future<void> handleSubmit(BuildContext context) async {
     if (formKey.currentState!.validate()) {
-      final network = ref.read(networkAwareProvider);
+      var network = ref.read(networkAwareProvider);
       if (!inCI && network == NetworkStatus.Off) {
         showNoInternetNotification();
       } else {
-        final notifier = ref.read(authStateProvider.notifier);
-        final loginSuccess = await notifier.login(
+        var notifier = ref.read(authStateProvider.notifier);
+        var loginSuccess = await notifier.login(
           username.text,
           password.text,
         );

@@ -10,6 +10,7 @@ use crate::{
         CommentBuilder, CommentEventContent, CommentUpdateBuilder, CommentUpdateEventContent,
     },
     store::Store,
+    Result,
 };
 
 static COMMENTS_FIELD: &str = "comments";
@@ -47,7 +48,7 @@ impl CommentsManager {
         }
     }
 
-    pub async fn comments(&self) -> crate::Result<Vec<Comment>> {
+    pub async fn comments(&self) -> Result<Vec<Comment>> {
         let comments = self
             .store
             .get_list(&Comment::index_for(&self.event_id))
@@ -60,7 +61,7 @@ impl CommentsManager {
         Ok(comments)
     }
 
-    pub(crate) async fn add_comment(&mut self, _comment: &Comment) -> crate::Result<bool> {
+    pub(crate) async fn add_comment(&mut self, _comment: &Comment) -> Result<bool> {
         self.stats.has_comments = true;
         self.stats.total_comments_count += 1;
         Ok(true)
@@ -80,7 +81,7 @@ impl CommentsManager {
         Self::stats_field_for(&self.event_id)
     }
 
-    pub async fn save(&self) -> crate::Result<String> {
+    pub async fn save(&self) -> Result<String> {
         let update_key = self.update_key();
         self.store.set_raw(&update_key, &self.stats).await?;
         Ok(update_key)
@@ -144,7 +145,7 @@ impl super::ActerModel for Comment {
         &[super::Capability::Commentable]
     }
 
-    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
         let belongs_to = self.belongs_to().unwrap();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying comment");
 
@@ -189,7 +190,7 @@ impl super::ActerModel for Comment {
         Some(references)
     }
 
-    fn transition(&mut self, model: &super::AnyActerModel) -> crate::Result<bool> {
+    fn transition(&mut self, model: &super::AnyActerModel) -> Result<bool> {
         let AnyActerModel::CommentUpdate(update) = model else {
             return Ok(false)
         };
@@ -239,7 +240,7 @@ impl super::ActerModel for CommentUpdate {
         Some(vec![self.inner.comment.event_id.to_string()])
     }
 
-    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &super::Store) -> Result<Vec<String>> {
         super::default_model_execute(store, self.into()).await
     }
 }

@@ -1,6 +1,6 @@
 use anyhow::{bail, Result};
 use clap::Parser;
-use futures::StreamExt;
+use futures::stream::StreamExt;
 use matrix_sdk::{
     room::{Messages, MessagesOptions},
     ruma::OwnedRoomId,

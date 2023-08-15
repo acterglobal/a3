@@ -4,7 +4,7 @@ use matrix_sdk::ruma::{
         message::{AudioInfo, FileInfo, VideoInfo},
         ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
     },
-    OwnedUserId,
+    MilliSecondsSinceUnixEpoch, OwnedUserId,
 };
 
 use super::api::FfiBuffer;
@@ -13,13 +13,13 @@ pub fn duration_from_secs(secs: u64) -> Duration {
     Duration::from_secs(secs)
 }
 
-pub struct OptionText {
+pub struct OptionString {
     text: Option<String>,
 }
 
-impl OptionText {
+impl OptionString {
     pub(crate) fn new(text: Option<String>) -> Self {
-        OptionText { text }
+        OptionString { text }
     }
 
     pub fn text(&self) -> Option<String> {
@@ -381,21 +381,24 @@ impl FileDesc {
 }
 
 #[derive(Clone, Debug)]
-pub struct ReactionDesc {
-    count: u32,
-    senders: Vec<OwnedUserId>,
+pub struct ReactionRecord {
+    sender_id: OwnedUserId,
+    timestamp: MilliSecondsSinceUnixEpoch,
 }
 
-impl ReactionDesc {
-    pub(crate) fn new(count: u32, senders: Vec<OwnedUserId>) -> Self {
-        ReactionDesc { count, senders }
+impl ReactionRecord {
+    pub(crate) fn new(sender_id: OwnedUserId, timestamp: MilliSecondsSinceUnixEpoch) -> Self {
+        ReactionRecord {
+            sender_id,
+            timestamp,
+        }
     }
 
-    pub fn count(&self) -> u32 {
-        self.count
+    pub fn sender_id(&self) -> OwnedUserId {
+        self.sender_id.clone()
     }
 
-    pub fn senders(&self) -> Vec<String> {
-        self.senders.iter().map(|x| x.to_string()).collect()
+    pub fn timestamp(&self) -> u64 {
+        self.timestamp.get().into()
     }
 }

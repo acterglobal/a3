@@ -237,8 +237,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                           )
                         : null,
                     onTap: () async {
-                      final currentSpaceId = ref.read(parentSpaceProvider);
-                      final newSelectedSpaceId = await selectSpaceDrawer(
+                      var currentSpaceId = ref.read(parentSpaceProvider);
+                      var newSelectedSpaceId = await selectSpaceDrawer(
                         context: context,
                         currentSpaceId: currentSpaceId,
                         title: const Text('Select parent space'),
@@ -312,18 +312,18 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       _endTimeController.text = time;
     }
     try {
-      final space = await ref.read(
+      var space = await ref.read(
         spaceProvider(widget.initialSelectedSpace!).future,
       );
-      final draft = space.calendarEventDraft();
+      var draft = space.calendarEventDraft();
 
       draft.title(ref.read(_titleProvider));
       draft.descriptionText(_descriptionController.text.trim());
 
       // convert selected date time to utc and RFC3339 format
-      final date = ref.read(_dateProvider);
-      final startTime = ref.read(_startTimeProvider);
-      final utcStartDateTime = DateTime(
+      var date = ref.read(_dateProvider);
+      var startTime = ref.read(_startTimeProvider);
+      var utcStartDateTime = DateTime(
         date.year,
         date.month,
         date.day,
@@ -332,8 +332,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       ).toUtc();
       draft.utcStartFromRfc3339(utcStartDateTime.toIso8601String());
 
-      final endTime = ref.read(_endTimeProvider);
-      final utcEndDateTime = DateTime(
+      var endTime = ref.read(_endTimeProvider);
+      var utcEndDateTime = DateTime(
         date.year,
         date.month,
         date.day,
@@ -342,7 +342,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       ).toUtc();
       draft.utcEndFromRfc3339(utcEndDateTime.toIso8601String());
 
-      final eventId = await draft.send();
+      var eventId = await draft.send();
       debugPrint('Created Calendar Event: ${eventId.toString()}');
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
@@ -362,7 +362,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   }
 
   Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
+    DateTime? picked = await showDatePicker(
       context: context,
       initialDate: ref.read(_dateProvider),
       initialDatePickerMode: DatePickerMode.day,
@@ -376,7 +376,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   }
 
   Future<void> _selectStartTime() async {
-    final TimeOfDay? picked = await showTimePicker(
+    TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_startTimeProvider),
     );
@@ -394,7 +394,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   }
 
   Future<void> _selectEndTime() async {
-    final TimeOfDay? picked = await showTimePicker(
+    TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_endTimeProvider),
     );

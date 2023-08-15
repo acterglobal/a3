@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use futures::{
     channel::mpsc::{channel, Receiver, Sender},
-    StreamExt,
+    stream::StreamExt,
 };
 use matrix_sdk::{
     config::SyncSettings,

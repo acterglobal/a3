@@ -1,0 +1,39 @@
+name: Publish Release
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+    inputs:
+      new_tag:
+        description: 'Provide the tag name for this release'
+        required: true
+        type: string
+      prev_tag:
+        description: 'The tag to compare the changelog to'
+        type: string
+
+  # schedule:
+  #  - cron: 0 3 * * *
+
+jobs:
+  run_checker:
+    runs-on: ubuntu-latest
+    name: Check latest commit
+    outputs:
+      should_run: ${{ steps.check-new-commits.outputs.has-new-commits }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # fetch all history and tags
+      - name: Check for new commits since last release
+        id: check-new-commits
+        shell: bash
+        run: |
+          if [ `git diff --name-only release-latest app native .changes | wc -l` -ne 0 ]; then
+            echo "has-new-commits=true"  >> $GITHUB_OUTPUT ;
+          else
+            echo "has-new-commits=false" >> $GITHUB_OUTPUT ;
+          fi

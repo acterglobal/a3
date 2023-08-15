@@ -41,8 +41,8 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // apply existing data to fields
   void _editSpaceData() async {
-    final space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
-    final profileData = await ref.read(spaceProfileDataProvider(space).future);
+    var space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
+    var profileData = await ref.read(spaceProfileDataProvider(space).future);
 
     ref
         .read(editTitleProvider.notifier)
@@ -270,7 +270,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
               );
               return;
             }
-            final roomId = await _handleUpdateSpace(context);
+            var roomId = await _handleUpdateSpace(context);
             debugPrint('Space Updated: $roomId');
             // We are doing as expected, but the lints triggers.
             // ignore: use_build_context_synchronously

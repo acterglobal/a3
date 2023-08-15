@@ -7,9 +7,10 @@ use anyhow::Result;
 use app_dirs2::{app_root, AppDataType, AppInfo};
 use clap::Parser;
 use config::ActerTuiConfig;
-use futures::{future::Either, pin_mut, StreamExt};
-use std::sync::mpsc::channel;
+use futures::{future::Either, pin_mut, stream::StreamExt};
+use std::{path::PathBuf, sync::mpsc::channel};
 use tracing::{error, info, warn};
+use tui_logger::Drain;
 use ui::AppUpdate;
 
 const APP_INFO: AppInfo = AppInfo {
@@ -22,7 +23,7 @@ async fn main() -> Result<()> {
     let cli = ActerTuiConfig::parse();
 
     // Set max_log_level to Trace
-    let drain = tui_logger::Drain::new();
+    let drain = Drain::new();
     // instead of tui_logger::init_logger, we use `env_logger`
     env_logger::Builder::default()
         .parse_filters(&cli.log)
@@ -36,7 +37,7 @@ async fn main() -> Result<()> {
 
     let (sender, rx) = channel::<AppUpdate>();
     let app_dir = if cli.local {
-        std::path::PathBuf::new().join(".local")
+        PathBuf::new().join(".local")
     } else {
         app_root(AppDataType::UserData, &APP_INFO)?
     };

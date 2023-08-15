@@ -83,7 +83,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                       height: 300,
                       child: InkWell(
                         onTap: () async {
-                          final XFile? image = await picker.pickImage(
+                          XFile? image = await picker.pickImage(
                             source: ImageSource.gallery,
                           );
                           ref.read(selectedImageProvider.notifier).state =
@@ -151,8 +151,8 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                         )
                       : null,
                   onTap: () async {
-                    final currentSpaceId = ref.read(selectedSpaceIdProvider);
-                    final newSelectedSpaceId = await selectSpaceDrawer(
+                    var currentSpaceId = ref.read(selectedSpaceIdProvider);
+                    var newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
                       currentSpaceId: currentSpaceId,
                       canCheck: 'CanPostNews',
@@ -188,9 +188,9 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
         ElevatedButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
-              final spaceId = ref.read(selectedSpaceIdProvider);
-              final file = ref.read(selectedImageProvider);
-              final caption = ref.read(textProvider);
+              var spaceId = ref.read(selectedSpaceIdProvider);
+              var file = ref.read(selectedImageProvider);
+              var caption = ref.read(textProvider);
               late String displayMsg;
 
               if (file == null) {

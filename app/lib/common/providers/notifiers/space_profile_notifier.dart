@@ -15,7 +15,7 @@ class AsyncSpaceProfileDataNotifier
   Future<ProfileData> _getSpaceProfileData() async {
     final space = arg;
     final profile = space.getProfile();
-    OptionText displayName = await profile.getDisplayName();
+    OptionString displayName = await profile.getDisplayName();
     final avatar = await profile.getAvatar();
     return ProfileData(displayName.text(), avatar.data());
   }
@@ -46,40 +46,6 @@ class AsyncSpaceProfileDataNotifier
   }
 }
 
-class AsyncSpaceNotifier extends FamilyAsyncNotifier<Space, String> {
-  late Stream<bool> _listener;
-  late StreamSubscription<bool> _sub;
-  Future<Space> _getSpace() async {
-    final client = ref.watch(clientProvider)!;
-    return await client.getSpace(arg); // this might throw internally
-  }
-
-  @override
-  Future<Space> build(String arg) async {
-    final client = ref.watch(clientProvider)!;
-    ref.onDispose(onDispose);
-    _listener = client.subscribeStream(arg);
-    _sub = _listener.listen(
-      (e) async {
-        debugPrint('Received space update $arg');
-        state = await AsyncValue.guard(() => _getSpace());
-      },
-      onError: (e, stack) {
-        debugPrint('stream errored: $e : $stack');
-      },
-      onDone: () {
-        debugPrint('stream ended');
-      },
-    );
-    return _getSpace();
-  }
-
-  void onDispose() {
-    debugPrint('disposing profile not for $arg');
-    _sub.cancel();
-  }
-}
-
 class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _sub;
@@ -88,7 +54,6 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
     try {
       return await client.getSpace(arg);
     } catch (e) {
-      // we sneakly suggest that means we don't have access.
       return null;
     }
   }

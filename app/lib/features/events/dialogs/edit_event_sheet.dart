@@ -45,12 +45,12 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
 
   // apply existing data to fields
   void _editEventData() async {
-    final calendarEvent =
+    var calendarEvent =
         await ref.read(calendarEventProvider(widget.calendarId!).future);
     ref.read(_titleProvider.notifier).update((state) => calendarEvent.title());
     // parse RFC3393 date time
-    final dartDateTime = toDartDatetime(calendarEvent.utcStart());
-    final dartEndTime = toDartDatetime(calendarEvent.utcEnd());
+    var dartDateTime = toDartDatetime(calendarEvent.utcStart());
+    var dartEndTime = toDartDatetime(calendarEvent.utcEnd());
     ref.read(_dateProvider.notifier).update(
           (state) => DateTime(
             dartDateTime.year,
@@ -301,17 +301,17 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
       ),
       isLoader: true,
     );
-    final calendarEvent =
+    var calendarEvent =
         await ref.read(calendarEventProvider(widget.calendarId!).future);
     try {
       // initialize event update builder
-      final eventUpdateBuilder = calendarEvent.updateBuilder();
+      var eventUpdateBuilder = calendarEvent.updateBuilder();
 
       eventUpdateBuilder.title(ref.read(_titleProvider));
 
-      final date = ref.read(_dateProvider);
-      final startTime = ref.read(_startTimeProvider);
-      final utcStartDateTime = DateTime(
+      var date = ref.read(_dateProvider);
+      var startTime = ref.read(_startTimeProvider);
+      var utcStartDateTime = DateTime(
         date.year,
         date.month,
         date.day,
@@ -321,8 +321,8 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
       eventUpdateBuilder
           .utcStartFromRfc3339(utcStartDateTime.toIso8601String());
 
-      final endTime = ref.read(_endTimeProvider);
-      final utcEndDateTime = DateTime(
+      var endTime = ref.read(_endTimeProvider);
+      var utcEndDateTime = DateTime(
         date.year,
         date.month,
         date.day,
@@ -333,7 +333,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
 
       eventUpdateBuilder.descriptionText(_descriptionController.text.trim());
 
-      final eventId = await eventUpdateBuilder.send();
+      var eventId = await eventUpdateBuilder.send();
       debugPrint('Updated Calendar Event: ${eventId.toString()}');
 
       // We are doing as expected, but the lints triggers.
@@ -355,7 +355,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
   }
 
   Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
+    DateTime? picked = await showDatePicker(
       context: context,
       initialDate: ref.read(_dateProvider),
       initialDatePickerMode: DatePickerMode.day,
@@ -369,7 +369,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
   }
 
   Future<void> _selectStartTime() async {
-    final TimeOfDay? picked = await showTimePicker(
+    TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_startTimeProvider),
     );
@@ -381,7 +381,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
   }
 
   Future<void> _selectEndTime() async {
-    final TimeOfDay? picked = await showTimePicker(
+    TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_endTimeProvider),
     );

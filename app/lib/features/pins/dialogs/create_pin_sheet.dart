@@ -151,8 +151,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
               FormField(
                 builder: (state) => GestureDetector(
                   onTap: () async {
-                    final currentSpaceId = ref.read(selectedSpaceIdProvider);
-                    final newSelectedSpaceId = await selectSpaceDrawer(
+                    var currentSpaceId = ref.read(selectedSpaceIdProvider);
+                    var newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
                       currentSpaceId: currentSpaceId,
                       canCheck: 'CanPostPin',
@@ -235,16 +235,16 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 isLoader: true,
               );
               try {
-                final spaceId = ref.read(selectedSpaceIdProvider);
+                var spaceId = ref.read(selectedSpaceIdProvider);
                 var space = await ref.read(spaceProvider(spaceId!).future);
-                final pinDraft = space.pinDraft();
+                var pinDraft = space.pinDraft();
                 pinDraft.title(ref.read(titleProvider));
                 if (ref.read(selectedTypeProvider) == 'text') {
                   pinDraft.contentMarkdown(ref.read(textProvider));
                 } else {
                   pinDraft.url(ref.read(linkProvider));
                 }
-                final pinId = await pinDraft.send();
+                var pinId = await pinDraft.send();
                 // reset providers
                 ref.read(titleProvider.notifier).state = '';
                 ref.read(textProvider.notifier).state = '';
