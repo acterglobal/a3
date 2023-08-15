@@ -80,9 +80,10 @@ class CommentInputState extends ConsumerState<CommentInput> {
                       ),
                     );
                   },
+                  error: (error, stackTrace) => Text(
+                    'Failed to load avatar $error',
+                  ),
                   loading: () => const CircularProgressIndicator(),
-                  error: (error, stackTrace) =>
-                      Text('Failed to load avatar $error'),
                 ),
                 GetBuilder<ToDoController>(
                   id: 'comment-input',

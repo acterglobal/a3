@@ -196,15 +196,6 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
     final searchValueNotifier = ref.read(searchValueProvider.notifier);
     final children = [];
 
-    bool isInvited(String userId) {
-      for (final i in invited) {
-        if (i.userId().toString() == userId) {
-          return true;
-        }
-      }
-      return false;
-    }
-
     if (suggestedUsers != null && suggestedUsers.isNotEmpty) {
       children.add(
         SliverToBoxAdapter(
@@ -236,7 +227,7 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
                   trailing: InviteButton(
                     userId: e.userId,
                     space: space.valueOrNull!.space!,
-                    invited: isInvited(e.userId),
+                    invited: isInvited(e.userId, invited),
                   ),
                 ),
               );
@@ -262,34 +253,20 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
       children.add(
         SliverList(
           delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              final e = foundUsers.value![index];
-              final userId = e.userId().toString();
-              return Consumer(
-                builder: (context, ref, child) {
-                  final avatarProv = ref.watch(userAvatarProvider(e));
-                  final displayName = ref.watch(displayNameProvider(e));
-                  return Card(
-                    child: ListTile(
-                      title: Text(displayName.valueOrNull ?? userId),
-                      subtitle:
-                          displayName.valueOrNull != null ? Text(userId) : null,
-                      leading: ActerAvatar(
-                        mode: DisplayMode.User,
-                        uniqueId: userId,
-                        displayName: displayName.valueOrNull,
-                        avatar: avatarProv.valueOrNull,
-                      ),
-                      trailing: InviteButton(
-                        userId: userId,
-                        space: space.valueOrNull!.space!,
-                        invited: isInvited(userId),
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
+            (context, index) => foundUsers.when(
+              data: (data) => Consumer(
+                builder: (context, ref, child) => userBuilder(
+                  context,
+                  ref,
+                  child,
+                  data[index],
+                  space,
+                  invited,
+                ),
+              ),
+              error: (err, stackTrace) => Text('Error: $err'),
+              loading: () => const Text('Loading found user'),
+            ),
             childCount: foundUsers.value!.length,
           ),
         ),
@@ -301,9 +278,7 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
       child: Scaffold(
         appBar: space.when(
           data: (space) => AppBar(
-            title: Text(
-              'Invite to ${space.spaceProfileData.displayName}',
-            ),
+            title: Text('Invite to ${space.spaceProfileData.displayName}'),
             bottom: TabBar(
               controller: _tabController,
               dividerColor: Colors.transparent,
@@ -357,40 +332,75 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
               slivers: [
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final e = invited[index];
-                      final userId = e.userId().toString();
-                      final profile = e.getProfile();
-                      return Consumer(
-                        builder: (context, ref, child) {
-                          final avatarProv =
-                              ref.watch(userAvatarProvider(profile));
-                          final displayName =
-                              ref.watch(displayNameProvider(profile));
-                          return Card(
-                            child: ListTile(
-                              title: Text(displayName.valueOrNull ?? userId),
-                              subtitle: displayName.valueOrNull != null
-                                  ? Text(userId)
-                                  : null,
-                              leading: ActerAvatar(
-                                mode: DisplayMode.User,
-                                uniqueId: userId,
-                                displayName: displayName.valueOrNull,
-                                avatar: avatarProv.valueOrNull,
-                              ),
-                              trailing: null,
-                            ),
-                          );
-                        },
-                      );
-                    },
+                    (context, index) => Consumer(
+                      builder: (context, ref, child) => userBuilder(
+                        context,
+                        ref,
+                        child,
+                        invited[index].getProfile(),
+                        space,
+                        invited,
+                      ),
+                    ),
                     childCount: invited.length,
                   ),
                 ),
               ],
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  bool isInvited(String userId, List<Member> invited) {
+    for (final i in invited) {
+      if (i.userId().toString() == userId) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Widget userBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+    UserProfile profile,
+    AsyncValue<SpaceItem> spaceItem,
+    List<Member> invited,
+  ) {
+    final avatarProv = ref.watch(userAvatarProvider(profile));
+    final displayName = ref.watch(displayNameProvider(profile));
+    final userId = profile.userId().toString();
+    return Card(
+      child: ListTile(
+        title: displayName.when(
+          data: (data) => Text(data ?? userId),
+          error: (err, stackTrace) => Text('Error: $err'),
+          loading: () => const Text('Loading display name'),
+        ),
+        subtitle: displayName.when(
+          data: (data) {
+            return (data == null) ? null : Text(userId);
+          },
+          error: (err, stackTrace) => Text('Error: $err'),
+          loading: () => const Text('Loading display name'),
+        ),
+        leading: ActerAvatar(
+          mode: DisplayMode.User,
+          uniqueId: userId,
+          displayName: displayName.valueOrNull,
+          avatar: avatarProv.valueOrNull,
+        ),
+        trailing: spaceItem.when(
+          data: (data) => InviteButton(
+            userId: userId,
+            space: data.space!,
+            invited: isInvited(userId, invited),
+          ),
+          error: (err, stackTrace) => Text('Error: $err'),
+          loading: () => const Text('Loading user'),
         ),
       ),
     );

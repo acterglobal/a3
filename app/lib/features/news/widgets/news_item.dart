@@ -39,67 +39,31 @@ class NewsItem extends ConsumerWidget {
       Theme.of(context).colorScheme.primary,
     );
 
-    Stack regularSlide(Widget child) => Stack(
-          children: [
-            child,
-            Padding(
-              padding: const EdgeInsets.only(left: 8, right: 80, bottom: 8),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      context.goNamed(
-                        Routes.space.name,
-                        pathParameters: {'spaceId': roomId},
-                      );
-                    },
-                    child: space.when(
-                      data: (space) =>
-                          Text(space!.spaceProfileData.displayName ?? roomId),
-                      error: (e, st) => Text('Error loading space: $e'),
-                      loading: () => Text(roomId),
-                    ),
-                  ),
-                  Text(
-                    slide.text(),
-                    softWrap: true,
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: fgColor,
-                      shadows: [
-                        Shadow(
-                          color: bgColor,
-                          offset: const Offset(1, 1),
-                          blurRadius: 0,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: NewsSideBar(
-                news: news,
-                index: index,
-              ),
-            ),
-          ],
-        );
-
     switch (slideType) {
       case 'image':
-        return regularSlide(ImageSlide(slide: slide));
+        return regularSlide(
+          context,
+          ImageSlide(slide: slide),
+          roomId,
+          space,
+          slide,
+          bgColor,
+          fgColor,
+        );
 
       case 'video':
         return regularSlide(
+          context,
           const Expanded(
             child: Center(
               child: Text('video slides not yet supported'),
             ),
           ),
+          roomId,
+          space,
+          slide,
+          bgColor,
+          fgColor,
         );
 
       case 'text':
@@ -144,13 +108,79 @@ class NewsItem extends ConsumerWidget {
 
       default:
         return regularSlide(
+          context,
           Expanded(
             child: Center(
               child: Text('$slideType slides not yet supported'),
             ),
           ),
+          roomId,
+          space,
+          slide,
+          bgColor,
+          fgColor,
         );
     }
+  }
+
+  Stack regularSlide(
+    BuildContext context,
+    Widget child,
+    String roomId,
+    AsyncValue<SpaceItem?> space,
+    NewsSlide slide,
+    Color bgColor,
+    Color fgColor,
+  ) {
+    return Stack(
+      children: [
+        child,
+        Padding(
+          padding: const EdgeInsets.only(left: 8, right: 80, bottom: 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              InkWell(
+                onTap: () {
+                  context.goNamed(
+                    Routes.space.name,
+                    pathParameters: {'spaceId': roomId},
+                  );
+                },
+                child: space.when(
+                  data: (space) =>
+                      Text(space!.spaceProfileData.displayName ?? roomId),
+                  error: (e, st) => Text('Error loading space: $e'),
+                  loading: () => Text(roomId),
+                ),
+              ),
+              Text(
+                slide.text(),
+                softWrap: true,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: fgColor,
+                  shadows: [
+                    Shadow(
+                      color: bgColor,
+                      offset: const Offset(1, 1),
+                      blurRadius: 0,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: NewsSideBar(
+            news: news,
+            index: index,
+          ),
+        ),
+      ],
+    );
   }
 }
 

@@ -30,12 +30,14 @@ class CustomChatInput extends ConsumerWidget {
         ref.watch(chatRoomProvider.notifier).repliedToMessage;
     final isAuthor = ref.watch(chatRoomProvider.notifier).isAuthor();
     final accountProfile = ref.watch(accountProfileProvider);
+    final showReplyView = ref.watch(
+      chatInputProvider.select((ci) => ci.showReplyView),
+    );
     Size size = MediaQuery.of(context).size;
     return Column(
       children: [
         Visibility(
-          visible:
-              ref.watch(chatInputProvider.select((ci) => ci.showReplyView)),
+          visible: showReplyView,
           child: Container(
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primaryContainer,
@@ -52,56 +54,7 @@ class CustomChatInput extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   repliedToMessage != null
-                      ? Consumer(
-                          builder: (context, ref, child) {
-                            final replyProfile = ref.watch(
-                              memberProfileProvider(
-                                repliedToMessage.author.id,
-                              ),
-                            );
-                            return Row(
-                              children: [
-                                replyProfile.when(
-                                  data: (profile) {
-                                    return ActerAvatar(
-                                      mode: DisplayMode.User,
-                                      uniqueId: repliedToMessage.author.id,
-                                      displayName: profile.displayName ??
-                                          repliedToMessage.author.id,
-                                      avatar: profile.getAvatarImage(),
-                                      size: profile.hasAvatar() ? 12 : 24,
-                                    );
-                                  },
-                                  error: (e, st) => Text(
-                                    'Error loading avatar due to ${e.toString()}',
-                                    textScaleFactor: 0.2,
-                                  ),
-                                  loading: () =>
-                                      const CircularProgressIndicator(),
-                                ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  'Reply to ${toBeginningOfSentenceCase(repliedToMessage.author.id)}',
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                const Spacer(),
-                                GestureDetector(
-                                  onTap: () {
-                                    chatInputNotifier.toggleReplyView(false);
-                                    chatInputNotifier.setReplyWidget(null);
-                                  },
-                                  child: const Icon(
-                                    Atlas.xmark_circle,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        )
+                      ? Consumer(builder: replyBuilder)
                       : const SizedBox.shrink(),
                   if (repliedToMessage != null &&
                       chatInputState.replyWidget != null)
@@ -234,6 +187,52 @@ class CustomChatInput extends ConsumerWidget {
     );
   }
 
+  Widget replyBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final roomNotifier = ref.watch(chatRoomProvider.notifier);
+    final authorId = roomNotifier.repliedToMessage!.author.id;
+    final replyProfile = ref.watch(memberProfileProvider(authorId));
+    final inputNotifier = ref.read(chatInputProvider.notifier);
+    return Row(
+      children: [
+        replyProfile.when(
+          data: (profile) {
+            return ActerAvatar(
+              mode: DisplayMode.User,
+              uniqueId: authorId,
+              displayName: profile.displayName ?? authorId,
+              avatar: profile.getAvatarImage(),
+              size: profile.hasAvatar() ? 12 : 24,
+            );
+          },
+          error: (e, st) => Text(
+            'Error loading avatar due to ${e.toString()}',
+            textScaleFactor: 0.2,
+          ),
+          loading: () => const CircularProgressIndicator(),
+        ),
+        const SizedBox(width: 5),
+        Text(
+          'Reply to ${toBeginningOfSentenceCase(authorId)}',
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
+          ),
+        ),
+        const Spacer(),
+        GestureDetector(
+          onTap: () {
+            inputNotifier.toggleReplyView(false);
+            inputNotifier.setReplyWidget(null);
+          },
+          child: const Icon(
+            Atlas.xmark_circle,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+
   Future<void> onSendButtonPressed(WidgetRef ref) async {
     var inputNotifier = ref.read(chatInputProvider.notifier);
     var roomNotifier = ref.read(chatRoomProvider.notifier);
@@ -298,8 +297,9 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         borderRadius: BorderRadius.circular(6),
       ),
       onChanged: (String value) async {
-        if (!ref.read(chatInputFocusProvider).hasFocus) {
-          ref.read(chatInputFocusProvider).requestFocus();
+        var focusNode = ref.read(chatInputFocusProvider);
+        if (!focusNode.hasFocus) {
+          focusNode.requestFocus();
         }
         if (value.isNotEmpty) {
           chatInputNotifier.showSendBtn(true);
@@ -355,23 +355,12 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
             return ListTile(
               leading: Consumer(
                 builder: (context, ref, child) {
-                  final mentionProfile =
-                      ref.watch(memberProfileProvider(roomMember['link']));
-                  return mentionProfile.when(
-                    data: (profile) {
-                      return ActerAvatar(
-                        mode: DisplayMode.User,
-                        uniqueId: roomMember['link'],
-                        avatar: profile.getAvatarImage(),
-                        displayName: title,
-                        size: profile.hasAvatar() ? 18 : 36,
-                      );
-                    },
-                    error: (e, st) => Text(
-                      'Error loading avatar due to ${e.toString()}',
-                      textScaleFactor: 0.2,
-                    ),
-                    loading: () => const CircularProgressIndicator(),
+                  return mentionPorfileBuilder(
+                    context,
+                    ref,
+                    child,
+                    roomMember['link'],
+                    title,
                   );
                 },
               ),
@@ -394,6 +383,32 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           },
         )
       ],
+    );
+  }
+
+  Widget mentionPorfileBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+    String authorId,
+    String title,
+  ) {
+    final mentionProfile = ref.watch(memberProfileProvider(authorId));
+    return mentionProfile.when(
+      data: (profile) {
+        return ActerAvatar(
+          mode: DisplayMode.User,
+          uniqueId: authorId,
+          avatar: profile.getAvatarImage(),
+          displayName: title,
+          size: profile.hasAvatar() ? 18 : 36,
+        );
+      },
+      error: (e, st) => Text(
+        'Error loading avatar due to ${e.toString()}',
+        textScaleFactor: 0.2,
+      ),
+      loading: () => const CircularProgressIndicator(),
     );
   }
 
@@ -509,16 +524,16 @@ class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
   }
 
   void handleEmojiSelected(Category? category, Emoji emoji) {
-    var mentionKey = ref.watch(mentionKeyProvider);
-    mentionKey.currentState!.controller!.text += emoji.emoji;
+    var mentionState = ref.read(mentionKeyProvider).currentState!;
+    mentionState.controller!.text += emoji.emoji;
     ref.read(chatInputProvider.notifier).showSendBtn(true);
   }
 
   void handleBackspacePressed() {
-    var mentionState = ref.watch(mentionKeyProvider).currentState!;
-    mentionState.controller!.text =
-        mentionState.controller!.text.characters.skipLast(1).string;
-    if (mentionState.controller!.text.isEmpty) {
+    var mentionState = ref.read(mentionKeyProvider).currentState!;
+    var newValue = mentionState.controller!.text.characters.skipLast(1).string;
+    mentionState.controller!.text = newValue;
+    if (newValue.isEmpty) {
       ref.read(chatInputProvider.notifier).showSendBtn(false);
     }
   }

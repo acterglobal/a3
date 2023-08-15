@@ -6,20 +6,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SpaceChip extends ConsumerWidget {
   final SpaceItem? space;
   final String? spaceId;
-  const SpaceChip({Key? key, this.space, this.spaceId}) : super(key: key);
+
+  const SpaceChip({
+    Key? key,
+    this.space,
+    this.spaceId,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    Widget renderSpace(space) => Chip(
-          avatar: ActerAvatar(
-            mode: DisplayMode.Space,
-            displayName: space.spaceProfileData.displayName,
-            uniqueId: space.roomId,
-            avatar: space.spaceProfileData.getAvatarImage(),
-            size: 24,
-          ),
-          label: Text(space.spaceProfileData.displayName ?? space.roomId),
-        );
     if (space == null) {
       if (spaceId == null) {
         throw 'space or spaceId must be provided';
@@ -33,5 +28,18 @@ class SpaceChip extends ConsumerWidget {
           );
     }
     return renderSpace(space!);
+  }
+
+  Widget renderSpace(space) {
+    return Chip(
+      avatar: ActerAvatar(
+        mode: DisplayMode.Space,
+        displayName: space.spaceProfileData.displayName,
+        uniqueId: space.roomId,
+        avatar: space.spaceProfileData.getAvatarImage(),
+        size: 24,
+      ),
+      label: Text(space.spaceProfileData.displayName ?? space.roomId),
+    );
   }
 }

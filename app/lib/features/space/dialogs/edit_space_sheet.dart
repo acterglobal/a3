@@ -68,6 +68,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(editTitleProvider);
+    final avatarUpload = ref.watch(editAvatarProvider);
     final avatarNotifier = ref.read(editAvatarProvider.notifier);
     return SideSheet(
       header: 'Edit Space',
@@ -92,7 +93,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                           child: Text('Avatar'),
                         ),
                         const SizedBox(width: 5),
-                        ref.watch(editAvatarProvider).isNotEmpty
+                        avatarUpload.isNotEmpty
                             ? Padding(
                                 padding: const EdgeInsets.only(bottom: 5),
                                 child: GestureDetector(
@@ -116,37 +117,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                             : const SizedBox.shrink(),
                       ],
                     ),
-                    Consumer(
-                      builder: (context, ref, child) {
-                        final avatarUpload = ref.watch(editAvatarProvider);
-                        return GestureDetector(
-                          onTap: _handleAvatarUpload,
-                          child: Container(
-                            height: 75,
-                            width: 75,
-                            decoration: BoxDecoration(
-                              image: avatarUpload.isNotEmpty
-                                  ? DecorationImage(
-                                      image: FileImage(File(avatarUpload)),
-                                      fit: BoxFit.cover,
-                                    )
-                                  : null,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: avatarUpload.isEmpty
-                                ? Icon(
-                                    Atlas.up_arrow_from_bracket_thin,
-                                    color:
-                                        Theme.of(context).colorScheme.neutral4,
-                                  )
-                                : null,
-                          ),
-                        );
-                      },
-                    ),
+                    Consumer(builder: avatarBuilder),
                   ],
                 ),
                 const SizedBox(width: 15),
@@ -298,6 +269,33 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
           child: const Text('Save changes'),
         ),
       ],
+    );
+  }
+
+  Widget avatarBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final avatarUpload = ref.watch(editAvatarProvider);
+    return GestureDetector(
+      onTap: _handleAvatarUpload,
+      child: Container(
+        height: 75,
+        width: 75,
+        decoration: BoxDecoration(
+          image: avatarUpload.isNotEmpty
+              ? DecorationImage(
+                  image: FileImage(File(avatarUpload)),
+                  fit: BoxFit.cover,
+                )
+              : null,
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: avatarUpload.isEmpty
+            ? Icon(
+                Atlas.up_arrow_from_bracket_thin,
+                color: Theme.of(context).colorScheme.neutral4,
+              )
+            : null,
+      ),
     );
   }
 

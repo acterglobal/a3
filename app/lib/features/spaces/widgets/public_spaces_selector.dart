@@ -194,12 +194,6 @@ class PublicSpaceItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final withInfo = ref.watch(maybeSpaceInfoProvider(space.roomIdStr()));
 
-    ActerAvatar fallbackAvatar() => ActerAvatar(
-          mode: DisplayMode.Space,
-          uniqueId: space.roomIdStr(),
-          displayName: space.name(),
-        );
-
     return Card(
       shape: RoundedRectangleBorder(
         side: BorderSide(
@@ -273,6 +267,14 @@ class PublicSpaceItem extends ConsumerWidget {
       ),
     );
   }
+
+  ActerAvatar fallbackAvatar() {
+    return ActerAvatar(
+      mode: DisplayMode.Space,
+      uniqueId: space.roomIdStr(),
+      displayName: space.name(),
+    );
+  }
 }
 
 class PublicSpaceSelector extends ConsumerWidget {
@@ -282,6 +284,7 @@ class PublicSpaceSelector extends ConsumerWidget {
   final OnSelectedMatchFn? onSelectedMatch;
   final bool canMatchAlias;
   final bool canMatchId;
+
   const PublicSpaceSelector({
     super.key,
     this.title,
@@ -296,8 +299,6 @@ class PublicSpaceSelector extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final searchTextCtrl = ref.watch(searchController);
     final searchValueNotifier = ref.read(searchValueProvider.notifier);
-    final selectedServer = ref.watch(selectedServerProvider);
-    final selectedServerNotifier = ref.read(selectedServerProvider.notifier);
     return CustomScrollView(
       slivers: [
         SliverAppBar(
@@ -328,41 +329,7 @@ class PublicSpaceSelector extends ConsumerWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 5),
-                  child: Consumer(
-                    builder: (context, ref, child) {
-                      final controller = ref.watch(serverTypeAheadController);
-                      final val = ref.watch(serverTypeAheadProvider);
-                      final List<DropdownMenuEntry<String>> menuItems = [
-                        ...defaultServers.map(
-                          (e) => DropdownMenuEntry(
-                            label: e.name ?? e.value,
-                            value: e.value,
-                          ),
-                        )
-                      ];
-
-                      if (val != null && val.isNotEmpty) {
-                        menuItems.add(
-                          DropdownMenuEntry(
-                            leadingIcon: const Icon(Atlas.plus_circle_thin),
-                            label: val,
-                            value: val,
-                          ),
-                        );
-                      }
-                      return DropdownMenu<String>(
-                        controller: controller,
-                        initialSelection: selectedServer,
-                        label: const Text('Server'),
-                        dropdownMenuEntries: menuItems,
-                        onSelected: (String? typus) {
-                          if (typus != null) {
-                            selectedServerNotifier.state = typus;
-                          }
-                        },
-                      );
-                    },
-                  ),
+                  child: Consumer(builder: serverTypeBuilder),
                 ),
               ],
             ),
@@ -455,6 +422,43 @@ class PublicSpaceSelector extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget serverTypeBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final selectedServer = ref.watch(selectedServerProvider);
+    final selectedServerNotifier = ref.read(selectedServerProvider.notifier);
+
+    final controller = ref.watch(serverTypeAheadController);
+    final val = ref.watch(serverTypeAheadProvider);
+    final List<DropdownMenuEntry<String>> menuItems = [
+      ...defaultServers.map(
+        (e) => DropdownMenuEntry(
+          label: e.name ?? e.value,
+          value: e.value,
+        ),
+      )
+    ];
+    if (val != null && val.isNotEmpty) {
+      menuItems.add(
+        DropdownMenuEntry(
+          leadingIcon: const Icon(Atlas.plus_circle_thin),
+          label: val,
+          value: val,
+        ),
+      );
+    }
+
+    return DropdownMenu<String>(
+      controller: controller,
+      initialSelection: selectedServer,
+      label: const Text('Server'),
+      dropdownMenuEntries: menuItems,
+      onSelected: (String? typus) {
+        if (typus != null) {
+          selectedServerNotifier.state = typus;
+        }
+      },
     );
   }
 }

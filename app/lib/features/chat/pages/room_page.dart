@@ -88,6 +88,46 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     );
   }
 
+  void onBackgroundTap() {
+    var emojiRowVisible = ref.read(
+      chatInputProvider.select((ci) {
+        return ci.emojiRowVisible;
+      }),
+    );
+    var roomNotifier = ref.read(chatRoomProvider.notifier);
+    var inputNotifier = ref.read(chatInputProvider.notifier);
+    if (emojiRowVisible) {
+      roomNotifier.currentMessageId = null;
+      inputNotifier.emojiRowVisible(false);
+    }
+  }
+
+  Widget avatarBuilder(String userId) {
+    final memberProfile = ref.watch(memberProfileProvider(userId));
+    return memberProfile.when(
+      data: (profile) {
+        return Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: SizedBox(
+            height: 28,
+            width: 28,
+            child: ActerAvatar(
+              mode: DisplayMode.User,
+              uniqueId: userId,
+              displayName: profile.displayName ?? userId,
+              avatar: profile.getAvatarImage(),
+            ),
+          ),
+        );
+      },
+      error: (e, st) => Text(
+        'Error loading avatar due to ${e.toString()}',
+        textScaleFactor: 0.2,
+      ),
+      loading: () => const CircularProgressIndicator(),
+    );
+  }
+
   Widget textMessageBuilder(
     types.TextMessage m, {
     required int messageWidth,
@@ -243,32 +283,8 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             user: types.User(id: client!.userId().toString()),
             // disable image preview
             disableImageGallery: true,
-            //custom avatar builder
-            avatarBuilder: (userId) {
-              var memberProfile = ref.watch(memberProfileProvider(userId));
-              return memberProfile.when(
-                data: (profile) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: SizedBox(
-                      height: 28,
-                      width: 28,
-                      child: ActerAvatar(
-                        mode: DisplayMode.User,
-                        uniqueId: userId,
-                        displayName: profile.displayName ?? userId,
-                        avatar: profile.getAvatarImage(),
-                      ),
-                    ),
-                  );
-                },
-                error: (e, st) => Text(
-                  'Error loading avatar due to ${e.toString()}',
-                  textScaleFactor: 0.2,
-                ),
-                loading: () => const CircularProgressIndicator(),
-              );
-            },
+            // custom avatar builder
+            avatarBuilder: avatarBuilder,
             isLastPage: !ref.watch(paginationProvider),
             bubbleBuilder: bubbleBuilder,
             imageMessageBuilder: imageMessageBuilder,
@@ -279,14 +295,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             onMessageTap: roomNotifier.handleMessageTap,
             onEndReached: roomNotifier.handleEndReached,
             onEndReachedThreshold: 0.75,
-            onBackgroundTap: () {
-              if (ref.watch(
-                chatInputProvider.select((ci) => ci.emojiRowVisible),
-              )) {
-                roomNotifier.currentMessageId = null;
-                ref.read(chatInputProvider.notifier).emojiRowVisible(false);
-              }
-            },
+            onBackgroundTap: onBackgroundTap,
             //Custom Theme class, see lib/common/store/chatTheme.dart
             theme: const ActerChatTheme(
               attachmentButtonIcon: Icon(Atlas.plus_circle),

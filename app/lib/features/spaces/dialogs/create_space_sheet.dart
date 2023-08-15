@@ -72,34 +72,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                       padding: EdgeInsets.only(bottom: 5),
                       child: Text('Avatar'),
                     ),
-                    Consumer(
-                      builder: (context, ref, child) {
-                        final avatarUpload = ref.watch(avatarProvider);
-                        return GestureDetector(
-                          onTap: _handleAvatarUpload,
-                          child: Container(
-                            height: 75,
-                            width: 75,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: avatarUpload.isNotEmpty
-                                ? Image.file(
-                                    File(avatarUpload),
-                                    fit: BoxFit.cover,
-                                  )
-                                : Icon(
-                                    Atlas.up_arrow_from_bracket_thin,
-                                    color:
-                                        Theme.of(context).colorScheme.neutral4,
-                                  ),
-                          ),
-                        );
-                      },
-                    ),
+                    Consumer(builder: avatarBuilder),
                   ],
                 ),
                 const SizedBox(width: 15),
@@ -172,18 +145,8 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                         : 'No parent space selected',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  trailing: parentSelected
-                      ? Consumer(
-                          builder: (context, ref, child) =>
-                              ref.watch(parentSpaceDetailsProvider).when(
-                                    data: (space) => space != null
-                                        ? SpaceChip(space: space)
-                                        : Text(currentParentSpace),
-                                    error: (e, s) => Text('error: $e'),
-                                    loading: () => const Text('loading'),
-                                  ),
-                        )
-                      : null,
+                  trailing:
+                      parentSelected ? Consumer(builder: parentBuilder) : null,
                   onTap: () async {
                     var newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
@@ -242,6 +205,46 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
           child: const Text('Create Space'),
         ),
       ],
+    );
+  }
+
+  Widget avatarBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final avatarUpload = ref.watch(avatarProvider);
+    return GestureDetector(
+      onTap: _handleAvatarUpload,
+      child: Container(
+        height: 75,
+        width: 75,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: avatarUpload.isNotEmpty
+            ? Image.file(
+                File(avatarUpload),
+                fit: BoxFit.cover,
+              )
+            : Icon(
+                Atlas.up_arrow_from_bracket_thin,
+                color: Theme.of(context).colorScheme.neutral4,
+              ),
+      ),
+    );
+  }
+
+  Widget parentBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final spaceDetails = ref.watch(parentSpaceDetailsProvider);
+    final currentParentSpace = ref.watch(parentSpaceProvider);
+    return spaceDetails.when(
+      data: (data) {
+        if (data != null) {
+          return SpaceChip(space: data);
+        } else {
+          return Text(currentParentSpace!);
+        }
+      },
+      error: (err, stackTrace) => Text('error: $err'),
+      loading: () => const Text('loading'),
     );
   }
 

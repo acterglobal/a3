@@ -14,9 +14,9 @@ class MemberList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final convo = ref.watch(currentConvoProvider);
-    final members = ref.watch(chatMembersProvider(convo!.getRoomIdStr()));
-    final myMembership =
-        ref.watch(spaceMembershipProvider(convo.getRoomIdStr()));
+    final roomId = convo!.getRoomIdStr();
+    final members = ref.watch(chatMembersProvider(roomId));
+    final myMembership = ref.watch(spaceMembershipProvider(roomId));
 
     return members.when(
       data: (members) {

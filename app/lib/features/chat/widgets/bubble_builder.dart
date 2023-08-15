@@ -159,52 +159,7 @@ class _ChatBubble extends ConsumerWidget {
                                     left: 10,
                                     top: 15,
                                   ),
-                                  child: Consumer(
-                                    builder: (context, ref, child) {
-                                      final replyProfile = ref.watch(
-                                        memberProfileProvider(
-                                          message.repliedMessage!.author.id,
-                                        ),
-                                      );
-                                      return replyProfile.when(
-                                        data: (profile) {
-                                          return Row(
-                                            children: [
-                                              ActerAvatar(
-                                                uniqueId: message
-                                                    .repliedMessage!.author.id,
-                                                displayName:
-                                                    profile.displayName,
-                                                mode: DisplayMode.User,
-                                                avatar:
-                                                    profile.getAvatarImage(),
-                                                size: profile.hasAvatar()
-                                                    ? 12
-                                                    : 24,
-                                              ),
-                                              const SizedBox(width: 5),
-                                              Text(
-                                                profile.displayName ?? '',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodySmall!
-                                                    .copyWith(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .tertiary,
-                                                    ),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                        error: (e, st) => Text(
-                                          'Failed to load profile due to ${e.toString()}',
-                                        ),
-                                        loading: () =>
-                                            const CircularProgressIndicator(),
-                                      );
-                                    },
-                                  ),
+                                  child: Consumer(builder: replyProfileBuilder),
                                 ),
                                 _OriginalMessageBuilder(message: message),
                               ],
@@ -225,6 +180,39 @@ class _ChatBubble extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget replyProfileBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
+    final authorId = message.repliedMessage!.author.id;
+    final replyProfile = ref.watch(memberProfileProvider(authorId));
+    return replyProfile.when(
+      data: (profile) {
+        return Row(
+          children: [
+            ActerAvatar(
+              uniqueId: authorId,
+              displayName: profile.displayName,
+              mode: DisplayMode.User,
+              avatar: profile.getAvatarImage(),
+              size: profile.hasAvatar() ? 12 : 24,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              profile.displayName ?? '',
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                    color: Theme.of(context).colorScheme.tertiary,
+                  ),
+            ),
+          ],
+        );
+      },
+      error: (err, stackTrace) => Text('Failed to load profile due to $err'),
+      loading: () => const CircularProgressIndicator(),
     );
   }
 }

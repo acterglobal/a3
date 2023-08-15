@@ -62,40 +62,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Consumer(
-                  builder: (context, ref, child) {
-                    final selectedImage = ref.watch(selectedImageProvider);
-                    if (selectedImage != null) {
-                      return SizedBox(
-                        height: 300,
-                        child: InkWell(
-                          onTap: () {
-                            imageNotifier.state = null;
-                          },
-                          child: Center(
-                            child: Image(
-                              image: XFileImage(selectedImage),
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-
-                    return SizedBox(
-                      height: 300,
-                      child: InkWell(
-                        onTap: () async {
-                          imageNotifier.state = await picker.pickImage(
-                            source: ImageSource.gallery,
-                          );
-                        },
-                        child: const Center(
-                          child: Text('select an image (optional)'),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                child: Consumer(builder: imageBuilder),
               ),
               Expanded(
                 child: TextFormField(
@@ -143,14 +110,12 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                       : null,
                   trailing: selectedSpace
                       ? Consumer(
-                          builder: (context, ref, child) =>
-                              ref.watch(selectedSpaceDetailsProvider).when(
-                                    data: (space) => space != null
-                                        ? SpaceChip(space: space)
-                                        : Text(currentSelectedSpace),
-                                    error: (e, s) => Text('error: $e'),
-                                    loading: () => const Text('loading'),
-                                  ),
+                          builder: (context, ref, child) => spaceBuilder(
+                            context,
+                            ref,
+                            child,
+                            currentSelectedSpace,
+                          ),
                         )
                       : null,
                   onTap: () async {
@@ -305,5 +270,52 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
         ),
       ],
     );
+  }
+
+  Widget imageBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final selectedImage = ref.watch(selectedImageProvider);
+    final imageNotifier = ref.read(selectedImageProvider.notifier);
+    if (selectedImage != null) {
+      return SizedBox(
+        height: 300,
+        child: InkWell(
+          onTap: () => imageNotifier.state = null,
+          child: Center(
+            child: Image(
+              image: XFileImage(selectedImage),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 300,
+      child: InkWell(
+        onTap: () async {
+          imageNotifier.state = await picker.pickImage(
+            source: ImageSource.gallery,
+          );
+        },
+        child: const Center(
+          child: Text('select an image (optional)'),
+        ),
+      ),
+    );
+  }
+
+  Widget spaceBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+    String currentSelectedSpace,
+  ) {
+    return ref.watch(selectedSpaceDetailsProvider).when(
+          data: (space) => space != null
+              ? SpaceChip(space: space)
+              : Text(currentSelectedSpace),
+          error: (e, s) => Text('error: $e'),
+          loading: () => const Text('loading'),
+        );
   }
 }

@@ -227,44 +227,45 @@ class QuickJump extends ConsumerWidget {
   }
 
   Widget spaces(BuildContext context, WidgetRef ref) {
-    return ref.watch(spacesFoundProvider).when(
-          loading: () => const Text('loading'),
-          error: (e, st) => Text('error: $e'),
-          data: (data) {
-            final Widget body;
-            if (data.isEmpty) {
-              body = const Text('no matching spaces found');
-            } else {
-              final List<Widget> children = data
-                  .map(
-                    (e) => TextButton(
-                      child: Column(
-                        children: [
-                          e.icon,
-                          Text(e.name),
-                        ],
-                      ),
-                      onPressed: () {
-                        navigateTo(target: e.navigationTarget);
-                      },
-                    ),
-                  )
-                  .toList();
-              body = SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: children,
+    final foundSpaces = ref.watch(spacesFoundProvider);
+    return foundSpaces.when(
+      loading: () => const Text('loading'),
+      error: (e, st) => Text('error: $e'),
+      data: (data) {
+        final Widget body;
+        if (data.isEmpty) {
+          body = const Text('no matching spaces found');
+        } else {
+          final List<Widget> children = data
+              .map(
+                (e) => TextButton(
+                  child: Column(
+                    children: [
+                      e.icon,
+                      Text(e.name),
+                    ],
+                  ),
+                  onPressed: () {
+                    navigateTo(target: e.navigationTarget);
+                  },
                 ),
-              );
-            }
-            return Column(
-              children: [
-                const Text('Spaces'),
-                body,
-              ],
-            );
-          },
+              )
+              .toList();
+          body = SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: children,
+            ),
+          );
+        }
+        return Column(
+          children: [
+            const Text('Spaces'),
+            body,
+          ],
         );
+      },
+    );
   }
 
   @override

@@ -53,6 +53,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
+    final parentNotifier = ref.read(parentSpaceProvider.notifier);
     final selectParentSpace = currentParentSpace != null;
     return SideSheet(
       header: 'Create new event',
@@ -225,26 +226,15 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     trailing: selectParentSpace
-                        ? Consumer(
-                            builder: (context, ref, child) =>
-                                ref.watch(parentSpaceDetailsProvider).when(
-                                      data: (space) => space != null
-                                          ? SpaceChip(space: space)
-                                          : Text(currentParentSpace),
-                                      error: (e, s) => Text('error: $e'),
-                                      loading: () => const Text('loading'),
-                                    ),
-                          )
+                        ? Consumer(builder: parentSpaceBuilder)
                         : null,
                     onTap: () async {
-                      var currentSpaceId = ref.read(parentSpaceProvider);
                       var newSelectedSpaceId = await selectSpaceDrawer(
                         context: context,
-                        currentSpaceId: currentSpaceId,
+                        currentSpaceId: ref.read(parentSpaceProvider),
                         title: const Text('Select parent space'),
                       );
-                      ref.read(parentSpaceProvider.notifier).state =
-                          newSelectedSpaceId;
+                      parentNotifier.state = newSelectedSpaceId;
                     },
                   )
                 ],
@@ -287,6 +277,21 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
         ),
       ],
     );
+  }
+
+  Widget parentSpaceBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
+    final currentParentSpace = ref.watch(parentSpaceProvider);
+    return ref.watch(parentSpaceDetailsProvider).when(
+          data: (space) => space != null
+              ? SpaceChip(space: space)
+              : Text(currentParentSpace!),
+          error: (e, s) => Text('error: $e'),
+          loading: () => const Text('loading'),
+        );
   }
 
   void _handleTitleChange(String? value) {
