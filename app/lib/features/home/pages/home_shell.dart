@@ -10,7 +10,6 @@ import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/router/providers/router_providers.dart';
-import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
@@ -308,10 +307,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   Future<void> handleBugReport() async {
     var appDocDir = await getApplicationDocumentsDirectory();
     // rage shake disallows dot in filename
-    String timestamp = formatDate(
-      DateTime.now(),
-      [yyyy, '-', mm, '-', dd, '_', hh, '-', nn, '-', ss, '_', SSS],
-    );
+    var now = DateTime.now();
+    String timestamp =
+        "${now.year.toString()}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}-${now.minute.toString().padLeft(2, '0')}";
     var imagePath = await screenshotController.captureAndSave(
       appDocDir.path,
       fileName: 'screenshot_$timestamp.png',
