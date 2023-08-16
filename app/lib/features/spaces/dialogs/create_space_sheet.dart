@@ -38,9 +38,9 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   @override
   void initState() {
     super.initState();
-    Future(() {
-      ref.read(parentSpaceProvider.notifier).state =
-          widget.initialParentsSpaceId;
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      var parentNotifier = ref.read(parentSpaceProvider.notifier);
+      parentNotifier.state = widget.initialParentsSpaceId;
     });
   }
 

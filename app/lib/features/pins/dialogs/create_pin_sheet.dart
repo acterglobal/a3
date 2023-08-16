@@ -33,9 +33,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
   @override
   void initState() {
     super.initState();
-    Future(() {
-      ref.read(selectedSpaceIdProvider.notifier).state =
-          widget.initialSelectedSpace;
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      var spaceNotifier = ref.read(selectedSpaceIdProvider.notifier);
+      spaceNotifier.state = widget.initialSelectedSpace;
     });
   }
 

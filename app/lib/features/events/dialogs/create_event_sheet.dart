@@ -43,7 +43,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   @override
   void initState() {
     super.initState();
-    Future(() {
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       var parentNotifier = ref.read(parentSpaceProvider.notifier);
       parentNotifier.state = widget.initialSelectedSpace;
     });

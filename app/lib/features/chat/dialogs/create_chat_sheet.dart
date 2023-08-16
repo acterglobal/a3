@@ -44,7 +44,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
     super.initState();
     if (widget.initialSelectedSpaceId != null) {
       isSpaceRoom = true;
-      Future(() {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         var notifier = ref.read(parentSpaceProvider.notifier);
         notifier.state = widget.initialSelectedSpaceId;
       });
