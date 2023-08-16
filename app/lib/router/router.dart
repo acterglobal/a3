@@ -7,6 +7,7 @@ import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/dialogs/create_chat_sheet.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
+import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/events/dialogs/create_event_sheet.dart';
 import 'package:acter/features/events/dialogs/edit_event_sheet.dart';
@@ -47,7 +48,6 @@ import 'package:acter/features/spaces/pages/spaces_page.dart';
 import 'package:acter/features/todo/pages/create_task_sidesheet.dart';
 import 'package:acter/features/todo/pages/todo_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod/riverpod.dart';
@@ -325,9 +325,18 @@ List<RouteBase> makeRoutes(Ref ref) {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: RoomPage(convo: state.extra as Convo),
+          child: const RoomPage(),
         );
       },
+      routes: <RouteBase>[
+        GoRoute(
+          parentNavigatorKey: rootNavKey,
+          path: 'profile',
+          name: Routes.chatProfile.name,
+          redirect: authGuardRedirect,
+          builder: (context, state) => const RoomProfilePage(),
+        ),
+      ],
     ),
 
     GoRoute(

@@ -324,7 +324,14 @@ impl Client {
             history.lock_mut().start(space_ids);
 
             futures::future::join_all(spaces.iter_mut().map(|space| async {
-                if !space.is_acter_space().await {
+                let is_acter_space = match space.is_acter_space().await {
+                    Ok(b) => b,
+                    Err(error) => {
+                        error!(room_id=?space.room_id(), ?error, "checking for is-acter-space status failed");
+                        false
+                    }
+                };
+                if !is_acter_space {
                     trace!(room_id=?space.room_id(), "not an acter space");
                     history.lock_mut().unknow_room(&space.room_id().to_owned());
                     return;
