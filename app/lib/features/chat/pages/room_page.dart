@@ -120,10 +120,18 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           ),
         );
       },
-      error: (e, st) => Text(
-        'Error loading avatar due to ${e.toString()}',
-        textScaleFactor: 0.2,
-      ),
+      error: (e, st) {
+        debugPrint('ERROR loading avatar due to $e');
+        return Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: ActerAvatar(
+            uniqueId: userId,
+            displayName: userId,
+            mode: DisplayMode.User,
+            size: 28,
+          ),
+        );
+      },
       loading: () => const CircularProgressIndicator(),
     );
   }
