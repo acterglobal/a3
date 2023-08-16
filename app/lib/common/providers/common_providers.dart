@@ -92,15 +92,14 @@ final relatedChatsProvider = FutureProvider.autoDispose
 final memberProfileProvider =
     FutureProvider.family<ProfileData, String>((ref, userId) async {
   final member = ref.watch(memberProvider(userId));
-  return member.when(
+  return member.maybeWhen(
     data: (data) async {
       UserProfile profile = data!.getProfile();
       OptionString displayName = await profile.getDisplayName();
       final avatar = await profile.getThumbnail(62, 60);
       return ProfileData(displayName.text(), avatar.data());
     },
-    error: (error, st) => ProfileData('', null),
-    loading: () => ProfileData('', null),
+    orElse: () => ProfileData('', null),
   );
 });
 
