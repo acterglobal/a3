@@ -231,7 +231,7 @@ class CustomChatInput extends ConsumerWidget {
                     ),
                     if (chatInputState.sendBtnVisible)
                       InkWell(
-                        onTap: () => onSendButtonPressed,
+                        onTap: () => onSendButtonPressed(ref),
                         child: const Icon(Atlas.paper_airplane),
                       ),
                   ],
@@ -335,23 +335,6 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 }
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
-  Future<void> onSendButtonPressed(WidgetRef ref) async {
-    final chatInputNotifier = ref.read(chatInputProvider.notifier);
-    chatInputNotifier.showSendBtn(false);
-    String markdownText =
-        ref.read(mentionKeyProvider).currentState!.controller!.text;
-    int messageLength = markdownText.length;
-    ref.read(messageMarkDownProvider).forEach((key, value) {
-      markdownText = markdownText.replaceAll(key, value);
-    });
-    await ref.read(chatRoomProvider.notifier).handleSendPressed(
-          markdownText,
-          messageLength,
-        );
-    ref.read(messageMarkDownProvider.notifier).update((state) => {});
-    ref.read(mentionKeyProvider).currentState!.controller!.clear();
-  }
-
   @override
   Widget build(BuildContext context) {
     final mentionList = ref.watch(mentionListProvider);

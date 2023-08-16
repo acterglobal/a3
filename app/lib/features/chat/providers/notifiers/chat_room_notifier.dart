@@ -558,7 +558,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.image':
             ImageDesc? description = eventItem.imageDesc();
             if (description != null) {
-              Map<String, dynamic> metadata = {'base64': ''};
+              Map<String, dynamic> metadata = {};
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -697,31 +697,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   // fetch event media content for message.
   Future<void> _fetchEventContent(String? subType, String eventId) async {
     switch (subType) {
-      case 'm.image':
-        await _fetchImageContent(eventId);
-        break;
       case 'm.audio':
         await _fetchAudioContent(eventId);
         break;
       case 'm.video':
         await _fetchVideoContent(eventId);
         break;
-    }
-  }
-
-  // fetch image content for message.
-  Future<void> _fetchImageContent(String eventId) async {
-    final room = ref.read(currentConvoProvider)!;
-    var messages = ref.read(messagesProvider);
-    var data = await room.imageBinary(eventId);
-    int index = messages.indexWhere((x) => x.id == eventId);
-    if (index != -1) {
-      var metadata = messages[index].metadata;
-      metadata!['base64'] = base64Encode(data.asTypedList());
-      messages[index] = messages[index].copyWith(metadata: metadata);
-      ref
-          .read(messagesProvider.notifier)
-          .replaceMessage(index, messages[index]);
     }
   }
 
