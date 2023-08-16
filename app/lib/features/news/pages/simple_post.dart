@@ -46,10 +46,10 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
   @override
   Widget build(BuildContext context) {
     final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final spaceNotifier = ref.read(selectedSpaceIdProvider.notifier);
+    final spaceNotifier = ref.watch(selectedSpaceIdProvider.notifier);
     final selectedSpace = currentSelectedSpace != null;
-    final imageNotifier = ref.read(selectedImageProvider.notifier);
-    final captionNotifier = ref.read(textProvider.notifier);
+    final imageNotifier = ref.watch(selectedImageProvider.notifier);
+    final captionNotifier = ref.watch(textProvider.notifier);
     return SideSheet(
       header: 'Create new Update',
       addActions: true,
@@ -274,7 +274,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
 
   Widget imageBuilder(BuildContext context, WidgetRef ref, Widget? child) {
     final selectedImage = ref.watch(selectedImageProvider);
-    final imageNotifier = ref.read(selectedImageProvider.notifier);
+    final imageNotifier = ref.watch(selectedImageProvider.notifier);
     if (selectedImage != null) {
       return SizedBox(
         height: 300,

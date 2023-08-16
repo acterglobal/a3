@@ -42,12 +42,12 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(titleProvider);
-    final titleNotifier = ref.read(titleProvider.notifier);
-    final textNotifier = ref.read(textProvider.notifier);
+    final titleNotifier = ref.watch(titleProvider.notifier);
+    final textNotifier = ref.watch(textProvider.notifier);
     final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final spaceNotifier = ref.read(selectedSpaceIdProvider.notifier);
+    final spaceNotifier = ref.watch(selectedSpaceIdProvider.notifier);
     final selectedSpace = currentSelectedSpace != null;
-    final typeNotifier = ref.read(selectedTypeProvider.notifier);
+    final typeNotifier = ref.watch(selectedTypeProvider.notifier);
     return SideSheet(
       header: 'Create new Pin',
       addActions: true,
@@ -229,8 +229,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
 
   Widget contentBuilder(BuildContext context, WidgetRef ref, Widget? child) {
     final subselection = ref.watch(selectedTypeProvider);
-    final textNotifier = ref.read(textProvider.notifier);
-    final linkNotifier = ref.read(linkProvider.notifier);
+    final textNotifier = ref.watch(textProvider.notifier);
+    final linkNotifier = ref.watch(linkProvider.notifier);
     if (subselection == 'text') {
       return Expanded(
         child: TextFormField(

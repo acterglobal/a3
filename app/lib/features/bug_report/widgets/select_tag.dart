@@ -28,7 +28,7 @@ class SelectTag extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final reportNotifier = ref.read(bugReportProvider.notifier);
+    final reportNotifier = ref.watch(bugReportProvider.notifier);
     return CustomSingleSelectField(
       items: tags,
       title: 'Select issue tag',

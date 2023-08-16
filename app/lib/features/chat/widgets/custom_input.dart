@@ -23,9 +23,9 @@ class CustomChatInput extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userId = ref.watch(clientProvider)!.userId().toString();
-    final chatInputNotifier = ref.read(chatInputProvider.notifier);
+    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     final chatInputState = ref.watch(chatInputProvider);
-    final chatRoomNotifier = ref.read(chatRoomProvider.notifier);
+    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
     final repliedToMessage =
         ref.watch(chatRoomProvider.notifier).repliedToMessage;
     final isAuthor = ref.watch(chatRoomProvider.notifier).isAuthor();
@@ -191,7 +191,7 @@ class CustomChatInput extends ConsumerWidget {
     final roomNotifier = ref.watch(chatRoomProvider.notifier);
     final authorId = roomNotifier.repliedToMessage!.author.id;
     final replyProfile = ref.watch(memberProfileProvider(authorId));
-    final inputNotifier = ref.read(chatInputProvider.notifier);
+    final inputNotifier = ref.watch(chatInputProvider.notifier);
     return Row(
       children: [
         replyProfile.when(
@@ -283,8 +283,8 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   Widget build(BuildContext context) {
     final mentionList = ref.watch(mentionListProvider);
     final mentionKey = ref.watch(mentionKeyProvider);
-    final chatInputNotifier = ref.read(chatInputProvider.notifier);
-    final chatRoomNotifier = ref.read(chatRoomProvider.notifier);
+    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
+    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
     final chatInputState = ref.watch(chatInputProvider);
     return FlutterMentions(
       key: mentionKey,

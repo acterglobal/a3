@@ -193,7 +193,7 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
     final suggestedUsers =
         ref.watch(filteredSuggestedUsersProvider(spaceId)).valueOrNull;
     final foundUsers = ref.watch(searchResultProvider);
-    final searchValueNotifier = ref.read(searchValueProvider.notifier);
+    final searchValueNotifier = ref.watch(searchValueProvider.notifier);
     final children = [];
 
     if (suggestedUsers != null && suggestedUsers.isNotEmpty) {

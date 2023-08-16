@@ -69,7 +69,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   Widget build(BuildContext context) {
     final titleInput = ref.watch(editTitleProvider);
     final avatarUpload = ref.watch(editAvatarProvider);
-    final avatarNotifier = ref.read(editAvatarProvider.notifier);
+    final avatarNotifier = ref.watch(editAvatarProvider.notifier);
     return SideSheet(
       header: 'Edit Space',
       addActions: true,

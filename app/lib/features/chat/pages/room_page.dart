@@ -133,7 +133,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     required int messageWidth,
     required bool showName,
   }) {
-    final roomNotifier = ref.read(chatRoomProvider.notifier);
+    final roomNotifier = ref.watch(chatRoomProvider.notifier);
     return TextMessageBuilder(
       message: m,
       onPreviewDataFetched: roomNotifier.handlePreviewDataFetched,
@@ -179,7 +179,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   Widget build(BuildContext context) {
     final client = ref.watch(clientProvider);
     final chatRoomState = ref.watch(chatRoomProvider);
-    final roomNotifier = ref.read(chatRoomProvider.notifier);
+    final roomNotifier = ref.watch(chatRoomProvider.notifier);
     final convo = ref.watch(currentConvoProvider);
     final convoProfile = ref.watch(chatProfileDataProvider(convo!));
     final activeMembers = ref.watch(chatMembersProvider(convo.getRoomIdStr()));

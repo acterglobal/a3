@@ -48,7 +48,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   @override
   Widget build(BuildContext context) {
     final bugReport = ref.watch(bugReportProvider);
-    final reportNotifier = ref.read(bugReportProvider.notifier);
+    final reportNotifier = ref.watch(bugReportProvider.notifier);
     final isLoading = ref.watch(loadingProvider);
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 350),

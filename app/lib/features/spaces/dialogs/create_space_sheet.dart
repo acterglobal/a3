@@ -48,7 +48,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   Widget build(BuildContext context) {
     final titleInput = ref.watch(titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
-    final parentNotifier = ref.read(parentSpaceProvider.notifier);
+    final parentNotifier = ref.watch(parentSpaceProvider.notifier);
     final parentSelected = currentParentSpace != null;
     return SideSheet(
       header: parentSelected ? 'Create Subspace' : 'Create Space',

@@ -19,9 +19,9 @@ class ChatPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(clientProvider)!;
-    final chatsNotifier = ref.read(chatListProvider.notifier);
+    final chatsNotifier = ref.watch(chatListProvider.notifier);
     final showSearch = ref.watch(_searchToggleProvider);
-    final searchNotifier = ref.read(_searchToggleProvider.notifier);
+    final searchNotifier = ref.watch(_searchToggleProvider.notifier);
     return SafeArea(
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.neutral,

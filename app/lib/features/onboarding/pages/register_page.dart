@@ -76,7 +76,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
-    final authNotifier = ref.read(authStateProvider.notifier);
+    final authNotifier = ref.watch(authStateProvider.notifier);
     return Scaffold(
       primary: false,
       appBar: AppBar(

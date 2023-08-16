@@ -55,7 +55,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
-    final parentNotifier = ref.read(parentSpaceProvider.notifier);
+    final parentNotifier = ref.watch(parentSpaceProvider.notifier);
     final avatarUpload = ref.watch(_avatarProvider);
     return SideSheet(
       header: 'Create Chat',

@@ -53,7 +53,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
-    final parentNotifier = ref.read(parentSpaceProvider.notifier);
+    final parentNotifier = ref.watch(parentSpaceProvider.notifier);
     final selectParentSpace = currentParentSpace != null;
     return SideSheet(
       header: 'Create new event',

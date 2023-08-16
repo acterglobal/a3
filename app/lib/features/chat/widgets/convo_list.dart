@@ -14,7 +14,7 @@ class ConvosList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(chatListProvider);
-    final chatsNotifier = ref.read(chatListProvider.notifier);
+    final chatsNotifier = ref.watch(chatListProvider.notifier);
     return chats.when(
       initial: () => const SizedBox.shrink(),
       loading: () => Center(

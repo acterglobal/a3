@@ -298,7 +298,7 @@ class PublicSpaceSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final searchTextCtrl = ref.watch(searchController);
-    final searchValueNotifier = ref.read(searchValueProvider.notifier);
+    final searchValueNotifier = ref.watch(searchValueProvider.notifier);
     return CustomScrollView(
       slivers: [
         SliverAppBar(
@@ -427,7 +427,7 @@ class PublicSpaceSelector extends ConsumerWidget {
 
   Widget serverTypeBuilder(BuildContext context, WidgetRef ref, Widget? child) {
     final selectedServer = ref.watch(selectedServerProvider);
-    final selectedServerNotifier = ref.read(selectedServerProvider.notifier);
+    final selectedServerNotifier = ref.watch(selectedServerProvider.notifier);
 
     final controller = ref.watch(serverTypeAheadController);
     final val = ref.watch(serverTypeAheadProvider);

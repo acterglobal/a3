@@ -36,8 +36,8 @@ class BubbleBuilder extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chatInputState = ref.watch(chatInputProvider);
-    final chatInputNotifier = ref.read(chatInputProvider.notifier);
-    final chatRoomNotifier = ref.read(chatRoomProvider.notifier);
+    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
+    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
     String msgType = '';
     if (message.metadata!.containsKey('eventType')) {
       msgType = message.metadata?['eventType'];
@@ -389,7 +389,7 @@ class _EmojiRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chatRoomNotifier = ref.read(chatRoomProvider.notifier);
+    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
     return Visibility(
       visible: message.id == chatRoomNotifier.currentMessageId,
       child: Container(

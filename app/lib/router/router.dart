@@ -93,7 +93,7 @@ final GlobalKey<NavigatorState> spaceNavKey = GlobalKey<NavigatorState>(
 );
 
 List<RouteBase> makeRoutes(Ref ref) {
-  final tabKeyNotifier = ref.read(selectedTabKeyProvider.notifier);
+  final tabKeyNotifier = ref.watch(selectedTabKeyProvider.notifier);
   return [
     GoRoute(
       name: Routes.intro.name,
