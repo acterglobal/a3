@@ -45,7 +45,7 @@ class _ImageMessageBuilderConsumerState
       if (widget.isReplyContent) {
         return ClipRRect(
           borderRadius: BorderRadius.circular(6),
-          child: Container(
+          child: ConstrainedBox(
             constraints: BoxConstraints(
               maxHeight: MediaQuery.of(context).size.height * 0.2,
               maxWidth: MediaQuery.of(context).size.width * 0.2,
@@ -75,40 +75,45 @@ class _ImageMessageBuilderConsumerState
                   child: child,
                 );
               },
-              fit: BoxFit.contain,
+              fit: BoxFit.cover,
             ),
           ),
         );
       }
       return ClipRRect(
         borderRadius: BorderRadius.circular(15),
-        child: Image.memory(
-          decodedImage!,
-          errorBuilder: (
-            BuildContext context,
-            Object url,
-            StackTrace? error,
-          ) {
-            return Text('Could not load image due to $error');
-          },
-          frameBuilder: (
-            BuildContext context,
-            Widget child,
-            int? frame,
-            bool wasSynchronouslyLoaded,
-          ) {
-            if (wasSynchronouslyLoaded) {
-              return child;
-            }
-            return AnimatedOpacity(
-              opacity: frame == null ? 0 : 1,
-              duration: const Duration(seconds: 1),
-              curve: Curves.easeOut,
-              child: child,
-            );
-          },
-          width: widget.messageWidth.toDouble(),
-          fit: BoxFit.cover,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.4,
+            maxWidth: MediaQuery.of(context).size.width * 0.4,
+          ),
+          child: Image.memory(
+            decodedImage!,
+            errorBuilder: (
+              BuildContext context,
+              Object url,
+              StackTrace? error,
+            ) {
+              return Text('Could not load image due to $error');
+            },
+            frameBuilder: (
+              BuildContext context,
+              Widget child,
+              int? frame,
+              bool wasSynchronouslyLoaded,
+            ) {
+              if (wasSynchronouslyLoaded) {
+                return child;
+              }
+              return AnimatedOpacity(
+                opacity: frame == null ? 0 : 1,
+                duration: const Duration(seconds: 1),
+                curve: Curves.easeOut,
+                child: child,
+              );
+            },
+            fit: BoxFit.cover,
+          ),
         ),
       );
     } else if (widget.message.uri.isNotEmpty && isURL(widget.message.uri)) {

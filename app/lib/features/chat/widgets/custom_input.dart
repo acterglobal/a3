@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
@@ -16,6 +18,7 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'package:mime/mime.dart';
 
 class CustomChatInput extends ConsumerWidget {
   const CustomChatInput({
@@ -219,9 +222,17 @@ class CustomChatInput extends ConsumerWidget {
                         child: _TextInputWidget(),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: InkWell(
+                        onTap: () => handleAttachment(ref, context),
+                        child: const Icon(Atlas.paperclip_attachment),
+                      ),
+                    ),
                     if (chatInputState.sendBtnVisible)
-                      _BuildSendBtn(
-                        onButtonPressed: () => onSendButtonPressed(ref),
+                      InkWell(
+                        onTap: () => onSendButtonPressed,
+                        child: const Icon(Atlas.paper_airplane),
                       ),
                   ],
                 ),
@@ -234,6 +245,48 @@ class CustomChatInput extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  void handleAttachment(WidgetRef ref, BuildContext ctx) async {
+    var chatRoomNotifier = ref.read(chatRoomProvider.notifier);
+    await chatRoomNotifier.handleFileSelection(ctx);
+    if (ctx.mounted) {
+      var selectionList = chatRoomNotifier.fileList;
+      String fileName = selectionList.first.path.split('/').last;
+      final mimeType = lookupMimeType(selectionList.first.path);
+      popUpDialog(
+        context: ctx,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Upload Files (${selectionList.length})',
+                style: Theme.of(ctx).textTheme.titleSmall,
+              ),
+            ),
+          ],
+        ),
+        subtitle: Visibility(
+          visible: selectionList.length <= 5,
+          child: _FileWidget(mimeType, selectionList.first),
+        ),
+        description: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(fileName, style: Theme.of(ctx).textTheme.bodySmall),
+        ),
+        btnText: 'Cancel',
+        btn2Text: 'Upload',
+        btn2Color: Theme.of(ctx).colorScheme.success,
+        btnBorderColor: Theme.of(ctx).colorScheme.errorContainer,
+        onPressedBtn: () => ctx.pop(),
+        onPressedBtn2: () async {
+          ctx.pop();
+          await chatRoomNotifier.handleFileUpload();
+        },
+      );
+    }
   }
 
   Future<void> onSendButtonPressed(WidgetRef ref) async {
@@ -251,6 +304,25 @@ class CustomChatInput extends ConsumerWidget {
         );
     ref.read(messageMarkDownProvider.notifier).update((state) => {});
     ref.read(mentionKeyProvider).currentState!.controller!.clear();
+  }
+}
+
+class _FileWidget extends ConsumerWidget {
+  const _FileWidget(this.mimeType, this.file);
+  final String? mimeType;
+  final File file;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (mimeType!.startsWith('image/')) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: Image.file(file, height: 200, fit: BoxFit.cover),
+      );
+    }
+    //FIXME: cover all mime extension cases?
+    else {
+      return const SizedBox.shrink();
+    }
   }
 }
 
@@ -449,22 +521,6 @@ class _ReplyContentWidget extends StatelessWidget {
       );
     }
     return messageWidget ?? const SizedBox.shrink();
-  }
-}
-
-class _BuildSendBtn extends StatelessWidget {
-  final Function()? onButtonPressed;
-
-  const _BuildSendBtn({
-    required this.onButtonPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onButtonPressed,
-      child: const Icon(Atlas.paper_airplane),
-    );
   }
 }
 

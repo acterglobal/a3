@@ -29,68 +29,6 @@ class RoomPage extends ConsumerStatefulWidget {
 }
 
 class _RoomPageConsumerState extends ConsumerState<RoomPage> {
-  void onAttach(BuildContext context) {
-    showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      context: context,
-      builder: (BuildContext context) {
-        return SafeArea(
-          child: SizedBox(
-            height: 124,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                GestureDetector(
-                  onTap: () => ref
-                      .read(chatRoomProvider.notifier)
-                      .handleImageSelection(context),
-                  child: Row(
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(Atlas.camera),
-                      ),
-                      const SizedBox(width: 10),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Text(
-                          AppLocalizations.of(context)!.photo,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () => ref
-                      .read(chatRoomProvider.notifier)
-                      .handleFileSelection(context),
-                  child: Row(
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(Atlas.document),
-                      ),
-                      const SizedBox(width: 10),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Text(
-                          AppLocalizations.of(context)!.file,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget textMessageBuilder(
     types.TextMessage m, {
     required int messageWidth,
@@ -284,7 +222,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             imageMessageBuilder: imageMessageBuilder,
             customMessageBuilder: customMessageBuilder,
             showUserAvatars: true,
-            onAttachmentPressed: () => onAttach(context),
             onMessageLongPress:
                 ref.read(chatRoomProvider.notifier).handleMessageTap,
             onMessageTap: ref.read(chatRoomProvider.notifier).handleMessageTap,
@@ -300,7 +237,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             },
             //Custom Theme class, see lib/common/store/chatTheme.dart
             theme: const ActerChatTheme(
-              attachmentButtonIcon: Icon(Atlas.plus_circle),
               sendButtonIcon: Icon(Atlas.paper_airplane),
             ),
           ),
