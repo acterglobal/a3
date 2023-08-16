@@ -367,10 +367,15 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
                         size: profile.hasAvatar() ? 18 : 36,
                       );
                     },
-                    error: (e, st) => Text(
-                      'Error loading avatar due to ${e.toString()}',
-                      textScaleFactor: 0.2,
-                    ),
+                    error: (e, st) {
+                      debugPrint('ERROR loading avatar due to $e');
+                      return ActerAvatar(
+                        mode: DisplayMode.User,
+                        uniqueId: roomMember['link'],
+                        displayName: title,
+                        size: 36,
+                      );
+                    },
                     loading: () => const CircularProgressIndicator(),
                   );
                 },

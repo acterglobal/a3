@@ -13,20 +13,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:jiffy/jiffy.dart';
 
 // chats stream provider
 final chatStreamProvider = StreamProvider<List<Convo>>((ref) async* {
   final client = ref.watch(clientProvider)!;
   StreamSubscription<FfiListConvo>? subscription;
   StreamController<List<Convo>> controller = StreamController<List<Convo>>();
-  List<Convo> conversations = [];
   subscription = client.convosRx().listen((event) {
     controller.add(event.toList());
     debugPrint('Acter Conversations Stream');
   });
   await for (var convoList in controller.stream) {
-    conversations = convoList;
-    conversations.retainWhere((room) => room.isJoined());
+    convoList.retainWhere((room) => room.isJoined());
+    List<Map<String, dynamic>> sortedConversations =
+        convoList.map((conversation) {
+      var time = Jiffy.parseFromMillisecondsSinceEpoch(
+        conversation.latestMessage()!.eventItem()!.originServerTs(),
+      );
+      return {'time': time, 'conversation': conversation};
+    }).toList()
+          ..sort(
+            (a, b) => (b['time'] as Jiffy).isAfter(a['time'] as Jiffy) ? -1 : 1,
+          );
+
+    var conversations = sortedConversations.reversed
+        .map((item) => (item['conversation']) as Convo)
+        .toList();
     //FIXME: how to check empty chats ?
     if (conversations.isNotEmpty) {
       yield conversations;

@@ -101,7 +101,7 @@ dependencies:
   freezed_annotation: ^2.4.1
   http_parser: ^4.0.2
   flutter_custom_selector: ^0.0.3
-  date_format: ^2.0.2
+  jiffy: ^6.2.1
   screenshot: ^2.1.0
   http: ^1.0.0
   string_validator: ^1.0.0

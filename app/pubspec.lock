@@ -298,14 +298,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
-  date_format:
-    dependency: "direct main"
-    description:
-      name: date_format
-      sha256: "8e5154ca363411847220c8cbc43afcf69c08e8debe40ba09d57710c25711760c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.7"
   dbus:
     dependency: transitive
     description:
@@ -935,6 +927,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  jiffy:
+    dependency: "direct main"
+    description:
+      name: jiffy
+      sha256: cc1d4b75016a9156c29b5d61f0c9176c3e0fb0580cc5a0e0422b5d2cab3fbfff
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.2.1"
   js:
     dependency: transitive
     description:

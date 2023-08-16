@@ -90,16 +90,21 @@ final relatedChatsProvider = FutureProvider.autoDispose
 
 // Member Providers
 final memberProfileProvider =
-    FutureProvider.family.autoDispose<ProfileData, String>((ref, userId) async {
-  final member = await ref.watch(memberProvider(userId).future);
-  UserProfile profile = member.getProfile();
-  OptionString displayName = await profile.getDisplayName();
-  final avatar = await profile.getThumbnail(62, 60);
-  return ProfileData(displayName.text(), avatar.data());
+    FutureProvider.family<ProfileData, String>((ref, userId) async {
+  final member = ref.watch(memberProvider(userId));
+  return member.maybeWhen(
+    data: (data) async {
+      UserProfile profile = data!.getProfile();
+      OptionString displayName = await profile.getDisplayName();
+      final avatar = await profile.getThumbnail(62, 60);
+      return ProfileData(displayName.text(), avatar.data());
+    },
+    orElse: () => ProfileData('', null),
+  );
 });
 
 final memberProvider =
-    FutureProvider.family<Member, String>((ref, userId) async {
-  final convo = ref.watch(currentConvoProvider)!;
-  return await convo.getMember(userId);
+    FutureProvider.family<Member?, String>((ref, userId) async {
+  final convo = ref.watch(currentConvoProvider);
+  return await convo!.getMember(userId);
 });
