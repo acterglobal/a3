@@ -10,7 +10,6 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 class ConvoCard extends ConsumerStatefulWidget {
   final Convo room;
@@ -376,14 +375,11 @@ class _TrailingWidget extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    int ts = eventItem.originServerTs();
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          DateFormat.Hm().format(
-            DateTime.fromMillisecondsSinceEpoch(ts, isUtc: true),
-          ),
+          jiffyTime(latestMessage!.eventItem()!.originServerTs()),
           style: Theme.of(context).textTheme.labelMedium,
         ),
       ],
