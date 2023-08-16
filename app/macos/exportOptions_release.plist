@@ -11,7 +11,7 @@
     <key>provisioningProfiles</key>
     <dict>
         <key>global.acter.a3</key>
-        <string>Acter iOS App Release</string>
+        <string>Acter MacApp Release</string>
     </dict>
     <key>signingCertificate</key>
     <string>Apple Distribution</string>
