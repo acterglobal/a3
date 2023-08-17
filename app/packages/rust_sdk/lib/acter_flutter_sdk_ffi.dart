@@ -9138,7 +9138,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListDeviceRecord? __verificationSessionManagerAllSessionsFuturePoll(
+  FfiListDeviceRecord? __sessionManagerAllSessionsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -9152,7 +9152,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _verificationSessionManagerAllSessionsFuturePoll(
+    final tmp6 = _sessionManagerAllSessionsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -9186,7 +9186,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListDeviceRecord? __verificationSessionManagerVerifiedSessionsFuturePoll(
+  FfiListDeviceRecord? __sessionManagerVerifiedSessionsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -9200,7 +9200,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _verificationSessionManagerVerifiedSessionsFuturePoll(
+    final tmp6 = _sessionManagerVerifiedSessionsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -9234,7 +9234,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListDeviceRecord? __verificationSessionManagerUnverifiedSessionsFuturePoll(
+  FfiListDeviceRecord? __sessionManagerUnverifiedSessionsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -9248,7 +9248,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _verificationSessionManagerUnverifiedSessionsFuturePoll(
+    final tmp6 = _sessionManagerUnverifiedSessionsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -9282,7 +9282,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListDeviceRecord? __verificationSessionManagerInactiveSessionsFuturePoll(
+  FfiListDeviceRecord? __sessionManagerInactiveSessionsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -9296,7 +9296,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _verificationSessionManagerInactiveSessionsFuturePoll(
+    final tmp6 = _sessionManagerInactiveSessionsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -17521,17 +17521,16 @@ class Api {
           _ClientVerificationEventRxReturn Function(
             int,
           )>();
-  late final _clientVerificationSessionManagerPtr = _lookup<
+  late final _clientSessionManagerPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__Client_verification_session_manager");
+          )>>("__Client_session_manager");
 
-  late final _clientVerificationSessionManager =
-      _clientVerificationSessionManagerPtr.asFunction<
-          int Function(
-            int,
-          )>();
+  late final _clientSessionManager = _clientSessionManagerPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _clientDeviceChangedEventRxPtr = _lookup<
       ffi.NativeFunction<
           _ClientDeviceChangedEventRxReturn Function(
@@ -18262,47 +18261,47 @@ class Api {
           _VerificationEmojiDescriptionReturn Function(
             int,
           )>();
-  late final _verificationSessionManagerAllSessionsPtr = _lookup<
+  late final _sessionManagerAllSessionsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__VerificationSessionManager_all_sessions");
+          )>>("__SessionManager_all_sessions");
 
-  late final _verificationSessionManagerAllSessions =
-      _verificationSessionManagerAllSessionsPtr.asFunction<
+  late final _sessionManagerAllSessions =
+      _sessionManagerAllSessionsPtr.asFunction<
           int Function(
             int,
           )>();
-  late final _verificationSessionManagerVerifiedSessionsPtr = _lookup<
+  late final _sessionManagerVerifiedSessionsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__VerificationSessionManager_verified_sessions");
+          )>>("__SessionManager_verified_sessions");
 
-  late final _verificationSessionManagerVerifiedSessions =
-      _verificationSessionManagerVerifiedSessionsPtr.asFunction<
+  late final _sessionManagerVerifiedSessions =
+      _sessionManagerVerifiedSessionsPtr.asFunction<
           int Function(
             int,
           )>();
-  late final _verificationSessionManagerUnverifiedSessionsPtr = _lookup<
+  late final _sessionManagerUnverifiedSessionsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__VerificationSessionManager_unverified_sessions");
+          )>>("__SessionManager_unverified_sessions");
 
-  late final _verificationSessionManagerUnverifiedSessions =
-      _verificationSessionManagerUnverifiedSessionsPtr.asFunction<
+  late final _sessionManagerUnverifiedSessions =
+      _sessionManagerUnverifiedSessionsPtr.asFunction<
           int Function(
             int,
           )>();
-  late final _verificationSessionManagerInactiveSessionsPtr = _lookup<
+  late final _sessionManagerInactiveSessionsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__VerificationSessionManager_inactive_sessions");
+          )>>("__SessionManager_inactive_sessions");
 
-  late final _verificationSessionManagerInactiveSessions =
-      _verificationSessionManagerInactiveSessionsPtr.asFunction<
+  late final _sessionManagerInactiveSessions =
+      _sessionManagerInactiveSessionsPtr.asFunction<
           int Function(
             int,
           )>();
@@ -21039,66 +21038,62 @@ class Api {
             int,
             int,
           )>();
-  late final _verificationSessionManagerAllSessionsFuturePollPtr = _lookup<
+  late final _sessionManagerAllSessionsFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _VerificationSessionManagerAllSessionsFuturePollReturn Function(
+          _SessionManagerAllSessionsFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__VerificationSessionManager_all_sessions_future_poll");
+          )>>("__SessionManager_all_sessions_future_poll");
 
-  late final _verificationSessionManagerAllSessionsFuturePoll =
-      _verificationSessionManagerAllSessionsFuturePollPtr.asFunction<
-          _VerificationSessionManagerAllSessionsFuturePollReturn Function(
+  late final _sessionManagerAllSessionsFuturePoll =
+      _sessionManagerAllSessionsFuturePollPtr.asFunction<
+          _SessionManagerAllSessionsFuturePollReturn Function(
             int,
             int,
             int,
           )>();
-  late final _verificationSessionManagerVerifiedSessionsFuturePollPtr = _lookup<
+  late final _sessionManagerVerifiedSessionsFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _VerificationSessionManagerVerifiedSessionsFuturePollReturn Function(
+          _SessionManagerVerifiedSessionsFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__VerificationSessionManager_verified_sessions_future_poll");
+          )>>("__SessionManager_verified_sessions_future_poll");
 
-  late final _verificationSessionManagerVerifiedSessionsFuturePoll =
-      _verificationSessionManagerVerifiedSessionsFuturePollPtr.asFunction<
-          _VerificationSessionManagerVerifiedSessionsFuturePollReturn Function(
+  late final _sessionManagerVerifiedSessionsFuturePoll =
+      _sessionManagerVerifiedSessionsFuturePollPtr.asFunction<
+          _SessionManagerVerifiedSessionsFuturePollReturn Function(
             int,
             int,
             int,
           )>();
-  late final _verificationSessionManagerUnverifiedSessionsFuturePollPtr =
-      _lookup<
-              ffi.NativeFunction<
-                  _VerificationSessionManagerUnverifiedSessionsFuturePollReturn
-                      Function(
-                    ffi.Int64,
-                    ffi.Int64,
-                    ffi.Int64,
-                  )>>(
-          "__VerificationSessionManager_unverified_sessions_future_poll");
+  late final _sessionManagerUnverifiedSessionsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SessionManagerUnverifiedSessionsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__SessionManager_unverified_sessions_future_poll");
 
-  late final _verificationSessionManagerUnverifiedSessionsFuturePoll =
-      _verificationSessionManagerUnverifiedSessionsFuturePollPtr.asFunction<
-          _VerificationSessionManagerUnverifiedSessionsFuturePollReturn
-              Function(
+  late final _sessionManagerUnverifiedSessionsFuturePoll =
+      _sessionManagerUnverifiedSessionsFuturePollPtr.asFunction<
+          _SessionManagerUnverifiedSessionsFuturePollReturn Function(
             int,
             int,
             int,
           )>();
-  late final _verificationSessionManagerInactiveSessionsFuturePollPtr = _lookup<
+  late final _sessionManagerInactiveSessionsFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _VerificationSessionManagerInactiveSessionsFuturePollReturn Function(
+          _SessionManagerInactiveSessionsFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__VerificationSessionManager_inactive_sessions_future_poll");
+          )>>("__SessionManager_inactive_sessions_future_poll");
 
-  late final _verificationSessionManagerInactiveSessionsFuturePoll =
-      _verificationSessionManagerInactiveSessionsFuturePollPtr.asFunction<
-          _VerificationSessionManagerInactiveSessionsFuturePollReturn Function(
+  late final _sessionManagerInactiveSessionsFuturePoll =
+      _sessionManagerInactiveSessionsFuturePollPtr.asFunction<
+          _SessionManagerInactiveSessionsFuturePollReturn Function(
             int,
             int,
             int,
@@ -37466,17 +37461,18 @@ class Client {
     return tmp2;
   }
 
-  VerificationSessionManager verificationSessionManager() {
+  /// Get session manager that returns all/verified/unverified/inactive session list
+  SessionManager sessionManager() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientVerificationSessionManager(
+    final tmp1 = _api._clientSessionManager(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_VerificationSessionManager");
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_SessionManager");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = VerificationSessionManager._(_api, tmp3_1);
+    final tmp2 = SessionManager._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -39012,73 +39008,73 @@ class VerificationEmoji {
   }
 }
 
-class VerificationSessionManager {
+class SessionManager {
   final Api _api;
   final _Box _box;
 
-  VerificationSessionManager._(this._api, this._box);
+  SessionManager._(this._api, this._box);
 
   Future<FfiListDeviceRecord> allSessions() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationSessionManagerAllSessions(
+    final tmp1 = _api._sessionManagerAllSessions(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(
-        _api, tmp3_0, "__VerificationSessionManager_all_sessions_future_drop");
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__SessionManager_all_sessions_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__verificationSessionManagerAllSessionsFuturePoll);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__sessionManagerAllSessionsFuturePoll);
     return tmp2;
   }
 
   Future<FfiListDeviceRecord> verifiedSessions() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationSessionManagerVerifiedSessions(
+    final tmp1 = _api._sessionManagerVerifiedSessions(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
-        "__VerificationSessionManager_verified_sessions_future_drop");
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__SessionManager_verified_sessions_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__verificationSessionManagerVerifiedSessionsFuturePoll);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__sessionManagerVerifiedSessionsFuturePoll);
     return tmp2;
   }
 
   Future<FfiListDeviceRecord> unverifiedSessions() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationSessionManagerUnverifiedSessions(
+    final tmp1 = _api._sessionManagerUnverifiedSessions(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
-        "__VerificationSessionManager_unverified_sessions_future_drop");
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__SessionManager_unverified_sessions_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(
-        tmp3_1, _api.__verificationSessionManagerUnverifiedSessionsFuturePoll);
+        tmp3_1, _api.__sessionManagerUnverifiedSessionsFuturePoll);
     return tmp2;
   }
 
   Future<FfiListDeviceRecord> inactiveSessions() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationSessionManagerInactiveSessions(
+    final tmp1 = _api._sessionManagerInactiveSessions(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
-        "__VerificationSessionManager_inactive_sessions_future_drop");
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__SessionManager_inactive_sessions_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__verificationSessionManagerInactiveSessionsFuturePoll);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__sessionManagerInactiveSessionsFuturePoll);
     return tmp2;
   }
 
@@ -44265,8 +44261,7 @@ class _VerificationEventReviewVerificationMacFuturePollReturn
   external int arg5;
 }
 
-class _VerificationSessionManagerAllSessionsFuturePollReturn
-    extends ffi.Struct {
+class _SessionManagerAllSessionsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -44281,8 +44276,7 @@ class _VerificationSessionManagerAllSessionsFuturePollReturn
   external int arg5;
 }
 
-class _VerificationSessionManagerVerifiedSessionsFuturePollReturn
-    extends ffi.Struct {
+class _SessionManagerVerifiedSessionsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -44297,8 +44291,7 @@ class _VerificationSessionManagerVerifiedSessionsFuturePollReturn
   external int arg5;
 }
 
-class _VerificationSessionManagerUnverifiedSessionsFuturePollReturn
-    extends ffi.Struct {
+class _SessionManagerUnverifiedSessionsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -44313,8 +44306,7 @@ class _VerificationSessionManagerUnverifiedSessionsFuturePollReturn
   external int arg5;
 }
 
-class _VerificationSessionManagerInactiveSessionsFuturePollReturn
-    extends ffi.Struct {
+class _SessionManagerInactiveSessionsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

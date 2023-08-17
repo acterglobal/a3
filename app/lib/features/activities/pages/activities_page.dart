@@ -1,4 +1,5 @@
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/providers/cross_signing_providers.dart';
@@ -7,7 +8,7 @@ import 'package:acter/features/activities/providers/notifications_providers.dart
 import 'package:acter/features/activities/providers/notifiers/notifications_list_notifier.dart';
 import 'package:acter/features/activities/widgets/invitation_card.dart';
 import 'package:acter/features/activities/widgets/notification_card.dart';
-import 'package:acter/features/activities/widgets/verification_session_card.dart';
+import 'package:acter/features/activities/widgets/session_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,20 @@ class ActivitiesPage extends ConsumerWidget {
     final children = [];
     unverifiedSessions.when(
       data: (sessions) {
-        if (sessions.isNotEmpty) {
+        if (sessions.length == 1) {
+          children.add(
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext ctx, int index) {
+                  return SessionCard(
+                    deviceRecord: sessions[index],
+                  );
+                },
+                childCount: sessions.length,
+              ),
+            ),
+          );
+        } else if (sessions.length > 1) {
           children.add(
             SliverToBoxAdapter(
               child: Padding(
@@ -36,22 +50,30 @@ class ActivitiesPage extends ConsumerWidget {
                   horizontal: 10,
                   vertical: 5,
                 ),
-                child: Text(
-                  'Unverified Sessions',
-                  style: Theme.of(context).textTheme.headlineSmall,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'You have ${sessions.length} unverified sessions log in',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    ElevatedButton(
+                      onPressed: () => onReviewSessions(context, ref),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.neutral,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.success,
+                        ),
+                        foregroundColor: Theme.of(context).colorScheme.neutral6,
+                        textStyle: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      child: const Text('Review'),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-          );
-          children.add(
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext ctx, int index) {
-                  return VerificationSessionCard(
-                    deviceRecord: sessions[index],
-                  );
-                },
-                childCount: sessions.length,
               ),
             ),
           );
@@ -149,6 +171,86 @@ class ActivitiesPage extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void onReviewSessions(BuildContext context, WidgetRef ref) {
+    var allSessions = ref.read(allSessionsProvider);
+    var unverifiedSessions = ref.read(unverifiedSessionsProvider);
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext ctx1) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Sessions'),
+              const SizedBox(height: 15),
+              Padding(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
+                child: Text(
+                  'All Sessions',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+              allSessions.when(
+                data: (sessions) {
+                  debugPrint('$sessions');
+                  return Expanded(
+                    child: ListView.builder(
+                      itemBuilder: (BuildContext ctx2, int index) {
+                        return SessionCard(
+                          deviceRecord: sessions[index],
+                        );
+                      },
+                      itemCount: sessions.length,
+                    ),
+                  );
+                },
+                error: (error, stack) {
+                  return const Text("Couldn't load all sessions");
+                },
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
+                child: Text(
+                  'Unverified Sessions',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+              unverifiedSessions.when(
+                data: (sessions) => Expanded(
+                  child: ListView.builder(
+                    itemBuilder: (BuildContext ctx2, int index) {
+                      return SessionCard(
+                        deviceRecord: sessions[index],
+                      );
+                    },
+                    itemCount: sessions.length,
+                  ),
+                ),
+                error: (error, stack) {
+                  return const Text("Couldn't load unverified sessions");
+                },
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -32,7 +32,10 @@ use matrix_sdk::{
     },
     Client as SdkClient,
 };
-use std::sync::Arc;
+use std::{
+    sync::Arc,
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
 use tokio::sync::Mutex;
 use tracing::{error, info, warn};
 
@@ -1105,11 +1108,11 @@ impl VerificationController {
     }
 }
 
-pub struct VerificationSessionManager {
+pub struct SessionManager {
     client: SdkClient,
 }
 
-impl VerificationSessionManager {
+impl SessionManager {
     pub async fn all_sessions(&self) -> Result<Vec<DeviceRecord>> {
         let client = self.client.clone();
         RUNTIME
@@ -1199,7 +1202,19 @@ impl VerificationSessionManager {
                 let response = client.devices().await?;
                 let mut sessions = vec![];
                 for device in response.devices {
-                    if device.last_seen_ts.is_none() {
+                    let mut is_inactive = true;
+                    if let Some(last_seen_ts) = device.last_seen_ts {
+                        let limit = SystemTime::now()
+                            .checked_sub(Duration::from_secs(90 * 24 * 60 * 60))
+                            .context("Couldn't get time of 90 days ago")?
+                            .duration_since(UNIX_EPOCH)
+                            .context("Couldn't calculate duration from Unix epoch")?;
+                        let secs: u64 = last_seen_ts.as_secs().into();
+                        if secs > limit.as_secs() {
+                            is_inactive = false;
+                        }
+                    }
+                    if is_inactive {
                         sessions.push(DeviceRecord::new(
                             device.device_id,
                             device.display_name,
@@ -1223,8 +1238,8 @@ impl Client {
         }
     }
 
-    pub fn verification_session_manager(&self) -> VerificationSessionManager {
+    pub fn session_manager(&self) -> SessionManager {
         let client = self.core.client().clone();
-        VerificationSessionManager { client }
+        SessionManager { client }
     }
 }

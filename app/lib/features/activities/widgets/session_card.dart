@@ -3,10 +3,10 @@ import 'dart:core';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
-class VerificationSessionCard extends StatelessWidget {
+class SessionCard extends StatelessWidget {
   final DeviceRecord deviceRecord;
 
-  const VerificationSessionCard({
+  const SessionCard({
     Key? key,
     required this.deviceRecord,
   }) : super(key: key);

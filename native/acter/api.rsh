@@ -1626,7 +1626,8 @@ object Client {
     /// Get the verification event receiver
     fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
 
-    fn verification_session_manager() -> VerificationSessionManager;
+    /// Get session manager that returns all/verified/unverified/inactive session list
+    fn session_manager() -> SessionManager;
 
     /// Return the event handler of device changed
     fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
@@ -1821,7 +1822,7 @@ object VerificationEmoji {
     fn description() -> string;
 }
 
-object VerificationSessionManager {
+object SessionManager {
     fn all_sessions() -> Future<Result<Vec<DeviceRecord>>>;
     fn verified_sessions() -> Future<Result<Vec<DeviceRecord>>>;
     fn unverified_sessions() -> Future<Result<Vec<DeviceRecord>>>;

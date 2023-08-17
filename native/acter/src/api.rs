@@ -86,7 +86,7 @@ pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
 pub use typing::TypingEvent;
-pub use verification::{VerificationEmoji, VerificationEvent, VerificationSessionManager};
+pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
 
 pub type DeviceId = matrix_sdk::ruma::OwnedDeviceId;
 pub type EventId = matrix_sdk::ruma::OwnedEventId;
