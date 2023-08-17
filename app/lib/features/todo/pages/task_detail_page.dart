@@ -193,7 +193,7 @@ class _NameWidget extends StatelessWidget {
         children: <Widget>[
           InkWell(
             onTap: () async {
-              var eventId = await controller.updateToDoTask(
+              final eventId = await controller.updateToDoTask(
                 task,
                 list,
                 null,

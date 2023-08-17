@@ -49,8 +49,9 @@ class AsyncSpaceProfileDataNotifier
 class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _sub;
+
   Future<Space?> _getSpace() async {
-    final client = ref.watch(clientProvider)!;
+    final client = ref.read(clientProvider)!;
     try {
       return await client.getSpace(arg);
     } catch (e) {
@@ -89,7 +90,7 @@ class AsyncSpacesNotifier extends AsyncNotifier<List<Space>> {
   late StreamSubscription<bool> _sub;
 
   Future<List<Space>> _getSpaces() async {
-    final client = ref.watch(clientProvider)!;
+    final client = ref.read(clientProvider)!;
     final spaces = await client.spaces();
     return spaces.toList(); // this might throw internally
   }
