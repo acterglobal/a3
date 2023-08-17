@@ -347,7 +347,7 @@ class MemberListEntry extends ConsumerWidget {
               uniqueId: userId,
               displayName: userId,
               mode: DisplayMode.User,
-              size: 18,
+              size: 36,
             );
           },
         ),
