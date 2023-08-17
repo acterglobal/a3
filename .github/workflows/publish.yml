@@ -186,9 +186,6 @@ jobs:
         if: matrix.flutter_config
         run: flutter config ${{ matrix.flutter_config }}
 
-      - name: Build Rust Lib
-        run: cargo make --profile release ${{ matrix.cargo_make_args}}
-
       - name: Install the Apple iOS certificate and provisioning profile
         if: matrix.target == 'ios' || matrix.target == 'macos'
         env:
@@ -207,8 +204,9 @@ jobs:
           echo "vars set"
           # import certificate and provisioning profile from secrets
           echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output "$CERTIFICATE_PATH"
-          echo -n "$BUILD_PROVISION_PROFILE_IOS_BASE64" | base64 --decode --output "IOS_$PP_PATH"
+          echo -n "$BUILD_PROVISION_PROFILE_IOS_BASE64" | base64 --decode --output "$IOS_PP_PATH"
           echo -n "$BUILD_PROVISION_PROFILE_MACAPP_BASE64" | base64 --decode --output "$MAC_PP_PATH"
+          ls -ltash $RUNNER_TEMP/*
           # create temporary keychain
           echo "creating keychain"
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
@@ -226,6 +224,11 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $IOS_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/Acter_iOS_App_Release.mobileprovision
           cp $MAC_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/Acter_MacApp_Release.mobileprovision
+          ls ~/Library/MobileDevice/Provisioning\ Profiles/
+
+
+      - name: Build Rust Lib
+        run: cargo make --profile release ${{ matrix.cargo_make_args}}
 
       - name: Expose JKS file
         if: matrix.target == 'android'
@@ -257,7 +260,7 @@ jobs:
         if: ${{ always() && (matrix.target == 'ios' || matrix.target == 'macos') }}
         run: |
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision
 
       - name: Generate manifest
         if: matrix.target == 'ios'
