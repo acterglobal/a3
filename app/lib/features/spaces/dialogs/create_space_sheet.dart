@@ -39,7 +39,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      var parentNotifier = ref.read(parentSpaceProvider.notifier);
+      final parentNotifier = ref.read(parentSpaceProvider.notifier);
       parentNotifier.state = widget.initialParentsSpaceId;
     });
   }
@@ -148,7 +148,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                   trailing:
                       parentSelected ? Consumer(builder: parentBuilder) : null,
                   onTap: () async {
-                    var newSelectedSpaceId = await selectSpaceDrawer(
+                    final newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
                       currentSpaceId: ref.read(parentSpaceProvider),
                       title: const Text('Select parent space'),
@@ -279,24 +279,24 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       isLoader: true,
     );
     try {
-      var sdk = await ref.read(sdkProvider.future);
-      var config = sdk.newSpaceSettingsBuilder();
+      final sdk = await ref.read(sdkProvider.future);
+      final config = sdk.newSpaceSettingsBuilder();
       config.setName(spaceName);
       if (description.isNotEmpty) {
         config.setTopic(description);
       }
-      var localUri = ref.read(avatarProvider);
+      final localUri = ref.read(avatarProvider);
       if (localUri.isNotEmpty) {
         config.setAvatarUri(localUri); // space creation will upload it
       }
-      var parentRoomId = ref.read(parentSpaceProvider);
+      final parentRoomId = ref.read(parentSpaceProvider);
       if (parentRoomId != null) {
         config.setParent(parentRoomId);
       }
-      var client = ref.read(clientProvider)!;
-      var roomId = await client.createActerSpace(config.build());
+      final client = ref.read(clientProvider)!;
+      final roomId = await client.createActerSpace(config.build());
       if (parentRoomId != null) {
-        var space = await ref.read(spaceProvider(parentRoomId).future);
+        final space = await ref.read(spaceProvider(parentRoomId).future);
         await space.addChildSpace(roomId.toString());
       }
 

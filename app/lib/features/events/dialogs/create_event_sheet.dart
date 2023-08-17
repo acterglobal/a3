@@ -44,7 +44,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      var parentNotifier = ref.read(parentSpaceProvider.notifier);
+      final parentNotifier = ref.read(parentSpaceProvider.notifier);
       parentNotifier.state = widget.initialSelectedSpace;
     });
   }
@@ -229,7 +229,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                         ? Consumer(builder: parentSpaceBuilder)
                         : null,
                     onTap: () async {
-                      var newSelectedSpaceId = await selectSpaceDrawer(
+                      final newSelectedSpaceId = await selectSpaceDrawer(
                         context: context,
                         currentSpaceId: ref.read(parentSpaceProvider),
                         title: const Text('Select parent space'),
@@ -309,26 +309,26 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
     }
     if (_startTimeController.text.isEmpty) {
-      var time = ref.read(_startTimeProvider).format(context);
+      final time = ref.read(_startTimeProvider).format(context);
       _startTimeController.text = time;
     }
     if (_endTimeController.text.isEmpty) {
-      var time = ref.read(_endTimeProvider).format(context);
+      final time = ref.read(_endTimeProvider).format(context);
       _endTimeController.text = time;
     }
     try {
-      var space = await ref.read(
+      final space = await ref.read(
         spaceProvider(widget.initialSelectedSpace!).future,
       );
-      var draft = space.calendarEventDraft();
+      final draft = space.calendarEventDraft();
 
       draft.title(ref.read(_titleProvider));
       draft.descriptionText(_descriptionController.text.trim());
 
       // convert selected date time to utc and RFC3339 format
-      var date = ref.read(_dateProvider);
-      var startTime = ref.read(_startTimeProvider);
-      var utcStartDateTime = DateTime(
+      final date = ref.read(_dateProvider);
+      final startTime = ref.read(_startTimeProvider);
+      final utcStartDateTime = DateTime(
         date.year,
         date.month,
         date.day,
@@ -337,8 +337,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       ).toUtc();
       draft.utcStartFromRfc3339(utcStartDateTime.toIso8601String());
 
-      var endTime = ref.read(_endTimeProvider);
-      var utcEndDateTime = DateTime(
+      final endTime = ref.read(_endTimeProvider);
+      final utcEndDateTime = DateTime(
         date.year,
         date.month,
         date.day,
@@ -347,7 +347,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       ).toUtc();
       draft.utcEndFromRfc3339(utcEndDateTime.toIso8601String());
 
-      var eventId = await draft.send();
+      final eventId = await draft.send();
       debugPrint('Created Calendar Event: ${eventId.toString()}');
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
@@ -393,7 +393,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     }
     if (picked != null) {
       ref.read(_startTimeProvider.notifier).update((state) => picked);
-      var time = ref.read(_startTimeProvider).format(context);
+      final time = ref.read(_startTimeProvider).format(context);
       _startTimeController.text = time;
     }
   }
@@ -411,7 +411,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     }
     if (picked != null) {
       ref.read(_endTimeProvider.notifier).update((state) => picked);
-      var time = ref.read(_endTimeProvider).format(context);
+      final time = ref.read(_endTimeProvider).format(context);
       _endTimeController.text = time;
     }
   }

@@ -37,10 +37,10 @@ class BugReportStateNotifier extends StateNotifier<BugReport> {
 
   Future<String> report(String? screenshotPath) async {
     ref.read(loadingProvider.notifier).update((state) => !state);
-    var sdk = await ActerSdk.instance;
+    final sdk = await ActerSdk.instance;
     String logFile = sdk.rotateLogFile();
 
-    var request = http.MultipartRequest('POST', Uri.parse(rageshakeUrl));
+    final request = http.MultipartRequest('POST', Uri.parse(rageshakeUrl));
     request.fields.addAll({
       'text': state.description,
       'user_agent': userAgent,
@@ -67,7 +67,7 @@ class BugReportStateNotifier extends StateNotifier<BugReport> {
         ),
       );
     }
-    var resp = await request.send();
+    final resp = await request.send();
     if (resp.statusCode == HttpStatus.ok) {
       Map<String, dynamic> json = jsonDecode(await resp.stream.bytesToString());
       if (screenshotPath != null) {

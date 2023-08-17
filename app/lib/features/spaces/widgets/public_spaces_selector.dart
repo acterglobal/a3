@@ -121,8 +121,8 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchState>
   void readData() async {
     try {
       await ref.debounce(const Duration(milliseconds: 300));
-      var newSearchValue = ref.read(searchValueProvider);
-      var newSelectedSever = ref.read(selectedServerProvider);
+      final newSearchValue = ref.read(searchValueProvider);
+      final newSelectedSever = ref.read(selectedServerProvider);
       refresh(newSearchValue, newSelectedSever);
     } catch (e) {
       // we do not care.
@@ -146,14 +146,14 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchState>
       return null;
     }
 
-    var pageReq = page.next ?? '';
-    var client = ref.read(clientProvider)!;
-    var searchValue = state.searchValue;
-    var server = state.server;
+    final pageReq = page.next ?? '';
+    final client = ref.read(clientProvider)!;
+    final searchValue = state.searchValue;
+    final server = state.server;
     try {
-      var res = await client.publicSpaces(searchValue, server, pageReq);
-      var entries = res.chunks();
-      var next = res.nextBatch();
+      final res = await client.publicSpaces(searchValue, server, pageReq);
+      final entries = res.chunks();
+      final next = res.nextBatch();
       Next? finalPageKey;
       if (next != null) {
         // we are not at the end

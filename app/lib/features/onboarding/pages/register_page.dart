@@ -54,12 +54,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   Future<void> handleSubmit() async {
     if (formKey.currentState!.validate()) {
-      var network = ref.read(networkAwareProvider);
+      final network = ref.read(networkAwareProvider);
       if (!inCI && network == NetworkStatus.Off) {
         showNoInternetNotification();
       } else {
-        var notifier = ref.read(authStateProvider.notifier);
-        var errorMsg = await notifier.register(
+        final authNotifier = ref.read(authStateProvider.notifier);
+        final errorMsg = await authNotifier.register(
           username.text,
           password.text,
           name.text,
@@ -144,7 +144,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         if (val == null || val.trim().isEmpty) {
                           return AppLocalizations.of(context)!.emptyUsername;
                         }
-                        var cleanedVal = val.trim().toLowerCase();
+                        final cleanedVal = val.trim().toLowerCase();
                         if (!usernamePattern.hasMatch(cleanedVal)) {
                           return 'Username may only contain letters a-z, numbers and any of  ._=-/';
                         }

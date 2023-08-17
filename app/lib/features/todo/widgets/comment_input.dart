@@ -42,7 +42,7 @@ class CommentInputState extends ConsumerState<CommentInput> {
   }
 
   Future<void> onSend() async {
-    var eventId = await controller.sendComment(
+    final eventId = await controller.sendComment(
       widget.task.commentsManager.commentDraft(),
       _inputController.text.trim(),
     );

@@ -115,7 +115,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                         )
                       : null,
                   onTap: () async {
-                    var newSelectedSpaceId = await selectSpaceDrawer(
+                    final newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
                       currentSpaceId: ref.read(selectedSpaceIdProvider),
                       canCheck: 'CanPostNews',
@@ -150,9 +150,9 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
         ElevatedButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
-              var spaceId = ref.read(selectedSpaceIdProvider);
-              var file = ref.read(selectedImageProvider);
-              var caption = ref.read(textProvider);
+              final spaceId = ref.read(selectedSpaceIdProvider);
+              final file = ref.read(selectedImageProvider);
+              final caption = ref.read(textProvider);
               late String displayMsg;
 
               if (file == null) {
@@ -170,7 +170,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 isLoader: true,
               );
 
-              var space = await ref.read(spaceProvider(spaceId!).future);
+              final space = await ref.read(spaceProvider(spaceId!).future);
               NewsEntryDraft draft = space.newsDraft();
               if (file == null) {
                 draft.addTextSlide(caption);
@@ -180,7 +180,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 if (mimeType != null) {
                   if (mimeType.startsWith('image/')) {
                     Uint8List bytes = await file.readAsBytes();
-                    var decodedImage = await decodeImageFromList(bytes);
+                    final decodedImage = await decodeImageFromList(bytes);
                     await draft.addImageSlide(
                       caption,
                       file.path,

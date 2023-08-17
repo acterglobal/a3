@@ -34,7 +34,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      var spaceNotifier = ref.read(selectedSpaceIdProvider.notifier);
+      final spaceNotifier = ref.read(selectedSpaceIdProvider.notifier);
       spaceNotifier.state = widget.initialSelectedSpace;
     });
   }
@@ -106,7 +106,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
               FormField(
                 builder: (state) => GestureDetector(
                   onTap: () async {
-                    var newSelectedSpaceId = await selectSpaceDrawer(
+                    final newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
                       currentSpaceId: ref.read(selectedSpaceIdProvider),
                       canCheck: 'CanPostPin',
@@ -175,16 +175,16 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 isLoader: true,
               );
               try {
-                var spaceId = ref.read(selectedSpaceIdProvider);
-                var space = await ref.read(spaceProvider(spaceId!).future);
-                var pinDraft = space.pinDraft();
+                final spaceId = ref.read(selectedSpaceIdProvider);
+                final space = await ref.read(spaceProvider(spaceId!).future);
+                final pinDraft = space.pinDraft();
                 pinDraft.title(ref.read(titleProvider));
                 if (ref.read(selectedTypeProvider) == 'text') {
                   pinDraft.contentMarkdown(ref.read(textProvider));
                 } else {
                   pinDraft.url(ref.read(linkProvider));
                 }
-                var pinId = await pinDraft.send();
+                final pinId = await pinDraft.send();
                 // reset providers
                 titleNotifier.state = '';
                 textNotifier.state = '';

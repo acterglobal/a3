@@ -45,7 +45,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
     if (widget.initialSelectedSpaceId != null) {
       isSpaceRoom = true;
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        var notifier = ref.read(parentSpaceProvider.notifier);
+        final notifier = ref.read(parentSpaceProvider.notifier);
         notifier.state = widget.initialSelectedSpaceId;
       });
     }
@@ -150,7 +150,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                       : null,
                   onTap: () async {
                     if (!isSpaceRoom) {
-                      var newSelectedSpaceId = await selectSpaceDrawer(
+                      final newSelectedSpaceId = await selectSpaceDrawer(
                         context: context,
                         currentSpaceId: ref.read(parentSpaceProvider),
                         title: const Text('Select space'),
@@ -248,28 +248,28 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
     String description,
   ) async {
     try {
-      var sdk = await ref.read(sdkProvider.future);
-      var config = sdk.newConvoSettingsBuilder();
+      final sdk = await ref.read(sdkProvider.future);
+      final config = sdk.newConvoSettingsBuilder();
       config.setName(convoName);
       if (description.isNotEmpty) {
         config.setTopic(description);
       }
-      var avatarUri = ref.read(_avatarProvider);
+      final avatarUri = ref.read(_avatarProvider);
       if (avatarUri.isNotEmpty) {
         config.setAvatarUri(avatarUri); // convo creation will upload it
       }
-      var parentId = ref.read(parentSpaceProvider);
+      final parentId = ref.read(parentSpaceProvider);
       if (parentId != null) {
         config.setParent(parentId);
       }
-      var client = ref.read(clientProvider)!;
-      var roomId = await client.createConvo(config.build());
+      final client = ref.read(clientProvider)!;
+      final roomId = await client.createConvo(config.build());
       // add room to child of space (if given)
       if (parentId != null) {
-        var space = await ref.read(spaceProvider(parentId).future);
+        final space = await ref.read(spaceProvider(parentId).future);
         await space.addChildSpace(roomId.toString());
       }
-      var convo = await client.convo(roomId.toString());
+      final convo = await client.convo(roomId.toString());
       // We are doing as expected, but the lint still triggers.
       // ignore: use_build_context_synchronously
       if (!context.mounted) {

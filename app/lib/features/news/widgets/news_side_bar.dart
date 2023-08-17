@@ -25,11 +25,11 @@ class NewsSideBar extends ConsumerWidget {
     final roomId = news.roomId().toString();
     final space = ref.watch(briefSpaceItemProvider(roomId));
 
-    var bgColor = convertColor(
+    final bgColor = convertColor(
       news.colors()?.background(),
       Theme.of(context).colorScheme.neutral6,
     );
-    var fgColor = convertColor(
+    final fgColor = convertColor(
       news.colors()?.color(),
       Theme.of(context).colorScheme.neutral6,
     );

@@ -89,7 +89,7 @@ class CustomChatInput extends ConsumerWidget {
                         btn2Color: Theme.of(context).colorScheme.onError,
                         onPressedBtn: () => context.pop(),
                         onPressedBtn2: () async {
-                          var messageId = ref
+                          final messageId = ref
                               .read(chatRoomProvider.notifier)
                               .currentMessageId;
                           if (messageId != null) {
@@ -243,11 +243,11 @@ class CustomChatInput extends ConsumerWidget {
   }
 
   Future<void> onSendButtonPressed(WidgetRef ref) async {
-    var inputNotifier = ref.read(chatInputProvider.notifier);
-    var roomNotifier = ref.read(chatRoomProvider.notifier);
-    var mentionState = ref.read(mentionKeyProvider).currentState!;
-    var markDownProvider = ref.read(messageMarkDownProvider);
-    var markDownNotifier = ref.read(messageMarkDownProvider.notifier);
+    final inputNotifier = ref.read(chatInputProvider.notifier);
+    final roomNotifier = ref.read(chatRoomProvider.notifier);
+    final mentionState = ref.read(mentionKeyProvider).currentState!;
+    final markDownProvider = ref.read(messageMarkDownProvider);
+    final markDownNotifier = ref.read(messageMarkDownProvider.notifier);
 
     inputNotifier.showSendBtn(false);
     String markdownText = mentionState.controller!.text;
@@ -271,11 +271,11 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   Future<void> onSendButtonPressed(WidgetRef ref) async {
-    var inputNotifier = ref.read(chatInputProvider.notifier);
-    var mentionState = ref.read(mentionKeyProvider).currentState!;
-    var markDownProvider = ref.read(messageMarkDownProvider);
-    var markDownNotifier = ref.read(messageMarkDownProvider.notifier);
-    var roomNotifier = ref.read(chatRoomProvider.notifier);
+    final inputNotifier = ref.read(chatInputProvider.notifier);
+    final mentionState = ref.read(mentionKeyProvider).currentState!;
+    final markDownProvider = ref.read(messageMarkDownProvider);
+    final markDownNotifier = ref.read(messageMarkDownProvider.notifier);
+    final roomNotifier = ref.read(chatRoomProvider.notifier);
 
     inputNotifier.showSendBtn(false);
     String markdownText = mentionState.controller!.text;
@@ -306,7 +306,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         borderRadius: BorderRadius.circular(6),
       ),
       onChanged: (String value) async {
-        var focusNode = ref.read(chatInputFocusProvider);
+        final focusNode = ref.read(chatInputFocusProvider);
         if (!focusNode.hasFocus) {
           focusNode.requestFocus();
         }
@@ -410,7 +410,7 @@ class _ReplyContentWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (msg is ImageMessage) {
-      var imageMsg = msg as ImageMessage;
+      final imageMsg = msg as ImageMessage;
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: ImageMessageBuilder(
@@ -420,7 +420,7 @@ class _ReplyContentWidget extends StatelessWidget {
         ),
       );
     } else if (msg is TextMessage) {
-      var textMsg = msg as TextMessage;
+      final textMsg = msg as TextMessage;
       return Container(
         constraints:
             BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.2),
@@ -501,14 +501,15 @@ class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
   }
 
   void handleEmojiSelected(Category? category, Emoji emoji) {
-    var mentionState = ref.read(mentionKeyProvider).currentState!;
+    final mentionState = ref.read(mentionKeyProvider).currentState!;
     mentionState.controller!.text += emoji.emoji;
     ref.read(chatInputProvider.notifier).showSendBtn(true);
   }
 
   void handleBackspacePressed() {
-    var mentionState = ref.read(mentionKeyProvider).currentState!;
-    var newValue = mentionState.controller!.text.characters.skipLast(1).string;
+    final mentionState = ref.read(mentionKeyProvider).currentState!;
+    final newValue =
+        mentionState.controller!.text.characters.skipLast(1).string;
     mentionState.controller!.text = newValue;
     if (newValue.isEmpty) {
       ref.read(chatInputProvider.notifier).showSendBtn(false);

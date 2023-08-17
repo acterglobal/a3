@@ -20,9 +20,9 @@ Future<void> joinRoom(
     ),
     isLoader: true,
   );
-  var client = ref.read(clientProvider)!;
+  final client = ref.read(clientProvider)!;
   try {
-    var newSpace = await client.joinSpace(
+    final newSpace = await client.joinSpace(
       roomIdOrAlias,
       server,
     );

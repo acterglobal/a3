@@ -38,11 +38,11 @@ class _DashboardState extends ConsumerState<Dashboard> {
   void _checkIfSpacesPresent() {
     firstSyncListener =
         ref.read(syncStateProvider.notifier).addListener((syncState) async {
-      var hasFirstSynced = !syncState.syncing;
+      final hasFirstSynced = !syncState.syncing;
       if (!hasFirstSynced) {
         return;
       }
-      var spaces = await ref.read(spacesProvider.future);
+      final spaces = await ref.read(spacesProvider.future);
       clearFirstSyncListener();
       if (spaces.isEmpty && context.mounted) {
         onBoardingDialog(

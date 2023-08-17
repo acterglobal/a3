@@ -22,8 +22,8 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   final formKey = GlobalKey<FormState>();
 
   Future<void> reportBug(BugReport report) async {
-    var reportNotifier = ref.read(bugReportProvider.notifier);
-    var loadingNotifier = ref.read(loadingProvider.notifier);
+    final reportNotifier = ref.read(bugReportProvider.notifier);
+    final loadingNotifier = ref.read(loadingProvider.notifier);
     try {
       String reportUrl = await reportNotifier.report(
         report.withScreenshot ? widget.imagePath : null,

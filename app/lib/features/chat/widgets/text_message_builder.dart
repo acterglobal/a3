@@ -103,7 +103,7 @@ class _TextMessageBuilderConsumerState
 
   void onPreviewDataFetched(types.PreviewData previewData) {
     if (widget.message.previewData == null) {
-      var roomNotifier = ref.read(chatRoomProvider.notifier);
+      final roomNotifier = ref.read(chatRoomProvider.notifier);
       roomNotifier.handlePreviewDataFetched(widget.message, previewData);
     }
   }

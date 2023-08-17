@@ -41,11 +41,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // apply existing data to fields
   void _editSpaceData() async {
-    var space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
-    var profileData = await ref.read(spaceProfileDataProvider(space).future);
-    var titleNotifier = ref.read(editTitleProvider.notifier);
-    var topicNotifier = ref.read(editTopicProvider.notifier);
-    var avatarNotifier = ref.read(editAvatarProvider.notifier);
+    final space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
+    final profileData = await ref.read(spaceProfileDataProvider(space).future);
+    final titleNotifier = ref.read(editTitleProvider.notifier);
+    final topicNotifier = ref.read(editTopicProvider.notifier);
+    final avatarNotifier = ref.read(editAvatarProvider.notifier);
 
     titleNotifier.update((state) => profileData.displayName ?? '');
     topicNotifier.update((state) => space.topic() ?? '');
@@ -56,7 +56,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
           .create(recursive: true)
           .then((Directory directory) {});
       String filePath = '${appDocDirectory.path}/${widget.spaceId}.jpg';
-      var imageFile = File(filePath);
+      final imageFile = File(filePath);
       imageFile.writeAsBytes(profileData.avatar!.asTypedList());
       avatarNotifier.update((state) => imageFile.path);
     }
@@ -242,7 +242,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
               );
               return;
             }
-            var roomId = await _handleUpdateSpace(context);
+            final roomId = await _handleUpdateSpace(context);
             debugPrint('Space Updated: $roomId');
             // We are doing as expected, but the lints triggers.
             // ignore: use_build_context_synchronously
@@ -323,8 +323,8 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // permission check
   Future<bool> permissionCheck() async {
-    var space = await ref.read(spaceProvider(widget.spaceId!).future);
-    var membership = await space.getMyMembership();
+    final space = await ref.read(spaceProvider(widget.spaceId!).future);
+    final membership = await space.getMyMembership();
     return membership.canString('CanSetTopic');
   }
 
@@ -339,11 +339,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       isLoader: true,
     );
 
-    var space = await ref.read(spaceProvider(widget.spaceId!).future);
+    final space = await ref.read(spaceProvider(widget.spaceId!).future);
     // update space name
     String title = ref.read(editTitleProvider);
     try {
-      var eventId = await space.setName(title);
+      final eventId = await space.setName(title);
       debugPrint('Space update event: $eventId');
     } catch (e) {
       debugPrint('$e');
@@ -353,16 +353,16 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     // update space avatar
     String avatarUri = ref.read(editAvatarProvider);
     if (avatarUri.isNotEmpty) {
-      var eventId = await space.uploadAvatar(avatarUri);
+      final eventId = await space.uploadAvatar(avatarUri);
       debugPrint('Avatar update event: ${eventId.toString()}');
     } else {
-      var eventId = await space.removeAvatar();
+      final eventId = await space.removeAvatar();
       debugPrint('Avatar removed event: ${eventId.toString()}');
     }
 
     //update space topic
     String topic = ref.read(editTopicProvider);
-    var eventId = await space.setTopic(topic);
+    final eventId = await space.setTopic(topic);
     debugPrint('topic update event: $eventId');
 
     return space.getRoomId();

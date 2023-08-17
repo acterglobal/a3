@@ -24,15 +24,15 @@ class NewsItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var slide = news.getSlide(0)!;
-    var slideType = slide.typeStr();
+    final slide = news.getSlide(0)!;
+    final slideType = slide.typeStr();
 
     // else
-    var bgColor = convertColor(
+    final bgColor = convertColor(
       news.colors()?.background(),
       Theme.of(context).colorScheme.background,
     );
-    var fgColor = convertColor(
+    final fgColor = convertColor(
       news.colors()?.color(),
       Theme.of(context).colorScheme.primary,
     );

@@ -45,18 +45,18 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
 
   // apply existing data to fields
   void _editEventData() async {
-    var calendarEvent = await ref.read(
+    final calendarEvent = await ref.read(
       calendarEventProvider(widget.calendarId!).future,
     );
-    var titleNotifier = ref.read(_titleProvider.notifier);
-    var dateNotifier = ref.read(_dateProvider.notifier);
-    var startTimeNotifier = ref.read(_startTimeProvider.notifier);
-    var endTimeNotifier = ref.read(_endTimeProvider.notifier);
+    final titleNotifier = ref.read(_titleProvider.notifier);
+    final dateNotifier = ref.read(_dateProvider.notifier);
+    final startTimeNotifier = ref.read(_startTimeProvider.notifier);
+    final endTimeNotifier = ref.read(_endTimeProvider.notifier);
 
     titleNotifier.update((state) => calendarEvent.title());
     // parse RFC3393 date time
-    var dartDateTime = toDartDatetime(calendarEvent.utcStart());
-    var dartEndTime = toDartDatetime(calendarEvent.utcEnd());
+    final dartDateTime = toDartDatetime(calendarEvent.utcStart());
+    final dartEndTime = toDartDatetime(calendarEvent.utcEnd());
     dateNotifier.update(
       (state) => DateTime(
         dartDateTime.year,
@@ -303,17 +303,17 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
       ),
       isLoader: true,
     );
-    var calendarEvent =
+    final calendarEvent =
         await ref.read(calendarEventProvider(widget.calendarId!).future);
     try {
       // initialize event update builder
-      var eventUpdateBuilder = calendarEvent.updateBuilder();
+      final eventUpdateBuilder = calendarEvent.updateBuilder();
 
       eventUpdateBuilder.title(ref.read(_titleProvider));
 
-      var date = ref.read(_dateProvider);
-      var startTime = ref.read(_startTimeProvider);
-      var utcStartDateTime = DateTime(
+      final date = ref.read(_dateProvider);
+      final startTime = ref.read(_startTimeProvider);
+      final utcStartDateTime = DateTime(
         date.year,
         date.month,
         date.day,
@@ -323,8 +323,8 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
       eventUpdateBuilder
           .utcStartFromRfc3339(utcStartDateTime.toIso8601String());
 
-      var endTime = ref.read(_endTimeProvider);
-      var utcEndDateTime = DateTime(
+      final endTime = ref.read(_endTimeProvider);
+      final utcEndDateTime = DateTime(
         date.year,
         date.month,
         date.day,
@@ -335,7 +335,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
 
       eventUpdateBuilder.descriptionText(_descriptionController.text.trim());
 
-      var eventId = await eventUpdateBuilder.send();
+      final eventId = await eventUpdateBuilder.send();
       debugPrint('Updated Calendar Event: ${eventId.toString()}');
 
       // We are doing as expected, but the lints triggers.
@@ -377,7 +377,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
     );
     if (picked != null && context.mounted) {
       ref.read(_startTimeProvider.notifier).update((state) => picked);
-      var time = ref.read(_startTimeProvider).format(context);
+      final time = ref.read(_startTimeProvider).format(context);
       _startTimeController.text = time;
     }
   }
@@ -389,7 +389,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
     );
     if (picked != null && context.mounted) {
       ref.read(_endTimeProvider.notifier).update((state) => picked);
-      var time = ref.read(_endTimeProvider).format(context);
+      final time = ref.read(_endTimeProvider).format(context);
       _endTimeController.text = time;
     }
   }

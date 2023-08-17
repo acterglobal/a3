@@ -31,7 +31,7 @@ class RoomPage extends ConsumerStatefulWidget {
 
 class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   void onAttach(BuildContext context) {
-    var roomNotifier = ref.read(chatRoomProvider.notifier);
+    final roomNotifier = ref.read(chatRoomProvider.notifier);
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: context,
@@ -90,13 +90,13 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   }
 
   void onBackgroundTap() {
-    var emojiRowVisible = ref.read(
+    final emojiRowVisible = ref.read(
       chatInputProvider.select((ci) {
         return ci.emojiRowVisible;
       }),
     );
-    var roomNotifier = ref.read(chatRoomProvider.notifier);
-    var inputNotifier = ref.read(chatInputProvider.notifier);
+    final roomNotifier = ref.read(chatRoomProvider.notifier);
+    final inputNotifier = ref.read(chatInputProvider.notifier);
     if (emojiRowVisible) {
       roomNotifier.currentMessageId = null;
       inputNotifier.emojiRowVisible(false);
@@ -179,7 +179,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             children: [
               convoProfile.when(
                 data: (profile) {
-                  var roomId = convo.getRoomIdStr();
+                  final roomId = convo.getRoomIdStr();
                   return Text(
                     profile.displayName ?? roomId,
                     overflow: TextOverflow.clip,

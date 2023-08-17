@@ -13,9 +13,9 @@ class AuthStateNotifier extends StateNotifier<bool> {
   AuthStateNotifier(this.ref) : super(false);
 
   Future<String?> login(String username, String password) async {
-    var sdk = await ref.read(sdkProvider.future);
+    final sdk = await ref.read(sdkProvider.future);
     try {
-      var client = await sdk.login(username, password);
+      final client = await sdk.login(username, password);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
       return null;
@@ -27,9 +27,9 @@ class AuthStateNotifier extends StateNotifier<bool> {
 
   Future<void> makeGuest(BuildContext? context) async {
     state = true;
-    var sdk = await ref.read(sdkProvider.future);
+    final sdk = await ref.read(sdkProvider.future);
     try {
-      var client = await sdk.newGuestClient(setAsCurrent: true);
+      final client = await sdk.newGuestClient(setAsCurrent: true);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
       state = false;
@@ -48,9 +48,9 @@ class AuthStateNotifier extends StateNotifier<bool> {
     String token,
     BuildContext context,
   ) async {
-    var sdk = await ref.read(sdkProvider.future);
+    final sdk = await ref.read(sdkProvider.future);
     try {
-      var client = await sdk.register(username, password, displayName, token);
+      final client = await sdk.register(username, password, displayName, token);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
 
@@ -66,10 +66,10 @@ class AuthStateNotifier extends StateNotifier<bool> {
   }
 
   Future<void> logout(BuildContext context) async {
-    var sdk = await ref.read(sdkProvider.future);
-    var stillHasClient = await sdk.logout();
-    var loggedInNotifier = ref.read(isLoggedInProvider.notifier);
-    var clientNotifier = ref.read(clientProvider.notifier);
+    final sdk = await ref.read(sdkProvider.future);
+    final stillHasClient = await sdk.logout();
+    final loggedInNotifier = ref.read(isLoggedInProvider.notifier);
+    final clientNotifier = ref.read(clientProvider.notifier);
     if (stillHasClient) {
       debugPrint('Still has clients, dropping back to other');
       loggedInNotifier.update((state) => true);
