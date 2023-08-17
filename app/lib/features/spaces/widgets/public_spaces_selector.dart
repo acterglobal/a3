@@ -183,6 +183,7 @@ final publicSearchProvider = StateNotifierProvider.autoDispose<
 class PublicSpaceItem extends ConsumerWidget {
   final PublicSearchResultItem space;
   final OnSelectedInnerFn onSelected;
+
   const PublicSpaceItem({
     super.key,
     required this.space,
@@ -191,7 +192,8 @@ class PublicSpaceItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final withInfo = ref.watch(maybeSpaceInfoProvider(space.roomIdStr()));
+    final spaceId = space.roomIdStr();
+    final withInfo = ref.watch(maybeSpaceInfoProvider(spaceId));
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -218,7 +220,7 @@ class PublicSpaceItem extends ConsumerWidget {
                 data: (data) => data != null
                     ? ActerAvatar(
                         mode: DisplayMode.Space,
-                        uniqueId: space.roomIdStr(),
+                        uniqueId: spaceId,
                         size: 48,
                         displayName: data.spaceProfileData.displayName,
                         avatar: data.spaceProfileData.hasAvatar()
@@ -226,7 +228,15 @@ class PublicSpaceItem extends ConsumerWidget {
                             : null,
                       )
                     : fallbackAvatar(),
-                error: (e, a) => Text('loading failed: $e'),
+                error: (e, a) {
+                  debugPrint('loading failed: $e');
+                  return ActerAvatar(
+                    mode: DisplayMode.Space,
+                    uniqueId: spaceId,
+                    size: 48,
+                    displayName: spaceId,
+                  );
+                },
                 loading: fallbackAvatar,
               ),
               title: Text(space.name() ?? 'no display name'),

@@ -212,25 +212,31 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
                 Routes.chatProfile.name,
                 pathParameters: {'roomId': convo.getRoomIdStr()},
               ),
-              child: convoProfile.when(
-                data: (profile) => Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: SpaceParentBadge(
-                    spaceId: convo.getRoomIdStr(),
-                    badgeSize: 20,
-                    child: ActerAvatar(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: SpaceParentBadge(
+                  spaceId: convo.getRoomIdStr(),
+                  badgeSize: 20,
+                  child: convoProfile.when(
+                    data: (profile) => ActerAvatar(
                       uniqueId: convo.getRoomIdStr(),
                       mode: DisplayMode.GroupChat,
                       displayName: profile.displayName ?? convo.getRoomIdStr(),
                       avatar: profile.getAvatarImage(),
                       size: 36,
                     ),
+                    error: (err, stackTrace) {
+                      debugPrint('Failed to load avatar due to $err');
+                      return ActerAvatar(
+                        uniqueId: convo.getRoomIdStr(),
+                        mode: DisplayMode.GroupChat,
+                        displayName: convo.getRoomIdStr(),
+                        size: 36,
+                      );
+                    },
+                    loading: () => const CircularProgressIndicator(),
                   ),
                 ),
-                error: (error, stackTrace) => Text(
-                  'Failed to load avatar due to $error',
-                ),
-                loading: () => const CircularProgressIndicator(),
               ),
             ),
           ],

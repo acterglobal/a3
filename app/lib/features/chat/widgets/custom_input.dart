@@ -152,17 +152,22 @@ class CustomChatInput extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     accountProfile.when(
-                      data: (data) {
+                      data: (data) => ActerAvatar(
+                        uniqueId: userId,
+                        mode: DisplayMode.User,
+                        displayName: data.profile.displayName ?? userId,
+                        avatar: data.profile.getAvatarImage(),
+                        size: data.profile.hasAvatar() ? 18 : 36,
+                      ),
+                      error: (e, st) {
+                        debugPrint('Error loading due to $e');
                         return ActerAvatar(
                           uniqueId: userId,
                           mode: DisplayMode.User,
-                          displayName: data.profile.displayName ?? userId,
-                          avatar: data.profile.getAvatarImage(),
-                          size: data.profile.hasAvatar() ? 18 : 36,
+                          displayName: userId,
+                          size: 36,
                         );
                       },
-                      error: (e, st) =>
-                          Text('Error loading due to ${e.toString()}'),
                       loading: () => const CircularProgressIndicator(),
                     ),
                     const Expanded(
@@ -196,19 +201,22 @@ class CustomChatInput extends ConsumerWidget {
     return Row(
       children: [
         replyProfile.when(
-          data: (profile) {
+          data: (profile) => ActerAvatar(
+            mode: DisplayMode.User,
+            uniqueId: authorId,
+            displayName: profile.displayName ?? authorId,
+            avatar: profile.getAvatarImage(),
+            size: profile.hasAvatar() ? 12 : 24,
+          ),
+          error: (e, st) {
+            debugPrint('Error loading avatar due to $e');
             return ActerAvatar(
               mode: DisplayMode.User,
               uniqueId: authorId,
-              displayName: profile.displayName ?? authorId,
-              avatar: profile.getAvatarImage(),
-              size: profile.hasAvatar() ? 12 : 24,
+              displayName: authorId,
+              size: 24,
             );
           },
-          error: (e, st) => Text(
-            'Error loading avatar due to ${e.toString()}',
-            textScaleFactor: 0.2,
-          ),
           loading: () => const CircularProgressIndicator(),
         ),
         const SizedBox(width: 5),

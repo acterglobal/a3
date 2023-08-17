@@ -18,15 +18,12 @@ class AvatarBuilder extends ConsumerWidget {
       data: (profile) {
         return Padding(
           padding: const EdgeInsets.only(right: 10),
-          child: SizedBox(
-            height: 28,
-            width: 28,
-            child: ActerAvatar(
-              mode: DisplayMode.User,
-              uniqueId: userId,
-              displayName: profile.displayName ?? userId,
-              avatar: profile.getAvatarImage(),
-            ),
+          child: ActerAvatar(
+            mode: DisplayMode.User,
+            uniqueId: userId,
+            displayName: profile.displayName ?? userId,
+            avatar: profile.getAvatarImage(),
+            size: 28,
           ),
         );
       },

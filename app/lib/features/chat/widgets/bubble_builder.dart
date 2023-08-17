@@ -187,29 +187,42 @@ class _ChatBubble extends ConsumerWidget {
   ) {
     final authorId = message.repliedMessage!.author.id;
     final replyProfile = ref.watch(memberProfileProvider(authorId));
-    return replyProfile.when(
-      data: (profile) {
-        return Row(
-          children: [
-            ActerAvatar(
+    return Row(
+      children: [
+        replyProfile.when(
+          data: (profile) => ActerAvatar(
+            uniqueId: authorId,
+            displayName: profile.displayName,
+            mode: DisplayMode.User,
+            avatar: profile.getAvatarImage(),
+            size: profile.hasAvatar() ? 12 : 24,
+          ),
+          error: (err, stackTrace) {
+            debugPrint('Failed to load profile due to $err');
+            return ActerAvatar(
               uniqueId: authorId,
-              displayName: profile.displayName,
+              displayName: authorId,
               mode: DisplayMode.User,
-              avatar: profile.getAvatarImage(),
-              size: profile.hasAvatar() ? 12 : 24,
-            ),
-            const SizedBox(width: 5),
-            Text(
-              profile.displayName ?? '',
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
-            ),
-          ],
-        );
-      },
-      error: (err, stackTrace) => Text('Failed to load profile due to $err'),
-      loading: () => const CircularProgressIndicator(),
+              size: 24,
+            );
+          },
+          loading: () => const CircularProgressIndicator(),
+        ),
+        const SizedBox(width: 5),
+        replyProfile.when(
+          data: (profile) => Text(
+            profile.displayName ?? '',
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+          ),
+          error: (err, stackTrace) {
+            debugPrint('Failed to load profile due to $err');
+            return const Text('');
+          },
+          loading: () => const CircularProgressIndicator(),
+        ),
+      ],
     );
   }
 }

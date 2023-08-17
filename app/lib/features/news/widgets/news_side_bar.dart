@@ -87,7 +87,15 @@ class NewsSideBar extends ConsumerWidget {
               avatar: space.spaceProfileData.getAvatarImage(),
               size: 42,
             ),
-            error: (e, st) => Text('Error loading space: $e'),
+            error: (e, st) {
+              debugPrint('Error loading space: $e');
+              return ActerAvatar(
+                uniqueId: roomId,
+                mode: DisplayMode.Space,
+                displayName: roomId,
+                size: 42,
+              );
+            },
             loading: () => const Text('l'),
           ),
         ),

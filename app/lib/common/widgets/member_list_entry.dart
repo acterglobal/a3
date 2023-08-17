@@ -335,13 +335,21 @@ class MemberListEntry extends ConsumerWidget {
         leading: profile.when(
           data: (data) => ActerAvatar(
             mode: DisplayMode.User,
-            uniqueId: member.userId().toString(),
+            uniqueId: userId,
             size: data.hasAvatar() ? 18 : 36,
             avatar: data.getAvatarImage(),
             displayName: data.displayName,
           ),
           loading: () => const Text('loading'),
-          error: (e, t) => Text('loading avatar failed: $e'),
+          error: (e, t) {
+            debugPrint('loading avatar failed: $e');
+            return ActerAvatar(
+              uniqueId: userId,
+              displayName: userId,
+              mode: DisplayMode.User,
+              size: 18,
+            );
+          },
         ),
         title: profile.when(
           data: (data) => Text(data.displayName ?? userId),

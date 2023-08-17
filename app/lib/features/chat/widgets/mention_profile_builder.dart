@@ -17,15 +17,13 @@ class MentionProfileBuilder extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mentionProfile = ref.watch(memberProfileProvider(authorId));
     return mentionProfile.when(
-      data: (profile) {
-        return ActerAvatar(
-          mode: DisplayMode.User,
-          uniqueId: authorId,
-          avatar: profile.getAvatarImage(),
-          displayName: title,
-          size: profile.hasAvatar() ? 18 : 36,
-        );
-      },
+      data: (profile) => ActerAvatar(
+        mode: DisplayMode.User,
+        uniqueId: authorId,
+        avatar: profile.getAvatarImage(),
+        displayName: title,
+        size: profile.hasAvatar() ? 18 : 36,
+      ),
       error: (e, st) {
         debugPrint('ERROR loading avatar due to $e');
         return ActerAvatar(
