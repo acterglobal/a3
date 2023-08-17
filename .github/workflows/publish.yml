@@ -186,6 +186,25 @@ jobs:
         if: matrix.flutter_config
         run: flutter config ${{ matrix.flutter_config }}
 
+      - name: Download Development Profile
+        if: matrix.target == 'ios' || matrix.target == 'macos'
+        uses: apple-actions/download-provisioning-profiles@v1
+        with:
+          bundle-id: global.acter.a3
+          profile-type: IOS_APP_DEVELOPMENT
+          issuer-id: ${{ secrets.APPLE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPLE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPLE_API_KEY_BASE64 }}
+      - name: Download Distribution Profile
+        if: matrix.target == 'ios' || matrix.target == 'macos'
+        id: provisioning
+        uses: apple-actions/download-provisioning-profiles@v1
+        with:
+          bundle-id: global.acter.a3
+          profile-type: IOS_APP_STORE
+          issuer-id: ${{ secrets.APPLE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPLE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPLE_API_KEY_BASE64 }}
       - name: Install the Apple iOS certificate and provisioning profile
         if: matrix.target == 'ios' || matrix.target == 'macos'
         env:
