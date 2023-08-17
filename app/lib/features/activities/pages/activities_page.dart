@@ -176,8 +176,8 @@ class ActivitiesPage extends ConsumerWidget {
   }
 
   void onReviewSessions(BuildContext context, WidgetRef ref) {
-    var allSessions = ref.read(allSessionsProvider);
-    var unverifiedSessions = ref.read(unverifiedSessionsProvider);
+    final allSessions = ref.read(allSessionsProvider);
+    final unverifiedSessions = ref.read(unverifiedSessionsProvider);
     showDialog(
       barrierDismissible: false,
       context: context,

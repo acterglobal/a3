@@ -51,7 +51,7 @@ class ToDoController extends GetxController {
     String? avatarUri,
   ) async {
     final sdk = await ActerSdk.instance;
-    var config = sdk.newSpaceSettingsBuilder();
+    final config = sdk.newSpaceSettingsBuilder();
     config.setName(name);
     if (description != null) {
       config.setTopic(description);
@@ -121,7 +121,7 @@ class ToDoController extends GetxController {
     List<String> assignees = [];
     List<String> subscribers = [];
 
-    var tasksList = (await list.tasks()).toList();
+    final tasksList = (await list.tasks()).toList();
     if (tasksList.isNotEmpty) {
       for (Task task in tasksList) {
         if (task.assignees().isNotEmpty) {
@@ -190,7 +190,7 @@ class ToDoController extends GetxController {
     final TaskListDraft listDraft = space.taskListDraft();
     listDraft.name(name);
     listDraft.descriptionText(description ?? '');
-    var eventId = (await listDraft.send()).toString();
+    final eventId = (await listDraft.send()).toString();
     TaskList list = await client.waitForTaskList(eventId, null);
     final ToDoList newItem = ToDoList(
       name: list.name(),

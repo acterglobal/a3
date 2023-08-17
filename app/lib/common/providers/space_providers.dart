@@ -167,7 +167,7 @@ final briefSpaceItemsProviderWithMembership =
   for (final element in spaces) {
     final profileData =
         await ref.watch(spaceProfileDataProvider(element).future);
-    var item = SpaceItem(
+    final item = SpaceItem(
       roomId: element.getRoomId().toString(),
       membership: await element.getMyMembership(),
       activeMembers: [],
@@ -226,7 +226,7 @@ final spaceItemsProvider =
     } else {
       members = [];
     }
-    var item = SpaceItem(
+    final item = SpaceItem(
       roomId: element.getRoomId().toString(),
       activeMembers: members,
       spaceProfileData: profileData,
@@ -417,4 +417,13 @@ final spaceHierarchyProfileProvider = FutureProvider.autoDispose
 
   final avatar = await space.getAvatar();
   return ProfileData(space.name(), avatar.data());
+});
+
+final isActerSpaceProvider =
+    FutureProvider.autoDispose.family<bool, String>((ref, spaceId) async {
+  final space = await ref.watch(maybeSpaceProvider(spaceId).future);
+  if (space == null) {
+    return false;
+  }
+  return await space.isActerSpace();
 });

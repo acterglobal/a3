@@ -24,6 +24,7 @@ final _avatarProvider = StateProvider.autoDispose<String>((ref) => '');
 
 class CreateChatSheet extends ConsumerStatefulWidget {
   final String? initialSelectedSpaceId;
+
   const CreateChatSheet({super.key, this.initialSelectedSpaceId});
 
   @override
@@ -43,9 +44,9 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
     super.initState();
     if (widget.initialSelectedSpaceId != null) {
       isSpaceRoom = true;
-      Future(() {
-        ref.read(parentSpaceProvider.notifier).state =
-            widget.initialSelectedSpaceId;
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        final notifier = ref.read(parentSpaceProvider.notifier);
+        notifier.state = widget.initialSelectedSpaceId;
       });
     }
   }
@@ -54,6 +55,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
+    final parentNotifier = ref.watch(parentSpaceProvider.notifier);
     final avatarUpload = ref.watch(_avatarProvider);
     return SideSheet(
       header: 'Create Chat',
@@ -148,14 +150,12 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                       : null,
                   onTap: () async {
                     if (!isSpaceRoom) {
-                      final currentSpaceId = ref.read(parentSpaceProvider);
                       final newSelectedSpaceId = await selectSpaceDrawer(
                         context: context,
-                        currentSpaceId: currentSpaceId,
+                        currentSpaceId: ref.read(parentSpaceProvider),
                         title: const Text('Select space'),
                       );
-                      ref.read(parentSpaceProvider.notifier).state =
-                          newSelectedSpaceId;
+                      parentNotifier.state = newSelectedSpaceId;
                     } else {
                       return;
                     }
@@ -248,26 +248,25 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
     String description,
   ) async {
     try {
-      final sdk = await ref.watch(sdkProvider.future);
-      var config = sdk.newConvoSettingsBuilder();
+      final sdk = await ref.read(sdkProvider.future);
+      final config = sdk.newConvoSettingsBuilder();
       config.setName(convoName);
       if (description.isNotEmpty) {
         config.setTopic(description);
       }
-      var avatarUri = ref.read(_avatarProvider);
+      final avatarUri = ref.read(_avatarProvider);
       if (avatarUri.isNotEmpty) {
         config.setAvatarUri(avatarUri); // convo creation will upload it
       }
-      final parentRoomId = ref.watch(parentSpaceProvider);
-      if (parentRoomId != null) {
-        config.setParent(parentRoomId);
+      final parentId = ref.read(parentSpaceProvider);
+      if (parentId != null) {
+        config.setParent(parentId);
       }
       final client = ref.read(clientProvider)!;
       final roomId = await client.createConvo(config.build());
-      final linkSpace = ref.watch(parentSpaceProvider);
       // add room to child of space (if given)
-      if (linkSpace != null) {
-        final space = await ref.watch(spaceProvider(linkSpace).future);
+      if (parentId != null) {
+        final space = await ref.read(spaceProvider(parentId).future);
         await space.addChildSpace(roomId.toString());
       }
       final convo = await client.convo(roomId.toString());

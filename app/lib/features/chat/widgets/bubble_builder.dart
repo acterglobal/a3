@@ -1,21 +1,20 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
-import 'package:acter/features/chat/widgets/image_message_builder.dart';
-import 'package:acter/features/chat/widgets/text_message_builder.dart';
-import 'package:acter_avatar/acter_avatar.dart';
-import 'package:bubble/bubble.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show ReactionRecord;
+import 'package:acter/features/chat/widgets/image_message_builder.dart';
+import 'package:acter/features/chat/widgets/text_message_builder.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:swipe_to/swipe_to.dart';
 
 class BubbleBuilder extends ConsumerWidget {
-  final String userId;
   final Widget child;
   final types.Message message;
   final bool nextMessageInGroup;
@@ -26,16 +25,15 @@ class BubbleBuilder extends ConsumerWidget {
     required this.child,
     required this.message,
     required this.nextMessageInGroup,
-    required this.userId,
     required this.enlargeEmoji,
   }) : super(key: key);
 
-  bool isAuthor() {
-    return userId == message.author.id;
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final client = ref.watch(clientProvider);
+    final myId = client!.userId().toString();
+    final isAuthor = (myId == message.author.id);
+
     final chatInputState = ref.watch(chatInputProvider);
     final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
@@ -48,7 +46,7 @@ class BubbleBuilder extends ConsumerWidget {
     return isMemberEvent
         ? child
         : SwipeTo(
-            onLeftSwipe: !isAuthor()
+            onLeftSwipe: !isAuthor
                 ? null
                 : () {
                     if (chatRoomNotifier.currentMessageId != null) {
@@ -63,7 +61,7 @@ class BubbleBuilder extends ConsumerWidget {
                       chatInputNotifier.setReplyWidget(child);
                     }
                   },
-            onRightSwipe: isAuthor()
+            onRightSwipe: isAuthor
                 ? null
                 : () {
                     if (chatInputState.emojiRowVisible) {
@@ -79,7 +77,6 @@ class BubbleBuilder extends ConsumerWidget {
                     }
                   },
             child: _ChatBubble(
-              isAuthor: isAuthor(),
               message: message,
               nextMessageInGroup: nextMessageInGroup,
               enlargeEmoji: enlargeEmoji,
@@ -90,14 +87,12 @@ class BubbleBuilder extends ConsumerWidget {
 }
 
 class _ChatBubble extends ConsumerWidget {
-  final bool isAuthor;
   final types.Message message;
   final bool nextMessageInGroup;
   final Widget child;
   final bool enlargeEmoji;
 
   const _ChatBubble({
-    required this.isAuthor,
     required this.message,
     required this.nextMessageInGroup,
     required this.child,
@@ -106,15 +101,17 @@ class _ChatBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final client = ref.watch(clientProvider);
+    final myId = client!.userId().toString();
+    final isAuthor = (myId == message.author.id);
+
     bool hasRepliedMessage = message.repliedMessage != null;
     return Column(
       crossAxisAlignment:
           isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        _EmojiRow(
-          isAuthor: isAuthor,
-          message: message,
-        ),
+        _EmojiRow(message: message),
         const SizedBox(height: 4),
         enlargeEmoji
             ? child
@@ -159,43 +156,7 @@ class _ChatBubble extends ConsumerWidget {
                                     left: 10,
                                     top: 15,
                                   ),
-                                  child: Consumer(
-                                    builder: (context, ref, child) {
-                                      final replyProfile = ref
-                                          .watch(chatRoomProvider.notifier)
-                                          .getUserProfile(
-                                            message.repliedMessage!.author.id,
-                                          );
-                                      final displayName = replyProfile != null
-                                          ? replyProfile.displayName
-                                          : message.repliedMessage?.author.id;
-                                      return Row(
-                                        children: [
-                                          ActerAvatar(
-                                            uniqueId: message
-                                                .repliedMessage!.author.id,
-                                            displayName: displayName,
-                                            mode: DisplayMode.User,
-                                            avatar:
-                                                replyProfile?.getAvatarImage(),
-                                            size: 12,
-                                          ),
-                                          const SizedBox(width: 5),
-                                          Text(
-                                            displayName ?? '',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .copyWith(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .tertiary,
-                                                ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  ),
+                                  child: Consumer(builder: replyProfileBuilder),
                                 ),
                                 _OriginalMessageBuilder(message: message),
                               ],
@@ -218,17 +179,64 @@ class _ChatBubble extends ConsumerWidget {
       ],
     );
   }
+
+  Widget replyProfileBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
+    final authorId = message.repliedMessage!.author.id;
+    final replyProfile = ref.watch(memberProfileProvider(authorId));
+    return Row(
+      children: [
+        replyProfile.when(
+          data: (profile) => ActerAvatar(
+            uniqueId: authorId,
+            displayName: profile.displayName,
+            mode: DisplayMode.User,
+            avatar: profile.getAvatarImage(),
+            size: profile.hasAvatar() ? 12 : 24,
+          ),
+          error: (err, stackTrace) {
+            debugPrint('Failed to load profile due to $err');
+            return ActerAvatar(
+              uniqueId: authorId,
+              displayName: authorId,
+              mode: DisplayMode.User,
+              size: 24,
+            );
+          },
+          loading: () => const CircularProgressIndicator(),
+        ),
+        const SizedBox(width: 5),
+        replyProfile.when(
+          data: (profile) => Text(
+            profile.displayName ?? '',
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+          ),
+          error: (err, stackTrace) {
+            debugPrint('Failed to load profile due to $err');
+            return const Text('');
+          },
+          loading: () => const CircularProgressIndicator(),
+        ),
+      ],
+    );
+  }
 }
 
 class _EmojiContainer extends StatefulWidget {
+  final bool isAuthor;
+  final types.Message message;
+  final bool nextMessageInGroup;
+
   const _EmojiContainer({
     required this.isAuthor,
     required this.message,
     required this.nextMessageInGroup,
   });
-  final bool isAuthor;
-  final types.Message message;
-  final bool nextMessageInGroup;
 
   @override
   State<_EmojiContainer> createState() => _EmojiContainerState();
@@ -290,7 +298,7 @@ class _EmojiContainerState extends State<_EmojiContainer>
               String key = keys[index];
               Map<String, dynamic> reactions =
                   widget.message.metadata!['reactions'];
-              List<ReactionRecord>? reactionRecords = reactions[key];
+              final recordsCount = reactions[key]?.length;
               return GestureDetector(
                 onTap: () {
                   showEmojiReactionsSheet(reactions);
@@ -300,7 +308,7 @@ class _EmojiContainerState extends State<_EmojiContainer>
                   children: [
                     Text(key),
                     const SizedBox(width: 2),
-                    Text(reactionRecords!.length.toString()),
+                    Text(recordsCount!.toString()),
                   ],
                 ),
               );
@@ -318,9 +326,9 @@ class _EmojiContainerState extends State<_EmojiContainer>
     if (mounted) {
       setState(() {
         reactions.forEach((key, value) {
-          count += value.count();
+          count += value.length;
           reactionTabs.add(
-            Tab(text: '$key+${value.count()}'),
+            Tab(text: '$key+${value.length}'),
           );
         });
         reactionTabs.insert(0, (Tab(text: 'All $count')));
@@ -333,7 +341,9 @@ class _EmojiContainerState extends State<_EmojiContainer>
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(15),
+        ),
       ),
       isDismissible: true,
       builder: (BuildContext context) {
@@ -383,15 +393,16 @@ class _EmojiContainerState extends State<_EmojiContainer>
 }
 
 class _EmojiRow extends ConsumerWidget {
-  const _EmojiRow({
-    required this.isAuthor,
-    required this.message,
-  });
-  final bool isAuthor;
   final types.Message message;
+
+  const _EmojiRow({required this.message});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final client = ref.watch(clientProvider);
+    final myId = client!.userId().toString();
+    final isAuthor = (myId == message.author.id);
+
     final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
     return Visibility(
       visible: message.id == chatRoomNotifier.currentMessageId,
@@ -417,35 +428,45 @@ class _EmojiRow extends ConsumerWidget {
 }
 
 class _OriginalMessageBuilder extends ConsumerWidget {
-  const _OriginalMessageBuilder({
-    required this.message,
-  });
-
   final types.Message message;
+
+  const _OriginalMessageBuilder({required this.message});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (message.repliedMessage is types.TextMessage) {
+      final w = message.repliedMessage!.metadata!['messageLength'] * 38.5;
       return TextMessageBuilder(
         message: message.repliedMessage as types.TextMessage,
-        messageWidth:
-            ((message.repliedMessage!.metadata!['messageLength']) * 38.5)
-                .toInt(),
+        messageWidth: w.toInt(),
         isReply: true,
       );
     } else if (message.repliedMessage is types.ImageMessage) {
-      var imageMsg = message.repliedMessage as types.ImageMessage;
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ImageMessageBuilder(
-          message: imageMsg,
-          messageWidth: imageMsg.size.toInt(),
-        ),
+      final imageMsg = message.repliedMessage as types.ImageMessage;
+      return Row(
+        children: [
+          Container(
+            constraints: const BoxConstraints(maxHeight: 50),
+            margin: const EdgeInsets.all(12),
+            child: ImageMessageBuilder(
+              message: imageMsg,
+              messageWidth: imageMsg.size.toInt(),
+              isReplyContent: true,
+            ),
+          ),
+          Text(
+            'sent an image.',
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+        ],
       );
     } else if (message.repliedMessage is types.FileMessage) {
-      return Text(
-        message.repliedMessage!.metadata?['content'],
-        style: Theme.of(context).textTheme.bodySmall,
+      return Padding(
+        padding: const EdgeInsets.all(12),
+        child: Text(
+          message.repliedMessage!.metadata?['content'],
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
       );
     } else if (message.repliedMessage is types.CustomMessage) {
       return CustomMessageBuilder(
@@ -459,11 +480,9 @@ class _OriginalMessageBuilder extends ConsumerWidget {
 }
 
 class _ReactionListing extends StatelessWidget {
-  const _ReactionListing({
-    required this.emojis,
-  });
-
   final List<String> emojis;
+
+  const _ReactionListing({required this.emojis});
 
   @override
   Widget build(BuildContext context) {

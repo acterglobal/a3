@@ -12,34 +12,39 @@ class MemberAvatar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(memberProfileProvider(member));
-    return profile.when(
-      data: (data) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.neutral4,
-                ),
-                shape: BoxShape.circle,
-              ),
-              child: ActerAvatar(
-                mode: DisplayMode.User,
-                uniqueId: member.userId().toString(),
-                size: 18,
-                avatar: data.getAvatarImage(),
-                displayName: data.displayName,
-              ),
+    final userId = member.userId().toString();
+    final profile = ref.watch(memberProfileProvider(userId));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Theme.of(context).colorScheme.neutral4),
+            shape: BoxShape.circle,
+          ),
+          child: profile.when(
+            data: (data) => ActerAvatar(
+              mode: DisplayMode.User,
+              uniqueId: userId,
+              size: 18,
+              avatar: data.getAvatarImage(),
+              displayName: data.displayName,
             ),
-          ],
-        );
-      },
-      error: (error, stackTrace) => const Text("Couldn't load avatar"),
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
+            error: (err, stackTrace) {
+              debugPrint("Couldn't load avatar");
+              return ActerAvatar(
+                mode: DisplayMode.User,
+                uniqueId: userId,
+                size: 18,
+                displayName: userId,
+              );
+            },
+            loading: () => const Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
