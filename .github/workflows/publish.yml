@@ -102,7 +102,7 @@ jobs:
             target: macos
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
-            flutter_build_args: "build macos --export-options-plist=macos/exportOptions_release.plist --split-debug-info=debug_symbols"
+            flutter_build_args: "build macos --split-debug-info=debug_symbols"
             artifact_prefix: acter-macosx
             artifact_path: app/build/macos/Build/Products/Release/
             extra_artifacts: app/build/macos/Build/Products/Release/Acter.app
