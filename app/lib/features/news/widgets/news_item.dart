@@ -7,8 +7,8 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class NewsItem extends ConsumerWidget {
   final Client client;
@@ -26,8 +26,6 @@ class NewsItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     var slide = news.getSlide(0)!;
     var slideType = slide.typeStr();
-    final roomId = news.roomId().toString();
-    final space = ref.watch(briefSpaceItemProvider(roomId));
 
     // else
     var bgColor = convertColor(
@@ -41,29 +39,25 @@ class NewsItem extends ConsumerWidget {
 
     switch (slideType) {
       case 'image':
-        return regularSlide(
-          context,
-          ImageSlide(slide: slide),
-          roomId,
-          space,
-          slide,
-          bgColor,
-          fgColor,
+        return RegularSlide(
+          news: news,
+          index: index,
+          bgColor: bgColor,
+          fgColor: fgColor,
+          child: ImageSlide(slide: slide),
         );
 
       case 'video':
-        return regularSlide(
-          context,
-          const Expanded(
+        return RegularSlide(
+          news: news,
+          index: index,
+          bgColor: bgColor,
+          fgColor: fgColor,
+          child: const Expanded(
             child: Center(
               child: Text('video slides not yet supported'),
             ),
           ),
-          roomId,
-          space,
-          slide,
-          bgColor,
-          fgColor,
         );
 
       case 'text':
@@ -107,31 +101,42 @@ class NewsItem extends ConsumerWidget {
         );
 
       default:
-        return regularSlide(
-          context,
-          Expanded(
+        return RegularSlide(
+          news: news,
+          index: index,
+          bgColor: bgColor,
+          fgColor: fgColor,
+          child: Expanded(
             child: Center(
               child: Text('$slideType slides not yet supported'),
             ),
           ),
-          roomId,
-          space,
-          slide,
-          bgColor,
-          fgColor,
         );
     }
   }
+}
 
-  Stack regularSlide(
-    BuildContext context,
-    Widget child,
-    String roomId,
-    AsyncValue<SpaceItem?> space,
-    NewsSlide slide,
-    Color bgColor,
-    Color fgColor,
-  ) {
+class RegularSlide extends ConsumerWidget {
+  final NewsEntry news;
+  final int index;
+  final Color bgColor;
+  final Color fgColor;
+  final Widget child;
+
+  const RegularSlide({
+    Key? key,
+    required this.news,
+    required this.index,
+    required this.bgColor,
+    required this.fgColor,
+    required this.child,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final slide = news.getSlide(0)!;
+    final roomId = news.roomId().toString();
+    final space = ref.watch(briefSpaceItemProvider(roomId));
     return Stack(
       children: [
         child,
