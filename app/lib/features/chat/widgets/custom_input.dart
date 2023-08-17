@@ -318,10 +318,38 @@ class _FileWidget extends ConsumerWidget {
         borderRadius: BorderRadius.circular(6),
         child: Image.file(file, height: 200, fit: BoxFit.cover),
       );
+    } else if (mimeType!.startsWith('audio/')) {
+      return Container(
+        height: 55,
+        width: 55,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child: const Center(child: Icon(Atlas.file_sound_thin)),
+      );
+    } else if (mimeType!.startsWith('video/')) {
+      return Container(
+        height: 55,
+        width: 55,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child: const Center(child: Icon(Atlas.file_video_thin)),
+      );
     }
     //FIXME: cover all mime extension cases?
     else {
-      return const SizedBox.shrink();
+      return Container(
+        height: 55,
+        width: 55,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child: const Center(child: Icon(Atlas.plus_file_thin)),
+      );
     }
   }
 }

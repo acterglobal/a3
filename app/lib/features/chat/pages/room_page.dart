@@ -18,6 +18,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class RoomPage extends ConsumerStatefulWidget {
   const RoomPage({
@@ -178,6 +179,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               inputPlaceholder: AppLocalizations.of(context)!.message,
               sendButtonAccessibilityLabel: '',
             ),
+            timeFormat: DateFormat.jm(),
             messages: ref.watch(messagesProvider),
             onSendPressed: (types.PartialText partialText) {},
             user: types.User(id: client!.userId().toString()),
@@ -224,7 +226,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             showUserAvatars: true,
             onMessageLongPress:
                 ref.read(chatRoomProvider.notifier).handleMessageTap,
-            onMessageTap: ref.read(chatRoomProvider.notifier).handleMessageTap,
             onEndReached: ref.read(chatRoomProvider.notifier).handleEndReached,
             onEndReachedThreshold: 0.75,
             onBackgroundTap: () {
@@ -238,6 +239,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             //Custom Theme class, see lib/common/store/chatTheme.dart
             theme: const ActerChatTheme(
               sendButtonIcon: Icon(Atlas.paper_airplane),
+              documentIcon: Icon(Atlas.file_thin, size: 18),
             ),
           ),
         ),
