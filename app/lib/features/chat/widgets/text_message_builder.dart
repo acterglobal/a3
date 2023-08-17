@@ -1,9 +1,9 @@
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/chat_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:acter/common/themes/chat_theme.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
@@ -12,15 +12,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TextMessageBuilder extends ConsumerStatefulWidget {
   final types.TextMessage message;
-  final void Function(types.TextMessage, types.PreviewData)?
-      onPreviewDataFetched;
   final int messageWidth;
   final bool isReply;
 
   const TextMessageBuilder({
     Key? key,
     required this.message,
-    this.onPreviewDataFetched,
     this.isReply = false,
     required this.messageWidth,
   }) : super(key: key);
@@ -80,7 +77,7 @@ class _TextMessageBuilderConsumerState
         },
         previewData: widget.message.previewData,
         text: parsedString,
-        onPreviewDataFetched: _onPreviewDataFetched,
+        onPreviewDataFetched: onPreviewDataFetched,
         textWidget: _TextWidget(
           message: widget.message,
           messageWidth: widget.messageWidth,
@@ -104,7 +101,7 @@ class _TextMessageBuilderConsumerState
     );
   }
 
-  void _onPreviewDataFetched(types.PreviewData previewData) {
+  void onPreviewDataFetched(types.PreviewData previewData) {
     if (widget.message.previewData == null) {
       var roomNotifier = ref.read(chatRoomProvider.notifier);
       roomNotifier.handlePreviewDataFetched(widget.message, previewData);

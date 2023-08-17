@@ -1,15 +1,15 @@
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 
 // interface data providers
 final titleProvider = StateProvider<String>((ref) => '');
@@ -133,9 +133,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                                   ),
                             )
                           : Container(),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       selectedSpace
                           ? Consumer(builder: spaceBuilder)
                           : Container(),

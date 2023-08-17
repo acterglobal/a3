@@ -4,6 +4,7 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
+import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -351,18 +352,12 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           data: mentionList,
           matchAll: true,
           suggestionBuilder: (Map<String, dynamic> roomMember) {
-            String title = roomMember['display'] ?? roomMember['link'];
+            final authorId = roomMember['link'];
+            final title = roomMember['display'] ?? authorId;
             return ListTile(
-              leading: Consumer(
-                builder: (context, ref, child) {
-                  return mentionPorfileBuilder(
-                    context,
-                    ref,
-                    child,
-                    roomMember['link'],
-                    title,
-                  );
-                },
+              leading: MentionProfileBuilder(
+                authorId: authorId,
+                title: title,
               ),
               title: Row(
                 children: [
@@ -372,7 +367,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
                   ),
                   const SizedBox(width: 15),
                   Text(
-                    roomMember['link'],
+                    authorId,
                     style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           color: Theme.of(context).colorScheme.neutral5,
                         ),
@@ -386,42 +381,11 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     );
   }
 
-  Widget mentionPorfileBuilder(
-    BuildContext context,
-    WidgetRef ref,
-    Widget? child,
-    String authorId,
-    String title,
-  ) {
-    final mentionProfile = ref.watch(memberProfileProvider(authorId));
-    return mentionProfile.when(
-      data: (profile) {
-        return ActerAvatar(
-          mode: DisplayMode.User,
-          uniqueId: authorId,
-          avatar: profile.getAvatarImage(),
-          displayName: title,
-          size: profile.hasAvatar() ? 18 : 36,
-        );
-      },
-      error: (e, st) {
-        debugPrint('ERROR loading avatar due to $e');
-        return ActerAvatar(
-          mode: DisplayMode.User,
-          uniqueId: authorId,
-          displayName: title,
-          size: 36,
-        );
-      },
-      loading: () => const CircularProgressIndicator(),
-    );
-  }
-
   void _handleMentionAdd(Map<String, dynamic> roomMember, WidgetRef ref) {
-    String userId = roomMember['link'];
-    String displayName = roomMember['display'] ?? userId;
+    String authorId = roomMember['link'];
+    String displayName = roomMember['display'] ?? authorId;
     ref.read(messageMarkDownProvider).addAll({
-      '@$displayName': '[$displayName](https://matrix.to/#/$userId)',
+      '@$displayName': '[$displayName](https://matrix.to/#/$authorId)',
     });
   }
 }

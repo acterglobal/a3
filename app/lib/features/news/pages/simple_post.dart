@@ -1,20 +1,21 @@
+import 'dart:typed_data';
+
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
-import 'package:acter/features/news/providers/news_providers.dart';
-import 'package:cross_file_image/cross_file_image.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:go_router/go_router.dart';
+import 'package:cross_file_image/cross_file_image.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
-import 'dart:typed_data';
 
 final selectedSpaceIdProvider = StateProvider<String?>((ref) => null);
 final selectedSpaceDetailsProvider =
@@ -109,13 +110,8 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                         )
                       : null,
                   trailing: selectedSpace
-                      ? Consumer(
-                          builder: (context, ref, child) => spaceBuilder(
-                            context,
-                            ref,
-                            child,
-                            currentSelectedSpace,
-                          ),
+                      ? _SpaceBuilder(
+                          currentSelectedSpace: currentSelectedSpace,
                         )
                       : null,
                   onTap: () async {
@@ -274,12 +270,14 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
 
   Widget imageBuilder(BuildContext context, WidgetRef ref, Widget? child) {
     final selectedImage = ref.watch(selectedImageProvider);
-    final imageNotifier = ref.watch(selectedImageProvider.notifier);
     if (selectedImage != null) {
       return SizedBox(
         height: 300,
         child: InkWell(
-          onTap: () => imageNotifier.state = null,
+          onTap: () {
+            final imageNotifier = ref.read(selectedImageProvider.notifier);
+            imageNotifier.state = null;
+          },
           child: Center(
             child: Image(
               image: XFileImage(selectedImage),
@@ -288,11 +286,11 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
         ),
       );
     }
-
     return SizedBox(
       height: 300,
       child: InkWell(
         onTap: () async {
+          final imageNotifier = ref.read(selectedImageProvider.notifier);
           imageNotifier.state = await picker.pickImage(
             source: ImageSource.gallery,
           );
@@ -303,19 +301,24 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
       ),
     );
   }
+}
 
-  Widget spaceBuilder(
-    BuildContext context,
-    WidgetRef ref,
-    Widget? child,
-    String currentSelectedSpace,
-  ) {
-    return ref.watch(selectedSpaceDetailsProvider).when(
-          data: (space) => space != null
-              ? SpaceChip(space: space)
-              : Text(currentSelectedSpace),
-          error: (e, s) => Text('error: $e'),
-          loading: () => const Text('loading'),
-        );
+class _SpaceBuilder extends ConsumerWidget {
+  final String currentSelectedSpace;
+
+  const _SpaceBuilder({
+    Key? key,
+    required this.currentSelectedSpace,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
+    return spaceDetails.when(
+      data: (space) =>
+          space != null ? SpaceChip(space: space) : Text(currentSelectedSpace),
+      error: (e, s) => Text('error: $e'),
+      loading: () => const Text('loading'),
+    );
   }
 }

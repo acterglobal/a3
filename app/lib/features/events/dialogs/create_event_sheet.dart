@@ -1,15 +1,15 @@
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:intl/intl.dart';
 
 // interface data providers
@@ -284,14 +284,14 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     WidgetRef ref,
     Widget? child,
   ) {
+    final parentDetails = ref.watch(parentSpaceDetailsProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
-    return ref.watch(parentSpaceDetailsProvider).when(
-          data: (space) => space != null
-              ? SpaceChip(space: space)
-              : Text(currentParentSpace!),
-          error: (e, s) => Text('error: $e'),
-          loading: () => const Text('loading'),
-        );
+    return parentDetails.when(
+      data: (space) =>
+          space != null ? SpaceChip(space: space) : Text(currentParentSpace!),
+      error: (e, s) => Text('error: $e'),
+      loading: () => const Text('loading'),
+    );
   }
 
   void _handleTitleChange(String? value) {

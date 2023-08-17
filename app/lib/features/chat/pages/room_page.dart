@@ -4,6 +4,7 @@ import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/widgets/avatar_builder.dart';
 import 'package:acter/features/chat/widgets/bubble_builder.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -103,37 +104,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   }
 
   Widget avatarBuilder(String userId) {
-    final memberProfile = ref.watch(memberProfileProvider(userId));
-    return memberProfile.when(
-      data: (profile) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: SizedBox(
-            height: 28,
-            width: 28,
-            child: ActerAvatar(
-              mode: DisplayMode.User,
-              uniqueId: userId,
-              displayName: profile.displayName ?? userId,
-              avatar: profile.getAvatarImage(),
-            ),
-          ),
-        );
-      },
-      error: (e, st) {
-        debugPrint('ERROR loading avatar due to $e');
-        return Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: ActerAvatar(
-            uniqueId: userId,
-            displayName: userId,
-            mode: DisplayMode.User,
-            size: 28,
-          ),
-        );
-      },
-      loading: () => const CircularProgressIndicator(),
-    );
+    return AvatarBuilder(userId: userId);
   }
 
   Widget textMessageBuilder(
@@ -141,10 +112,8 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     required int messageWidth,
     required bool showName,
   }) {
-    final roomNotifier = ref.watch(chatRoomProvider.notifier);
     return TextMessageBuilder(
       message: m,
-      onPreviewDataFetched: roomNotifier.handlePreviewDataFetched,
       messageWidth: messageWidth,
     );
   }
@@ -175,7 +144,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     required bool nextMessageInGroup,
   }) {
     return BubbleBuilder(
-      userId: ref.watch(clientProvider)!.userId().toString(),
       message: message,
       nextMessageInGroup: nextMessageInGroup,
       enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,

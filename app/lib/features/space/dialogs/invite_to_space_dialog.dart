@@ -2,11 +2,12 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/space/widgets/user_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 
 final searchController = Provider.autoDispose<TextEditingController>((ref) {
   final controller = TextEditingController();
@@ -110,51 +111,6 @@ class UserEntry extends ConsumerWidget {
   }
 }
 
-class InviteButton extends ConsumerStatefulWidget {
-  final String userId;
-  final bool invited;
-  final Space space;
-  const InviteButton({
-    super.key,
-    required this.space,
-    this.invited = false,
-    required this.userId,
-  });
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _InviteButtonState();
-}
-
-class _InviteButtonState extends ConsumerState<InviteButton> {
-  bool _loading = false;
-  bool _success = false;
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.invited || _success) {
-      return const Chip(label: Text('invited'));
-    }
-
-    if (_loading) {
-      return const CircularProgressIndicator();
-    }
-
-    return OutlinedButton.icon(
-      onPressed: () async {
-        if (mounted) {
-          setState(() => _loading = true);
-        }
-        await widget.space.inviteUser(widget.userId);
-        if (mounted) {
-          setState(() => _success = true);
-        }
-      },
-      icon: const Icon(Atlas.paper_airplane_thin),
-      label: const Text('invite'),
-    );
-  }
-}
-
 class InviteToSpaceDialog extends ConsumerStatefulWidget {
   final String spaceId;
   const InviteToSpaceDialog({
@@ -254,15 +210,9 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (context, index) => foundUsers.when(
-              data: (data) => Consumer(
-                builder: (context, ref, child) => userBuilder(
-                  context,
-                  ref,
-                  child,
-                  data[index],
-                  space,
-                  invited,
-                ),
+              data: (data) => UserBuilder(
+                profile: data[index],
+                spaceId: widget.spaceId,
               ),
               error: (err, stackTrace) => Text('Error: $err'),
               loading: () => const Text('Loading found user'),
@@ -332,15 +282,9 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
               slivers: [
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (context, index) => Consumer(
-                      builder: (context, ref, child) => userBuilder(
-                        context,
-                        ref,
-                        child,
-                        invited[index].getProfile(),
-                        space,
-                        invited,
-                      ),
+                    (context, index) => UserBuilder(
+                      profile: invited[index].getProfile(),
+                      spaceId: widget.spaceId,
                     ),
                     childCount: invited.length,
                   ),
@@ -348,59 +292,6 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
               ],
             )
           ],
-        ),
-      ),
-    );
-  }
-
-  bool isInvited(String userId, List<Member> invited) {
-    for (final i in invited) {
-      if (i.userId().toString() == userId) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  Widget userBuilder(
-    BuildContext context,
-    WidgetRef ref,
-    Widget? child,
-    UserProfile profile,
-    AsyncValue<SpaceItem> spaceItem,
-    List<Member> invited,
-  ) {
-    final avatarProv = ref.watch(userAvatarProvider(profile));
-    final displayName = ref.watch(displayNameProvider(profile));
-    final userId = profile.userId().toString();
-    return Card(
-      child: ListTile(
-        title: displayName.when(
-          data: (data) => Text(data ?? userId),
-          error: (err, stackTrace) => Text('Error: $err'),
-          loading: () => const Text('Loading display name'),
-        ),
-        subtitle: displayName.when(
-          data: (data) {
-            return (data == null) ? null : Text(userId);
-          },
-          error: (err, stackTrace) => Text('Error: $err'),
-          loading: () => const Text('Loading display name'),
-        ),
-        leading: ActerAvatar(
-          mode: DisplayMode.User,
-          uniqueId: userId,
-          displayName: displayName.valueOrNull,
-          avatar: avatarProv.valueOrNull,
-        ),
-        trailing: spaceItem.when(
-          data: (data) => InviteButton(
-            userId: userId,
-            space: data.space!,
-            invited: isInvited(userId, invited),
-          ),
-          error: (err, stackTrace) => Text('Error: $err'),
-          loading: () => const Text('Loading user'),
         ),
       ),
     );

@@ -2,12 +2,11 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:acter_avatar/acter_avatar.dart';
-import 'package:atlas_icons/atlas_icons.dart';
-
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
@@ -427,7 +426,6 @@ class PublicSpaceSelector extends ConsumerWidget {
 
   Widget serverTypeBuilder(BuildContext context, WidgetRef ref, Widget? child) {
     final selectedServer = ref.watch(selectedServerProvider);
-    final selectedServerNotifier = ref.watch(selectedServerProvider.notifier);
 
     final controller = ref.watch(serverTypeAheadController);
     final val = ref.watch(serverTypeAheadProvider);
@@ -456,7 +454,8 @@ class PublicSpaceSelector extends ConsumerWidget {
       dropdownMenuEntries: menuItems,
       onSelected: (String? typus) {
         if (typus != null) {
-          selectedServerNotifier.state = typus;
+          final notifier = ref.read(selectedServerProvider.notifier);
+          notifier.state = typus;
         }
       },
     );

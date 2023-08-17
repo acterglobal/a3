@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SpaceChip extends ConsumerWidget {
@@ -19,13 +19,16 @@ class SpaceChip extends ConsumerWidget {
       if (spaceId == null) {
         throw 'space or spaceId must be provided';
       }
-      return ref.watch(briefSpaceItemProvider(spaceId!)).when(
-            data: (space) => renderSpace(space),
-            error: (error, st) => Chip(label: Text('Loading failed: $error')),
-            loading: () => const Chip(
-              label: Text('loading'),
-            ),
-          );
+      final brief = ref.watch(briefSpaceItemProvider(spaceId!));
+      return brief.when(
+        data: (space) => renderSpace(space),
+        error: (error, st) => Chip(
+          label: Text('Loading failed: $error'),
+        ),
+        loading: () => const Chip(
+          label: Text('loading'),
+        ),
+      );
     }
     return renderSpace(space!);
   }
