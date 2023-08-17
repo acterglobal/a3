@@ -1,0 +1,2 @@
+- Chat is now supported with attachments. You can now send image(s) and files as messages.
+- [fix] When opening the room, images get stuck with loading indicator sometimes. This has been fixed.
