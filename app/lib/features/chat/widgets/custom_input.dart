@@ -244,6 +244,7 @@ class CustomChatInput extends ConsumerWidget {
         },
       );
     }
+  }
 
   Widget replyBuilder(BuildContext context, WidgetRef ref, Widget? child) {
     final roomNotifier = ref.watch(chatRoomProvider.notifier);
@@ -369,24 +370,6 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 }
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
-  Future<void> onSendButtonPressed(WidgetRef ref) async {
-    final inputNotifier = ref.read(chatInputProvider.notifier);
-    final mentionState = ref.read(mentionKeyProvider).currentState!;
-    final markDownProvider = ref.read(messageMarkDownProvider);
-    final markDownNotifier = ref.read(messageMarkDownProvider.notifier);
-    final roomNotifier = ref.read(chatRoomProvider.notifier);
-
-    inputNotifier.showSendBtn(false);
-    String markdownText = mentionState.controller!.text;
-    int messageLength = markdownText.length;
-    markDownProvider.forEach((key, value) {
-      markdownText = markdownText.replaceAll(key, value);
-    });
-    await roomNotifier.handleSendPressed(markdownText, messageLength);
-    markDownNotifier.update((state) => {});
-    mentionState.controller!.clear();
-  }
-
   @override
   Widget build(BuildContext context) {
     final mentionList = ref.watch(mentionListProvider);

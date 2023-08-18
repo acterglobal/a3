@@ -31,7 +31,6 @@ class RoomPage extends ConsumerStatefulWidget {
 }
 
 class _RoomPageConsumerState extends ConsumerState<RoomPage> {
-
   void onBackgroundTap() {
     final emojiRowVisible = ref.read(
       chatInputProvider.select((ci) {
@@ -216,7 +215,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             imageMessageBuilder: imageMessageBuilder,
             customMessageBuilder: customMessageBuilder,
             showUserAvatars: true,
-            onAttachmentPressed: () => onAttach(context),
             onMessageLongPress: roomNotifier.handleMessageTap,
             onEndReached: roomNotifier.handleEndReached,
             onEndReachedThreshold: 0.75,

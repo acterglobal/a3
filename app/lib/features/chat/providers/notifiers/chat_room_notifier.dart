@@ -704,7 +704,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
     }
   }
-  
+
   // fetch audio content for message.
   Future<void> _fetchAudioContent(String eventId) async {
     final room = ref.read(currentConvoProvider)!;
@@ -762,8 +762,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       });
     }
   }
-  
-  
+
   // file selection
   Future<void> handleFileSelection(BuildContext context) async {
     fileList.clear();
@@ -844,29 +843,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       } catch (e) {
         debugPrint('error occured: $e');
       }
-      
-    String? name = result.files.single.name;
-    String? mimeType = lookupMimeType(path);
-    if (repliedToMessage != null) {
-      await room.sendFileReply(
-        path,
-        name,
-        mimeType!,
-        result.files.single.size,
-        repliedToMessage!.id,
-        null,
-      );
-      repliedToMessage = null;
-      final inputNotifier = ref.read(chatInputProvider.notifier);
-      inputNotifier.toggleReplyView(false);
-      inputNotifier.setReplyWidget(null);
-    } else {
-      await room.sendFileMessage(
-        path,
-        name,
-        mimeType!,
-        result.files.single.size,
-      );
     }
   }
 
