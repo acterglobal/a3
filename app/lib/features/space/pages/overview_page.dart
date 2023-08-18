@@ -15,6 +15,7 @@ class ActerSpaceChecker extends ConsumerWidget {
   final Widget child;
   final String spaceId;
   final bool expectation;
+
   const ActerSpaceChecker({
     super.key,
     this.expectation = true,
@@ -24,12 +25,12 @@ class ActerSpaceChecker extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(isActerSpaceProvider(spaceId)).when(
-          data: (isActerSpace) =>
-              isActerSpace == expectation ? child : const SizedBox.shrink(),
-          error: (error, stackTrace) => Text('Failed to load space: $error'),
-          loading: () => const SizedBox.shrink(),
-        );
+    final isActerSpace = ref.watch(isActerSpaceProvider(spaceId));
+    return isActerSpace.when(
+      data: (data) => data == expectation ? child : const SizedBox.shrink(),
+      error: (error, stackTrace) => Text('Failed to load space: $error'),
+      loading: () => const SizedBox.shrink(),
+    );
   }
 }
 

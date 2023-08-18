@@ -1,20 +1,21 @@
+import 'dart:typed_data';
+
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
-import 'package:acter/features/news/providers/news_providers.dart';
-import 'package:cross_file_image/cross_file_image.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:go_router/go_router.dart';
+import 'package:cross_file_image/cross_file_image.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
-import 'dart:typed_data';
 
 final selectedSpaceIdProvider = StateProvider<String?>((ref) => null);
 final selectedSpaceDetailsProvider =
@@ -46,7 +47,10 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
   @override
   Widget build(BuildContext context) {
     final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
+    final spaceNotifier = ref.watch(selectedSpaceIdProvider.notifier);
     final selectedSpace = currentSelectedSpace != null;
+    final imageNotifier = ref.watch(selectedImageProvider.notifier);
+    final captionNotifier = ref.watch(textProvider.notifier);
     return SideSheet(
       header: 'Create new Update',
       addActions: true,
@@ -59,67 +63,34 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Consumer(
-                  builder: (context, ref, child) {
-                    final selectedImage = ref.watch(selectedImageProvider);
-                    if (selectedImage != null) {
-                      return SizedBox(
-                        height: 300,
-                        child: InkWell(
-                          onTap: () async {
-                            ref.read(selectedImageProvider.notifier).state =
-                                null;
-                          },
-                          child: Center(
-                            child: Image(
-                              image: XFileImage(selectedImage),
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-
-                    return SizedBox(
-                      height: 300,
-                      child: InkWell(
-                        onTap: () async {
-                          final XFile? image = await picker.pickImage(
-                            source: ImageSource.gallery,
-                          );
-                          ref.read(selectedImageProvider.notifier).state =
-                              image;
-                        },
-                        child: const Center(
-                          child: Text('select an image (optional)'),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                child: Consumer(builder: imageBuilder),
               ),
               Expanded(
                 child: TextFormField(
                   textAlignVertical: TextAlignVertical.top,
                   decoration: InputDecoration(
-                    hintText:
-                        (ref.read(selectedImageProvider.notifier).state == null)
-                            ? 'The update you want to share'
-                            : 'Text caption',
-                    labelText:
-                        ref.read(selectedImageProvider.notifier).state == null
-                            ? 'Text Update'
-                            : 'Image Caption',
+                    hintText: imageNotifier.state == null
+                        ? 'The update you want to share'
+                        : 'Text caption',
+                    labelText: imageNotifier.state == null
+                        ? 'Text Update'
+                        : 'Image Caption',
                   ),
                   expands: true,
                   minLines: null,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
-                  validator: (value) => (value != null && value.isNotEmpty) ||
-                          ref.read(selectedImageProvider.notifier).state != null
-                      ? null
-                      : 'Please enter a text or add an image',
+                  validator: (value) {
+                    if (value != null && value.isNotEmpty) {
+                      return null;
+                    }
+                    if (imageNotifier.state != null) {
+                      return null;
+                    }
+                    return 'Please enter a text or add an image';
+                  },
                   onChanged: (String? value) {
-                    ref.read(textProvider.notifier).state = value ?? '';
+                    captionNotifier.state = value ?? '';
                   },
                 ),
               ),
@@ -139,27 +110,18 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                         )
                       : null,
                   trailing: selectedSpace
-                      ? Consumer(
-                          builder: (context, ref, child) =>
-                              ref.watch(selectedSpaceDetailsProvider).when(
-                                    data: (space) => space != null
-                                        ? SpaceChip(space: space)
-                                        : Text(currentSelectedSpace),
-                                    error: (e, s) => Text('error: $e'),
-                                    loading: () => const Text('loading'),
-                                  ),
+                      ? _SpaceBuilder(
+                          currentSelectedSpace: currentSelectedSpace,
                         )
                       : null,
                   onTap: () async {
-                    final currentSpaceId = ref.read(selectedSpaceIdProvider);
                     final newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
-                      currentSpaceId: currentSpaceId,
+                      currentSpaceId: ref.read(selectedSpaceIdProvider),
                       canCheck: 'CanPostNews',
                       title: const Text('Select space'),
                     );
-                    ref.read(selectedSpaceIdProvider.notifier).state =
-                        newSelectedSpaceId;
+                    spaceNotifier.state = newSelectedSpaceId;
                   },
                 ),
                 validator: (x) => (ref.read(selectedSpaceIdProvider) != null)
@@ -208,7 +170,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 isLoader: true,
               );
 
-              final space = await ref.watch(spaceProvider(spaceId!).future);
+              final space = await ref.read(spaceProvider(spaceId!).future);
               NewsEntryDraft draft = space.newsDraft();
               if (file == null) {
                 draft.addTextSlide(caption);
@@ -218,7 +180,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 if (mimeType != null) {
                   if (mimeType.startsWith('image/')) {
                     Uint8List bytes = await file.readAsBytes();
-                    var decodedImage = await decodeImageFromList(bytes);
+                    final decodedImage = await decodeImageFromList(bytes);
                     await draft.addImageSlide(
                       caption,
                       file.path,
@@ -257,8 +219,8 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               try {
                 await draft.send();
                 // reset fields
-                ref.read(textProvider.notifier).state = '';
-                ref.read(selectedImageProvider.notifier).state = null;
+                captionNotifier.state = '';
+                imageNotifier.state = null;
                 // close both
 
                 // We are doing as expected, but the lints triggers.
@@ -303,6 +265,60 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
           child: const Text('Post Update'),
         ),
       ],
+    );
+  }
+
+  Widget imageBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final selectedImage = ref.watch(selectedImageProvider);
+    if (selectedImage != null) {
+      return SizedBox(
+        height: 300,
+        child: InkWell(
+          onTap: () {
+            final imageNotifier = ref.read(selectedImageProvider.notifier);
+            imageNotifier.state = null;
+          },
+          child: Center(
+            child: Image(
+              image: XFileImage(selectedImage),
+            ),
+          ),
+        ),
+      );
+    }
+    return SizedBox(
+      height: 300,
+      child: InkWell(
+        onTap: () async {
+          final imageNotifier = ref.read(selectedImageProvider.notifier);
+          imageNotifier.state = await picker.pickImage(
+            source: ImageSource.gallery,
+          );
+        },
+        child: const Center(
+          child: Text('select an image (optional)'),
+        ),
+      ),
+    );
+  }
+}
+
+class _SpaceBuilder extends ConsumerWidget {
+  final String currentSelectedSpace;
+
+  const _SpaceBuilder({
+    Key? key,
+    required this.currentSelectedSpace,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
+    return spaceDetails.when(
+      data: (space) =>
+          space != null ? SpaceChip(space: space) : Text(currentSelectedSpace),
+      error: (e, s) => Text('error: $e'),
+      loading: () => const Text('loading'),
     );
   }
 }

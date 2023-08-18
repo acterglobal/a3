@@ -54,12 +54,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   Future<void> handleSubmit() async {
     if (formKey.currentState!.validate()) {
-      var network = ref.read(networkAwareProvider);
+      final network = ref.read(networkAwareProvider);
       if (!inCI && network == NetworkStatus.Off) {
         showNoInternetNotification();
       } else {
-        final notifier = ref.read(authStateProvider.notifier);
-        final errorMsg = await notifier.register(
+        final authNotifier = ref.read(authStateProvider.notifier);
+        final errorMsg = await authNotifier.register(
           username.text,
           password.text,
           name.text,
@@ -76,15 +76,14 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
+    final authNotifier = ref.watch(authStateProvider.notifier);
     return Scaffold(
       primary: false,
       appBar: AppBar(
         actions: [
           if (canGuestLogin)
             OutlinedButton(
-              onPressed: () async {
-                await ref.read(authStateProvider.notifier).makeGuest(context);
-              },
+              onPressed: () async => await authNotifier.makeGuest(context),
               child: const Text('Continue as guest'),
             ),
         ],
