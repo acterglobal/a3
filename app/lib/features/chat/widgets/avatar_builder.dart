@@ -23,7 +23,7 @@ class AvatarBuilder extends ConsumerWidget {
             uniqueId: userId,
             displayName: profile.displayName ?? userId,
             avatar: profile.getAvatarImage(),
-            size: 28,
+            size: profile.hasAvatar() ? 14 : 28,
           ),
         );
       },
