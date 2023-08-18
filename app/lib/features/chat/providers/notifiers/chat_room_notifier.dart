@@ -19,7 +19,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   TimelineStream? timeline;
   String? currentMessageId;
   types.Message? repliedToMessage;
-  final List<PlatformFile> _imageFileList = [];
+  List<File> fileList = [];
   late Client client;
 
   ChatRoomNotifier({
@@ -83,7 +83,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           messagesNotifier.insertMessage(0, message);
           if (message.metadata != null &&
               message.metadata!.containsKey('repliedTo')) {
-            _fetchOriginalContent(
+            await _fetchOriginalContent(
               message.metadata?['repliedTo'],
               message.id,
             );
@@ -112,14 +112,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         if (message.metadata != null &&
             message.metadata!.containsKey('repliedTo')) {
-          _fetchOriginalContent(
+          await _fetchOriginalContent(
             message.metadata?['repliedTo'],
             message.id,
           );
         }
         RoomEventItem? eventItem = m.eventItem();
         if (eventItem != null) {
-          _fetchEventContent(eventItem.subType(), message.id);
+          await _fetchEventContent(eventItem.subType(), message.id);
         }
         break;
       case 'Remove':
@@ -138,14 +138,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         messagesNotifier.insertMessage(0, message);
         if (message.metadata != null &&
             message.metadata!.containsKey('repliedTo')) {
-          _fetchOriginalContent(
+          await _fetchOriginalContent(
             message.metadata?['repliedTo'],
             message.id,
           );
         }
         RoomEventItem? eventItem = m.eventItem();
         if (eventItem != null) {
-          _fetchEventContent(eventItem.subType(), message.id);
+          await _fetchEventContent(eventItem.subType(), message.id);
         }
         break;
       case 'PushFront':
@@ -157,14 +157,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         messagesNotifier.addMessage(message);
         if (message.metadata != null &&
             message.metadata!.containsKey('repliedTo')) {
-          _fetchOriginalContent(
+          await _fetchOriginalContent(
             message.metadata?['repliedTo'],
             message.id,
           );
         }
         RoomEventItem? eventItem = m.eventItem();
         if (eventItem != null) {
-          _fetchEventContent(eventItem.subType(), message.id);
+          await _fetchEventContent(eventItem.subType(), message.id);
         }
         break;
       case 'PopBack':
@@ -557,7 +557,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.image':
             ImageDesc? description = eventItem.imageDesc();
             if (description != null) {
-              Map<String, dynamic> metadata = {'base64': ''};
+              Map<String, dynamic> metadata = {};
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -696,30 +696,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   // fetch event media content for message.
   Future<void> _fetchEventContent(String? subType, String eventId) async {
     switch (subType) {
-      case 'm.image':
-        await _fetchImageContent(eventId);
-        break;
       case 'm.audio':
         await _fetchAudioContent(eventId);
         break;
       case 'm.video':
         await _fetchVideoContent(eventId);
         break;
-    }
-  }
-
-  // fetch image content for message.
-  Future<void> _fetchImageContent(String eventId) async {
-    final room = ref.read(currentConvoProvider)!;
-    final messages = ref.read(messagesProvider);
-    final messagesNotifier = ref.read(messagesProvider.notifier);
-    final data = await room.imageBinary(eventId);
-    int index = messages.indexWhere((x) => x.id == eventId);
-    if (index != -1) {
-      final metadata = messages[index].metadata ?? {};
-      metadata['base64'] = base64Encode(data.asTypedList());
-      messages[index] = messages[index].copyWith(metadata: metadata);
-      messagesNotifier.replaceMessage(index, messages[index]);
     }
   }
 
@@ -781,99 +763,86 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-  // image selection
-  Future<void> handleImageSelection(BuildContext context) async {
-    final room = ref.read(currentConvoProvider)!;
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-    );
-    if (result == null) {
-      return;
-    }
-    String? path = result.files.single.path;
-    if (path == null) {
-      return;
-    }
-    String? name = result.files.single.name;
-    String? mimeType = lookupMimeType(path);
-    final bytes = File(path).readAsBytesSync();
-    final image = await decodeImageFromList(bytes);
-    if (repliedToMessage != null) {
-      await room.sendImageReply(
-        path,
-        name,
-        mimeType!,
-        bytes.length,
-        image.width,
-        image.height,
-        repliedToMessage!.id,
-        null,
-      );
-      repliedToMessage = null;
-      final inputNotifier = ref.read(chatInputProvider.notifier);
-      inputNotifier.toggleReplyView(false);
-      inputNotifier.setReplyWidget(null);
-    } else {
-      await room.sendImageMessage(
-        path,
-        name,
-        mimeType!,
-        bytes.length,
-        image.width,
-        image.height,
-        null,
-      );
-    }
-  }
-
-  // multiple images selection
-  Future<void> handleMultipleImageSelection(BuildContext context) async {
-    _imageFileList.clear();
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowMultiple: true,
-    );
-    if (result == null) {
-      return;
-    }
-    _imageFileList.addAll(result.files);
-  }
-
   // file selection
   Future<void> handleFileSelection(BuildContext context) async {
-    final room = ref.read(currentConvoProvider)!;
+    fileList.clear();
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.any,
+      allowMultiple: true,
     );
-    if (result == null) {
-      return;
+    if (result != null) {
+      fileList = result.paths.map((path) => File(path!)).toList();
     }
-    String? path = result.files.single.path;
-    if (path == null) {
-      return;
-    }
-    String? name = result.files.single.name;
-    String? mimeType = lookupMimeType(path);
-    if (repliedToMessage != null) {
-      await room.sendFileReply(
-        path,
-        name,
-        mimeType!,
-        result.files.single.size,
-        repliedToMessage!.id,
-        null,
-      );
-      repliedToMessage = null;
-      final inputNotifier = ref.read(chatInputProvider.notifier);
-      inputNotifier.toggleReplyView(false);
-      inputNotifier.setReplyWidget(null);
-    } else {
-      await room.sendFileMessage(
-        path,
-        name,
-        mimeType!,
-        result.files.single.size,
-      );
+  }
+
+  Future<void> handleFileUpload() async {
+    var room = ref.read(currentConvoProvider)!;
+    var chatInputNotifier = ref.read(chatInputProvider.notifier);
+    if (fileList.isNotEmpty) {
+      try {
+        for (File file in fileList) {
+          String fileName = file.path.split('/').last;
+          String? mimeType = lookupMimeType(file.path);
+
+          if (mimeType!.startsWith('image/')) {
+            var bytes = file.readAsBytesSync();
+            var image = await decodeImageFromList(bytes);
+            if (repliedToMessage != null) {
+              await room.sendImageReply(
+                file.path,
+                fileName,
+                mimeType,
+                file.lengthSync(),
+                image.width,
+                image.height,
+                repliedToMessage!.id,
+                null,
+              );
+
+              repliedToMessage = null;
+              chatInputNotifier.toggleReplyView(false);
+              chatInputNotifier.setReplyWidget(null);
+            } else {
+              await room.sendImageMessage(
+                file.path,
+                fileName,
+                mimeType,
+                file.lengthSync(),
+                image.height,
+                image.width,
+                null,
+              );
+            }
+          } else if (mimeType.startsWith('/audio')) {
+            if (repliedToMessage != null) {
+            } else {}
+          } else if (mimeType.startsWith('/video')) {
+          } else {
+            if (repliedToMessage != null) {
+              await room.sendFileReply(
+                file.path,
+                fileName,
+                mimeType,
+                file.lengthSync(),
+                repliedToMessage!.id,
+                null,
+              );
+              repliedToMessage = null;
+              chatInputNotifier.toggleReplyView(false);
+              chatInputNotifier.setReplyWidget(null);
+            } else {
+              await room.sendFileMessage(
+                file.path,
+                fileName,
+                mimeType,
+                file.lengthSync(),
+              );
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('error occured: $e');
+      }
     }
   }
 
@@ -914,57 +883,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
     roomNotifier.currentMessageId = message.id;
     inputNotifier.emojiRowVisible(true);
-  }
-
-  // send message event with image media
-  Future<void> sendImage(PlatformFile file) async {
-    final room = ref.read(currentConvoProvider)!;
-    String? path = file.path;
-    if (path == null) {
-      return;
-    }
-    String? name = file.name;
-    String? mimeType = lookupMimeType(path);
-    final bytes = file.bytes;
-    if (bytes == null) {
-      return;
-    }
-    final image = await decodeImageFromList(bytes);
-    if (repliedToMessage != null) {
-      await room.sendImageReply(
-        path,
-        name,
-        mimeType!,
-        bytes.length,
-        image.width,
-        image.height,
-        repliedToMessage!.id,
-        null,
-      );
-      repliedToMessage = null;
-      final chatInputState = ref.read(chatInputProvider.notifier);
-      chatInputState.toggleReplyView(false);
-      chatInputState.setReplyWidget(null);
-    } else {
-      await room.sendImageMessage(
-        path,
-        name,
-        mimeType!,
-        bytes.length,
-        image.width,
-        image.height,
-        null,
-      );
-    }
-  }
-
-  void updateEmojiState(types.Message message) {
-    final messages = ref.read(messagesProvider);
-    int emojiMessageIndex = messages.indexWhere((x) => x.id == message.id);
-    currentMessageId = messages[emojiMessageIndex].id;
-    if (currentMessageId == message.id) {
-      ref.read(chatInputProvider.notifier).emojiRowVisible(true);
-    }
   }
 
   // send typing event from client

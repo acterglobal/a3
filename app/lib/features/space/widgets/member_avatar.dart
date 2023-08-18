@@ -26,7 +26,7 @@ class MemberAvatar extends ConsumerWidget {
             data: (data) => ActerAvatar(
               mode: DisplayMode.User,
               uniqueId: userId,
-              size: 18,
+              size: data.hasAvatar() ? 18 : 36,
               avatar: data.getAvatarImage(),
               displayName: data.displayName,
             ),
@@ -35,7 +35,7 @@ class MemberAvatar extends ConsumerWidget {
               return ActerAvatar(
                 mode: DisplayMode.User,
                 uniqueId: userId,
-                size: 18,
+                size: 36,
                 displayName: userId,
               );
             },

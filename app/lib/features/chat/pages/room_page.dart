@@ -19,6 +19,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class RoomPage extends ConsumerStatefulWidget {
   const RoomPage({
@@ -30,65 +31,6 @@ class RoomPage extends ConsumerStatefulWidget {
 }
 
 class _RoomPageConsumerState extends ConsumerState<RoomPage> {
-  void onAttach(BuildContext context) {
-    final roomNotifier = ref.read(chatRoomProvider.notifier);
-    showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      context: context,
-      builder: (BuildContext context) {
-        return SafeArea(
-          child: SizedBox(
-            height: 124,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                GestureDetector(
-                  onTap: () => roomNotifier.handleImageSelection(context),
-                  child: Row(
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(Atlas.camera),
-                      ),
-                      const SizedBox(width: 10),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Text(
-                          AppLocalizations.of(context)!.photo,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () => roomNotifier.handleFileSelection(context),
-                  child: Row(
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(Atlas.document),
-                      ),
-                      const SizedBox(width: 10),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Text(
-                          AppLocalizations.of(context)!.file,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   void onBackgroundTap() {
     final emojiRowVisible = ref.read(
       chatInputProvider.select((ci) {
@@ -260,6 +202,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               inputPlaceholder: AppLocalizations.of(context)!.message,
               sendButtonAccessibilityLabel: '',
             ),
+            timeFormat: DateFormat.jm(),
             messages: ref.watch(messagesProvider),
             onSendPressed: (types.PartialText partialText) {},
             user: types.User(id: client!.userId().toString()),
@@ -272,16 +215,14 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
             imageMessageBuilder: imageMessageBuilder,
             customMessageBuilder: customMessageBuilder,
             showUserAvatars: true,
-            onAttachmentPressed: () => onAttach(context),
             onMessageLongPress: roomNotifier.handleMessageTap,
-            onMessageTap: roomNotifier.handleMessageTap,
             onEndReached: roomNotifier.handleEndReached,
             onEndReachedThreshold: 0.75,
             onBackgroundTap: onBackgroundTap,
             //Custom Theme class, see lib/common/store/chatTheme.dart
             theme: const ActerChatTheme(
-              attachmentButtonIcon: Icon(Atlas.plus_circle),
               sendButtonIcon: Icon(Atlas.paper_airplane),
+              documentIcon: Icon(Atlas.file_thin, size: 18),
             ),
           ),
         ),
