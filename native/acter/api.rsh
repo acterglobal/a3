@@ -1902,6 +1902,9 @@ object DeviceRecord {
 
     /// last seen timestamp of this device in milliseconds
     fn last_seen_ts() -> Option<u64>;
+
+    /// whether it was verified
+    fn verified() -> bool;
 }
 
 /// Deliver typing event from rust to flutter

@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,8 @@ class SessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fields = ['Unverified'];
+    bool isVerified = deviceRecord.verified();
+    final fields = [isVerified ? 'Verified' : 'Unverified'];
     final lastSeenTs = deviceRecord.lastSeenTs();
     if (lastSeenTs != null) {
       final dateTime = DateTime.fromMillisecondsSinceEpoch(
@@ -26,14 +28,19 @@ class SessionCard extends StatelessWidget {
     if (lastSeenIp != null) {
       fields.add(lastSeenIp);
     }
-    final displayName = deviceRecord.displayName();
-    if (displayName != null) {
-      fields.add(displayName);
-    }
+    fields.add(deviceRecord.deviceId().toString());
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 1),
       child: ListTile(
-        leading: const Icon(Icons.question_mark_rounded),
+        leading: isVerified
+            ? Icon(
+                Icons.verified_rounded,
+                color: Theme.of(context).colorScheme.success,
+              )
+            : Icon(
+                Icons.question_mark_rounded,
+                color: Theme.of(context).colorScheme.error,
+              ),
         title: Text(deviceRecord.displayName() ?? ''),
         subtitle: Text(fields.join(' - ')),
         trailing: const Icon(Icons.arrow_right),

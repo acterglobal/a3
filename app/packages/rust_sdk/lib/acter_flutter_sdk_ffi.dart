@@ -18626,6 +18626,16 @@ class Api {
       _DeviceRecordLastSeenTsReturn Function(
         int,
       )>();
+  late final _deviceRecordVerifiedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__DeviceRecord_verified");
+
+  late final _deviceRecordVerified = _deviceRecordVerifiedPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _typingEventRoomIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -39764,6 +39774,18 @@ class DeviceRecord {
       return null;
     }
     final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// whether it was verified
+  bool verified() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._deviceRecordVerified(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 

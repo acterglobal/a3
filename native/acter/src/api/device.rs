@@ -45,7 +45,8 @@ impl DeviceChangedEvent {
                     .await?
                     .devices()
                 {
-                    if device.is_verified() == verified {
+                    let is_verified = device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
+                    if is_verified == verified {
                         if let Some(dev) = response
                             .devices
                             .iter()
@@ -56,6 +57,7 @@ impl DeviceChangedEvent {
                                 dev.display_name.clone(),
                                 dev.last_seen_ts,
                                 dev.last_seen_ip.clone(),
+                                is_verified,
                             ));
                         } else {
                             records.push(DeviceRecord::new(
@@ -63,6 +65,7 @@ impl DeviceChangedEvent {
                                 device.display_name().map(|x| x.to_string()),
                                 None,
                                 None,
+                                is_verified,
                             ));
                         }
                     }
@@ -182,6 +185,7 @@ impl DeviceLeftEvent {
                     .await?
                     .devices()
                 {
+                    let is_verified = device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
                     if device.is_deleted() == deleted {
                         if let Some(dev) = response
                             .devices
@@ -193,6 +197,7 @@ impl DeviceLeftEvent {
                                 dev.display_name.clone(),
                                 dev.last_seen_ts,
                                 dev.last_seen_ip.clone(),
+                                is_verified,
                             ));
                         } else {
                             records.push(DeviceRecord::new(
@@ -200,6 +205,7 @@ impl DeviceLeftEvent {
                                 device.display_name().map(|x| x.to_string()),
                                 None,
                                 None,
+                                is_verified,
                             ));
                         }
                     }

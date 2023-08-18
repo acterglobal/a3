@@ -1117,18 +1117,28 @@ impl SessionManager {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
+                let user_id = client.user_id().context("User not found")?;
                 let response = client.devices().await?;
-                let mut records = vec![];
+                let crypto_devices = client
+                    .encryption()
+                    .get_user_devices(user_id)
+                    .await
+                    .context("Couldn't get crypto devices")?;
+                let mut sessions = vec![];
                 for device in response.devices {
-                    records.push(DeviceRecord::new(
+                    let is_verified = crypto_devices
+                        .get(&device.device_id)
+                        .is_some_and(|d| d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing());
+                    sessions.push(DeviceRecord::new(
                         device.device_id.clone(),
                         device.display_name.clone(),
                         device.last_seen_ts,
                         device.last_seen_ip.clone(),
+                        is_verified,
                     ));
                 }
-                warn!("all sessions: {:?}", records);
-                Ok(records)
+                warn!("all sessions: {:?}", sessions);
+                Ok(sessions)
             })
             .await?
     }
@@ -1155,6 +1165,7 @@ impl SessionManager {
                             device.display_name.clone(),
                             device.last_seen_ts,
                             device.last_seen_ip.clone(),
+                            true,
                         ));
                     }
                 }
@@ -1186,6 +1197,7 @@ impl SessionManager {
                             device.display_name.clone(),
                             device.last_seen_ts,
                             device.last_seen_ip.clone(),
+                            false,
                         ));
                     }
                 }
@@ -1199,7 +1211,13 @@ impl SessionManager {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
+                let user_id = client.user_id().context("User not found")?;
                 let response = client.devices().await?;
+                let crypto_devices = client
+                    .encryption()
+                    .get_user_devices(user_id)
+                    .await
+                    .context("Couldn't get crypto devices")?;
                 let mut sessions = vec![];
                 for device in response.devices {
                     let mut is_inactive = true;
@@ -1215,11 +1233,15 @@ impl SessionManager {
                         }
                     }
                     if is_inactive {
+                        let is_verified = crypto_devices
+                            .get(&device.device_id)
+                            .is_some_and(|d| d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing());
                         sessions.push(DeviceRecord::new(
                             device.device_id.clone(),
                             device.display_name.clone(),
                             device.last_seen_ts,
                             device.last_seen_ip.clone(),
+                            is_verified,
                         ));
                     }
                 }
