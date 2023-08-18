@@ -2,9 +2,9 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
-import 'package:acter/features/activities/providers/cross_signing_providers.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter/features/activities/providers/notifications_providers.dart';
+import 'package:acter/features/activities/providers/session_providers.dart';
 import 'package:acter/features/activities/providers/notifiers/notifications_list_notifier.dart';
 import 'package:acter/features/activities/widgets/invitation_card.dart';
 import 'package:acter/features/activities/widgets/notification_card.dart';
@@ -34,9 +34,7 @@ class ActivitiesPage extends ConsumerWidget {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (BuildContext ctx, int index) {
-                  return SessionCard(
-                    deviceRecord: sessions[index],
-                  );
+                  return SessionCard(deviceRecord: sessions[index]);
                 },
                 childCount: sessions.length,
               ),
@@ -176,8 +174,6 @@ class ActivitiesPage extends ConsumerWidget {
   }
 
   void onReviewSessions(BuildContext context, WidgetRef ref) {
-    final allSessions = ref.read(allSessionsProvider);
-    final unverifiedSessions = ref.read(unverifiedSessionsProvider);
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -199,27 +195,7 @@ class ActivitiesPage extends ConsumerWidget {
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
-              allSessions.when(
-                data: (sessions) {
-                  debugPrint('$sessions');
-                  return Expanded(
-                    child: ListView.builder(
-                      itemBuilder: (BuildContext ctx2, int index) {
-                        return SessionCard(
-                          deviceRecord: sessions[index],
-                        );
-                      },
-                      itemCount: sessions.length,
-                    ),
-                  );
-                },
-                error: (error, stack) {
-                  return const Text("Couldn't load all sessions");
-                },
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
+              Consumer(builder: allSessionsBuilder),
               Padding(
                 padding: const EdgeInsetsDirectional.symmetric(
                   horizontal: 10,
@@ -230,27 +206,61 @@ class ActivitiesPage extends ConsumerWidget {
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
-              unverifiedSessions.when(
-                data: (sessions) => Expanded(
-                  child: ListView.builder(
-                    itemBuilder: (BuildContext ctx2, int index) {
-                      return SessionCard(
-                        deviceRecord: sessions[index],
-                      );
-                    },
-                    itemCount: sessions.length,
-                  ),
-                ),
-                error: (error, stack) {
-                  return const Text("Couldn't load unverified sessions");
-                },
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
+              Consumer(builder: unverifiedSessionsBuilder),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget allSessionsBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
+    final allSessions = ref.read(allSessionsProvider);
+    return allSessions.when(
+      data: (sessions) {
+        debugPrint('allSessions - ${sessions.toString()}');
+        return Expanded(
+          child: ListView.builder(
+            itemBuilder: (BuildContext context, int index) {
+              return SessionCard(deviceRecord: sessions[index]);
+            },
+            itemCount: sessions.length,
+          ),
+        );
+      },
+      error: (error, stack) {
+        return const Text("Couldn't load all sessions");
+      },
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  Widget unverifiedSessionsBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
+    final unverifiedSessions = ref.read(unverifiedSessionsProvider);
+    return unverifiedSessions.when(
+      data: (sessions) => Expanded(
+        child: ListView.builder(
+          itemBuilder: (BuildContext context, int index) {
+            return SessionCard(deviceRecord: sessions[index]);
+          },
+          itemCount: sessions.length,
+        ),
+      ),
+      error: (error, stack) {
+        return const Text("Couldn't load unverified sessions");
+      },
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }
