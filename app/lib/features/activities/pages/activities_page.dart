@@ -219,19 +219,16 @@ class ActivitiesPage extends ConsumerWidget {
     WidgetRef ref,
     Widget? child,
   ) {
-    final allSessions = ref.read(allSessionsProvider);
+    final allSessions = ref.watch(allSessionsProvider);
     return allSessions.when(
-      data: (sessions) {
-        debugPrint('allSessions - ${sessions.toString()}');
-        return Expanded(
-          child: ListView.builder(
-            itemBuilder: (BuildContext context, int index) {
-              return SessionCard(deviceRecord: sessions[index]);
-            },
-            itemCount: sessions.length,
-          ),
-        );
-      },
+      data: (sessions) => Expanded(
+        child: ListView.builder(
+          itemBuilder: (BuildContext context, int index) {
+            return SessionCard(deviceRecord: sessions[index]);
+          },
+          itemCount: sessions.length,
+        ),
+      ),
       error: (error, stack) {
         return const Text("Couldn't load all sessions");
       },
@@ -246,7 +243,7 @@ class ActivitiesPage extends ConsumerWidget {
     WidgetRef ref,
     Widget? child,
   ) {
-    final unverifiedSessions = ref.read(unverifiedSessionsProvider);
+    final unverifiedSessions = ref.watch(unverifiedSessionsProvider);
     return unverifiedSessions.when(
       data: (sessions) => Expanded(
         child: ListView.builder(
