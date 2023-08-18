@@ -419,10 +419,10 @@ impl DeviceRecord {
         last_seen_ip: Option<String>,
     ) -> Self {
         DeviceRecord {
-            device_id: device_id,
-            display_name: display_name,
+            device_id,
+            display_name,
             last_seen_ts,
-            last_seen_ip: last_seen_ip,
+            last_seen_ip,
         }
     }
 

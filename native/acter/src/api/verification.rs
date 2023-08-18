@@ -1121,10 +1121,10 @@ impl SessionManager {
                 let mut records = vec![];
                 for device in response.devices {
                     records.push(DeviceRecord::new(
-                        device.device_id,
-                        device.display_name,
+                        device.device_id.clone(),
+                        device.display_name.clone(),
                         device.last_seen_ts,
-                        device.last_seen_ip,
+                        device.last_seen_ip.clone(),
                     ));
                 }
                 warn!("all sessions: {:?}", records);
@@ -1151,10 +1151,10 @@ impl SessionManager {
                         .is_some_and(|d| d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing());
                     if is_verified {
                         sessions.push(DeviceRecord::new(
-                            device.device_id,
-                            device.display_name,
+                            device.device_id.clone(),
+                            device.display_name.clone(),
                             device.last_seen_ts,
-                            device.last_seen_ip,
+                            device.last_seen_ip.clone(),
                         ));
                     }
                 }
@@ -1182,10 +1182,10 @@ impl SessionManager {
                         .is_some_and(|d| d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing());
                     if !is_verified {
                         sessions.push(DeviceRecord::new(
-                            device.device_id,
-                            device.display_name,
+                            device.device_id.clone(),
+                            device.display_name.clone(),
                             device.last_seen_ts,
-                            device.last_seen_ip,
+                            device.last_seen_ip.clone(),
                         ));
                     }
                 }
@@ -1216,10 +1216,10 @@ impl SessionManager {
                     }
                     if is_inactive {
                         sessions.push(DeviceRecord::new(
-                            device.device_id,
-                            device.display_name,
+                            device.device_id.clone(),
+                            device.display_name.clone(),
                             device.last_seen_ts,
-                            device.last_seen_ip,
+                            device.last_seen_ip.clone(),
                         ));
                     }
                 }
