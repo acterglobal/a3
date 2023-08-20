@@ -39,8 +39,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (!inCI && network == NetworkStatus.Off) {
         showNoInternetNotification();
       } else {
-        final notifier = ref.read(authStateProvider.notifier);
-        final loginSuccess = await notifier.login(
+        final authNotifier = ref.read(authStateProvider.notifier);
+        final loginSuccess = await authNotifier.login(
           username.text,
           password.text,
         );

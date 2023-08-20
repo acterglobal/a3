@@ -91,8 +91,6 @@ dependencies:
   path: ^1.8.3
   url_launcher: ^6.1.10
   file_picker: ^5.2.5
-  filesystem_picker: ^3.1.0
-  open_app_file: ^4.0.1
   emoji_picker_flutter: ^1.6.1
   connectivity_plus: ^4.0.1
   mime: ^1.0.2
@@ -101,7 +99,7 @@ dependencies:
   freezed_annotation: ^2.4.1
   http_parser: ^4.0.2
   flutter_custom_selector: ^0.0.3
-  date_format: ^2.0.2
+  jiffy: ^6.2.1
   screenshot: ^2.1.0
   http: ^1.0.0
   string_validator: ^1.0.0
@@ -109,7 +107,6 @@ dependencies:
   crypto: ^3.0.2
   flutter_math_fork: ^0.7.1
   shared_preferences: ^2.2.0
-
   image_picker_for_web: ^2.1.11
   flutter_onboarding_slider: ^1.0.9
   riverpod_infinite_scroll: ^1.0.9

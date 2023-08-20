@@ -282,14 +282,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
-  date_format:
-    dependency: "direct main"
-    description:
-      name: date_format
-      sha256: "8e5154ca363411847220c8cbc43afcf69c08e8debe40ba09d57710c25711760c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.7"
   dbus:
     dependency: transitive
     description:
@@ -402,14 +394,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.3"
-  filesystem_picker:
-    dependency: "direct main"
-    description:
-      name: filesystem_picker
-      sha256: cf790e033b3e0c07b5bc9f71458b39f1f45017641aae508ffdfb86a59baa0c1d
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.1.0"
   fixnum:
     dependency: transitive
     description:
@@ -806,10 +790,10 @@ packages:
     dependency: "direct main"
     description:
       name: image_picker
-      sha256: "6296e98782726d37f59663f0727d0e978eee1ced1ffed45ccaba591786a7f7b3"
+      sha256: "841837258e0b42c80946c43443054fc726f5e8aa84a97f363eb9ef0d45b33c14"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   image_picker_android:
     dependency: transitive
     description:
@@ -911,6 +895,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  jiffy:
+    dependency: "direct main"
+    description:
+      name: jiffy
+      sha256: cc1d4b75016a9156c29b5d61f0c9176c3e0fb0580cc5a0e0422b5d2cab3fbfff
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.2.1"
   js:
     dependency: transitive
     description:
@@ -1031,14 +1023,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
-  open_app_file:
-    dependency: "direct main"
-    description:
-      name: open_app_file
-      sha256: "5dd0af054364c12093947ad3e69370bb22ca535ca17f81f7b72444c7be18cc01"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.2"
   overlay_support:
     dependency: "direct main"
     description:

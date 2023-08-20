@@ -19,7 +19,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   TimelineStream? timeline;
   String? currentMessageId;
   types.Message? repliedToMessage;
-  final List<PlatformFile> _imageFileList = [];
+  List<File> fileList = [];
   late Client client;
 
   ChatRoomNotifier({
@@ -71,18 +71,19 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   // parses `RoomMessage` event to `types.Message` and updates messages list
   Future<void> _parseEvent(TimelineDiff timelineEvent) async {
     debugPrint('DiffRx: ${timelineEvent.action()}');
+    final messagesNotifier = ref.read(messagesProvider.notifier);
     switch (timelineEvent.action()) {
       case 'Append':
         List<RoomMessage> messages = timelineEvent.values()!.toList();
         for (var m in messages) {
-          var message = _parseMessage(m);
+          final message = _parseMessage(m);
           if (message == null || message is types.UnsupportedMessage) {
             break;
           }
-          ref.read(messagesProvider.notifier).insertMessage(0, message);
+          messagesNotifier.insertMessage(0, message);
           if (message.metadata != null &&
               message.metadata!.containsKey('repliedTo')) {
-            _fetchOriginalContent(
+            await _fetchOriginalContent(
               message.metadata?['repliedTo'],
               message.id,
             );
@@ -96,7 +97,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'Set':
       case 'Insert':
         RoomMessage m = timelineEvent.value()!;
-        var message = _parseMessage(m);
+        final message = _parseMessage(m);
         if (message == null || message is types.UnsupportedMessage) {
           break;
         }
@@ -104,86 +105,82 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             .read(messagesProvider)
             .indexWhere((msg) => message.id == msg.id);
         if (index == -1) {
-          ref.read(messagesProvider.notifier).addMessage(message);
+          messagesNotifier.addMessage(message);
         } else {
           // update event may be fetched prior to insert event
-          ref.read(messagesProvider.notifier).replaceMessage(index, message);
+          messagesNotifier.replaceMessage(index, message);
         }
         if (message.metadata != null &&
             message.metadata!.containsKey('repliedTo')) {
-          _fetchOriginalContent(
+          await _fetchOriginalContent(
             message.metadata?['repliedTo'],
             message.id,
           );
         }
         RoomEventItem? eventItem = m.eventItem();
         if (eventItem != null) {
-          _fetchEventContent(eventItem.subType(), message.id);
+          await _fetchEventContent(eventItem.subType(), message.id);
         }
         break;
       case 'Remove':
         int index = timelineEvent.index()!;
         final messages = ref.read(messagesProvider);
         if (index < messages.length) {
-          ref
-              .read(messagesProvider.notifier)
-              .removeMessage(messages.length - 1 - index);
+          messagesNotifier.removeMessage(messages.length - 1 - index);
         }
         break;
       case 'PushBack':
         RoomMessage m = timelineEvent.value()!;
-        var message = _parseMessage(m);
+        final message = _parseMessage(m);
         if (message == null || message is types.UnsupportedMessage) {
           break;
         }
-        ref.read(messagesProvider.notifier).insertMessage(0, message);
+        messagesNotifier.insertMessage(0, message);
         if (message.metadata != null &&
             message.metadata!.containsKey('repliedTo')) {
-          _fetchOriginalContent(
+          await _fetchOriginalContent(
             message.metadata?['repliedTo'],
             message.id,
           );
         }
         RoomEventItem? eventItem = m.eventItem();
         if (eventItem != null) {
-          _fetchEventContent(eventItem.subType(), message.id);
+          await _fetchEventContent(eventItem.subType(), message.id);
         }
         break;
       case 'PushFront':
         RoomMessage m = timelineEvent.value()!;
-        var message = _parseMessage(m);
+        final message = _parseMessage(m);
         if (message == null || message is types.UnsupportedMessage) {
           break;
         }
-        ref.read(messagesProvider.notifier).addMessage(message);
+        messagesNotifier.addMessage(message);
         if (message.metadata != null &&
             message.metadata!.containsKey('repliedTo')) {
-          _fetchOriginalContent(
+          await _fetchOriginalContent(
             message.metadata?['repliedTo'],
             message.id,
           );
         }
         RoomEventItem? eventItem = m.eventItem();
         if (eventItem != null) {
-          _fetchEventContent(eventItem.subType(), message.id);
+          await _fetchEventContent(eventItem.subType(), message.id);
         }
         break;
       case 'PopBack':
         final messages = ref.read(messagesProvider);
         if (messages.isNotEmpty) {
-          ref.read(messagesProvider.notifier).removeMessage(0);
+          messagesNotifier.removeMessage(0);
         }
         break;
       case 'PopFront':
         final messages = ref.read(messagesProvider);
         if (messages.isNotEmpty) {
-          ref
-              .read(messagesProvider.notifier)
-              .removeMessage(messages.length - 1);
+          messagesNotifier.removeMessage(messages.length - 1);
         }
         break;
       case 'Clear':
-        ref.read(messagesProvider.notifier).reset();
+        messagesNotifier.reset();
         break;
       case 'Reset':
         break;
@@ -197,18 +194,17 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     final activeMembers =
         await ref.read(chatMembersProvider(convo.getRoomIdStr()).future);
     List<Map<String, dynamic>> mentionRecords = [];
+    final mentionListNotifier = ref.read(mentionListProvider.notifier);
     for (int i = 0; i < activeMembers.length; i++) {
       String userId = activeMembers[i].userId().toString();
-      var profile = activeMembers[i].getProfile();
+      final profile = activeMembers[i].getProfile();
       Map<String, dynamic> record = {};
-      var userName = (await profile.getDisplayName()).text();
+      final userName = (await profile.getDisplayName()).text();
       record['display'] = userName ?? simplifyUserId(userId);
       record['link'] = userId;
       mentionRecords.add(record);
       if (i % 3 == 0 || i == activeMembers.length - 1) {
-        ref
-            .read(mentionListProvider.notifier)
-            .update((state) => mentionRecords);
+        mentionListNotifier.update((state) => mentionRecords);
       }
     }
   }
@@ -216,7 +212,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   // fetch original content media for reply msg, i.e. text/image/file etc.
   Future<void> _fetchOriginalContent(String originalId, String replyId) async {
     final room = ref.read(currentConvoProvider)!;
-    var roomMsg = await room.getMessage(originalId);
+    final roomMsg = await room.getMessage(originalId);
 
     // reply is allowed for only EventItem not VirtualItem
     // user should be able to get original event as RoomMessage
@@ -247,7 +243,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.space.parent':
         break;
       case 'm.room.encrypted':
-        var metadata = {
+        final metadata = {
           'itemType': 'event',
           'eventType': orgEventItem.eventType()
         };
@@ -259,7 +255,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         );
         break;
       case 'm.room.redaction':
-        var metadata = {
+        final metadata = {
           'itemType': 'event',
           'eventType': orgEventItem.eventType()
         };
@@ -378,7 +374,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
     }
 
-    var messages = ref.read(messagesProvider);
+    final messages = ref.read(messagesProvider);
     int index = messages.indexWhere((x) => x.id == replyId);
     if (index != -1 && repliedTo != null) {
       messages[index] = messages[index].copyWith(repliedMessage: repliedTo);
@@ -406,7 +402,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
     String eventType = eventItem.eventType();
     String sender = eventItem.sender();
-    var author = types.User(id: sender, firstName: simplifyUserId(sender));
+    final author = types.User(
+      id: sender,
+      firstName: simplifyUserId(sender),
+    );
     int createdAt = eventItem.originServerTs(); // in milliseconds
     String eventId = eventItem.eventId();
 
@@ -466,7 +465,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
       case 'm.reaction':
       case 'm.room.encrypted':
-        var metadata = {'itemType': 'event', 'eventType': eventType};
+        final metadata = {'itemType': 'event', 'eventType': eventType};
         if (inReplyTo != null) {
           metadata['repliedTo'] = inReplyTo;
         }
@@ -477,7 +476,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata: metadata,
         );
       case 'm.room.redaction':
-        var metadata = {'itemType': 'event', 'eventType': eventType};
+        final metadata = {'itemType': 'event', 'eventType': eventType};
         if (inReplyTo != null) {
           metadata['repliedTo'] = inReplyTo;
         }
@@ -558,7 +557,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.image':
             ImageDesc? description = eventItem.imageDesc();
             if (description != null) {
-              Map<String, dynamic> metadata = {'base64': ''};
+              Map<String, dynamic> metadata = {};
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -697,9 +696,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   // fetch event media content for message.
   Future<void> _fetchEventContent(String? subType, String eventId) async {
     switch (subType) {
-      case 'm.image':
-        await _fetchImageContent(eventId);
-        break;
       case 'm.audio':
         await _fetchAudioContent(eventId);
         break;
@@ -709,51 +705,33 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-  // fetch image content for message.
-  Future<void> _fetchImageContent(String eventId) async {
-    final room = ref.read(currentConvoProvider)!;
-    var messages = ref.read(messagesProvider);
-    var data = await room.imageBinary(eventId);
-    int index = messages.indexWhere((x) => x.id == eventId);
-    if (index != -1) {
-      var metadata = messages[index].metadata ?? {};
-      metadata['base64'] = base64Encode(data.asTypedList());
-      messages[index] = messages[index].copyWith(metadata: metadata);
-      ref
-          .read(messagesProvider.notifier)
-          .replaceMessage(index, messages[index]);
-    }
-  }
-
   // fetch audio content for message.
   Future<void> _fetchAudioContent(String eventId) async {
     final room = ref.read(currentConvoProvider)!;
-    var messages = ref.read(messagesProvider);
-    var data = await room.audioBinary(eventId);
+    final messages = ref.read(messagesProvider);
+    final messagesNotifier = ref.read(messagesProvider.notifier);
+    final data = await room.audioBinary(eventId);
     int index = messages.indexWhere((x) => x.id == eventId);
     if (index != -1) {
       final metadata = messages[index].metadata ?? {};
       metadata['base64'] = base64Encode(data.asTypedList());
       messages[index] = messages[index].copyWith(metadata: metadata);
-      ref
-          .read(messagesProvider.notifier)
-          .replaceMessage(index, messages[index]);
+      messagesNotifier.replaceMessage(index, messages[index]);
     }
   }
 
   // fetch video conent for message
   Future<void> _fetchVideoContent(String eventId) async {
     final room = ref.read(currentConvoProvider)!;
-    var messages = ref.read(messagesProvider);
-    var data = await room.videoBinary(eventId);
+    final messages = ref.read(messagesProvider);
+    final messagesNotifier = ref.read(messagesProvider.notifier);
+    final data = await room.videoBinary(eventId);
     int index = messages.indexWhere((x) => x.id == eventId);
     if (index != -1) {
       final metadata = messages[index].metadata ?? {};
       metadata['base64'] = base64Encode(data.asTypedList());
       messages[index] = messages[index].copyWith(metadata: metadata);
-      ref
-          .read(messagesProvider.notifier)
-          .replaceMessage(index, messages[index]);
+      messagesNotifier.replaceMessage(index, messages[index]);
     }
   }
 
@@ -772,114 +750,99 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     types.TextMessage message,
     types.PreviewData previewData,
   ) {
-    var messages = ref.read(messagesProvider);
+    final messages = ref.read(messagesProvider);
     final index = messages.indexWhere((x) => x.id == message.id);
     if (index != -1) {
       final updatedMessage = (messages[index] as types.TextMessage).copyWith(
         previewData: previewData,
       );
-
-      WidgetsBinding.instance.addPostFrameCallback(
-        (Duration duration) => ref
-            .read(messagesProvider.notifier)
-            .replaceMessage(index, updatedMessage),
-      );
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        final messagesNotifier = ref.read(messagesProvider.notifier);
+        messagesNotifier.replaceMessage(index, updatedMessage);
+      });
     }
-  }
-
-  // image selection
-  Future<void> handleImageSelection(BuildContext context) async {
-    final room = ref.read(currentConvoProvider)!;
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-    );
-    if (result == null) {
-      return;
-    }
-    String? path = result.files.single.path;
-    if (path == null) {
-      return;
-    }
-    String? name = result.files.single.name;
-    String? mimeType = lookupMimeType(path);
-    var bytes = File(path).readAsBytesSync();
-    final image = await decodeImageFromList(bytes);
-    if (repliedToMessage != null) {
-      await room.sendImageReply(
-        path,
-        name,
-        mimeType!,
-        bytes.length,
-        image.width,
-        image.height,
-        repliedToMessage!.id,
-        null,
-      );
-      final chatInputState = ref.read(chatInputProvider.notifier);
-      repliedToMessage = null;
-      chatInputState.toggleReplyView(false);
-      chatInputState.setReplyWidget(null);
-    } else {
-      await room.sendImageMessage(
-        path,
-        name,
-        mimeType!,
-        bytes.length,
-        image.width,
-        image.height,
-        null,
-      );
-    }
-  }
-
-  // multiple images selection
-  Future<void> handleMultipleImageSelection(BuildContext context) async {
-    _imageFileList.clear();
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowMultiple: true,
-    );
-    if (result == null) {
-      return;
-    }
-    _imageFileList.addAll(result.files);
   }
 
   // file selection
   Future<void> handleFileSelection(BuildContext context) async {
-    final room = ref.read(currentConvoProvider)!;
+    fileList.clear();
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.any,
+      allowMultiple: true,
     );
-    if (result == null) {
-      return;
+    if (result != null) {
+      fileList = result.paths.map((path) => File(path!)).toList();
     }
-    String? path = result.files.single.path;
-    if (path == null) {
-      return;
-    }
-    String? name = result.files.single.name;
-    String? mimeType = lookupMimeType(path);
-    if (repliedToMessage != null) {
-      await room.sendFileReply(
-        path,
-        name,
-        mimeType!,
-        result.files.single.size,
-        repliedToMessage!.id,
-        null,
-      );
-      final chatInputState = ref.read(chatInputProvider.notifier);
-      repliedToMessage = null;
-      chatInputState.toggleReplyView(false);
-      chatInputState.setReplyWidget(null);
-    } else {
-      await room.sendFileMessage(
-        path,
-        name,
-        mimeType!,
-        result.files.single.size,
-      );
+  }
+
+  Future<void> handleFileUpload() async {
+    var room = ref.read(currentConvoProvider)!;
+    var chatInputNotifier = ref.read(chatInputProvider.notifier);
+    if (fileList.isNotEmpty) {
+      try {
+        for (File file in fileList) {
+          String fileName = file.path.split('/').last;
+          String? mimeType = lookupMimeType(file.path);
+
+          if (mimeType!.startsWith('image/')) {
+            var bytes = file.readAsBytesSync();
+            var image = await decodeImageFromList(bytes);
+            if (repliedToMessage != null) {
+              await room.sendImageReply(
+                file.path,
+                fileName,
+                mimeType,
+                file.lengthSync(),
+                image.width,
+                image.height,
+                repliedToMessage!.id,
+                null,
+              );
+
+              repliedToMessage = null;
+              chatInputNotifier.toggleReplyView(false);
+              chatInputNotifier.setReplyWidget(null);
+            } else {
+              await room.sendImageMessage(
+                file.path,
+                fileName,
+                mimeType,
+                file.lengthSync(),
+                image.height,
+                image.width,
+                null,
+              );
+            }
+          } else if (mimeType.startsWith('/audio')) {
+            if (repliedToMessage != null) {
+            } else {}
+          } else if (mimeType.startsWith('/video')) {
+          } else {
+            if (repliedToMessage != null) {
+              await room.sendFileReply(
+                file.path,
+                fileName,
+                mimeType,
+                file.lengthSync(),
+                repliedToMessage!.id,
+                null,
+              );
+              repliedToMessage = null;
+              chatInputNotifier.toggleReplyView(false);
+              chatInputNotifier.setReplyWidget(null);
+            } else {
+              await room.sendFileMessage(
+                file.path,
+                fileName,
+                mimeType,
+                file.lengthSync(),
+              );
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('error occured: $e');
+      }
     }
   }
 
@@ -899,9 +862,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         null,
       );
       repliedToMessage = null;
-      final chatInputState = ref.read(chatInputProvider.notifier);
-      chatInputState.toggleReplyView(false);
-      chatInputState.setReplyWidget(null);
+      final inputNotifier = ref.read(chatInputProvider.notifier);
+      inputNotifier.toggleReplyView(false);
+      inputNotifier.setReplyWidget(null);
     } else {
       await room.sendFormattedMessage(markdownMessage);
     }
@@ -912,63 +875,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     BuildContext context,
     types.Message message,
   ) async {
+    final inputNotifier = ref.read(chatInputProvider.notifier);
+    final roomNotifier = ref.read(chatRoomProvider.notifier);
     if (ref.read(chatInputProvider).showReplyView) {
-      ref.read(chatInputProvider.notifier).toggleReplyView(false);
-      ref.read(chatInputProvider.notifier).setReplyWidget(null);
+      inputNotifier.toggleReplyView(false);
+      inputNotifier.setReplyWidget(null);
     }
-    ref.read(chatRoomProvider.notifier).currentMessageId = message.id;
-    ref.read(chatInputProvider.notifier).emojiRowVisible(true);
-  }
-
-  // send message event with image media
-  Future<void> sendImage(PlatformFile file) async {
-    final room = ref.read(currentConvoProvider)!;
-    String? path = file.path;
-    if (path == null) {
-      return;
-    }
-    String? name = file.name;
-    String? mimeType = lookupMimeType(path);
-    var bytes = file.bytes;
-    if (bytes == null) {
-      return;
-    }
-    final image = await decodeImageFromList(bytes);
-    if (repliedToMessage != null) {
-      await room.sendImageReply(
-        path,
-        name,
-        mimeType!,
-        bytes.length,
-        image.width,
-        image.height,
-        repliedToMessage!.id,
-        null,
-      );
-      repliedToMessage = null;
-      final chatInputState = ref.read(chatInputProvider.notifier);
-      chatInputState.toggleReplyView(false);
-      chatInputState.setReplyWidget(null);
-    } else {
-      await room.sendImageMessage(
-        path,
-        name,
-        mimeType!,
-        bytes.length,
-        image.width,
-        image.height,
-        null,
-      );
-    }
-  }
-
-  void updateEmojiState(types.Message message) {
-    final messages = ref.read(messagesProvider);
-    int emojiMessageIndex = messages.indexWhere((x) => x.id == message.id);
-    currentMessageId = messages[emojiMessageIndex].id;
-    if (currentMessageId == message.id) {
-      ref.read(chatInputProvider.notifier).emojiRowVisible(true);
-    }
+    roomNotifier.currentMessageId = message.id;
+    inputNotifier.emojiRowVisible(true);
   }
 
   // send typing event from client

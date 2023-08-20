@@ -38,9 +38,9 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   @override
   void initState() {
     super.initState();
-    Future(() {
-      ref.read(parentSpaceProvider.notifier).state =
-          widget.initialParentsSpaceId;
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      final parentNotifier = ref.read(parentSpaceProvider.notifier);
+      parentNotifier.state = widget.initialParentsSpaceId;
     });
   }
 
@@ -48,6 +48,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   Widget build(BuildContext context) {
     final titleInput = ref.watch(titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
+    final parentNotifier = ref.watch(parentSpaceProvider.notifier);
     final parentSelected = currentParentSpace != null;
     return SideSheet(
       header: parentSelected ? 'Create Subspace' : 'Create Space',
@@ -71,34 +72,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                       padding: EdgeInsets.only(bottom: 5),
                       child: Text('Avatar'),
                     ),
-                    Consumer(
-                      builder: (context, ref, child) {
-                        final avatarUpload = ref.watch(avatarProvider);
-                        return GestureDetector(
-                          onTap: _handleAvatarUpload,
-                          child: Container(
-                            height: 75,
-                            width: 75,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: avatarUpload.isNotEmpty
-                                ? Image.file(
-                                    File(avatarUpload),
-                                    fit: BoxFit.cover,
-                                  )
-                                : Icon(
-                                    Atlas.up_arrow_from_bracket_thin,
-                                    color:
-                                        Theme.of(context).colorScheme.neutral4,
-                                  ),
-                          ),
-                        );
-                      },
-                    ),
+                    Consumer(builder: avatarBuilder),
                   ],
                 ),
                 const SizedBox(width: 15),
@@ -171,27 +145,15 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                         : 'No parent space selected',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  trailing: parentSelected
-                      ? Consumer(
-                          builder: (context, ref, child) =>
-                              ref.watch(parentSpaceDetailsProvider).when(
-                                    data: (space) => space != null
-                                        ? SpaceChip(space: space)
-                                        : Text(currentParentSpace),
-                                    error: (e, s) => Text('error: $e'),
-                                    loading: () => const Text('loading'),
-                                  ),
-                        )
-                      : null,
+                  trailing:
+                      parentSelected ? Consumer(builder: parentBuilder) : null,
                   onTap: () async {
-                    final currentSpaceId = ref.read(parentSpaceProvider);
                     final newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
-                      currentSpaceId: currentSpaceId,
+                      currentSpaceId: ref.read(parentSpaceProvider),
                       title: const Text('Select parent space'),
                     );
-                    ref.read(parentSpaceProvider.notifier).state =
-                        newSelectedSpaceId;
+                    parentNotifier.state = newSelectedSpaceId;
                   },
                 )
               ],
@@ -246,6 +208,46 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
   }
 
+  Widget avatarBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final avatarUpload = ref.watch(avatarProvider);
+    return GestureDetector(
+      onTap: _handleAvatarUpload,
+      child: Container(
+        height: 75,
+        width: 75,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: avatarUpload.isNotEmpty
+            ? Image.file(
+                File(avatarUpload),
+                fit: BoxFit.cover,
+              )
+            : Icon(
+                Atlas.up_arrow_from_bracket_thin,
+                color: Theme.of(context).colorScheme.neutral4,
+              ),
+      ),
+    );
+  }
+
+  Widget parentBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final spaceDetails = ref.watch(parentSpaceDetailsProvider);
+    final currentParentSpace = ref.watch(parentSpaceProvider);
+    return spaceDetails.when(
+      data: (data) {
+        if (data != null) {
+          return SpaceChip(space: data);
+        } else {
+          return Text(currentParentSpace!);
+        }
+      },
+      error: (err, stackTrace) => Text('error: $err'),
+      loading: () => const Text('loading'),
+    );
+  }
+
   void _handleTitleChange(String? value) {
     ref.read(titleProvider.notifier).update((state) => value!);
   }
@@ -257,8 +259,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
     if (result != null) {
       File file = File(result.files.single.path!);
-      String filepath = file.path;
-      ref.read(avatarProvider.notifier).update((state) => filepath);
+      ref.read(avatarProvider.notifier).update((state) => file.path);
     } else {
       // user cancelled the picker
     }
@@ -278,17 +279,17 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       isLoader: true,
     );
     try {
-      final sdk = await ref.watch(sdkProvider.future);
-      var config = sdk.newSpaceSettingsBuilder();
+      final sdk = await ref.read(sdkProvider.future);
+      final config = sdk.newSpaceSettingsBuilder();
       config.setName(spaceName);
       if (description.isNotEmpty) {
         config.setTopic(description);
       }
-      var localUri = ref.read(avatarProvider);
+      final localUri = ref.read(avatarProvider);
       if (localUri.isNotEmpty) {
         config.setAvatarUri(localUri); // space creation will upload it
       }
-      final parentRoomId = ref.watch(parentSpaceProvider);
+      final parentRoomId = ref.read(parentSpaceProvider);
       if (parentRoomId != null) {
         config.setParent(parentRoomId);
       }

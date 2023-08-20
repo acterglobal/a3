@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
+import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -17,11 +20,10 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'package:mime/mime.dart';
 
 class CustomChatInput extends ConsumerWidget {
-  const CustomChatInput({
-    Key? key,
-  }) : super(key: key);
+  const CustomChatInput({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,12 +35,14 @@ class CustomChatInput extends ConsumerWidget {
         ref.watch(chatRoomProvider.notifier).repliedToMessage;
     final isAuthor = ref.watch(chatRoomProvider.notifier).isAuthor();
     final accountProfile = ref.watch(accountProfileProvider);
+    final showReplyView = ref.watch(
+      chatInputProvider.select((ci) => ci.showReplyView),
+    );
     Size size = MediaQuery.of(context).size;
     return Column(
       children: [
         Visibility(
-          visible:
-              ref.watch(chatInputProvider.select((ci) => ci.showReplyView)),
+          visible: showReplyView,
           child: Container(
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primaryContainer,
@@ -55,56 +59,7 @@ class CustomChatInput extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   repliedToMessage != null
-                      ? Consumer(
-                          builder: (context, ref, child) {
-                            final replyProfile = ref.watch(
-                              memberProfileProvider(
-                                repliedToMessage.author.id,
-                              ),
-                            );
-                            return Row(
-                              children: [
-                                replyProfile.when(
-                                  data: (profile) {
-                                    return ActerAvatar(
-                                      mode: DisplayMode.User,
-                                      uniqueId: repliedToMessage.author.id,
-                                      displayName: profile.displayName ??
-                                          repliedToMessage.author.id,
-                                      avatar: profile.getAvatarImage(),
-                                      size: profile.hasAvatar() ? 12 : 24,
-                                    );
-                                  },
-                                  error: (e, st) => Text(
-                                    'Error loading avatar due to ${e.toString()}',
-                                    textScaleFactor: 0.2,
-                                  ),
-                                  loading: () =>
-                                      const CircularProgressIndicator(),
-                                ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  'Reply to ${toBeginningOfSentenceCase(repliedToMessage.author.id)}',
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                const Spacer(),
-                                GestureDetector(
-                                  onTap: () {
-                                    chatInputNotifier.toggleReplyView(false);
-                                    chatInputNotifier.setReplyWidget(null);
-                                  },
-                                  child: const Icon(
-                                    Atlas.xmark_circle,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        )
+                      ? Consumer(builder: replyBuilder)
                       : const SizedBox.shrink(),
                   if (repliedToMessage != null &&
                       chatInputState.replyWidget != null)
@@ -201,17 +156,22 @@ class CustomChatInput extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     accountProfile.when(
-                      data: (data) {
+                      data: (data) => ActerAvatar(
+                        uniqueId: userId,
+                        mode: DisplayMode.User,
+                        displayName: data.profile.displayName ?? userId,
+                        avatar: data.profile.getAvatarImage(),
+                        size: data.profile.hasAvatar() ? 18 : 36,
+                      ),
+                      error: (e, st) {
+                        debugPrint('Error loading due to $e');
                         return ActerAvatar(
                           uniqueId: userId,
                           mode: DisplayMode.User,
-                          displayName: data.profile.displayName ?? userId,
-                          avatar: data.profile.getAvatarImage(),
-                          size: data.profile.hasAvatar() ? 18 : 36,
+                          displayName: userId,
+                          size: 36,
                         );
                       },
-                      error: (e, st) =>
-                          Text('Error loading due to ${e.toString()}'),
                       loading: () => const CircularProgressIndicator(),
                     ),
                     const Expanded(
@@ -220,9 +180,17 @@ class CustomChatInput extends ConsumerWidget {
                         child: _TextInputWidget(),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: InkWell(
+                        onTap: () => handleAttachment(ref, context),
+                        child: const Icon(Atlas.paperclip_attachment),
+                      ),
+                    ),
                     if (chatInputState.sendBtnVisible)
-                      _BuildSendBtn(
-                        onButtonPressed: () => onSendButtonPressed(ref),
+                      InkWell(
+                        onTap: () => onSendButtonPressed(ref),
+                        child: const Icon(Atlas.paper_airplane),
                       ),
                   ],
                 ),
@@ -237,21 +205,161 @@ class CustomChatInput extends ConsumerWidget {
     );
   }
 
+  void handleAttachment(WidgetRef ref, BuildContext ctx) async {
+    var chatRoomNotifier = ref.read(chatRoomProvider.notifier);
+    await chatRoomNotifier.handleFileSelection(ctx);
+    if (ctx.mounted) {
+      var selectionList = chatRoomNotifier.fileList;
+      String fileName = selectionList.first.path.split('/').last;
+      final mimeType = lookupMimeType(selectionList.first.path);
+      popUpDialog(
+        context: ctx,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Upload Files (${selectionList.length})',
+                style: Theme.of(ctx).textTheme.titleSmall,
+              ),
+            ),
+          ],
+        ),
+        subtitle: Visibility(
+          visible: selectionList.length <= 5,
+          child: _FileWidget(mimeType, selectionList.first),
+        ),
+        description: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(fileName, style: Theme.of(ctx).textTheme.bodySmall),
+        ),
+        btnText: 'Cancel',
+        btn2Text: 'Upload',
+        btn2Color: Theme.of(ctx).colorScheme.success,
+        btnBorderColor: Theme.of(ctx).colorScheme.errorContainer,
+        onPressedBtn: () => ctx.pop(),
+        onPressedBtn2: () async {
+          ctx.pop();
+          await chatRoomNotifier.handleFileUpload();
+        },
+      );
+    }
+  }
+
+  Widget replyBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final roomNotifier = ref.watch(chatRoomProvider.notifier);
+    final authorId = roomNotifier.repliedToMessage!.author.id;
+    final replyProfile = ref.watch(memberProfileProvider(authorId));
+    final inputNotifier = ref.watch(chatInputProvider.notifier);
+    return Row(
+      children: [
+        replyProfile.when(
+          data: (profile) => ActerAvatar(
+            mode: DisplayMode.User,
+            uniqueId: authorId,
+            displayName: profile.displayName ?? authorId,
+            avatar: profile.getAvatarImage(),
+            size: profile.hasAvatar() ? 12 : 24,
+          ),
+          error: (e, st) {
+            debugPrint('Error loading avatar due to $e');
+            return ActerAvatar(
+              mode: DisplayMode.User,
+              uniqueId: authorId,
+              displayName: authorId,
+              size: 24,
+            );
+          },
+          loading: () => const CircularProgressIndicator(),
+        ),
+        const SizedBox(width: 5),
+        Text(
+          'Reply to ${toBeginningOfSentenceCase(authorId)}',
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
+          ),
+        ),
+        const Spacer(),
+        GestureDetector(
+          onTap: () {
+            inputNotifier.toggleReplyView(false);
+            inputNotifier.setReplyWidget(null);
+          },
+          child: const Icon(
+            Atlas.xmark_circle,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+
+}
+
   Future<void> onSendButtonPressed(WidgetRef ref) async {
-    final chatInputNotifier = ref.read(chatInputProvider.notifier);
-    chatInputNotifier.showSendBtn(false);
-    String markdownText =
-        ref.read(mentionKeyProvider).currentState!.controller!.text;
+    final inputNotifier = ref.read(chatInputProvider.notifier);
+    final roomNotifier = ref.read(chatRoomProvider.notifier);
+    final mentionState = ref.read(mentionKeyProvider).currentState!;
+    final markDownProvider = ref.read(messageMarkDownProvider);
+    final markDownNotifier = ref.read(messageMarkDownProvider.notifier);
+
+    inputNotifier.showSendBtn(false);
+    String markdownText = mentionState.controller!.text;
     int messageLength = markdownText.length;
-    ref.read(messageMarkDownProvider).forEach((key, value) {
+    markDownProvider.forEach((key, value) {
       markdownText = markdownText.replaceAll(key, value);
     });
-    await ref.read(chatRoomProvider.notifier).handleSendPressed(
-          markdownText,
-          messageLength,
-        );
-    ref.read(messageMarkDownProvider.notifier).update((state) => {});
-    ref.read(mentionKeyProvider).currentState!.controller!.clear();
+    await roomNotifier.handleSendPressed(markdownText, messageLength);
+    markDownNotifier.update((state) => {});
+    mentionState.controller!.clear();
+  }
+
+class _FileWidget extends ConsumerWidget {
+  const _FileWidget(this.mimeType, this.file);
+  final String? mimeType;
+  final File file;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (mimeType!.startsWith('image/')) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: Image.file(file, height: 200, fit: BoxFit.cover),
+      );
+    } else if (mimeType!.startsWith('audio/')) {
+      return Container(
+        height: 55,
+        width: 55,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child: const Center(child: Icon(Atlas.file_sound_thin)),
+      );
+    } else if (mimeType!.startsWith('video/')) {
+      return Container(
+        height: 55,
+        width: 55,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child: const Center(child: Icon(Atlas.file_video_thin)),
+      );
+    }
+    //FIXME: cover all mime extension cases?
+    else {
+      return Container(
+        height: 55,
+        width: 55,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child: const Center(child: Icon(Atlas.plus_file_thin)),
+      );
+    }
   }
 }
 
@@ -264,23 +372,6 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 }
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
-  Future<void> onSendButtonPressed(WidgetRef ref) async {
-    final chatInputNotifier = ref.read(chatInputProvider.notifier);
-    chatInputNotifier.showSendBtn(false);
-    String markdownText =
-        ref.read(mentionKeyProvider).currentState!.controller!.text;
-    int messageLength = markdownText.length;
-    ref.read(messageMarkDownProvider).forEach((key, value) {
-      markdownText = markdownText.replaceAll(key, value);
-    });
-    await ref.read(chatRoomProvider.notifier).handleSendPressed(
-          markdownText,
-          messageLength,
-        );
-    ref.read(messageMarkDownProvider.notifier).update((state) => {});
-    ref.read(mentionKeyProvider).currentState!.controller!.clear();
-  }
-
   @override
   Widget build(BuildContext context) {
     final mentionList = ref.watch(mentionListProvider);
@@ -299,8 +390,9 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         borderRadius: BorderRadius.circular(6),
       ),
       onChanged: (String value) async {
-        if (!ref.read(chatInputFocusProvider).hasFocus) {
-          ref.read(chatInputFocusProvider).requestFocus();
+        final focusNode = ref.read(chatInputFocusProvider);
+        if (!focusNode.hasFocus) {
+          focusNode.requestFocus();
         }
         if (value.isNotEmpty) {
           chatInputNotifier.showSendBtn(true);
@@ -311,7 +403,6 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         }
       },
       textInputAction: TextInputAction.send,
-      inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\n'))],
       onSubmitted: (value) => onSendButtonPressed(ref),
       style: Theme.of(context).textTheme.bodySmall,
       cursorColor: Theme.of(context).colorScheme.tertiary,
@@ -355,29 +446,12 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           data: mentionList,
           matchAll: true,
           suggestionBuilder: (Map<String, dynamic> roomMember) {
-            String title = roomMember['display'] ?? roomMember['link'];
+            final authorId = roomMember['link'];
+            final title = roomMember['display'] ?? authorId;
             return ListTile(
-              leading: Consumer(
-                builder: (context, ref, child) {
-                  final mentionProfile =
-                      ref.watch(memberProfileProvider(roomMember['link']));
-                  return mentionProfile.when(
-                    data: (profile) {
-                      return ActerAvatar(
-                        mode: DisplayMode.User,
-                        uniqueId: roomMember['link'],
-                        avatar: profile.getAvatarImage(),
-                        displayName: title,
-                        size: profile.hasAvatar() ? 18 : 36,
-                      );
-                    },
-                    error: (e, st) => Text(
-                      'Error loading avatar due to ${e.toString()}',
-                      textScaleFactor: 0.2,
-                    ),
-                    loading: () => const CircularProgressIndicator(),
-                  );
-                },
+              leading: MentionProfileBuilder(
+                authorId: authorId,
+                title: title,
               ),
               title: Row(
                 children: [
@@ -387,7 +461,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
                   ),
                   const SizedBox(width: 15),
                   Text(
-                    roomMember['link'],
+                    authorId,
                     style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           color: Theme.of(context).colorScheme.neutral5,
                         ),
@@ -402,10 +476,10 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   }
 
   void _handleMentionAdd(Map<String, dynamic> roomMember, WidgetRef ref) {
-    String userId = roomMember['link'];
-    String displayName = roomMember['display'] ?? userId;
+    String authorId = roomMember['link'];
+    String displayName = roomMember['display'] ?? authorId;
     ref.read(messageMarkDownProvider).addAll({
-      '@$displayName': '[$displayName](https://matrix.to/#/$userId)',
+      '@$displayName': '[$displayName](https://matrix.to/#/$authorId)',
     });
   }
 }
@@ -422,7 +496,7 @@ class _ReplyContentWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (msg is ImageMessage) {
-      var imageMsg = msg as ImageMessage;
+      final imageMsg = msg as ImageMessage;
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: ImageMessageBuilder(
@@ -432,7 +506,7 @@ class _ReplyContentWidget extends StatelessWidget {
         ),
       );
     } else if (msg is TextMessage) {
-      var textMsg = msg as TextMessage;
+      final textMsg = msg as TextMessage;
       return Container(
         constraints:
             BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.2),
@@ -448,22 +522,6 @@ class _ReplyContentWidget extends StatelessWidget {
       );
     }
     return messageWidget ?? const SizedBox.shrink();
-  }
-}
-
-class _BuildSendBtn extends StatelessWidget {
-  final Function()? onButtonPressed;
-
-  const _BuildSendBtn({
-    required this.onButtonPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onButtonPressed,
-      child: const Icon(Atlas.paper_airplane),
-    );
   }
 }
 
@@ -513,16 +571,17 @@ class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
   }
 
   void handleEmojiSelected(Category? category, Emoji emoji) {
-    var mentionKey = ref.watch(mentionKeyProvider);
-    mentionKey.currentState!.controller!.text += emoji.emoji;
+    final mentionState = ref.read(mentionKeyProvider).currentState!;
+    mentionState.controller!.text += emoji.emoji;
     ref.read(chatInputProvider.notifier).showSendBtn(true);
   }
 
   void handleBackspacePressed() {
-    var mentionKey = ref.watch(mentionKeyProvider);
-    mentionKey.currentState!.controller!.text =
-        mentionKey.currentState!.controller!.text.characters.skipLast(1).string;
-    if (mentionKey.currentState!.controller!.text.isEmpty) {
+    final mentionState = ref.read(mentionKeyProvider).currentState!;
+    final newValue =
+        mentionState.controller!.text.characters.skipLast(1).string;
+    mentionState.controller!.text = newValue;
+    if (newValue.isEmpty) {
       ref.read(chatInputProvider.notifier).showSendBtn(false);
     }
   }

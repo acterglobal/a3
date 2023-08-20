@@ -77,7 +77,7 @@ class SpaceHierarchyNotifier extends StateNotifier<SpaceHierarchyListState>
       // the current space is also returned as part of the response
       // filter that out:
       final myId = spaceRel.roomIdStr();
-      var entries =
+      final entries =
           (await res.rooms()).where((x) => x.roomIdStr() != myId).toList();
       final next = res.nextBatch();
       Next? finalPageKey;
@@ -121,9 +121,8 @@ class FilteredSpaceHierarchyNotifier
 
   FilteredSpaceHierarchyNotifier(this.ref, this.spaceRel, this.filter)
       : super(const SpaceHierarchyListState()) {
-    listener = ref
-        .read(fullSpaceHierarchyProvider(spaceRel).notifier)
-        .addListener((newState) {
+    final notifier = ref.read(fullSpaceHierarchyProvider(spaceRel).notifier);
+    listener = notifier.addListener((newState) {
       if (mounted) {
         state = newState.filtered(filter);
       }
@@ -132,8 +131,7 @@ class FilteredSpaceHierarchyNotifier
 
   @override
   Future<List<ffi.SpaceHierarchyRoomInfo>?> load(Next? page, int limit) async {
-    return await ref
-        .read(fullSpaceHierarchyProvider(spaceRel).notifier)
-        .load(page, limit);
+    final notifier = ref.read(fullSpaceHierarchyProvider(spaceRel).notifier);
+    return await notifier.load(page, limit);
   }
 }

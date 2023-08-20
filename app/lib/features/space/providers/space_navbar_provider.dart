@@ -116,7 +116,9 @@ class SelectedTabNotifier extends Notifier<Key> {
   }
 
   void switchTo(Key input) {
-    Future(() => state = input);
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      state = input;
+    });
   }
 }
 

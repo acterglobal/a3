@@ -100,7 +100,7 @@ class NotificationsListNotifier extends StateNotifier<NotificationListState>
     }
 
     final pageReq = page.next ?? '';
-    final client = ref.watch(clientProvider);
+    final client = ref.read(clientProvider);
     if (client == null) {
       throw 'No client found';
     }

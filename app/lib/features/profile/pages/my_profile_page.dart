@@ -137,135 +137,129 @@ class MyProfile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final account = ref.watch(accountProfileProvider);
     return account.when(
-      data: (account) => Scaffold(
-        appBar: AppBar(
-          title: const Text('My profile'),
-          actions: [
-            IconButton(
-              icon: const Icon(Atlas.construction_tools_thin),
-              onPressed: () {
-                context.go('/settings');
-              },
-            ),
-            PopupMenuButton(
-              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                PopupMenuItem(
-                  onTap: () => logoutConfirmationDialog(context, ref),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Atlas.exit_thin,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Text(
-                          AppLocalizations.of(context)!.logOut,
-                          style: Theme.of(context).textTheme.labelSmall,
-                          softWrap: false,
+      data: (data) {
+        final userId = data.account.userId().toString();
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('My profile'),
+            actions: [
+              IconButton(
+                icon: const Icon(Atlas.construction_tools_thin),
+                onPressed: () {
+                  context.go('/settings');
+                },
+              ),
+              PopupMenuButton(
+                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                  PopupMenuItem(
+                    onTap: () => logoutConfirmationDialog(context, ref),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Atlas.exit_thin,
                         ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Text(
+                            AppLocalizations.of(context)!.logOut,
+                            style: Theme.of(context).textTheme.labelSmall,
+                            softWrap: false,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.fromLTRB(20, 15, 20, 0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  width: double.infinity,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(25),
+                    child: const SizedBox(),
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width - 100,
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () => _handleAvatarUpload(
+                          data,
+                          context,
+                          ref,
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(width: 5),
+                          ),
+                          child: ActerAvatar(
+                            mode: DisplayMode.User,
+                            uniqueId: userId,
+                            avatar: data.profile.getAvatarImage(),
+                            displayName: data.profile.displayName,
+                            size: 100,
+                          ),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(data.profile.displayName ?? ''),
+                          IconButton(
+                            iconSize: 14,
+                            icon: const Icon(Atlas.pencil_edit_thin),
+                            onPressed: () async {
+                              await updateDisplayName(
+                                data,
+                                context,
+                                ref,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(userId),
+                          IconButton(
+                            iconSize: 14,
+                            icon: const Icon(Atlas.pages),
+                            onPressed: () async {
+                              Clipboard.setData(
+                                ClipboardData(text: userId),
+                              );
+                              customMsgSnackbar(
+                                context,
+                                'Username copied to clipboard',
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 25),
               ],
             ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.fromLTRB(20, 15, 20, 0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                width: double.infinity,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
-                  child: const SizedBox(),
-                ),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width - 100,
-                alignment: Alignment.center,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () => _handleAvatarUpload(
-                        account,
-                        context,
-                        ref,
-                      ),
-                      child: Container(
-                        margin: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(100),
-                          border: Border.all(width: 5),
-                        ),
-                        child: ActerAvatar(
-                          mode: DisplayMode.User,
-                          uniqueId: account.account.userId().toString(),
-                          avatar: account.profile.getAvatarImage(),
-                          displayName: account.profile.displayName,
-                          size: 100,
-                        ),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          account.profile.displayName != null
-                              ? account.profile.displayName!
-                              : 'Add Username',
-                          style: account.profile.displayName == null
-                              ? const TextStyle(fontStyle: FontStyle.italic)
-                              : const TextStyle(fontStyle: FontStyle.normal),
-                        ),
-                        IconButton(
-                          iconSize: 14,
-                          icon: const Icon(Atlas.pencil_edit_thin),
-                          onPressed: () async {
-                            await updateDisplayName(
-                              account,
-                              context,
-                              ref,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(account.account.userId().toString()),
-                        IconButton(
-                          iconSize: 14,
-                          icon: const Icon(Atlas.pages),
-                          onPressed: () async {
-                            Clipboard.setData(
-                              ClipboardData(
-                                text: account.account.userId().toString(),
-                              ),
-                            );
-                            customMsgSnackbar(
-                              context,
-                              'Username copied to clipboard',
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 25),
-            ],
           ),
-        ),
-      ),
+        );
+      },
       error: (e, trace) => Text('error: $e'),
       loading: () => const Text('loading'),
     );
