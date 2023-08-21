@@ -295,6 +295,8 @@ class CustomChatInput extends ConsumerWidget {
     );
   }
 
+}
+
   Future<void> onSendButtonPressed(WidgetRef ref) async {
     final inputNotifier = ref.read(chatInputProvider.notifier);
     final roomNotifier = ref.read(chatRoomProvider.notifier);
@@ -312,7 +314,6 @@ class CustomChatInput extends ConsumerWidget {
     markDownNotifier.update((state) => {});
     mentionState.controller!.clear();
   }
-}
 
 class _FileWidget extends ConsumerWidget {
   const _FileWidget(this.mimeType, this.file);
@@ -400,6 +401,8 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           await chatRoomNotifier.typingNotice(false);
         }
       },
+      textInputAction: TextInputAction.send,
+      onSubmitted: (value) => onSendButtonPressed(ref),
       style: Theme.of(context).textTheme.bodySmall,
       cursorColor: Theme.of(context).colorScheme.tertiary,
       maxLines:
