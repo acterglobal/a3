@@ -406,7 +406,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
       style: Theme.of(context).textTheme.bodySmall,
       cursorColor: Theme.of(context).colorScheme.tertiary,
       maxLines:
-          MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
+          MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 6,
       minLines: 1,
       focusNode: ref.watch(chatInputFocusProvider),
       decoration: InputDecoration(
