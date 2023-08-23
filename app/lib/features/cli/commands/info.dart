@@ -4,6 +4,8 @@ import 'package:args/command_runner.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final backupFormatFinder = RegExp(r'_backup_[0-9-_T.+]+$');
+
 // ignore_for_file: avoid_print
 
 class InfoCommand extends Command {
@@ -46,7 +48,10 @@ class InfoCommand extends Command {
           }
         })
         .where(
-          (f) => f.startsWith('@'), // only show the ones indicating a username
+          (f) =>
+              f.startsWith('@') &&
+              !backupFormatFinder
+                  .hasMatch(f), // only show the ones indicating a username
         )
         .toList();
     logFiles.sort(
