@@ -485,6 +485,19 @@ jobs:
         with:
           name: MacOS
 
+      # for debugging any errors below, print out the bundle version from the IPA/plist
+      - name: Print Bundle Version
+        continue-on-error: true
+        env:
+         UNZIPPED_PATH: "build/macos/Build/Products/Release/Acter.app"
+        run: |
+          ls build/macos/Build/Products/Release/Acter.app/*
+          cat build/macos/Build/Products/Release/Acter.app/Info.plist
+          echo ""
+          echo " ------- "
+          echo ""
+          defaults read "build/macos/Build/Products/Release/Acter.app/Info.plist" CFBundleShortVersionString
+
       - name: Upload to App Store
         env:
           APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
@@ -493,6 +506,8 @@ jobs:
         run: |
           mkdir private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
+          xcrun altool --validate-app --type macos --file build/macos/Build/Products/Release/Acter.app \
+              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
           xcrun altool --upload-app --type macos --file build/macos/Build/Products/Release/Acter.app \
               --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
         shell: bash
