@@ -64,9 +64,9 @@ impl DeviceChangedEvent {
                         }
                     }
                     if is_verified == verified {
-                        let found = crypto_devices.get(&device.device_id).is_some_and(|d| {
-                            d.device_id() == device.device_id
-                        });
+                        let found = crypto_devices
+                            .get(&device.device_id)
+                            .is_some_and(|d| d.device_id() == device.device_id);
                         if found {
                             sessions.push(DeviceRecord::new(
                                 device.device_id.clone(),
@@ -218,11 +218,13 @@ impl DeviceLeftEvent {
                             is_active = true;
                         }
                     }
-                    let is_deleted = crypto_devices.get(&device.device_id).is_some_and(|d| d.is_deleted());
+                    let is_deleted = crypto_devices
+                        .get(&device.device_id)
+                        .is_some_and(|d| d.is_deleted());
                     if is_deleted == deleted {
-                        let found = crypto_devices.get(&device.device_id).is_some_and(|d| {
-                            d.device_id() == device.device_id
-                        });
+                        let found = crypto_devices
+                            .get(&device.device_id)
+                            .is_some_and(|d| d.device_id() == device.device_id);
                         if found {
                             sessions.push(DeviceRecord::new(
                                 device.device_id.clone(),
@@ -234,8 +236,8 @@ impl DeviceLeftEvent {
                             ));
                         } else {
                             sessions.push(DeviceRecord::new(
-                                device.device_id.to_owned(),
-                                device.display_name.map(|x| x.to_string()),
+                                device.device_id.clone(),
+                                device.display_name.clone(),
                                 None,
                                 None,
                                 is_verified,
