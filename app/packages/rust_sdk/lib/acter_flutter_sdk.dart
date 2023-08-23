@@ -55,7 +55,7 @@ Color convertColor(ffi.EfkColor? primary, Color fallback) {
   if (primary == null) {
     return fallback;
   }
-  var data = primary.rgbaU8();
+  final data = primary.rgbaU8();
   return Color.fromARGB(
     data[3],
     data[0],
@@ -303,7 +303,7 @@ class ActerSdk {
     );
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
-      var client = _clients.removeAt(0);
+      final client = _clients.removeAt(0);
       unawaited(
         client.logout().catchError((e) {
           developer.log(

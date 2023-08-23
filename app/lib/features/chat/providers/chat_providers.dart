@@ -28,7 +28,7 @@ final chatStreamProvider = StreamProvider<List<Convo>>((ref) async* {
     convoList.retainWhere((room) => room.isJoined());
     List<Map<String, dynamic>> sortedConversations =
         convoList.map((conversation) {
-      var time = Jiffy.parseFromMillisecondsSinceEpoch(
+      final time = Jiffy.parseFromMillisecondsSinceEpoch(
         conversation.latestMessage()!.eventItem()!.originServerTs(),
       );
       return {'time': time, 'conversation': conversation};
@@ -37,7 +37,7 @@ final chatStreamProvider = StreamProvider<List<Convo>>((ref) async* {
             (a, b) => (b['time'] as Jiffy).isAfter(a['time'] as Jiffy) ? -1 : 1,
           );
 
-    var conversations = sortedConversations.reversed
+    final conversations = sortedConversations.reversed
         .map((item) => (item['conversation']) as Convo)
         .toList();
     //FIXME: how to check empty chats ?

@@ -1,2 +1,2 @@
-- [fix] fixed My profile page widget tree errors 
-- [fix] fixed Events page card display errors 
+- [fix] Cases in which My profile showed up blank.
+- [fix] Messed up title when clicking on Events now displaying correctly.

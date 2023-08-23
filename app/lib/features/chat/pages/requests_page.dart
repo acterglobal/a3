@@ -90,7 +90,7 @@ class _TabBarWidgetState extends State<_TabBarWidget> {
     List<_UserItem> items = [];
     for (var profile in widget.userProfiles) {
       OptionString displayName = await profile.getDisplayName();
-      var item = _UserItem(
+      final item = _UserItem(
         userId: profile.userId().toString(),
         displayName: displayName.text(),
         avatar: profile.getAvatar(),
@@ -135,7 +135,7 @@ class _TabBarWidgetState extends State<_TabBarWidget> {
                         itemCount: userItems.length,
                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int index) {
-                          var item = userItems[index];
+                          final item = userItems[index];
                           return Padding(
                             padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                             child: PendingReqListView(

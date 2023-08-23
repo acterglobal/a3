@@ -167,7 +167,7 @@ final briefSpaceItemsProviderWithMembership =
   for (final element in spaces) {
     final profileData =
         await ref.watch(spaceProfileDataProvider(element).future);
-    var item = SpaceItem(
+    final item = SpaceItem(
       roomId: element.getRoomId().toString(),
       membership: await element.getMyMembership(),
       activeMembers: [],
@@ -226,7 +226,7 @@ final spaceItemsProvider =
     } else {
       members = [];
     }
-    var item = SpaceItem(
+    final item = SpaceItem(
       roomId: element.getRoomId().toString(),
       activeMembers: members,
       spaceProfileData: profileData,

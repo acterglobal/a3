@@ -233,49 +233,50 @@ class _ShellHeader extends ConsumerWidget {
                 padding: const EdgeInsets.only(bottom: 10, left: 10),
                 child: SpaceInfo(spaceId: spaceId),
               ),
-              Consumer(
-                builder: (context, ref, child) {
-                  final spaceMembers = ref.watch(
-                    spaceMembersProvider(spaceId),
-                  );
-                  return spaceMembers.when(
-                    data: (members) {
-                      final membersCount = members.length;
-                      if (membersCount > 5) {
-                        // too many to display, means we limit to 5
-                        members = members.sublist(0, 5);
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 14),
-                        child: Wrap(
-                          direction: Axis.horizontal,
-                          spacing: -6,
-                          children: [
-                            ...members.map(
-                              (a) => MemberAvatar(member: a),
-                            ),
-                            if (membersCount > 5)
-                              CircleAvatar(
-                                child: Text(
-                                  '+${membersCount - 5}',
-                                  textAlign: TextAlign.center,
-                                  textScaleFactor: 0.8,
-                                ),
-                              )
-                          ],
-                        ),
-                      );
-                    },
-                    error: (error, stack) =>
-                        Text('Loading members failed: $error'),
-                    loading: () => const CircularProgressIndicator(),
-                  );
-                },
-              ),
+              Consumer(builder: spaceMembersBuilder),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget spaceMembersBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
+    final spaceMembers = ref.watch(spaceMembersProvider(spaceId));
+    return spaceMembers.when(
+      data: (members) {
+        final membersCount = members.length;
+        if (membersCount > 5) {
+          // too many to display, means we limit to 5
+          members = members.sublist(0, 5);
+        }
+        return Padding(
+          padding: const EdgeInsets.only(left: 14),
+          child: Wrap(
+            direction: Axis.horizontal,
+            spacing: -6,
+            children: [
+              ...members.map(
+                (a) => MemberAvatar(member: a),
+              ),
+              if (membersCount > 5)
+                CircleAvatar(
+                  child: Text(
+                    '+${membersCount - 5}',
+                    textAlign: TextAlign.center,
+                    textScaleFactor: 0.8,
+                  ),
+                )
+            ],
+          ),
+        );
+      },
+      error: (error, stack) => Text('Loading members failed: $error'),
+      loading: () => const CircularProgressIndicator(),
     );
   }
 }

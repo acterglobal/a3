@@ -23,9 +23,8 @@ class RoomProfilePage extends ConsumerWidget {
     final room = ref.watch(currentConvoProvider)!;
     final convoProfile = ref.watch(chatProfileDataProvider(room));
     final roomId = room.getRoomIdStr();
-    final members = ref.watch(chatMembersProvider(room.getRoomIdStr()));
-    final myMembership =
-        ref.watch(spaceMembershipProvider(room.getRoomIdStr()));
+    final members = ref.watch(chatMembersProvider(roomId));
+    final myMembership = ref.watch(spaceMembershipProvider(roomId));
     final List<Widget> topMenu = [
       members.when(
         data: (list) {
@@ -52,7 +51,7 @@ class RoomProfilePage extends ConsumerWidget {
             color: Theme.of(context).colorScheme.surface,
             onPressed: () => context.pushNamed(
               Routes.spaceInvite.name,
-              pathParameters: {'spaceId': room.getRoomIdStr()},
+              pathParameters: {'spaceId': roomId},
             ),
           ),
         );
@@ -87,37 +86,56 @@ class RoomProfilePage extends ConsumerWidget {
             ],
           ),
           SliverToBoxAdapter(
-            child: convoProfile.when(
-              data: (profile) => Column(
-                children: [
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 38,
-                        bottom: 12,
-                      ),
-                      child: SpaceParentBadge(
-                        badgeSize: 20,
-                        spaceId: room.getRoomIdStr(),
-                        child: ActerAvatar(
+            child: Column(
+              children: [
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 38,
+                      bottom: 12,
+                    ),
+                    child: SpaceParentBadge(
+                      badgeSize: 20,
+                      spaceId: roomId,
+                      child: convoProfile.when(
+                        data: (profile) => ActerAvatar(
                           mode: DisplayMode.GroupChat,
                           uniqueId: roomId,
                           displayName: profile.displayName ?? roomId,
                           avatar: profile.getAvatarImage(),
                           size: 75,
                         ),
+                        error: (err, stackTrace) {
+                          debugPrint('Some error occured $err');
+                          return ActerAvatar(
+                            mode: DisplayMode.GroupChat,
+                            uniqueId: roomId,
+                            displayName: roomId,
+                            size: 75,
+                          );
+                        },
+                        loading: () => const CircularProgressIndicator(),
                       ),
                     ),
                   ),
-                  Text(
+                ),
+                convoProfile.when(
+                  data: (profile) => Text(
                     profile.displayName ?? roomId,
                     overflow: TextOverflow.clip,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                ],
-              ),
-              loading: () => const CircularProgressIndicator(),
-              error: (e, st) => Text('Some error occured ${e.toString()}'),
+                  error: (err, stackTrace) {
+                    debugPrint('Some error occured $err');
+                    return Text(
+                      roomId,
+                      overflow: TextOverflow.clip,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    );
+                  },
+                  loading: () => const CircularProgressIndicator(),
+                ),
+              ],
             ),
           ),
           SliverPadding(

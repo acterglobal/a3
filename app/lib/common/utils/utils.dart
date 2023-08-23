@@ -76,8 +76,8 @@ String jiffyTime(int timeInterval) {
     // (00:00 AM/PM)
     return jiffyTime.jm;
   } else {
-    var yesterday = now.subtract(days: 1);
-    var week = now.subtract(weeks: 1);
+    final yesterday = now.subtract(days: 1);
+    final week = now.subtract(weeks: 1);
     if (jiffyTime.isBetween(yesterday, now)) {
       return 'Yesterday';
     } else if (jiffyTime.isBetween(week, now)) {

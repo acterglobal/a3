@@ -2,10 +2,9 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class SpaceWithProfileCard extends ConsumerWidget {
+class SpaceWithProfileCard extends StatelessWidget {
   final String roomId;
   final ProfileData profile;
   final Widget? subtitle;
@@ -94,34 +93,20 @@ class SpaceWithProfileCard extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final displayName =
-        profile.displayName != null && profile.displayName!.isNotEmpty
-            ? profile.displayName!
-            : roomId;
+  Widget build(BuildContext context) {
+    final displayName = profile.displayName;
+    final title =
+        displayName != null && displayName.isNotEmpty ? displayName : roomId;
     final avatar = ActerAvatar(
       mode: DisplayMode.Space,
       uniqueId: roomId,
-      displayName: displayName,
+      displayName: title,
       avatar: profile.getAvatarImage(),
       size: avatarSize,
     );
 
-    ShapeBorder? renderShape() {
-      return shape ??
-          (withBorder
-              ? RoundedRectangleBorder(
-                  side: BorderSide(
-                    color: Theme.of(context).colorScheme.inversePrimary,
-                    width: 1.5,
-                  ),
-                  borderRadius: BorderRadius.circular(6),
-                )
-              : null);
-    }
-
     return Card(
-      shape: renderShape(),
+      shape: renderShape(context),
       color: Theme.of(context).colorScheme.surface,
       child: ListTile(
         contentPadding: contentPadding,
@@ -131,7 +116,7 @@ class SpaceWithProfileCard extends ConsumerWidget {
         titleTextStyle: titleTextStyle,
         subtitleTextStyle: subtitleTextStyle,
         leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-        title: Text(displayName),
+        title: Text(title),
         subtitle: subtitle,
         leading: showParent
             ? SpaceParentBadge(
@@ -143,5 +128,21 @@ class SpaceWithProfileCard extends ConsumerWidget {
         trailing: trailing,
       ),
     );
+  }
+
+  ShapeBorder? renderShape(BuildContext context) {
+    if (shape != null) {
+      return shape;
+    }
+    if (withBorder) {
+      return RoundedRectangleBorder(
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.inversePrimary,
+          width: 1.5,
+        ),
+        borderRadius: BorderRadius.circular(6),
+      );
+    }
+    return null;
   }
 }
