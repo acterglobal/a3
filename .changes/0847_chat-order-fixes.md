@@ -1,0 +1,2 @@
+- Chat room latest message timestamps have been updated to be human readable format.
+- [fix] Chat rooms ordering will now happen correctly according to timestamps (both in realtime and initial load).

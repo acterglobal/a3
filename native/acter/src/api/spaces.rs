@@ -1,8 +1,9 @@
 pub use acter_core::spaces::{
     CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
-    SpaceRelations,
+    SpaceRelations as CoreSpaceRelations,
 };
 use acter_core::{
+    error::Error,
     events::{
         attachments::{SyncAttachmentEvent, SyncAttachmentUpdateEvent},
         calendar::{SyncCalendarEventEvent, SyncCalendarEventUpdateEvent},
@@ -21,29 +22,42 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{
-    deserialized_responses::EncryptionInfo,
     event_handler::{Ctx, EventHandlerHandle},
+    media::{MediaFormat, MediaRequest},
     room::{Messages, MessagesOptions, Room as SdkRoom},
     ruma::{
-        api::client::state::send_state_event::v3::Request as SendStateEventRequest,
-        events::{
-            space::child::SpaceChildEventContent, AnyStateEventContent, MessageLikeEvent,
-            StateEventType,
+        api::client::{
+            space::{
+                get_hierarchy::v1::{
+                    Request as GetHierarchyRequest, Response as GetHierarchyResponse,
+                },
+                SpaceHierarchyRoomsChunk, SpaceRoomJoinRule,
+            },
+            state::send_state_event::v3::Request as SendStateEventRequest,
         },
+        assign,
+        directory::RoomTypeFilter,
+        events::{
+            room::MediaSource,
+            space::child::{HierarchySpaceChildEvent, SpaceChildEventContent},
+            AnyStateEventContent, MessageLikeEvent, StateEventType,
+        },
+        room::RoomType,
         serde::Raw,
-        OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
+        OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
     },
     Client as SdkClient,
 };
-use ruma::assign;
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, thread::JoinHandle};
 use tokio::sync::broadcast::Receiver;
+use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
 
 use super::{
-    client::{devide_spaces_from_convos, Client, SpaceFilter, SpaceFilterBuilder},
-    room::{Member, Room},
+    client::{devide_spaces_from_convos, Client, SpaceFilterBuilder},
+    common::OptionBuffer,
+    room::Room,
     search::PublicSearchResult,
     RUNTIME,
 };
@@ -72,9 +86,8 @@ impl Space {
         vec![
             self.room.add_event_handler(
                 |ev: SyncTaskListEvent,
-                    room: SdkRoom,
-                    c: SdkClient,
-                    Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
@@ -86,26 +99,24 @@ impl Space {
             ),
             self.room.add_event_handler(
                 |ev: SyncTaskListUpdateEvent,
-                room: SdkRoom,
-                c: SdkClient,
-                Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::TaskListUpdate(t.into()))
-                            .await {
-                                error!(?error, "execution failed");
-
-                            }
+                            .await
+                        {
+                            error!(?error, "execution failed");
+                        }
                     }
                 },
             ),
             self.room.add_event_handler(
                 |ev: SyncTaskEvent,
-                room: SdkRoom,
-                c: SdkClient,
-                Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
@@ -117,9 +128,8 @@ impl Space {
             ),
             self.room.add_event_handler(
                 |ev: SyncTaskUpdateEvent,
-                    room: SdkRoom,
-                    c: SdkClient,
-                    Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
@@ -132,9 +142,8 @@ impl Space {
             // Comments
             self.room.add_event_handler(
                 |ev: SyncCommentEvent,
-                    room: SdkRoom,
-                    c: SdkClient,
-                    Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
@@ -146,15 +155,15 @@ impl Space {
             ),
             self.room.add_event_handler(
                 |ev: SyncCommentUpdateEvent,
-                room: SdkRoom,
-                c: SdkClient,
-                Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::CommentUpdate(t.into()))
-                            .await {
+                            .await
+                        {
                             error!(?error, "execution failed");
                         }
                     }
@@ -164,9 +173,8 @@ impl Space {
             // Attachments
             self.room.add_event_handler(
                 |ev: SyncAttachmentEvent,
-                    room: SdkRoom,
-                    c: SdkClient,
-                    Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
@@ -178,15 +186,15 @@ impl Space {
             ),
             self.room.add_event_handler(
                 |ev: SyncAttachmentUpdateEvent,
-                room: SdkRoom,
-                c: SdkClient,
-                Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::AttachmentUpdate(t.into()))
-                            .await {
+                            .await
+                        {
                             error!(?error, "execution failed");
                         }
                     }
@@ -196,9 +204,8 @@ impl Space {
             // Pin
             self.room.add_event_handler(
                 |ev: SyncPinEvent,
-                room: SdkRoom,
-                c: SdkClient,
-                Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
@@ -210,9 +217,8 @@ impl Space {
             ),
             self.room.add_event_handler(
                 |ev: SyncPinUpdateEvent,
-                    room: SdkRoom,
-                    c: SdkClient,
-                    Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
@@ -226,15 +232,15 @@ impl Space {
             // CalendarEvents
             self.room.add_event_handler(
                 |ev: SyncCalendarEventEvent,
-                room: SdkRoom,
-                c: SdkClient,
-                Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::CalendarEvent(t.into()))
-                            .await {
+                            .await
+                        {
                             error!(?error, "execution failed");
                         }
                     }
@@ -242,15 +248,15 @@ impl Space {
             ),
             self.room.add_event_handler(
                 |ev: SyncCalendarEventUpdateEvent,
-                room: SdkRoom,
-                c: SdkClient,
-                Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::CalendarEventUpdate(t.into()))
-                            .await {
+                            .await
+                        {
                             error!(?error, "execution failed");
                         }
                     }
@@ -260,15 +266,15 @@ impl Space {
             // RSVPs
             self.room.add_event_handler(
                 |ev: SyncRsvpEvent,
-                room: SdkRoom,
-                c: SdkClient,
-                Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::Rsvp(t.into()))
-                            .await {
+                            .await
+                        {
                             error!(?error, "execution failed");
                         }
                     }
@@ -278,9 +284,8 @@ impl Space {
             // NewsEntrys
             self.room.add_event_handler(
                 |ev: SyncNewsEntryEvent,
-                    room: SdkRoom,
-                    c: SdkClient,
-                    Ctx(executor): Ctx<Executor>| async move {
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
@@ -291,20 +296,21 @@ impl Space {
                 },
             ),
             self.room.add_event_handler(
-            |ev: SyncNewsEntryUpdateEvent,
-                room: SdkRoom,
-                c: SdkClient,
-                Ctx(executor): Ctx<Executor>| async move {
-                let room_id = room.room_id().to_owned();
-                // FIXME: handle redactions
-                if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                    if let Err(error) = executor
-                        .handle(AnyActerModel::NewsEntryUpdate(t.into()))
-                        .await {
+                |ev: SyncNewsEntryUpdateEvent,
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor
+                            .handle(AnyActerModel::NewsEntryUpdate(t.into()))
+                            .await
+                        {
                             error!(?error, "execution failed");
                         }
-                }
-            })
+                    }
+                },
+            )
         ]
     }
 
@@ -398,6 +404,178 @@ impl Space {
     }
 }
 
+pub struct SpaceRelations {
+    core: CoreSpaceRelations,
+    space: Space,
+}
+
+impl Deref for SpaceRelations {
+    type Target = CoreSpaceRelations;
+    fn deref(&self) -> &Self::Target {
+        &self.core
+    }
+}
+
+pub struct SpaceHierarchyRoomInfo {
+    chunk: SpaceHierarchyRoomsChunk,
+    client: Client,
+}
+
+impl SpaceHierarchyRoomInfo {
+    pub fn canonical_alias(&self) -> Option<OwnedRoomAliasId> {
+        self.chunk.canonical_alias.clone()
+    }
+
+    /// The name of the room, if any.
+    pub fn name(&self) -> Option<String> {
+        self.chunk.name.clone()
+    }
+
+    /// The number of members joined to the room.
+    pub fn num_joined_members(&self) -> u64 {
+        self.chunk.num_joined_members.into()
+    }
+
+    /// The ID of the room.
+    pub fn room_id(&self) -> OwnedRoomId {
+        self.chunk.room_id.clone()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.room_id().to_string()
+    }
+
+    pub fn topic(&self) -> Option<String> {
+        self.chunk.topic.clone()
+    }
+
+    /// Whether the room may be viewed by guest users without joining.
+    pub fn world_readable(&self) -> bool {
+        self.chunk.world_readable
+    }
+
+    pub fn guest_can_join(&self) -> bool {
+        self.chunk.guest_can_join
+    }
+
+    pub fn avatar_url(&self) -> Option<OwnedMxcUri> {
+        self.chunk.avatar_url.clone()
+    }
+
+    pub fn avatar_url_str(&self) -> Option<String> {
+        self.avatar_url().map(|a| a.to_string())
+    }
+
+    /// The join rule of the room.
+    pub fn join_rule(&self) -> SpaceRoomJoinRule {
+        self.chunk.join_rule.clone()
+    }
+
+    pub fn join_rule_str(&self) -> String {
+        self.join_rule().to_string()
+    }
+
+    /// The type of room from `m.room.create`, if any.
+    pub fn room_type(&self) -> Option<RoomType> {
+        self.chunk.room_type.clone()
+    }
+
+    pub fn is_space(&self) -> bool {
+        matches!(self.chunk.room_type, Some(RoomType::Space))
+    }
+
+    /// The stripped `m.space.child` events of the space-room.
+    ///
+    /// If the room is not a space-room, this should be empty.
+    pub fn children_state(&self) -> Vec<Raw<HierarchySpaceChildEvent>> {
+        self.chunk.children_state.clone()
+    }
+
+    pub fn has_avatar(&self) -> bool {
+        self.chunk.avatar_url.is_some()
+    }
+
+    pub fn via_server_name(&self) -> Option<String> {
+        for v in &self.chunk.children_state {
+            let Ok(h) = v.deserialize() else { continue };
+            let Some(via) = h.content.via else { continue };
+            if let Some(v) = via.into_iter().next() {
+                return Some(v.to_string());
+            }
+        }
+        None
+    }
+
+    pub async fn get_avatar(&self) -> Result<OptionBuffer> {
+        let client = self.client.clone();
+        if let Some(url) = self.chunk.avatar_url.clone() {
+            return RUNTIME
+                .spawn(async move {
+                    let request = MediaRequest {
+                        source: MediaSource::Plain(url),
+                        format: MediaFormat::File,
+                    };
+                    let buf = client.media().get_media_content(&request, true).await?;
+                    Ok(OptionBuffer::new(Some(buf)))
+                })
+                .await?;
+        }
+        Ok(OptionBuffer::new(None))
+    }
+}
+
+impl SpaceHierarchyRoomInfo {
+    pub(crate) async fn new(chunk: SpaceHierarchyRoomsChunk, client: Client) -> Self {
+        SpaceHierarchyRoomInfo { chunk, client }
+    }
+}
+
+pub struct SpaceHierarchyListResult {
+    resp: GetHierarchyResponse,
+    client: Client,
+}
+
+impl SpaceHierarchyListResult {
+    pub fn next_batch(&self) -> Option<String> {
+        self.resp.next_batch.clone()
+    }
+
+    pub async fn rooms(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
+        let client = self.client.clone();
+        let chunks = self.resp.rooms.clone();
+        RUNTIME
+            .spawn(async move {
+                let iter = chunks
+                    .into_iter()
+                    .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, client.clone()));
+                Ok(futures::future::join_all(iter).await)
+            })
+            .await?
+    }
+}
+
+impl SpaceRelations {
+    pub fn room_id(&self) -> OwnedRoomId {
+        self.space.room_id().to_owned()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.space.room_id().to_string()
+    }
+
+    pub async fn query_hierarchy(&self, from: Option<String>) -> Result<SpaceHierarchyListResult> {
+        let c = self.space.client.clone();
+        let room_id = self.space.room_id().to_owned();
+        RUNTIME
+            .spawn(async move {
+                let request = assign!(GetHierarchyRequest::new(room_id), { from, max_depth: Some(1u32.into()) });
+                let resp = c.send(request, None).await?;
+                Ok(SpaceHierarchyListResult { resp, client: c.clone() })
+            })
+            .await?
+    }
+}
+
 // External API
 
 impl Space {
@@ -424,17 +602,20 @@ impl Space {
         Ok(())
     }
 
-    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
-        tokio_stream::wrappers::BroadcastStream::new(self.subscribe()).map(|_| true)
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe()).map(|_| true)
     }
 
-    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
+    pub fn subscribe(&self) -> Receiver<()> {
         self.client.subscribe(format!("{}", self.room_id()))
     }
 
     // for only cli run_marking_space, not api.rsh
-    pub async fn is_acter_space(&self) -> bool {
-        is_acter_space(&self.inner).await
+    pub async fn is_acter_space(&self) -> Result<bool> {
+        let inner = self.inner.clone();
+        Ok(RUNTIME
+            .spawn(async move { is_acter_space(&inner).await })
+            .await?)
     }
 
     pub fn get_room_id(&self) -> OwnedRoomId {
@@ -445,45 +626,49 @@ impl Space {
         self.room_id().to_string()
     }
 
-    pub async fn set_acter_space_states(&self) -> Result<()> {
-        let SdkRoom::Joined(ref joined) = self.inner.room else {
-            bail!("You can't convert a space you didn't join");
-        };
-        let client = joined.client();
-        let my_id = client.user_id().context("User not found")?.to_owned();
-        let member = joined
-            .get_member(&my_id)
-            .await?
-            .context("Couldn't find me among room members")?;
-        for state in default_acter_space_states() {
-            println!("{:?}", state);
-            let event_type = state.get_field("type")?.context("given")?;
-            let state_key = state.get_field("state_key")?.unwrap_or_default();
-            let body = state
-                .get_field::<Raw<AnyStateEventContent>>("content")?
-                .context("body is given")?;
-            if !member.can_send_state(StateEventType::RoomAvatar) {
-                bail!("No permission to change avatar of this room");
-            }
-
-            let request = SendStateEventRequest::new_raw(
-                joined.room_id().to_owned(),
-                event_type,
-                state_key,
-                body,
-            );
-            client.send(request, None).await?;
-        }
-        Ok(())
-    }
-
-    pub async fn space_relations(&self) -> Result<SpaceRelations> {
-        let c = self.client.core.clone();
-        let room = self.room.clone();
+    pub async fn set_acter_space_states(&self) -> Result<bool> {
+        let room = self.inner.room.clone();
         RUNTIME
             .spawn(async move {
-                let relations = c.space_relations(&room).await?;
-                Ok(relations)
+                let SdkRoom::Joined(ref joined) = room else {
+                    bail!("You can't convert a space you didn't join");
+                };
+                let client = joined.client();
+                let my_id = client.user_id().context("User not found")?.to_owned();
+                let room_id = joined.room_id().to_owned();
+                let member = joined
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+
+                let mut requests = Vec::new();
+
+                for state in default_acter_space_states() {
+                    println!("{:?}", state);
+                    let event_type: StateEventType = state.get_field("type")?.context("given")?;
+                    let state_key = state.get_field("state_key")?.unwrap_or_default();
+                    let body = state
+                        .get_field::<Raw<AnyStateEventContent>>("content")?
+                        .context("body is given")?;
+                    if !member.can_send_state(event_type.clone()) {
+                        bail!(
+                            "No permission to set {event_type} states of this room. Can't convert"
+                        );
+                    }
+
+                    requests.push(SendStateEventRequest::new_raw(
+                        room_id.clone(),
+                        event_type,
+                        state_key,
+                        body,
+                    ));
+                }
+
+                for request in requests {
+                    client.send(request, None).await?;
+                }
+
+                Ok(true)
             })
             .await?
     }
@@ -501,14 +686,33 @@ impl Space {
             bail!("You can't update a space you aren't part of");
         };
         let room = joined.clone();
+        let client = self.client.clone();
 
-        let mut room_child_event = SpaceChildEventContent::new();
         RUNTIME
             .spawn(async move {
-                let res_id = room
-                    .send_state_event_for_key(&room_id, SpaceChildEventContent::new())
+                let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
+                    return Err(Error::HomeserverMissesHostname)?;
+                };
+                let response = room
+                    .send_state_event_for_key(
+                        &room_id,
+                        assign!(SpaceChildEventContent::new(), {
+                            via: Some(vec![homeserver]),
+                        }),
+                    )
                     .await?;
-                Ok(res_id.event_id.to_string())
+                Ok(response.event_id.to_string())
+            })
+            .await?
+    }
+
+    pub async fn space_relations(&self) -> Result<SpaceRelations> {
+        let c = self.client.core.clone();
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let core = c.space_relations(&me.room).await?;
+                Ok(SpaceRelations { core, space: me })
             })
             .await?
     }
@@ -575,19 +779,15 @@ impl Client {
             inner: room,
         })
     }
+
     pub async fn public_spaces(
         &self,
         search_term: Option<String>,
         server: Option<String>,
         since: Option<String>,
     ) -> Result<PublicSearchResult> {
-        self.search_public(
-            search_term,
-            server,
-            since,
-            Some(ruma::directory::RoomTypeFilter::Space),
-        )
-        .await
+        self.search_public(search_term, server, since, Some(RoomTypeFilter::Space))
+            .await
     }
 
     pub async fn spaces(&self) -> Result<Vec<Space>> {
@@ -601,20 +801,31 @@ impl Client {
             .await?
     }
 
-    pub async fn get_space(&self, alias_or_id: String) -> Result<Space> {
-        if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
-            self.get_room(&room_id)
-                .context("Room not found")
-                .map(|room| Space::new(self.clone(), Room { room }))
-        } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
-            for space in self.spaces().await?.into_iter() {
-                if let Some(space_alias) = space.inner.room.canonical_alias() {
-                    if space_alias == alias_id {
-                        return Ok(space);
-                    }
-                }
+    pub async fn get_space(&self, room_id_or_alias: String) -> Result<Space> {
+        if let Ok(room_id) = OwnedRoomId::try_from(room_id_or_alias.clone()) {
+            // alias passes here too
+            if let Some(room) = self.get_room(&room_id) {
+                let space = Space {
+                    client: self.clone(),
+                    inner: Room { room },
+                };
+                return Ok(space);
             }
-            bail!("Room with alias not found");
+        }
+        // if None, it is alias
+        if let Ok(alias_id) = OwnedRoomAliasId::try_from(room_id_or_alias) {
+            let me = self.clone();
+            RUNTIME
+                .spawn(async move {
+                    let response = me.resolve_room_alias(&alias_id).await?;
+                    for space in me.spaces().await?.into_iter() {
+                        if space.inner.room.room_id() == response.room_id {
+                            return Ok(space);
+                        }
+                    }
+                    bail!("Room with alias not found");
+                })
+                .await?
         } else {
             bail!("Neither roomId nor alias provided");
         }

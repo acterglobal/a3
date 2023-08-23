@@ -37,23 +37,32 @@ class NotificationCard extends ConsumerWidget {
         avatar = Consumer(
           builder: (context, ref, child) {
             final spaceProfile = ref.watch(spaceProfileDataProvider(space));
-            return spaceProfile.when(
-              data: (profile) => InkWell(
-                onTap: () => context.goNamed(
-                  Routes.space.name,
-                  pathParameters: {'spaceIdOrAlias': roomId},
-                ),
-                child: ActerAvatar(
+            return InkWell(
+              onTap: () => context.goNamed(
+                Routes.space.name,
+                pathParameters: {'spaceIdOrAlias': roomId},
+              ),
+              child: spaceProfile.when(
+                data: (profile) => ActerAvatar(
                   mode: DisplayMode.Space,
                   displayName: profile.displayName,
                   uniqueId: roomId,
                   avatar: profile.getAvatarImage(),
                   size: 48,
                 ),
+                error: (err, stackTrace) {
+                  debugPrint('Failed to load space due to $err');
+                  return ActerAvatar(
+                    mode: DisplayMode.Space,
+                    displayName: roomId,
+                    uniqueId: roomId,
+                    size: 48,
+                  );
+                },
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
+                ),
               ),
-              error: (error, stackTrace) => Text(
-                  'Failed to load space due to $error',), // FIXME: fallback would be nice
-              loading: () => const Center(child: CircularProgressIndicator()),
             );
           },
         );
@@ -73,24 +82,33 @@ class NotificationCard extends ConsumerWidget {
         avatar = Consumer(
           builder: (context, ref, child) {
             final profile = ref.watch(chatProfileDataProvider(convo));
-            return profile.when(
-              data: (profile) => InkWell(
-                onTap: () => context.goNamed(
-                  Routes.chatroom.name,
-                  pathParameters: {'roomId': roomId},
-                  extra: convo,
-                ),
-                child: ActerAvatar(
+            return InkWell(
+              onTap: () => context.goNamed(
+                Routes.chatroom.name,
+                pathParameters: {'roomId': roomId},
+                extra: convo,
+              ),
+              child: profile.when(
+                data: (profile) => ActerAvatar(
                   mode: DisplayMode.GroupChat,
                   displayName: profile.displayName,
                   uniqueId: roomId,
                   avatar: profile.getAvatarImage(),
                   size: 48,
                 ),
+                error: (err, stackTrace) {
+                  debugPrint('Failed to load room due to $err');
+                  return ActerAvatar(
+                    mode: DisplayMode.GroupChat,
+                    displayName: roomId,
+                    uniqueId: roomId,
+                    size: 48,
+                  );
+                },
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
+                ),
               ),
-              error: (error, stackTrace) =>
-                  Text('Failed to load room due to $error'),
-              loading: () => const Center(child: CircularProgressIndicator()),
             );
           },
         );

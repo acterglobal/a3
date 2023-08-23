@@ -4,6 +4,7 @@ use acter_core::{
         pins::PinEventContent,
     },
     spaces::is_acter_space,
+    statics::PURPOSE_FIELD_DEV,
 };
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
@@ -39,8 +40,11 @@ use matrix_sdk::{
     Client, RoomMemberships, RoomState,
 };
 use matrix_sdk_ui::timeline::RoomExt;
-use ruma::events::{EventContent, StaticEventContent};
-use std::{fs, io::Write, ops::Deref, path::PathBuf, sync::Arc};
+use ruma::events::{
+    room::join_rules::{AllowRule, JoinRule},
+    EventContent, StaticEventContent,
+};
+use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tracing::{error, info};
 
 use super::{
@@ -78,6 +82,7 @@ pub enum MemberPermission {
     CanRedact,
     CanTriggerRoomNotification,
     // state events
+    CanUpgradeToActerSpace,
     CanSetName,
     CanUpdateAvatar,
     CanSetTopic,
@@ -162,6 +167,7 @@ impl Member {
             MemberPermission::CanLinkSpaces => StateEventType::SpaceChild.into(),
             MemberPermission::CanSetParentSpace => StateEventType::SpaceParent.into(),
             MemberPermission::CanUpdatePowerLevels => StateEventType::RoomPowerLevels.into(),
+
             // Acter specific
             MemberPermission::CanPostNews => PermissionTest::Message(MessageLikeEventType::from(
                 <NewsEntryEventContent as StaticEventContent>::TYPE,
@@ -169,6 +175,9 @@ impl Member {
             MemberPermission::CanPostPin => PermissionTest::Message(MessageLikeEventType::from(
                 <PinEventContent as StaticEventContent>::TYPE,
             )),
+            MemberPermission::CanUpgradeToActerSpace => {
+                StateEventType::from(PURPOSE_FIELD_DEV).into()
+            }
         };
         match tester {
             PermissionTest::Message(msg) => self.member.can_send_message(msg),
@@ -237,7 +246,7 @@ impl Room {
 
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("MIME type should be given")?;
-                let buf = fs::read(path).context("File should be read")?;
+                let buf = std::fs::read(path).context("File should be read")?;
                 let upload_resp = client.media().upload(&content_type, buf).await?;
 
                 let info = assign!(AvatarImageInfo::new(), {
@@ -604,7 +613,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let image_buf = fs::read(path)?;
+                let image_buf = std::fs::read(path).context("File should be read")?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, image_buf, config)
                     .await?;
@@ -680,7 +689,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let audio_buf = fs::read(path)?;
+                let audio_buf = std::fs::read(path).context("File should be read")?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, audio_buf, config)
                     .await?;
@@ -763,7 +772,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let video_buf = fs::read(path)?;
+                let video_buf = std::fs::read(path).context("File should be read")?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, video_buf, config)
                     .await?;
@@ -837,7 +846,7 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let file_buf = fs::read(path)?;
+                let file_buf = std::fs::read(path).context("File should be read")?;
                 let response = room
                     .send_attachment(name.as_str(), &mime_type, file_buf, config)
                     .await?;
@@ -883,6 +892,10 @@ impl Room {
             RoomState::Left => "left".to_string(),
             RoomState::Invited => "invited".to_string(),
         }
+    }
+
+    pub fn is_joined(&self) -> bool {
+        matches!(self.room, SdkRoom::Joined(_))
     }
 
     pub async fn invite_user(&self, user_id: String) -> Result<bool> {
@@ -1021,7 +1034,8 @@ impl Room {
                 };
                 let mut path = PathBuf::from(dir_path.clone());
                 path.push(name);
-                let mut file = fs::File::create(path.clone())?;
+                let mut file =
+                    std::fs::File::create(path.clone()).context("File should be created")?;
                 let data = client.media().get_media_content(&request, false).await?;
                 file.write_all(&data)?;
                 let key = [
@@ -1095,6 +1109,32 @@ impl Room {
                 Ok(encrypted)
             })
             .await?
+    }
+
+    pub fn join_rule_str(&self) -> String {
+        match self.room.join_rule() {
+            JoinRule::Invite => "invite".to_owned(),
+            JoinRule::Knock => "knock".to_owned(),
+            JoinRule::KnockRestricted(_) => "knock_restricted".to_owned(),
+            JoinRule::Restricted(_) => "restricted".to_owned(),
+            JoinRule::Private => "private".to_owned(),
+            JoinRule::Public => "public".to_owned(),
+            _ => "unknown".to_owned(),
+        }
+    }
+
+    pub fn restricted_room_ids_str(&self) -> Vec<String> {
+        match self.room.join_rule() {
+            JoinRule::KnockRestricted(res) | JoinRule::Restricted(res) => res
+                .allow
+                .into_iter()
+                .filter_map(|a| match a {
+                    AllowRule::RoomMembership(o) => Some(o.room_id.to_string()),
+                    _ => None,
+                })
+                .collect(),
+            _ => vec![],
+        }
     }
 
     pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
@@ -1471,7 +1511,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let image_buf = fs::read(path)?;
+                let image_buf = std::fs::read(path).context("File should be read")?;
 
                 let timeline_event = room.event(&event_id).await?;
 
@@ -1483,11 +1523,8 @@ impl Room {
 
                 let response = client.media().upload(&content_type, image_buf).await?;
 
-                let image_content = ImageMessageEventContent::plain(
-                    name,
-                    response.content_uri,
-                    Some(Box::new(info)),
-                );
+                let mut image_content = ImageMessageEventContent::plain(name, response.content_uri);
+                image_content.info = Some(Box::new(info));
                 let content = RoomMessageEventContent::new(MessageType::Image(image_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 
@@ -1537,7 +1574,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let image_buf = fs::read(path)?;
+                let image_buf = std::fs::read(path).context("File should be read")?;
 
                 let timeline_event = room.event(&event_id).await?;
 
@@ -1549,11 +1586,8 @@ impl Room {
 
                 let response = client.media().upload(&content_type, image_buf).await?;
 
-                let audio_content = AudioMessageEventContent::plain(
-                    name,
-                    response.content_uri,
-                    Some(Box::new(info)),
-                );
+                let mut audio_content = AudioMessageEventContent::plain(name, response.content_uri);
+                audio_content.info = Some(Box::new(info));
                 let content = RoomMessageEventContent::new(MessageType::Audio(audio_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 
@@ -1609,7 +1643,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let video_buf = fs::read(path)?;
+                let video_buf = std::fs::read(path).context("File should be read")?;
 
                 let timeline_event = room.event(&event_id).await?;
 
@@ -1621,11 +1655,8 @@ impl Room {
 
                 let response = client.media().upload(&content_type, video_buf).await?;
 
-                let video_content = VideoMessageEventContent::plain(
-                    name,
-                    response.content_uri,
-                    Some(Box::new(info)),
-                );
+                let mut video_content = VideoMessageEventContent::plain(name, response.content_uri);
+                video_content.info = Some(Box::new(info));
                 let content = RoomMessageEventContent::new(MessageType::Video(video_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 
@@ -1672,7 +1703,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let file_buf = fs::read(path)?;
+                let file_buf = std::fs::read(path).context("File should be read")?;
 
                 let timeline_event = room.event(&event_id).await?;
 
@@ -1684,11 +1715,8 @@ impl Room {
 
                 let response = client.media().upload(&content_type, file_buf).await?;
 
-                let file_content = FileMessageEventContent::plain(
-                    name,
-                    response.content_uri,
-                    Some(Box::new(info)),
-                );
+                let mut file_content = FileMessageEventContent::plain(name, response.content_uri);
+                file_content.info = Some(Box::new(info));
                 let content = RoomMessageEventContent::new(MessageType::File(file_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 

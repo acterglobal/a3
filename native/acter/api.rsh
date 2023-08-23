@@ -348,7 +348,7 @@ object RsvpManager {
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
     /// get Yes/Maybe/No/None for the user's own status
-    fn my_status() -> Future<Result<OptionText>>;
+    fn my_status() -> Future<Result<OptionString>>;
 
     /// get the count of Yes/Maybe/No
     fn count_at_status(status: string) -> Future<Result<u32>>;
@@ -456,14 +456,14 @@ object RoomEventItem {
     fn reaction_keys() -> Vec<string>;
 
     /// the details that users reacted using this emote key in this message
-    fn reaction_desc(key: string) -> Option<ReactionDesc>;
+    fn reaction_items(key: string) -> Option<Vec<ReactionRecord>>;
 
     /// Whether this message is editable
     fn is_editable() -> bool;
 }
 
 object RoomVirtualItem {
-    /// one of DayDivider/LoadingIndicator/ReadMarker/TimelineStart
+    /// DayDivider or ReadMarker
     fn event_type() -> string;
 
     /// contains description text
@@ -588,12 +588,12 @@ object FileDesc {
     fn thumbnail_source() -> Option<MediaSource>;
 }
 
-object ReactionDesc {
-    /// how many times this key was clicked
-    fn count() -> u32;
+object ReactionRecord {
+    /// who sent reaction
+    fn sender_id() -> UserId;
 
-    /// which users selected this key
-    fn senders() -> Vec<string>;
+    /// when reaction was sent
+    fn timestamp() -> u64;
 }
 
 object TimelineDiff {
@@ -618,7 +618,7 @@ object TimelineStream {
     /// Fires whenever new event arrived
     fn next() -> Future<Result<RoomMessage>>;
 
-    /// Get the next count messages backwards,
+    /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
     /// modify the room message
@@ -768,6 +768,8 @@ object Convo {
 
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
+
+    fn is_joined() -> bool;
 }
 
 object CommentDraft {
@@ -1177,11 +1179,40 @@ object TaskListUpdateBuilder {
     fn send() -> Future<Result<EventId>>;
 }
 
+
 enum RelationTargetType {
     Unknown,
     ChatRoom,
     Space,
     ActerSpace
+}
+
+/// remote info
+object SpaceHierarchyRoomInfo {
+    fn name() -> Option<string>;
+    //fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
+    fn topic() -> Option<string>;
+    fn num_joined_members() -> u64;
+    fn world_readable() -> bool;
+    fn guest_can_join() -> bool;
+    fn is_space() -> bool;
+    fn avatar_url_str() -> Option<string>;
+    fn join_rule_str() -> string;
+    /// whether to have avatar
+    fn has_avatar() -> bool;
+
+    /// get the binary data of avatar
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
+    // recommended server to try to join via
+    fn via_server_name() -> Option<string>;
+}
+
+object SpaceHierarchyListResult {
+    /// to be used for the next `since`
+    fn next_batch() -> Option<string>;
+    /// get the chunk of items in this response
+    fn rooms() -> Future<Result<Vec<SpaceHierarchyRoomInfo>>>;
 }
 
 object SpaceRelation {
@@ -1196,12 +1227,16 @@ object SpaceRelation {
 }
 
 object SpaceRelations {
+    //fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
     /// do we have a canonical parent?!?
     fn main_parent() -> Option<SpaceRelation>;
     /// other parents we belong to
     fn other_parents() -> Vec<SpaceRelation>;
     /// children
     fn children() -> Vec<SpaceRelation>;
+    /// query for children from the server
+    fn query_hierarchy(from: Option<string>) -> Future<Result<SpaceHierarchyListResult>>;
 }
 
 object Space {
@@ -1220,11 +1255,15 @@ object Space {
     /// Change the avatar of the room
     fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
 
+    fn set_acter_space_states() -> Future<Result<bool>>;
+
     /// Remove the avatar of the room
     fn remove_avatar() -> Future<Result<EventId>>;
 
     /// what is the description / topic
     fn topic() -> Option<string>;
+
+    fn is_joined() -> bool;
 
     /// set description / topic of the room
     fn set_topic(topic: string) -> Future<Result<EventId>>;
@@ -1255,6 +1294,18 @@ object Space {
 
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
+
+    /// whether or not this space is public
+    fn is_public() -> bool;
+
+    /// join rules for this space.
+    fn join_rule_str() -> string;
+
+    /// the ids of the rooms the restriction applies to
+    fn restricted_room_ids_str() -> Vec<string>;
+
+    /// whether or not this space has been marked as an 'acter' one
+    fn is_acter_space() -> Future<Result<bool>>;
 
     /// the Tasks lists of this Space
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
@@ -1324,7 +1375,7 @@ object Space {
     /// leave this room
     fn leave() -> Future<Result<bool>>;
     
-       /// update the power levels of specified member
+    /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
 
 }
@@ -1347,6 +1398,7 @@ enum MemberPermission {
     CanInvite,
     CanRedact,
     CanTriggerRoomNotification,
+    CanUpgradeToActerSpace,
     CanSetName,
     CanUpdateAvatar,
     CanSetTopic,
@@ -1378,7 +1430,7 @@ object Account {
     fn user_id() -> UserId;
 
     /// The display_name of the account
-    fn display_name() -> Future<Result<OptionText>>;
+    fn display_name() -> Future<Result<OptionString>>;
 
     /// Change the display name of the account
     fn set_display_name(name: string) -> Future<Result<bool>>;
@@ -1430,7 +1482,6 @@ object PublicSearchResult {
     /// get the chunk of items in this response
     fn chunks() -> Vec<PublicSearchResultItem>;
 }
-
 
 object Notification {
     fn read() -> bool;
@@ -1543,7 +1594,7 @@ object Client {
     fn user_id() -> Result<UserId>;
 
     /// get convo room
-    fn convo(room_or_id: string) -> Future<Result<Convo>>;
+    fn convo(room_id_or_alias: string) -> Future<Result<Convo>>;
 
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Result<UserProfile>;
@@ -1569,9 +1620,8 @@ object Client {
     /// search the public directory for spaces
     fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
 
-    /// Get the following space the user is part of by
-    /// roomId or room alias;
-    fn get_space(id_or_alias: string) -> Future<Result<Space>>;
+    /// Get the space that user belongs to
+    fn get_space(room_id_or_alias: string) -> Future<Result<Space>>;
 
     /// Get the Pinned Links for the client
     fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
@@ -1605,9 +1655,6 @@ object Client {
 
     /// Return the receipt event receiver
     fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
-
-    /// Return the message receiver
-    fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
 
     /// create convo
     fn create_convo(settings: CreateConvoSettings) -> Future<Result<RoomId>>;
@@ -1665,7 +1712,7 @@ object Client {
 
 }
 
-object OptionText {
+object OptionString {
     /// get text
     fn text() -> Option<string>;
 }
@@ -1689,7 +1736,7 @@ object UserProfile {
     fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<OptionText>>;
+    fn get_display_name() -> Future<Result<OptionString>>;
 }
 
 object RoomProfile {
@@ -1703,7 +1750,7 @@ object RoomProfile {
     fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<OptionText>>;
+    fn get_display_name() -> Future<Result<OptionString>>;
 }
 
 object Invitation {

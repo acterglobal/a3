@@ -13,8 +13,8 @@ class TaskEntry extends ConsumerWidget {
     final List<Widget> subtitle = [];
     final dueDate = task.utcDue();
     if (dueDate != null) {
-      final due = Jiffy(dueDate.toRfc3339());
-      final now = Jiffy();
+      final due = Jiffy.parse(dueDate.toRfc3339());
+      final now = Jiffy.now();
       if (due.isBefore(now)) {
         subtitle.add(
           Padding(

@@ -1,6 +1,6 @@
 use anyhow::{bail, Result};
 use clap::Parser;
-use futures::{pin_mut, StreamExt};
+use futures::{pin_mut, stream::StreamExt};
 use std::{collections::HashMap, path::PathBuf};
 use tracing::info;
 

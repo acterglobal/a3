@@ -14,7 +14,7 @@ class LinkSettingsPage extends StatefulWidget {
 }
 
 class _LinkSettingsPageState extends State<LinkSettingsPage> {
-  var timeArr = [
+  final timeArr = [
     '30 min',
     '1 Hour',
     '24 Hours',
@@ -22,7 +22,7 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
     'Never',
   ];
 
-  var usesArr = [
+  final usesArr = [
     '∞',
     '1',
     '5',
@@ -34,7 +34,6 @@ class _LinkSettingsPageState extends State<LinkSettingsPage> {
   List<int> selectedTimeIndexList = [];
   List<int> selectedUsesIndexList = [];
 
-  var isTimeSelected = false;
   int? timeIndexing;
   int? usesIndexing;
 

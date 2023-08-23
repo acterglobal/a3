@@ -1,8 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 use git2::Repository;
-
-use std::{fs::read_dir, io::Write, path::PathBuf};
+use std::{io::Write, path::PathBuf};
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
@@ -48,7 +47,7 @@ fn file_subset(reference: &str) -> Result<Vec<PathBuf>> {
         .collect::<Vec<_>>())
 }
 
-fn main() -> anyhow::Result<()> {
+fn main() -> Result<()> {
     let args = Args::parse();
     let _ = env_logger::try_init();
     let mut writer = std::fs::File::create(args.output)?;
@@ -59,7 +58,7 @@ fn main() -> anyhow::Result<()> {
 
     log::trace!("File changes to check against: {included_files:#?}");
 
-    for entry in read_dir(args.input_folder)? {
+    for entry in std::fs::read_dir(args.input_folder)? {
         let file = entry?;
         if file.metadata()?.is_file() {
             let path = file.path();

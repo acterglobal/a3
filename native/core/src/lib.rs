@@ -17,7 +17,7 @@ pub mod store;
 pub mod support;
 
 pub use error::{Error, Result};
-pub use support::RestoreToken;
+pub use support::{CustomAuthSession, RestoreToken};
 
 #[cfg(feature = "templates")]
 pub mod templates;

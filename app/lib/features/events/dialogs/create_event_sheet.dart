@@ -1,15 +1,15 @@
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:intl/intl.dart';
 
 // interface data providers
@@ -43,9 +43,9 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   @override
   void initState() {
     super.initState();
-    Future(() {
-      ref.read(parentSpaceProvider.notifier).state =
-          widget.initialSelectedSpace;
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      final parentNotifier = ref.read(parentSpaceProvider.notifier);
+      parentNotifier.state = widget.initialSelectedSpace;
     });
   }
 
@@ -53,6 +53,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
     final currentParentSpace = ref.watch(parentSpaceProvider);
+    final parentNotifier = ref.watch(parentSpaceProvider.notifier);
     final selectParentSpace = currentParentSpace != null;
     return SideSheet(
       header: 'Create new event',
@@ -225,26 +226,15 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     trailing: selectParentSpace
-                        ? Consumer(
-                            builder: (context, ref, child) =>
-                                ref.watch(parentSpaceDetailsProvider).when(
-                                      data: (space) => space != null
-                                          ? SpaceChip(space: space)
-                                          : Text(currentParentSpace),
-                                      error: (e, s) => Text('error: $e'),
-                                      loading: () => const Text('loading'),
-                                    ),
-                          )
+                        ? Consumer(builder: parentSpaceBuilder)
                         : null,
                     onTap: () async {
-                      final currentSpaceId = ref.read(parentSpaceProvider);
                       final newSelectedSpaceId = await selectSpaceDrawer(
                         context: context,
-                        currentSpaceId: currentSpaceId,
+                        currentSpaceId: ref.read(parentSpaceProvider),
                         title: const Text('Select parent space'),
                       );
-                      ref.read(parentSpaceProvider.notifier).state =
-                          newSelectedSpaceId;
+                      parentNotifier.state = newSelectedSpaceId;
                     },
                   )
                 ],
@@ -289,6 +279,21 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     );
   }
 
+  Widget parentSpaceBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
+    final parentDetails = ref.watch(parentSpaceDetailsProvider);
+    final currentParentSpace = ref.watch(parentSpaceProvider);
+    return parentDetails.when(
+      data: (space) =>
+          space != null ? SpaceChip(space: space) : Text(currentParentSpace!),
+      error: (e, s) => Text('error: $e'),
+      loading: () => const Text('loading'),
+    );
+  }
+
   void _handleTitleChange(String? value) {
     ref.read(_titleProvider.notifier).update((state) => value!);
   }
@@ -304,11 +309,11 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
     }
     if (_startTimeController.text.isEmpty) {
-      var time = ref.read(_startTimeProvider).format(context);
+      final time = ref.read(_startTimeProvider).format(context);
       _startTimeController.text = time;
     }
     if (_endTimeController.text.isEmpty) {
-      var time = ref.read(_endTimeProvider).format(context);
+      final time = ref.read(_endTimeProvider).format(context);
       _endTimeController.text = time;
     }
     try {
@@ -362,7 +367,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   }
 
   Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
+    DateTime? picked = await showDatePicker(
       context: context,
       initialDate: ref.read(_dateProvider),
       initialDatePickerMode: DatePickerMode.day,
@@ -376,7 +381,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   }
 
   Future<void> _selectStartTime() async {
-    final TimeOfDay? picked = await showTimePicker(
+    TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_startTimeProvider),
     );
@@ -388,13 +393,13 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     }
     if (picked != null) {
       ref.read(_startTimeProvider.notifier).update((state) => picked);
-      var time = ref.read(_startTimeProvider).format(context);
+      final time = ref.read(_startTimeProvider).format(context);
       _startTimeController.text = time;
     }
   }
 
   Future<void> _selectEndTime() async {
-    final TimeOfDay? picked = await showTimePicker(
+    TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_endTimeProvider),
     );
@@ -406,7 +411,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     }
     if (picked != null) {
       ref.read(_endTimeProvider.notifier).update((state) => picked);
-      var time = ref.read(_endTimeProvider).format(context);
+      final time = ref.read(_endTimeProvider).format(context);
       _endTimeController.text = time;
     }
   }

@@ -14,11 +14,8 @@ testing = ["dep:matrix-sdk-base"]
 cbindgen = []
 dart = []
 
-[patch.crates-io]
-proc-macro2 = "=1.0.55" # fix issue 'Your compiler does not support spans which is required by genco'
-
 [build-dependencies]
-ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "leaking-no-drop"}
+ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "span-support" }
 cbindgen = "0.24.3"
 
 [dependencies]
@@ -26,9 +23,9 @@ anyhow = "1.0.51"
 async-stream =  "0.3.4"
 chrono =  "0.4"
 derive_builder = "0.10.2"
-eyeball-im = "0.2"
+eyeball-im = "0.2.6"
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
-ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "leaking-no-drop" }
+ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "span-support" }
 futures = "0.3.17"
 futures-signals = "0.3.31"
 lazy_static = "1.4"

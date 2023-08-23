@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -64,6 +65,25 @@ String formatDt(CalendarEvent e) {
     } else {
       final endFmt = DateFormat.yMMMd().format(end);
       return '$startFmt $startTimeFmt - $endFmt $endTimeFmt';
+    }
+  }
+}
+
+String jiffyTime(int timeInterval) {
+  final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
+  final now = Jiffy.now().startOf(Unit.day);
+  if (now.isSame(jiffyTime, unit: Unit.day)) {
+    // (00:00 AM/PM)
+    return jiffyTime.jm;
+  } else {
+    final yesterday = now.subtract(days: 1);
+    final week = now.subtract(weeks: 1);
+    if (jiffyTime.isBetween(yesterday, now)) {
+      return 'Yesterday';
+    } else if (jiffyTime.isBetween(week, now)) {
+      return jiffyTime.EEEE;
+    } else {
+      return jiffyTime.yMd;
     }
   }
 }

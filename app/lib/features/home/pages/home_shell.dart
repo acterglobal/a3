@@ -10,13 +10,13 @@ import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/router/providers/router_providers.dart';
-import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
@@ -306,13 +306,10 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   }
 
   Future<void> handleBugReport() async {
-    var appDocDir = await getApplicationDocumentsDirectory();
+    final appDocDir = await getApplicationDocumentsDirectory();
     // rage shake disallows dot in filename
-    String timestamp = formatDate(
-      DateTime.now(),
-      [yyyy, '-', mm, '-', dd, '_', hh, '-', nn, '-', ss, '_', SSS],
-    );
-    var imagePath = await screenshotController.captureAndSave(
+    String timestamp = Jiffy.now().toUtc().format();
+    final imagePath = await screenshotController.captureAndSave(
       appDocDir.path,
       fileName: 'screenshot_$timestamp.png',
     );

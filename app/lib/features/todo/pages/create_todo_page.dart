@@ -181,7 +181,7 @@ class _CreateBtnWidget extends StatelessWidget {
                           nameController.text.trim().isNotEmpty)
                       ? () async {
                           controller.isLoading.value = true;
-                          var eventId = await controller.createToDoList(
+                          final eventId = await controller.createToDoList(
                             controller.selectedTeam!.id,
                             nameController.text.trim(),
                             descriptionController.text.trim(),

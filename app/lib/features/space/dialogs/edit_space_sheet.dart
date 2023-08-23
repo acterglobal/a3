@@ -43,22 +43,22 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   void _editSpaceData() async {
     final space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
     final profileData = await ref.read(spaceProfileDataProvider(space).future);
+    final titleNotifier = ref.read(editTitleProvider.notifier);
+    final topicNotifier = ref.read(editTopicProvider.notifier);
+    final avatarNotifier = ref.read(editAvatarProvider.notifier);
 
-    ref
-        .read(editTitleProvider.notifier)
-        .update((state) => profileData.displayName ?? '');
-    ref.read(editTopicProvider.notifier).update((state) => space.topic() ?? '');
+    titleNotifier.update((state) => profileData.displayName ?? '');
+    topicNotifier.update((state) => space.topic() ?? '');
 
     if (profileData.hasAvatar()) {
       Directory appDocDirectory = await getApplicationDocumentsDirectory();
       Directory('${appDocDirectory.path}/dir')
           .create(recursive: true)
           .then((Directory directory) {});
-
-      File imageFile =
-          await File('${appDocDirectory.path}/${widget.spaceId}.jpg')
-              .writeAsBytes(profileData.avatar!.asTypedList());
-      ref.read(editAvatarProvider.notifier).update((state) => imageFile.path);
+      String filePath = '${appDocDirectory.path}/${widget.spaceId}.jpg';
+      final imageFile = File(filePath);
+      imageFile.writeAsBytes(profileData.avatar!.asTypedList());
+      avatarNotifier.update((state) => imageFile.path);
     }
 
     _titleController.text = ref.read(editTitleProvider);
@@ -68,6 +68,8 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(editTitleProvider);
+    final avatarUpload = ref.watch(editAvatarProvider);
+    final avatarNotifier = ref.watch(editAvatarProvider.notifier);
     return SideSheet(
       header: 'Edit Space',
       addActions: true,
@@ -91,13 +93,13 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                           child: Text('Avatar'),
                         ),
                         const SizedBox(width: 5),
-                        ref.watch(editAvatarProvider).isNotEmpty
+                        avatarUpload.isNotEmpty
                             ? Padding(
                                 padding: const EdgeInsets.only(bottom: 5),
                                 child: GestureDetector(
-                                  onTap: () => ref
-                                      .read(editAvatarProvider.notifier)
-                                      .update((state) => ''),
+                                  onTap: () {
+                                    avatarNotifier.update((state) => '');
+                                  },
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: Theme.of(context)
@@ -115,37 +117,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                             : const SizedBox.shrink(),
                       ],
                     ),
-                    Consumer(
-                      builder: (context, ref, child) {
-                        final avatarUpload = ref.watch(editAvatarProvider);
-                        return GestureDetector(
-                          onTap: _handleAvatarUpload,
-                          child: Container(
-                            height: 75,
-                            width: 75,
-                            decoration: BoxDecoration(
-                              image: avatarUpload.isNotEmpty
-                                  ? DecorationImage(
-                                      image: FileImage(File(avatarUpload)),
-                                      fit: BoxFit.cover,
-                                    )
-                                  : null,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: avatarUpload.isEmpty
-                                ? Icon(
-                                    Atlas.up_arrow_from_bracket_thin,
-                                    color:
-                                        Theme.of(context).colorScheme.neutral4,
-                                  )
-                                : null,
-                          ),
-                        );
-                      },
-                    ),
+                    Consumer(builder: avatarBuilder),
                   ],
                 ),
                 const SizedBox(width: 15),
@@ -300,6 +272,33 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     );
   }
 
+  Widget avatarBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final avatarUpload = ref.watch(editAvatarProvider);
+    return GestureDetector(
+      onTap: _handleAvatarUpload,
+      child: Container(
+        height: 75,
+        width: 75,
+        decoration: BoxDecoration(
+          image: avatarUpload.isNotEmpty
+              ? DecorationImage(
+                  image: FileImage(File(avatarUpload)),
+                  fit: BoxFit.cover,
+                )
+              : null,
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: avatarUpload.isEmpty
+            ? Icon(
+                Atlas.up_arrow_from_bracket_thin,
+                color: Theme.of(context).colorScheme.neutral4,
+              )
+            : null,
+      ),
+    );
+  }
+
   void _handleTitleChange(String? value) {
     ref.read(editTitleProvider.notifier).update((state) => value!);
   }
@@ -324,8 +323,8 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // permission check
   Future<bool> permissionCheck() async {
-    var space = await ref.watch(spaceProvider(widget.spaceId!).future);
-    var membership = await space.getMyMembership();
+    final space = await ref.read(spaceProvider(widget.spaceId!).future);
+    final membership = await space.getMyMembership();
     return membership.canString('CanSetTopic');
   }
 
@@ -340,11 +339,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       isLoader: true,
     );
 
-    var space = await ref.watch(spaceProvider(widget.spaceId!).future);
+    final space = await ref.read(spaceProvider(widget.spaceId!).future);
     // update space name
     String title = ref.read(editTitleProvider);
     try {
-      var eventId = await space.setName(title);
+      final eventId = await space.setName(title);
       debugPrint('Space update event: $eventId');
     } catch (e) {
       debugPrint('$e');
@@ -354,16 +353,16 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     // update space avatar
     String avatarUri = ref.read(editAvatarProvider);
     if (avatarUri.isNotEmpty) {
-      var eventId = await space.uploadAvatar(avatarUri);
+      final eventId = await space.uploadAvatar(avatarUri);
       debugPrint('Avatar update event: ${eventId.toString()}');
     } else {
-      var eventId = await space.removeAvatar();
+      final eventId = await space.removeAvatar();
       debugPrint('Avatar removed event: ${eventId.toString()}');
     }
 
     //update space topic
     String topic = ref.read(editTopicProvider);
-    var eventId = await space.setTopic(topic);
+    final eventId = await space.setTopic(topic);
     debugPrint('topic update event: $eventId');
 
     return space.getRoomId();

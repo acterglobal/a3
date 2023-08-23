@@ -100,7 +100,11 @@ pub async fn ensure_user(
     };
 
     let cl = config.clone().build().await?;
-    let login_res = cl.login_username(username.clone(), &password).send().await;
+    let login_res = cl
+        .matrix_auth()
+        .login_username(username.clone(), &password)
+        .send()
+        .await;
 
     let Err(e) = login_res else {
         return Client::new(cl, Default::default()).await

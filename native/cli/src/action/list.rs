@@ -1,7 +1,7 @@
 use acter_core::spaces::SpaceRelation;
 use anyhow::Result;
 use clap::Parser;
-use futures::StreamExt;
+use futures::stream::StreamExt;
 use tracing::info;
 
 use crate::config::LoginConfig;
@@ -42,7 +42,7 @@ impl List {
         println!("## Spaces:");
         for sp in client.spaces().await? {
             let room_id = sp.room_id();
-            let is_acter_space = sp.is_acter_space().await;
+            let is_acter_space = sp.is_acter_space().await?;
             let acter_space = if is_acter_space { 'x' } else { ' ' };
             let display_name = sp.display_name().await?;
             println!(" ## [{acter_space}] {room_id}: {display_name}");

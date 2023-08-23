@@ -11,6 +11,7 @@ use super::{
 use crate::{
     events::tasks::{TaskListEventContent, TaskListUpdateBuilder, TaskListUpdateEventContent},
     statics::KEYS,
+    Result,
 };
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
@@ -100,11 +101,11 @@ impl ActerModel for TaskList {
         &[Capability::Commentable]
     }
 
-    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
         default_model_execute(store, self.into()).await
     }
 
-    fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
+    fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
         match model {
             AnyActerModel::TaskListUpdate(update) => update.apply(&mut self.inner),
             AnyActerModel::Task(task) => {
@@ -140,7 +141,7 @@ impl ActerModel for TaskListUpdate {
         &self.meta.event_id
     }
 
-    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
         default_model_execute(store, self.into()).await
     }
 

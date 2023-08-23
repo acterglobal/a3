@@ -7,7 +7,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Account, Convo, Member, OptionText, UserProfile;
+    show Account, Convo, Member, OptionString, UserProfile;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Network/Connectivity Providers
@@ -84,31 +84,27 @@ final chatMembersProvider =
 
 final relatedChatsProvider = FutureProvider.autoDispose
     .family<List<Convo>, String>((ref, spaceId) async {
-  List<Convo> conversations = [];
-  ref
-      .watch(chatStreamProvider)
-      .whenData((value) => conversations.addAll(value));
-  final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
-  final chats = [];
-  final children = relatedSpaces.children();
-  for (Convo room in conversations) {
-    for (final related in children) {
-      if (related.targetType() == 'ChatRoom') {
-        final roomId = related.roomId().toString();
-        if (room.getRoomIdStr() == roomId) {
-          chats.add(room);
-        }
-      }
-    }
-  }
-  return List<Convo>.from(chats);
+  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
+      .knownChats;
 });
 
 // Member Providers
 final memberProfileProvider =
-    FutureProvider.family.autoDispose<ProfileData, Member>((ref, member) async {
-  UserProfile profile = member.getProfile();
-  OptionText displayName = await profile.getDisplayName();
-  final avatar = await profile.getAvatar();
-  return ProfileData(displayName.text(), avatar.data());
+    FutureProvider.family<ProfileData, String>((ref, userId) async {
+  final member = ref.watch(memberProvider(userId));
+  return member.maybeWhen(
+    data: (data) async {
+      UserProfile profile = data!.getProfile();
+      OptionString displayName = await profile.getDisplayName();
+      final avatar = await profile.getThumbnail(62, 60);
+      return ProfileData(displayName.text(), avatar.data());
+    },
+    orElse: () => ProfileData('', null),
+  );
+});
+
+final memberProvider =
+    FutureProvider.family<Member?, String>((ref, userId) async {
+  final convo = ref.watch(currentConvoProvider);
+  return await convo!.getMember(userId);
 });

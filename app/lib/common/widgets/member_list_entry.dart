@@ -170,13 +170,15 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
 
 class MemberListEntry extends ConsumerWidget {
   final Member member;
-  final Space space;
+  final Space? space;
+  final Convo? convo;
   final Member? myMembership;
 
   const MemberListEntry({
     super.key,
     required this.member,
-    required this.space,
+    this.space,
+    this.convo,
     this.myMembership,
   });
 
@@ -202,7 +204,9 @@ class MemberListEntry extends ConsumerWidget {
         ),
         isLoader: true,
       );
-      await space.updatePowerLevel(userId, newPowerlevel);
+      space != null
+          ? convo?.updatePowerLevel(userId, newPowerlevel)
+          : space?.updatePowerLevel(userId, newPowerlevel);
 
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
@@ -296,8 +300,8 @@ class MemberListEntry extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(memberProfileProvider(member));
     final userId = member.userId().toString();
+    final profile = ref.watch(memberProfileProvider(userId));
     final memberStatus = member.membershipStatusStr();
     final List<Widget> trailing = [];
     debugPrint(memberStatus);
@@ -331,13 +335,21 @@ class MemberListEntry extends ConsumerWidget {
         leading: profile.when(
           data: (data) => ActerAvatar(
             mode: DisplayMode.User,
-            uniqueId: member.userId().toString(),
-            size: 18,
+            uniqueId: userId,
+            size: data.hasAvatar() ? 18 : 36,
             avatar: data.getAvatarImage(),
             displayName: data.displayName,
           ),
           loading: () => const Text('loading'),
-          error: (e, t) => Text('loading avatar failed: $e'),
+          error: (e, t) {
+            debugPrint('loading avatar failed: $e');
+            return ActerAvatar(
+              uniqueId: userId,
+              displayName: userId,
+              mode: DisplayMode.User,
+              size: 36,
+            );
+          },
         ),
         title: profile.when(
           data: (data) => Text(data.displayName ?? userId),

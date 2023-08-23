@@ -407,6 +407,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-once-cell"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9338790e78aa95a416786ec8389546c4b6a1dfc3dc36071ed9518a9413a542eb"
+
+[[package]]
 name = "async-process"
 version = "1.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -738,6 +744,18 @@ name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
+
+[[package]]
+name = "cfg-vis"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c3a2c3bf5fc10fe2ca157564fbe08a4cb2b0a7d2ff3fe2f9683e65d5e7c7859c"
+dependencies = [
+ "proc-macro-crate",
+ "proc-macro2 1.0.55",
+ "quote 1.0.28",
+ "syn 1.0.109",
+]
 
 [[package]]
 name = "chacha20"
@@ -1421,9 +1439,9 @@ checksum = "0206175f82b8d6bf6652ff7d71a1e27fd2e4efde587fd368662814d6ec1d9ce0"
 
 [[package]]
 name = "eyeball"
-version = "0.7.0"
+version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "01fb4d0bc50820a1c925b6b65ad230ce8ca59f689418fb35af560e41df208523"
+checksum = "78a7b57c052e83f2bd8d756fc379132e43d3786f3767856026ee3757868f099f"
 dependencies = [
  "futures-core",
  "readlock",
@@ -1431,14 +1449,26 @@ dependencies = [
 
 [[package]]
 name = "eyeball-im"
-version = "0.2.2"
+version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7b7f93b1590ac27ac76fd8a142ae19221ea9fd7ce35769a9aaea2e4f3c07250"
+checksum = "4d999ff633cd7243e8b9efc2a1e35846517f16ce4c3c87a70e0a829d8fb29af3"
 dependencies = [
  "futures-core",
  "imbl",
  "tokio",
  "tokio-util",
+]
+
+[[package]]
+name = "eyeball-im-util"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a51602d13a284f2241af1d8dc020dd22f49a6bbbf420a5eccbea6c399069a45"
+dependencies = [
+ "eyeball-im",
+ "futures-core",
+ "imbl",
+ "pin-project-lite",
 ]
 
 [[package]]
@@ -1474,7 +1504,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen"
 version = "0.1.13"
-source = "git+https://github.com/acterglobal/ffi-gen?branch=leaking-no-drop#a28c123e440e6d32bf9b6e97f02debbbae3f38bd"
+source = "git+https://github.com/acterglobal/ffi-gen?branch=span-support#b04f1bf9b3ff24f7f94d635fdbc86979fe764e04"
 dependencies = [
  "anyhow",
  "genco",
@@ -1487,7 +1517,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen-macro"
 version = "0.1.2"
-source = "git+https://github.com/acterglobal/ffi-gen?branch=leaking-no-drop#a28c123e440e6d32bf9b6e97f02debbbae3f38bd"
+source = "git+https://github.com/acterglobal/ffi-gen?branch=span-support#b04f1bf9b3ff24f7f94d635fdbc86979fe764e04"
 dependencies = [
  "ffi-gen",
  "proc-macro2 1.0.55",
@@ -2122,6 +2152,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1c173a5686ce8bfa551b3563d0c2170bf24ca44da99c7ca4bfdab5418c3fe57"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2371,7 +2410,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk"
 version = "0.6.2"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=645af31c59c9310f822dabae87166c0ea7d29bd5#645af31c59c9310f822dabae87166c0ea7d29bd5"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7#01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7"
 dependencies = [
  "anyhow",
  "anymap2",
@@ -2380,10 +2419,12 @@ dependencies = [
  "backoff",
  "bytes",
  "bytesize",
+ "cfg-vis",
  "dashmap",
  "event-listener",
  "eyeball",
  "eyeball-im",
+ "eyeball-im-util",
  "futures-core",
  "futures-util",
  "gloo-timers",
@@ -2411,7 +2452,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-base"
 version = "0.6.1"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=645af31c59c9310f822dabae87166c0ea7d29bd5#645af31c59c9310f822dabae87166c0ea7d29bd5"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7#01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7"
 dependencies = [
  "async-trait",
  "bitflags 2.3.3",
@@ -2433,7 +2474,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-common"
 version = "0.6.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=645af31c59c9310f822dabae87166c0ea7d29bd5#645af31c59c9310f822dabae87166c0ea7d29bd5"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7#01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7"
 dependencies = [
  "futures-core",
  "futures-util",
@@ -2449,7 +2490,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-crypto"
 version = "0.6.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=645af31c59c9310f822dabae87166c0ea7d29bd5#645af31c59c9310f822dabae87166c0ea7d29bd5"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7#01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7"
 dependencies = [
  "aes",
  "async-std",
@@ -2464,7 +2505,7 @@ dependencies = [
  "futures-core",
  "futures-util",
  "hmac",
- "itertools",
+ "itertools 0.11.0",
  "matrix-sdk-common",
  "pbkdf2",
  "rand 0.8.5",
@@ -2485,7 +2526,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-indexeddb"
 version = "0.2.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=645af31c59c9310f822dabae87166c0ea7d29bd5#645af31c59c9310f822dabae87166c0ea7d29bd5"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7#01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2510,10 +2551,11 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-sqlite"
 version = "0.1.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=645af31c59c9310f822dabae87166c0ea7d29bd5#645af31c59c9310f822dabae87166c0ea7d29bd5"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7#01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7"
 dependencies = [
  "async-trait",
  "deadpool-sqlite",
+ "itertools 0.11.0",
  "matrix-sdk-base",
  "matrix-sdk-crypto",
  "matrix-sdk-store-encryption",
@@ -2531,7 +2573,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-store-encryption"
 version = "0.2.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=645af31c59c9310f822dabae87166c0ea7d29bd5#645af31c59c9310f822dabae87166c0ea7d29bd5"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7#01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7"
 dependencies = [
  "blake3",
  "chacha20poly1305",
@@ -2551,16 +2593,22 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-ui"
 version = "0.6.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=645af31c59c9310f822dabae87166c0ea7d29bd5#645af31c59c9310f822dabae87166c0ea7d29bd5"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7#01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7"
 dependencies = [
+ "async-once-cell",
+ "async-std",
  "async-trait",
  "chrono",
+ "eyeball",
  "eyeball-im",
  "futures-core",
  "futures-util",
  "imbl",
- "indexmap 1.9.3",
+ "indexmap 2.0.0",
+ "itertools 0.11.0",
  "matrix-sdk",
+ "matrix-sdk-base",
+ "matrix-sdk-crypto",
  "mime",
  "once_cell",
  "pin-project-lite",
@@ -3158,7 +3206,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e5d2d8d10f3c6ded6da8b05b5fb3b8a5082514344d56c9f871412d29b4e075b4"
 dependencies = [
  "anyhow",
- "itertools",
+ "itertools 0.10.5",
  "proc-macro2 1.0.55",
  "quote 1.0.28",
  "syn 1.0.109",
@@ -3490,6 +3538,7 @@ dependencies = [
  "url",
  "wasm-bindgen",
  "wasm-bindgen-futures",
+ "wasm-streams",
  "web-sys",
  "webpki-roots",
  "winreg",
@@ -3541,7 +3590,7 @@ dependencies = [
 [[package]]
 name = "ruma"
 version = "0.8.2"
-source = "git+https://github.com/ruma/ruma?rev=854d8076eff1c5b6454c42e4309b1b070b815893#854d8076eff1c5b6454c42e4309b1b070b815893"
+source = "git+https://github.com/ruma/ruma?rev=5fde57460aaa71e16ac68f79376843089f9c3dfc#5fde57460aaa71e16ac68f79376843089f9c3dfc"
 dependencies = [
  "assign",
  "js_int",
@@ -3554,7 +3603,7 @@ dependencies = [
 [[package]]
 name = "ruma-client-api"
 version = "0.16.2"
-source = "git+https://github.com/ruma/ruma?rev=854d8076eff1c5b6454c42e4309b1b070b815893#854d8076eff1c5b6454c42e4309b1b070b815893"
+source = "git+https://github.com/ruma/ruma?rev=5fde57460aaa71e16ac68f79376843089f9c3dfc#5fde57460aaa71e16ac68f79376843089f9c3dfc"
 dependencies = [
  "assign",
  "bytes",
@@ -3571,7 +3620,7 @@ dependencies = [
 [[package]]
 name = "ruma-common"
 version = "0.11.3"
-source = "git+https://github.com/ruma/ruma?rev=854d8076eff1c5b6454c42e4309b1b070b815893#854d8076eff1c5b6454c42e4309b1b070b815893"
+source = "git+https://github.com/ruma/ruma?rev=5fde57460aaa71e16ac68f79376843089f9c3dfc#5fde57460aaa71e16ac68f79376843089f9c3dfc"
 dependencies = [
  "base64 0.21.2",
  "bytes",
@@ -3604,7 +3653,7 @@ dependencies = [
 [[package]]
 name = "ruma-federation-api"
 version = "0.7.1"
-source = "git+https://github.com/ruma/ruma?rev=854d8076eff1c5b6454c42e4309b1b070b815893#854d8076eff1c5b6454c42e4309b1b070b815893"
+source = "git+https://github.com/ruma/ruma?rev=5fde57460aaa71e16ac68f79376843089f9c3dfc#5fde57460aaa71e16ac68f79376843089f9c3dfc"
 dependencies = [
  "js_int",
  "ruma-common",
@@ -3615,7 +3664,7 @@ dependencies = [
 [[package]]
 name = "ruma-identifiers-validation"
 version = "0.9.1"
-source = "git+https://github.com/ruma/ruma?rev=854d8076eff1c5b6454c42e4309b1b070b815893#854d8076eff1c5b6454c42e4309b1b070b815893"
+source = "git+https://github.com/ruma/ruma?rev=5fde57460aaa71e16ac68f79376843089f9c3dfc#5fde57460aaa71e16ac68f79376843089f9c3dfc"
 dependencies = [
  "js_int",
  "thiserror",
@@ -3624,7 +3673,7 @@ dependencies = [
 [[package]]
 name = "ruma-macros"
 version = "0.11.3"
-source = "git+https://github.com/ruma/ruma?rev=854d8076eff1c5b6454c42e4309b1b070b815893#854d8076eff1c5b6454c42e4309b1b070b815893"
+source = "git+https://github.com/ruma/ruma?rev=5fde57460aaa71e16ac68f79376843089f9c3dfc#5fde57460aaa71e16ac68f79376843089f9c3dfc"
 dependencies = [
  "once_cell",
  "proc-macro-crate",
@@ -4716,6 +4765,19 @@ name = "wasm-bindgen-shared"
 version = "0.2.87"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ca6ad05a4870b2bf5fe995117d3728437bd27d7cd5f06f13c17443ef369775a1"
+
+[[package]]
+name = "wasm-streams"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6bbae3363c08332cadccd13b67db371814cd214c2524020932f0804b8cf7c078"
+dependencies = [
+ "futures-util",
+ "js-sys",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
 
 [[package]]
 name = "web-sys"

@@ -77,18 +77,18 @@ use matrix_sdk::{
             AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
             SyncStateEvent,
         },
+        serde::Raw,
         OwnedEventId, OwnedRoomId, OwnedUserId,
     },
 };
 use matrix_sdk_ui::timeline::{
-    EventTimelineItem, MemberProfileChange, MembershipChange, TimelineDetails, TimelineItem,
-    TimelineItemContent, VirtualTimelineItem,
+    EventSendState, EventTimelineItem, MembershipChange, TimelineItem, TimelineItemContent,
+    VirtualTimelineItem,
 };
-use ruma::serde::Raw;
 use std::{collections::HashMap, sync::Arc};
 use tracing::info;
 
-use super::common::{AudioDesc, FileDesc, ImageDesc, ReactionDesc, TextDesc, VideoDesc};
+use super::common::{AudioDesc, FileDesc, ImageDesc, ReactionRecord, TextDesc, VideoDesc};
 
 #[derive(Clone, Debug)]
 pub struct RoomEventItem {
@@ -103,7 +103,7 @@ pub struct RoomEventItem {
     video_desc: Option<VideoDesc>,
     file_desc: Option<FileDesc>,
     in_reply_to: Option<OwnedEventId>,
-    reactions: HashMap<String, ReactionDesc>,
+    reactions: HashMap<String, Vec<ReactionRecord>>,
     is_editable: bool,
 }
 
@@ -121,7 +121,7 @@ impl RoomEventItem {
         video_desc: Option<VideoDesc>,
         file_desc: Option<FileDesc>,
         in_reply_to: Option<OwnedEventId>,
-        reactions: HashMap<String, ReactionDesc>,
+        reactions: HashMap<String, Vec<ReactionRecord>>,
         is_editable: bool,
     ) -> Self {
         RoomEventItem {
@@ -196,7 +196,7 @@ impl RoomEventItem {
         keys
     }
 
-    pub fn reaction_desc(&self, key: String) -> Option<ReactionDesc> {
+    pub fn reaction_items(&self, key: String) -> Option<Vec<ReactionRecord>> {
         if self.reactions.contains_key(&key) {
             Some(self.reactions[&key].clone())
         } else {
@@ -378,10 +378,10 @@ impl RoomMessage {
         event: OriginalCallHangupEvent,
         room_id: OwnedRoomId,
     ) -> Self {
-        let text_desc = event
-            .content
-            .reason
-            .map(|x| TextDesc::new(format!("hangup this call because {x}"), None));
+        let text_desc = TextDesc::new(
+            format!("hangup this call because {}", event.content.reason),
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room_id,
@@ -391,7 +391,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.call.hangup".to_string(),
                 None,
-                text_desc,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -408,10 +408,10 @@ impl RoomMessage {
         event: OriginalSyncCallHangupEvent,
         room_id: OwnedRoomId,
     ) -> Self {
-        let text_desc = event
-            .content
-            .reason
-            .map(|x| TextDesc::new(format!("hangup this call because {x}"), None));
+        let text_desc = TextDesc::new(
+            format!("hangup this call because {}", event.content.reason),
+            None,
+        );
         RoomMessage::new(
             "event".to_string(),
             room_id,
@@ -421,7 +421,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.call.hangup".to_string(),
                 None,
-                text_desc,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2728,18 +2728,17 @@ impl RoomMessage {
     }
 
     pub(crate) fn from_timeline_event_item(event: &EventTimelineItem, room: Room) -> Self {
-        let event_id = event.unique_identifier();
+        let event_id = unique_identifier(event);
         let room_id = room.room_id().to_owned();
         let sender = event.sender().to_string();
         let origin_server_ts: u64 = event.timestamp().get().into();
-        let mut reactions: HashMap<String, ReactionDesc> = HashMap::new();
+        let mut reactions: HashMap<String, Vec<ReactionRecord>> = HashMap::new();
         for (key, value) in event.reactions().iter() {
-            let senders = value
+            let reaction_items = value
                 .senders()
-                .map(|x| x.to_owned())
-                .collect::<Vec<OwnedUserId>>();
-            let description = ReactionDesc::new(senders.len() as u32, senders);
-            reactions.insert(key.clone(), description);
+                .map(|x| ReactionRecord::new(x.sender_id.clone(), x.timestamp))
+                .collect::<Vec<ReactionRecord>>();
+            reactions.insert(key.clone(), reaction_items);
         }
 
         let event_item = match event.content() {
@@ -3107,23 +3106,11 @@ impl RoomMessage {
                     Some(RoomVirtualItem::new("DayDivider".to_string(), desc)),
                 )
             }
-            VirtualTimelineItem::LoadingIndicator => RoomMessage::new(
-                "virtual".to_string(),
-                room_id,
-                None,
-                Some(RoomVirtualItem::new("LoadingIndicator".to_string(), None)),
-            ),
             VirtualTimelineItem::ReadMarker => RoomMessage::new(
                 "virtual".to_string(),
                 room_id,
                 None,
                 Some(RoomVirtualItem::new("ReadMarker".to_string(), None)),
-            ),
-            VirtualTimelineItem::TimelineStart => RoomMessage::new(
-                "virtual".to_string(),
-                room_id,
-                None,
-                Some(RoomVirtualItem::new("TimelineStart".to_string(), None)),
             ),
         }
     }
@@ -3364,10 +3351,23 @@ pub(crate) fn sync_event_to_message(
 }
 
 pub(crate) fn timeline_item_to_message(item: Arc<TimelineItem>, room: Room) -> RoomMessage {
-    match item.as_ref() {
-        TimelineItem::Event(event_item) => RoomMessage::from_timeline_event_item(event_item, room),
-        TimelineItem::Virtual(virtual_item) => {
-            RoomMessage::from_timeline_virtual_item(virtual_item, room)
+    if let Some(event_item) = item.as_event() {
+        return RoomMessage::from_timeline_event_item(event_item, room);
+    }
+    if let Some(virtual_item) = item.as_virtual() {
+        return RoomMessage::from_timeline_virtual_item(virtual_item, room);
+    }
+    unreachable!("Timeline item should be one of event or virtual");
+}
+
+// this function was removed from EventTimelineItem so we clone that function
+fn unique_identifier(event: &EventTimelineItem) -> String {
+    if event.is_local_echo() {
+        match event.send_state() {
+            Some(EventSendState::Sent { event_id }) => event_id.to_string(),
+            _ => event.transaction_id().unwrap().to_string(),
         }
+    } else {
+        event.event_id().unwrap().to_string()
     }
 }
