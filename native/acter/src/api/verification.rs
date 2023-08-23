@@ -1260,9 +1260,9 @@ impl SessionManager {
         password: String,
     ) -> Result<bool> {
         let client = self.client.clone();
-        let devices = dev_ids
+        let devices = (*dev_ids)
             .iter()
-            .map(|x| device_id!(x.as_str()).to_owned())
+            .map(|x| x.as_str().into())
             .collect::<Vec<OwnedDeviceId>>();
         RUNTIME
             .spawn(async move {

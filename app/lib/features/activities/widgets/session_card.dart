@@ -88,8 +88,64 @@ class SessionCard extends ConsumerWidget {
   }
 
   Future<void> onLogout(BuildContext context, WidgetRef ref) async {
+    TextEditingController usernameController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: const Text('Auth data needed'),
+          content: Wrap(
+            children: [
+              const Text('Please input username.'),
+              TextField(
+                controller: usernameController,
+                decoration: const InputDecoration(hintText: 'Username'),
+              ),
+              const Text('Please input password.'),
+              TextField(
+                controller: passwordController,
+                decoration: const InputDecoration(hintText: 'Password'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                if (ctx.mounted) {
+                  Navigator.of(context).pop(false);
+                }
+              },
+            ),
+            TextButton(
+              child: const Text('Ok'),
+              onPressed: () {
+                if (usernameController.text.isEmpty) {
+                  return;
+                }
+                if (passwordController.text.isEmpty) {
+                  return;
+                }
+                if (ctx.mounted) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+    if (result != true) {
+      return;
+    }
     final client = ref.read(clientProvider)!;
     final manager = client.sessionManager();
+    await manager.deleteDevices(
+      [deviceRecord.deviceId().toString()] as FfiListFfiString,
+      usernameController.text,
+      passwordController.text,
+    );
   }
 
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {
