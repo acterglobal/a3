@@ -144,7 +144,6 @@ class CustomChatInput extends ConsumerWidget {
             ),
           ),
           child: Container(
-            width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 15),
             color: Theme.of(context).colorScheme.onPrimary,
             child: Center(
@@ -173,7 +172,7 @@ class CustomChatInput extends ConsumerWidget {
                       },
                       loading: () => const CircularProgressIndicator(),
                     ),
-                    const Expanded(
+                    const Flexible(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: _TextInputWidget(),
@@ -294,26 +293,25 @@ class CustomChatInput extends ConsumerWidget {
       ],
     );
   }
-
 }
 
-  Future<void> onSendButtonPressed(WidgetRef ref) async {
-    final inputNotifier = ref.read(chatInputProvider.notifier);
-    final roomNotifier = ref.read(chatRoomProvider.notifier);
-    final mentionState = ref.read(mentionKeyProvider).currentState!;
-    final markDownProvider = ref.read(messageMarkDownProvider);
-    final markDownNotifier = ref.read(messageMarkDownProvider.notifier);
+Future<void> onSendButtonPressed(WidgetRef ref) async {
+  final inputNotifier = ref.read(chatInputProvider.notifier);
+  final roomNotifier = ref.read(chatRoomProvider.notifier);
+  final mentionState = ref.read(mentionKeyProvider).currentState!;
+  final markDownProvider = ref.read(messageMarkDownProvider);
+  final markDownNotifier = ref.read(messageMarkDownProvider.notifier);
 
-    inputNotifier.showSendBtn(false);
-    String markdownText = mentionState.controller!.text;
-    int messageLength = markdownText.length;
-    markDownProvider.forEach((key, value) {
-      markdownText = markdownText.replaceAll(key, value);
-    });
-    await roomNotifier.handleSendPressed(markdownText, messageLength);
-    markDownNotifier.update((state) => {});
-    mentionState.controller!.clear();
-  }
+  inputNotifier.showSendBtn(false);
+  String markdownText = mentionState.controller!.text;
+  int messageLength = markdownText.length;
+  markDownProvider.forEach((key, value) {
+    markdownText = markdownText.replaceAll(key, value);
+  });
+  await roomNotifier.handleSendPressed(markdownText, messageLength);
+  markDownNotifier.update((state) => {});
+  mentionState.controller!.clear();
+}
 
 class _FileWidget extends ConsumerWidget {
   const _FileWidget(this.mimeType, this.file);
@@ -378,9 +376,11 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
     final chatInputState = ref.watch(chatInputProvider);
+    final width = MediaQuery.of(context).size.width;
     return FlutterMentions(
       key: mentionKey,
       suggestionPosition: SuggestionPosition.Top,
+      suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
       onMentionAdd: (Map<String, dynamic> roomMember) {
         _handleMentionAdd(roomMember, ref);
       },

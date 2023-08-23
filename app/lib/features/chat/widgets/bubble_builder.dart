@@ -2,7 +2,6 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
-import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
@@ -299,9 +298,7 @@ class _EmojiContainerState extends State<_EmojiContainer>
                   widget.message.metadata!['reactions'];
               final recordsCount = reactions[key]?.length;
               return GestureDetector(
-                onTap: () {
-                  showEmojiReactionsSheet(reactions);
-                },
+                onTap: () {},
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -316,78 +313,6 @@ class _EmojiContainerState extends State<_EmojiContainer>
         );
       },
     );
-  }
-
-  //Emoji reaction info bottom sheet.
-  void showEmojiReactionsSheet(Map<String, dynamic> reactions) {
-    List<String> keys = reactions.keys.toList();
-    num count = 0;
-    if (mounted) {
-      setState(() {
-        reactions.forEach((key, value) {
-          count += value.length;
-          reactionTabs.add(
-            Tab(text: '$key+${value.length}'),
-          );
-        });
-        reactionTabs.insert(0, (Tab(text: 'All $count')));
-        tabBarController = TabController(
-          length: reactionTabs.length,
-          vsync: this,
-        );
-      });
-    }
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(15),
-        ),
-      ),
-      isDismissible: true,
-      builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: TabBar(
-                isScrollable: true,
-                padding: const EdgeInsets.all(24),
-                controller: tabBarController,
-                overlayColor:
-                    MaterialStateProperty.all<Color>(Colors.transparent),
-                indicator: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                ),
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: Colors.white,
-                unselectedLabelColor: Colors.white,
-                dividerColor: Colors.transparent,
-                tabs: reactionTabs,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: TabBarView(
-                  viewportFraction: 1.0,
-                  controller: tabBarController,
-                  children: [
-                    _ReactionListing(emojis: keys),
-                    for (var count in keys) _ReactionListing(emojis: [count]),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    ).whenComplete(() {
-      if (mounted) {
-        setState(() => reactionTabs.clear());
-      }
-    });
   }
 }
 
@@ -473,26 +398,5 @@ class _OriginalMessageBuilder extends ConsumerWidget {
     } else {
       return const SizedBox();
     }
-  }
-}
-
-class _ReactionListing extends StatelessWidget {
-  final List<String> emojis;
-
-  const _ReactionListing({required this.emojis});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      shrinkWrap: true,
-      itemCount: emojis.length,
-      itemBuilder: (BuildContext context, int index) {
-        return EmojiReactionItem(emoji: emojis[index]);
-      },
-      separatorBuilder: (BuildContext context, int index) {
-        return const SizedBox(height: 12);
-      },
-    );
   }
 }

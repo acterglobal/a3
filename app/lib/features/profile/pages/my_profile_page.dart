@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -145,9 +146,7 @@ class MyProfile extends ConsumerWidget {
             actions: [
               IconButton(
                 icon: const Icon(Atlas.construction_tools_thin),
-                onPressed: () {
-                  context.go('/settings');
-                },
+                onPressed: () => context.pushNamed(Routes.settings.name),
               ),
               PopupMenuButton(
                 itemBuilder: (BuildContext context) => <PopupMenuEntry>[

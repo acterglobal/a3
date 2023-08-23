@@ -2,6 +2,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/avatar_builder.dart';
@@ -95,6 +96,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     final client = ref.watch(clientProvider);
     final chatRoomState = ref.watch(chatRoomProvider);
     final roomNotifier = ref.watch(chatRoomProvider.notifier);
@@ -106,11 +108,24 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
         roomNotifier.isLoaded();
       }
     });
+
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.neutral,
         resizeToAvoidBottomInset: orientation == Orientation.portrait,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: Visibility(
+            visible: size.width < 675,
+            child: IconButton(
+              onPressed: () {
+                context.canPop()
+                    ? context.pop()
+                    : context.goNamed(Routes.chat.name);
+              },
+              icon: const Icon(Atlas.arrow_left),
+            ),
+          ),
           backgroundColor: Theme.of(context).colorScheme.onPrimary,
           elevation: 1,
           centerTitle: true,
@@ -150,10 +165,16 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           ),
           actions: [
             GestureDetector(
-              onTap: () => context.pushNamed(
-                Routes.chatProfile.name,
-                pathParameters: {'roomId': convo.getRoomIdStr()},
-              ),
+              onTap: () {
+                if (!isDesktop(context)) {
+                  context.pushNamed(
+                    Routes.chatProfile.name,
+                    pathParameters: {'roomId': convo.getRoomIdStr()},
+                  );
+                } else {
+                  ref.read(showFullSplitView.notifier).update((state) => true);
+                }
+              },
               child: Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: SpaceParentBadge(
