@@ -4,6 +4,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:breadcrumbs/breadcrumbs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,7 +47,10 @@ class SessionCard extends ConsumerWidget {
                 color: Theme.of(context).colorScheme.error,
               ),
         title: Text(deviceRecord.displayName() ?? ''),
-        subtitle: Text(fields.join(' - ')),
+        subtitle: Breadcrumbs(
+          crumbs: fields.map((e) => TextSpan(text: e)).toList(),
+          separator: ' - ',
+        ),
         trailing: PopupMenuButton(
           itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
             PopupMenuItem(
