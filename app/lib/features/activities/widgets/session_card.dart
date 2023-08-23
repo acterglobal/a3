@@ -92,7 +92,6 @@ class SessionCard extends ConsumerWidget {
   }
 
   Future<void> onLogout(BuildContext context, WidgetRef ref) async {
-    TextEditingController usernameController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
     final result = await showDialog<bool>(
       context: context,
@@ -101,12 +100,7 @@ class SessionCard extends ConsumerWidget {
           title: const Text('Auth data needed'),
           content: Wrap(
             children: [
-              const Text('Please input username.'),
-              TextField(
-                controller: usernameController,
-                decoration: const InputDecoration(hintText: 'Username'),
-              ),
-              const Text('Please input password.'),
+              const Text('Please input password of your account.'),
               TextField(
                 controller: passwordController,
                 decoration: const InputDecoration(hintText: 'Password'),
@@ -125,9 +119,6 @@ class SessionCard extends ConsumerWidget {
             TextButton(
               child: const Text('Ok'),
               onPressed: () {
-                if (usernameController.text.isEmpty) {
-                  return;
-                }
                 if (passwordController.text.isEmpty) {
                   return;
                 }
@@ -150,7 +141,7 @@ class SessionCard extends ConsumerWidget {
     final manager = client.sessionManager();
     await manager.deleteDevices(
       [deviceRecord.deviceId().toString()] as FfiListFfiString,
-      usernameController.text,
+      client.userId().toString(),
       passwordController.text,
     );
   }
