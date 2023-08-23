@@ -15,7 +15,7 @@ void onBoardingDialog({
     useRootNavigator: true,
     enableDrag: false,
     isScrollControlled: true,
-    context: (context),
+    context: context,
     builder: (context) {
       return FractionallySizedBox(
         heightFactor: 1.0,
