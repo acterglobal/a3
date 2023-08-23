@@ -18,7 +18,7 @@ class SessionCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool isVerified = deviceRecord.verified();
+    bool isVerified = deviceRecord.isVerified();
     final fields = [isVerified ? 'Verified' : 'Unverified'];
     final lastSeenTs = deviceRecord.lastSeenTs();
     if (lastSeenTs != null) {

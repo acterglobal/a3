@@ -74,16 +74,19 @@ class SessionsPage extends ConsumerWidget {
     WidgetRef ref,
     Widget? child,
   ) {
-    final unverifiedSessions = ref.watch(unverifiedSessionsProvider);
-    return unverifiedSessions.when(
-      data: (sessions) => Expanded(
-        child: ListView.builder(
-          itemBuilder: (BuildContext context, int index) {
-            return SessionCard(deviceRecord: sessions[index]);
-          },
-          itemCount: sessions.length,
-        ),
-      ),
+    final allSessions = ref.watch(allSessionsProvider);
+    return allSessions.when(
+      data: (data) {
+        final sessions = data.where((sess) => !sess.isVerified()).toList();
+        return Expanded(
+          child: ListView.builder(
+            itemBuilder: (BuildContext context, int index) {
+              return SessionCard(deviceRecord: sessions[index]);
+            },
+            itemCount: sessions.length,
+          ),
+        );
+      },
       error: (error, stack) {
         return const Text("Couldn't load unverified sessions");
       },

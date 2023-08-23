@@ -26,11 +26,12 @@ class ActivitiesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // ignore: unused_local_variable
     final allDone = ref.watch(hasActivitiesProvider) == HasActivities.none;
-    final unverifiedSessions = ref.watch(unverifiedSessionsProvider);
+    final allSessions = ref.watch(allSessionsProvider);
     final invitations = ref.watch(invitationListProvider);
     final children = [];
-    unverifiedSessions.when(
-      data: (sessions) {
+    allSessions.when(
+      data: (data) {
+        final sessions = data.where((sess) => !sess.isVerified()).toList();
         if (sessions.length == 1) {
           children.add(
             SliverToBoxAdapter(

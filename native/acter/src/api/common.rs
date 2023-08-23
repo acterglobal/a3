@@ -409,7 +409,8 @@ pub struct DeviceRecord {
     display_name: Option<String>,
     last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
     last_seen_ip: Option<String>,
-    verified: bool,
+    is_verified: bool,
+    is_active: bool,
 }
 
 impl DeviceRecord {
@@ -418,14 +419,16 @@ impl DeviceRecord {
         display_name: Option<String>,
         last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
         last_seen_ip: Option<String>,
-        verified: bool,
+        is_verified: bool,
+        is_active: bool,
     ) -> Self {
         DeviceRecord {
             device_id,
             display_name,
             last_seen_ts,
             last_seen_ip,
-            verified,
+            is_verified,
+            is_active,
         }
     }
 
@@ -445,7 +448,11 @@ impl DeviceRecord {
         self.last_seen_ip.clone()
     }
 
-    pub fn verified(&self) -> bool {
-        self.verified
+    pub fn is_verified(&self) -> bool {
+        self.is_verified
+    }
+
+    pub fn is_active(&self) -> bool {
+        self.is_active
     }
 }

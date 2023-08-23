@@ -9274,150 +9274,6 @@ class Api {
     return tmp7;
   }
 
-  FfiListDeviceRecord? __sessionManagerVerifiedSessionsFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _sessionManagerVerifiedSessionsFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListDeviceRecord");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListDeviceRecord._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiListDeviceRecord? __sessionManagerUnverifiedSessionsFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _sessionManagerUnverifiedSessionsFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListDeviceRecord");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListDeviceRecord._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiListDeviceRecord? __sessionManagerInactiveSessionsFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _sessionManagerInactiveSessionsFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListDeviceRecord");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListDeviceRecord._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
   bool? __sessionManagerDeleteDevicesFuturePoll(
     int boxed,
     int postCobject,
@@ -18500,39 +18356,6 @@ class Api {
           int Function(
             int,
           )>();
-  late final _sessionManagerVerifiedSessionsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__SessionManager_verified_sessions");
-
-  late final _sessionManagerVerifiedSessions =
-      _sessionManagerVerifiedSessionsPtr.asFunction<
-          int Function(
-            int,
-          )>();
-  late final _sessionManagerUnverifiedSessionsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__SessionManager_unverified_sessions");
-
-  late final _sessionManagerUnverifiedSessions =
-      _sessionManagerUnverifiedSessionsPtr.asFunction<
-          int Function(
-            int,
-          )>();
-  late final _sessionManagerInactiveSessionsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__SessionManager_inactive_sessions");
-
-  late final _sessionManagerInactiveSessions =
-      _sessionManagerInactiveSessionsPtr.asFunction<
-          int Function(
-            int,
-          )>();
   late final _sessionManagerDeleteDevicesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -18756,13 +18579,23 @@ class Api {
       _DeviceRecordLastSeenTsReturn Function(
         int,
       )>();
-  late final _deviceRecordVerifiedPtr = _lookup<
+  late final _deviceRecordIsVerifiedPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
             ffi.Int64,
-          )>>("__DeviceRecord_verified");
+          )>>("__DeviceRecord_is_verified");
 
-  late final _deviceRecordVerified = _deviceRecordVerifiedPtr.asFunction<
+  late final _deviceRecordIsVerified = _deviceRecordIsVerifiedPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _deviceRecordIsActivePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__DeviceRecord_is_active");
+
+  late final _deviceRecordIsActive = _deviceRecordIsActivePtr.asFunction<
       int Function(
         int,
       )>();
@@ -21359,51 +21192,6 @@ class Api {
   late final _sessionManagerAllSessionsFuturePoll =
       _sessionManagerAllSessionsFuturePollPtr.asFunction<
           _SessionManagerAllSessionsFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _sessionManagerVerifiedSessionsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SessionManagerVerifiedSessionsFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__SessionManager_verified_sessions_future_poll");
-
-  late final _sessionManagerVerifiedSessionsFuturePoll =
-      _sessionManagerVerifiedSessionsFuturePollPtr.asFunction<
-          _SessionManagerVerifiedSessionsFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _sessionManagerUnverifiedSessionsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SessionManagerUnverifiedSessionsFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__SessionManager_unverified_sessions_future_poll");
-
-  late final _sessionManagerUnverifiedSessionsFuturePoll =
-      _sessionManagerUnverifiedSessionsFuturePollPtr.asFunction<
-          _SessionManagerUnverifiedSessionsFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _sessionManagerInactiveSessionsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SessionManagerInactiveSessionsFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__SessionManager_inactive_sessions_future_poll");
-
-  late final _sessionManagerInactiveSessionsFuturePoll =
-      _sessionManagerInactiveSessionsFuturePollPtr.asFunction<
-          _SessionManagerInactiveSessionsFuturePollReturn Function(
             int,
             int,
             int,
@@ -39459,54 +39247,6 @@ class SessionManager {
     return tmp2;
   }
 
-  Future<FfiListDeviceRecord> verifiedSessions() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._sessionManagerVerifiedSessions(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__SessionManager_verified_sessions_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__sessionManagerVerifiedSessionsFuturePoll);
-    return tmp2;
-  }
-
-  Future<FfiListDeviceRecord> unverifiedSessions() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._sessionManagerUnverifiedSessions(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__SessionManager_unverified_sessions_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__sessionManagerUnverifiedSessionsFuturePoll);
-    return tmp2;
-  }
-
-  Future<FfiListDeviceRecord> inactiveSessions() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._sessionManagerInactiveSessions(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__SessionManager_inactive_sessions_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__sessionManagerInactiveSessionsFuturePoll);
-    return tmp2;
-  }
-
   /// Force to logout another devices
   /// Authentication is required to do so
   Future<bool> deleteDevices(
@@ -40028,10 +39768,22 @@ class DeviceRecord {
   }
 
   /// whether it was verified
-  bool verified() {
+  bool isVerified() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._deviceRecordVerified(
+    final tmp1 = _api._deviceRecordIsVerified(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// whether it is active
+  bool isActive() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._deviceRecordIsActive(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -44837,51 +44589,6 @@ class _VerificationEventReviewVerificationMacFuturePollReturn
 }
 
 class _SessionManagerAllSessionsFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _SessionManagerVerifiedSessionsFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _SessionManagerUnverifiedSessionsFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _SessionManagerInactiveSessionsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

@@ -1839,9 +1839,6 @@ object VerificationEmoji {
 
 object SessionManager {
     fn all_sessions() -> Future<Result<Vec<DeviceRecord>>>;
-    fn verified_sessions() -> Future<Result<Vec<DeviceRecord>>>;
-    fn unverified_sessions() -> Future<Result<Vec<DeviceRecord>>>;
-    fn inactive_sessions() -> Future<Result<Vec<DeviceRecord>>>;
 
     /// Force to logout another devices
     /// Authentication is required to do so
@@ -1911,7 +1908,10 @@ object DeviceRecord {
     fn last_seen_ts() -> Option<u64>;
 
     /// whether it was verified
-    fn verified() -> bool;
+    fn is_verified() -> bool;
+
+    /// whether it is active
+    fn is_active() -> bool;
 }
 
 /// Deliver typing event from rust to flutter

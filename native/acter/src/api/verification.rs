@@ -1131,98 +1131,7 @@ impl SessionManager {
                     let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
                         d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing()
                     });
-                    sessions.push(DeviceRecord::new(
-                        device.device_id.clone(),
-                        device.display_name.clone(),
-                        device.last_seen_ts,
-                        device.last_seen_ip.clone(),
-                        is_verified,
-                    ));
-                }
-                warn!("all sessions: {:?}", sessions);
-                Ok(sessions)
-            })
-            .await?
-    }
-
-    pub async fn verified_sessions(&self) -> Result<Vec<DeviceRecord>> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let user_id = client.user_id().context("User not found")?;
-                let response = client.devices().await?;
-                let crypto_devices = client
-                    .encryption()
-                    .get_user_devices(user_id)
-                    .await
-                    .context("Couldn't get crypto devices")?;
-                let mut sessions = vec![];
-                for device in response.devices {
-                    let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
-                        d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing()
-                    });
-                    if is_verified {
-                        sessions.push(DeviceRecord::new(
-                            device.device_id.clone(),
-                            device.display_name.clone(),
-                            device.last_seen_ts,
-                            device.last_seen_ip.clone(),
-                            true,
-                        ));
-                    }
-                }
-                warn!("verified sessions: {:?}", sessions);
-                Ok(sessions)
-            })
-            .await?
-    }
-
-    pub async fn unverified_sessions(&self) -> Result<Vec<DeviceRecord>> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let user_id = client.user_id().context("User not found")?;
-                let response = client.devices().await?;
-                let crypto_devices = client
-                    .encryption()
-                    .get_user_devices(user_id)
-                    .await
-                    .context("Couldn't get crypto devices")?;
-                let mut sessions = vec![];
-                for device in response.devices {
-                    let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
-                        d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing()
-                    });
-                    if !is_verified {
-                        sessions.push(DeviceRecord::new(
-                            device.device_id.clone(),
-                            device.display_name.clone(),
-                            device.last_seen_ts,
-                            device.last_seen_ip.clone(),
-                            false,
-                        ));
-                    }
-                }
-                warn!("unverified sessions: {:?}", sessions);
-                Ok(sessions)
-            })
-            .await?
-    }
-
-    pub async fn inactive_sessions(&self) -> Result<Vec<DeviceRecord>> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let user_id = client.user_id().context("User not found")?;
-                let response = client.devices().await?;
-                let crypto_devices = client
-                    .encryption()
-                    .get_user_devices(user_id)
-                    .await
-                    .context("Couldn't get crypto devices")?;
-                let mut sessions = vec![];
-                for device in response.devices {
-                    let mut is_inactive = true;
+                    let mut is_active = false;
                     if let Some(last_seen_ts) = device.last_seen_ts {
                         let limit = SystemTime::now()
                             .checked_sub(Duration::from_secs(90 * 24 * 60 * 60))
@@ -1230,24 +1139,20 @@ impl SessionManager {
                             .duration_since(UNIX_EPOCH)
                             .context("Couldn't calculate duration from Unix epoch")?;
                         let secs: u64 = last_seen_ts.as_secs().into();
-                        if secs > limit.as_secs() {
-                            is_inactive = false;
+                        if secs < limit.as_secs() {
+                            is_active = true;
                         }
                     }
-                    if is_inactive {
-                        let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
-                            d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing()
-                        });
-                        sessions.push(DeviceRecord::new(
-                            device.device_id.clone(),
-                            device.display_name.clone(),
-                            device.last_seen_ts,
-                            device.last_seen_ip.clone(),
-                            is_verified,
-                        ));
-                    }
+                    sessions.push(DeviceRecord::new(
+                        device.device_id.clone(),
+                        device.display_name.clone(),
+                        device.last_seen_ts,
+                        device.last_seen_ip.clone(),
+                        is_verified,
+                        is_active,
+                    ));
                 }
-                warn!("inactive sessions: {:?}", sessions);
+                warn!("all sessions: {:?}", sessions);
                 Ok(sessions)
             })
             .await?
