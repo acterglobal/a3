@@ -24,22 +24,22 @@ class SessionsPage extends ConsumerWidget {
               vertical: 5,
             ),
             child: Text(
-              'All Sessions',
+              'Unverified Sessions',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
-          Consumer(builder: allSessionsBuilder),
+          Consumer(builder: unverifiedSessionsBuilder),
           Padding(
             padding: const EdgeInsetsDirectional.symmetric(
               horizontal: 10,
               vertical: 5,
             ),
             child: Text(
-              'Unverified Sessions',
+              'All Sessions',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
-          Consumer(builder: unverifiedSessionsBuilder),
+          Consumer(builder: allSessionsBuilder),
         ],
       ),
     );
