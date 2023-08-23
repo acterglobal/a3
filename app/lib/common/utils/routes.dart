@@ -20,6 +20,7 @@ enum Routes {
   updates('/updates'),
   search('/search'),
   activities('/activities'),
+  sessions('/sessions'),
   tasks('/tasks'),
 
   // --- chat

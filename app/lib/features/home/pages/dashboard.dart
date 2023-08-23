@@ -44,9 +44,6 @@ class _DashboardState extends ConsumerState<Dashboard> {
         return;
       }
 
-      final client = ref.watch(clientProvider);
-      final crossSigning = CrossSigning(client: client!);
-
       final spaces = await ref.watch(spacesProvider.future);
       clearFirstSyncListener();
       if (spaces.isEmpty && context.mounted) {

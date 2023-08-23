@@ -10,6 +10,8 @@ use matrix_sdk::{
     },
     event_handler::{Ctx, EventHandlerHandle},
     ruma::{
+        api::client::uiaa::{AuthData, Password, UserIdentifier},
+        assign, device_id,
         events::{
             forwarded_room_key::ToDeviceForwardedRoomKeyEvent,
             key::verification::{
@@ -1126,9 +1128,9 @@ impl SessionManager {
                     .context("Couldn't get crypto devices")?;
                 let mut sessions = vec![];
                 for device in response.devices {
-                    let is_verified = crypto_devices
-                        .get(&device.device_id)
-                        .is_some_and(|d| d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing());
+                    let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
+                        d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing()
+                    });
                     sessions.push(DeviceRecord::new(
                         device.device_id.clone(),
                         device.display_name.clone(),
@@ -1156,9 +1158,9 @@ impl SessionManager {
                     .context("Couldn't get crypto devices")?;
                 let mut sessions = vec![];
                 for device in response.devices {
-                    let is_verified = crypto_devices
-                        .get(&device.device_id)
-                        .is_some_and(|d| d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing());
+                    let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
+                        d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing()
+                    });
                     if is_verified {
                         sessions.push(DeviceRecord::new(
                             device.device_id.clone(),
@@ -1188,9 +1190,9 @@ impl SessionManager {
                     .context("Couldn't get crypto devices")?;
                 let mut sessions = vec![];
                 for device in response.devices {
-                    let is_verified = crypto_devices
-                        .get(&device.device_id)
-                        .is_some_and(|d| d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing());
+                    let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
+                        d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing()
+                    });
                     if !is_verified {
                         sessions.push(DeviceRecord::new(
                             device.device_id.clone(),
@@ -1233,9 +1235,9 @@ impl SessionManager {
                         }
                     }
                     if is_inactive {
-                        let is_verified = crypto_devices
-                            .get(&device.device_id)
-                            .is_some_and(|d| d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing());
+                        let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
+                            d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing()
+                        });
                         sessions.push(DeviceRecord::new(
                             device.device_id.clone(),
                             device.display_name.clone(),
@@ -1247,6 +1249,63 @@ impl SessionManager {
                 }
                 warn!("inactive sessions: {:?}", sessions);
                 Ok(sessions)
+            })
+            .await?
+    }
+
+    pub async fn delete_devices(
+        &self,
+        dev_ids: &mut Vec<String>,
+        username: String,
+        password: String,
+    ) -> Result<bool> {
+        let client = self.client.clone();
+        let devices = dev_ids
+            .iter()
+            .map(|x| device_id!(x.as_str()).to_owned())
+            .collect::<Vec<OwnedDeviceId>>();
+        RUNTIME
+            .spawn(async move {
+                if let Err(e) = client.delete_devices(&devices, None).await {
+                    if let Some(info) = e.as_uiaa_response() {
+                        let pass_data = assign!(Password::new(
+                            UserIdentifier::UserIdOrLocalpart(username),
+                            password,
+                        ), {
+                            session: info.session.clone(),
+                        });
+                        let auth_data = AuthData::Password(pass_data);
+                        client.delete_devices(&devices, Some(auth_data)).await?;
+                    } else {
+                        return Ok(false);
+                    }
+                }
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn request_verification(&self, dev_id: String) -> Result<bool> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let user_id = client.user_id().context("User not found")?;
+                if let Some(device) = client
+                    .encryption()
+                    .get_device(user_id, device_id!(dev_id.as_str()))
+                    .await
+                    .context("Couldn't get crypto device")?
+                {
+                    let is_verified = device.is_cross_signed_by_owner()
+                        || device.is_verified_with_cross_signing();
+                    if !is_verified {
+                        let request = device
+                            .request_verification()
+                            .await
+                            .context("Failed to request verification")?;
+                    }
+                }
+                Ok(true)
             })
             .await?
     }

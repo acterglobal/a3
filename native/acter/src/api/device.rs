@@ -45,7 +45,8 @@ impl DeviceChangedEvent {
                     .await?
                     .devices()
                 {
-                    let is_verified = device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
+                    let is_verified = device.is_cross_signed_by_owner()
+                        || device.is_verified_with_cross_signing();
                     if is_verified == verified {
                         if let Some(dev) = response
                             .devices
@@ -185,7 +186,8 @@ impl DeviceLeftEvent {
                     .await?
                     .devices()
                 {
-                    let is_verified = device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
+                    let is_verified = device.is_cross_signed_by_owner()
+                        || device.is_verified_with_cross_signing();
                     if device.is_deleted() == deleted {
                         if let Some(dev) = response
                             .devices

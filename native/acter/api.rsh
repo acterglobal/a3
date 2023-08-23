@@ -1842,6 +1842,13 @@ object SessionManager {
     fn verified_sessions() -> Future<Result<Vec<DeviceRecord>>>;
     fn unverified_sessions() -> Future<Result<Vec<DeviceRecord>>>;
     fn inactive_sessions() -> Future<Result<Vec<DeviceRecord>>>;
+
+    /// Force to logout another devices
+    /// Authentication is required to do so
+    fn delete_devices(dev_ids: Vec<string>, username: string, password: string) -> Future<Result<bool>>;
+
+    /// Trigger verification of another device
+    fn request_verification(dev_id: string) -> Future<Result<bool>>;
 }
 
 /// Deliver receipt event from rust to flutter
