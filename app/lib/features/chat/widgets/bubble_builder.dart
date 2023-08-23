@@ -109,7 +109,6 @@ class _ChatBubble extends ConsumerWidget {
     return Column(
       crossAxisAlignment:
           isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
       children: [
         _EmojiRow(message: message),
         const SizedBox(height: 4),
@@ -124,7 +123,7 @@ class _ChatBubble extends ConsumerWidget {
                       ? const BubbleEdges.symmetric(horizontal: 2)
                       : null,
                   radius: const Radius.circular(22),
-                  padding: message is types.ImageMessage
+                  padding: (message is types.ImageMessage && !hasRepliedMessage)
                       ? const BubbleEdges.all(0)
                       : null,
                   nip: (nextMessageInGroup || message is types.ImageMessage)
@@ -163,7 +162,7 @@ class _ChatBubble extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(height: 5),
-                          child,
+                          child
                         ],
                       )
                     : child,
@@ -417,10 +416,8 @@ class _EmojiRow extends ConsumerWidget {
           color: Theme.of(context).colorScheme.neutral2,
         ),
         child: EmojiRow(
-          onEmojiTap: (String value) async {
-            await chatRoomNotifier.sendEmojiReaction(message.id, value);
-            chatRoomNotifier.updateEmojiState(message);
-          },
+          onEmojiTap: (String value) =>
+              chatRoomNotifier.sendEmojiReaction(message.id, value),
         ),
       ),
     );

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
@@ -17,6 +19,7 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'package:mime/mime.dart';
 
 class CustomChatInput extends ConsumerWidget {
   const CustomChatInput({Key? key}) : super(key: key);
@@ -176,9 +179,17 @@ class CustomChatInput extends ConsumerWidget {
                         child: _TextInputWidget(),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: InkWell(
+                        onTap: () => handleAttachment(ref, context),
+                        child: const Icon(Atlas.paperclip_attachment),
+                      ),
+                    ),
                     if (chatInputState.sendBtnVisible)
-                      _BuildSendBtn(
-                        onButtonPressed: () => onSendButtonPressed(ref),
+                      InkWell(
+                        onTap: () => onSendButtonPressed(ref),
+                        child: const Icon(Atlas.paper_airplane),
                       ),
                   ],
                 ),
@@ -191,6 +202,48 @@ class CustomChatInput extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  void handleAttachment(WidgetRef ref, BuildContext ctx) async {
+    var chatRoomNotifier = ref.read(chatRoomProvider.notifier);
+    await chatRoomNotifier.handleFileSelection(ctx);
+    if (ctx.mounted) {
+      var selectionList = chatRoomNotifier.fileList;
+      String fileName = selectionList.first.path.split('/').last;
+      final mimeType = lookupMimeType(selectionList.first.path);
+      popUpDialog(
+        context: ctx,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Upload Files (${selectionList.length})',
+                style: Theme.of(ctx).textTheme.titleSmall,
+              ),
+            ),
+          ],
+        ),
+        subtitle: Visibility(
+          visible: selectionList.length <= 5,
+          child: _FileWidget(mimeType, selectionList.first),
+        ),
+        description: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(fileName, style: Theme.of(ctx).textTheme.bodySmall),
+        ),
+        btnText: 'Cancel',
+        btn2Text: 'Upload',
+        btn2Color: Theme.of(ctx).colorScheme.success,
+        btnBorderColor: Theme.of(ctx).colorScheme.errorContainer,
+        onPressedBtn: () => ctx.pop(),
+        onPressedBtn2: () async {
+          ctx.pop();
+          await chatRoomNotifier.handleFileUpload();
+        },
+      );
+    }
   }
 
   Widget replyBuilder(BuildContext context, WidgetRef ref, Widget? child) {
@@ -242,6 +295,8 @@ class CustomChatInput extends ConsumerWidget {
     );
   }
 
+}
+
   Future<void> onSendButtonPressed(WidgetRef ref) async {
     final inputNotifier = ref.read(chatInputProvider.notifier);
     final roomNotifier = ref.read(chatRoomProvider.notifier);
@@ -258,6 +313,52 @@ class CustomChatInput extends ConsumerWidget {
     await roomNotifier.handleSendPressed(markdownText, messageLength);
     markDownNotifier.update((state) => {});
     mentionState.controller!.clear();
+  }
+
+class _FileWidget extends ConsumerWidget {
+  const _FileWidget(this.mimeType, this.file);
+  final String? mimeType;
+  final File file;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (mimeType!.startsWith('image/')) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: Image.file(file, height: 200, fit: BoxFit.cover),
+      );
+    } else if (mimeType!.startsWith('audio/')) {
+      return Container(
+        height: 55,
+        width: 55,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child: const Center(child: Icon(Atlas.file_sound_thin)),
+      );
+    } else if (mimeType!.startsWith('video/')) {
+      return Container(
+        height: 55,
+        width: 55,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child: const Center(child: Icon(Atlas.file_video_thin)),
+      );
+    }
+    //FIXME: cover all mime extension cases?
+    else {
+      return Container(
+        height: 55,
+        width: 55,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child: const Center(child: Icon(Atlas.plus_file_thin)),
+      );
+    }
   }
 }
 
@@ -270,24 +371,6 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 }
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
-  Future<void> onSendButtonPressed(WidgetRef ref) async {
-    final inputNotifier = ref.read(chatInputProvider.notifier);
-    final mentionState = ref.read(mentionKeyProvider).currentState!;
-    final markDownProvider = ref.read(messageMarkDownProvider);
-    final markDownNotifier = ref.read(messageMarkDownProvider.notifier);
-    final roomNotifier = ref.read(chatRoomProvider.notifier);
-
-    inputNotifier.showSendBtn(false);
-    String markdownText = mentionState.controller!.text;
-    int messageLength = markdownText.length;
-    markDownProvider.forEach((key, value) {
-      markdownText = markdownText.replaceAll(key, value);
-    });
-    await roomNotifier.handleSendPressed(markdownText, messageLength);
-    markDownNotifier.update((state) => {});
-    mentionState.controller!.clear();
-  }
-
   @override
   Widget build(BuildContext context) {
     final mentionList = ref.watch(mentionListProvider);
@@ -318,6 +401,8 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           await chatRoomNotifier.typingNotice(false);
         }
       },
+      textInputAction: TextInputAction.send,
+      onSubmitted: (value) => onSendButtonPressed(ref),
       style: Theme.of(context).textTheme.bodySmall,
       cursorColor: Theme.of(context).colorScheme.tertiary,
       maxLines:
@@ -436,22 +521,6 @@ class _ReplyContentWidget extends StatelessWidget {
       );
     }
     return messageWidget ?? const SizedBox.shrink();
-  }
-}
-
-class _BuildSendBtn extends StatelessWidget {
-  final Function()? onButtonPressed;
-
-  const _BuildSendBtn({
-    required this.onButtonPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onButtonPressed,
-      child: const Icon(Atlas.paper_airplane),
-    );
   }
 }
 
