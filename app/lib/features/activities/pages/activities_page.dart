@@ -58,7 +58,9 @@ class ActivitiesPage extends ConsumerWidget {
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     ElevatedButton(
-                      onPressed: () => onReviewSessions(context),
+                      onPressed: () {
+                        context.pushNamed(Routes.settingSessions.name);
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.neutral,
                         shape: RoundedRectangleBorder(
@@ -173,9 +175,5 @@ class ActivitiesPage extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  void onReviewSessions(BuildContext context) {
-    context.pushNamed(Routes.settingSessions.name);
   }
 }
