@@ -33,13 +33,8 @@ class ActivitiesPage extends ConsumerWidget {
       data: (sessions) {
         if (sessions.length == 1) {
           children.add(
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext ctx, int index) {
-                  return SessionCard(deviceRecord: sessions[index]);
-                },
-                childCount: sessions.length,
-              ),
+            SliverToBoxAdapter(
+              child: SessionCard(deviceRecord: sessions[0]),
             ),
           );
         } else if (sessions.length > 1) {
