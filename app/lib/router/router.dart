@@ -409,8 +409,8 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
         GoRoute(
-          name: Routes.sessions.name,
-          path: Routes.sessions.route,
+          name: Routes.settingSessions.name,
+          path: Routes.settingSessions.route,
           redirect: authGuardRedirect,
           pageBuilder: (context, state) {
             return NoTransitionPage(

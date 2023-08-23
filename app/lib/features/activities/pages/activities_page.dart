@@ -176,6 +176,6 @@ class ActivitiesPage extends ConsumerWidget {
   }
 
   void onReviewSessions(BuildContext context) {
-    context.pushNamed(Routes.sessions.name);
+    context.pushNamed(Routes.settingSessions.name);
   }
 }
