@@ -1035,7 +1035,6 @@ impl VerificationController {
                     AnyToDeviceEvent::Dummy(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1051,7 +1050,6 @@ impl VerificationController {
                     AnyToDeviceEvent::ForwardedRoomKey(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1074,7 +1072,6 @@ impl VerificationController {
                     AnyToDeviceEvent::KeyVerificationAccept(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1102,7 +1099,6 @@ impl VerificationController {
                     AnyToDeviceEvent::KeyVerificationCancel(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1120,7 +1116,6 @@ impl VerificationController {
                     AnyToDeviceEvent::KeyVerificationDone(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1136,7 +1131,6 @@ impl VerificationController {
                     AnyToDeviceEvent::KeyVerificationKey(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1153,7 +1147,6 @@ impl VerificationController {
                     AnyToDeviceEvent::KeyVerificationMac(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1172,7 +1165,6 @@ impl VerificationController {
                     AnyToDeviceEvent::KeyVerificationReady(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1191,7 +1183,6 @@ impl VerificationController {
                     AnyToDeviceEvent::KeyVerificationRequest(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1211,7 +1202,6 @@ impl VerificationController {
                     AnyToDeviceEvent::KeyVerificationStart(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1261,7 +1251,6 @@ impl VerificationController {
                     AnyToDeviceEvent::RoomEncrypted(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1290,7 +1279,6 @@ impl VerificationController {
                     AnyToDeviceEvent::RoomKeyRequest(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1314,7 +1302,6 @@ impl VerificationController {
                     AnyToDeviceEvent::SecretRequest(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1341,7 +1328,6 @@ impl VerificationController {
                     AnyToDeviceEvent::SecretSend(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
                             c,
                             me.clone(),
@@ -1359,7 +1345,6 @@ impl VerificationController {
                     AnyToDeviceEvent::_Custom(evt) => {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        warn!("{} got {}", device_id, event_type);
                         let msg = VerificationEvent::new(
                             c,
                             me.clone(),
