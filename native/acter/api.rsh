@@ -1641,6 +1641,9 @@ object Client {
     /// Get the verification event receiver
     fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
 
+    /// Get session manager that returns all/verified/unverified/inactive session list
+    fn session_manager() -> SessionManager;
+
     /// Return the event handler of device changed
     fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
 
@@ -1834,6 +1837,17 @@ object VerificationEmoji {
     fn description() -> string;
 }
 
+object SessionManager {
+    fn all_sessions() -> Future<Result<Vec<DeviceRecord>>>;
+
+    /// Force to logout another devices
+    /// Authentication is required to do so
+    fn delete_devices(dev_ids: Vec<string>, username: string, password: string) -> Future<Result<bool>>;
+
+    /// Trigger verification of another device
+    fn request_verification(dev_id: string) -> Future<Result<bool>>;
+}
+
 /// Deliver receipt event from rust to flutter
 object ReceiptEvent {
     /// Get transaction id or flow id
@@ -1881,15 +1895,6 @@ object DeviceLeftEvent {
 
 /// Provide various device infos
 object DeviceRecord {
-    /// whether this device was verified
-    fn verified() -> bool;
-
-    /// whether this device was deleted
-    fn deleted() -> bool;
-
-    /// get the id of this device user
-    fn user_id() -> UserId;
-
     /// get the id of this device
     fn device_id() -> DeviceId;
 
@@ -1901,6 +1906,12 @@ object DeviceRecord {
 
     /// last seen timestamp of this device in milliseconds
     fn last_seen_ts() -> Option<u64>;
+
+    /// whether it was verified
+    fn is_verified() -> bool;
+
+    /// whether it is active
+    fn is_active() -> bool;
 }
 
 /// Deliver typing event from rust to flutter
