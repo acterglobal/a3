@@ -735,28 +735,38 @@ class CrossSigning {
       return;
     }
     _processMap[flowId]?.stage = 'm.key.verification.key';
-    event.getVerificationEmoji().then((emoji) {
-      showModalBottomSheet(
-        context: rootNavKey.currentContext!,
-        builder: (BuildContext context) => Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: _buildOnKey(context, event, flowId, emoji),
+    // event.getVerificationEmoji().then((emoji) {
+    //   showModalBottomSheet(
+    //     context: rootNavKey.currentContext!,
+    //     builder: (BuildContext context) => Container(
+    //       decoration: BoxDecoration(
+    //         borderRadius: BorderRadius.circular(15),
+    //       ),
+    //       child: _buildOnKey(context, event, flowId, emoji),
+    //     ),
+    //     isDismissible: false,
+    //   );
+    // });
+    showModalBottomSheet(
+      context: rootNavKey.currentContext!,
+      builder: (BuildContext context) => Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
         ),
-        isDismissible: false,
-      );
-    });
+        child: _buildOnKey(context, event, flowId, event.getEmojis()),
+      ),
+      isDismissible: false,
+    );
   }
 
   Widget _buildOnKey(
     BuildContext context,
     VerificationEvent event,
     String flowId,
-    FfiListVerificationEmoji emoji,
+    FfiListVerificationEmoji emojis,
   ) {
-    List<int> emojiCodes = emoji.map((e) => e.symbol()).toList();
-    List<String> emojiDescriptions = emoji.map((e) => e.description()).toList();
+    List<int> codes = emojis.map((e) => e.symbol()).toList();
+    List<String> descriptions = emojis.map((e) => e.description()).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
@@ -819,17 +829,17 @@ class CrossSigning {
                 padding: const EdgeInsets.only(top: 10),
                 child: GridView.count(
                   crossAxisCount: isDesktop ? 7 : 4,
-                  children: List.generate(emoji.length, (index) {
+                  children: List.generate(emojis.length, (index) {
                     return GridTile(
                       child: Column(
                         children: <Widget>[
                           Text(
-                            String.fromCharCode(emojiCodes[index]),
+                            String.fromCharCode(codes[index]),
                             style: const TextStyle(fontSize: 32),
                             textAlign: TextAlign.center,
                           ),
                           Text(
-                            emojiDescriptions[index],
+                            descriptions[index],
                             maxLines: 1,
                             textAlign: TextAlign.center,
                           ),

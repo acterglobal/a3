@@ -1786,11 +1786,11 @@ object VerificationEvent {
     /// Get user id of event sender
     fn sender() -> string;
 
-    /// An error code for why the process/request was cancelled by the user.
-    fn cancel_code() -> Option<string>;
+    /// Get content by field
+    fn get_content(key: string) -> Option<string>;
 
-    /// A description for why the process/request was cancelled by the user.
-    fn reason() -> Option<string>;
+    /// Get emoji array
+    fn get_emojis() -> Vec<VerificationEmoji>;
 
     /// Bob accepts the verification request from Alice
     fn accept_verification_request() -> Future<Result<bool>>;

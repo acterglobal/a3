@@ -18167,27 +18167,34 @@ class Api {
       _VerificationEventSenderReturn Function(
         int,
       )>();
-  late final _verificationEventCancelCodePtr = _lookup<
+  late final _verificationEventGetContentPtr = _lookup<
       ffi.NativeFunction<
-          _VerificationEventCancelCodeReturn Function(
+          _VerificationEventGetContentReturn Function(
             ffi.Int64,
-          )>>("__VerificationEvent_cancel_code");
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__VerificationEvent_get_content");
 
-  late final _verificationEventCancelCode =
-      _verificationEventCancelCodePtr.asFunction<
-          _VerificationEventCancelCodeReturn Function(
+  late final _verificationEventGetContent =
+      _verificationEventGetContentPtr.asFunction<
+          _VerificationEventGetContentReturn Function(
+            int,
+            int,
+            int,
             int,
           )>();
-  late final _verificationEventReasonPtr = _lookup<
+  late final _verificationEventGetEmojisPtr = _lookup<
       ffi.NativeFunction<
-          _VerificationEventReasonReturn Function(
+          ffi.Int64 Function(
             ffi.Int64,
-          )>>("__VerificationEvent_reason");
+          )>>("__VerificationEvent_get_emojis");
 
-  late final _verificationEventReason = _verificationEventReasonPtr.asFunction<
-      _VerificationEventReasonReturn Function(
-        int,
-      )>();
+  late final _verificationEventGetEmojis =
+      _verificationEventGetEmojisPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _verificationEventAcceptVerificationRequestPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -38876,71 +38883,70 @@ class VerificationEvent {
     return tmp2;
   }
 
-  /// An error code for why the process/request was cancelled by the user.
-  String? cancelCode() {
+  /// Get content by field
+  String? getContent(
+    String key,
+  ) {
+    final tmp1 = key;
     var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventCancelCode(
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._verificationEventGetContent(
       tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
       return null;
     }
-    if (tmp5 == 0) {
+    if (tmp9 == 0) {
       print("returning empty string");
       return "";
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
+    final ffi.Pointer<ffi.Uint8> tmp8_ptr = ffi.Pointer.fromAddress(tmp8);
+    List<int> tmp8_buf = [];
+    final tmp8_precast = tmp8_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp9; i++) {
+      int char = tmp8_precast.elementAt(i).value;
+      tmp8_buf.add(char);
     }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    final tmp6 = utf8.decode(tmp8_buf, allowMalformed: true);
+    if (tmp10 > 0) {
+      final ffi.Pointer<ffi.Void> tmp8_0;
+      tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      _api.__deallocate(tmp8_0, tmp10 * 1, 1);
     }
-    return tmp2;
+    return tmp6;
   }
 
-  /// A description for why the process/request was cancelled by the user.
-  String? reason() {
+  /// Get emoji array
+  FfiListVerificationEmoji getEmojis() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventReason(
+    final tmp1 = _api._verificationEventGetEmojis(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListVerificationEmoji");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListVerificationEmoji._(_api, tmp3_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -41888,18 +41894,7 @@ class _VerificationEventSenderReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _VerificationEventCancelCodeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _VerificationEventReasonReturn extends ffi.Struct {
+class _VerificationEventGetContentReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
