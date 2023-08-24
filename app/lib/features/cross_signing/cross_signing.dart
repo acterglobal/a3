@@ -735,18 +735,6 @@ class CrossSigning {
       return;
     }
     _processMap[flowId]?.stage = 'm.key.verification.key';
-    // event.getVerificationEmoji().then((emoji) {
-    //   showModalBottomSheet(
-    //     context: rootNavKey.currentContext!,
-    //     builder: (BuildContext context) => Container(
-    //       decoration: BoxDecoration(
-    //         borderRadius: BorderRadius.circular(15),
-    //       ),
-    //       child: _buildOnKey(context, event, flowId, emoji),
-    //     ),
-    //     isDismissible: false,
-    //   );
-    // });
     showModalBottomSheet(
       context: rootNavKey.currentContext!,
       builder: (BuildContext context) => Container(
