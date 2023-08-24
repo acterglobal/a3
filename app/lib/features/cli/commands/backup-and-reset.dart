@@ -1,5 +1,4 @@
 import 'package:args/command_runner.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter/features/cli/util.dart';
 
 import 'dart:io';
