@@ -10,6 +10,8 @@ use matrix_sdk::{
     },
     event_handler::{Ctx, EventHandlerHandle},
     ruma::{
+        api::client::uiaa::{AuthData, Password, UserIdentifier},
+        assign, device_id,
         events::{
             forwarded_room_key::ToDeviceForwardedRoomKeyEvent,
             key::verification::{
@@ -32,11 +34,14 @@ use matrix_sdk::{
     },
     Client as SdkClient,
 };
-use std::sync::Arc;
+use std::{
+    sync::Arc,
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
 use tokio::sync::Mutex;
-use tracing::{error, info};
+use tracing::{error, info, warn};
 
-use super::{client::Client, RUNTIME};
+use super::{client::Client, common::DeviceRecord, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct VerificationEvent {
@@ -1105,11 +1110,122 @@ impl VerificationController {
     }
 }
 
+pub struct SessionManager {
+    client: SdkClient,
+}
+
+impl SessionManager {
+    pub async fn all_sessions(&self) -> Result<Vec<DeviceRecord>> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let user_id = client.user_id().context("User not found")?;
+                let response = client.devices().await?;
+                let crypto_devices = client
+                    .encryption()
+                    .get_user_devices(user_id)
+                    .await
+                    .context("Couldn't get crypto devices")?;
+                let mut sessions = vec![];
+                for device in response.devices {
+                    let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
+                        d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing()
+                    });
+                    let mut is_active = false;
+                    if let Some(last_seen_ts) = device.last_seen_ts {
+                        let limit = SystemTime::now()
+                            .checked_sub(Duration::from_secs(90 * 24 * 60 * 60))
+                            .context("Couldn't get time of 90 days ago")?
+                            .duration_since(UNIX_EPOCH)
+                            .context("Couldn't calculate duration from Unix epoch")?;
+                        let secs: u64 = last_seen_ts.as_secs().into();
+                        if secs < limit.as_secs() {
+                            is_active = true;
+                        }
+                    }
+                    sessions.push(DeviceRecord::new(
+                        device.device_id.clone(),
+                        device.display_name.clone(),
+                        device.last_seen_ts,
+                        device.last_seen_ip.clone(),
+                        is_verified,
+                        is_active,
+                    ));
+                }
+                warn!("all sessions: {:?}", sessions);
+                Ok(sessions)
+            })
+            .await?
+    }
+
+    pub async fn delete_devices(
+        &self,
+        dev_ids: &mut Vec<String>,
+        username: String,
+        password: String,
+    ) -> Result<bool> {
+        let client = self.client.clone();
+        let devices = (*dev_ids)
+            .iter()
+            .map(|x| x.as_str().into())
+            .collect::<Vec<OwnedDeviceId>>();
+        RUNTIME
+            .spawn(async move {
+                if let Err(e) = client.delete_devices(&devices, None).await {
+                    if let Some(info) = e.as_uiaa_response() {
+                        let pass_data = assign!(Password::new(
+                            UserIdentifier::UserIdOrLocalpart(username),
+                            password,
+                        ), {
+                            session: info.session.clone(),
+                        });
+                        let auth_data = AuthData::Password(pass_data);
+                        client.delete_devices(&devices, Some(auth_data)).await?;
+                    } else {
+                        return Ok(false);
+                    }
+                }
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn request_verification(&self, dev_id: String) -> Result<bool> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let user_id = client.user_id().context("User not found")?;
+                if let Some(device) = client
+                    .encryption()
+                    .get_device(user_id, device_id!(dev_id.as_str()))
+                    .await
+                    .context("Couldn't get crypto device")?
+                {
+                    let is_verified = device.is_cross_signed_by_owner()
+                        || device.is_verified_with_cross_signing();
+                    if !is_verified {
+                        let request = device
+                            .request_verification()
+                            .await
+                            .context("Failed to request verification")?;
+                    }
+                }
+                Ok(true)
+            })
+            .await?
+    }
+}
+
 impl Client {
     pub fn verification_event_rx(&self) -> Option<Receiver<VerificationEvent>> {
         match self.verification_controller.event_rx.try_lock() {
             Ok(mut r) => r.take(),
             Err(e) => None,
         }
+    }
+
+    pub fn session_manager(&self) -> SessionManager {
+        let client = self.core.client().clone();
+        SessionManager { client }
     }
 }

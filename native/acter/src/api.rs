@@ -58,14 +58,14 @@ pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdate
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
-    duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, OptionBuffer, OptionString,
-    ReactionRecord, TextDesc, ThumbnailInfo, VideoDesc,
+    duration_from_secs, AudioDesc, DeviceRecord, FileDesc, ImageDesc, MediaSource, OptionBuffer,
+    OptionString, ReactionRecord, TextDesc, ThumbnailInfo, VideoDesc,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, CreateConvoSettings, CreateConvoSettingsBuilder,
 };
 pub use core::time::Duration as EfkDuration;
-pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
+pub use device::{DeviceChangedEvent, DeviceLeftEvent};
 pub use invitation::Invitation;
 pub use message::{RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
@@ -86,7 +86,7 @@ pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
 pub use typing::TypingEvent;
-pub use verification::{VerificationEmoji, VerificationEvent};
+pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
 
 pub type DeviceId = matrix_sdk::ruma::OwnedDeviceId;
 pub type EventId = matrix_sdk::ruma::OwnedEventId;

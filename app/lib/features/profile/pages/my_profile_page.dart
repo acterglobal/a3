@@ -154,9 +154,7 @@ class MyProfile extends ConsumerWidget {
                     onTap: () => logoutConfirmationDialog(context, ref),
                     child: Row(
                       children: [
-                        const Icon(
-                          Atlas.exit_thin,
-                        ),
+                        const Icon(Atlas.exit_thin),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5),
                           child: Text(

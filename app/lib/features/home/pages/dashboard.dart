@@ -43,7 +43,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
       if (!hasFirstSynced) {
         return;
       }
-      final spaces = await ref.read(spacesProvider.future);
+
+      final spaces = await ref.watch(spacesProvider.future);
       clearFirstSyncListener();
       if (spaces.isEmpty && context.mounted) {
         onBoardingDialog(
