@@ -49,12 +49,10 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
         roomId: roomId,
         showParent: widget.showParent,
         profile: profile,
-        onTap: () async {
+        onTap: () {
           ref
               .read(currentConvoProvider.notifier)
               .update((state) => widget.room);
-          ref.invalidate(chatRoomProvider);
-          ref.invalidate(messagesProvider);
           if (!isDesktop(context)) {
             context.pushNamed(
               Routes.chatroom.name,
@@ -63,9 +61,11 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
           }
         },
         subtitle: _SubtitleWidget(
+          room: widget.room,
           latestMessage: widget.room.latestMessage(),
         ),
         trailing: _TrailingWidget(
+          // controller: receiptController,
           room: widget.room,
           latestMessage: widget.room.latestMessage(),
           activeMembers: activeMembers,
@@ -84,12 +84,27 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
 
 class _SubtitleWidget extends ConsumerWidget {
   const _SubtitleWidget({
+    required this.room,
     required this.latestMessage,
   });
+  final Convo room;
   final RoomMessage? latestMessage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final typingEvent = ref.watch(typingProvider);
+    if (typingEvent.isNotEmpty) {
+      debugPrint('$typingEvent');
+      if (typingEvent['roomId'] == room.getRoomIdStr()) {
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            getUserPlural(typingEvent['typingUsers']),
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+        );
+      }
+    }
     if (latestMessage == null) {
       return const SizedBox.shrink();
     }
@@ -97,6 +112,8 @@ class _SubtitleWidget extends ConsumerWidget {
     if (eventItem == null) {
       return const SizedBox.shrink();
     }
+
+    String sender = eventItem.sender();
     String eventType = eventItem.eventType();
     // message event
     switch (eventType) {
@@ -128,9 +145,6 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'm.key.verification.mac':
       case 'm.key.verification.ready':
       case 'm.key.verification.start':
-      case 'm.room.sticker':
-      case 'm.room.member':
-        return _RoomMessageDescription(eventItem: eventItem);
       case 'm.room.message':
         String? subType = eventItem.subType();
         switch (subType) {
@@ -143,20 +157,215 @@ class _SubtitleWidget extends ConsumerWidget {
           case 'm.key.verification.request':
           case 'm.notice':
           case 'm.server_notice':
-          case 'm.sticker':
-          case 'm.reaction':
           case 'm.text':
-            return _RoomMessageDescription(eventItem: eventItem);
+            TextDesc? textDesc = eventItem.textDesc();
+            if (textDesc == null) {
+              return const SizedBox.shrink();
+            }
+            String body = textDesc.body();
+            String? formattedBody = textDesc.formattedBody();
+            if (formattedBody != null) {
+              body = simplifyBody(formattedBody);
+            }
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      '${simplifyUserId(sender)}: ',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall!
+                          .copyWith(fontWeight: FontWeight.w700),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                Flexible(
+                  child: Html(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    // ignore: unnecessary_string_interpolations
+                    data: '''$body''',
+                    maxLines: 1,
+                    defaultTextStyle: const TextStyle(
+                      overflow: TextOverflow.ellipsis,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    onLinkTap: (url) => {},
+                  ),
+                ),
+              ],
+            );
         }
+      case 'm.reaction':
+        TextDesc? textDesc = eventItem.textDesc();
+        if (textDesc == null) {
+          return const SizedBox();
+        }
+        String body = textDesc.body();
+        String? formattedBody = textDesc.formattedBody();
+        if (formattedBody != null) {
+          body = simplifyBody(formattedBody);
+        }
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  '${simplifyUserId(sender)}: ',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            Flexible(
+              child: Html(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                // ignore: unnecessary_string_interpolations
+                data: '''$body''',
+                maxLines: 1,
+                defaultTextStyle: const TextStyle(
+                  overflow: TextOverflow.ellipsis,
+                  fontSize: 14,
+                ),
+                onLinkTap: (url) => {},
+              ),
+            ),
+          ],
+        );
+      case 'm.sticker':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  '${simplifyUserId(sender)}: ',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            Flexible(
+              child: Text(
+                eventItem.textDesc()!.body(),
+                style: Theme.of(context).textTheme.bodySmall,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
       case 'm.room.redaction':
-        return _RoomMessageDescription(
-          eventItem: eventItem,
-          optionalText: 'Message deleted',
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  '${simplifyUserId(sender)}: ',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            Flexible(
+              child: Text(
+                'This message has been deleted',
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: Theme.of(context).colorScheme.neutral5,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w700,
+                    ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         );
       case 'm.room.encrypted':
-        return _RoomMessageDescription(
-          eventItem: eventItem,
-          optionalText: 'Failed to decrypt message. Re-request session keys',
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  '${simplifyUserId(sender)}: ',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            Flexible(
+              child: Text(
+                'Failed to decrypt message. Re-request session keys',
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: Theme.of(context).colorScheme.neutral5,
+                      fontStyle: FontStyle.italic,
+                    ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.member':
+        TextDesc? textDesc = eventItem.textDesc();
+        if (textDesc == null) {
+          return const SizedBox();
+        }
+        String body = textDesc.body();
+        String? formattedBody = textDesc.formattedBody();
+        if (formattedBody != null) {
+          body = simplifyBody(formattedBody);
+        }
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  '${simplifyUserId(sender)}: ',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            Flexible(
+              child: Html(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                // ignore: unnecessary_string_interpolations
+                data: '''$body''',
+                maxLines: 1,
+                defaultTextStyle: const TextStyle(
+                  overflow: TextOverflow.ellipsis,
+                  fontSize: 14,
+                ),
+                onLinkTap: (url) => {},
+              ),
+            ),
+          ],
         );
     }
     return const SizedBox.shrink();
@@ -172,68 +381,6 @@ class _SubtitleWidget extends ConsumerWidget {
     } else {
       return '${authors[0].firstName} and ${authors.length - 1} others typing...';
     }
-  }
-}
-
-class _RoomMessageDescription extends StatelessWidget {
-  final RoomEventItem? eventItem;
-  final String? optionalText;
-  const _RoomMessageDescription({this.eventItem, this.optionalText});
-
-  @override
-  Widget build(BuildContext context) {
-    TextDesc? textDesc = eventItem!.textDesc();
-    if (textDesc == null) {
-      return const SizedBox.shrink();
-    }
-    String sender = eventItem!.sender();
-    String body = textDesc.body();
-    String? formattedBody = textDesc.formattedBody();
-    if (formattedBody != null) {
-      body = simplifyBody(formattedBody);
-    }
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Text(
-              '${simplifyUserId(sender)}: ',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(fontWeight: FontWeight.w700),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ),
-        optionalText != null
-            ? Flexible(
-                child: Text(
-                  optionalText ?? '',
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                        color: Theme.of(context).colorScheme.neutral5,
-                        fontStyle: FontStyle.italic,
-                      ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              )
-            : Flexible(
-                child: Html(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  data: body,
-                  maxLines: 1,
-                  defaultTextStyle: const TextStyle(
-                    overflow: TextOverflow.ellipsis,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  onLinkTap: (url) => {},
-                ),
-              ),
-      ],
-    );
   }
 }
 
@@ -261,7 +408,7 @@ class _TrailingWidget extends ConsumerWidget {
     }
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           jiffyTime(latestMessage!.eventItem()!.originServerTs()),

@@ -98,7 +98,8 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final client = ref.watch(clientProvider);
-    final chatRoomState = ref.watch(chatRoomProvider);
+    var chatRoomState = ref.watch(chatRoomProvider);
+    var messages = ref.watch(messagesProvider);
     final roomNotifier = ref.watch(chatRoomProvider.notifier);
     final convo = ref.watch(currentConvoProvider);
     final convoProfile = ref.watch(chatProfileDataProvider(convo!));
@@ -109,6 +110,12 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
       }
     });
 
+    ref.listen(currentConvoProvider, ((previous, next) {
+      if (previous != next) {
+        chatRoomState = ref.refresh(chatRoomProvider);
+        messages = ref.refresh(messagesProvider);
+      }
+    }));
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.neutral,
@@ -224,7 +231,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               sendButtonAccessibilityLabel: '',
             ),
             timeFormat: DateFormat.jm(),
-            messages: ref.watch(messagesProvider),
+            messages: messages,
             onSendPressed: (types.PartialText partialText) {},
             user: types.User(id: client!.userId().toString()),
             // disable image preview

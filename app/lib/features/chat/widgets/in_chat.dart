@@ -19,27 +19,35 @@ class _InChatConsumerState extends ConsumerState<InChat>
     super.build(context);
     final showFullView = ref.watch(showFullSplitView);
     final convo = ref.watch(currentConvoProvider);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Flexible(
-          flex: 1,
-          child: widget.child,
-        ),
-        Flexible(
-          flex: 2,
-          child: convo != null
-              ? const RoomPage()
-              : const SizedBox(
-                  child: Center(
-                    child: Text('Tap on any room to see full preview'),
-                  ),
-                ),
-        ),
-        showFullView
-            ? const Flexible(flex: 1, child: const RoomProfilePage())
-            : const SizedBox.shrink()
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Flexible(
+              flex: 1,
+              child: widget.child,
+            ),
+            Flexible(
+              flex: 2,
+              child: convo != null
+                  ? const RoomPage()
+                  : const SizedBox(
+                      child: Center(
+                        child: Text('Tap on any room to see full preview'),
+                      ),
+                    ),
+            ),
+            showFullView && constraints.maxWidth > 400
+                ? ConstrainedBox(
+                    constraints:
+                        BoxConstraints.tight(const Size(400, double.infinity)),
+                    child: const RoomProfilePage(),
+                  )
+                : const SizedBox.shrink()
+          ],
+        );
+      },
     );
   }
 
