@@ -282,9 +282,9 @@ impl VerificationEvent {
             .device_id()
             .context("guest user cannot get device id")?;
         if let Some(other_device_id) = self.content.get("other_device_id") {
-            Ok(other_device_id.to_owned() == device_id.to_string())
+            Ok(*other_device_id == *device_id)
         } else if let Some(from_device) = self.content.get("from_device") {
-            Ok(from_device.to_owned() == device_id.to_string())
+            Ok(*from_device == *device_id)
         } else {
             Ok(false)
         }
