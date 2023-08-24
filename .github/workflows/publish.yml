@@ -226,7 +226,7 @@ jobs:
           echo "copying over"
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $IOS_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/Acter_iOS_App_Release.mobileprovision
-          cp $MAC_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/Acter_MacApp_Release.mobileprovision
+          cp $MAC_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/Acter_MacApp_Release.provisionprofile
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/Acter_App_Release.mobileprovision
           ls ~/Library/MobileDevice/Provisioning\ Profiles/
 
