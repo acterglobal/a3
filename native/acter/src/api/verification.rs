@@ -372,59 +372,6 @@ impl VerificationEvent {
             .await?
     }
 
-    pub async fn get_verification_emoji(&self) -> Result<Vec<VerificationEmoji>> {
-        let client = self.client.clone();
-        let sender = self.sender.clone();
-        let event_id = self.event_id.clone();
-        let txn_id = self.txn_id.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(event_id) = event_id {
-                    if let Some(Verification::SasV1(sas)) = client
-                        .encryption()
-                        .get_verification(&sender, event_id.as_str())
-                        .await
-                    {
-                        if let Some(items) = sas.emoji() {
-                            let sequence = items
-                                .iter()
-                                .map(|e| VerificationEmoji {
-                                    symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
-                                    description: e.description.to_string(),
-                                })
-                                .collect::<Vec<VerificationEmoji>>();
-                            return Ok(sequence);
-                        } else {
-                            return Ok(vec![]);
-                        }
-                    }
-                } else if let Some(txn_id) = txn_id {
-                    if let Some(Verification::SasV1(sas)) = client
-                        .encryption()
-                        .get_verification(&sender, txn_id.as_str())
-                        .await
-                    {
-                        if let Some(items) = sas.emoji() {
-                            let sequence = items
-                                .iter()
-                                .map(|e| VerificationEmoji {
-                                    symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
-                                    description: e.description.to_string(),
-                                })
-                                .collect::<Vec<VerificationEmoji>>();
-                            return Ok(sequence);
-                        } else {
-                            return Ok(vec![]);
-                        }
-                    }
-                }
-                // request may be timed out
-                info!("Could not get verification object");
-                Ok(vec![])
-            })
-            .await?
-    }
-
     pub async fn confirm_sas_verification(&self) -> Result<bool> {
         let client = self.client.clone();
         let sender = self.sender.clone();

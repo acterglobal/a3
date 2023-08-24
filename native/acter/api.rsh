@@ -1816,9 +1816,6 @@ object VerificationEvent {
     /// Alice sends the verification key to Bob and vice versa
     fn send_verification_key() -> Future<Result<bool>>;
 
-    /// Alice gets the verification emoji from Bob and vice versa
-    fn get_verification_emoji() -> Future<Result<Vec<VerificationEmoji>>>;
-
     /// Alice says to Bob that SAS verification matches and vice versa
     fn confirm_sas_verification() -> Future<Result<bool>>;
 
