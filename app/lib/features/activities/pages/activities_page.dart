@@ -1,4 +1,6 @@
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
@@ -7,10 +9,13 @@ import 'package:acter/features/activities/providers/session_providers.dart';
 import 'package:acter/features/activities/providers/notifiers/notifications_list_notifier.dart';
 import 'package:acter/features/activities/widgets/invitation_card.dart';
 import 'package:acter/features/activities/widgets/notification_card.dart';
+import 'package:acter/features/activities/widgets/session_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 

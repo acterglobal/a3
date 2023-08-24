@@ -110,12 +110,15 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
       }
     });
 
-    ref.listen(currentConvoProvider, ((previous, next) {
-      if (previous != next) {
-        chatRoomState = ref.refresh(chatRoomProvider);
-        messages = ref.refresh(messagesProvider);
-      }
-    }));
+    ref.listen(
+      currentConvoProvider,
+      ((previous, next) {
+        if (previous != next) {
+          chatRoomState = ref.refresh(chatRoomProvider);
+          messages = ref.refresh(messagesProvider);
+        }
+      }),
+    );
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.neutral,
