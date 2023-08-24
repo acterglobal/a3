@@ -871,7 +871,7 @@ class CrossSigning {
       children: [
         Container(
           padding: const EdgeInsets.only(left: 20),
-          width: MediaQuery.of(context).size.width * 0.48,
+          width: MediaQuery.of(context).size.width * 0.18,
           child: elevatedButton(
             AppLocalizations.of(context)!.verificationSasDoNotMatch,
             Theme.of(context).colorScheme.success,
@@ -888,7 +888,7 @@ class CrossSigning {
         const Spacer(flex: 1),
         Container(
           padding: const EdgeInsets.only(right: 20),
-          width: MediaQuery.of(context).size.width * 0.48,
+          width: MediaQuery.of(context).size.width * 0.18,
           child: elevatedButton(
             AppLocalizations.of(context)!.verificationSasMatch,
             Theme.of(context).colorScheme.success,
