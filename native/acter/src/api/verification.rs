@@ -107,7 +107,7 @@ impl VerificationEvent {
     }
 
     pub fn get_content(&self, key: String) -> Option<String> {
-        self.content.get(&key).map(|x| x.clone())
+        self.content.get(&key).cloned()
     }
 
     pub(crate) fn set_emojis(&mut self, emojis: Vec<VerificationEmoji>) {
@@ -282,9 +282,9 @@ impl VerificationEvent {
             .device_id()
             .context("guest user cannot get device id")?;
         if let Some(other_device_id) = self.content.get("other_device_id") {
-            Ok(*other_device_id == device_id.to_string())
+            Ok(other_device_id.to_owned() == device_id.to_string())
         } else if let Some(from_device) = self.content.get("from_device") {
-            Ok(*from_device == device_id.to_string())
+            Ok(from_device.to_owned() == device_id.to_string())
         } else {
             Ok(false)
         }
