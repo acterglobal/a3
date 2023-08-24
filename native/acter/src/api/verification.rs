@@ -765,7 +765,10 @@ async fn sas_verification_handler(
                         .collect::<Vec<VerificationEmoji>>();
                     msg.set_emojis(sequence);
                 }
-                msg.set_content("decimals".to_string(), serde_json::to_string(&decimals).unwrap());
+                msg.set_content(
+                    "decimals".to_string(),
+                    serde_json::to_string(&decimals).unwrap(),
+                );
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
                         error!("Dropping event for {}: {}", event_id, e);
@@ -854,7 +857,10 @@ async fn sas_verification_handler(
                     .iter()
                     .map(|x| x.to_string())
                     .collect::<Vec<String>>();
-                msg.set_content("key_agreement_protocols".to_string(), key_agreement_protocols.join(","));
+                msg.set_content(
+                    "key_agreement_protocols".to_string(),
+                    key_agreement_protocols.join(","),
+                );
                 let hashes = protocols
                     .hashes
                     .iter()
@@ -866,13 +872,19 @@ async fn sas_verification_handler(
                     .iter()
                     .map(|x| x.to_string())
                     .collect::<Vec<String>>();
-                msg.set_content("message_authentication_codes".to_string(), message_authentication_codes.join(","));
+                msg.set_content(
+                    "message_authentication_codes".to_string(),
+                    message_authentication_codes.join(","),
+                );
                 let short_authentication_string = protocols
                     .short_authentication_string
                     .iter()
                     .map(|x| x.to_string())
                     .collect::<Vec<String>>();
-                msg.set_content("short_authentication_string".to_string(), short_authentication_string.join(","));
+                msg.set_content(
+                    "short_authentication_string".to_string(),
+                    short_authentication_string.join(","),
+                );
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
                         error!("Dropping event for {}: {}", event_id, e);
@@ -894,7 +906,10 @@ async fn sas_verification_handler(
                     txn_id.clone(),
                     sender.clone(),
                 );
-                msg.set_content("key_agreement_protocol".to_string(), accepted_protocols.key_agreement_protocol.to_string());
+                msg.set_content(
+                    "key_agreement_protocol".to_string(),
+                    accepted_protocols.key_agreement_protocol.to_string(),
+                );
                 msg.set_content("hash".to_string(), accepted_protocols.hash.to_string());
                 let short_auth_string = accepted_protocols
                     .short_auth_string
