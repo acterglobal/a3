@@ -43,21 +43,25 @@ class PinPage extends ConsumerWidget {
             data: (pin) {
               final isLink = pin.isLink();
               final spaceId = pin.roomIdStr();
-              final Widget content;
+              final List<Widget> content = [];
               if (isLink) {
-                content = OutlinedButton.icon(
-                  icon: const Icon(Atlas.link_chain_thin),
-                  label: Text(pin.url() ?? ''),
-                  onPressed: () async {
-                    final target = pin.url()!;
-                    await openLink(target, context);
-                  },
+                content.add(
+                  OutlinedButton.icon(
+                    icon: const Icon(Atlas.link_chain_thin),
+                    label: Text(pin.url() ?? ''),
+                    onPressed: () async {
+                      final target = pin.url()!;
+                      await openLink(target, context);
+                    },
+                  ),
                 );
+              }
+              if (pin.hasFormattedText()) {
+                content.add(RenderHtml(text: pin.contentFormatted() ?? ''));
               } else {
-                if (pin.hasFormattedText()) {
-                  content = RenderHtml(text: pin.contentFormatted() ?? '');
-                } else {
-                  content = Text(pin.contentText() ?? '');
+                final text = pin.contentText();
+                if (text != null) {
+                  content.add(Text(text));
                 }
               }
 
@@ -79,11 +83,17 @@ class PinPage extends ConsumerWidget {
                                 : Atlas.document_thin,
                           ),
                           title: Text(pin.title()),
-                          subtitle: SpaceChip(spaceId: spaceId),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Wrap(
+                              alignment: WrapAlignment.start,
+                              children: [SpaceChip(spaceId: spaceId)],
+                            ),
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8),
-                          child: content,
+                          child: Column(children: content),
                         ),
                       ],
                     ),
