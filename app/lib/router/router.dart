@@ -387,6 +387,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           builder: (context, state) => const GalleryPage(),
         ),
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.myProfile.name,
           path: Routes.myProfile.route,
           redirect: authGuardRedirect,
@@ -398,6 +399,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.activities.name,
           path: Routes.activities.route,
           redirect: authGuardRedirect,
@@ -409,6 +411,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.settingSessions.name,
           path: Routes.settingSessions.route,
           redirect: authGuardRedirect,
@@ -421,6 +424,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.tasks.name,
           path: Routes.tasks.route,
           redirect: authGuardRedirect,
@@ -432,6 +436,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.pins.name,
           path: Routes.pins.route,
           redirect: authGuardRedirect,
@@ -444,6 +449,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.pin.name,
           path: Routes.pin.route,
           redirect: authGuardRedirect,
@@ -456,6 +462,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.calendarEvent.name,
           path: Routes.calendarEvent.route,
           redirect: authGuardRedirect,
@@ -470,6 +477,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.updates.name,
           path: Routes.updates.route,
           redirect: authGuardRedirect,
