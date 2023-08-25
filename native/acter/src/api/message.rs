@@ -1770,25 +1770,25 @@ impl RoomMessage {
                     ),
                     (None, Some(avatar), (None, _)) => (
                         Some("ProfileChanged".to_string()),
-                        format!("Updated avatar"),
+                        "Updated avatar".to_string(),
                     ),
                     (None, Some(avatar), (Some(_), _)) => (
                         Some("ProfileChanged".to_string()),
-                        format!("Removed name, updated avatar"),
+                        "Removed name, updated avatar".to_string(),
                     ),
                     (None, None, (Some(_), Some(_))) => (
                         Some("ProfileChanged".to_string()),
-                        format!("Removed name and avatar"),
+                        "Removed name and avatar".to_string(),
                     ),
                     (None, None, (Some(_), None)) => {
-                        (Some("ProfileChanged".to_string()), format!("Removed name"))
+                        (Some("ProfileChanged".to_string()), "Removed name".to_string())
                     }
                     (None, None, (None, Some(_))) => (
                         Some("ProfileChanged".to_string()),
-                        format!("Removed avatar"),
+                        "Removed avatar".to_string(),
                     ),
                     (None, None, (None, None)) => {
-                        (Some("ProfileChanged".to_string()), format!("Removed name"))
+                        (Some("ProfileChanged".to_string()), "Removed name".to_string())
                     }
                 }
             }
@@ -1861,25 +1861,25 @@ impl RoomMessage {
                     ),
                     (None, Some(avatar), (None, _)) => (
                         Some("ProfileChanged".to_string()),
-                        format!("Updated avatar"),
+                        "Updated avatar".to_string(),
                     ),
                     (None, Some(avatar), (Some(_), _)) => (
                         Some("ProfileChanged".to_string()),
-                        format!("Removed name, updated avatar"),
+                        "Removed name, updated avatar".to_string(),
                     ),
                     (None, None, (Some(_), Some(_))) => (
                         Some("ProfileChanged".to_string()),
-                        format!("Removed name and avatar"),
+                        "Removed name and avatar".to_string(),
                     ),
                     (None, None, (Some(_), None)) => {
-                        (Some("ProfileChanged".to_string()), format!("Removed name"))
+                        (Some("ProfileChanged".to_string()), "Removed name".to_string())
                     }
                     (None, None, (None, Some(_))) => (
                         Some("ProfileChanged".to_string()),
-                        format!("Removed avatar"),
+                        "Removed avatar".to_string(),
                     ),
                     (None, None, (None, None)) => {
-                        (Some("ProfileChanged".to_string()), format!("Removed name"))
+                        (Some("ProfileChanged".to_string()), "Removed name".to_string())
                     }
                 }
             }
@@ -3059,10 +3059,10 @@ impl RoomMessage {
                                 TextDesc::new(format!("changed name {old} -> {new}",), None)
                             }
                             (None, Some(new)) => TextDesc::new(format!("set name to {new}",), None),
-                            (Some(_old), None) => TextDesc::new(format!("removed name",), None),
+                            (Some(_old), None) => TextDesc::new("removed name".to_string(), None),
                             (None, None) => {
                                 //  why would that ever happen?
-                                TextDesc::new(format!("kept name unset",), None)
+                                TextDesc::new("kept name unset".to_string(), None)
                             }
                         });
                 let image_desc = p.avatar_url_change().and_then(|change| {
