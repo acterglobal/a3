@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/activities/util.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
@@ -141,7 +142,9 @@ class NotificationCard extends ConsumerWidget {
             // nothing for now.
           }
         },
-        title: Text(brief.title),
+        title: brief.hasFormatted
+            ? RenderHtml(text: brief.title)
+            : Text(brief.title),
         subtitle: room,
       ),
     );

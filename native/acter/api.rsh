@@ -491,6 +491,9 @@ object TextDesc {
 
     /// formatted text
     fn formatted_body() -> Option<string>;
+
+    /// whether this has a formatted version
+    fn has_formatted() -> bool;
 }
 
 object ImageDesc {
