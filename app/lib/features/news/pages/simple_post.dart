@@ -5,6 +5,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
@@ -63,35 +64,36 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Consumer(builder: imageBuilder),
               ),
-              Expanded(
-                child: TextFormField(
-                  textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(
-                    hintText: imageNotifier.state == null
-                        ? 'The update you want to share'
-                        : 'Text caption',
-                    labelText: imageNotifier.state == null
-                        ? 'Text Update'
-                        : 'Image Caption',
-                  ),
-                  expands: true,
-                  minLines: null,
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  validator: (value) {
-                    if (value != null && value.isNotEmpty) {
-                      return null;
-                    }
-                    if (imageNotifier.state != null) {
-                      return null;
-                    }
-                    return 'Please enter a text or add an image';
-                  },
-                  onChanged: (String? value) {
-                    captionNotifier.state = value ?? '';
-                  },
-                ),
-              ),
+              imageNotifier.state == null
+                  ? MdEditorWithPreview(
+                      hintText: 'Text Update',
+                      labelText: 'Text Update',
+                      validator: (value) {
+                        if (value != null && value.isNotEmpty) {
+                          return null;
+                        }
+                        if (imageNotifier.state != null) {
+                          return null;
+                        }
+                        return 'Please enter a text or add an image';
+                      },
+                      onChanged: (String? value) {
+                        captionNotifier.state = value ?? '';
+                      },
+                    )
+                  : Expanded(
+                      child: TextFormField(
+                        textAlignVertical: TextAlignVertical.top,
+                        decoration: const InputDecoration(
+                          hintText: 'Text caption',
+                          labelText: 'Image Caption',
+                        ),
+                        expands: true,
+                        minLines: null,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                      ),
+                    ),
               const SelectSpaceFormField(canCheck: 'CanPostNews')
             ],
           ),

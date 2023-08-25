@@ -13,11 +13,15 @@ final markdownProvider =
 class MdEditorWithPreview extends ConsumerStatefulWidget {
   final ValueChanged<String>? onChanged;
   final FormFieldValidator<String>? validator;
+  final String hintText;
+  final String labelText;
 
   const MdEditorWithPreview({
     Key? key,
     this.onChanged,
     this.validator,
+    this.hintText = 'Description',
+    this.labelText = 'Description',
   }) : super(key: key);
 
   @override
@@ -66,8 +70,8 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
                   )
                 : TextFormField(
                     decoration: InputDecoration(
-                      hintText: 'The description',
-                      labelText: 'Description',
+                      hintText: widget.hintText,
+                      labelText: widget.labelText,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5),
                       ),
