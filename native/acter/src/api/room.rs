@@ -1,5 +1,6 @@
 use acter_core::{
     events::{
+        calendar::CalendarEventEventContent,
         news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
         pins::PinEventContent,
     },
@@ -75,6 +76,7 @@ pub enum MemberPermission {
     // Acter Specific actions
     CanPostNews,
     CanPostPin,
+    CanPostEvent,
     // moderation tools
     CanBan,
     CanInvite,
@@ -174,6 +176,9 @@ impl Member {
             )),
             MemberPermission::CanPostPin => PermissionTest::Message(MessageLikeEventType::from(
                 <PinEventContent as StaticEventContent>::TYPE,
+            )),
+            MemberPermission::CanPostEvent => PermissionTest::Message(MessageLikeEventType::from(
+                <CalendarEventEventContent as StaticEventContent>::TYPE,
             )),
             MemberPermission::CanUpgradeToActerSpace => {
                 StateEventType::from(PURPOSE_FIELD_DEV).into()

@@ -39941,6 +39941,7 @@ enum MemberPermissionTag {
   CanSendSticker,
   CanPostNews,
   CanPostPin,
+  CanPostEvent,
   CanBan,
   CanKick,
   CanInvite,
@@ -39986,50 +39987,54 @@ class MemberPermission {
 
         break;
       case 5:
-        this._tag = MemberPermissionTag.CanBan;
+        this._tag = MemberPermissionTag.CanPostEvent;
 
         break;
       case 6:
-        this._tag = MemberPermissionTag.CanKick;
+        this._tag = MemberPermissionTag.CanBan;
 
         break;
       case 7:
-        this._tag = MemberPermissionTag.CanInvite;
+        this._tag = MemberPermissionTag.CanKick;
 
         break;
       case 8:
-        this._tag = MemberPermissionTag.CanRedact;
+        this._tag = MemberPermissionTag.CanInvite;
 
         break;
       case 9:
-        this._tag = MemberPermissionTag.CanTriggerRoomNotification;
+        this._tag = MemberPermissionTag.CanRedact;
 
         break;
       case 10:
-        this._tag = MemberPermissionTag.CanUpgradeToActerSpace;
+        this._tag = MemberPermissionTag.CanTriggerRoomNotification;
 
         break;
       case 11:
-        this._tag = MemberPermissionTag.CanSetName;
+        this._tag = MemberPermissionTag.CanUpgradeToActerSpace;
 
         break;
       case 12:
-        this._tag = MemberPermissionTag.CanUpdateAvatar;
+        this._tag = MemberPermissionTag.CanSetName;
 
         break;
       case 13:
-        this._tag = MemberPermissionTag.CanSetTopic;
+        this._tag = MemberPermissionTag.CanUpdateAvatar;
 
         break;
       case 14:
-        this._tag = MemberPermissionTag.CanLinkSpaces;
+        this._tag = MemberPermissionTag.CanSetTopic;
 
         break;
       case 15:
-        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
+        this._tag = MemberPermissionTag.CanLinkSpaces;
 
         break;
       case 16:
+        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
+
+        break;
+      case 17:
         this._tag = MemberPermissionTag.CanSetParentSpace;
 
         break;

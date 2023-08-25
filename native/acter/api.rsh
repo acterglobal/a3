@@ -1392,6 +1392,7 @@ enum MemberPermission {
     CanSendSticker,
     CanPostNews,
     CanPostPin,
+    CanPostEvent,
     CanBan,
     CanKick,
     CanInvite,
