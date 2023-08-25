@@ -511,7 +511,7 @@ jobs:
           mkdir private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
           xcrun altool --validate-app --type macos --file build/macos/Build/Products/Release/Acter.app \
-              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
+              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
           xcrun altool --upload-app --type macos --file build/macos/Build/Products/Release/Acter.app \
-              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
+              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
         shell: bash
