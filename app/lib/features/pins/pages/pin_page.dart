@@ -1,14 +1,16 @@
 import 'dart:core';
 
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class PinPage extends ConsumerWidget {
   final String pinId;
@@ -27,17 +29,21 @@ class PinPage extends ConsumerWidget {
           PageHeaderWidget(
             title: pin.hasValue ? pin.value!.title() : 'Loading pin',
             sectionColor: Colors.blue.shade200,
-            actions: [
-              IconButton(
-                icon: const Icon(Atlas.pencil_edit_thin),
-                onPressed: () {
-                  customMsgSnackbar(
-                    context,
-                    'Pin edit not yet implemented',
-                  );
-                },
-              ),
-            ],
+            actions: pin.hasValue
+                ? [
+                    HasSpacePermission(
+                      spaceId: pin.value!.roomIdStr(),
+                      permission: 'CanPostPin',
+                      child: IconButton(
+                        icon: const Icon(Atlas.pencil_edit_thin),
+                        onPressed: () => context.pushNamed(
+                          Routes.editPin.name,
+                          pathParameters: {'pinId': pin.value!.eventIdStr()},
+                        ),
+                      ),
+                    ),
+                  ]
+                : [],
           ),
           pin.when(
             data: (pin) {

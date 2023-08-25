@@ -16,6 +16,7 @@ import 'package:acter/features/events/pages/event_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/features/pins/dialogs/edit_pin_sheet.dart';
 import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/news/pages/simple_post.dart';
@@ -187,6 +188,29 @@ List<RouteBase> makeRoutes(Ref ref) {
           child: CreatePinSheet(
             initialSelectedSpace: state.uri.queryParameters['spaceId'],
           ),
+        );
+      },
+    ),
+
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.editPin.name,
+      path: Routes.editPin.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: EditPinSheet(pinId: state.pathParameters['pinId']!),
         );
       },
     ),

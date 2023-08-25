@@ -286,6 +286,7 @@ object CalendarEvent {
     // fn locations() -> Vec<Location>;
     /// event id
     fn event_id() -> EventId;
+    fn room_id_str() -> string;
     /// update builder
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager

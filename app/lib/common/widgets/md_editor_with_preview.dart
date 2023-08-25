@@ -15,6 +15,7 @@ class MdEditorWithPreview extends ConsumerStatefulWidget {
   final FormFieldValidator<String>? validator;
   final String hintText;
   final String labelText;
+  final TextEditingController? controller;
 
   const MdEditorWithPreview({
     Key? key,
@@ -22,6 +23,7 @@ class MdEditorWithPreview extends ConsumerStatefulWidget {
     this.validator,
     this.hintText = 'Description',
     this.labelText = 'Description',
+    this.controller,
   }) : super(key: key);
 
   @override
@@ -35,6 +37,7 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
 
   @override
   Widget build(BuildContext context) {
+    final controller = widget.controller ?? _textCtr;
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -54,7 +57,7 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
                           padding: const EdgeInsets.all(10),
                           child: Consumer(
                             builder: (context, ref, child) => ref
-                                .watch(markdownProvider(_textCtr.text))
+                                .watch(markdownProvider(controller.text))
                                 .when(
                                   data: (text) => RenderHtml(text: text),
                                   error: (error, stackTrace) =>
@@ -77,7 +80,7 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
                       ),
                     ),
                     textAlignVertical: TextAlignVertical.top,
-                    controller: _textCtr,
+                    controller: controller,
                     expands: true,
                     minLines: null,
                     maxLines: null,

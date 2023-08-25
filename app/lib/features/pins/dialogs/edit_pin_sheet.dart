@@ -6,6 +6,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,36 +17,40 @@ final titleProvider = StateProvider<String>((ref) => '');
 final textProvider = StateProvider<String>((ref) => '');
 final linkProvider = StateProvider<String>((ref) => '');
 
-class CreatePinSheet extends ConsumerStatefulWidget {
-  final String? initialSelectedSpace;
-  const CreatePinSheet({super.key, this.initialSelectedSpace});
+class EditPinSheet extends ConsumerStatefulWidget {
+  final String pinId;
+  const EditPinSheet({super.key, required this.pinId});
 
   @override
-  ConsumerState<CreatePinSheet> createState() => _CreatePinSheetConsumerState();
+  ConsumerState<EditPinSheet> createState() => _EditPinSheetConsumerState();
 }
 
-class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
+class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
   final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
+  final TextEditingController _urlController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      final spaceNotifier = ref.read(selectedSpaceIdProvider.notifier);
-      spaceNotifier.state = widget.initialSelectedSpace;
-    });
+    _pinData();
+  }
+
+  // apply existing data to fields
+  void _pinData() async {
+    final pin = await ref.read(
+      pinProvider(widget.pinId).future,
+    );
+    _titleController.text = pin.title();
+    _textController.text = pin.contentText() ?? '';
+    _urlController.text = pin.url() ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
-    final titleInput = ref.watch(titleProvider);
-    final titleNotifier = ref.watch(titleProvider.notifier);
-    final textNotifier = ref.watch(textProvider.notifier);
-    final linkNotifier = ref.watch(linkProvider.notifier);
-
     return SideSheet(
-      header: 'Create new Pin',
+      header: 'Edit Pin',
       addActions: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -70,9 +75,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                             ),
                           ),
                           controller: _titleController,
-                          onChanged: (String? value) {
-                            titleNotifier.state = value ?? '';
-                          },
                           validator: (value) =>
                               (value != null && value.isNotEmpty)
                                   ? null
@@ -93,25 +95,20 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                   ),
                 ),
                 validator: (value) => (value != null && value.isNotEmpty)
-                    ? textNotifier.state.isEmpty
+                    ? null
+                    : _textController.text.isEmpty
                         ? 'Text or URL must be given'
-                        : null
-                    : 'Please enter a link',
-                onChanged: (String? value) {
-                  linkNotifier.state = value ?? '';
-                },
+                        : null,
+                controller: _urlController,
               ),
               MdEditorWithPreview(
                 validator: (value) => (value != null && value.isNotEmpty)
-                    ? linkNotifier.state.isEmpty
+                    ? null
+                    : _urlController.text.isEmpty
                         ? 'Text or URL must be given'
-                        : null
-                    : 'Please enter a text',
-                onChanged: (String? value) {
-                  textNotifier.state = value ?? '';
-                },
+                        : null,
+                controller: _textController,
               ),
-              const SelectSpaceFormField(canCheck: 'CanPostPin'),
             ],
           ),
         ),
@@ -137,29 +134,36 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
               popUpDialog(
                 context: context,
                 title: Text(
-                  'Posting Pin',
+                  'Saving Pin update',
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 isLoader: true,
               );
               try {
-                final spaceId = ref.read(selectedSpaceIdProvider);
-                final space = await ref.read(spaceProvider(spaceId!).future);
-                final pinDraft = space.pinDraft();
-                final text = ref.read(textProvider);
-                final url = ref.read(linkProvider);
-                pinDraft.title(ref.read(titleProvider));
-                if (text.isNotEmpty) {
-                  pinDraft.contentMarkdown(text);
-                }
-                if (url.isNotEmpty) {
-                  pinDraft.url(url);
-                }
-                final pinId = await pinDraft.send();
-                // reset providers
-                titleNotifier.state = '';
-                textNotifier.state = '';
+                final pin = await ref.read(
+                  pinProvider(widget.pinId).future,
+                );
 
+                final updateBuild = pin.updateBuilder();
+                var hasChanges = false;
+
+                if (_titleController.text != pin.title()) {
+                  updateBuild.title(_titleController.text);
+                  hasChanges = true;
+                }
+
+                if (_textController.text != pin.contentText()) {
+                  updateBuild.contentText(_textController.text);
+                  hasChanges = true;
+                }
+                if (_urlController.text != pin.url()) {
+                  updateBuild.url(_urlController.text);
+                  hasChanges = true;
+                }
+
+                if (hasChanges) {
+                  await updateBuild.send();
+                }
                 // We are doing as expected, but the lints triggers.
                 // ignore: use_build_context_synchronously
                 if (!context.mounted) {
@@ -168,7 +172,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 Navigator.of(context, rootNavigator: true).pop();
                 context.goNamed(
                   Routes.pin.name,
-                  pathParameters: {'pinId': pinId.toString()},
+                  pathParameters: {'pinId': widget.pinId.toString()},
                 );
               } catch (e) {
                 // We are doing as expected, but the lints triggers.
@@ -176,21 +180,19 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 if (!context.mounted) {
                   return;
                 }
-                customMsgSnackbar(context, 'Failed to pin: $e');
+                customMsgSnackbar(context, 'Failed to update pin: $e');
               }
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: titleInput.isNotEmpty
-                ? Theme.of(context).colorScheme.success
-                : Theme.of(context).colorScheme.success.withOpacity(0.6),
+            backgroundColor: Theme.of(context).colorScheme.success,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
             ),
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
-          child: const Text('Create Pin'),
+          child: const Text('Save'),
         ),
       ],
     );
