@@ -55,7 +55,7 @@ class NotificationCard extends ConsumerWidget {
           },
         );
         room = Consumer(
-          builder: (context, ref, child) {
+          builder: (ctx, ref, child) {
             final spaceProfile = ref.watch(spaceProfileDataProvider(space));
             return spaceProfile.when(
               data: (value) => Text(value.displayName ?? roomId),
@@ -68,10 +68,10 @@ class NotificationCard extends ConsumerWidget {
       } else {
         final convo = notification.convo()!;
         avatar = Consumer(
-          builder: (context, ref, child) {
+          builder: (ctx, ref, child) {
             final profile = ref.watch(chatProfileDataProvider(convo));
             return InkWell(
-              onTap: () => context.goNamed(
+              onTap: () => ctx.goNamed(
                 Routes.chatroom.name,
                 pathParameters: {'roomId': roomId},
                 extra: convo,
@@ -101,7 +101,7 @@ class NotificationCard extends ConsumerWidget {
           },
         );
         room = Consumer(
-          builder: (context, ref, child) {
+          builder: (ctx, ref, child) {
             final profile = ref.watch(chatProfileDataProvider(convo));
             return profile.when(
               data: (value) => Text(value.displayName ?? roomId),

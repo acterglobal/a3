@@ -12,6 +12,7 @@ import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +97,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final location = ref.watch(currentRoutingLocation);
     final client = ref.watch(clientProvider);
     var chatRoomState = ref.watch(chatRoomProvider);
     var messages = ref.watch(messagesProvider);
@@ -124,18 +125,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
         backgroundColor: Theme.of(context).colorScheme.neutral,
         resizeToAvoidBottomInset: orientation == Orientation.portrait,
         appBar: AppBar(
-          automaticallyImplyLeading: false,
-          leading: Visibility(
-            visible: size.width < 675,
-            child: IconButton(
-              onPressed: () {
-                context.canPop()
-                    ? context.pop()
-                    : context.goNamed(Routes.chat.name);
-              },
-              icon: const Icon(Atlas.arrow_left),
-            ),
-          ),
           backgroundColor: Theme.of(context).colorScheme.onPrimary,
           elevation: 1,
           centerTitle: true,
@@ -176,7 +165,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           actions: [
             GestureDetector(
               onTap: () {
-                if (!isDesktop(context)) {
+                if (!isDesktop(context) || location != Routes.chat.route) {
                   context.pushNamed(
                     Routes.chatProfile.name,
                     pathParameters: {'roomId': convo.getRoomIdStr()},

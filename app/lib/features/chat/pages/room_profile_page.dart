@@ -3,10 +3,10 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
+import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +26,7 @@ class RoomProfilePage extends ConsumerWidget {
     final roomId = room.getRoomIdStr();
     final members = ref.watch(chatMembersProvider(roomId));
     final myMembership = ref.watch(spaceMembershipProvider(roomId));
+    final location = ref.watch(currentRoutingLocation);
     final List<Widget> topMenu = [
       members.when(
         data: (list) {
@@ -66,19 +67,19 @@ class RoomProfilePage extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            automaticallyImplyLeading: false,
             backgroundColor: Theme.of(context).colorScheme.neutral,
-            leading: IconButton(
-              onPressed: () {
-                isDesktop(context)
-                    ? ref
-                        .read(showFullSplitView.notifier)
-                        .update((state) => false)
-                    : context.pop();
-              },
-              icon: isDesktop(context)
-                  ? const Icon(Atlas.xmark_circle_thin)
-                  : const Icon(Atlas.arrow_left),
+            leading: Visibility(
+              visible: location == Routes.chat.route,
+              replacement: IconButton(
+                onPressed: () => context.pop(),
+                icon: const Icon(Icons.chevron_left),
+              ),
+              child: IconButton(
+                onPressed: () => ref
+                    .read(showFullSplitView.notifier)
+                    .update((state) => false),
+                icon: const Icon(Atlas.xmark_circle_thin),
+              ),
             ),
             elevation: 0.0,
             actions: <Widget>[

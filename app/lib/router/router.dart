@@ -473,6 +473,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.chat.name,
           path: Routes.chat.route,
           redirect: authGuardRedirect,
