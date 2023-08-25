@@ -6,6 +6,7 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
@@ -46,9 +47,6 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
 
   @override
   Widget build(BuildContext context) {
-    final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final spaceNotifier = ref.watch(selectedSpaceIdProvider.notifier);
-    final selectedSpace = currentSelectedSpace != null;
     final imageNotifier = ref.watch(selectedImageProvider.notifier);
     final captionNotifier = ref.watch(textProvider.notifier);
     return SideSheet(
@@ -94,40 +92,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                   },
                 ),
               ),
-              FormField(
-                builder: (state) => ListTile(
-                  title: Text(
-                    selectedSpace ? 'Space' : 'Please select a space',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  subtitle: state.errorText != null
-                      ? Text(
-                          state.errorText!,
-                          style:
-                              Theme.of(context).textTheme.bodySmall!.copyWith(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                        )
-                      : null,
-                  trailing: selectedSpace
-                      ? _SpaceBuilder(
-                          currentSelectedSpace: currentSelectedSpace,
-                        )
-                      : null,
-                  onTap: () async {
-                    final newSelectedSpaceId = await selectSpaceDrawer(
-                      context: context,
-                      currentSpaceId: ref.read(selectedSpaceIdProvider),
-                      canCheck: 'CanPostNews',
-                      title: const Text('Select space'),
-                    );
-                    spaceNotifier.state = newSelectedSpaceId;
-                  },
-                ),
-                validator: (x) => (ref.read(selectedSpaceIdProvider) != null)
-                    ? null
-                    : 'You must select a space',
-              ),
+              const SelectSpaceFormField(canCheck: 'CanPostNews')
             ],
           ),
         ),
@@ -299,26 +264,6 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
           child: Text('select an image (optional)'),
         ),
       ),
-    );
-  }
-}
-
-class _SpaceBuilder extends ConsumerWidget {
-  final String currentSelectedSpace;
-
-  const _SpaceBuilder({
-    Key? key,
-    required this.currentSelectedSpace,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
-    return spaceDetails.when(
-      data: (space) =>
-          space != null ? SpaceChip(space: space) : Text(currentSelectedSpace),
-      error: (e, s) => Text('error: $e'),
-      loading: () => const Text('loading'),
     );
   }
 }

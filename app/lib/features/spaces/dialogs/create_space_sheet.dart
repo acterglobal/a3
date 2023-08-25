@@ -8,6 +8,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
@@ -39,7 +40,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      final parentNotifier = ref.read(parentSpaceProvider.notifier);
+      final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
       parentNotifier.state = widget.initialParentsSpaceId;
     });
   }
@@ -47,8 +48,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(titleProvider);
-    final currentParentSpace = ref.watch(parentSpaceProvider);
-    final parentNotifier = ref.watch(parentSpaceProvider.notifier);
+    final currentParentSpace = ref.watch(selectedSpaceIdProvider);
     final parentSelected = currentParentSpace != null;
     return SideSheet(
       header: parentSelected ? 'Create Subspace' : 'Create Space',
@@ -138,24 +138,12 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                   textInputType: TextInputType.multiline,
                   maxLines: 10,
                 ),
-                ListTile(
-                  title: Text(
-                    parentSelected
-                        ? 'Parent space'
-                        : 'No parent space selected',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  trailing:
-                      parentSelected ? Consumer(builder: parentBuilder) : null,
-                  onTap: () async {
-                    final newSelectedSpaceId = await selectSpaceDrawer(
-                      context: context,
-                      currentSpaceId: ref.read(parentSpaceProvider),
-                      title: const Text('Select parent space'),
-                    );
-                    parentNotifier.state = newSelectedSpaceId;
-                  },
-                )
+                const SelectSpaceFormField(
+                  canCheck: 'CanLinkSpaces',
+                  mandatory: false,
+                  title: 'Parent space',
+                  selectTitle: 'Select parent space',
+                ),
               ],
             ),
           ],
@@ -232,22 +220,6 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
   }
 
-  Widget parentBuilder(BuildContext context, WidgetRef ref, Widget? child) {
-    final spaceDetails = ref.watch(parentSpaceDetailsProvider);
-    final currentParentSpace = ref.watch(parentSpaceProvider);
-    return spaceDetails.when(
-      data: (data) {
-        if (data != null) {
-          return SpaceChip(space: data);
-        } else {
-          return Text(currentParentSpace!);
-        }
-      },
-      error: (err, stackTrace) => Text('error: $err'),
-      loading: () => const Text('loading'),
-    );
-  }
-
   void _handleTitleChange(String? value) {
     ref.read(titleProvider.notifier).update((state) => value!);
   }
@@ -289,7 +261,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       if (localUri.isNotEmpty) {
         config.setAvatarUri(localUri); // space creation will upload it
       }
-      final parentRoomId = ref.read(parentSpaceProvider);
+      final parentRoomId = ref.read(selectedSpaceIdProvider);
       if (parentRoomId != null) {
         config.setParent(parentRoomId);
       }

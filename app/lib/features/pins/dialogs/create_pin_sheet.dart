@@ -5,6 +5,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -44,10 +45,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
     final titleInput = ref.watch(titleProvider);
     final titleNotifier = ref.watch(titleProvider.notifier);
     final textNotifier = ref.watch(textProvider.notifier);
-    final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
     final linkNotifier = ref.watch(linkProvider.notifier);
-    final spaceNotifier = ref.watch(selectedSpaceIdProvider.notifier);
-    final selectedSpace = currentSelectedSpace != null;
+
     return SideSheet(
       header: 'Create new Pin',
       addActions: true,
@@ -111,47 +110,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                   textNotifier.state = value ?? '';
                 },
               ),
-              FormField(
-                builder: (state) => GestureDetector(
-                  onTap: () async {
-                    final newSelectedSpaceId = await selectSpaceDrawer(
-                      context: context,
-                      currentSpaceId: ref.read(selectedSpaceIdProvider),
-                      canCheck: 'CanPostPin',
-                      title: const Text('Select space'),
-                    );
-                    spaceNotifier.state = newSelectedSpaceId;
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        selectedSpace ? 'Space' : 'Please select a space',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(width: 15),
-                      state.errorText != null
-                          ? Text(
-                              state.errorText!,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall!
-                                  .copyWith(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                            )
-                          : Container(),
-                      const SizedBox(height: 10),
-                      selectedSpace
-                          ? Consumer(builder: spaceBuilder)
-                          : Container(),
-                    ],
-                  ),
-                ),
-                validator: (x) => (ref.read(selectedSpaceIdProvider) != null)
-                    ? null
-                    : 'You must select a space',
-              ),
+              const SelectSpaceFormField(canCheck: 'CanPostPin'),
             ],
           ),
         ),
@@ -230,17 +189,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
           child: const Text('Create Pin'),
         ),
       ],
-    );
-  }
-
-  Widget spaceBuilder(BuildContext context, WidgetRef ref, Widget? child) {
-    final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
-    final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    return spaceDetails.when(
-      data: (space) =>
-          space != null ? SpaceChip(space: space) : Text(currentSelectedSpace!),
-      error: (e, s) => Text('error: $e'),
-      loading: () => const Text('loading'),
     );
   }
 }

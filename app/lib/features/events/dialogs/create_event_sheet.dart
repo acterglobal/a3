@@ -5,6 +5,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      final parentNotifier = ref.read(parentSpaceProvider.notifier);
+      final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
       parentNotifier.state = widget.initialSelectedSpace;
     });
   }
@@ -52,8 +53,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
-    final currentParentSpace = ref.watch(parentSpaceProvider);
-    final parentNotifier = ref.watch(parentSpaceProvider.notifier);
+    final currentParentSpace = ref.watch(selectedSpaceIdProvider);
+    final parentNotifier = ref.watch(selectedSpaceIdProvider.notifier);
     final selectParentSpace = currentParentSpace != null;
     return SideSheet(
       header: 'Create new event',
@@ -220,23 +221,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                     maxLines: 1,
                   ),
                   const SizedBox(height: 15),
-                  ListTile(
-                    title: Text(
-                      selectParentSpace ? 'Space' : 'No space selected',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    trailing: selectParentSpace
-                        ? Consumer(builder: parentSpaceBuilder)
-                        : null,
-                    onTap: () async {
-                      final newSelectedSpaceId = await selectSpaceDrawer(
-                        context: context,
-                        currentSpaceId: ref.read(parentSpaceProvider),
-                        title: const Text('Select parent space'),
-                      );
-                      parentNotifier.state = newSelectedSpaceId;
-                    },
-                  )
+                  const SelectSpaceFormField(canCheck: 'CanPostEvent'),
                 ],
               ),
             ],
@@ -279,21 +264,6 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     );
   }
 
-  Widget parentSpaceBuilder(
-    BuildContext context,
-    WidgetRef ref,
-    Widget? child,
-  ) {
-    final parentDetails = ref.watch(parentSpaceDetailsProvider);
-    final currentParentSpace = ref.watch(parentSpaceProvider);
-    return parentDetails.when(
-      data: (space) =>
-          space != null ? SpaceChip(space: space) : Text(currentParentSpace!),
-      error: (e, s) => Text('error: $e'),
-      loading: () => const Text('loading'),
-    );
-  }
-
   void _handleTitleChange(String? value) {
     ref.read(_titleProvider.notifier).update((state) => value!);
   }
@@ -317,9 +287,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       _endTimeController.text = time;
     }
     try {
-      final space = await ref.read(
-        spaceProvider(widget.initialSelectedSpace!).future,
-      );
+      final spaceId = ref.read(selectedSpaceIdProvider);
+      final space = await ref.read(spaceProvider(spaceId!).future);
       final draft = space.calendarEventDraft();
 
       draft.title(ref.read(_titleProvider));
@@ -362,7 +331,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       );
     } catch (e) {
       context.pop();
-      customMsgSnackbar(context, 'Some error occured $e');
+      customMsgSnackbar(context, 'Some error occurred $e');
     }
   }
 
