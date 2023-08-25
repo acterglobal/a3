@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/utils/logging.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/cli/main.dart';
 import 'package:acter/l10n/l10n.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -16,8 +17,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:overlay_support/overlay_support.dart';
 
-void main() async {
-  await startApp();
+void main(List<String> args) async {
+  if (args.isNotEmpty) {
+    await cliMain(args);
+  } else {
+    await startApp();
+  }
 }
 
 Future<void> startFreshTestApp(String key) async {

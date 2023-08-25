@@ -117,6 +117,7 @@ dependencies:
       url: https://github.com/acterglobal/awesome_notifications
       ref: acter-main
   logging: ^1.2.0
+  args: ^2.4.2
   breadcrumbs: ^0.1.0
 
 dev_dependencies:
