@@ -35,6 +35,11 @@ class SelectSpaceFormField extends ConsumerWidget {
       spaceNotifier.state = newSelectedSpaceId;
     }
 
+    final emptyButton = OutlinedButton(
+      onPressed: selectSpace,
+      child: Text(emptyText),
+    );
+
     return FormField(
       builder: (state) => selectedSpace
           ? InkWell(
@@ -46,27 +51,27 @@ class SelectSpaceFormField extends ConsumerWidget {
                     title,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  const SizedBox(width: 15),
-                  state.errorText != null
-                      ? Text(
+                  Consumer(builder: spaceBuilder),
+                ],
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: state.hasError
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        emptyButton,
+                        Text(
                           state.errorText!,
                           style:
                               Theme.of(context).textTheme.bodySmall!.copyWith(
                                     color: Theme.of(context).colorScheme.error,
                                   ),
                         )
-                      : Container(),
-                  const SizedBox(height: 10),
-                  selectedSpace ? Consumer(builder: spaceBuilder) : Container(),
-                ],
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: OutlinedButton(
-                onPressed: selectSpace,
-                child: Text(emptyText),
-              ),
+                      ],
+                    )
+                  : emptyButton,
             ),
       validator: (x) =>
           (!mandatory || ref.read(selectedSpaceIdProvider) != null)
