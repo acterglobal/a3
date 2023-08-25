@@ -24,6 +24,8 @@ object EfkDuration {}
 
 fn duration_from_secs(secs: u64) -> EfkDuration;
 
+fn parse_markdown(text: string) -> Option<string>;
+
 /// Representing a color
 object EfkColor {
     /// as rgba in u8

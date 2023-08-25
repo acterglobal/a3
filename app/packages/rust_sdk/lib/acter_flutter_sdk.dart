@@ -389,6 +389,10 @@ class ActerSdk {
     return _api.rotateLogFile();
   }
 
+  String? parseMarkdown(String text) {
+    return _api.parseMarkdown(text);
+  }
+
   void writeLog(String text, String level) {
     _api.writeLog(text, level);
   }

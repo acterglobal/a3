@@ -41,6 +41,7 @@ mod spaces;
 mod stream;
 mod tasks;
 mod typing;
+mod utils;
 mod verification;
 
 pub use account::Account;
@@ -86,6 +87,7 @@ pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
 pub use typing::TypingEvent;
+pub use utils::parse_markdown;
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
 
 pub type DeviceId = matrix_sdk::ruma::OwnedDeviceId;

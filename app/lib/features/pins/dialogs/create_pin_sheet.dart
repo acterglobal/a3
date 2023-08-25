@@ -3,6 +3,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
@@ -27,7 +28,6 @@ class CreatePinSheet extends ConsumerStatefulWidget {
 
 class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _typeController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -45,9 +45,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
     final titleNotifier = ref.watch(titleProvider.notifier);
     final textNotifier = ref.watch(textProvider.notifier);
     final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
+    final linkNotifier = ref.watch(linkProvider.notifier);
     final spaceNotifier = ref.watch(selectedSpaceIdProvider.notifier);
     final selectedSpace = currentSelectedSpace != null;
-    final typeNotifier = ref.watch(selectedTypeProvider.notifier);
     return SideSheet(
       header: 'Create new Pin',
       addActions: true,
@@ -62,21 +62,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Row(
                   children: [
-                    DropdownMenu<String>(
-                      initialSelection: 'link',
-                      controller: _typeController,
-                      label: const Text('Type'),
-                      dropdownMenuEntries: const [
-                        DropdownMenuEntry(label: 'Link', value: 'link'),
-                        DropdownMenuEntry(label: 'Text', value: 'text'),
-                      ],
-                      onSelected: (String? typus) {
-                        if (typus != null) {
-                          typeNotifier.state = typus;
-                        }
-                      },
-                    ),
-                    const SizedBox(width: 6),
                     Expanded(
                       child: SizedBox(
                         height: 52,
@@ -102,7 +87,30 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                   ],
                 ),
               ),
-              Consumer(builder: contentBuilder),
+              TextFormField(
+                decoration: InputDecoration(
+                  icon: const Icon(Atlas.link_thin),
+                  hintText: 'https://',
+                  labelText: 'link',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+                validator: (value) => (value != null && value.isNotEmpty)
+                    ? null
+                    : 'Please enter a link',
+                onChanged: (String? value) {
+                  linkNotifier.state = value ?? '';
+                },
+              ),
+              MdEditorWithPreview(
+                validator: (value) => (value != null && value.isNotEmpty)
+                    ? null
+                    : 'Please enter a text',
+                onChanged: (String? value) {
+                  textNotifier.state = value ?? '';
+                },
+              ),
               FormField(
                 builder: (state) => GestureDetector(
                   onTap: () async {
@@ -223,52 +231,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
         ),
       ],
     );
-  }
-
-  Widget contentBuilder(BuildContext context, WidgetRef ref, Widget? child) {
-    final subselection = ref.watch(selectedTypeProvider);
-    final textNotifier = ref.watch(textProvider.notifier);
-    final linkNotifier = ref.watch(linkProvider.notifier);
-    if (subselection == 'text') {
-      return Expanded(
-        child: TextFormField(
-          decoration: InputDecoration(
-            hintText: 'The content of the pin',
-            labelText: 'Content',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
-            ),
-          ),
-          textAlignVertical: TextAlignVertical.top,
-          expands: true,
-          minLines: null,
-          maxLines: null,
-          keyboardType: TextInputType.multiline,
-          validator: (value) => (value != null && value.isNotEmpty)
-              ? null
-              : 'Please enter a text',
-          onChanged: (String? value) {
-            textNotifier.state = value ?? '';
-          },
-        ),
-      );
-    } else {
-      return TextFormField(
-        decoration: InputDecoration(
-          icon: const Icon(Atlas.link_thin),
-          hintText: 'https://',
-          labelText: 'link',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
-        ),
-        validator: (value) =>
-            (value != null && value.isNotEmpty) ? null : 'Please enter a link',
-        onChanged: (String? value) {
-          linkNotifier.state = value ?? '';
-        },
-      );
-    }
   }
 
   Widget spaceBuilder(BuildContext context, WidgetRef ref, Widget? child) {
