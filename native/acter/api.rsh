@@ -1641,6 +1641,9 @@ object Client {
     /// Get the verification event receiver
     fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
 
+    /// Get session manager that returns all/verified/unverified/inactive session list
+    fn session_manager() -> SessionManager;
+
     /// Return the event handler of device changed
     fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
 
@@ -1783,11 +1786,11 @@ object VerificationEvent {
     /// Get user id of event sender
     fn sender() -> string;
 
-    /// An error code for why the process/request was cancelled by the user.
-    fn cancel_code() -> Option<string>;
+    /// Get content by field
+    fn get_content(key: string) -> Option<string>;
 
-    /// A description for why the process/request was cancelled by the user.
-    fn reason() -> Option<string>;
+    /// Get emoji array
+    fn get_emojis() -> Vec<VerificationEmoji>;
 
     /// Bob accepts the verification request from Alice
     fn accept_verification_request() -> Future<Result<bool>>;
@@ -1813,9 +1816,6 @@ object VerificationEvent {
     /// Alice sends the verification key to Bob and vice versa
     fn send_verification_key() -> Future<Result<bool>>;
 
-    /// Alice gets the verification emoji from Bob and vice versa
-    fn get_verification_emoji() -> Future<Result<Vec<VerificationEmoji>>>;
-
     /// Alice says to Bob that SAS verification matches and vice versa
     fn confirm_sas_verification() -> Future<Result<bool>>;
 
@@ -1832,6 +1832,17 @@ object VerificationEmoji {
 
     /// text description of emoji unicode
     fn description() -> string;
+}
+
+object SessionManager {
+    fn all_sessions() -> Future<Result<Vec<DeviceRecord>>>;
+
+    /// Force to logout another devices
+    /// Authentication is required to do so
+    fn delete_devices(dev_ids: Vec<string>, username: string, password: string) -> Future<Result<bool>>;
+
+    /// Trigger verification of another device
+    fn request_verification(dev_id: string) -> Future<Result<bool>>;
 }
 
 /// Deliver receipt event from rust to flutter
@@ -1881,15 +1892,6 @@ object DeviceLeftEvent {
 
 /// Provide various device infos
 object DeviceRecord {
-    /// whether this device was verified
-    fn verified() -> bool;
-
-    /// whether this device was deleted
-    fn deleted() -> bool;
-
-    /// get the id of this device user
-    fn user_id() -> UserId;
-
     /// get the id of this device
     fn device_id() -> DeviceId;
 
@@ -1901,6 +1903,12 @@ object DeviceRecord {
 
     /// last seen timestamp of this device in milliseconds
     fn last_seen_ts() -> Option<u64>;
+
+    /// whether it was verified
+    fn is_verified() -> bool;
+
+    /// whether it is active
+    fn is_active() -> bool;
 }
 
 /// Deliver typing event from rust to flutter

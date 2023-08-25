@@ -82,6 +82,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  breadcrumbs:
+    dependency: "direct main"
+    description:
+      name: breadcrumbs
+      sha256: "0b5fa2d5663e849d52ce9664204094aca1c17197bf5c22d29eb133c2e2002688"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   bubble:
     dependency: "direct main"
     description:

@@ -152,8 +152,8 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let bob_event = wait_for_verification_event(&mut bob_rx, "m.key.verification.key");
 
     // Bob gets the verification key from event
-    let emoji_from_alice = bob_event.get_verification_emoji().await?;
-    info!("emoji from alice: {:?}", emoji_from_alice);
+    let emojis_from_alice = bob_event.get_emojis();
+    info!("emojis from alice: {:?}", emojis_from_alice);
 
     // Bob sends a key
     bob_event.send_verification_key().await?;
@@ -165,8 +165,8 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let alice_event = wait_for_verification_event(&mut alice_rx, "m.key.verification.key");
 
     // Alice gets the verification key from event
-    let emoji_from_bob = alice_event.get_verification_emoji().await?;
-    info!("emoji from bob: {:?}", emoji_from_bob);
+    let emojis_from_bob = alice_event.get_emojis();
+    info!("emojis from bob: {:?}", emojis_from_bob);
 
     // ----------------------------------------------------------------------------
     // On Bob's device:

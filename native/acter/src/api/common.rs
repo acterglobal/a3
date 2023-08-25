@@ -4,7 +4,7 @@ use matrix_sdk::ruma::{
         message::{AudioInfo, FileInfo, VideoInfo},
         ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
     },
-    MilliSecondsSinceUnixEpoch, OwnedUserId,
+    MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId,
 };
 
 use super::api::FfiBuffer;
@@ -400,5 +400,59 @@ impl ReactionRecord {
 
     pub fn timestamp(&self) -> u64 {
         self.timestamp.get().into()
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct DeviceRecord {
+    device_id: OwnedDeviceId,
+    display_name: Option<String>,
+    last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
+    last_seen_ip: Option<String>,
+    is_verified: bool,
+    is_active: bool,
+}
+
+impl DeviceRecord {
+    pub(crate) fn new(
+        device_id: OwnedDeviceId,
+        display_name: Option<String>,
+        last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
+        last_seen_ip: Option<String>,
+        is_verified: bool,
+        is_active: bool,
+    ) -> Self {
+        DeviceRecord {
+            device_id,
+            display_name,
+            last_seen_ts,
+            last_seen_ip,
+            is_verified,
+            is_active,
+        }
+    }
+
+    pub fn device_id(&self) -> OwnedDeviceId {
+        self.device_id.clone()
+    }
+
+    pub fn display_name(&self) -> Option<String> {
+        self.display_name.clone()
+    }
+
+    pub fn last_seen_ts(&self) -> Option<u64> {
+        self.last_seen_ts.map(|x| x.get().into())
+    }
+
+    pub fn last_seen_ip(&self) -> Option<String> {
+        self.last_seen_ip.clone()
+    }
+
+    pub fn is_verified(&self) -> bool {
+        self.is_verified
+    }
+
+    pub fn is_active(&self) -> bool {
+        self.is_active
     }
 }
