@@ -240,6 +240,7 @@ object PinUpdateBuilder {
 
     /// set the content for this pin
     fn content_text(text: string);
+    fn content_markdown(text: string);
     fn unset_content();
     fn unset_content_update();
 

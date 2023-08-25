@@ -153,7 +153,7 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
                 }
 
                 if (_textController.text != pin.contentText()) {
-                  updateBuild.contentText(_textController.text);
+                  updateBuild.contentMarkdown(_textController.text);
                   hasChanges = true;
                 }
                 if (_urlController.text != pin.url()) {
