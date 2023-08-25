@@ -27,11 +27,18 @@ class QuickActionsBuilder extends ConsumerWidget {
       hasSpaceWithPermissionProvider('CanPostNews'),
     );
     final canPostNews = canPostNewsProvider.valueOrNull ?? false;
+
     final canPostPinProvider = ref.watch(
       hasSpaceWithPermissionProvider('CanPostPin'),
     );
     final canPostPin =
         isActive(LabsFeature.pins) && (canPostPinProvider.valueOrNull ?? false);
+
+    final canPostEventProvider = ref.watch(
+      hasSpaceWithPermissionProvider('CanPostEvent'),
+    );
+    final canPostEvent = isActive(LabsFeature.events) &&
+        (canPostEventProvider.valueOrNull ?? false);
     return Wrap(
       alignment: WrapAlignment.spaceBetween,
       spacing: 8,
@@ -40,10 +47,6 @@ class QuickActionsBuilder extends ConsumerWidget {
         [
           canPostNews
               ? OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.amber,
-                    side: const BorderSide(width: 2, color: Colors.amber),
-                  ),
                   onPressed: () {
                     navigateTo(route: Routes.actionAddUpdate, push: true);
                     debugPrint('Update');
@@ -54,10 +57,6 @@ class QuickActionsBuilder extends ConsumerWidget {
               : null,
           isActive(LabsFeature.tasks)
               ? OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.amber,
-                    side: const BorderSide(width: 2, color: Colors.amber),
-                  ),
                   onPressed: () {
                     navigateTo(route: Routes.actionAddTask, push: true);
                     debugPrint('Add Task');
@@ -68,21 +67,13 @@ class QuickActionsBuilder extends ConsumerWidget {
               : null,
           canPostPin
               ? OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.purple,
-                    side: const BorderSide(width: 2, color: Colors.purple),
-                  ),
                   onPressed: () => context.pushNamed(Routes.actionAddPin.name),
                   icon: const Icon(Atlas.plus_circle_thin),
                   label: const Text('Pin'),
                 )
               : null,
-          isActive(LabsFeature.events)
+          canPostEvent
               ? OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.purple,
-                    side: const BorderSide(width: 2, color: Colors.purple),
-                  ),
                   onPressed: () => context.pushNamed(Routes.createEvent.name),
                   icon: const Icon(Atlas.plus_circle_thin),
                   label: const Text('Event'),
@@ -90,10 +81,6 @@ class QuickActionsBuilder extends ConsumerWidget {
               : null,
           isActive(LabsFeature.polls)
               ? OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.green.shade900,
-                    side: BorderSide(width: 2, color: Colors.green.shade900),
-                  ),
                   onPressed: () {
                     debugPrint('poll');
                   },
@@ -117,7 +104,7 @@ class QuickActionsBuilder extends ConsumerWidget {
           OutlinedButton.icon(
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.greenAccent,
-              side: const BorderSide(width: 2, color: Colors.greenAccent),
+              side: const BorderSide(width: 1, color: Colors.greenAccent),
             ),
             icon: const Icon(Atlas.bug_clipboard_thin),
             label: const Text('Report bug'),
