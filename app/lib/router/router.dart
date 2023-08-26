@@ -4,6 +4,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
+import 'package:acter/features/activities/pages/sessions_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/dialogs/create_chat_sheet.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
@@ -405,6 +406,17 @@ List<RouteBase> makeRoutes(Ref ref) {
             return NoTransitionPage(
               key: state.pageKey,
               child: const ActivitiesPage(),
+            );
+          },
+        ),
+        GoRoute(
+          name: Routes.settingSessions.name,
+          path: Routes.settingSessions.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const SessionsPage(),
             );
           },
         ),

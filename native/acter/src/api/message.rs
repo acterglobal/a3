@@ -1736,30 +1736,62 @@ impl RoomMessage {
             MembershipState::Invite => (Some("Invited".to_string()), "invited".to_string()),
             MembershipState::Knock => (Some("Knocked".to_string()), "knocked".to_string()),
             _ => {
-                if let Some(new_name) = event.clone().content.displayname {
-                    let mut old_name = None;
-                    if let Some(content) = event.prev_content() {
-                        if let Some(ref name) = content.displayname {
-                            old_name = Some(name.clone());
-                        }
-                    }
-                    (
+                match (
+                    &event.content.displayname,
+                    &event.content.avatar_url,
+                    event
+                        .prev_content()
+                        .map(|c| (c.avatar_url.as_ref(), c.displayname.as_ref()))
+                        .unwrap_or_default(),
+                ) {
+                    (Some(display_name), Some(avatar_name), (Some(old), _)) => (
                         Some("ProfileChanged".to_string()),
-                        format!("changed display name from {:?} to {}", old_name, new_name),
-                    )
-                } else if let Some(new_url) = event.clone().content.avatar_url {
-                    let mut old_url = None;
-                    if let Some(content) = event.prev_content() {
-                        if let Some(ref url) = content.avatar_url {
-                            old_url = Some(url.clone());
-                        }
-                    }
-                    (
+                        format!("Updated avatar & changed name to {old} -> {display_name}"),
+                    ),
+                    (Some(display_name), Some(avatar_name), (None, _)) => (
                         Some("ProfileChanged".to_string()),
-                        format!("changed avatar url from {:?} to {:?}", old_url, new_url),
-                    )
-                } else {
-                    (None, "unknown error".to_string())
+                        format!("Updated avatar & set name to{display_name}"),
+                    ),
+                    (Some(display_name), None, (Some(old), Some(_))) => (
+                        Some("ProfileChanged".to_string()),
+                        format!("Changed name {old} -> {display_name}, removed avatar"),
+                    ),
+                    (Some(display_name), None, (None, Some(_))) => (
+                        Some("ProfileChanged".to_string()),
+                        format!("Set name to {display_name}, removed avatar"),
+                    ),
+                    (Some(display_name), None, (Some(old), _)) => (
+                        Some("ProfileChanged".to_string()),
+                        format!("Changed name {old} -> {display_name}"),
+                    ),
+                    (Some(display_name), None, (None, _)) => (
+                        Some("ProfileChanged".to_string()),
+                        format!("Set name to {display_name}"),
+                    ),
+                    (None, Some(avatar), (None, _)) => (
+                        Some("ProfileChanged".to_string()),
+                        "Updated avatar".to_string(),
+                    ),
+                    (None, Some(avatar), (Some(_), _)) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed name, updated avatar".to_string(),
+                    ),
+                    (None, None, (Some(_), Some(_))) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed name and avatar".to_string(),
+                    ),
+                    (None, None, (Some(_), None)) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed name".to_string(),
+                    ),
+                    (None, None, (None, Some(_))) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed avatar".to_string(),
+                    ),
+                    (None, None, (None, None)) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed name".to_string(),
+                    ),
                 }
             }
         };
@@ -1797,30 +1829,62 @@ impl RoomMessage {
             MembershipState::Invite => (Some("Invited".to_string()), "invited".to_string()),
             MembershipState::Knock => (Some("Knocked".to_string()), "knocked".to_string()),
             _ => {
-                if let Some(new_name) = event.clone().content.displayname {
-                    let mut old_name = None;
-                    if let Some(content) = event.prev_content() {
-                        if let Some(ref name) = content.displayname {
-                            old_name = Some(name.clone());
-                        }
-                    }
-                    (
+                match (
+                    &event.content.displayname,
+                    &event.content.avatar_url,
+                    event
+                        .prev_content()
+                        .map(|c| (c.avatar_url.as_ref(), c.displayname.as_ref()))
+                        .unwrap_or_default(),
+                ) {
+                    (Some(display_name), Some(avatar_name), (Some(old), _)) => (
                         Some("ProfileChanged".to_string()),
-                        format!("changed display name from {:?} to {}", old_name, new_name),
-                    )
-                } else if let Some(new_url) = event.clone().content.avatar_url {
-                    let mut old_url = None;
-                    if let Some(content) = event.prev_content() {
-                        if let Some(ref url) = content.avatar_url {
-                            old_url = Some(url.clone());
-                        }
-                    }
-                    (
+                        format!("Updated avatar & changed name to {old} -> {display_name}"),
+                    ),
+                    (Some(display_name), Some(avatar_name), (None, _)) => (
                         Some("ProfileChanged".to_string()),
-                        format!("changed avatar url from {:?} to {:?}", old_url, new_url),
-                    )
-                } else {
-                    (None, "unknown error".to_string())
+                        format!("Updated avatar & set name to{display_name}"),
+                    ),
+                    (Some(display_name), None, (Some(old), Some(_))) => (
+                        Some("ProfileChanged".to_string()),
+                        format!("Changed name {old} -> {display_name}, removed avatar"),
+                    ),
+                    (Some(display_name), None, (None, Some(_))) => (
+                        Some("ProfileChanged".to_string()),
+                        format!("Set name to {display_name}, removed avatar"),
+                    ),
+                    (Some(display_name), None, (Some(old), _)) => (
+                        Some("ProfileChanged".to_string()),
+                        format!("Changed name {old} -> {display_name}"),
+                    ),
+                    (Some(display_name), None, (None, _)) => (
+                        Some("ProfileChanged".to_string()),
+                        format!("Set name to {display_name}"),
+                    ),
+                    (None, Some(avatar), (None, _)) => (
+                        Some("ProfileChanged".to_string()),
+                        "Updated avatar".to_string(),
+                    ),
+                    (None, Some(avatar), (Some(_), _)) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed name, updated avatar".to_string(),
+                    ),
+                    (None, None, (Some(_), Some(_))) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed name and avatar".to_string(),
+                    ),
+                    (None, None, (Some(_), None)) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed name".to_string(),
+                    ),
+                    (None, None, (None, Some(_))) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed avatar".to_string(),
+                    ),
+                    (None, None, (None, None)) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed name".to_string(),
+                    ),
                 }
             }
         };
@@ -2992,16 +3056,19 @@ impl RoomMessage {
             }
             TimelineItemContent::ProfileChange(p) => {
                 info!("Edit event applies to a state event, discarding");
-                let text_desc = p.displayname_change().map(|change| {
-                    TextDesc::new(
-                        format!(
-                            "changed display name from {:?} to {:?}",
-                            change.old.clone(),
-                            change.new.clone(),
-                        ),
-                        None,
-                    )
-                });
+                let text_desc =
+                    p.displayname_change()
+                        .map(|change| match (&change.old, &change.new) {
+                            (Some(old), Some(new)) => {
+                                TextDesc::new(format!("changed name {old} -> {new}",), None)
+                            }
+                            (None, Some(new)) => TextDesc::new(format!("set name to {new}",), None),
+                            (Some(_old), None) => TextDesc::new("removed name".to_string(), None),
+                            (None, None) => {
+                                //  why would that ever happen?
+                                TextDesc::new("kept name unset".to_string(), None)
+                            }
+                        });
                 let image_desc = p.avatar_url_change().and_then(|change| {
                     change.new.as_ref().map(|uri| {
                         ImageDesc::new(

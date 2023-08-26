@@ -1,158 +1,23 @@
-import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter/features/activities/providers/notifications_providers.dart';
+import 'package:acter/features/activities/providers/session_providers.dart';
 import 'package:acter/features/activities/providers/notifiers/notifications_list_notifier.dart';
-import 'package:acter/features/activities/util.dart';
 import 'package:acter/features/activities/widgets/invitation_card.dart';
-import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter/features/activities/widgets/notification_card.dart';
+import 'package:acter/features/activities/widgets/session_card.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
-
-class NotificationCard extends ConsumerWidget {
-  final ffi.Notification notification;
-  const NotificationCard({super.key, required this.notification});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final unread = !notification.read();
-    final Widget? avatar;
-    final Widget room;
-    final roomId = notification.roomIdStr();
-    final brief = extractBrief(notification);
-    if (notification.hasRoom()) {
-      if (notification.isActerSpace()) {
-        final space = notification.space()!;
-        avatar = Consumer(
-          builder: (context, ref, child) {
-            final spaceProfile = ref.watch(spaceProfileDataProvider(space));
-            return InkWell(
-              onTap: () => context.goNamed(
-                Routes.space.name,
-                pathParameters: {'spaceIdOrAlias': roomId},
-              ),
-              child: spaceProfile.when(
-                data: (profile) => ActerAvatar(
-                  mode: DisplayMode.Space,
-                  displayName: profile.displayName,
-                  uniqueId: roomId,
-                  avatar: profile.getAvatarImage(),
-                  size: 48,
-                ),
-                error: (err, stackTrace) {
-                  debugPrint('Failed to load space due to $err');
-                  return ActerAvatar(
-                    mode: DisplayMode.Space,
-                    displayName: roomId,
-                    uniqueId: roomId,
-                    size: 48,
-                  );
-                },
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            );
-          },
-        );
-        room = Consumer(
-          builder: (context, ref, child) {
-            final spaceProfile = ref.watch(spaceProfileDataProvider(space));
-            return spaceProfile.when(
-              data: (value) => Text(value.displayName ?? roomId),
-              error: (error, stackTrace) =>
-                  Text('Failed to load space Text(roomId)due to $error'),
-              loading: () => Text(roomId),
-            );
-          },
-        );
-      } else {
-        final convo = notification.convo()!;
-        avatar = Consumer(
-          builder: (context, ref, child) {
-            final profile = ref.watch(chatProfileDataProvider(convo));
-            return InkWell(
-              onTap: () => context.goNamed(
-                Routes.chatroom.name,
-                pathParameters: {'roomId': roomId},
-                extra: convo,
-              ),
-              child: profile.when(
-                data: (profile) => ActerAvatar(
-                  mode: DisplayMode.GroupChat,
-                  displayName: profile.displayName,
-                  uniqueId: roomId,
-                  avatar: profile.getAvatarImage(),
-                  size: 48,
-                ),
-                error: (err, stackTrace) {
-                  debugPrint('Failed to load room due to $err');
-                  return ActerAvatar(
-                    mode: DisplayMode.GroupChat,
-                    displayName: roomId,
-                    uniqueId: roomId,
-                    size: 48,
-                  );
-                },
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            );
-          },
-        );
-        room = Consumer(
-          builder: (context, ref, child) {
-            final profile = ref.watch(chatProfileDataProvider(convo));
-            return profile.when(
-              data: (value) => Text(value.displayName ?? roomId),
-              error: (error, stackTrace) =>
-                  Text('Failed to load room due to $error'),
-              loading: () => Text(roomId),
-            );
-          },
-        );
-      }
-    } else {
-      avatar = null;
-      room = Text(roomId);
-    }
-    return Card(
-      elevation: unread ? 1 : 0,
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(15),
-        leading: SizedBox(height: 50, width: 50, child: avatar),
-        onTap: () {
-          switch (brief.route) {
-            case Routes.chatroom:
-              context.pushNamed(
-                Routes.chatroom.name,
-                pathParameters: {
-                  'roomId': roomId
-                }, // FIXME: fails at the moment
-              );
-              return;
-            default:
-            // nothing for now.
-          }
-        },
-        title: Text(brief.title),
-        subtitle: room,
-      ),
-    );
-  }
-}
 
 class ActivitiesPage extends ConsumerWidget {
   const ActivitiesPage({super.key});
@@ -161,8 +26,58 @@ class ActivitiesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // ignore: unused_local_variable
     final allDone = ref.watch(hasActivitiesProvider) == HasActivities.none;
+    final allSessions = ref.watch(allSessionsProvider);
     final invitations = ref.watch(invitationListProvider);
     final children = [];
+    allSessions.when(
+      data: (data) {
+        final sessions = data.where((sess) => !sess.isVerified()).toList();
+        if (sessions.length == 1) {
+          children.add(
+            SliverToBoxAdapter(
+              child: SessionCard(deviceRecord: sessions[0]),
+            ),
+          );
+        } else if (sessions.length > 1) {
+          children.add(
+            SliverToBoxAdapter(
+              child: Card(
+                child: ListTile(
+                  leading: const Icon(Atlas.warning_bold),
+                  title: Text(
+                    'There are ${sessions.length} unverified sessions logged in',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  trailing: ElevatedButton(
+                    onPressed: () {
+                      context.pushNamed(Routes.settingSessions.name);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.neutral,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.success,
+                      ),
+                      foregroundColor: Theme.of(context).colorScheme.neutral6,
+                      textStyle: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    child: const Text('Review'),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+      },
+      error: (error, stack) {
+        return const Text("Couldn't load unverified sessions");
+      },
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
     if (invitations.isNotEmpty) {
       children.add(
         SliverToBoxAdapter(
@@ -181,7 +96,7 @@ class ActivitiesPage extends ConsumerWidget {
       children.add(
         SliverList(
           delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) {
+            (BuildContext ctx, int index) {
               return InvitationCard(
                 invitation: invitations[index],
                 avatarColor: Colors.white,
@@ -228,9 +143,10 @@ class ActivitiesPage extends ConsumerWidget {
           RiverPagedBuilder<Next?, ffi.Notification>.autoDispose(
             firstPageKey: const Next(isStart: true),
             provider: notificationsListProvider,
-            itemBuilder: (context, item, index) =>
-                NotificationCard(notification: item),
-            noItemsFoundIndicatorBuilder: (context, controller) => weAreEmpty
+            itemBuilder: (ctx, item, index) => NotificationCard(
+              notification: item,
+            ),
+            noItemsFoundIndicatorBuilder: (ctx, controller) => weAreEmpty
                 ? SizedBox(
                     // nothing found, even in the section before. Show nice fallback
                     height: 250,
