@@ -97,7 +97,7 @@ class TaskDetailPage extends StatelessWidget {
       'Copy Link',
       'Close Comment',
       'Delete',
-      'View change log'
+      'View change log',
     ];
     List<Icon> optionIcons = [
       const Icon(
@@ -153,7 +153,7 @@ class TaskDetailPage extends StatelessWidget {
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
-            )
+            ),
           ],
         );
       },
@@ -283,7 +283,7 @@ class _AssignWidget extends StatelessWidget {
             '+ Assign',
             style: Theme.of(context).textTheme.labelSmall,
           ),
-        )
+        ),
       ],
     );
   }
@@ -333,13 +333,13 @@ class _DueDateWidget extends StatelessWidget {
       'Later Today',
       'Tomorrow',
       'Next Week',
-      'Pick a Date & Time'
+      'Pick a Date & Time',
     ];
     const List<Icon> optionIcons = [
       Icon(Atlas.clock),
       Icon(Atlas.calendar),
       Icon(Atlas.calendar),
-      Icon(Atlas.calendar_schedule)
+      Icon(Atlas.calendar_schedule),
     ];
 
     showModalBottomSheet(
@@ -542,7 +542,7 @@ class _AddFileWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -563,7 +563,7 @@ class _AddFileWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -584,7 +584,7 @@ class _AddFileWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -752,7 +752,7 @@ class _DiscussionWidget extends StatelessWidget {
                   ),
                 );
               },
-            )
+            ),
           ],
         ),
       ),
@@ -791,7 +791,7 @@ class _DiscussionWidget extends StatelessWidget {
                   children: [
                     optionIcons[index],
                     const SizedBox(height: 8),
-                    Text(options[index])
+                    Text(options[index]),
                   ],
                 ),
               ),

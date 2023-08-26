@@ -46,7 +46,7 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                             setState(() => showLink = newValue);
                           }
                         },
-                      )
+                      ),
                     ],
                   ),
                   Visibility(
@@ -75,10 +75,10 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                             'https://acter/chat/group/#erifdjknsdjhndlsnGdhsuSsyUJKHSiojsjSHNIjsjfds{LIJHNmdjsoifkdsodjms',
                             style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
-                        )
+                        ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -111,7 +111,7 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                                 fontSize: 16,
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -145,7 +145,7 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                                 fontSize: 16,
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -179,7 +179,7 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                                 fontSize: 16,
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -187,7 +187,7 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

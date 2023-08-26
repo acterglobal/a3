@@ -60,7 +60,7 @@ class ReplyViewState extends State<ReplyView> {
                             fontSize: 14,
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ],

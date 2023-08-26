@@ -77,7 +77,7 @@ class ToDoCommentViewState extends State<ToDoCommentView> {
                               ),
                             ],
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -96,7 +96,7 @@ class ToDoCommentViewState extends State<ToDoCommentView> {
                         widget.commentModel.likeCount.toString(),
                         style: const TextStyle(color: Colors.white),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ],

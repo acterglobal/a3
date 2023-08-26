@@ -489,7 +489,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
               ),
             );
           },
-        )
+        ),
       ],
     );
   }

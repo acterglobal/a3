@@ -182,7 +182,7 @@ class _TabBarWidgetState extends State<_TabBarWidget> {
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
                 Column(
@@ -235,7 +235,7 @@ class _TabBarWidgetState extends State<_TabBarWidget> {
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ],

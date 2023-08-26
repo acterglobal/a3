@@ -63,7 +63,7 @@ final defaultServers = parseServers(defaultServersStr);
 const List<TargetPlatform> desktopPlatforms = [
   TargetPlatform.macOS,
   TargetPlatform.linux,
-  TargetPlatform.windows
+  TargetPlatform.windows,
 ];
 
 // hide bottom nav at locations.

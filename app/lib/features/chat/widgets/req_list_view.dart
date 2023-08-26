@@ -43,7 +43,7 @@ class ReqListView extends StatelessWidget {
                 style: TextStyle(fontSize: 16),
               ),
             ],
-          )
+          ),
         ],
       ),
     );

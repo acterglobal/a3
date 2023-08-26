@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -162,7 +161,7 @@ class CommentInputState extends ConsumerState<CommentInput> {
                 onEmojiSelected(emoji);
               },
               onBackspacePressed: onBackspacePressed,
-            )
+            ),
           ],
         ),
       ),

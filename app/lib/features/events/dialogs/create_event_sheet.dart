@@ -195,7 +195,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
               const SizedBox(height: 15),
@@ -236,7 +236,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                       );
                       parentNotifier.state = newSelectedSpaceId;
                     },
-                  )
+                  ),
                 ],
               ),
             ],

@@ -159,7 +159,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         },
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyK): () {
           context.pushNamed(Routes.quickJump.name);
-        }
+        },
       },
       child: Scaffold(
         body: Screenshot(
@@ -176,7 +176,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                             const LinearProgressIndicator(
                           semanticsLabel: 'Loading first sync',
                         ),
-                      )
+                      ),
                     },
                   )
                 : null,
@@ -199,7 +199,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                             labelType: NavigationRailLabelType.all,
                           );
                         },
-                      )
+                      ),
                     },
                   )
                 : null,
@@ -255,7 +255,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                         builder: (BuildContext ctx) {
                           return widget.child;
                         },
-                      )
+                      ),
                     },
                   )
                 : null,

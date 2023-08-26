@@ -155,7 +155,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                     );
                     parentNotifier.state = newSelectedSpaceId;
                   },
-                )
+                ),
               ],
             ),
           ],

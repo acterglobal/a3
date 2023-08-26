@@ -14,7 +14,6 @@ import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:swipe_to/swipe_to.dart';
 
 class BubbleBuilder extends ConsumerWidget {

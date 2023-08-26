@@ -137,7 +137,7 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
           const Padding(
             padding: EdgeInsets.only(left: 12),
             child: Icon(Atlas.group_team_collective),
-          )
+          ),
         ],
       ),
     );

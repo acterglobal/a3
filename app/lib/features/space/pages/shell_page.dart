@@ -270,7 +270,7 @@ class _ShellHeader extends ConsumerWidget {
                     textAlign: TextAlign.center,
                     textScaleFactor: 0.8,
                   ),
-                )
+                ),
             ],
           ),
         );

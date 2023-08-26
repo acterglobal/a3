@@ -41,7 +41,7 @@ class _ToDoPageXState extends State<ToDoPageX> {
       ToDoListView(controller: todoController),
       const ToDoMinePage(),
       const Placeholder(),
-      const Placeholder()
+      const Placeholder(),
     ];
   }
 
@@ -80,7 +80,7 @@ class _ToDoPageXState extends State<ToDoPageX> {
                 color: Colors.white,
               ),
             ),
-          )
+          ),
         ],
       ),
       body: _BodyWidget(

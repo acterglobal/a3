@@ -8,7 +8,7 @@ import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart'
 import 'package:acter/features/chat/providers/notifiers/messages_notifier.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Convo, FfiListConvo, Member;
+    show Convo, FfiListConvo;
 import 'package:flutter/material.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

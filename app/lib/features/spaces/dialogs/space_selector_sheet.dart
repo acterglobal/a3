@@ -80,7 +80,7 @@ Future<String?> selectSpaceDrawer({
                       child: Text('loading'),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),

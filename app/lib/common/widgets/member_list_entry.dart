@@ -111,7 +111,7 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
                   keyboardType:
                       const TextInputType.numberWithOptions(signed: true),
                   inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
+                    FilteringTextInputFormatter.digitsOnly,
                   ], // Only numbers
                   validator: (String? value) {
                     return currentMemberStatus == 'Custom' &&
