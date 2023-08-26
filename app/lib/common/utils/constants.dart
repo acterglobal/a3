@@ -1,7 +1,11 @@
 import 'package:flutter/foundation.dart';
 
 const String heart = '\u{2764}';
+const String thumbsUp = '\u{1F44D}';
+const String prayHands = '\u{1F64F}';
 const String faceWithTears = '\u{1F602}';
+const String raisedHands = '\u{1F64C}';
+const String clappingHands = '\u{1F44F}';
 const String disappointedFace = '\u{1F625}';
 const String angryFace = '\u{1F621}';
 const String astonishedFace = '\u{1F632}';

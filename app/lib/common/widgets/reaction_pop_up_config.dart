@@ -30,7 +30,6 @@ class ReactionPopupConfiguration {
   final double? maxWidth;
   final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry? padding;
-  final EmojiConfiguration? emojiConfig;
   final bool showGlassMorphismEffect;
   final StringsCallBack? onEmojiTap;
   final GlassMorphismConfiguration? glassMorphismConfig;
@@ -46,16 +45,6 @@ class ReactionPopupConfiguration {
     this.onEmojiTap,
     this.emojiConfig,
     this.glassMorphismConfig,
-  });
-}
-
-class EmojiConfiguration {
-  final List<String>? emojiList;
-  final double? size;
-
-  EmojiConfiguration({
-    this.emojiList,
-    this.size,
   });
 }
 

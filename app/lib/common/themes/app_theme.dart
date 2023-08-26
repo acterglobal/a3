@@ -4,12 +4,18 @@ import 'dart:io';
 
 bool isDesktop = (Platform.isLinux || Platform.isWindows || Platform.isMacOS);
 
+const emojiFallbackFonts = [
+  'Apple Color Emoji', // we fallback to system fonts first
+  'Segoe UI Emoji',
+  'NotoEmoji',
+];
+const emojiFont = 'NotoEmoji';
+
 class EmojiConfig {
-  static final TextStyle emojiTextStyle =
-      const TextStyle(fontFamily: 'NotoEmoji');
+  static const TextStyle emojiTextStyle =
+      TextStyle(fontFamily: emojiFont, fontFamilyFallback: emojiFallbackFonts);
   static final checkPlatformCompatibility = !isDesktop;
   static final emojiSizeMax = 32 * ((!kIsWeb && Platform.isIOS) ? 1.30 : 1.0);
-  static final fallbackFonts = isDesktop ? ['Noto Color Emoji'] : null;
 }
 
 AppTheme currentTheme = AppTheme();
@@ -69,8 +75,8 @@ class AppTheme {
   static ThemeData get theme {
     return ThemeData(
       fontFamily: 'Inter',
-      fontFamilyFallback: ['Apple Color Emoji', 'NotoEmoji', 'Segoe UI Emoji'],
-      textTheme: TextTheme(
+      fontFamilyFallback: emojiFallbackFonts,
+      textTheme: const TextTheme(
         headlineLarge: TextStyle(
           color: Colors.white,
           fontSize: 36,
@@ -175,14 +181,14 @@ class AppTheme {
             color: Color(0xFF3AE3E0),
           ),
         ),
-        hintStyle: TextStyle(
-          color: const Color(0xFF898989),
+        hintStyle: const TextStyle(
+          color: Color(0xFF898989),
           fontWeight: FontWeight.w300,
           fontSize: 14,
         ),
       ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: const Color(0xff1D293E),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Color(0xff1D293E),
         unselectedLabelStyle: TextStyle(
           color: Colors.white,
           fontSize: 12,
@@ -196,14 +202,14 @@ class AppTheme {
           fontWeight: FontWeight.w400,
           height: 1.5,
         ),
-        selectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
-        unselectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
+        selectedIconTheme: IconThemeData(color: Colors.white, size: 18),
+        unselectedIconTheme: IconThemeData(color: Colors.white, size: 18),
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),
-      navigationRailTheme: NavigationRailThemeData(
-        backgroundColor: const Color(0xff1D293E),
-        indicatorColor: const Color(0xff1E4E7B),
+      navigationRailTheme: const NavigationRailThemeData(
+        backgroundColor: Color(0xff1D293E),
+        indicatorColor: Color(0xff1E4E7B),
         unselectedLabelTextStyle: TextStyle(
           color: Colors.white,
           fontSize: 12,
@@ -214,8 +220,8 @@ class AppTheme {
           fontSize: 12,
           fontWeight: FontWeight.w400,
         ),
-        selectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
-        unselectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
+        selectedIconTheme: IconThemeData(color: Colors.white, size: 18),
+        unselectedIconTheme: IconThemeData(color: Colors.white, size: 18),
       ),
     );
   }

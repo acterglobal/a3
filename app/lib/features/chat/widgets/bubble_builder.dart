@@ -10,7 +10,6 @@ import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -165,7 +164,7 @@ class _ChatBubble extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(height: 5),
-                          child
+                          child,
                         ],
                       )
                     : child,
@@ -303,7 +302,10 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
                       ? AppTheme.theme.colorScheme.inversePrimary
                       : null,
                   labelPadding: const EdgeInsets.only(left: 2, right: 1),
-                  avatar: Text(key),
+                  avatar: Text(
+                    key,
+                    style: EmojiConfig.emojiTextStyle,
+                  ),
                   label: Text(recordsCount!.toString()),
                 ),
               );
@@ -402,7 +404,7 @@ class _EmojiRow extends ConsumerWidget {
     return Visibility(
       visible: message.id == chatRoomNotifier.currentMessageId,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 202, maxHeight: 42),
+        constraints: const BoxConstraints(maxWidth: 238, maxHeight: 42),
         padding: const EdgeInsets.all(8),
         margin: !isAuthor
             ? const EdgeInsets.only(bottom: 8, left: 8)

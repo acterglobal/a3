@@ -54,7 +54,6 @@ class EmojiPickerWidget extends StatelessWidget {
               onBackspacePressed: onBackspacePressed,
               config: Config(
                 columns: cols,
-                emojiTextStyle: EmojiConfig.emojiTextStyle,
                 checkPlatformCompatibility:
                     EmojiConfig.checkPlatformCompatibility,
                 emojiSizeMax: EmojiConfig.emojiSizeMax,
