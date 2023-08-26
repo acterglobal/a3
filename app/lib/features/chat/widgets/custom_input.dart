@@ -11,6 +11,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -37,6 +38,23 @@ class CustomChatInput extends ConsumerWidget {
     final showReplyView = ref.watch(
       chatInputProvider.select((ci) => ci.showReplyView),
     );
+
+    void handleEmojiSelected(Category? category, Emoji emoji) {
+      final mentionState = ref.read(mentionKeyProvider).currentState!;
+      mentionState.controller!.text += emoji.emoji;
+      ref.read(chatInputProvider.notifier).showSendBtn(true);
+    }
+
+    void handleBackspacePressed() {
+      final mentionState = ref.read(mentionKeyProvider).currentState!;
+      final newValue =
+          mentionState.controller!.text.characters.skipLast(1).string;
+      mentionState.controller!.text = newValue;
+      if (newValue.isEmpty) {
+        ref.read(chatInputProvider.notifier).showSendBtn(false);
+      }
+    }
+
     return Column(
       children: [
         Visibility(
@@ -203,6 +221,8 @@ class CustomChatInput extends ConsumerWidget {
               MediaQuery.of(context).size.width,
               MediaQuery.of(context).size.height / 2,
             ),
+            onEmojiSelected: handleEmojiSelected,
+            onBackspacePressed: handleBackspacePressed,
           ),
         ),
       ],
