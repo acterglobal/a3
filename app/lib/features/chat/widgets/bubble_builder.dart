@@ -14,6 +14,7 @@ import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:swipe_to/swipe_to.dart';
 
 class BubbleBuilder extends ConsumerWidget {
@@ -319,16 +320,53 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
   //Emoji reaction info bottom sheet.
   void showEmojiReactionsSheet(Map<String, dynamic> reactions) {
     List<String> keys = reactions.keys.toList();
-    num count = 0;
+    Map<String, List<String>> reactionsByUsers = {};
+    Map<String, List<String>> usersByReaction = {};
+    reactions.forEach((key, value) {
+      usersByReaction.putIfAbsent(
+        key,
+        () => List<String>.empty(growable: true),
+      );
+      for (final reaction in value) {
+        final userId = reaction.senderId().toString();
+        reactionsByUsers.putIfAbsent(
+          userId,
+          () => List<String>.empty(growable: true),
+        );
+        usersByReaction[key]!.add(userId);
+        reactionsByUsers[userId]!.add(key);
+      }
+    });
+    // sort the users per item on the number of emojis sent - highest first
+    usersByReaction.forEach((key, users) {
+      users.sort(
+        (userIdA, userIdB) => reactionsByUsers[userIdB]!
+            .length
+            .compareTo(reactionsByUsers[userIdA]!.length),
+      );
+    });
+    final allUsers = reactionsByUsers.keys.toList();
+    allUsers.sort(
+      (userIdA, userIdB) => reactionsByUsers[userIdB]!
+          .length
+          .compareTo(reactionsByUsers[userIdA]!.length),
+    );
+
+    num total = 0;
     if (mounted) {
       setState(() {
         reactions.forEach((key, value) {
-          count += value.length;
+          total += value.length;
           reactionTabs.add(
-            Tab(text: '$key+${value.length}'),
+            Tab(
+              child: Chip(
+                avatar: Text(key, style: EmojiConfig.emojiTextStyle),
+                label: Text('${value.length}'),
+              ),
+            ),
           );
         });
-        reactionTabs.insert(0, (Tab(text: 'All $count')));
+        reactionTabs.insert(0, (Tab(child: Chip(label: Text('All $total')))));
         tabBarController = TabController(
           length: reactionTabs.length,
           vsync: this,
@@ -372,8 +410,15 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
                   viewportFraction: 1.0,
                   controller: tabBarController,
                   children: [
-                    _ReactionListing(emojis: keys),
-                    for (var count in keys) _ReactionListing(emojis: [count]),
+                    _ReactionListing(
+                      users: allUsers,
+                      usersMap: reactionsByUsers,
+                    ),
+                    for (var key in keys)
+                      _ReactionListing(
+                        users: usersByReaction[key]!,
+                        usersMap: reactionsByUsers,
+                      ),
                   ],
                 ),
               ),
@@ -475,18 +520,22 @@ class _OriginalMessageBuilder extends ConsumerWidget {
 }
 
 class _ReactionListing extends StatelessWidget {
-  final List<String> emojis;
+  final List<String> users;
+  final Map<String, List<String>> usersMap; // UserId -> List of Emoji
 
-  const _ReactionListing({required this.emojis});
+  const _ReactionListing({required this.users, required this.usersMap});
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 10),
       shrinkWrap: true,
-      itemCount: emojis.length,
+      itemCount: users.length,
       itemBuilder: (BuildContext context, int index) {
-        return EmojiReactionItem(emoji: emojis[index]);
+        return EmojiReactionItem(
+          userId: users[index],
+          emojis: usersMap[users[index]]!,
+        );
       },
       separatorBuilder: (BuildContext context, int index) {
         return const SizedBox(height: 12);
