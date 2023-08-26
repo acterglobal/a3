@@ -1,14 +1,18 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 
 class EmojiConfig {
-  static final emojiTextStyle =
-      Platform.isLinux ? GoogleFonts.notoColorEmoji() : null;
+  static final TextStyle emojiTextStyle =
+      ((Platform.isLinux || Platform.isWindows || Platform.isMacOS)
+              ? GoogleFonts.notoColorEmoji()
+              : null) ??
+          AppTheme.theme.textTheme.bodyMedium!;
   static final checkPlatformCompatibility = Platform.isLinux ? false : true;
   static final emojiSizeMax = 32 * ((!kIsWeb && Platform.isIOS) ? 1.30 : 1.0);
 }

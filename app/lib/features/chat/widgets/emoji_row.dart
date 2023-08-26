@@ -63,7 +63,8 @@ class EmojiRow extends StatelessWidget {
                 onTap: () => onEmojiTap(emoji),
                 child: Text(
                   emoji,
-                  style: TextStyle(fontSize: size ?? 18),
+                  style:
+                      EmojiConfig.emojiTextStyle.copyWith(fontSize: size ?? 18),
                 ),
               ),
             InkWell(
