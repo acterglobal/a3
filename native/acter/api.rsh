@@ -1790,7 +1790,10 @@ object VerificationEvent {
     fn get_content(key: string) -> Option<string>;
 
     /// Get emoji array
-    fn get_emojis() -> Vec<VerificationEmoji>;
+    fn emojis() -> Vec<VerificationEmoji>;
+
+    /// Get emoji array
+    fn get_emojis() -> Future<Result<Vec<VerificationEmoji>>>;
 
     /// Bob accepts the verification request from Alice
     fn accept_verification_request() -> Future<Result<bool>>;

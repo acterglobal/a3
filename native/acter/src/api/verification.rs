@@ -114,8 +114,63 @@ impl VerificationEvent {
         self.emojis.clone_from(&emojis);
     }
 
-    pub fn get_emojis(&self) -> Vec<VerificationEmoji> {
+    // when this device triggered verification of other device, it can get emojis from SAS state
+    pub fn emojis(&self) -> Vec<VerificationEmoji> {
         self.emojis.clone()
+    }
+
+    // when other device triggered verification of this device, it can get emojis from remote server
+    pub async fn get_emojis(&self) -> Result<Vec<VerificationEmoji>> {
+        let client = self.client.clone();
+        let sender = self.sender.clone();
+        let event_id = self.event_id.clone();
+        let txn_id = self.txn_id.clone();
+        RUNTIME
+            .spawn(async move {
+                if let Some(event_id) = event_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, event_id.as_str())
+                        .await
+                    {
+                        if let Some(items) = sas.emoji() {
+                            let sequence = items
+                                .iter()
+                                .map(|e| VerificationEmoji {
+                                    symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
+                                    description: e.description.to_string(),
+                                })
+                                .collect::<Vec<VerificationEmoji>>();
+                            return Ok(sequence);
+                        } else {
+                            return Ok(vec![]);
+                        }
+                    }
+                } else if let Some(txn_id) = txn_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, txn_id.as_str())
+                        .await
+                    {
+                        if let Some(items) = sas.emoji() {
+                            let sequence = items
+                                .iter()
+                                .map(|e| VerificationEmoji {
+                                    symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
+                                    description: e.description.to_string(),
+                                })
+                                .collect::<Vec<VerificationEmoji>>();
+                            return Ok(sequence);
+                        } else {
+                            return Ok(vec![]);
+                        }
+                    }
+                }
+                // request may be timed out
+                info!("Could not get verification object");
+                Ok(vec![])
+            })
+            .await?
     }
 
     pub async fn accept_verification_request(&self) -> Result<bool> {
@@ -281,11 +336,15 @@ impl VerificationEvent {
             .client
             .device_id()
             .context("guest user cannot get device id")?;
+        warn!("was_triggered_from_this_device device_id: {}", device_id.to_string());
         if let Some(other_device_id) = self.content.get("other_device_id") {
+            warn!("was_triggered_from_this_device other_device_id: {}", *other_device_id);
             Ok(*other_device_id == *device_id)
         } else if let Some(from_device) = self.content.get("from_device") {
+            warn!("was_triggered_from_this_device from_device: {}", *from_device);
             Ok(*from_device == *device_id)
         } else {
+            warn!("neither other_device_id nor from_device");
             Ok(false)
         }
     }
