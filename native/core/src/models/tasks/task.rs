@@ -48,6 +48,20 @@ impl Task {
         self.inner.progress_percent
     }
 
+    pub fn utc_due_rfc3339(&self) -> Option<String> {
+        self.inner
+            .utc_due
+            .as_ref()
+            .map(|d| d.to_rfc3339_opts(chrono::SecondsFormat::Secs, true))
+    }
+
+    pub fn utc_start_rfc3339(&self) -> Option<String> {
+        self.inner
+            .utc_start
+            .as_ref()
+            .map(|d| d.to_rfc3339_opts(chrono::SecondsFormat::Secs, true))
+    }
+
     pub fn updater(&self) -> TaskUpdateBuilder {
         TaskUpdateBuilder::default()
             .task(self.meta.event_id.clone())

@@ -35,5 +35,5 @@ final tasksListsProvider =
 final spaceTasksListsProvider =
     FutureProvider.family<List<TaskList>, String>((ref, spaceId) async {
   final taskLists = await ref.watch(tasksListsProvider.future);
-  return taskLists.where((t) => t.spaceId() == spaceId).toList();
+  return taskLists.where((t) => t.spaceIdStr() == spaceId).toList();
 });

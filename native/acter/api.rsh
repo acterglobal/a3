@@ -878,7 +878,7 @@ object Task {
     fn title() -> string;
 
     /// the description of this task
-    fn description_text() -> Option<string>;
+    fn description() -> Option<TextDesc>;
 
     /// the users assigned
     fn assignees() -> Vec<UserId>;
@@ -903,10 +903,10 @@ object Task {
     fn priority() -> Option<u8>;
 
     /// When this is due
-    fn utc_due() -> Option<UtcDateTime>;
+    fn utc_due_rfc3339() -> Option<string>;
 
     /// When this was started
-    fn utc_start() -> Option<UtcDateTime>;
+    fn utc_start_rfc3339() -> Option<string>;
 
     /// Has this been colored in?
     fn color() -> Option<EfkColor>;
@@ -1070,7 +1070,7 @@ object TaskList {
     fn name() -> string;
 
     /// the description of this task list
-    fn description_text() -> Option<string>;
+    fn description() -> Option<TextDesc>;
 
     /// who wants to be informed on updates about this?
     fn subscribers() -> Vec<UserId>;
@@ -1112,7 +1112,7 @@ object TaskList {
     fn space() -> Space;
 
     /// the id of the space this TaskList belongs to
-    fn space_id() -> string;
+    fn space_id_str() -> string;
 }
 
 object TaskListDraft {

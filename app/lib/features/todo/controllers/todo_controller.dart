@@ -95,6 +95,7 @@ class ToDoController extends GetxController {
       List<TaskList> taskList = (await group.taskLists()).toList();
       for (var todo in taskList) {
         List<ToDoTask> tasks = await getTodoTasks(todo);
+        final desc = todo.description();
         ToDoList item = ToDoList(
           index: todo.sortOrder(),
           name: todo.name(),
@@ -105,7 +106,7 @@ class ToDoController extends GetxController {
           tasks: tasks,
           subscribers: [],
           color: todo.color() as Color?,
-          description: todo.descriptionText() ?? '',
+          description: desc != null ? desc.body() : '',
           tags: [],
           role: todo.role() ?? '',
           timezone: todo.timeZone() ?? '',
@@ -135,6 +136,8 @@ class ToDoController extends GetxController {
           }
         }
         CommentsManager commentsManager = await task.comments();
+        final desc = task.description();
+        final due = task.utcDueRfc3339();
         ToDoTask item = ToDoTask(
           index: task.sortOrder(),
           name: task.title(),
@@ -144,12 +147,10 @@ class ToDoController extends GetxController {
           categories: asDartStringList(task.categories().toList()) ?? [],
           tags: asDartStringList(task.keywords().toList()) ?? [],
           subscribers: subscribers,
-          description: task.descriptionText() ?? '',
+          description: desc != null ? desc.body() : '',
           priority: task.priority() ?? 0,
           progressPercent: task.progressPercent() ?? 0,
-          due: task.utcDue() != null
-              ? DateTime.parse(task.utcDue()!.toRfc3339())
-              : null,
+          due: due != null ? DateTime.parse(due) : null,
         );
         todoTasks.add(item);
       }
@@ -192,10 +193,11 @@ class ToDoController extends GetxController {
     listDraft.descriptionText(description ?? '');
     final eventId = (await listDraft.send()).toString();
     TaskList list = await client.waitForTaskList(eventId, null);
+    final desc = list.description();
     final ToDoList newItem = ToDoList(
       name: list.name(),
       team: team,
-      description: list.descriptionText() ?? '',
+      description: desc != null ? desc.body() : '',
       tasks: [],
       taskDraft: list.taskBuilder(),
       taskUpdateDraft: list.updateBuilder(),
@@ -218,15 +220,15 @@ class ToDoController extends GetxController {
     // wait for task to come down to wire.
     final Task task = await client.waitForTask(eventId, null);
     final CommentsManager commentsManager = await task.comments();
+    final desc = task.description();
+    final due = task.utcDueRfc3339();
     final ToDoTask newItem = ToDoTask(
       name: task.title(),
       progressPercent: task.progressPercent() ?? 0,
       taskUpdateDraft: task.updateBuilder(),
       commentsManager: commentsManager,
-      due: task.utcDue() != null
-          ? DateTime.parse(task.utcDue()!.toRfc3339())
-          : null,
-      description: task.descriptionText() ?? '',
+      due: due != null ? DateTime.parse(due) : null,
+      description: desc != null ? desc.body() : '',
       assignees: [],
       subscribers: [],
       categories: [],

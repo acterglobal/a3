@@ -64,7 +64,7 @@ class TaskListCard extends ConsumerWidget {
     final tasks = ref.watch(tasksProvider(taskList));
     final space = taskList.space();
     final spaceInfo = ref.watch(spaceProfileDataProvider(space));
-    final description = taskList.descriptionText();
+    final description = taskList.description();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -89,7 +89,7 @@ class TaskListCard extends ConsumerWidget {
                 title: Text(
                   taskList.name(),
                 ),
-                subtitle: description != null ? Text(description) : null,
+                subtitle: description != null ? Text(description.body()) : null,
               ),
               tasks.when(
                 data: (overview) {

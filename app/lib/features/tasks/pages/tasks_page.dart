@@ -77,7 +77,7 @@ class TasksPage extends ConsumerWidget {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

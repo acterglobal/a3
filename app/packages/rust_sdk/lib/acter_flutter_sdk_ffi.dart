@@ -14148,14 +14148,14 @@ class Api {
       _TaskTitleReturn Function(
         int,
       )>();
-  late final _taskDescriptionTextPtr = _lookup<
+  late final _taskDescriptionPtr = _lookup<
       ffi.NativeFunction<
-          _TaskDescriptionTextReturn Function(
+          _TaskDescriptionReturn Function(
             ffi.Int64,
-          )>>("__Task_description_text");
+          )>>("__Task_description");
 
-  late final _taskDescriptionText = _taskDescriptionTextPtr.asFunction<
-      _TaskDescriptionTextReturn Function(
+  late final _taskDescription = _taskDescriptionPtr.asFunction<
+      _TaskDescriptionReturn Function(
         int,
       )>();
   late final _taskAssigneesPtr = _lookup<
@@ -14198,24 +14198,24 @@ class Api {
       _TaskPriorityReturn Function(
         int,
       )>();
-  late final _taskUtcDuePtr = _lookup<
+  late final _taskUtcDueRfc3339Ptr = _lookup<
       ffi.NativeFunction<
-          _TaskUtcDueReturn Function(
+          _TaskUtcDueRfc3339Return Function(
             ffi.Int64,
-          )>>("__Task_utc_due");
+          )>>("__Task_utc_due_rfc3339");
 
-  late final _taskUtcDue = _taskUtcDuePtr.asFunction<
-      _TaskUtcDueReturn Function(
+  late final _taskUtcDueRfc3339 = _taskUtcDueRfc3339Ptr.asFunction<
+      _TaskUtcDueRfc3339Return Function(
         int,
       )>();
-  late final _taskUtcStartPtr = _lookup<
+  late final _taskUtcStartRfc3339Ptr = _lookup<
       ffi.NativeFunction<
-          _TaskUtcStartReturn Function(
+          _TaskUtcStartRfc3339Return Function(
             ffi.Int64,
-          )>>("__Task_utc_start");
+          )>>("__Task_utc_start_rfc3339");
 
-  late final _taskUtcStart = _taskUtcStartPtr.asFunction<
-      _TaskUtcStartReturn Function(
+  late final _taskUtcStartRfc3339 = _taskUtcStartRfc3339Ptr.asFunction<
+      _TaskUtcStartRfc3339Return Function(
         int,
       )>();
   late final _taskColorPtr = _lookup<
@@ -15143,14 +15143,14 @@ class Api {
       _TaskListNameReturn Function(
         int,
       )>();
-  late final _taskListDescriptionTextPtr = _lookup<
+  late final _taskListDescriptionPtr = _lookup<
       ffi.NativeFunction<
-          _TaskListDescriptionTextReturn Function(
+          _TaskListDescriptionReturn Function(
             ffi.Int64,
-          )>>("__TaskList_description_text");
+          )>>("__TaskList_description");
 
-  late final _taskListDescriptionText = _taskListDescriptionTextPtr.asFunction<
-      _TaskListDescriptionTextReturn Function(
+  late final _taskListDescription = _taskListDescriptionPtr.asFunction<
+      _TaskListDescriptionReturn Function(
         int,
       )>();
   late final _taskListSubscribersPtr = _lookup<
@@ -15283,14 +15283,14 @@ class Api {
       int Function(
         int,
       )>();
-  late final _taskListSpaceIdPtr = _lookup<
+  late final _taskListSpaceIdStrPtr = _lookup<
       ffi.NativeFunction<
-          _TaskListSpaceIdReturn Function(
+          _TaskListSpaceIdStrReturn Function(
             ffi.Int64,
-          )>>("__TaskList_space_id");
+          )>>("__TaskList_space_id_str");
 
-  late final _taskListSpaceId = _taskListSpaceIdPtr.asFunction<
-      _TaskListSpaceIdReturn Function(
+  late final _taskListSpaceIdStr = _taskListSpaceIdStrPtr.asFunction<
+      _TaskListSpaceIdStrReturn Function(
         int,
       )>();
   late final _taskListDraftNamePtr = _lookup<
@@ -31284,36 +31284,21 @@ class Task {
   }
 
   /// the description of this task
-  String? descriptionText() {
+  TextDesc? description() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._taskDescriptionText(
+    final tmp1 = _api._taskDescription(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
     if (tmp3 == 0) {
       return null;
     }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TextDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = TextDesc._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -31388,40 +31373,70 @@ class Task {
   }
 
   /// When this is due
-  UtcDateTime? utcDue() {
+  String? utcDueRfc3339() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._taskUtcDue(
+    final tmp1 = _api._taskUtcDueRfc3339(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = UtcDateTime._(_api, tmp4_1);
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
     return tmp2;
   }
 
   /// When this was started
-  UtcDateTime? utcStart() {
+  String? utcStartRfc3339() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._taskUtcStart(
+    final tmp1 = _api._taskUtcStartRfc3339(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = UtcDateTime._(_api, tmp4_1);
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -32872,36 +32887,21 @@ class TaskList {
   }
 
   /// the description of this task list
-  String? descriptionText() {
+  TextDesc? description() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._taskListDescriptionText(
+    final tmp1 = _api._taskListDescription(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
     if (tmp3 == 0) {
       return null;
     }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TextDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = TextDesc._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -33177,10 +33177,10 @@ class TaskList {
   }
 
   /// the id of the space this TaskList belongs to
-  String spaceId() {
+  String spaceIdStr() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._taskListSpaceId(
+    final tmp1 = _api._taskListSpaceIdStr(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -41094,7 +41094,21 @@ class _TaskTitleReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _TaskDescriptionTextReturn extends ffi.Struct {
+class _TaskDescriptionReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _TaskPriorityReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _TaskUtcDueRfc3339Return extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -41105,25 +41119,15 @@ class _TaskDescriptionTextReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _TaskPriorityReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-}
-
-class _TaskUtcDueReturn extends ffi.Struct {
+class _TaskUtcStartRfc3339Return extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
-}
-
-class _TaskUtcStartReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class _TaskColorReturn extends ffi.Struct {
@@ -41294,15 +41298,11 @@ class _TaskListNameReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _TaskListDescriptionTextReturn extends ffi.Struct {
+class _TaskListDescriptionReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
 }
 
 class _TaskListRoleReturn extends ffi.Struct {
@@ -41360,7 +41360,7 @@ class _TaskListUpdateBuilderReturn extends ffi.Struct {
   external int arg4;
 }
 
-class _TaskListSpaceIdReturn extends ffi.Struct {
+class _TaskListSpaceIdStrReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()

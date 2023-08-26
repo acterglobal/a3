@@ -21,6 +21,8 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
 
+use crate::TextDesc;
+
 use super::{client::Client, spaces::Space, RUNTIME};
 
 impl Client {
@@ -281,7 +283,10 @@ impl Deref for TaskList {
 
 /// helpers for content
 impl TaskList {
-    pub fn description_text(&self) -> Option<String> {
+    pub fn name(&self) -> String {
+        self.content.name.to_owned()
+    }
+    pub fn description(&self) -> Option<String> {
         self.content.description.as_ref().map(|t| t.body.clone())
     }
 
@@ -331,7 +336,7 @@ impl TaskList {
         )
     }
 
-    pub fn space_id(&self) -> String {
+    pub fn space_id_str(&self) -> String {
         self.room.room_id().to_string()
     }
 }
@@ -462,12 +467,19 @@ impl Deref for Task {
 
 /// helpers for content
 impl Task {
-    pub fn description_text(&self) -> Option<String> {
-        self.content.description.as_ref().map(|t| t.body.clone())
+    pub fn title(&self) -> String {
+        self.content.title().to_owned()
+    }
+    pub fn description(&self) -> Option<TextDesc> {
+        self.content.description.as_ref().map(Into::into)
     }
 
     pub fn sort_order(&self) -> u32 {
         self.content.sort_order
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.content.room_id().to_string()
     }
 
     pub fn priority(&self) -> Option<u8> {

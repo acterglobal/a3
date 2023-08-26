@@ -11,9 +11,9 @@ class TaskEntry extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final List<Widget> subtitle = [];
-    final dueDate = task.utcDue();
+    final dueDate = task.utcDueRfc3339();
     if (dueDate != null) {
-      final due = Jiffy.parse(dueDate.toRfc3339());
+      final due = Jiffy.parse(dueDate);
       final now = Jiffy.now();
       if (due.isBefore(now)) {
         subtitle.add(
@@ -22,8 +22,10 @@ class TaskEntry extends ConsumerWidget {
             child: Text(
               due.fromNow(),
               style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  color: Theme.of(context).colorScheme.taskOverdueFG,
-                  backgroundColor: Theme.of(context).colorScheme.taskOverdueBG),
+                    color: Theme.of(context).colorScheme.taskOverdueFG,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.taskOverdueBG,
+                  ),
             ),
           ),
         );
