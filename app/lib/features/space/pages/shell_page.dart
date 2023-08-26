@@ -2,8 +2,9 @@ import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/spaces/space_info.dart';
+import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
@@ -32,8 +33,6 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
   @override
   Widget build(BuildContext context) {
     // get platform of context.
-    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
-    final h = MediaQuery.of(context).size.height;
     final space = ref.watch(spaceProvider(widget.spaceIdOrAlias));
     return space.when(
       data: (space) {
@@ -53,8 +52,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                     ],
                   ),
                 ),
-                child: ListView(
-                  shrinkWrap: true,
+                child: Column(
                   children: <Widget>[
                     _ShellToolbar(space, widget.spaceIdOrAlias),
                     _ShellHeader(widget.spaceIdOrAlias, profile),
@@ -62,8 +60,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
                       spaceId: widget.spaceIdOrAlias,
                       key: Key('${widget.spaceIdOrAlias}::top-nav'),
                     ),
-                    SizedBox(
-                      height: !isDesktop ? h * 2 : h,
+                    Expanded(
                       child: widget.child,
                     ),
                   ],
@@ -142,7 +139,9 @@ class _ShellToolbar extends ConsumerWidget {
       child: Row(
         children: [
           InkWell(
-            onTap: () => context.goNamed(Routes.dashboard.name),
+            onTap: () => context.canPop()
+                ? context.pop()
+                : context.goNamed(Routes.dashboard.name),
             child: Icon(
               Atlas.arrow_left,
               color: Theme.of(context).colorScheme.neutral5,
@@ -204,110 +203,80 @@ class _ShellHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Row(
         children: <Widget>[
-          Wrap(
-            direction: Axis.horizontal,
-            spacing: -20,
-            children: [
-              ActerAvatar(
-                mode: DisplayMode.Space,
-                displayName: spaceProfile.displayName,
-                tooltip: TooltipStyle.None,
-                uniqueId: spaceId,
-                avatar: spaceProfile.getAvatarImage(),
-                size: 80,
-              ),
-              canonicalParent.when(
-                data: (parent) {
-                  if (parent == null) {
-                    return const SizedBox(width: 20);
-                  }
-                  return Column(
-                    children: <Widget>[
-                      const SizedBox(height: 50),
-                      Tooltip(
-                        message: parent.profile.displayName,
-                        child: InkWell(
-                          onTap: () {
-                            final roomId = parent.space.getRoomId();
-                            context.go('/$roomId');
-                          },
-                          child: ActerAvatar(
-                            mode: DisplayMode.Space,
-                            displayName: parent.profile.displayName,
-                            uniqueId: parent.space.getRoomId().toString(),
-                            avatar: parent.profile.getAvatarImage(),
-                            size: 40,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-                error: (error, stackTrace) => Text(
-                  'Failed to load canonical parent due to $error',
-                ),
-                loading: () => const CircularProgressIndicator(),
-              ),
-            ],
+          SpaceParentBadge(
+            spaceId: spaceId,
+            badgeSize: 40,
+            child: ActerAvatar(
+              mode: DisplayMode.Space,
+              displayName: spaceProfile.displayName,
+              tooltip: TooltipStyle.None,
+              uniqueId: spaceId,
+              avatar: spaceProfile.getAvatarImage(),
+              size: 80,
+            ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.only(left: 8.0),
                 child: Text(
                   spaceProfile.displayName ?? spaceId,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
-              Consumer(
-                builder: (context, ref, child) {
-                  final spaceMembers = ref.watch(
-                    spaceMembersProvider(spaceId),
-                  );
-                  return spaceMembers.when(
-                    data: (members) {
-                      final membersCount = members.length;
-                      if (membersCount > 5) {
-                        // too many to display, means we limit to 5
-                        members = members.sublist(0, 5);
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: Wrap(
-                          direction: Axis.horizontal,
-                          spacing: -6,
-                          children: [
-                            ...members.map(
-                              (a) => MemberAvatar(member: a),
-                            ),
-                            if (membersCount > 5)
-                              CircleAvatar(
-                                child: Text(
-                                  '+${membersCount - 5}',
-                                  textAlign: TextAlign.center,
-                                  textScaleFactor: 0.8,
-                                ),
-                              )
-                          ],
-                        ),
-                      );
-                    },
-                    error: (error, stack) =>
-                        Text('Loading members failed: $error'),
-                    loading: () => const CircularProgressIndicator(),
-                  );
-                },
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10, left: 10),
+                child: SpaceInfo(spaceId: spaceId),
               ),
+              Consumer(builder: spaceMembersBuilder),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget spaceMembersBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
+    final spaceMembers = ref.watch(spaceMembersProvider(spaceId));
+    return spaceMembers.when(
+      data: (members) {
+        final membersCount = members.length;
+        if (membersCount > 5) {
+          // too many to display, means we limit to 5
+          members = members.sublist(0, 5);
+        }
+        return Padding(
+          padding: const EdgeInsets.only(left: 14),
+          child: Wrap(
+            direction: Axis.horizontal,
+            spacing: -6,
+            children: [
+              ...members.map(
+                (a) => MemberAvatar(member: a),
+              ),
+              if (membersCount > 5)
+                CircleAvatar(
+                  child: Text(
+                    '+${membersCount - 5}',
+                    textAlign: TextAlign.center,
+                    textScaleFactor: 0.8,
+                  ),
+                )
+            ],
+          ),
+        );
+      },
+      error: (error, stack) => Text('Loading members failed: $error'),
+      loading: () => const CircularProgressIndicator(),
     );
   }
 }

@@ -6,6 +6,7 @@ use super::{AnyActerModel, EventMeta};
 use crate::{
     events::pins::{PinEventContent, PinUpdateBuilder, PinUpdateEventContent},
     statics::KEYS,
+    Result,
 };
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -63,11 +64,11 @@ impl super::ActerModel for Pin {
         ]
     }
 
-    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &super::Store) -> Result<Vec<String>> {
         super::default_model_execute(store, self.into()).await
     }
 
-    fn transition(&mut self, model: &super::AnyActerModel) -> crate::Result<bool> {
+    fn transition(&mut self, model: &super::AnyActerModel) -> Result<bool> {
         let AnyActerModel::PinUpdate(update) = model else {
             return Ok(false)
         };
@@ -113,7 +114,7 @@ impl super::ActerModel for PinUpdate {
         &self.meta.event_id
     }
 
-    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &super::Store) -> Result<Vec<String>> {
         super::default_model_execute(store, self.into()).await
     }
 

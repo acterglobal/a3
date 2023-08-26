@@ -50,23 +50,24 @@ class CalendarEventPage extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(15),
                   child: Card(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListTile(
-                          key: Key(calendarId),
-                          title: Text(ev.title()),
-                          subtitle: Column(
+                    child: Container(
+                      margin: const EdgeInsets.all(10),
+                      child: Column(
+                        key: Key(calendarId),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(ev.title()),
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              const SizedBox(height: 15),
                               Text(dateTime),
                               const SizedBox(height: 15),
                               Text(description),
                               const SizedBox(height: 15),
                             ],
                           ),
-                          trailing: Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -78,7 +79,6 @@ class CalendarEventPage extends ConsumerWidget {
                                   onPressed: () => onInvite(context),
                                 ),
                               ),
-                              const SizedBox(width: 10),
                               SizedBox(
                                 height: 50,
                                 width: 100,
@@ -87,7 +87,6 @@ class CalendarEventPage extends ConsumerWidget {
                                   onPressed: () => onJoin(context),
                                 ),
                               ),
-                              const SizedBox(width: 10),
                               SizedBox(
                                 height: 50,
                                 width: 100,
@@ -115,8 +114,8 @@ class CalendarEventPage extends ConsumerWidget {
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -158,13 +157,13 @@ class CalendarEventPage extends ConsumerWidget {
     CalendarEvent event,
     String status,
   ) async {
-    var rsvpManager = await event.rsvpManager();
+    final rsvpManager = await event.rsvpManager();
     int count = rsvpManager.totalRsvpCount();
     debugPrint('rsvp prev count: $count');
 
-    var draft = rsvpManager.rsvpDraft();
+    final draft = rsvpManager.rsvpDraft();
     draft.status(status);
-    var rsvpId = await draft.send();
+    final rsvpId = await draft.send();
     debugPrint('new rsvp id: $rsvpId');
 
     // rsvpManager.subscribeStream();

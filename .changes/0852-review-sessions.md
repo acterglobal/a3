@@ -1,0 +1,1 @@
+- Implement the sessions page that can be accessed from activities page

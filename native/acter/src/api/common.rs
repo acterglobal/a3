@@ -4,7 +4,7 @@ use matrix_sdk::ruma::{
         message::{AudioInfo, FileInfo, VideoInfo},
         ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
     },
-    OwnedUserId,
+    MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId,
 };
 
 use super::api::FfiBuffer;
@@ -13,13 +13,13 @@ pub fn duration_from_secs(secs: u64) -> Duration {
     Duration::from_secs(secs)
 }
 
-pub struct OptionText {
+pub struct OptionString {
     text: Option<String>,
 }
 
-impl OptionText {
+impl OptionString {
     pub(crate) fn new(text: Option<String>) -> Self {
-        OptionText { text }
+        OptionString { text }
     }
 
     pub fn text(&self) -> Option<String> {
@@ -381,21 +381,78 @@ impl FileDesc {
 }
 
 #[derive(Clone, Debug)]
-pub struct ReactionDesc {
-    count: u32,
-    senders: Vec<OwnedUserId>,
+pub struct ReactionRecord {
+    sender_id: OwnedUserId,
+    timestamp: MilliSecondsSinceUnixEpoch,
 }
 
-impl ReactionDesc {
-    pub(crate) fn new(count: u32, senders: Vec<OwnedUserId>) -> Self {
-        ReactionDesc { count, senders }
+impl ReactionRecord {
+    pub(crate) fn new(sender_id: OwnedUserId, timestamp: MilliSecondsSinceUnixEpoch) -> Self {
+        ReactionRecord {
+            sender_id,
+            timestamp,
+        }
     }
 
-    pub fn count(&self) -> u32 {
-        self.count
+    pub fn sender_id(&self) -> OwnedUserId {
+        self.sender_id.clone()
     }
 
-    pub fn senders(&self) -> Vec<String> {
-        self.senders.iter().map(|x| x.to_string()).collect()
+    pub fn timestamp(&self) -> u64 {
+        self.timestamp.get().into()
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct DeviceRecord {
+    device_id: OwnedDeviceId,
+    display_name: Option<String>,
+    last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
+    last_seen_ip: Option<String>,
+    is_verified: bool,
+    is_active: bool,
+}
+
+impl DeviceRecord {
+    pub(crate) fn new(
+        device_id: OwnedDeviceId,
+        display_name: Option<String>,
+        last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
+        last_seen_ip: Option<String>,
+        is_verified: bool,
+        is_active: bool,
+    ) -> Self {
+        DeviceRecord {
+            device_id,
+            display_name,
+            last_seen_ts,
+            last_seen_ip,
+            is_verified,
+            is_active,
+        }
+    }
+
+    pub fn device_id(&self) -> OwnedDeviceId {
+        self.device_id.clone()
+    }
+
+    pub fn display_name(&self) -> Option<String> {
+        self.display_name.clone()
+    }
+
+    pub fn last_seen_ts(&self) -> Option<u64> {
+        self.last_seen_ts.map(|x| x.get().into())
+    }
+
+    pub fn last_seen_ip(&self) -> Option<String> {
+        self.last_seen_ip.clone()
+    }
+
+    pub fn is_verified(&self) -> bool {
+        self.is_verified
+    }
+
+    pub fn is_active(&self) -> bool {
+        self.is_active
     }
 }

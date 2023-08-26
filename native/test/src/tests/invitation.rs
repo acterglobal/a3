@@ -1,6 +1,6 @@
 use acter::api::login_new_client;
 use anyhow::Result;
-use futures::{pin_mut, StreamExt};
+use futures::{pin_mut, stream::StreamExt};
 use std::time::Duration;
 use tempfile::TempDir;
 use tokio::time::sleep;

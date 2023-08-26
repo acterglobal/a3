@@ -1,13 +1,13 @@
 use acter_core::spaces::CreateSpaceSettingsBuilder;
 use anyhow::Result;
-use clap::Parser;
-use futures::StreamExt;
+use clap::{Parser, Subcommand};
+use futures::stream::StreamExt;
 use matrix_sdk::ruma::OwnedRoomId;
 use tracing::{info, warn};
 
 use crate::config::LoginConfig;
 
-#[derive(clap::Subcommand, Debug, Clone)]
+#[derive(Subcommand, Debug, Clone)]
 pub enum Action {
     /// List rooms
     CreateOnboardingSpace,
@@ -47,7 +47,7 @@ impl Manage {
         if !space.is_space() {
             warn!("{room_id} is not a space. quitting.");
             return Ok(());
-        } else if space.is_acter_space().await {
+        } else if space.is_acter_space().await? {
             warn!("{room_id} is already an acter space. quitting.");
             return Ok(());
         }

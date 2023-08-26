@@ -173,7 +173,7 @@ class _InputWidgetState extends State<_InputWidget> {
 
   Future<void> handleTaskCreate() async {
     if (titleInputController.text.isNotEmpty) {
-      var eventId = await controller.createToDoTask(
+      final eventId = await controller.createToDoTask(
         name: titleInputController.text,
         dueDate: widget.selectedDate,
         list: widget.list,

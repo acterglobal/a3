@@ -28,12 +28,13 @@ class SelectTag extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final reportNotifier = ref.watch(bugReportProvider.notifier);
     return CustomSingleSelectField(
       items: tags,
       title: 'Select issue tag',
-      onSelectionDone: (value) => ref
-          .read(bugReportNotifierProvider.notifier)
-          .setTags([value.toString()]),
+      onSelectionDone: (value) {
+        reportNotifier.setTags([value.toString()]);
+      },
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(15),
         errorBorder:

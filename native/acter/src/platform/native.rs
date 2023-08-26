@@ -6,7 +6,7 @@ use matrix_sdk::{Client, ClientBuilder};
 use matrix_sdk_sqlite::make_store_config;
 use parse_env_filter::eager::{filters, Filter};
 use std::{
-    path::PathBuf,
+    path::{Path, PathBuf},
     sync::{Arc, Mutex},
 };
 
@@ -14,17 +14,17 @@ use crate::RUNTIME;
 
 pub async fn new_client_config(
     base_path: String,
-    home: String,
+    home_dir: String,
     reset_if_existing: bool,
 ) -> Result<ClientBuilder> {
     RUNTIME
         .spawn(async move {
-            let data_path = sanitize(&base_path, &home);
+            let data_path = sanitize(&base_path, &home_dir);
 
-            if reset_if_existing && std::path::Path::new(&data_path).try_exists()? {
+            if reset_if_existing && Path::new(&data_path).try_exists()? {
                 let backup_path = sanitize(
                     &base_path,
-                    &format!("{home}_backup_{}", Local::now().to_rfc3339()),
+                    &format!("{home_dir}_backup_{}", Local::now().to_rfc3339()),
                 );
                 tracing::warn!(
                     "{data_path:?} already existing. Moving to backup at {backup_path:?}."

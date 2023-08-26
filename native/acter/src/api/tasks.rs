@@ -21,6 +21,7 @@ use std::{
     ops::Deref,
 };
 use tokio::sync::broadcast::Receiver;
+use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
 
 use super::{client::Client, spaces::Space, RUNTIME};
@@ -359,11 +360,11 @@ impl TaskList {
             .await?
     }
 
-    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
-        tokio_stream::wrappers::BroadcastStream::new(self.subscribe()).map(|_| true)
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe()).map(|_| true)
     }
 
-    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
+    pub fn subscribe(&self) -> Receiver<()> {
         let key = self.content.event_id().to_string();
         self.client.subscribe(key)
     }
@@ -546,11 +547,11 @@ impl Task {
         })
     }
 
-    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
-        tokio_stream::wrappers::BroadcastStream::new(self.subscribe()).map(|_| true)
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe()).map(|_| true)
     }
 
-    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
+    pub fn subscribe(&self) -> Receiver<()> {
         let key = self.content.event_id().to_string();
         self.client.subscribe(key)
     }

@@ -2,6 +2,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -48,8 +49,6 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
               ),
             ),
           ],
-          //   ),
-          // ],
         ),
       ),
       actions: <Widget>[
@@ -138,148 +137,127 @@ class MyProfile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final account = ref.watch(accountProfileProvider);
     return account.when(
-      data: (account) => Scaffold(
-        appBar: AppBar(
-          title: const Text('My profile'),
-          actions: [
-            IconButton(
-              icon: const Icon(Atlas.construction_tools_thin),
-              onPressed: () {
-                context.go('/settings');
-              },
-            ),
-            PopupMenuButton(
-              color: Theme.of(context).colorScheme.surface,
-              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                PopupMenuItem(
-                  onTap: () => logoutConfirmationDialog(context, ref),
-                  child: Row(
-                    children: [
-                      const Icon(Atlas.exit_thin),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Text(
-                          AppLocalizations.of(context)!.logOut,
-                          style: Theme.of(context).textTheme.labelSmall,
-                          softWrap: false,
+      data: (data) {
+        final userId = data.account.userId().toString();
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('My profile'),
+            actions: [
+              IconButton(
+                icon: const Icon(Atlas.construction_tools_thin),
+                onPressed: () {
+                  context.go('/settings');
+                },
+              ),
+              PopupMenuButton(
+                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                  PopupMenuItem(
+                    onTap: () => logoutConfirmationDialog(context, ref),
+                    child: Row(
+                      children: [
+                        const Icon(Atlas.exit_thin),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Text(
+                            AppLocalizations.of(context)!.logOut,
+                            style: Theme.of(context).textTheme.labelSmall,
+                            softWrap: false,
+                          ),
                         ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.fromLTRB(20, 15, 20, 0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  width: double.infinity,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(25),
+                    child: const SizedBox(),
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width - 100,
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () => _handleAvatarUpload(
+                          data,
+                          context,
+                          ref,
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(width: 5),
+                          ),
+                          child: ActerAvatar(
+                            mode: DisplayMode.User,
+                            uniqueId: userId,
+                            avatar: data.profile.getAvatarImage(),
+                            displayName: data.profile.displayName,
+                            size: 100,
+                          ),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(data.profile.displayName ?? ''),
+                          IconButton(
+                            iconSize: 14,
+                            icon: const Icon(Atlas.pencil_edit_thin),
+                            onPressed: () async {
+                              await updateDisplayName(
+                                data,
+                                context,
+                                ref,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(userId),
+                          IconButton(
+                            iconSize: 14,
+                            icon: const Icon(Atlas.pages),
+                            onPressed: () async {
+                              Clipboard.setData(
+                                ClipboardData(text: userId),
+                              );
+                              customMsgSnackbar(
+                                context,
+                                'Username copied to clipboard',
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 25),
               ],
             ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Stack(
-                children: <Widget>[
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(20, 15, 20, 0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    width: double.infinity,
-                    height: 230,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(25),
-                      child: const SizedBox(),
-                    ),
-                  ),
-                  Positioned(
-                    left: 50,
-                    top: 40,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width - 100,
-                      alignment: Alignment.center,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          GestureDetector(
-                            onTap: () => _handleAvatarUpload(
-                              account,
-                              context,
-                              ref,
-                            ),
-                            child: Container(
-                              margin: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                                border: Border.all(width: 5),
-                              ),
-                              child: ActerAvatar(
-                                mode: DisplayMode.User,
-                                uniqueId: account.account.userId().toString(),
-                                avatar: account.profile.getAvatarImage(),
-                                displayName: account.profile.displayName,
-                                size: 100,
-                              ),
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(account.profile.displayName ?? ''),
-                              IconButton(
-                                iconSize: 14,
-                                icon: const Icon(Atlas.pencil_edit_thin),
-                                onPressed: () async {
-                                  await updateDisplayName(
-                                    account,
-                                    context,
-                                    ref,
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          Text(account.account.userId().toString()),
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(height: 25),
-              DefaultTabController(
-                length: 3,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    const TabBar(
-                      tabs: [
-                        Tab(
-                          child: Text('News'),
-                        ),
-                        Tab(
-                          child: Text('Feed'),
-                        ),
-                        Tab(
-                          child: Text('More details'),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height - 100,
-                      child: const TabBarView(
-                        physics: NeverScrollableScrollPhysics(),
-                        children: [
-                          Text(''),
-                          Text(''),
-                          Text(''),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
           ),
-        ),
-      ),
+        );
+      },
       error: (e, trace) => Text('error: $e'),
       loading: () => const Text('loading'),
     );

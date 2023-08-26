@@ -1,235 +1,368 @@
-import 'dart:convert';
+import 'dart:io';
 
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/widgets/image_message_builder.dart';
+import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'package:mime/mime.dart';
 
-class CustomChatInput extends ConsumerStatefulWidget {
-  const CustomChatInput({super.key});
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _CustomChatInputState();
-}
-
-class _CustomChatInputState extends ConsumerState<CustomChatInput> {
-  static const List<Icon> _attachmentIcons = [
-    Icon(Atlas.camera_photo),
-    Icon(Atlas.folder),
-    Icon(Atlas.location),
-  ];
+class CustomChatInput extends ConsumerWidget {
+  const CustomChatInput({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final client = ref.watch(clientProvider)!;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userId = ref.watch(clientProvider)!.userId().toString();
+    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     final chatInputState = ref.watch(chatInputProvider);
-    Size size = MediaQuery.of(context).size;
-    return Container(
-      color: Theme.of(context).colorScheme.onPrimary,
-      child: Column(
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Visibility(
-                visible: ref
-                    .watch(chatInputProvider.select((ci) => ci.showReplyView)),
-                child: Container(
-                  color: Theme.of(context).colorScheme.neutral,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 12.0,
-                      left: 16.0,
-                      right: 16.0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                client.userId().toString() ==
-                                        ref
-                                            .watch(chatRoomProvider.notifier)
-                                            .repliedToMessage
-                                            ?.id
-                                    ? 'Replying to you'
-                                    : 'Replying to ${toBeginningOfSentenceCase(ref.watch(chatRoomProvider.notifier).repliedToMessage?.author.firstName)}',
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              if (ref
-                                          .watch(chatRoomProvider.notifier)
-                                          .repliedToMessage !=
-                                      null &&
-                                  chatInputState.replyWidget != null)
-                                _ReplyContentWidget(
-                                  msg: ref
-                                      .watch(chatRoomProvider.notifier)
-                                      .repliedToMessage,
-                                  messageWidget: chatInputState.replyWidget,
-                                ),
-                            ],
-                          ),
-                        ),
-                        Flexible(
-                          flex: 2,
-                          child: GestureDetector(
-                            onTap: () {
-                              ref
-                                  .read(chatInputProvider.notifier)
-                                  .toggleReplyView();
-                              ref
-                                  .read(chatInputProvider.notifier)
-                                  .setReplyWidget(null);
-                            },
-                            child: const Icon(
-                              Atlas.xmark_circle,
-                              color: Colors.white,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
+    final repliedToMessage =
+        ref.watch(chatRoomProvider.notifier).repliedToMessage;
+    final isAuthor = ref.watch(chatRoomProvider.notifier).isAuthor();
+    final accountProfile = ref.watch(accountProfileProvider);
+    final showReplyView = ref.watch(
+      chatInputProvider.select((ci) => ci.showReplyView),
+    );
+    return Column(
+      children: [
+        Visibility(
+          visible: showReplyView,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 12.0,
+                left: 16.0,
+                right: 16.0,
               ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        const _BuildAttachmentBtn(),
-                        const Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: _TextInputWidget(),
-                          ),
-                        ),
-                        if (chatInputState.sendBtnVisible)
-                          _BuildSendBtn(
-                            onButtonPressed: () => onSendButtonPressed(ref),
-                          ),
-                        if (!chatInputState.sendBtnVisible) _BuildImageBtn(),
-                        if (!chatInputState.sendBtnVisible)
-                          const SizedBox(width: 10),
-                        if (!chatInputState.sendBtnVisible)
-                          const _BuildAudioBtn(),
-                      ],
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  repliedToMessage != null
+                      ? Consumer(builder: replyBuilder)
+                      : const SizedBox.shrink(),
+                  if (repliedToMessage != null &&
+                      chatInputState.replyWidget != null)
+                    _ReplyContentWidget(
+                      msg: repliedToMessage,
+                      messageWidget: chatInputState.replyWidget,
                     ),
-                  ),
-                ),
+                ],
               ),
-            ],
-          ),
-          Visibility(
-            visible: ref.watch(chatInputProvider).emojiPickerVisible,
-            child: EmojiPickerWidget(
-              size: Size(
-                MediaQuery.of(context).size.width,
-                MediaQuery.of(context).size.height / 2,
-              ),
-              onEmojiSelected: handleEmojiSelected,
-              onBackspacePressed: handleBackspacePressed,
             ),
           ),
-          AttachmentWidget(
-            icons: _attachmentIcons,
-            size: size,
+        ),
+        Visibility(
+          visible: !chatInputState.emojiRowVisible,
+          replacement: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            color: Theme.of(context).colorScheme.onPrimary,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                InkWell(
+                  onTap: () {
+                    if (isAuthor) {
+                      popUpDialog(
+                        context: context,
+                        title: const Text(
+                          'Are you sure you want to delete this message? This action cannot be undone.',
+                        ),
+                        btnText: 'No',
+                        btn2Text: 'Yes',
+                        btn2Color: Theme.of(context).colorScheme.onError,
+                        onPressedBtn: () => context.pop(),
+                        onPressedBtn2: () async {
+                          final messageId = ref
+                              .read(chatRoomProvider.notifier)
+                              .currentMessageId;
+                          if (messageId != null) {
+                            try {
+                              await chatRoomNotifier
+                                  .redactRoomMessage(messageId);
+                              chatInputNotifier.emojiRowVisible(false);
+                              chatRoomNotifier.currentMessageId = null;
+                              if (context.mounted) {
+                                context.pop();
+                              }
+                            } catch (e) {
+                              context.pop();
+                              customMsgSnackbar(
+                                context,
+                                e.toString(),
+                              );
+                            }
+                          } else {
+                            debugPrint(messageId);
+                          }
+                        },
+                      );
+                    } else {
+                      customMsgSnackbar(
+                        context,
+                        'Report message isn\'t implemented yet',
+                      );
+                    }
+                  },
+                  child: Text(
+                    isAuthor ? 'Unsend' : 'Report',
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () => customMsgSnackbar(
+                    context,
+                    'More options not implemented yet',
+                  ),
+                  child: const Text(
+                    'More',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            color: Theme.of(context).colorScheme.onPrimary,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    accountProfile.when(
+                      data: (data) => ActerAvatar(
+                        uniqueId: userId,
+                        mode: DisplayMode.User,
+                        displayName: data.profile.displayName ?? userId,
+                        avatar: data.profile.getAvatarImage(),
+                        size: data.profile.hasAvatar() ? 18 : 36,
+                      ),
+                      error: (e, st) {
+                        debugPrint('Error loading due to $e');
+                        return ActerAvatar(
+                          uniqueId: userId,
+                          mode: DisplayMode.User,
+                          displayName: userId,
+                          size: 36,
+                        );
+                      },
+                      loading: () => const CircularProgressIndicator(),
+                    ),
+                    const Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: _TextInputWidget(),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: InkWell(
+                        onTap: () => handleAttachment(ref, context),
+                        child: const Icon(Atlas.paperclip_attachment),
+                      ),
+                    ),
+                    if (chatInputState.sendBtnVisible)
+                      InkWell(
+                        onTap: () => onSendButtonPressed(ref),
+                        child: const Icon(Atlas.paper_airplane),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Visibility(
+          visible: ref.watch(chatInputProvider).emojiPickerVisible,
+          child: EmojiPickerWidget(
+            size: Size(
+              MediaQuery.of(context).size.width,
+              MediaQuery.of(context).size.height / 2,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  Future<void> onSendButtonPressed(WidgetRef ref) async {
-    final chatInputNotifier = ref.read(chatInputProvider.notifier);
-    chatInputNotifier.showSendBtn(false);
-    String markdownText =
-        ref.read(mentionKeyProvider).currentState!.controller!.text;
-    int messageLength = markdownText.length;
-    ref.read(messageMarkDownProvider).forEach((key, value) {
-      markdownText = markdownText.replaceAll(key, value);
-    });
-    await ref.read(chatRoomProvider.notifier).handleSendPressed(
-          markdownText,
-          messageLength,
-        );
-    ref.read(messageMarkDownProvider.notifier).update((state) => {});
-    ref.read(mentionKeyProvider).currentState!.controller!.clear();
-  }
-
-  void handleEmojiSelected(Category? category, Emoji emoji) {
-    var mentionKey = ref.watch(mentionKeyProvider);
-    mentionKey.currentState!.controller!.text += emoji.emoji;
-    ref.read(chatInputProvider.notifier).showSendBtn(true);
-  }
-
-  void handleBackspacePressed() {
-    var mentionKey = ref.watch(mentionKeyProvider);
-    mentionKey.currentState!.controller!.text =
-        mentionKey.currentState!.controller!.text.characters.skipLast(1).string;
-    if (mentionKey.currentState!.controller!.text.isEmpty) {
-      ref.read(chatInputProvider.notifier).showSendBtn(false);
+  void handleAttachment(WidgetRef ref, BuildContext ctx) async {
+    var chatRoomNotifier = ref.read(chatRoomProvider.notifier);
+    await chatRoomNotifier.handleFileSelection(ctx);
+    if (ctx.mounted) {
+      var selectionList = chatRoomNotifier.fileList;
+      String fileName = selectionList.first.path.split('/').last;
+      final mimeType = lookupMimeType(selectionList.first.path);
+      popUpDialog(
+        context: ctx,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Upload Files (${selectionList.length})',
+                style: Theme.of(ctx).textTheme.titleSmall,
+              ),
+            ),
+          ],
+        ),
+        subtitle: Visibility(
+          visible: selectionList.length <= 5,
+          child: _FileWidget(mimeType, selectionList.first),
+        ),
+        description: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(fileName, style: Theme.of(ctx).textTheme.bodySmall),
+        ),
+        btnText: 'Cancel',
+        btn2Text: 'Upload',
+        btn2Color: Theme.of(ctx).colorScheme.success,
+        btnBorderColor: Theme.of(ctx).colorScheme.errorContainer,
+        onPressedBtn: () => ctx.pop(),
+        onPressedBtn2: () async {
+          ctx.pop();
+          await chatRoomNotifier.handleFileUpload();
+        },
+      );
     }
   }
-}
 
-class _BuildAttachmentBtn extends ConsumerWidget {
-  const _BuildAttachmentBtn();
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget replyBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final roomNotifier = ref.watch(chatRoomProvider.notifier);
+    final authorId = roomNotifier.repliedToMessage!.author.id;
+    final replyProfile = ref.watch(memberProfileProvider(authorId));
     final inputNotifier = ref.watch(chatInputProvider.notifier);
-    return InkWell(
-      onTap: () {
-        inputNotifier.toggleAttachment();
-        ref.read(chatInputFocusProvider).unfocus();
-        ref.read(chatInputFocusProvider).canRequestFocus = true;
-      },
-      child: const _BuildPlusBtn(),
+    return Row(
+      children: [
+        replyProfile.when(
+          data: (profile) => ActerAvatar(
+            mode: DisplayMode.User,
+            uniqueId: authorId,
+            displayName: profile.displayName ?? authorId,
+            avatar: profile.getAvatarImage(),
+            size: profile.hasAvatar() ? 12 : 24,
+          ),
+          error: (e, st) {
+            debugPrint('Error loading avatar due to $e');
+            return ActerAvatar(
+              mode: DisplayMode.User,
+              uniqueId: authorId,
+              displayName: authorId,
+              size: 24,
+            );
+          },
+          loading: () => const CircularProgressIndicator(),
+        ),
+        const SizedBox(width: 5),
+        Text(
+          'Reply to ${toBeginningOfSentenceCase(authorId)}',
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
+          ),
+        ),
+        const Spacer(),
+        GestureDetector(
+          onTap: () {
+            inputNotifier.toggleReplyView(false);
+            inputNotifier.setReplyWidget(null);
+          },
+          child: const Icon(
+            Atlas.xmark_circle,
+            color: Colors.white,
+          ),
+        ),
+      ],
     );
   }
 }
 
-class _BuildPlusBtn extends ConsumerWidget {
-  const _BuildPlusBtn();
+Future<void> onSendButtonPressed(WidgetRef ref) async {
+  final inputNotifier = ref.read(chatInputProvider.notifier);
+  final roomNotifier = ref.read(chatRoomProvider.notifier);
+  final mentionState = ref.read(mentionKeyProvider).currentState!;
+  final markDownProvider = ref.read(messageMarkDownProvider);
+  final markDownNotifier = ref.read(messageMarkDownProvider.notifier);
 
+  inputNotifier.showSendBtn(false);
+  String markdownText = mentionState.controller!.text;
+  int messageLength = markdownText.length;
+  markDownProvider.forEach((key, value) {
+    markdownText = markdownText.replaceAll(key, value);
+  });
+  await roomNotifier.handleSendPressed(markdownText, messageLength);
+  markDownNotifier.update((state) => {});
+  mentionState.controller!.clear();
+}
+
+class _FileWidget extends ConsumerWidget {
+  const _FileWidget(this.mimeType, this.file);
+  final String? mimeType;
+  final File file;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Visibility(
-      visible:
-          ref.watch(chatInputProvider.select((ci) => ci.attachmentVisible)),
-      replacement: const Icon(Atlas.plus_circle),
-      child: Container(
-        padding: const EdgeInsets.all(12),
+    if (mimeType!.startsWith('image/')) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: Image.file(file, height: 200, fit: BoxFit.cover),
+      );
+    } else if (mimeType!.startsWith('audio/')) {
+      return Container(
+        height: 55,
+        width: 55,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: BoxShape.circle,
         ),
-        child: const Icon(Atlas.xmark_circle),
-      ),
-    );
+        child: const Center(child: Icon(Atlas.file_sound_thin)),
+      );
+    } else if (mimeType!.startsWith('video/')) {
+      return Container(
+        height: 55,
+        width: 55,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child: const Center(child: Icon(Atlas.file_video_thin)),
+      );
+    }
+    //FIXME: cover all mime extension cases?
+    else {
+      return Container(
+        height: 55,
+        width: 55,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child: const Center(child: Icon(Atlas.plus_file_thin)),
+      );
+    }
   }
 }
 
@@ -243,47 +376,14 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final focusNode = ref.watch(chatInputFocusProvider);
-      ref.watch(chatInputFocusProvider).addListener(() {
-        if (focusNode.hasFocus) {
-          if (ref.watch(chatInputProvider).emojiRowVisible) {
-            ref.read(chatInputProvider.notifier).emojiRowVisible();
-          }
-          if (ref.watch(chatInputProvider).attachmentVisible) {
-            ref.read(chatInputProvider.notifier).toggleAttachment();
-          }
-        }
-      });
-    });
-  }
-
-  Future<void> onSendButtonPressed(WidgetRef ref) async {
-    final chatInputNotifier = ref.read(chatInputProvider.notifier);
-    chatInputNotifier.showSendBtn(false);
-    String markdownText =
-        ref.read(mentionKeyProvider).currentState!.controller!.text;
-    int messageLength = markdownText.length;
-    ref.read(messageMarkDownProvider).forEach((key, value) {
-      markdownText = markdownText.replaceAll(key, value);
-    });
-    await ref.read(chatRoomProvider.notifier).handleSendPressed(
-          markdownText,
-          messageLength,
-        );
-    ref.read(messageMarkDownProvider.notifier).update((state) => {});
-    ref.read(mentionKeyProvider).currentState!.controller!.clear();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final mentionList = ref.watch(mentionListProvider);
-    debugPrint('$mentionList');
+    final mentionKey = ref.watch(mentionKeyProvider);
+    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
+    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
+    final chatInputState = ref.watch(chatInputProvider);
     return FlutterMentions(
-      key: ref.watch(mentionKeyProvider),
+      key: mentionKey,
       suggestionPosition: SuggestionPosition.Top,
       onMentionAdd: (Map<String, dynamic> roomMember) {
         _handleMentionAdd(roomMember, ref);
@@ -293,30 +393,32 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         borderRadius: BorderRadius.circular(6),
       ),
       onChanged: (String value) async {
-        if (!ref.read(chatInputFocusProvider).hasFocus) {
-          ref.read(chatInputFocusProvider).requestFocus();
+        final focusNode = ref.read(chatInputFocusProvider);
+        if (!focusNode.hasFocus) {
+          focusNode.requestFocus();
         }
         if (value.isNotEmpty) {
-          ref.read(chatInputProvider.notifier).showSendBtn(true);
-          await ref.read(chatRoomProvider.notifier).typingNotice(true);
+          chatInputNotifier.showSendBtn(true);
+          await chatRoomNotifier.typingNotice(true);
         } else {
-          ref.read(chatInputProvider.notifier).showSendBtn(false);
-          await ref.read(chatRoomProvider.notifier).typingNotice(false);
+          chatInputNotifier.showSendBtn(false);
+          await chatRoomNotifier.typingNotice(false);
         }
       },
-      style: EmojiConfig.emojiTextStyle,
+      textInputAction: TextInputAction.send,
+      onSubmitted: (value) => onSendButtonPressed(ref),
+      style: Theme.of(context).textTheme.bodySmall,
       cursorColor: Theme.of(context).colorScheme.tertiary,
-      maxLines:
-          MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
+      maxLines: 6,
       minLines: 1,
       focusNode: ref.watch(chatInputFocusProvider),
       decoration: InputDecoration(
         isCollapsed: true,
         fillColor: Theme.of(context).colorScheme.primaryContainer,
         suffixIcon: InkWell(
-          onTap: () {
-            ref.read(chatInputProvider.notifier).emojiPickerVisible();
-          },
+          onTap: () => chatInputState.emojiPickerVisible
+              ? chatInputNotifier.emojiPickerVisible(false)
+              : chatInputNotifier.emojiPickerVisible(true),
           child: const Icon(Icons.emoji_emotions),
         ),
         border: OutlineInputBorder(
@@ -346,26 +448,19 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           data: mentionList,
           matchAll: true,
           suggestionBuilder: (Map<String, dynamic> roomMember) {
-            String title =
-                roomMember['display'] ?? simplifyUserId(roomMember['id']);
+            final authorId = roomMember['link'];
+            final title = roomMember['display'] ?? authorId;
             return ListTile(
-              leading: SizedBox(
-                width: 35,
-                height: 35,
-                child: ActerAvatar(
-                  mode: DisplayMode.User,
-                  uniqueId: roomMember['link'],
-                  size: 20,
-                  avatar: roomMember['avatar'],
-                  displayName: roomMember['display'],
-                ),
+              leading: MentionProfileBuilder(
+                authorId: authorId,
+                title: title,
               ),
               title: Row(
                 children: [
                   Text(title, style: Theme.of(context).textTheme.bodySmall),
                   const SizedBox(width: 15),
                   Text(
-                    roomMember['link'],
+                    authorId,
                     style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           color: Theme.of(context).colorScheme.neutral5,
                         ),
@@ -380,11 +475,10 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   }
 
   void _handleMentionAdd(Map<String, dynamic> roomMember, WidgetRef ref) {
-    String userId = roomMember['link'];
-    String displayName =
-        roomMember['display'] ?? simplifyUserId(roomMember['id']);
+    String authorId = roomMember['link'];
+    String displayName = roomMember['display'] ?? authorId;
     ref.read(messageMarkDownProvider).addAll({
-      '@$displayName': '[$displayName](https://matrix.to/#/$userId)',
+      '@$displayName': '[$displayName](https://matrix.to/#/$authorId)',
     });
   }
 }
@@ -400,191 +494,94 @@ class _ReplyContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (msg is TextMessage) {
-      return messageWidget!;
-    } else if (msg is ImageMessage) {
+    if (msg is ImageMessage) {
+      final imageMsg = msg as ImageMessage;
       return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 100, maxWidth: 125),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(6.33),
-            child: Image.memory(
-              base64Decode(msg?.metadata?['base64']),
-              fit: BoxFit.fill,
-              cacheWidth: 125,
-            ),
-          ),
+        child: ImageMessageBuilder(
+          message: imageMsg,
+          messageWidth: imageMsg.size.toInt(),
+          isReplyContent: true,
         ),
       );
-    } else if (msg is FileMessage) {
-      return messageWidget!;
-    } else if (msg is CustomMessage) {
-      return messageWidget!;
-    } else {
-      return const SizedBox.shrink();
+    } else if (msg is TextMessage) {
+      final textMsg = msg as TextMessage;
+      return Container(
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.2),
+        padding: const EdgeInsets.all(12),
+        child: Html(
+          data: textMsg.text,
+          defaultTextStyle: Theme.of(context)
+              .textTheme
+              .bodySmall!
+              .copyWith(overflow: TextOverflow.ellipsis),
+          maxLines: 3,
+        ),
+      );
     }
+    return messageWidget ?? const SizedBox.shrink();
   }
 }
 
-class AttachmentWidget extends ConsumerWidget {
-  final List<Icon> icons;
-  final Size size;
+// class EmojiPickerWidget extends ConsumerStatefulWidget {
+//   final Size size;
 
-  const AttachmentWidget({
-    Key? key,
-    required this.icons,
-    required this.size,
-  }) : super(key: key);
+//   const EmojiPickerWidget({
+//     Key? key,
+//     required this.size,
+//   }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Offstage(
-      offstage:
-          !ref.watch(chatInputProvider.select((ci) => ci.attachmentVisible)),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        width: double.infinity,
-        height: size.height * 0.3,
-        child: Column(
-          children: <Widget>[
-            Container(
-              width: double.infinity,
-              height: size.height * 0.172,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: const _BuildSettingBtn(),
-            ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () => onClickCamera(context, ref),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Atlas.camera),
-                          SizedBox(height: 6),
-                          Text(
-                            'Camera',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () => onClickFile(context, ref),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Atlas.folder),
-                          SizedBox(height: 6),
-                          Text(
-                            'File',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () => onClickLocation(context, ref),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Atlas.location),
-                          SizedBox(height: 6),
-                          Text(
-                            'Location',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+//   @override
+//   ConsumerState<EmojiPickerWidget> createState() =>
+//       _EmojiPickerWidgetConsumerState();
+// }
 
-  void onClickCamera(BuildContext context, WidgetRef ref) {
-    ref.read(chatInputProvider.notifier).toggleAttachment();
-    ref.read(chatRoomProvider.notifier).handleMultipleImageSelection(context);
-  }
+// class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
+//   @override
+//   Widget build(BuildContext context) {
+//     final chatInputState = ref.watch(chatInputProvider);
+//     return Offstage(
+//       offstage: !chatInputState.emojiPickerVisible,
+//       child: SizedBox(
+//         height: widget.size.height * 0.3,
+//         child: EmojiPicker(
+//           onEmojiSelected: handleEmojiSelected,
+//           onBackspacePressed: handleBackspacePressed,
+//           config: Config(
+//             columns: 8,
+//             bgColor: Theme.of(context).colorScheme.neutral,
+//             emojiSizeMax: 36,
+//             verticalSpacing: 0,
+//             horizontalSpacing: 0,
+//             initCategory: Category.SMILEYS,
+//             recentTabBehavior: RecentTabBehavior.RECENT,
+//             recentsLimit: 28,
+//             noRecents: Text(
+//               AppLocalizations.of(context)!.noRecents,
+//             ),
+//             tabIndicatorAnimDuration: kTabScrollDuration,
+//             categoryIcons: const CategoryIcons(),
+//             buttonMode: ButtonMode.MATERIAL,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
 
-  void onClickFile(BuildContext context, WidgetRef ref) {
-    ref.read(chatRoomProvider.notifier).handleFileSelection(context);
-  }
+//   void handleEmojiSelected(Category? category, Emoji emoji) {
+//     final mentionState = ref.read(mentionKeyProvider).currentState!;
+//     mentionState.controller!.text += emoji.emoji;
+//     ref.read(chatInputProvider.notifier).showSendBtn(true);
+//   }
 
-  void onClickLocation(BuildContext context, WidgetRef ref) {}
-}
-
-class _BuildAudioBtn extends StatelessWidget {
-  const _BuildAudioBtn();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Icon(Atlas.microphone);
-  }
-}
-
-class _BuildImageBtn extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return InkWell(
-      onTap: () => onClick(context, ref),
-      child: const Icon(Atlas.camera_photo),
-    );
-  }
-
-  void onClick(BuildContext context, WidgetRef ref) {
-    ref.read(chatRoomProvider.notifier).handleMultipleImageSelection(context);
-  }
-}
-
-class _BuildSettingBtn extends StatelessWidget {
-  const _BuildSettingBtn();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Text(AppLocalizations.of(context)!.grantAccessText),
-        ),
-        ElevatedButton(
-          onPressed: () {},
-          child: Text(
-            AppLocalizations.of(context)!.settings,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _BuildSendBtn extends StatelessWidget {
-  final Function()? onButtonPressed;
-
-  const _BuildSendBtn({
-    required this.onButtonPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onButtonPressed,
-      child: const Icon(Atlas.paper_airplane),
-    );
-  }
-}
+//   void handleBackspacePressed() {
+//     final mentionState = ref.read(mentionKeyProvider).currentState!;
+//     final newValue =
+//         mentionState.controller!.text.characters.skipLast(1).string;
+//     mentionState.controller!.text = newValue;
+//     if (newValue.isEmpty) {
+//       ref.read(chatInputProvider.notifier).showSendBtn(false);
+//     }
+//   }
+// }

@@ -43,7 +43,7 @@ class CommentInputState extends ConsumerState<CommentInput> {
   }
 
   Future<void> onSend() async {
-    var eventId = await controller.sendComment(
+    final eventId = await controller.sendComment(
       widget.task.commentsManager.commentDraft(),
       _inputController.text.trim(),
     );
@@ -68,22 +68,27 @@ class CommentInputState extends ConsumerState<CommentInput> {
           children: [
             Row(
               children: [
-                accountProfile.when(
-                  data: (data) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: ActerAvatar(
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: accountProfile.when(
+                    data: (data) => ActerAvatar(
+                      mode: DisplayMode.User,
+                      uniqueId: userId,
+                      size: 18,
+                      displayName: simplifyUserId(userId),
+                      avatar: data.profile.getAvatarImage(),
+                    ),
+                    error: (err, stackTrace) {
+                      debugPrint('Failed to load avatar $err');
+                      return ActerAvatar(
                         mode: DisplayMode.User,
                         uniqueId: userId,
                         size: 18,
                         displayName: simplifyUserId(userId),
-                        avatar: data.profile.getAvatarImage(),
-                      ),
-                    );
-                  },
-                  loading: () => const CircularProgressIndicator(),
-                  error: (error, stackTrace) =>
-                      Text('Failed to load avatar $error'),
+                      );
+                    },
+                    loading: () => const CircularProgressIndicator(),
+                  ),
                 ),
                 GetBuilder<ToDoController>(
                   id: 'comment-input',

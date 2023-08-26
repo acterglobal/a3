@@ -1,15 +1,15 @@
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 
 // interface data providers
 final titleProvider = StateProvider<String>((ref) => '');
@@ -33,17 +33,21 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
   @override
   void initState() {
     super.initState();
-    Future(() {
-      ref.read(selectedSpaceIdProvider.notifier).state =
-          widget.initialSelectedSpace;
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      final spaceNotifier = ref.read(selectedSpaceIdProvider.notifier);
+      spaceNotifier.state = widget.initialSelectedSpace;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(titleProvider);
+    final titleNotifier = ref.watch(titleProvider.notifier);
+    final textNotifier = ref.watch(textProvider.notifier);
     final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
+    final spaceNotifier = ref.watch(selectedSpaceIdProvider.notifier);
     final selectedSpace = currentSelectedSpace != null;
+    final typeNotifier = ref.watch(selectedTypeProvider.notifier);
     return SideSheet(
       header: 'Create new Pin',
       addActions: true,
@@ -68,13 +72,11 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                       ],
                       onSelected: (String? typus) {
                         if (typus != null) {
-                          ref.read(selectedTypeProvider.notifier).state = typus;
+                          typeNotifier.state = typus;
                         }
                       },
                     ),
-                    const SizedBox(
-                      width: 6,
-                    ),
+                    const SizedBox(width: 6),
                     Expanded(
                       child: SizedBox(
                         height: 52,
@@ -88,8 +90,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                           ),
                           controller: _titleController,
                           onChanged: (String? value) {
-                            ref.read(titleProvider.notifier).state =
-                                value ?? '';
+                            titleNotifier.state = value ?? '';
                           },
                           validator: (value) =>
                               (value != null && value.isNotEmpty)
@@ -101,65 +102,17 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                   ],
                 ),
               ),
-              Consumer(
-                builder: ((context, ref, child) {
-                  final subselection = ref.watch(selectedTypeProvider);
-                  if (subselection == 'text') {
-                    return Expanded(
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          hintText: 'The content of the pin',
-                          labelText: 'Content',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                        ),
-                        textAlignVertical: TextAlignVertical.top,
-                        expands: true,
-                        minLines: null,
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        validator: (value) =>
-                            (value != null && value.isNotEmpty)
-                                ? null
-                                : 'Please enter a text',
-                        onChanged: (String? value) {
-                          ref.read(textProvider.notifier).state = value ?? '';
-                        },
-                      ),
-                    );
-                  } else {
-                    return TextFormField(
-                      decoration: InputDecoration(
-                        icon: const Icon(Atlas.link_thin),
-                        hintText: 'https://',
-                        labelText: 'link',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                      ),
-                      validator: (value) => (value != null && value.isNotEmpty)
-                          ? null
-                          : 'Please enter a link',
-                      onChanged: (String? value) {
-                        ref.read(linkProvider.notifier).state = value ?? '';
-                      },
-                    );
-                  }
-                }),
-              ),
+              Consumer(builder: contentBuilder),
               FormField(
                 builder: (state) => GestureDetector(
                   onTap: () async {
-                    final currentSpaceId = ref.read(selectedSpaceIdProvider);
                     final newSelectedSpaceId = await selectSpaceDrawer(
                       context: context,
-                      currentSpaceId: currentSpaceId,
+                      currentSpaceId: ref.read(selectedSpaceIdProvider),
                       canCheck: 'CanPostPin',
                       title: const Text('Select space'),
                     );
-                    ref.read(selectedSpaceIdProvider.notifier).state =
-                        newSelectedSpaceId;
+                    spaceNotifier.state = newSelectedSpaceId;
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,9 +121,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                         selectedSpace ? 'Space' : 'Please select a space',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      const SizedBox(
-                        width: 15,
-                      ),
+                      const SizedBox(width: 15),
                       state.errorText != null
                           ? Text(
                               state.errorText!,
@@ -182,20 +133,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                                   ),
                             )
                           : Container(),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       selectedSpace
-                          ? Consumer(
-                              builder: (context, ref, child) =>
-                                  ref.watch(selectedSpaceDetailsProvider).when(
-                                        data: (space) => space != null
-                                            ? SpaceChip(space: space)
-                                            : Text(currentSelectedSpace),
-                                        error: (e, s) => Text('error: $e'),
-                                        loading: () => const Text('loading'),
-                                      ),
-                            )
+                          ? Consumer(builder: spaceBuilder)
                           : Container(),
                     ],
                   ),
@@ -236,7 +176,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
               );
               try {
                 final spaceId = ref.read(selectedSpaceIdProvider);
-                final space = await ref.watch(spaceProvider(spaceId!).future);
+                final space = await ref.read(spaceProvider(spaceId!).future);
                 final pinDraft = space.pinDraft();
                 pinDraft.title(ref.read(titleProvider));
                 if (ref.read(selectedTypeProvider) == 'text') {
@@ -246,8 +186,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 }
                 final pinId = await pinDraft.send();
                 // reset providers
-                ref.read(titleProvider.notifier).state = '';
-                ref.read(textProvider.notifier).state = '';
+                titleNotifier.state = '';
+                textNotifier.state = '';
 
                 // We are doing as expected, but the lints triggers.
                 // ignore: use_build_context_synchronously
@@ -282,6 +222,63 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
           child: const Text('Create Pin'),
         ),
       ],
+    );
+  }
+
+  Widget contentBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final subselection = ref.watch(selectedTypeProvider);
+    final textNotifier = ref.watch(textProvider.notifier);
+    final linkNotifier = ref.watch(linkProvider.notifier);
+    if (subselection == 'text') {
+      return Expanded(
+        child: TextFormField(
+          decoration: InputDecoration(
+            hintText: 'The content of the pin',
+            labelText: 'Content',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+          textAlignVertical: TextAlignVertical.top,
+          expands: true,
+          minLines: null,
+          maxLines: null,
+          keyboardType: TextInputType.multiline,
+          validator: (value) => (value != null && value.isNotEmpty)
+              ? null
+              : 'Please enter a text',
+          onChanged: (String? value) {
+            textNotifier.state = value ?? '';
+          },
+        ),
+      );
+    } else {
+      return TextFormField(
+        decoration: InputDecoration(
+          icon: const Icon(Atlas.link_thin),
+          hintText: 'https://',
+          labelText: 'link',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+        ),
+        validator: (value) =>
+            (value != null && value.isNotEmpty) ? null : 'Please enter a link',
+        onChanged: (String? value) {
+          linkNotifier.state = value ?? '';
+        },
+      );
+    }
+  }
+
+  Widget spaceBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
+    final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
+    return spaceDetails.when(
+      data: (space) =>
+          space != null ? SpaceChip(space: space) : Text(currentSelectedSpace!),
+      error: (e, s) => Text('error: $e'),
+      loading: () => const Text('loading'),
     );
   }
 }

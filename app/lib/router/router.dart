@@ -4,9 +4,11 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
+import 'package:acter/features/activities/pages/sessions_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/dialogs/create_chat_sheet.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
+import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/events/dialogs/create_event_sheet.dart';
 import 'package:acter/features/events/dialogs/edit_event_sheet.dart';
@@ -47,7 +49,6 @@ import 'package:acter/features/spaces/pages/spaces_page.dart';
 import 'package:acter/features/todo/pages/create_task_sidesheet.dart';
 import 'package:acter/features/todo/pages/todo_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod/riverpod.dart';
@@ -93,6 +94,7 @@ final GlobalKey<NavigatorState> spaceNavKey = GlobalKey<NavigatorState>(
 );
 
 List<RouteBase> makeRoutes(Ref ref) {
+  final tabKeyNotifier = ref.watch(selectedTabKeyProvider.notifier);
   return [
     GoRoute(
       name: Routes.intro.name,
@@ -325,9 +327,18 @@ List<RouteBase> makeRoutes(Ref ref) {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: RoomPage(convo: state.extra as Convo),
+          child: const RoomPage(),
         );
       },
+      routes: <RouteBase>[
+        GoRoute(
+          parentNavigatorKey: rootNavKey,
+          path: 'profile',
+          name: Routes.chatProfile.name,
+          redirect: authGuardRedirect,
+          builder: (context, state) => const RoomProfilePage(),
+        ),
+      ],
     ),
 
     GoRoute(
@@ -394,6 +405,17 @@ List<RouteBase> makeRoutes(Ref ref) {
             return NoTransitionPage(
               key: state.pageKey,
               child: const ActivitiesPage(),
+            );
+          },
+        ),
+        GoRoute(
+          name: Routes.settingSessions.name,
+          path: Routes.settingSessions.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const SessionsPage(),
             );
           },
         ),
@@ -562,9 +584,7 @@ List<RouteBase> makeRoutes(Ref ref) {
               path: Routes.spaceRelatedSpaces.route,
               redirect: authGuardRedirect,
               pageBuilder: (context, state) {
-                ref
-                    .read(selectedTabKeyProvider.notifier)
-                    .switchTo(const Key('spaces'));
+                tabKeyNotifier.switchTo(const Key('spaces'));
                 return NoTransitionPage(
                   key: state.pageKey,
                   child: RelatedSpacesPage(
@@ -578,9 +598,7 @@ List<RouteBase> makeRoutes(Ref ref) {
               path: Routes.spaceMembers.route,
               redirect: authGuardRedirect,
               pageBuilder: (context, state) {
-                ref
-                    .read(selectedTabKeyProvider.notifier)
-                    .switchTo(const Key('members'));
+                tabKeyNotifier.switchTo(const Key('members'));
                 return NoTransitionPage(
                   key: state.pageKey,
                   child: SpaceMembersPage(
@@ -594,9 +612,7 @@ List<RouteBase> makeRoutes(Ref ref) {
               path: Routes.spacePins.route,
               redirect: authGuardRedirect,
               pageBuilder: (context, state) {
-                ref
-                    .read(selectedTabKeyProvider.notifier)
-                    .switchTo(const Key('pins'));
+                tabKeyNotifier.switchTo(const Key('pins'));
                 return NoTransitionPage(
                   key: state.pageKey,
                   child: SpacePinsPage(
@@ -610,9 +626,7 @@ List<RouteBase> makeRoutes(Ref ref) {
               path: Routes.spaceEvents.route,
               redirect: authGuardRedirect,
               pageBuilder: (context, state) {
-                ref
-                    .read(selectedTabKeyProvider.notifier)
-                    .switchTo(const Key('events'));
+                tabKeyNotifier.switchTo(const Key('events'));
                 return NoTransitionPage(
                   key: state.pageKey,
                   child: SpaceEventsPage(
@@ -626,9 +640,7 @@ List<RouteBase> makeRoutes(Ref ref) {
               path: Routes.spaceChats.route,
               redirect: authGuardRedirect,
               pageBuilder: (context, state) {
-                ref
-                    .read(selectedTabKeyProvider.notifier)
-                    .switchTo(const Key('chat'));
+                tabKeyNotifier.switchTo(const Key('chat'));
                 return NoTransitionPage(
                   key: state.pageKey,
                   child: SpaceChatsPage(
@@ -642,9 +654,7 @@ List<RouteBase> makeRoutes(Ref ref) {
               path: Routes.space.route,
               redirect: authGuardRedirect,
               pageBuilder: (context, state) {
-                ref
-                    .read(selectedTabKeyProvider.notifier)
-                    .switchTo(const Key('overview'));
+                tabKeyNotifier.switchTo(const Key('overview'));
                 return NoTransitionPage(
                   key: state.pageKey,
                   child: SpaceOverview(

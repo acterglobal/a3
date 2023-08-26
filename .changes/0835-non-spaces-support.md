@@ -1,0 +1,2 @@
+- We now show indicators about access-level (e.g. if it is public) and whether it is end-to-end-encrypted on the top of the Space view
+- Support for non-acter spaces has been added: show an indicator in the top bar as well, as clear the features unavailable and show a large message box with optional upgrade button (if you have the permissions) on non-acter-spaces.

@@ -20,12 +20,14 @@ enum Routes {
   updates('/updates'),
   search('/search'),
   activities('/activities'),
+  settingSessions('/settings/sessions'),
   tasks('/tasks'),
 
   // --- chat
   chat('/chat'),
   createChat('/chat/create'),
   chatroom('/chat/:roomId([!#][^/]+)'), // !roomId, #roomName
+  chatProfile('/:roomId([!#][^/]+)/profile'),
 
   // -- spaces
   spaces('/spaces'),

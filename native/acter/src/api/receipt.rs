@@ -1,6 +1,6 @@
 use futures::{
     channel::mpsc::{channel, Receiver, Sender},
-    StreamExt,
+    stream::StreamExt,
 };
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},

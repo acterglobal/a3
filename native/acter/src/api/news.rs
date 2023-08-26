@@ -8,7 +8,7 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
-use futures::{io::Cursor, stream::StreamExt};
+use futures::stream::StreamExt;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Joined, Room},
@@ -31,6 +31,7 @@ use std::{
     path::PathBuf,
 };
 use tokio::sync::broadcast::Receiver;
+use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::trace;
 
 use super::{
@@ -321,11 +322,11 @@ impl NewsEntry {
         })
     }
 
-    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
-        tokio_stream::wrappers::BroadcastStream::new(self.subscribe()).map(|_| true)
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe()).map(|_| true)
     }
 
-    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
+    pub fn subscribe(&self) -> Receiver<()> {
         let key = self.content.event_id().to_string();
         self.client.subscribe(key)
     }
@@ -407,24 +408,24 @@ impl NewsEntryDraft {
                     anyhow::Ok(ImageMessageEventContent::plain(
                         body,
                         upload_resp.content_uri,
-                        None,
                     ))
                 }
             })
             .await??;
-        image_content.info = Some(Box::new(assign!(ImageInfo::new(), {
+        let info = assign!(ImageInfo::new(), {
             height: height.and_then(UInt::new),
             width: width.and_then(UInt::new),
             mimetype: Some(mimetype),
             size: size.and_then(UInt::new),
             blurhash,
-        })));
+        });
+        image_content.info = Some(Box::new(info));
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
             inner: news::NewsSlide {
-                content: news::NewsContent::Image(image_content),
+                content: NewsContent::Image(image_content),
                 references: Default::default(),
             },
         });
@@ -439,17 +440,12 @@ impl NewsEntryDraft {
         mimetype: Option<String>,
         size: Option<u64>,
     ) -> &mut Self {
-        let info = assign!(AudioInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            mimetype,
-            size: size.and_then(UInt::new),
-        });
         let url = Box::<MxcUri>::from(url.as_str());
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_audio(body, (*url).to_owned(), Some(Box::new(info))),
+            inner: news::NewsSlide::new_audio(body, (*url).to_owned()),
         });
         self
     }
@@ -466,20 +462,12 @@ impl NewsEntryDraft {
         size: Option<u64>,
         blurhash: Option<String>,
     ) -> &mut Self {
-        let info = assign!(VideoInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            mimetype,
-            size: size.and_then(UInt::new),
-            blurhash,
-        });
         let url = Box::<MxcUri>::from(url.as_str());
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_video(body, (*url).to_owned(), Some(Box::new(info))),
+            inner: news::NewsSlide::new_video(body, (*url).to_owned()),
         });
         self
     }
@@ -491,16 +479,12 @@ impl NewsEntryDraft {
         mimetype: Option<String>,
         size: Option<u64>,
     ) -> &mut Self {
-        let info = assign!(FileInfo::new(), {
-            mimetype,
-            size: size.and_then(UInt::new),
-        });
         let url = Box::<MxcUri>::from(url.as_str());
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide::new_file(body, (*url).to_owned(), Some(Box::new(info))),
+            inner: news::NewsSlide::new_file(body, (*url).to_owned()),
         });
         self
     }

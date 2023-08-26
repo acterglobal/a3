@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use futures::{
     channel::mpsc::{channel, Receiver, Sender},
-    StreamExt,
+    stream::StreamExt,
 };
 use matrix_sdk::{
     encryption::identities::Device,
@@ -12,11 +12,14 @@ use matrix_sdk::{
     sync::SyncResponse,
     Client as SdkClient,
 };
-use std::sync::Arc;
+use std::{
+    sync::Arc,
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
 use tokio::sync::Mutex;
 use tracing::{error, info};
 
-use super::{client::Client, RUNTIME};
+use super::{client::Client, common::DeviceRecord, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct DeviceChangedEvent {
@@ -37,31 +40,55 @@ impl DeviceChangedEvent {
                 let user_id = client
                     .user_id()
                     .context("guest user cannot get the verified devices")?;
-                let mut records: Vec<DeviceRecord> = vec![];
                 let response = client.devices().await?;
-                for device in client
+                let crypto_devices = client
                     .encryption()
                     .get_user_devices(user_id)
-                    .await?
-                    .devices()
-                {
-                    if device.is_verified() == verified {
-                        if let Some(dev) = response
-                            .devices
-                            .iter()
-                            .find(|e| e.device_id == device.device_id())
-                        {
-                            records.push(DeviceRecord::new(
-                                &device,
-                                dev.last_seen_ip.clone(),
-                                dev.last_seen_ts,
+                    .await
+                    .context("Couldn't get crypto devices")?;
+                let mut sessions = vec![];
+                for device in response.devices {
+                    let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
+                        d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing()
+                    });
+                    let mut is_active = false;
+                    if let Some(last_seen_ts) = device.last_seen_ts {
+                        let limit = SystemTime::now()
+                            .checked_sub(Duration::from_secs(90 * 24 * 60 * 60))
+                            .context("Couldn't get time of 90 days ago")?
+                            .duration_since(UNIX_EPOCH)
+                            .context("Couldn't calculate duration from Unix epoch")?;
+                        let secs: u64 = last_seen_ts.as_secs().into();
+                        if secs < limit.as_secs() {
+                            is_active = true;
+                        }
+                    }
+                    if is_verified == verified {
+                        let found = crypto_devices
+                            .get(&device.device_id)
+                            .is_some_and(|d| d.device_id() == device.device_id);
+                        if found {
+                            sessions.push(DeviceRecord::new(
+                                device.device_id.clone(),
+                                device.display_name.clone(),
+                                device.last_seen_ts,
+                                device.last_seen_ip.clone(),
+                                is_verified,
+                                is_active,
                             ));
                         } else {
-                            records.push(DeviceRecord::new(&device, None, None));
+                            sessions.push(DeviceRecord::new(
+                                device.device_id.clone(),
+                                device.display_name.clone(),
+                                None,
+                                None,
+                                is_verified,
+                                is_active,
+                            ));
                         }
                     }
                 }
-                Ok(records)
+                Ok(sessions)
             })
             .await?
     }
@@ -168,82 +195,60 @@ impl DeviceLeftEvent {
                 let user_id = client
                     .user_id()
                     .context("guest user cannot get the deleted devices")?;
-                let mut records: Vec<DeviceRecord> = vec![];
                 let response = client.devices().await?;
-                for device in client
+                let crypto_devices = client
                     .encryption()
                     .get_user_devices(user_id)
-                    .await?
-                    .devices()
-                {
-                    if device.is_deleted() == deleted {
-                        if let Some(dev) = response
-                            .devices
-                            .iter()
-                            .find(|e| e.device_id == device.device_id())
-                        {
-                            records.push(DeviceRecord::new(
-                                &device,
-                                dev.last_seen_ip.clone(),
-                                dev.last_seen_ts,
+                    .await
+                    .context("Couldn't get crypto devices")?;
+                let mut sessions = vec![];
+                for device in response.devices {
+                    let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
+                        d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing()
+                    });
+                    let mut is_active = false;
+                    if let Some(last_seen_ts) = device.last_seen_ts {
+                        let limit = SystemTime::now()
+                            .checked_sub(Duration::from_secs(90 * 24 * 60 * 60))
+                            .context("Couldn't get time of 90 days ago")?
+                            .duration_since(UNIX_EPOCH)
+                            .context("Couldn't calculate duration from Unix epoch")?;
+                        let secs: u64 = last_seen_ts.as_secs().into();
+                        if secs < limit.as_secs() {
+                            is_active = true;
+                        }
+                    }
+                    let is_deleted = crypto_devices
+                        .get(&device.device_id)
+                        .is_some_and(|d| d.is_deleted());
+                    if is_deleted == deleted {
+                        let found = crypto_devices
+                            .get(&device.device_id)
+                            .is_some_and(|d| d.device_id() == device.device_id);
+                        if found {
+                            sessions.push(DeviceRecord::new(
+                                device.device_id.clone(),
+                                device.display_name.clone(),
+                                device.last_seen_ts,
+                                device.last_seen_ip.clone(),
+                                is_verified,
+                                is_active,
                             ));
                         } else {
-                            records.push(DeviceRecord::new(&device, None, None));
+                            sessions.push(DeviceRecord::new(
+                                device.device_id.clone(),
+                                device.display_name.clone(),
+                                None,
+                                None,
+                                is_verified,
+                                is_active,
+                            ));
                         }
                     }
                 }
-                Ok(records)
+                Ok(sessions)
             })
             .await?
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct DeviceRecord {
-    device: Device,
-    last_seen_ip: Option<String>,
-    last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
-}
-
-impl DeviceRecord {
-    pub(crate) fn new(
-        device: &Device,
-        last_seen_ip: Option<String>,
-        last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
-    ) -> Self {
-        DeviceRecord {
-            device: device.clone(),
-            last_seen_ip,
-            last_seen_ts,
-        }
-    }
-
-    pub fn verified(&self) -> bool {
-        self.device.is_verified()
-    }
-
-    pub fn deleted(&self) -> bool {
-        self.device.is_deleted()
-    }
-
-    pub fn user_id(&self) -> OwnedUserId {
-        self.device.user_id().to_owned()
-    }
-
-    pub fn device_id(&self) -> OwnedDeviceId {
-        self.device.device_id().to_owned()
-    }
-
-    pub fn display_name(&self) -> Option<String> {
-        self.device.display_name().map(|s| s.to_string())
-    }
-
-    pub fn last_seen_ip(&self) -> Option<String> {
-        self.last_seen_ip.clone()
-    }
-
-    pub fn last_seen_ts(&self) -> Option<u64> {
-        self.last_seen_ts.map(|x| x.get().into())
     }
 }
 

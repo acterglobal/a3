@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use tracing::trace;
 
 use super::{Color, Icon, Update};
-use crate::util::deserialize_some;
+use crate::{util::deserialize_some, Result};
 
 #[derive(Clone, Debug, Deserialize, Serialize, Builder)]
 #[builder(name = "PinDisplayInfoBuilder", derive(Debug))]
@@ -58,7 +58,7 @@ pub struct PinDisplayInfoUpdate {
 }
 
 impl PinDisplayInfoUpdate {
-    pub fn apply(&self, info: &mut PinDisplayInfo) -> crate::Result<bool> {
+    pub fn apply(&self, info: &mut PinDisplayInfo) -> Result<bool> {
         let mut updated = false;
         if let Some(color) = &self.color {
             info.color = color.clone();
@@ -160,7 +160,7 @@ pub struct PinUpdateEventContent {
 }
 
 impl PinUpdateEventContent {
-    pub fn apply(&self, pin: &mut PinEventContent) -> crate::Result<bool> {
+    pub fn apply(&self, pin: &mut PinEventContent) -> Result<bool> {
         let mut updated = false;
         if let Some(title) = &self.title {
             pin.title = title.clone();

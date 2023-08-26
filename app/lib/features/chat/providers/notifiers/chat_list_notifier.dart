@@ -12,7 +12,7 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
 
   void _loadUp() async {
     state = asyncChats.when(
-      data: (rooms) => ChatListState.data(chats: rooms),
+      data: (rooms) => ChatListState.data(chats: [...rooms]),
       error: (e, s) => ChatListState.error(e.toString()),
       loading: () => const ChatListState.loading(),
     );
@@ -39,7 +39,7 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
   }
 
   void moveItem(int from, int to) {
-    var temp = asyncChats.requireValue;
+    final temp = asyncChats.requireValue;
     temp.removeAt(from);
     temp.insert(to, temp[from]);
     state = ChatListState.data(chats: temp);
