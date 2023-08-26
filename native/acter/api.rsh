@@ -1807,9 +1807,6 @@ object VerificationEvent {
     /// Alice starts the SAS verification
     fn start_sas_verification() -> Future<Result<bool>>;
 
-    /// Whether verification request was launched from this device
-    fn was_triggered_from_this_device() -> Result<bool>;
-
     /// Bob accepts the SAS verification
     fn accept_sas_verification() -> Future<Result<bool>>;
 

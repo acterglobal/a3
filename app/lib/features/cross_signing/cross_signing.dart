@@ -30,12 +30,12 @@ Widget elevatedButton(
 }
 
 class VerificationProcess {
-  bool wasTriggeredFromThisDevice;
+  bool verifiyingThisDevice;
   String stage;
   String? finishedMsg;
 
   VerificationProcess({
-    required this.wasTriggeredFromThisDevice,
+    required this.verifiyingThisDevice,
     required this.stage,
   });
 }
@@ -138,7 +138,7 @@ class CrossSigning {
     }
     // this case is bob side
     _processMap[flowId] = VerificationProcess(
-      wasTriggeredFromThisDevice: event.wasTriggeredFromThisDevice(),
+      verifiyingThisDevice: true, // this device is requested for verification
       stage: 'm.key.verification.request',
     );
     acceptingRequest = false;
@@ -258,7 +258,7 @@ class CrossSigning {
     } else {
       // this device is alice side
       _processMap[flowId] = VerificationProcess(
-        wasTriggeredFromThisDevice: event.wasTriggeredFromThisDevice(),
+        verifiyingThisDevice: false, // other device is ready for verification
         stage: 'm.key.verification.ready',
       );
     }
@@ -297,7 +297,7 @@ class CrossSigning {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  _processMap[flowId]!.wasTriggeredFromThisDevice
+                  _processMap[flowId]!.verifiyingThisDevice
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
                 ),
@@ -441,7 +441,7 @@ class CrossSigning {
               ),
               const SizedBox(width: 5),
               Text(
-                _processMap[flowId]?.wasTriggeredFromThisDevice == true
+                _processMap[flowId]?.verifiyingThisDevice == true
                     ? AppLocalizations.of(context)!.verifyThisSession
                     : AppLocalizations.of(context)!.verifySession,
               ),
@@ -539,7 +539,7 @@ class CrossSigning {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    _processMap[flowId]?.wasTriggeredFromThisDevice == true
+                    _processMap[flowId]?.verifiyingThisDevice == true
                         ? AppLocalizations.of(context)!.verifyThisSession
                         : AppLocalizations.of(context)!.verifySession,
                   ),
@@ -603,7 +603,7 @@ class CrossSigning {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    _processMap[flowId]?.wasTriggeredFromThisDevice == true
+                    _processMap[flowId]?.verifiyingThisDevice == true
                         ? AppLocalizations.of(context)!.verifyThisSession
                         : AppLocalizations.of(context)!.verifySession,
                   ),
@@ -691,7 +691,7 @@ class CrossSigning {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  _processMap[flowId]?.wasTriggeredFromThisDevice == true
+                  _processMap[flowId]?.verifiyingThisDevice == true
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
                 ),
@@ -775,7 +775,7 @@ class CrossSigning {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  _processMap[flowId]?.wasTriggeredFromThisDevice == true
+                  _processMap[flowId]?.verifiyingThisDevice == true
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
                 ),
@@ -954,7 +954,7 @@ class CrossSigning {
     if (process.finishedMsg != null) {
       return process.finishedMsg!;
     }
-    if (process.wasTriggeredFromThisDevice) {
+    if (process.verifiyingThisDevice) {
       return AppLocalizations.of(context)!.verificationConclusionOkSelfNotice;
     }
     return AppLocalizations.of(context)!.verificationConclusionOkDone;

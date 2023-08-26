@@ -18253,17 +18253,6 @@ class Api {
           int Function(
             int,
           )>();
-  late final _verificationEventWasTriggeredFromThisDevicePtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventWasTriggeredFromThisDeviceReturn Function(
-            ffi.Int64,
-          )>>("__VerificationEvent_was_triggered_from_this_device");
-
-  late final _verificationEventWasTriggeredFromThisDevice =
-      _verificationEventWasTriggeredFromThisDevicePtr.asFunction<
-          _VerificationEventWasTriggeredFromThisDeviceReturn Function(
-            int,
-          )>();
   late final _verificationEventAcceptSasVerificationPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -39040,34 +39029,6 @@ class VerificationEvent {
     return tmp2;
   }
 
-  /// Whether verification request was launched from this device
-  bool wasTriggeredFromThisDevice() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventWasTriggeredFromThisDevice(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    final tmp7 = tmp1.arg4;
-    if (tmp3 == 0) {
-      debugAllocation("handle error", tmp4, tmp5);
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      final tmp3_0 =
-          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
-      if (tmp5 > 0) {
-        final ffi.Pointer<ffi.Void> tmp4_0;
-        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-        _api.__deallocate(tmp4_0, tmp6, 1);
-      }
-      throw tmp3_0;
-    }
-    final tmp2 = tmp7 > 0;
-    return tmp2;
-  }
-
   /// Bob accepts the SAS verification
   Future<bool> acceptSasVerification() {
     var tmp0 = 0;
@@ -41902,19 +41863,6 @@ class _VerificationEventGetContentReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-}
-
-class _VerificationEventWasTriggeredFromThisDeviceReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint8()
-  external int arg4;
 }
 
 class _VerificationEmojiDescriptionReturn extends ffi.Struct {

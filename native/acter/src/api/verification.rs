@@ -331,24 +331,6 @@ impl VerificationEvent {
             .await?
     }
 
-    pub fn was_triggered_from_this_device(&self) -> Result<bool> {
-        let device_id = self
-            .client
-            .device_id()
-            .context("guest user cannot get device id")?;
-        warn!("was_triggered_from_this_device device_id: {}", device_id.to_string());
-        if let Some(other_device_id) = self.content.get("other_device_id") {
-            warn!("was_triggered_from_this_device other_device_id: {}", *other_device_id);
-            Ok(*other_device_id == *device_id)
-        } else if let Some(from_device) = self.content.get("from_device") {
-            warn!("was_triggered_from_this_device from_device: {}", *from_device);
-            Ok(*from_device == *device_id)
-        } else {
-            warn!("neither other_device_id nor from_device");
-            Ok(false)
-        }
-    }
-
     pub async fn accept_sas_verification(&self) -> Result<bool> {
         let client = self.client.clone();
         let controller = self.controller.clone();
