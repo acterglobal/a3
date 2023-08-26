@@ -1,5 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io';
+
+bool isDesktop = (Platform.isLinux || Platform.isWindows || Platform.isMacOS);
+
+class EmojiConfig {
+  static final TextStyle emojiTextStyle =
+      const TextStyle(fontFamily: 'NotoEmoji');
+  static final checkPlatformCompatibility = !isDesktop;
+  static final emojiSizeMax = 32 * ((!kIsWeb && Platform.isIOS) ? 1.30 : 1.0);
+  static final fallbackFonts = isDesktop ? ['Noto Color Emoji'] : null;
+}
 
 AppTheme currentTheme = AppTheme();
 
@@ -56,71 +67,71 @@ const brandColorScheme = ColorScheme.dark(
 
 class AppTheme {
   static ThemeData get theme {
-    return ThemeData.from(
-      textTheme: GoogleFonts.interTextTheme(
-        const TextTheme(
-          headlineLarge: TextStyle(
-            color: Colors.white,
-            fontSize: 36,
-            fontWeight: FontWeight.bold,
-          ),
-          headlineMedium: TextStyle(
-            color: Colors.white,
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-          ),
-          headlineSmall: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-          titleLarge: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.w500,
-          ),
-          titleMedium: TextStyle(
-            color: Colors.white,
-            fontSize: 21,
-            fontWeight: FontWeight.w500,
-          ),
-          titleSmall: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-          ),
-          bodyLarge: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w400,
-          ),
-          bodyMedium: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-          ),
-          bodySmall: TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
-          labelLarge: TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w300,
-            decorationThickness: 0.8,
-          ),
-          labelMedium: TextStyle(
-            color: Colors.white,
-            fontSize: 13,
-            fontWeight: FontWeight.w300,
-            decorationThickness: 0.8,
-          ),
-          labelSmall: TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w300,
-          ),
+    return ThemeData(
+      fontFamily: 'Inter',
+      fontFamilyFallback: ['Apple Color Emoji', 'NotoEmoji', 'Segoe UI Emoji'],
+      textTheme: TextTheme(
+        headlineLarge: TextStyle(
+          color: Colors.white,
+          fontSize: 36,
+          fontWeight: FontWeight.bold,
+        ),
+        headlineMedium: TextStyle(
+          color: Colors.white,
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+        ),
+        headlineSmall: TextStyle(
+          color: Colors.white,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+        titleLarge: TextStyle(
+          color: Colors.white,
+          fontSize: 24,
+          fontWeight: FontWeight.w500,
+        ),
+        titleMedium: TextStyle(
+          color: Colors.white,
+          fontSize: 21,
+          fontWeight: FontWeight.w500,
+        ),
+        titleSmall: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+        ),
+        bodyLarge: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+        ),
+        bodyMedium: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+        ),
+        bodySmall: TextStyle(
+          color: Colors.white,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+        labelLarge: TextStyle(
+          color: Colors.white,
+          fontSize: 14,
+          fontWeight: FontWeight.w300,
+          decorationThickness: 0.8,
+        ),
+        labelMedium: TextStyle(
+          color: Colors.white,
+          fontSize: 13,
+          fontWeight: FontWeight.w300,
+          decorationThickness: 0.8,
+        ),
+        labelSmall: TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+          fontWeight: FontWeight.w300,
         ),
       ),
       colorScheme: brandColorScheme,
@@ -164,14 +175,14 @@ class AppTheme {
             color: Color(0xFF3AE3E0),
           ),
         ),
-        hintStyle: const TextStyle(
-          color: Color(0xFF898989),
+        hintStyle: TextStyle(
+          color: const Color(0xFF898989),
           fontWeight: FontWeight.w300,
           fontSize: 14,
         ),
       ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Color(0xff1D293E),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: const Color(0xff1D293E),
         unselectedLabelStyle: TextStyle(
           color: Colors.white,
           fontSize: 12,
@@ -185,14 +196,14 @@ class AppTheme {
           fontWeight: FontWeight.w400,
           height: 1.5,
         ),
-        selectedIconTheme: IconThemeData(color: Colors.white, size: 18),
-        unselectedIconTheme: IconThemeData(color: Colors.white, size: 18),
+        selectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
+        unselectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),
-      navigationRailTheme: const NavigationRailThemeData(
-        backgroundColor: Color(0xff1D293E),
-        indicatorColor: Color(0xff1E4E7B),
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: const Color(0xff1D293E),
+        indicatorColor: const Color(0xff1E4E7B),
         unselectedLabelTextStyle: TextStyle(
           color: Colors.white,
           fontSize: 12,
@@ -203,8 +214,8 @@ class AppTheme {
           fontSize: 12,
           fontWeight: FontWeight.w400,
         ),
-        selectedIconTheme: IconThemeData(color: Colors.white, size: 18),
-        unselectedIconTheme: IconThemeData(color: Colors.white, size: 18),
+        selectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
+        unselectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
       ),
     );
   }
