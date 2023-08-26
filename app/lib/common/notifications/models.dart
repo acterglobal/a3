@@ -5,7 +5,12 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 class NotificationBrief {
   final String title;
   final Routes? route;
-  const NotificationBrief({required this.title, this.route});
+  final bool hasFormatted;
+  const NotificationBrief({
+    required this.title,
+    this.route,
+    this.hasFormatted = false,
+  });
 
   static NotificationBrief unsupported() {
     return const NotificationBrief(title: 'not yet supported');
@@ -15,11 +20,19 @@ class NotificationBrief {
     if (textDesc == null) {
       return NotificationBrief(title: 'chat message w/o content', route: route);
     }
-    String body = textDesc.body();
-    String? formattedBody = textDesc.formattedBody();
-    if (formattedBody != null) {
-      body = simplifyBody(formattedBody);
+    if (textDesc.hasFormatted()) {
+      final body = simplifyBody(textDesc.formattedBody() ?? textDesc.body());
+      return NotificationBrief(
+        title: body,
+        route: route,
+        hasFormatted: true,
+      );
+    } else {
+      return NotificationBrief(
+        title: textDesc.body(),
+        route: route,
+        hasFormatted: false,
+      );
     }
-    return NotificationBrief(title: body, route: route);
   }
 }
