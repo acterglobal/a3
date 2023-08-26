@@ -12,6 +12,7 @@ class TaskEntry extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final List<Widget> subtitle = [];
     final dueDate = task.utcDueRfc3339();
+    final isDone = task.isDone();
     if (dueDate != null) {
       final due = Jiffy.parse(dueDate);
       final now = Jiffy.now();
@@ -19,13 +20,18 @@ class TaskEntry extends ConsumerWidget {
         subtitle.add(
           Padding(
             padding: const EdgeInsets.only(right: 3),
-            child: Text(
-              due.fromNow(),
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    color: Theme.of(context).colorScheme.taskOverdueFG,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.taskOverdueBG,
-                  ),
+            child: Tooltip(
+              message: due.format(),
+              child: Text(
+                due.fromNow(),
+                style: isDone
+                    ? null
+                    : Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color: Theme.of(context).colorScheme.taskOverdueFG,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.taskOverdueBG,
+                        ),
+              ),
             ),
           ),
         );
@@ -34,10 +40,12 @@ class TaskEntry extends ConsumerWidget {
         subtitle.add(
           Padding(
             padding: const EdgeInsets.only(right: 3),
-            child: Text(
-              due.fromNow(),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            child: isDone
+                ? null
+                : Text(
+                    due.fromNow(),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
           ),
         );
       }
@@ -57,7 +65,7 @@ class TaskEntry extends ConsumerWidget {
           )
           .style,
       leading: Checkbox(
-        value: task.isDone(),
+        value: isDone,
         onChanged: (bool? value) async {
           final updater = task.updateBuilder();
           if (value == true) {
@@ -70,10 +78,10 @@ class TaskEntry extends ConsumerWidget {
       ),
       title: Text(
         task.title(),
-        style: Theme.of(context)
-            .textTheme
-            .bodyMedium!
-            .copyWith(fontWeight: FontWeight.normal),
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              fontWeight: FontWeight.normal,
+              decoration: isDone ? TextDecoration.lineThrough : null,
+            ),
       ),
       subtitle: subtitle.isEmpty ? null : Row(children: subtitle),
     );
