@@ -6,8 +6,11 @@ class NotificationBrief {
   final String title;
   final Routes? route;
   final bool hasFormatted;
-  const NotificationBrief(
-      {required this.title, this.route, this.hasFormatted = false});
+  const NotificationBrief({
+    required this.title,
+    this.route,
+    this.hasFormatted = false,
+  });
 
   static NotificationBrief unsupported() {
     return const NotificationBrief(title: 'not yet supported');
@@ -19,10 +22,17 @@ class NotificationBrief {
     }
     if (textDesc.hasFormatted()) {
       final body = simplifyBody(textDesc.formattedBody() ?? textDesc.body());
-      return NotificationBrief(title: body, route: route, hasFormatted: true);
+      return NotificationBrief(
+        title: body,
+        route: route,
+        hasFormatted: true,
+      );
     } else {
       return NotificationBrief(
-          title: textDesc.body(), route: route, hasFormatted: false);
+        title: textDesc.body(),
+        route: route,
+        hasFormatted: false,
+      );
     }
   }
 }

@@ -1780,16 +1780,18 @@ impl RoomMessage {
                         Some("ProfileChanged".to_string()),
                         "Removed name and avatar".to_string(),
                     ),
-                    (None, None, (Some(_), None)) => {
-                        (Some("ProfileChanged".to_string()), "Removed name".to_string())
-                    }
+                    (None, None, (Some(_), None)) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed name".to_string(),
+                    ),
                     (None, None, (None, Some(_))) => (
                         Some("ProfileChanged".to_string()),
                         "Removed avatar".to_string(),
                     ),
-                    (None, None, (None, None)) => {
-                        (Some("ProfileChanged".to_string()), "Removed name".to_string())
-                    }
+                    (None, None, (None, None)) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed name".to_string(),
+                    ),
                 }
             }
         };
@@ -1871,16 +1873,18 @@ impl RoomMessage {
                         Some("ProfileChanged".to_string()),
                         "Removed name and avatar".to_string(),
                     ),
-                    (None, None, (Some(_), None)) => {
-                        (Some("ProfileChanged".to_string()), "Removed name".to_string())
-                    }
+                    (None, None, (Some(_), None)) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed name".to_string(),
+                    ),
                     (None, None, (None, Some(_))) => (
                         Some("ProfileChanged".to_string()),
                         "Removed avatar".to_string(),
                     ),
-                    (None, None, (None, None)) => {
-                        (Some("ProfileChanged".to_string()), "Removed name".to_string())
-                    }
+                    (None, None, (None, None)) => (
+                        Some("ProfileChanged".to_string()),
+                        "Removed name".to_string(),
+                    ),
                 }
             }
         };
