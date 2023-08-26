@@ -264,31 +264,8 @@ class _EmojiContainerState extends State<_EmojiContainer>
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Container(
-          margin: const EdgeInsets.all(2),
-          decoration: BoxDecoration(
-            color: keys.isNotEmpty
-                ? Theme.of(context).colorScheme.tertiary.withOpacity(0.1)
-                : null,
-            border: keys.isNotEmpty
-                ? Border.all(color: Theme.of(context).colorScheme.tertiary)
-                : null,
-            borderRadius: BorderRadius.only(
-              topLeft: widget.nextMessageInGroup
-                  ? const Radius.circular(12)
-                  : !widget.isAuthor
-                      ? const Radius.circular(0)
-                      : const Radius.circular(12),
-              topRight: widget.nextMessageInGroup
-                  ? const Radius.circular(12)
-                  : !widget.isAuthor
-                      ? const Radius.circular(12)
-                      : const Radius.circular(0),
-              bottomLeft: const Radius.circular(12),
-              bottomRight: const Radius.circular(12),
-            ),
-          ),
-          padding: const EdgeInsets.all(5),
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 3),
           child: Wrap(
             direction: Axis.horizontal,
             spacing: 5,
@@ -298,17 +275,13 @@ class _EmojiContainerState extends State<_EmojiContainer>
               Map<String, dynamic> reactions =
                   widget.message.metadata!['reactions'];
               final recordsCount = reactions[key]?.length;
-              return GestureDetector(
-                onTap: () {
+              return InkWell(
+                onLongPress: () {
                   showEmojiReactionsSheet(reactions);
                 },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(key),
-                    const SizedBox(width: 2),
-                    Text(recordsCount!.toString()),
-                  ],
+                child: Chip(
+                  avatar: Text(key),
+                  label: Text(recordsCount!.toString()),
                 ),
               );
             }),
