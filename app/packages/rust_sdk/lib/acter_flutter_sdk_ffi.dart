@@ -12651,6 +12651,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _reactionRecordSentByMePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__ReactionRecord_sent_by_me");
+
+  late final _reactionRecordSentByMe = _reactionRecordSentByMePtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _timelineDiffActionPtr = _lookup<
       ffi.NativeFunction<
           _TimelineDiffActionReturn Function(
@@ -27894,6 +27904,18 @@ class ReactionRecord {
     );
     final tmp3 = tmp1;
     final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// whether I am the sender of this reaction
+  bool sentByMe() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionRecordSentByMe(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 

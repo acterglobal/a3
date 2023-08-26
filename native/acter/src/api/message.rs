@@ -2732,23 +2732,33 @@ impl RoomMessage {
         let room_id = room.room_id().to_owned();
         let sender = event.sender().to_string();
         let origin_server_ts: u64 = event.timestamp().get().into();
-        let mut reactions: HashMap<String, Vec<ReactionRecord>> = HashMap::new();
-        for (key, value) in event.reactions().iter() {
-            let reaction_items = value
-                .senders()
-                .map(|x| ReactionRecord::new(x.sender_id.clone(), x.timestamp))
-                .collect::<Vec<ReactionRecord>>();
-            reactions.insert(key.clone(), reaction_items);
-        }
+        let client = room.client();
+        let my_user_id = client.user_id();
+        let reactions: HashMap<String, Vec<ReactionRecord>> = event
+            .reactions()
+            .iter()
+            .map(|(key, value)| {
+                (
+                    key.clone(),
+                    value
+                        .senders()
+                        .map(|x| {
+                            ReactionRecord::new(
+                                x.sender_id.clone(),
+                                x.timestamp,
+                                my_user_id.map(|me| me == x.sender_id).unwrap_or_default(),
+                            )
+                        })
+                        .collect::<Vec<_>>(),
+                )
+            })
+            .collect();
 
         let event_item = match event.content() {
             TimelineItemContent::Message(msg) => {
-                let mut sent_by_me = false;
-                if let Some(user_id) = room.client().user_id() {
-                    if user_id == event.sender() {
-                        sent_by_me = true;
-                    }
-                }
+                let sent_by_me = my_user_id
+                    .map(|me| me == event.sender())
+                    .unwrap_or_default();
                 let sub_type = msg.msgtype();
                 let fallback = match sub_type {
                     MessageType::Audio(content) => "sent an audio.".to_string(),

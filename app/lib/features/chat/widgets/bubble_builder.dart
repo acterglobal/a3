@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -8,6 +9,8 @@ import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -226,7 +229,7 @@ class _ChatBubble extends ConsumerWidget {
   }
 }
 
-class _EmojiContainer extends StatefulWidget {
+class _EmojiContainer extends ConsumerStatefulWidget {
   final bool isAuthor;
   final types.Message message;
   final bool nextMessageInGroup;
@@ -238,10 +241,11 @@ class _EmojiContainer extends StatefulWidget {
   });
 
   @override
-  State<_EmojiContainer> createState() => _EmojiContainerState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      __EmojiContainerState();
 }
 
-class _EmojiContainerState extends State<_EmojiContainer>
+class __EmojiContainerState extends ConsumerState<_EmojiContainer>
     with TickerProviderStateMixin {
   late TabController tabBarController;
   List<Tab> reactionTabs = [];
@@ -261,6 +265,7 @@ class _EmojiContainerState extends State<_EmojiContainer>
         keys = reactions.keys.toList();
       }
     }
+    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -275,11 +280,29 @@ class _EmojiContainerState extends State<_EmojiContainer>
               Map<String, dynamic> reactions =
                   widget.message.metadata!['reactions'];
               final recordsCount = reactions[key]?.length;
+              var sentByMe = (reactions[key]! as List<ReactionRecord>)
+                  .any((x) => x.sentByMe());
               return InkWell(
                 onLongPress: () {
                   showEmojiReactionsSheet(reactions);
                 },
+                onTap: () {
+                  if (sentByMe) {
+                    customMsgSnackbar(
+                      context,
+                      'Revoking emoji reactions not yet supported',
+                    );
+                  } else {
+                    chatRoomNotifier.sendEmojiReaction(widget.message.id, key);
+                  }
+                },
                 child: Chip(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 1, horizontal: 2),
+                  backgroundColor: sentByMe
+                      ? AppTheme.theme.colorScheme.inversePrimary
+                      : null,
+                  labelPadding: const EdgeInsets.only(left: 2, right: 1),
                   avatar: Text(key),
                   label: Text(recordsCount!.toString()),
                 ),
