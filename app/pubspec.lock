@@ -582,11 +582,12 @@ packages:
   flutter_mentions:
     dependency: "direct main"
     description:
-      name: flutter_mentions
-      sha256: "86206b70e14a96c195130202f258c5764ef16f406c72613dfadbaea6bc4717d2"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
+      path: "."
+      ref: HEAD
+      resolved-ref: "45f76488f37400b96392f9e555461e65c1eae742"
+      url: "https://github.com/gtalha07/flutter_mentions.git"
+    source: git
+    version: "2.0.2"
   flutter_onboarding_slider:
     dependency: "direct main"
     description:

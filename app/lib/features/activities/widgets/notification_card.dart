@@ -4,18 +4,14 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/activities/util.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:go_router/go_router.dart';
 
 class NotificationCard extends ConsumerWidget {
   final ffi.Notification notification;
-
-  const NotificationCard({
-    Key? key,
-    required this.notification,
-  }) : super(key: key);
+  const NotificationCard({super.key, required this.notification});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,7 +24,7 @@ class NotificationCard extends ConsumerWidget {
       if (notification.isActerSpace()) {
         final space = notification.space()!;
         avatar = Consumer(
-          builder: (ctx, ref, child) {
+          builder: (context, ref, child) {
             final spaceProfile = ref.watch(spaceProfileDataProvider(space));
             return InkWell(
               onTap: () => context.goNamed(
@@ -64,10 +60,8 @@ class NotificationCard extends ConsumerWidget {
             final spaceProfile = ref.watch(spaceProfileDataProvider(space));
             return spaceProfile.when(
               data: (value) => Text(value.displayName ?? roomId),
-              error: (error, stackTrace) {
-                // FIXME: fallback would be nice
-                return Text('Failed to load space due to $error');
-              },
+              error: (error, stackTrace) =>
+                  Text('Failed to load space Text(roomId)due to $error'),
               loading: () => Text(roomId),
             );
           },
@@ -78,7 +72,7 @@ class NotificationCard extends ConsumerWidget {
           builder: (ctx, ref, child) {
             final profile = ref.watch(chatProfileDataProvider(convo));
             return InkWell(
-              onTap: () => context.goNamed(
+              onTap: () => ctx.goNamed(
                 Routes.chatroom.name,
                 pathParameters: {'roomId': roomId},
                 extra: convo,
@@ -112,9 +106,8 @@ class NotificationCard extends ConsumerWidget {
             final profile = ref.watch(chatProfileDataProvider(convo));
             return profile.when(
               data: (value) => Text(value.displayName ?? roomId),
-              error: (error, stackTrace) => Text(
-                'Failed to load room due to $error',
-              ),
+              error: (error, stackTrace) =>
+                  Text('Failed to load room due to $error'),
               loading: () => Text(roomId),
             );
           },
@@ -132,10 +125,11 @@ class NotificationCard extends ConsumerWidget {
         onTap: () {
           switch (brief.route) {
             case Routes.chatroom:
-              // FIXME: fails at the moment
               context.pushNamed(
                 Routes.chatroom.name,
-                pathParameters: {'roomId': roomId},
+                pathParameters: {
+                  'roomId': roomId
+                }, // FIXME: fails at the moment
               );
               return;
             default:

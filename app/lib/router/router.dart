@@ -321,28 +321,6 @@ List<RouteBase> makeRoutes(Ref ref) {
 
     GoRoute(
       parentNavigatorKey: rootNavKey,
-      name: Routes.chatroom.name,
-      path: Routes.chatroom.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const RoomPage(),
-        );
-      },
-      routes: <RouteBase>[
-        GoRoute(
-          parentNavigatorKey: rootNavKey,
-          path: 'profile',
-          name: Routes.chatProfile.name,
-          redirect: authGuardRedirect,
-          builder: (context, state) => const RoomProfilePage(),
-        ),
-      ],
-    ),
-
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
       name: Routes.createChat.name,
       path: Routes.createChat.route,
       pageBuilder: (context, state) {
@@ -387,6 +365,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           builder: (context, state) => const GalleryPage(),
         ),
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.myProfile.name,
           path: Routes.myProfile.route,
           redirect: authGuardRedirect,
@@ -494,6 +473,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.chat.name,
           path: Routes.chat.route,
           redirect: authGuardRedirect,
@@ -503,6 +483,25 @@ List<RouteBase> makeRoutes(Ref ref) {
               child: const ChatPage(),
             );
           },
+        ),
+
+        GoRoute(
+          name: Routes.chatroom.name,
+          path: Routes.chatroom.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const RoomPage(),
+            );
+          },
+        ),
+
+        GoRoute(
+          name: Routes.chatProfile.name,
+          path: Routes.chatProfile.route,
+          redirect: authGuardRedirect,
+          builder: (context, state) => const RoomProfilePage(),
         ),
 
         GoRoute(
@@ -518,15 +517,14 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         // ---- SETTINGS
-
         GoRoute(
-          name: Routes.info.name,
-          path: Routes.info.route,
+          name: Routes.settings.name,
+          path: Routes.settings.route,
           redirect: authGuardRedirect,
           pageBuilder: (context, state) {
             return NoTransitionPage(
               key: state.pageKey,
-              child: const SettingsInfoPage(),
+              child: const SettingsMenuPage(),
             );
           },
         ),
@@ -541,19 +539,6 @@ List<RouteBase> makeRoutes(Ref ref) {
             );
           },
         ),
-
-        GoRoute(
-          name: Routes.settings.name,
-          path: Routes.settings.route,
-          redirect: authGuardRedirect,
-          pageBuilder: (context, state) {
-            return NoTransitionPage(
-              key: state.pageKey,
-              child: const SettingsMenuPage(),
-            );
-          },
-        ),
-
         GoRoute(
           name: Routes.settingsLabs.name,
           path: Routes.settingsLabs.route,
@@ -562,6 +547,17 @@ List<RouteBase> makeRoutes(Ref ref) {
             return NoTransitionPage(
               key: state.pageKey,
               child: const SettingsLabsPage(),
+            );
+          },
+        ),
+        GoRoute(
+          name: Routes.info.name,
+          path: Routes.info.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const SettingsInfoPage(),
             );
           },
         ),
