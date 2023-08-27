@@ -1239,6 +1239,43 @@ object SpaceRelations {
     fn query_hierarchy(from: Option<string>) -> Future<Result<SpaceHierarchyListResult>>;
 }
 
+object SimpleSettingWithTurnOff {
+
+}
+
+object SimpleSettingWithTurnOffBuilder {
+    fn active(active: bool);
+    fn build() -> Result<SimpleSettingWithTurnOff>;
+}
+
+object NewsSettings {
+    fn active() -> bool;
+    fn updater() -> SimpleSettingWithTurnOffBuilder;
+}
+
+object EventsSettings {
+    fn active() -> bool;
+    fn updater() -> SimpleSettingWithTurnOffBuilder;
+}
+
+object PinsSettings {
+    fn active() -> bool;
+    fn updater() -> SimpleSettingWithTurnOffBuilder;
+}
+
+object ActerAppSettings {
+    fn news() -> NewsSettings;
+    fn pins() -> PinsSettings;
+    fn events() -> EventsSettings;
+    fn update_builder() -> ActerAppSettingsBuilder;
+}
+
+object ActerAppSettingsBuilder {
+    fn news(news: Option<SimpleSettingWithTurnOff>);
+    fn pins(pins: Option<SimpleSettingWithTurnOff>);
+    fn events(events: Option<SimpleSettingWithTurnOff>);
+}
+
 object Space {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
@@ -1374,6 +1411,12 @@ object Space {
 
     /// leave this room
     fn leave() -> Future<Result<bool>>;
+
+    /// current App Settings
+    fn app_settings() -> Future<Result<ActerAppSettings>>;
+
+    /// Whenever this is submitted;
+    fn update_app_settings(new_settings: ActerAppSettingsBuilder) -> Future<Result<string>>;
     
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
@@ -1404,7 +1447,8 @@ enum MemberPermission {
     CanSetTopic,
     CanLinkSpaces,
     CanUpdatePowerLevels,
-    CanSetParentSpace
+    CanSetParentSpace,
+    CanChangeAppSettings
 }
 
 object Member {

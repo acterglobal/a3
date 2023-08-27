@@ -2,6 +2,7 @@ use acter_core::{
     events::{
         news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
         pins::PinEventContent,
+        settings::{ActerAppSettings, ActerAppSettingsContent},
     },
     spaces::is_acter_space,
     statics::PURPOSE_FIELD_DEV,
@@ -42,7 +43,7 @@ use matrix_sdk::{
 use matrix_sdk_ui::timeline::RoomExt;
 use ruma::events::{
     room::join_rules::{AllowRule, JoinRule},
-    EventContent, StaticEventContent,
+    EventContent, StateEventContent, StaticEventContent, StaticStateEventContent,
 };
 use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tracing::{error, info};
@@ -89,6 +90,7 @@ pub enum MemberPermission {
     CanLinkSpaces,
     CanSetParentSpace,
     CanUpdatePowerLevels,
+    CanChangeAppSettings,
 }
 
 enum PermissionTest {
@@ -177,6 +179,9 @@ impl Member {
             )),
             MemberPermission::CanUpgradeToActerSpace => {
                 StateEventType::from(PURPOSE_FIELD_DEV).into()
+            }
+            MemberPermission::CanChangeAppSettings => {
+                PermissionTest::StateEvent(ActerAppSettingsContent::TYPE.into())
             }
         };
         match tester {
@@ -411,7 +416,7 @@ impl Room {
                 let member = room
                     .get_member(&uid)
                     .await?
-                    .context("Couldn't find him among room members")?;
+                    .context("User not found among room members")?;
                 Ok(Member { member })
             })
             .await?

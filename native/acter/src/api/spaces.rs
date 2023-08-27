@@ -618,6 +618,7 @@ impl Space {
             .await?)
     }
 
+    // for only cli run_marking_space, not api.rsh
     pub fn get_room_id(&self) -> OwnedRoomId {
         self.room_id().to_owned()
     }

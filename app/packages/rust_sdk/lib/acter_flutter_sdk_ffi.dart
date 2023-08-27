@@ -6506,6 +6506,115 @@ class Api {
     return tmp7;
   }
 
+  ActerAppSettings? __spaceAppSettingsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceAppSettingsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ActerAppSettings");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ActerAppSettings._(this, tmp13_1);
+    return tmp7;
+  }
+
+  String? __spaceUpdateAppSettingsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceUpdateAppSettingsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
   EventId? __spaceUpdatePowerLevelFuturePoll(
     int boxed,
     int postCobject,
@@ -15916,6 +16025,176 @@ class Api {
             int,
             int,
           )>();
+  late final _simpleSettingWithTurnOffBuilderActivePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__SimpleSettingWithTurnOffBuilder_active");
+
+  late final _simpleSettingWithTurnOffBuilderActive =
+      _simpleSettingWithTurnOffBuilderActivePtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _simpleSettingWithTurnOffBuilderBuildPtr = _lookup<
+      ffi.NativeFunction<
+          _SimpleSettingWithTurnOffBuilderBuildReturn Function(
+            ffi.Int64,
+          )>>("__SimpleSettingWithTurnOffBuilder_build");
+
+  late final _simpleSettingWithTurnOffBuilderBuild =
+      _simpleSettingWithTurnOffBuilderBuildPtr.asFunction<
+          _SimpleSettingWithTurnOffBuilderBuildReturn Function(
+            int,
+          )>();
+  late final _newsSettingsActivePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__NewsSettings_active");
+
+  late final _newsSettingsActive = _newsSettingsActivePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _newsSettingsUpdaterPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NewsSettings_updater");
+
+  late final _newsSettingsUpdater = _newsSettingsUpdaterPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _eventsSettingsActivePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__EventsSettings_active");
+
+  late final _eventsSettingsActive = _eventsSettingsActivePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _eventsSettingsUpdaterPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__EventsSettings_updater");
+
+  late final _eventsSettingsUpdater = _eventsSettingsUpdaterPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _pinsSettingsActivePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__PinsSettings_active");
+
+  late final _pinsSettingsActive = _pinsSettingsActivePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _pinsSettingsUpdaterPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__PinsSettings_updater");
+
+  late final _pinsSettingsUpdater = _pinsSettingsUpdaterPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _acterAppSettingsNewsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ActerAppSettings_news");
+
+  late final _acterAppSettingsNews = _acterAppSettingsNewsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _acterAppSettingsPinsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ActerAppSettings_pins");
+
+  late final _acterAppSettingsPins = _acterAppSettingsPinsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _acterAppSettingsEventsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ActerAppSettings_events");
+
+  late final _acterAppSettingsEvents = _acterAppSettingsEventsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _acterAppSettingsUpdateBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ActerAppSettings_update_builder");
+
+  late final _acterAppSettingsUpdateBuilder =
+      _acterAppSettingsUpdateBuilderPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _acterAppSettingsBuilderNewsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
+          )>>("__ActerAppSettingsBuilder_news");
+
+  late final _acterAppSettingsBuilderNews =
+      _acterAppSettingsBuilderNewsPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _acterAppSettingsBuilderPinsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
+          )>>("__ActerAppSettingsBuilder_pins");
+
+  late final _acterAppSettingsBuilderPins =
+      _acterAppSettingsBuilderPinsPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _acterAppSettingsBuilderEventsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
+          )>>("__ActerAppSettingsBuilder_events");
+
+  late final _acterAppSettingsBuilderEvents =
+      _acterAppSettingsBuilderEventsPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+          )>();
   late final _spaceGetProfilePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -16548,6 +16827,28 @@ class Api {
 
   late final _spaceLeave = _spaceLeavePtr.asFunction<
       int Function(
+        int,
+      )>();
+  late final _spaceAppSettingsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Space_app_settings");
+
+  late final _spaceAppSettings = _spaceAppSettingsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _spaceUpdateAppSettingsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Space_update_app_settings");
+
+  late final _spaceUpdateAppSettings = _spaceUpdateAppSettingsPtr.asFunction<
+      int Function(
+        int,
         int,
       )>();
   late final _spaceUpdatePowerLevelPtr = _lookup<
@@ -20271,6 +20572,36 @@ class Api {
         int,
         int,
       )>();
+  late final _spaceAppSettingsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceAppSettingsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Space_app_settings_future_poll");
+
+  late final _spaceAppSettingsFuturePoll =
+      _spaceAppSettingsFuturePollPtr.asFunction<
+          _SpaceAppSettingsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _spaceUpdateAppSettingsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceUpdateAppSettingsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Space_update_app_settings_future_poll");
+
+  late final _spaceUpdateAppSettingsFuturePoll =
+      _spaceUpdateAppSettingsFuturePollPtr.asFunction<
+          _SpaceUpdateAppSettingsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _spaceUpdatePowerLevelFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _SpaceUpdatePowerLevelFuturePollReturn Function(
@@ -34189,6 +34520,338 @@ class SpaceRelations {
   }
 }
 
+class SimpleSettingWithTurnOff {
+  final Api _api;
+  final _Box _box;
+
+  SimpleSettingWithTurnOff._(this._api, this._box);
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class SimpleSettingWithTurnOffBuilder {
+  final Api _api;
+  final _Box _box;
+
+  SimpleSettingWithTurnOffBuilder._(this._api, this._box);
+
+  void active(
+    bool active,
+  ) {
+    final tmp1 = active;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._simpleSettingWithTurnOffBuilderActive(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  SimpleSettingWithTurnOff build() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._simpleSettingWithTurnOffBuilderBuild(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 =
+          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_SimpleSettingWithTurnOff");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = SimpleSettingWithTurnOff._(_api, tmp7_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class NewsSettings {
+  final Api _api;
+  final _Box _box;
+
+  NewsSettings._(this._api, this._box);
+
+  bool active() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSettingsActive(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  SimpleSettingWithTurnOffBuilder updater() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSettingsUpdater(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "drop_box_SimpleSettingWithTurnOffBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = SimpleSettingWithTurnOffBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class EventsSettings {
+  final Api _api;
+  final _Box _box;
+
+  EventsSettings._(this._api, this._box);
+
+  bool active() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventsSettingsActive(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  SimpleSettingWithTurnOffBuilder updater() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventsSettingsUpdater(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "drop_box_SimpleSettingWithTurnOffBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = SimpleSettingWithTurnOffBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class PinsSettings {
+  final Api _api;
+  final _Box _box;
+
+  PinsSettings._(this._api, this._box);
+
+  bool active() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._pinsSettingsActive(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  SimpleSettingWithTurnOffBuilder updater() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._pinsSettingsUpdater(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "drop_box_SimpleSettingWithTurnOffBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = SimpleSettingWithTurnOffBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class ActerAppSettings {
+  final Api _api;
+  final _Box _box;
+
+  ActerAppSettings._(this._api, this._box);
+
+  NewsSettings news() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterAppSettingsNews(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsSettings");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = NewsSettings._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  PinsSettings pins() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterAppSettingsPins(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinsSettings");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinsSettings._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  EventsSettings events() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterAppSettingsEvents(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_EventsSettings");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = EventsSettings._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  ActerAppSettingsBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterAppSettingsUpdateBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_ActerAppSettingsBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = ActerAppSettingsBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class ActerAppSettingsBuilder {
+  final Api _api;
+  final _Box _box;
+
+  ActerAppSettingsBuilder._(this._api, this._box);
+
+  void news(
+    SimpleSettingWithTurnOff? news,
+  ) {
+    final tmp1 = news;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    _api._acterAppSettingsBuilderNews(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    return;
+  }
+
+  void pins(
+    SimpleSettingWithTurnOff? pins,
+  ) {
+    final tmp1 = pins;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    _api._acterAppSettingsBuilderPins(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    return;
+  }
+
+  void events(
+    SimpleSettingWithTurnOff? events,
+  ) {
+    final tmp1 = events;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    _api._acterAppSettingsBuilderEvents(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class Space {
   final Api _api;
   final _Box _box;
@@ -35546,6 +36209,43 @@ class Space {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__spaceLeaveFuturePoll);
     return tmp2;
+  }
+
+  /// current App Settings
+  Future<ActerAppSettings> appSettings() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceAppSettings(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Space_app_settings_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__spaceAppSettingsFuturePoll);
+    return tmp2;
+  }
+
+  /// Whenever this is submitted;
+  Future<String> updateAppSettings(
+    ActerAppSettingsBuilder newSettings,
+  ) {
+    final tmp1 = newSettings;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._spaceUpdateAppSettings(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__Space_update_app_settings_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__spaceUpdateAppSettingsFuturePoll);
+    return tmp4;
   }
 
   /// update the power levels of specified member
@@ -39914,6 +40614,7 @@ enum MemberPermissionTag {
   CanLinkSpaces,
   CanUpdatePowerLevels,
   CanSetParentSpace,
+  CanChangeAppSettings,
 }
 
 class MemberPermission {
@@ -39992,6 +40693,10 @@ class MemberPermission {
         break;
       case 16:
         this._tag = MemberPermissionTag.CanSetParentSpace;
+
+        break;
+      case 17:
+        this._tag = MemberPermissionTag.CanChangeAppSettings;
 
         break;
       default:
@@ -41416,6 +42121,19 @@ class _SpaceRelationsMainParentReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
+}
+
+class _SimpleSettingWithTurnOffBuilderBuildReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
 }
 
 class _SpaceTopicReturn extends ffi.Struct {
@@ -43624,6 +44342,40 @@ class _SpaceLeaveFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Uint8()
   external int arg5;
+}
+
+class _SpaceAppSettingsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceUpdateAppSettingsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _SpaceUpdatePowerLevelFuturePollReturn extends ffi.Struct {
