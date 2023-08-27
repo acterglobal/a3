@@ -112,6 +112,7 @@ impl From<MessageLikeEventType> for PermissionTest {
 
 pub struct Member {
     pub(crate) member: RoomMember,
+    pub(crate) acter_app_settings: Option<ActerAppSettingsContent>,
 }
 
 impl Deref for Member {
@@ -171,17 +172,49 @@ impl Member {
             MemberPermission::CanUpdatePowerLevels => StateEventType::RoomPowerLevels.into(),
 
             // Acter specific
-            MemberPermission::CanPostNews => PermissionTest::Message(MessageLikeEventType::from(
-                <NewsEntryEventContent as StaticEventContent>::TYPE,
-            )),
-            MemberPermission::CanPostPin => PermissionTest::Message(MessageLikeEventType::from(
-                <PinEventContent as StaticEventContent>::TYPE,
-            )),
+            MemberPermission::CanPostNews => {
+                if self
+                    .acter_app_settings
+                    .as_ref()
+                    .map(|s| s.news().active())
+                    .unwrap_or_default()
+                {
+                    PermissionTest::Message(MessageLikeEventType::from(
+                        <NewsEntryEventContent as StaticEventContent>::TYPE,
+                    ))
+                } else {
+                    // Not an acter space or news Posts are not activated..
+                    return false;
+                }
+            }
+            MemberPermission::CanPostPin => {
+                if self
+                    .acter_app_settings
+                    .as_ref()
+                    .map(|s| s.pins().active())
+                    .unwrap_or_default()
+                {
+                    PermissionTest::Message(MessageLikeEventType::from(
+                        <PinEventContent as StaticEventContent>::TYPE,
+                    ))
+                } else {
+                    // Not an acter space or Pins are not activated..
+                    return false;
+                }
+            }
             MemberPermission::CanUpgradeToActerSpace => {
+                if self.acter_app_settings.is_some() {
+                    return false; // already an acter space
+                }
                 StateEventType::from(PURPOSE_FIELD_DEV).into()
             }
             MemberPermission::CanChangeAppSettings => {
-                PermissionTest::StateEvent(ActerAppSettingsContent::TYPE.into())
+                if self.acter_app_settings.is_some() {
+                    PermissionTest::StateEvent(ActerAppSettingsContent::TYPE.into())
+                } else {
+                    // not an acter space, you can't set setting here
+                    return false;
+                }
             }
         };
         match tester {
@@ -210,6 +243,12 @@ impl Room {
 
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
+        let is_acter_space = self.is_acter_space().await;
+        let acter_app_settings = if is_acter_space {
+            Some(self.app_settings_content().await?)
+        } else {
+            None
+        };
 
         RUNTIME
             .spawn(async move {
@@ -217,7 +256,10 @@ impl Room {
                     .get_member(&my_id)
                     .await?
                     .context("Couldn't find me among room members")?;
-                Ok(Member { member })
+                Ok(Member {
+                    member,
+                    acter_app_settings,
+                })
             })
             .await?
     }
@@ -362,13 +404,23 @@ impl Room {
     pub async fn active_members(&self) -> Result<Vec<Member>> {
         let room = self.room.clone();
 
+        let is_acter_space = self.is_acter_space().await;
+        let acter_app_settings = if is_acter_space {
+            Some(self.app_settings_content().await?)
+        } else {
+            None
+        };
+
         RUNTIME
             .spawn(async move {
                 let members = room
                     .members(RoomMemberships::ACTIVE)
                     .await?
                     .into_iter()
-                    .map(|member| Member { member })
+                    .map(|member| Member {
+                        member,
+                        acter_app_settings: acter_app_settings.clone(),
+                    })
                     .collect();
                 Ok(members)
             })
@@ -377,6 +429,12 @@ impl Room {
 
     pub async fn invited_members(&self) -> Result<Vec<Member>> {
         let room = self.room.clone();
+        let is_acter_space = self.is_acter_space().await;
+        let acter_app_settings = if is_acter_space {
+            Some(self.app_settings_content().await?)
+        } else {
+            None
+        };
 
         RUNTIME
             .spawn(async move {
@@ -384,7 +442,10 @@ impl Room {
                     .members(RoomMemberships::INVITE)
                     .await?
                     .into_iter()
-                    .map(|member| Member { member })
+                    .map(|member| Member {
+                        member,
+                        acter_app_settings: acter_app_settings.clone(),
+                    })
                     .collect();
                 Ok(members)
             })
@@ -393,6 +454,12 @@ impl Room {
 
     pub async fn active_members_no_sync(&self) -> Result<Vec<Member>> {
         let room = self.room.clone();
+        let is_acter_space = self.is_acter_space().await;
+        let acter_app_settings = if is_acter_space {
+            Some(self.app_settings_content().await?)
+        } else {
+            None
+        };
 
         RUNTIME
             .spawn(async move {
@@ -400,7 +467,10 @@ impl Room {
                     .members_no_sync(RoomMemberships::ACTIVE)
                     .await?
                     .into_iter()
-                    .map(|member| Member { member })
+                    .map(|member| Member {
+                        member,
+                        acter_app_settings: acter_app_settings.clone(),
+                    })
                     .collect();
                 Ok(members)
             })
@@ -410,6 +480,12 @@ impl Room {
     pub async fn get_member(&self, user_id: String) -> Result<Member> {
         let room = self.room.clone();
         let uid = UserId::parse(user_id)?;
+        let is_acter_space = self.is_acter_space().await;
+        let acter_app_settings = if is_acter_space {
+            Some(self.app_settings_content().await?)
+        } else {
+            None
+        };
 
         RUNTIME
             .spawn(async move {
@@ -417,7 +493,10 @@ impl Room {
                     .get_member(&uid)
                     .await?
                     .context("User not found among room members")?;
-                Ok(Member { member })
+                Ok(Member {
+                    member,
+                    acter_app_settings: acter_app_settings.clone(),
+                })
             })
             .await?
     }
@@ -970,6 +1049,12 @@ impl Room {
         } else {
             bail!("Can't get a room we are not invited")
         };
+        let is_acter_space = self.is_acter_space().await;
+        let acter_app_settings = if is_acter_space {
+            Some(self.app_settings_content().await?)
+        } else {
+            None
+        };
 
         RUNTIME
             .spawn(async move {
@@ -980,7 +1065,10 @@ impl Room {
                 let mut members: Vec<Member> = vec![];
                 for user_id in invited.iter() {
                     if let Some(member) = room.get_member(user_id).await? {
-                        members.push(Member { member });
+                        members.push(Member {
+                            member,
+                            acter_app_settings: acter_app_settings.clone(),
+                        });
                     }
                 }
                 Ok(members)

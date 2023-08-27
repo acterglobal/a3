@@ -66,6 +66,9 @@ impl ActerAppSettings {
 
 impl Room {
     pub async fn app_settings(&self) -> Result<ActerAppSettings> {
+        Ok(self.app_settings_content().await?.into())
+    }
+    pub(crate) async fn app_settings_content(&self) -> Result<ActerAppSettingsContent> {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
@@ -76,10 +79,10 @@ impl Room {
                     if let Ok(SyncOrStrippedState::Sync(SyncStateEvent::Original(inner))) =
                         a.deserialize()
                     {
-                        return Ok(inner.content.into());
+                        return Ok(inner.content);
                     }
                 }
-                Ok(ActerAppSettingsContent::default().into()) // all other cases we fall back to default
+                Ok(ActerAppSettingsContent::default()) // all other cases we fall back to default
             })
             .await?
     }
