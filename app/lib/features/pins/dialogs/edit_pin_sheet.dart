@@ -1,11 +1,9 @@
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/dialogs/pop_up_dialog.dart';;
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
-import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';

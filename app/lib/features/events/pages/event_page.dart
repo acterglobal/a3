@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -24,31 +23,32 @@ class CalendarEventPage extends ConsumerWidget {
       body: CustomScrollView(
         slivers: <Widget>[
           PageHeaderWidget(
-              title: event.hasValue ? event.value!.title() : 'Loading Event',
-              sectionColor: Colors.blue.shade200,
-              actions: event.hasValue
-                  ? [
-                      HasSpacePermission(
-                        spaceId: event.value!.roomIdStr(),
-                        permission: 'CanPostEvent',
-                        child: PopupMenuButton(
-                          itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
-                            PopupMenuItem(
-                              onTap: () => ctx.pushNamed(
-                                Routes.editCalendarEvent.name,
-                                pathParameters: {'calendarId': calendarId},
-                              ),
-                              child: const Text('Edit Event'),
+            title: event.hasValue ? event.value!.title() : 'Loading Event',
+            sectionColor: Colors.blue.shade200,
+            actions: event.hasValue
+                ? [
+                    HasSpacePermission(
+                      spaceId: event.value!.roomIdStr(),
+                      permission: 'CanPostEvent',
+                      child: PopupMenuButton(
+                        itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
+                          PopupMenuItem(
+                            onTap: () => ctx.pushNamed(
+                              Routes.editCalendarEvent.name,
+                              pathParameters: {'calendarId': calendarId},
                             ),
-                            PopupMenuItem(
-                              onTap: () => onDelete(ctx),
-                              child: const Text('Delete Event'),
-                            ),
-                          ],
-                        ),
+                            child: const Text('Edit Event'),
+                          ),
+                          PopupMenuItem(
+                            onTap: () => onDelete(ctx),
+                            child: const Text('Delete Event'),
+                          ),
+                        ],
                       ),
-                    ]
-                  : []),
+                    ),
+                  ]
+                : [],
+          ),
           event.when(
             data: (ev) {
               String dateTime = 'Date and Time: ${formatDt(ev)}';
