@@ -7,16 +7,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 class SettingsAndMembership {
+  final Space space;
   final ActerAppSettings settings;
   final Member? member;
 
-  const SettingsAndMembership(this.settings, this.member);
+  const SettingsAndMembership(this.space, this.settings, this.member);
 }
 
 final spaceAppSettingsProvider = FutureProvider.autoDispose
     .family<SettingsAndMembership, String>((ref, spaceId) async {
   final space = await ref.watch(spaceProvider(spaceId).future);
   return SettingsAndMembership(
+    space,
     await space.appSettings(),
     await ref.watch(spaceMembershipProvider(spaceId).future),
   );
@@ -38,6 +40,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
       child: spaceSettingsWatcher.when(
         data: (appSettingsAndMembership) {
           final appSettings = appSettingsAndMembership.settings;
+          final space = appSettingsAndMembership.space;
           final canEdit = appSettingsAndMembership.member != null
               ? appSettingsAndMembership.member!
                   .canString('CanChangeAppSettings')
@@ -58,6 +61,62 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     title: const Text('Required PowerLevel'),
                     description: const Text(
                       'Minimum power level required to post news updates',
+                    ),
+                    trailing: const Text('not yet implemented'),
+                  ),
+                  SettingsTile.switchTile(
+                    title: const Text('Comments on Updates'),
+                    description: const Text('not yet supported'),
+                    enabled: false,
+                    initialValue: false,
+                    onToggle: (newVal) {},
+                  ),
+                ],
+              ),
+            );
+          }
+          if (pins.active()) {
+            moreSections.add(
+              SettingsSection(
+                title: const Text('Pin'),
+                tiles: [
+                  SettingsTile(
+                    enabled: false,
+                    title: const Text('Required PowerLevel'),
+                    description: const Text(
+                      'Minimum power level required to post and edit pins',
+                    ),
+                    trailing: const Text('not yet implemented'),
+                  ),
+                  SettingsTile.switchTile(
+                    title: const Text('Comments on Pins'),
+                    description: const Text('not yet supported'),
+                    enabled: false,
+                    initialValue: false,
+                    onToggle: (newVal) {},
+                  ),
+                ],
+              ),
+            );
+          }
+          if (events.active()) {
+            moreSections.add(
+              SettingsSection(
+                title: const Text('Calendar Events'),
+                tiles: [
+                  SettingsTile(
+                    enabled: false,
+                    title: const Text('Admin PowerLevel'),
+                    description: const Text(
+                      'Minimum power level required to post calendar events',
+                    ),
+                    trailing: const Text('not yet implemented'),
+                  ),
+                  SettingsTile(
+                    enabled: false,
+                    title: const Text('RSVP PowerLevel'),
+                    description: const Text(
+                      'Minimum power level to RSVP to calendar events',
                     ),
                     trailing: const Text('not yet implemented'),
                   ),
@@ -87,7 +146,13 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                         'Post space-wide updates',
                       ),
                       initialValue: news.active(),
-                      onToggle: (newVal) {},
+                      onToggle: (newVal) async {
+                        final updated = news.updater();
+                        updated.active(newVal);
+                        final builder = appSettings.updateBuilder();
+                        builder.news(updated.build());
+                        await space.updateAppSettings(builder);
+                      },
                     ),
                     SettingsTile.switchTile(
                       title: const Text('Pins'),
@@ -96,7 +161,13 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                         'Pin important information',
                       ),
                       initialValue: pins.active(),
-                      onToggle: (newVal) {},
+                      onToggle: (newVal) async {
+                        final updated = pins.updater();
+                        updated.active(newVal);
+                        final builder = appSettings.updateBuilder();
+                        builder.pins(updated.build());
+                        await space.updateAppSettings(builder);
+                      },
                     ),
                     SettingsTile.switchTile(
                       title: const Text('Events Calendar'),
@@ -105,7 +176,13 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                         'Calender with Events',
                       ),
                       initialValue: events.active(),
-                      onToggle: (newVal) {},
+                      onToggle: (newVal) async {
+                        final updated = events.updater();
+                        updated.active(newVal);
+                        final builder = appSettings.updateBuilder();
+                        builder.events(updated.build());
+                        await space.updateAppSettings(builder);
+                      },
                     ),
                   ],
                 ),
