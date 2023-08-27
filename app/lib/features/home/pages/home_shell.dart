@@ -3,13 +3,10 @@ import 'dart:io';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/providers/notifications_providers.dart';
-// import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
-import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/router/providers/router_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
@@ -49,16 +46,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   }
 
   @override
-  void dispose() {
-    // Get.delete<ReceiptController>();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     // get platform of context.
     final bool desktop = isDesktop(context);
-    final location = ref.watch(currentRoutingLocation);
     final client = ref.watch(clientProvider);
     if (client == null) {
       return const Scaffold(
@@ -149,9 +139,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     final bottomBarNav = ref.watch(bottomBarNavProvider(context));
     final bottomBarIdx =
         ref.watch(currentSelectedBottomBarIndexProvider(context));
-
-    final showInSidebar = desktop && location == '/dashboard';
-    final bodyRatio = showInSidebar ? 0.3 : 0.0;
     return CallbackShortcuts(
       bindings: <LogicalKeySet, VoidCallback>{
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK): () {
@@ -166,7 +153,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           controller: screenshotController,
           child: AdaptiveLayout(
             key: _key,
-            bodyRatio: bodyRatio,
             topNavigation: !hasFirstSynced
                 ? SlotLayout(
                     config: <Breakpoint, SlotLayoutConfig?>{
@@ -184,105 +170,34 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                 ? SlotLayout(
                     config: <Breakpoint, SlotLayoutConfig?>{
                       // adapt layout according to platform.
-                      Breakpoints.medium: SlotLayout.from(
+                      Breakpoints.small: SlotLayout.from(
                         key: const Key('primaryNavigation'),
-                        builder: (BuildContext ctx) {
-                          return const SidebarWidget(
-                            labelType: NavigationRailLabelType.none,
-                          );
-                        },
+                        builder: (BuildContext ctx) => const SidebarWidget(
+                          labelType: NavigationRailLabelType.selected,
+                        ),
                       ),
-                      Breakpoints.large: SlotLayout.from(
-                        key: const Key('Large primaryNavigation'),
-                        builder: (BuildContext ctx) {
-                          return const SidebarWidget(
-                            labelType: NavigationRailLabelType.all,
-                          );
-                        },
+                      Breakpoints.mediumAndUp: SlotLayout.from(
+                        key: const Key('primaryNavigation'),
+                        builder: (BuildContext ctx) => const SidebarWidget(
+                          labelType: NavigationRailLabelType.all,
+                        ),
                       )
                     },
                   )
                 : null,
-            body: showInSidebar
-                ? SlotLayout(
-                    config: <Breakpoint, SlotLayoutConfig>{
-                      Breakpoints.mediumAndUp: SlotLayout.from(
-                        key: const Key('Body Small'),
-                        builder: (BuildContext ctx) => const NewsWidget(),
-                      ),
-                      Breakpoints.small: SlotLayout.from(
-                        key: const Key('Body Small'),
-                        builder: (BuildContext ctx) => widget.child,
-                      ),
-                    },
-                  )
-                : SlotLayout(
-                    config: <Breakpoint, SlotLayoutConfig>{
-                      Breakpoints.small: SlotLayout.from(
-                        key: const Key('Body Small'),
-                        builder: (BuildContext ctx) => widget.child,
-                      ),
-                      // show dashboard view on desktop only.
-                      Breakpoints.mediumAndUp:
-                          // desktop
-                          //     ? SlotLayout.from(
-                          //         key: const Key('Body Medium'),
-                          //         builder: (BuildContext ctx) => Scaffold(
-                          //           body: Center(
-                          //             child: Text(
-                          //               'First Screen view to be implemented',
-                          //               style: Theme.of(context).textTheme.titleLarge,
-                          //             ),
-                          //           ),
-                          //         ),
-                          //       )
-                          //     :
-                          SlotLayout.from(
-                        key: const Key('body-medium-mobile'),
-                        builder: (BuildContext ctx) {
-                          return widget.child;
-                        },
-                      ),
-                    },
-                  ),
-            // helper UI for body view but since its doesn't fit for mobile view,
-            // hide it instead.
-            secondaryBody: showInSidebar
-                ? SlotLayout(
-                    config: <Breakpoint, SlotLayoutConfig>{
-                      Breakpoints.mediumAndUp: SlotLayout.from(
-                        key: const Key('Body Medium'),
-                        builder: (BuildContext ctx) {
-                          return widget.child;
-                        },
-                      )
-                    },
-                  )
-                : null,
-            bottomNavigation: desktop
+            body: SlotLayout(
+              config: <Breakpoint, SlotLayoutConfig>{
+                Breakpoints.smallAndUp: SlotLayout.from(
+                  key: const Key('Body Small'),
+                  builder: (BuildContext ctx) => widget.child,
+                ),
+              },
+            ),
+            bottomNavigation: !desktop
                 ? SlotLayout(
                     config: <Breakpoint, SlotLayoutConfig>{
                       //In desktop, we have ability to adjust windows res,
                       // adjust to navbar as primary to smaller views.
-                      Breakpoints.small: SlotLayout.from(
-                        key: const Key('Bottom Navigation Small'),
-                        inAnimation: AdaptiveScaffold.bottomToTop,
-                        outAnimation: AdaptiveScaffold.topToBottom,
-                        builder: (BuildContext ctx) => BottomNavigationBar(
-                          showSelectedLabels: false,
-                          showUnselectedLabels: false,
-                          currentIndex: bottomBarIdx,
-                          onTap: (index) =>
-                              context.go(bottomBarNav[index].initialLocation),
-                          items: bottomBarNav,
-                          type: BottomNavigationBarType.fixed,
-                        ),
-                      ),
-                    },
-                  )
-                : SlotLayout(
-                    config: <Breakpoint, SlotLayoutConfig>{
-                      // Navbar should be shown regardless of mobile screen sizes.
                       Breakpoints.smallAndUp: SlotLayout.from(
                         key: const Key('Bottom Navigation Small'),
                         inAnimation: AdaptiveScaffold.bottomToTop,
@@ -298,7 +213,8 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                         ),
                       ),
                     },
-                  ),
+                  )
+                : null,
           ),
         ),
       ),

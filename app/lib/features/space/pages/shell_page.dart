@@ -42,15 +42,8 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
             backgroundColor: Colors.transparent,
             body: SafeArea(
               child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.center,
-                    colors: <Color>[
-                      Theme.of(context).colorScheme.background,
-                      Theme.of(context).colorScheme.neutral,
-                    ],
-                  ),
+                decoration: const BoxDecoration(
+                  gradient: AppTheme.primaryGradient,
                 ),
                 child: Column(
                   children: <Widget>[

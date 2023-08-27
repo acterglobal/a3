@@ -2,6 +2,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/avatar_builder.dart';
@@ -11,6 +12,7 @@ import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -95,8 +97,10 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
 
   @override
   Widget build(BuildContext context) {
+    final location = ref.watch(currentRoutingLocation);
     final client = ref.watch(clientProvider);
-    final chatRoomState = ref.watch(chatRoomProvider);
+    var chatRoomState = ref.watch(chatRoomProvider);
+    var messages = ref.watch(messagesProvider);
     final roomNotifier = ref.watch(chatRoomProvider.notifier);
     final convo = ref.watch(currentConvoProvider);
     final convoProfile = ref.watch(chatProfileDataProvider(convo!));
@@ -106,6 +110,16 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
         roomNotifier.isLoaded();
       }
     });
+
+    ref.listen(
+      currentConvoProvider,
+      ((previous, next) {
+        if (previous != next) {
+          chatRoomState = ref.refresh(chatRoomProvider);
+          messages = ref.refresh(messagesProvider);
+        }
+      }),
+    );
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.neutral,
@@ -150,10 +164,16 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
           ),
           actions: [
             GestureDetector(
-              onTap: () => context.pushNamed(
-                Routes.chatProfile.name,
-                pathParameters: {'roomId': convo.getRoomIdStr()},
-              ),
+              onTap: () {
+                if (!isDesktop(context) || location != Routes.chat.route) {
+                  context.pushNamed(
+                    Routes.chatProfile.name,
+                    pathParameters: {'roomId': convo.getRoomIdStr()},
+                  );
+                } else {
+                  ref.read(showFullSplitView.notifier).update((state) => true);
+                }
+              },
               child: Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: SpaceParentBadge(
@@ -203,7 +223,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               sendButtonAccessibilityLabel: '',
             ),
             timeFormat: DateFormat.jm(),
-            messages: ref.watch(messagesProvider),
+            messages: messages,
             onSendPressed: (types.PartialText partialText) {},
             user: types.User(id: client!.userId().toString()),
             // disable image preview

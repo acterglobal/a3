@@ -1,5 +1,4 @@
 import 'dart:core';
-import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -20,8 +19,6 @@ class MemberList extends ConsumerWidget {
 
     return members.when(
       data: (members) {
-        final widthCount = (MediaQuery.of(context).size.width ~/ 600).toInt();
-        const int minCount = 2;
         if (members.isEmpty) {
           return const SliverToBoxAdapter(
             child: Center(
@@ -31,12 +28,8 @@ class MemberList extends ConsumerWidget {
             ),
           );
         }
-        return SliverGrid.builder(
+        return SliverList.builder(
           itemCount: members.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: max(1, min(widthCount, minCount)),
-            childAspectRatio: 6,
-          ),
           itemBuilder: (context, index) {
             final member = members[index];
             return Padding(

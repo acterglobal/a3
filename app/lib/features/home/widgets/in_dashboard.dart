@@ -1,9 +1,9 @@
-import 'package:acter/features/settings/widgets/settings_menu.dart';
+import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:flutter/material.dart';
 
-class InSettings extends StatelessWidget {
+class InDashboard extends StatelessWidget {
   final Widget child;
-  const InSettings({Key? key, required this.child}) : super(key: key);
+  const InDashboard({Key? key, required this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +12,15 @@ class InSettings extends StatelessWidget {
         if (constrains.maxWidth > 770) {
           return Row(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const Flexible(flex: 1, child: SettingsMenu()),
-              Flexible(flex: 2, child: child),
+              const Flexible(
+                flex: 1,
+                child: NewsWidget(),
+              ),
+              Flexible(
+                flex: 2,
+                child: child,
+              ),
             ],
           );
         }

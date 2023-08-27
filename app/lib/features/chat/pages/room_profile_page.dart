@@ -6,6 +6,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
+import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -25,12 +26,13 @@ class RoomProfilePage extends ConsumerWidget {
     final roomId = room.getRoomIdStr();
     final members = ref.watch(chatMembersProvider(roomId));
     final myMembership = ref.watch(spaceMembershipProvider(roomId));
+    final location = ref.watch(currentRoutingLocation);
     final List<Widget> topMenu = [
       members.when(
         data: (list) {
           return Text(
             'Members (${list.length})',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.titleSmall,
           );
         },
         error: (error, stackTrace) =>
@@ -43,11 +45,12 @@ class RoomProfilePage extends ConsumerWidget {
       if (membership.canString('CanInvite')) {
         topMenu.add(
           IconButton(
+            padding: const EdgeInsets.only(bottom: 8),
             icon: Icon(
               Atlas.plus_circle_thin,
               color: Theme.of(context).colorScheme.neutral5,
             ),
-            iconSize: 28,
+            iconSize: 24,
             color: Theme.of(context).colorScheme.surface,
             onPressed: () => context.pushNamed(
               Routes.spaceInvite.name,
@@ -59,13 +62,30 @@ class RoomProfilePage extends ConsumerWidget {
     }
 
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.neutral,
+      extendBodyBehindAppBar: true,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            backgroundColor: Theme.of(context).colorScheme.neutral,
+            leading: Visibility(
+              visible: location == Routes.chat.route,
+              replacement: IconButton(
+                onPressed: () => context.pop(),
+                icon: const Icon(Icons.chevron_left),
+              ),
+              child: IconButton(
+                onPressed: () => ref
+                    .read(showFullSplitView.notifier)
+                    .update((state) => false),
+                icon: const Icon(Atlas.xmark_circle_thin),
+              ),
+            ),
             elevation: 0.0,
             actions: <Widget>[
               PopupMenuButton<int>(
                 icon: const Icon(Atlas.dots_vertical, size: 22),
+                color: Colors.transparent,
                 itemBuilder: (context) => [
                   PopupMenuItem<int>(
                     value: 0,
@@ -122,15 +142,16 @@ class RoomProfilePage extends ConsumerWidget {
                 convoProfile.when(
                   data: (profile) => Text(
                     profile.displayName ?? roomId,
-                    overflow: TextOverflow.clip,
-                    style: Theme.of(context).textTheme.titleLarge,
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   error: (err, stackTrace) {
                     debugPrint('Some error occured $err');
                     return Text(
                       roomId,
                       overflow: TextOverflow.clip,
-                      style: Theme.of(context).textTheme.titleLarge,
+                      style: Theme.of(context).textTheme.titleSmall,
                     );
                   },
                   loading: () => const CircularProgressIndicator(),
@@ -148,15 +169,16 @@ class RoomProfilePage extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
                       roomId,
-                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             color: Theme.of(context).colorScheme.neutral5,
                           ),
+                      softWrap: true,
                     ),
                   ),
                   IconButton(
                     iconSize: 14,
                     icon: Icon(
-                      Atlas.pages,
+                      Atlas.pages_thin,
                       color: Theme.of(context).colorScheme.neutral5,
                     ),
                     onPressed: () async {
@@ -181,7 +203,7 @@ class RoomProfilePage extends ConsumerWidget {
               child: Center(
                 child: Text(
                   room.topic() ?? '',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.bodySmall,
                   softWrap: true,
                   textAlign: TextAlign.center,
                 ),
