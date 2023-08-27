@@ -427,11 +427,14 @@ final spaceHierarchyProfileProvider = FutureProvider.autoDispose
   return ProfileData(space.name(), avatar.data());
 });
 
-final isActerSpaceProvider =
-    FutureProvider.autoDispose.family<bool, String>((ref, spaceId) async {
+final acterAppSettingsProvider = FutureProvider.autoDispose
+    .family<ActerAppSettings?, String>((ref, spaceId) async {
   final space = await ref.watch(maybeSpaceProvider(spaceId).future);
   if (space == null) {
-    return false;
+    return null;
   }
-  return await space.isActerSpace();
+  if (!await space.isActerSpace()) {
+    return null;
+  }
+  return await space.appSettings();
 });
