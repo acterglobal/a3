@@ -33,6 +33,14 @@ final spaceProvider =
   throw 'Space not found';
 });
 
+/// Load the SpaceProfile Data right from the spaceId
+final spaceProfileDataForSpaceIdProvider = FutureProvider.autoDispose
+    .family<SpaceWithProfileData, String>((ref, spaceId) async {
+  final space = await ref.watch(spaceProvider(spaceId).future);
+  final profileData = await ref.watch(spaceProfileDataProvider(space).future);
+  return SpaceWithProfileData(space, profileData);
+});
+
 /// Attempts to map a spaceId to the space, but could come back empty (null) rather than throw.
 /// keeps up to date with underlying client even if the space wasn't found initially,
 final maybeSpaceProvider =

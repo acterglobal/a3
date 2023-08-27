@@ -1,9 +1,10 @@
-import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:flutter/material.dart';
 
-class InSettings extends StatelessWidget {
+class WithSidebar extends StatelessWidget {
   final Widget child;
-  const InSettings({Key? key, required this.child}) : super(key: key);
+  final Widget sidebar;
+  const WithSidebar({Key? key, required this.child, required this.sidebar})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,7 @@ class InSettings extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const Flexible(flex: 1, child: SettingsMenu()),
+              Flexible(flex: 1, child: sidebar),
               Flexible(flex: 2, child: child),
             ],
           );
