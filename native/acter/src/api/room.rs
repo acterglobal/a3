@@ -230,10 +230,12 @@ pub struct Room {
 }
 
 impl Room {
-    pub(crate) async fn is_acter_space(&self) -> bool {
-        is_acter_space(&self.room).await
+    pub async fn is_acter_space(&self) -> Result<bool> {
+        let inner = self.room.clone();
+        Ok(RUNTIME
+            .spawn(async move { is_acter_space(&inner).await })
+            .await?)
     }
-
     pub async fn get_my_membership(&self) -> Result<Member> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
@@ -243,7 +245,7 @@ impl Room {
 
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
-        let is_acter_space = self.is_acter_space().await;
+        let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
         } else {
@@ -404,7 +406,7 @@ impl Room {
     pub async fn active_members(&self) -> Result<Vec<Member>> {
         let room = self.room.clone();
 
-        let is_acter_space = self.is_acter_space().await;
+        let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
         } else {
@@ -429,7 +431,7 @@ impl Room {
 
     pub async fn invited_members(&self) -> Result<Vec<Member>> {
         let room = self.room.clone();
-        let is_acter_space = self.is_acter_space().await;
+        let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
         } else {
@@ -454,7 +456,7 @@ impl Room {
 
     pub async fn active_members_no_sync(&self) -> Result<Vec<Member>> {
         let room = self.room.clone();
-        let is_acter_space = self.is_acter_space().await;
+        let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
         } else {
@@ -480,7 +482,7 @@ impl Room {
     pub async fn get_member(&self, user_id: String) -> Result<Member> {
         let room = self.room.clone();
         let uid = UserId::parse(user_id)?;
-        let is_acter_space = self.is_acter_space().await;
+        let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
         } else {
@@ -1049,7 +1051,7 @@ impl Room {
         } else {
             bail!("Can't get a room we are not invited")
         };
-        let is_acter_space = self.is_acter_space().await;
+        let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
         } else {
