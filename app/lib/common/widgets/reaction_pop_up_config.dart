@@ -43,7 +43,6 @@ class ReactionPopupConfiguration {
     this.margin,
     this.padding,
     this.onEmojiTap,
-    this.emojiConfig,
     this.glassMorphismConfig,
   });
 }

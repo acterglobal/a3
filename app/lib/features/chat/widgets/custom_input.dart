@@ -122,6 +122,9 @@ class CustomChatInput extends ConsumerWidget {
                                 context.pop();
                               }
                             } catch (e) {
+                              if (!context.mounted) {
+                                return;
+                              }
                               context.pop();
                               customMsgSnackbar(
                                 context,

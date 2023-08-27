@@ -28,5 +28,9 @@ final routeInformationProvider =
 });
 
 final currentRoutingLocation = Provider<String>((ref) {
-  return ref.watch(routeInformationProvider).value.location ?? '/';
+  final uri = ref.watch(routeInformationProvider).value.uri;
+  if (uri.hasEmptyPath) {
+    return '/';
+  }
+  return uri.path;
 });

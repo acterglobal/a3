@@ -361,6 +361,9 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
         pathParameters: {'calendarId': eventId.toString()},
       );
     } catch (e) {
+      if (!context.mounted) {
+        return;
+      }
       context.pop();
       customMsgSnackbar(context, 'Some error occured $e');
     }
