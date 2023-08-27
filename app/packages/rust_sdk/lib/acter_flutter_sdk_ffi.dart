@@ -16199,6 +16199,17 @@ class Api {
           int Function(
             int,
           )>();
+  late final _roomPowerLevelsMaxPowerLevelPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__RoomPowerLevels_max_power_level");
+
+  late final _roomPowerLevelsMaxPowerLevel =
+      _roomPowerLevelsMaxPowerLevelPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _simpleSettingWithTurnOffBuilderActivePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -34908,6 +34919,17 @@ class RoomPowerLevels {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomPowerLevelsUsersDefault(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int maxPowerLevel() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsMaxPowerLevel(
       tmp0,
     );
     final tmp3 = tmp1;

@@ -81,6 +81,9 @@ impl RoomPowerLevels {
     pub fn users_default(&self) -> i64 {
         self.inner.users_default.into()
     }
+    pub fn max_power_level(&self) -> i64 {
+        self.inner.max().into()
+    }
 }
 
 #[derive(Clone)]

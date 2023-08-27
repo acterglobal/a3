@@ -1248,6 +1248,7 @@ object RoomPowerLevels {
     fn pins_key() -> string;
     fn events_default() -> i64;
     fn users_default() -> i64;
+    fn max_power_level() -> i64;
 }
 
 object SimpleSettingWithTurnOff {
