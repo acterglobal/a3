@@ -8,10 +8,12 @@ import 'package:settings_ui/settings_ui.dart';
 
 class SettingsAndMembership {
   final Space space;
+  final RoomPowerLevels powerLevels;
   final ActerAppSettings settings;
   final Member? member;
 
-  const SettingsAndMembership(this.space, this.settings, this.member);
+  const SettingsAndMembership(
+      this.space, this.powerLevels, this.settings, this.member);
 }
 
 final spaceAppSettingsProvider = FutureProvider.autoDispose
@@ -19,6 +21,7 @@ final spaceAppSettingsProvider = FutureProvider.autoDispose
   final space = await ref.watch(spaceProvider(spaceId).future);
   return SettingsAndMembership(
     space,
+    await space.powerLevels(),
     await space.appSettings(),
     await ref.watch(spaceMembershipProvider(spaceId).future),
   );
@@ -40,6 +43,15 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
       child: spaceSettingsWatcher.when(
         data: (appSettingsAndMembership) {
           final appSettings = appSettingsAndMembership.settings;
+          final powerLevels = appSettingsAndMembership.powerLevels;
+          final defaultPw = powerLevels.eventsDefault();
+          final usersDefaultPw = powerLevels.usersDefault();
+          String defaultDesc = 'default';
+          if (usersDefaultPw >= defaultPw) {
+            defaultDesc = 'everyone';
+          } else {
+            defaultDesc = 'default [everyone has $usersDefaultPw]';
+          }
           final space = appSettingsAndMembership.space;
           final canEdit = appSettingsAndMembership.member != null
               ? appSettingsAndMembership.member!
@@ -52,17 +64,20 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
 
           final moreSections = [];
           if (news.active()) {
+            final currentPw = powerLevels.news();
             moreSections.add(
               SettingsSection(
                 title: const Text('Updates'),
                 tiles: [
                   SettingsTile(
-                    enabled: false,
+                    enabled: canEdit,
                     title: const Text('Required PowerLevel'),
                     description: const Text(
                       'Minimum power level required to post news updates',
                     ),
-                    trailing: const Text('not yet implemented'),
+                    trailing: currentPw != null
+                        ? Text('$currentPw')
+                        : Text('$defaultDesc ($defaultPw)'),
                   ),
                   SettingsTile.switchTile(
                     title: const Text('Comments on Updates'),
@@ -76,17 +91,20 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             );
           }
           if (pins.active()) {
+            final currentPw = powerLevels.pins();
             moreSections.add(
               SettingsSection(
                 title: const Text('Pin'),
                 tiles: [
                   SettingsTile(
-                    enabled: false,
+                    enabled: canEdit,
                     title: const Text('Required PowerLevel'),
                     description: const Text(
                       'Minimum power level required to post and edit pins',
                     ),
-                    trailing: const Text('not yet implemented'),
+                    trailing: currentPw != null
+                        ? Text('$currentPw')
+                        : Text('$defaultDesc ($defaultPw)'),
                   ),
                   SettingsTile.switchTile(
                     title: const Text('Comments on Pins'),
@@ -100,17 +118,20 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             );
           }
           if (events.active()) {
+            final currentPw = powerLevels.events();
             moreSections.add(
               SettingsSection(
                 title: const Text('Calendar Events'),
                 tiles: [
                   SettingsTile(
-                    enabled: false,
+                    enabled: canEdit,
                     title: const Text('Admin PowerLevel'),
                     description: const Text(
                       'Minimum power level required to post calendar events',
                     ),
-                    trailing: const Text('not yet implemented'),
+                    trailing: currentPw != null
+                        ? Text('$currentPw')
+                        : Text('$defaultDesc ($defaultPw)'),
                   ),
                   SettingsTile(
                     enabled: false,

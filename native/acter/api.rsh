@@ -1239,6 +1239,17 @@ object SpaceRelations {
     fn query_hierarchy(from: Option<string>) -> Future<Result<SpaceHierarchyListResult>>;
 }
 
+object RoomPowerLevels {
+    fn news() -> Option<i64>;
+    fn news_key() -> string;
+    fn events() -> Option<i64>;
+    fn events_key() -> string;
+    fn pins() -> Option<i64>;
+    fn pins_key() -> string;
+    fn events_default() -> i64;
+    fn users_default() -> i64;
+}
+
 object SimpleSettingWithTurnOff {
 
 }
@@ -1412,6 +1423,9 @@ object Space {
     /// leave this room
     fn leave() -> Future<Result<bool>>;
 
+    /// the power levels currently set up
+    fn power_levels() -> Future<Result<RoomPowerLevels>>;
+
     /// current App Settings
     fn app_settings() -> Future<Result<ActerAppSettings>>;
 
@@ -1420,6 +1434,9 @@ object Space {
     
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
+
+    /// update the power level for a feature
+    fn update_feature_power_levels(feature: string, level: Option<i32>) -> Future<Result<bool>>;
 
 }
 

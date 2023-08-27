@@ -5,13 +5,24 @@ pub use acter_core::events::settings::{
     SimpleSettingWithTurnOffBuilder,
 };
 
-use acter_core::events::settings::ActerAppSettingsContentBuilder;
+use acter_core::events::{
+    calendar::CalendarEventEventContent,
+    news::{NewsEntryEventContent, NewsEntryUpdateEvent},
+    pins::PinEventContent,
+    settings::ActerAppSettingsContentBuilder,
+};
 use anyhow::{bail, Result};
 use matrix_sdk::{
     deserialized_responses::SyncOrStrippedState,
     room::{Messages, MessagesOptions, Room as SdkRoom},
 };
-use ruma::events::SyncStateEvent;
+use ruma::{
+    events::{
+        room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
+        MessageLikeEvent, StaticEventContent, SyncStateEvent, TimelineEventType,
+    },
+    Int,
+};
 
 use crate::Room;
 use crate::RUNTIME;
@@ -38,6 +49,40 @@ impl ActerAppSettingsBuilder {
     }
 }
 
+pub struct RoomPowerLevels {
+    inner: RumaRoomPowerLevels,
+}
+
+impl RoomPowerLevels {
+    fn get_for_key(&self, key: TimelineEventType) -> Option<i64> {
+        self.inner.events.get(&key).map(|i| (*i).into())
+    }
+    pub fn news(&self) -> Option<i64> {
+        self.get_for_key(<NewsEntryEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn news_key(&self) -> String {
+        <NewsEntryEventContent as StaticEventContent>::TYPE.into()
+    }
+    pub fn events(&self) -> Option<i64> {
+        self.get_for_key(<CalendarEventEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn events_key(&self) -> String {
+        <CalendarEventEventContent as StaticEventContent>::TYPE.into()
+    }
+    pub fn pins(&self) -> Option<i64> {
+        self.get_for_key(<PinEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn pins_key(&self) -> String {
+        <PinEventContent as StaticEventContent>::TYPE.into()
+    }
+    pub fn events_default(&self) -> i64 {
+        self.inner.events_default.into()
+    }
+    pub fn users_default(&self) -> i64 {
+        self.inner.users_default.into()
+    }
+}
+
 #[derive(Clone)]
 pub struct ActerAppSettings {
     inner: ActerAppSettingsContent,
@@ -47,12 +92,6 @@ impl Deref for ActerAppSettings {
     type Target = ActerAppSettingsContent;
     fn deref(&self) -> &Self::Target {
         &self.inner
-    }
-}
-
-impl From<ActerAppSettingsContent> for ActerAppSettings {
-    fn from(inner: ActerAppSettingsContent) -> Self {
-        ActerAppSettings { inner }
     }
 }
 
@@ -66,8 +105,84 @@ impl ActerAppSettings {
 
 impl Room {
     pub async fn app_settings(&self) -> Result<ActerAppSettings> {
-        Ok(self.app_settings_content().await?.into())
+        Ok(ActerAppSettings {
+            inner: self.app_settings_content().await?,
+        })
     }
+
+    pub async fn power_levels(&self) -> Result<RoomPowerLevels> {
+        Ok(RoomPowerLevels {
+            inner: self.power_levels_content().await?,
+        })
+    }
+
+    pub(crate) async fn power_levels_content(&self) -> Result<RumaRoomPowerLevels> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                anyhow::Ok(
+                    room.get_state_event_static::<RoomPowerLevelsEventContent>()
+                        .await?
+                        .expect("No Power levels set")
+                        .deserialize()?
+                        .power_levels(),
+                )
+            })
+            .await?
+    }
+    pub async fn update_feature_power_levels(
+        &self,
+        name: String,
+        power_level: Option<i32>,
+    ) -> Result<bool> {
+        let mut current_power_levels = self.power_levels_content().await?;
+        let mut updated = false;
+        match current_power_levels.events.entry(name.into()) {
+            std::collections::btree_map::Entry::Vacant(e) => {
+                if let Some(p) = power_level {
+                    e.insert(Int::from(p));
+                    updated = true;
+                }
+            }
+            std::collections::btree_map::Entry::Occupied(mut e) => {
+                if let Some(p) = power_level {
+                    e.insert(Int::from(p));
+                    updated = true;
+                } else {
+                    e.remove_entry();
+                    updated = true;
+                }
+            }
+        }
+
+        if !updated {
+            return Ok(false);
+        }
+
+        if !self
+            .get_my_membership()
+            .await?
+            .can(crate::MemberPermission::CanUpdatePowerLevels)
+        {
+            bail!("You don't have permissions to change the power levels");
+        }
+
+        let client = self.room.client().clone();
+        let SdkRoom::Joined(joined) = &self.room else {
+            bail!("You can't update a space you aren't part of");
+        };
+        let room = joined.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let response = room
+                    .send_state_event(RoomPowerLevelsEventContent::from(current_power_levels))
+                    .await?;
+                Ok(true)
+            })
+            .await?
+    }
+
     pub(crate) async fn app_settings_content(&self) -> Result<ActerAppSettingsContent> {
         let room = self.room.clone();
         RUNTIME
