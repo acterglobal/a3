@@ -2,6 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="global.acter.app" android:largeHeap="true">
    <uses-permission android:name="android.permission.INTERNET"/>
+   <uses-permission android:name="android.permission.VIBRATE"/>
+   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
    <application
         android:label="Acter"
         android:name="${applicationName}"
