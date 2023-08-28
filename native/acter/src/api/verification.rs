@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     stream::StreamExt,
@@ -133,18 +133,17 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        if let Some(items) = sas.emoji() {
-                            let sequence = items
-                                .iter()
-                                .map(|e| VerificationEmoji {
-                                    symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
-                                    description: e.description.to_string(),
-                                })
-                                .collect::<Vec<VerificationEmoji>>();
-                            return Ok(sequence);
-                        } else {
-                            return Ok(vec![]);
-                        }
+                        let Some(items) = sas.emoji() else {
+                            bail!("No emojis found. Aborted.");
+                        };
+                        let sequence = items
+                            .iter()
+                            .map(|e| VerificationEmoji {
+                                symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
+                                description: e.description.to_string(),
+                            })
+                            .collect::<Vec<VerificationEmoji>>();
+                        return Ok(sequence);
                     }
                 } else if let Some(txn_id) = txn_id {
                     if let Some(Verification::SasV1(sas)) = client
@@ -152,23 +151,21 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        if let Some(items) = sas.emoji() {
-                            let sequence = items
-                                .iter()
-                                .map(|e| VerificationEmoji {
-                                    symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
-                                    description: e.description.to_string(),
-                                })
-                                .collect::<Vec<VerificationEmoji>>();
-                            return Ok(sequence);
-                        } else {
-                            return Ok(vec![]);
-                        }
+                        let Some(items) = sas.emoji() else {
+                            bail!("No emojis found. Aborted.");
+                        };
+                        let sequence = items
+                            .iter()
+                            .map(|e| VerificationEmoji {
+                                symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
+                                description: e.description.to_string(),
+                            })
+                            .collect::<Vec<VerificationEmoji>>();
+                        return Ok(sequence);
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification object");
-                Ok(vec![])
+                bail!("Could not get verification object");
             })
             .await?
     }
