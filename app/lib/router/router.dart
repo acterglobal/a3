@@ -43,6 +43,8 @@ import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/related_spaces_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
+import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
+import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/spaces/dialogs/create_space_sheet.dart';
 import 'package:acter/features/spaces/pages/join_space.dart';
 import 'package:acter/features/spaces/pages/spaces_page.dart';
@@ -558,6 +560,36 @@ List<RouteBase> makeRoutes(Ref ref) {
             return NoTransitionPage(
               key: state.pageKey,
               child: const SettingsInfoPage(),
+            );
+          },
+        ),
+
+        // ---- Space SETTINGS
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.spaceSettings.name,
+          path: Routes.spaceSettings.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceSettingsMenuIndexPage(
+                spaceId: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.spaceSettingsApps.name,
+          path: Routes.spaceSettingsApps.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceAppsSettingsPage(
+                spaceId: state.pathParameters['spaceId']!,
+              ),
             );
           },
         ),
