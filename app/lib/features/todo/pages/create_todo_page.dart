@@ -145,7 +145,7 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
             child: Icon(
               Atlas.group_team_collective,
             ),
-          )
+          ),
         ],
       ),
     );

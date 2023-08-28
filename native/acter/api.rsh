@@ -597,6 +597,9 @@ object ReactionRecord {
 
     /// when reaction was sent
     fn timestamp() -> u64;
+
+    /// whether I am the sender of this reaction
+    fn sent_by_me() -> bool;
 }
 
 object TimelineDiff {

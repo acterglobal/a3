@@ -63,7 +63,7 @@ class _InviteUserDialogState extends State<InviteUserDialog> {
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );

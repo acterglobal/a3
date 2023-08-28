@@ -275,7 +275,7 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
                     ),
                   ),
                 ),
-                ...children
+                ...children,
               ],
             ),
             CustomScrollView(
@@ -290,7 +290,7 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

@@ -136,7 +136,7 @@ class MyTasksSection extends ConsumerWidget {
             },
             error: (error, stack) => [Text('Loading tasks failed: $error')],
             loading: () => [const Text('Loading')],
-          )
+          ),
         ],
       ),
     );

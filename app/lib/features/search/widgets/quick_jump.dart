@@ -161,7 +161,7 @@ class QuickJump extends ConsumerWidget {
               ref.read(searchValueProvider.notifier).state = value;
             },
           ),
-          ...body
+          ...body,
         ],
         // ),
       ),

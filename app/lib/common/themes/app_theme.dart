@@ -1,5 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io';
+
+bool isDesktop = (Platform.isLinux || Platform.isWindows || Platform.isMacOS);
+
+const emojiFallbackFonts = [
+  'Apple Color Emoji', // we fallback to system fonts first
+  'Segoe UI Emoji',
+  'NotoEmoji',
+];
+const emojiFont = 'NotoEmoji';
+
+class EmojiConfig {
+  static const TextStyle emojiTextStyle =
+      TextStyle(fontFamily: emojiFont, fontFamilyFallback: emojiFallbackFonts);
+  static final checkPlatformCompatibility = !isDesktop;
+  static final emojiSizeMax = 32 * ((!kIsWeb && Platform.isIOS) ? 1.30 : 1.0);
+}
 
 AppTheme currentTheme = AppTheme();
 
@@ -65,71 +82,71 @@ class AppTheme {
   );
 
   static ThemeData get theme {
-    return ThemeData.from(
-      textTheme: GoogleFonts.interTextTheme(
-        const TextTheme(
-          headlineLarge: TextStyle(
-            color: Colors.white,
-            fontSize: 36,
-            fontWeight: FontWeight.bold,
-          ),
-          headlineMedium: TextStyle(
-            color: Colors.white,
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-          ),
-          headlineSmall: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-          titleLarge: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.w500,
-          ),
-          titleMedium: TextStyle(
-            color: Colors.white,
-            fontSize: 21,
-            fontWeight: FontWeight.w500,
-          ),
-          titleSmall: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-          ),
-          bodyLarge: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w400,
-          ),
-          bodyMedium: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-          ),
-          bodySmall: TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
-          labelLarge: TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w300,
-            decorationThickness: 0.8,
-          ),
-          labelMedium: TextStyle(
-            color: Colors.white,
-            fontSize: 13,
-            fontWeight: FontWeight.w300,
-            decorationThickness: 0.8,
-          ),
-          labelSmall: TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w300,
-          ),
+    return ThemeData(
+      fontFamily: 'Inter',
+      fontFamilyFallback: emojiFallbackFonts,
+      textTheme: const TextTheme(
+        headlineLarge: TextStyle(
+          color: Colors.white,
+          fontSize: 36,
+          fontWeight: FontWeight.bold,
+        ),
+        headlineMedium: TextStyle(
+          color: Colors.white,
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+        ),
+        headlineSmall: TextStyle(
+          color: Colors.white,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+        titleLarge: TextStyle(
+          color: Colors.white,
+          fontSize: 24,
+          fontWeight: FontWeight.w500,
+        ),
+        titleMedium: TextStyle(
+          color: Colors.white,
+          fontSize: 21,
+          fontWeight: FontWeight.w500,
+        ),
+        titleSmall: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+        ),
+        bodyLarge: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+        ),
+        bodyMedium: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+        ),
+        bodySmall: TextStyle(
+          color: Colors.white,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+        labelLarge: TextStyle(
+          color: Colors.white,
+          fontSize: 14,
+          fontWeight: FontWeight.w300,
+          decorationThickness: 0.8,
+        ),
+        labelMedium: TextStyle(
+          color: Colors.white,
+          fontSize: 13,
+          fontWeight: FontWeight.w300,
+          decorationThickness: 0.8,
+        ),
+        labelSmall: TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+          fontWeight: FontWeight.w300,
         ),
       ),
       colorScheme: brandColorScheme,

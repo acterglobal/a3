@@ -44,7 +44,7 @@ class _InChatConsumerState extends ConsumerState<InChat>
                         BoxConstraints.tight(const Size(400, double.infinity)),
                     child: const RoomProfilePage(),
                   )
-                : const SizedBox.shrink()
+                : const SizedBox.shrink(),
           ],
         );
       },

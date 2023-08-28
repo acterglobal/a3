@@ -144,7 +144,7 @@ class SpaceInfo extends ConsumerWidget {
                       )
                       .valueOrNull ??
                   const SizedBox.shrink(),
-              joinRule
+              joinRule,
             ],
           );
         },

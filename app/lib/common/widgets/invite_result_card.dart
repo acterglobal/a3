@@ -29,7 +29,7 @@ class InviteResultCard extends StatelessWidget {
               Text(username!),
             ],
           ),
-        )
+        ),
       ],
     );
   }
