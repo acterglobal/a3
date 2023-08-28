@@ -1,14 +1,16 @@
 import 'dart:core';
 
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class PinPage extends ConsumerWidget {
   final String pinId;
@@ -27,37 +29,45 @@ class PinPage extends ConsumerWidget {
           PageHeaderWidget(
             title: pin.hasValue ? pin.value!.title() : 'Loading pin',
             sectionColor: Colors.blue.shade200,
-            actions: [
-              IconButton(
-                icon: const Icon(Atlas.pencil_edit_thin),
-                onPressed: () {
-                  customMsgSnackbar(
-                    context,
-                    'Pin edit not yet implemented',
-                  );
-                },
-              ),
-            ],
+            actions: pin.hasValue
+                ? [
+                    HasSpacePermission(
+                      spaceId: pin.value!.roomIdStr(),
+                      permission: 'CanPostPin',
+                      child: IconButton(
+                        icon: const Icon(Atlas.pencil_edit_thin),
+                        onPressed: () => context.pushNamed(
+                          Routes.editPin.name,
+                          pathParameters: {'pinId': pin.value!.eventIdStr()},
+                        ),
+                      ),
+                    ),
+                  ]
+                : [],
           ),
           pin.when(
             data: (pin) {
               final isLink = pin.isLink();
               final spaceId = pin.roomIdStr();
-              final Widget content;
+              final List<Widget> content = [];
               if (isLink) {
-                content = OutlinedButton.icon(
-                  icon: const Icon(Atlas.link_chain_thin),
-                  label: Text(pin.url() ?? ''),
-                  onPressed: () async {
-                    final target = pin.url()!;
-                    await openLink(target, context);
-                  },
+                content.add(
+                  OutlinedButton.icon(
+                    icon: const Icon(Atlas.link_chain_thin),
+                    label: Text(pin.url() ?? ''),
+                    onPressed: () async {
+                      final target = pin.url()!;
+                      await openLink(target, context);
+                    },
+                  ),
                 );
+              }
+              if (pin.hasFormattedText()) {
+                content.add(RenderHtml(text: pin.contentFormatted() ?? ''));
               } else {
-                if (pin.hasFormattedText()) {
-                  content = RenderHtml(text: pin.contentFormatted() ?? '');
-                } else {
-                  content = Text(pin.contentText() ?? '');
+                final text = pin.contentText();
+                if (text != null) {
+                  content.add(Text(text));
                 }
               }
 
@@ -79,11 +89,17 @@ class PinPage extends ConsumerWidget {
                                 : Atlas.document_thin,
                           ),
                           title: Text(pin.title()),
-                          subtitle: SpaceChip(spaceId: spaceId),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Wrap(
+                              alignment: WrapAlignment.start,
+                              children: [SpaceChip(spaceId: spaceId)],
+                            ),
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8),
-                          child: content,
+                          child: Column(children: content),
                         ),
                       ],
                     ),

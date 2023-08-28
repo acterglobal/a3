@@ -46,11 +46,16 @@ class SpacesBuilder extends ConsumerWidget {
             child: Row(children: children),
           );
         }
-        return Column(
-          children: [
-            const Text('Spaces'),
-            body,
-          ],
+        return Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Column(
+            children: [
+              const Text('Spaces'),
+              const SizedBox(height: 15),
+              body,
+              const SizedBox(height: 10),
+            ],
+          ),
         );
       },
     );

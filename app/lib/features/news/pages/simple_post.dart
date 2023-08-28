@@ -5,10 +5,10 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
-import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
-import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:cross_file_image/cross_file_image.dart';
 import 'package:flutter/material.dart';
@@ -16,18 +16,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
-
-final selectedSpaceIdProvider = StateProvider<String?>((ref) => null);
-final selectedSpaceDetailsProvider =
-    FutureProvider.autoDispose<SpaceItem?>((ref) async {
-  final selectedSpaceId = ref.watch(selectedSpaceIdProvider);
-  if (selectedSpaceId == null) {
-    return null;
-  }
-
-  final spaces = await ref.watch(briefSpaceItemsProviderWithMembership.future);
-  return spaces.firstWhere((element) => element.roomId == selectedSpaceId);
-});
 
 // upload avatar path
 final selectedImageProvider = StateProvider<XFile?>((ref) => null);
@@ -46,9 +34,6 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
 
   @override
   Widget build(BuildContext context) {
-    final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final spaceNotifier = ref.watch(selectedSpaceIdProvider.notifier);
-    final selectedSpace = currentSelectedSpace != null;
     final imageNotifier = ref.watch(selectedImageProvider.notifier);
     final captionNotifier = ref.watch(textProvider.notifier);
     return SideSheet(
@@ -65,69 +50,37 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Consumer(builder: imageBuilder),
               ),
-              Expanded(
-                child: TextFormField(
-                  textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(
-                    hintText: imageNotifier.state == null
-                        ? 'The update you want to share'
-                        : 'Text caption',
-                    labelText: imageNotifier.state == null
-                        ? 'Text Update'
-                        : 'Image Caption',
-                  ),
-                  expands: true,
-                  minLines: null,
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  validator: (value) {
-                    if (value != null && value.isNotEmpty) {
-                      return null;
-                    }
-                    if (imageNotifier.state != null) {
-                      return null;
-                    }
-                    return 'Please enter a text or add an image';
-                  },
-                  onChanged: (String? value) {
-                    captionNotifier.state = value ?? '';
-                  },
-                ),
-              ),
-              FormField(
-                builder: (state) => ListTile(
-                  title: Text(
-                    selectedSpace ? 'Space' : 'Please select a space',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  subtitle: state.errorText != null
-                      ? Text(
-                          state.errorText!,
-                          style:
-                              Theme.of(context).textTheme.bodySmall!.copyWith(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                        )
-                      : null,
-                  trailing: selectedSpace
-                      ? _SpaceBuilder(
-                          currentSelectedSpace: currentSelectedSpace,
-                        )
-                      : null,
-                  onTap: () async {
-                    final newSelectedSpaceId = await selectSpaceDrawer(
-                      context: context,
-                      currentSpaceId: ref.read(selectedSpaceIdProvider),
-                      canCheck: 'CanPostNews',
-                      title: const Text('Select space'),
-                    );
-                    spaceNotifier.state = newSelectedSpaceId;
-                  },
-                ),
-                validator: (x) => (ref.read(selectedSpaceIdProvider) != null)
-                    ? null
-                    : 'You must select a space',
-              ),
+              imageNotifier.state == null
+                  ? MdEditorWithPreview(
+                      hintText: 'Text Update',
+                      labelText: 'Text Update',
+                      validator: (value) {
+                        if (value != null && value.isNotEmpty) {
+                          return null;
+                        }
+                        if (imageNotifier.state != null) {
+                          return null;
+                        }
+                        return 'Please enter a text or add an image';
+                      },
+                      onChanged: (String? value) {
+                        captionNotifier.state = value ?? '';
+                      },
+                    )
+                  : Expanded(
+                      child: TextFormField(
+                        textAlignVertical: TextAlignVertical.top,
+                        decoration: const InputDecoration(
+                          hintText: 'Text caption',
+                          labelText: 'Image Caption',
+                        ),
+                        expands: true,
+                        minLines: null,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                      ),
+                    ),
+              const SelectSpaceFormField(canCheck: 'CanPostNews'),
             ],
           ),
         ),
@@ -299,26 +252,6 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
           child: Text('select an image (optional)'),
         ),
       ),
-    );
-  }
-}
-
-class _SpaceBuilder extends ConsumerWidget {
-  final String currentSelectedSpace;
-
-  const _SpaceBuilder({
-    Key? key,
-    required this.currentSelectedSpace,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
-    return spaceDetails.when(
-      data: (space) =>
-          space != null ? SpaceChip(space: space) : Text(currentSelectedSpace),
-      error: (e, s) => Text('error: $e'),
-      loading: () => const Text('loading'),
     );
   }
 }
