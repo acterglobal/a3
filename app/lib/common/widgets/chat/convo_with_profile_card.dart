@@ -92,7 +92,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
                     indent: 75,
                     endIndent: 10,
                     color: Theme.of(context).colorScheme.tertiary,
-                  )
+                  ),
           ],
         );
       },

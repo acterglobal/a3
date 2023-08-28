@@ -128,7 +128,7 @@ class NotificationCard extends ConsumerWidget {
               context.pushNamed(
                 Routes.chatroom.name,
                 pathParameters: {
-                  'roomId': roomId
+                  'roomId': roomId,
                 }, // FIXME: fails at the moment
               );
               return;

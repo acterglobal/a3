@@ -180,7 +180,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                         builder: (BuildContext ctx) => const SidebarWidget(
                           labelType: NavigationRailLabelType.all,
                         ),
-                      )
+                      ),
                     },
                   )
                 : null,
