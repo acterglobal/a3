@@ -80,7 +80,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                         keyboardType: TextInputType.multiline,
                       ),
                     ),
-              const SelectSpaceFormField(canCheck: 'CanPostNews')
+              const SelectSpaceFormField(canCheck: 'CanPostNews'),
             ],
           ),
         ),

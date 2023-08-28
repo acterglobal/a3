@@ -102,7 +102,7 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
                       : const Icon(Atlas.vision_thin),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

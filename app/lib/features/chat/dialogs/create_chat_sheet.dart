@@ -132,7 +132,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                   title: 'Parent space',
                   emptyText: 'optional parent space',
                   selectTitle: 'Select parent space',
-                )
+                ),
               ],
             ),
           ],

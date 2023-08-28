@@ -68,7 +68,7 @@ class SelectSpaceFormField extends ConsumerWidget {
                               Theme.of(context).textTheme.bodySmall!.copyWith(
                                     color: Theme.of(context).colorScheme.error,
                                   ),
-                        )
+                        ),
                       ],
                     )
                   : emptyButton,
