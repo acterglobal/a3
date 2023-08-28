@@ -13,25 +13,12 @@ use matrix_sdk::{
         api::client::uiaa::{AuthData, Password, UserIdentifier},
         assign, device_id,
         events::{
-            forwarded_room_key::ToDeviceForwardedRoomKeyEvent,
-            key::verification::{
-                accept::AcceptMethod, cancel::CancelCode, ready::ToDeviceKeyVerificationReadyEvent,
-                request::ToDeviceKeyVerificationRequestEvent, start::StartMethod,
-                VerificationMethod,
-            },
+            key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
             room::{
-                encrypted::{
-                    EncryptedEventScheme, OriginalSyncRoomEncryptedEvent,
-                    ToDeviceRoomEncryptedEvent,
-                },
+                encrypted::{EncryptedEventScheme, OriginalSyncRoomEncryptedEvent},
                 message::{MessageType, OriginalSyncRoomMessageEvent},
             },
-            room_key::ToDeviceRoomKeyEvent,
-            room_key_request::{Action, ToDeviceRoomKeyRequestEvent},
-            secret::{
-                request::{RequestAction, ToDeviceSecretRequestEvent},
-                send::ToDeviceSecretSendEvent,
-            },
+            secret::request::RequestAction,
             AnyToDeviceEvent, EventContent,
         },
         OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId,
@@ -44,7 +31,7 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 use tokio::sync::Mutex;
-use tracing::{error, info, warn};
+use tracing::{error, info};
 
 use super::{client::Client, common::DeviceRecord, RUNTIME};
 
@@ -1399,7 +1386,7 @@ impl SessionManager {
                         is_active,
                     ));
                 }
-                warn!("all sessions: {:?}", sessions);
+                info!("all sessions: {:?}", sessions);
                 Ok(sessions)
             })
             .await?
