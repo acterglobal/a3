@@ -45,7 +45,8 @@ import 'package:acter/features/space/pages/related_spaces_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
-import 'package:acter/features/tasks/pages/create_task_sidesheet.dart';
+import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
+import 'package:acter/features/tasks/dialogs/create_task_sidesheet.dart';
 import 'package:acter/features/tasks/pages/tasks_page.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
@@ -262,6 +263,31 @@ List<RouteBase> makeRoutes(Ref ref) {
             );
           },
           child: EditEventSheet(calendarId: state.pathParameters['calendarId']),
+        );
+      },
+    ),
+
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.actionAddTaskList.name,
+      path: Routes.actionAddTaskList.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: CreateTaskListSheet(
+            initialSelectedSpace: state.uri.queryParameters['spaceId'],
+          ),
         );
       },
     ),

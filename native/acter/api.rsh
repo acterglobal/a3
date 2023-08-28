@@ -1128,6 +1128,7 @@ object TaskListDraft {
 
     /// set the description for this task list
     fn description_text(text: string);
+    fn description_markdown(text: string);
     fn unset_description();
 
     /// set the sort order for this task list

@@ -1,6 +1,7 @@
 enum Routes {
   // primary & quickjump actions
   actionAddTask('/actions/addTask'),
+  actionAddTaskList('/actions/addTaskList'),
   actionAddPin('/actions/addPin'),
   actionAddUpdate('/actions/addUpdate'),
 
@@ -21,13 +22,16 @@ enum Routes {
   search('/search'),
   activities('/activities'),
   settingSessions('/settings/sessions'),
-  tasks('/tasks'),
 
   // --- chat
   chat('/chat'),
   createChat('/chat/create'),
   chatroom('/chat/:roomId([!#][^/]+)'), // !roomId, #roomName
   chatProfile('/:roomId([!#][^/]+)/profile'),
+
+  tasks('/tasks'),
+  task('/tasks/:taskListId([!#][^/]+)/:taskId([!#][^/]+)'),
+  taskList('/tasks/:taskListId([!#][^/]+)'),
 
   // -- spaces
   spaces('/spaces'),

@@ -202,6 +202,12 @@ impl TaskListDraft {
         self
     }
 
+    pub fn description_markdown(&mut self, body: String) -> &mut Self {
+        let desc = TextMessageEventContent::markdown(body);
+        self.content.description(Some(desc));
+        self
+    }
+
     pub fn unset_description(&mut self) -> &mut Self {
         self.content.description(None);
         self

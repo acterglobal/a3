@@ -1,4 +1,5 @@
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/tasks/widgets/all_tasks_done.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class TasksPage extends ConsumerWidget {
   const TasksPage({Key? key}) : super(key: key);
@@ -35,10 +37,7 @@ class TasksPage extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Atlas.plus_circle),
                 onPressed: () {
-                  customMsgSnackbar(
-                    context,
-                    'TaskList Creation page not yet implemented',
-                  );
+                  context.pushNamed(Routes.actionAddTaskList.name);
                 },
               ),
             ],
