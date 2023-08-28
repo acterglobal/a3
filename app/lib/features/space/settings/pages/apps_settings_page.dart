@@ -31,7 +31,7 @@ class SettingsAndMembership {
   final Member? member;
 
   const SettingsAndMembership(
-      this.space, this.powerLevels, this.settings, this.member);
+      this.space, this.powerLevels, this.settings, this.member,);
 }
 
 final spaceAppSettingsProvider = FutureProvider.autoDispose
@@ -425,7 +425,7 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
                   keyboardType:
                       const TextInputType.numberWithOptions(signed: true),
                   inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
+                    FilteringTextInputFormatter.digitsOnly,
                   ], // Only numbers
                   validator: (String? value) {
                     return currentMemberStatus == 'Custom' &&
