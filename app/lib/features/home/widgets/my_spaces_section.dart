@@ -135,7 +135,7 @@ class _NoSpacesWidget extends ConsumerWidget {
               children: [
                 Text('Create New Space'),
                 SizedBox(width: 10),
-                Icon(Icons.chevron_right_outlined)
+                Icon(Icons.chevron_right_outlined),
               ],
             ),
           ),

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/dialogs/logout_confirmation.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/activities/providers/notifications_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
@@ -48,7 +48,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   @override
   Widget build(BuildContext context) {
     // get platform of context.
-    final bool desktop = isDesktop(context);
     final client = ref.watch(clientProvider);
     if (client == null) {
       return const Scaffold(
@@ -146,7 +145,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         },
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyK): () {
           context.pushNamed(Routes.quickJump.name);
-        }
+        },
       },
       child: Scaffold(
         body: Screenshot(
@@ -162,11 +161,11 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                             const LinearProgressIndicator(
                           semanticsLabel: 'Loading first sync',
                         ),
-                      )
+                      ),
                     },
                   )
                 : null,
-            primaryNavigation: desktop
+            primaryNavigation: isDesktop
                 ? SlotLayout(
                     config: <Breakpoint, SlotLayoutConfig?>{
                       // adapt layout according to platform.
@@ -181,7 +180,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                         builder: (BuildContext ctx) => const SidebarWidget(
                           labelType: NavigationRailLabelType.all,
                         ),
-                      )
+                      ),
                     },
                   )
                 : null,
@@ -193,7 +192,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                 ),
               },
             ),
-            bottomNavigation: !desktop
+            bottomNavigation: !isDesktop
                 ? SlotLayout(
                     config: <Breakpoint, SlotLayoutConfig>{
                       //In desktop, we have ability to adjust windows res,

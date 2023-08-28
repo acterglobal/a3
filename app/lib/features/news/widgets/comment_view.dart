@@ -89,10 +89,10 @@ class CommentViewState extends State<CommentView> {
                                     fontSize: 14,
                                   ),
                                 ),
-                              )
+                              ),
                             ],
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -111,7 +111,7 @@ class CommentViewState extends State<CommentView> {
                         widget.commentModel.likeCount.toString(),
                         style: const TextStyle(color: Colors.white),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ],
@@ -147,7 +147,7 @@ class CommentViewState extends State<CommentView> {
                 );
               },
             ),
-          )
+          ),
         ],
       ),
     );

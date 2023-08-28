@@ -245,7 +245,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.room.encrypted':
         final metadata = {
           'itemType': 'event',
-          'eventType': orgEventItem.eventType()
+          'eventType': orgEventItem.eventType(),
         };
         repliedTo = types.CustomMessage(
           author: types.User(id: orgEventItem.sender()),
@@ -257,7 +257,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.room.redaction':
         final metadata = {
           'itemType': 'event',
-          'eventType': orgEventItem.eventType()
+          'eventType': orgEventItem.eventType(),
         };
         repliedTo = types.CustomMessage(
           author: types.User(id: orgEventItem.sender()),

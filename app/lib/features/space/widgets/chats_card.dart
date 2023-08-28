@@ -55,7 +55,7 @@ class ChatsCard extends ConsumerWidget {
                               child: Text('see all my ${chats.length} chats'),
                             ),
                           )
-                        : const SizedBox.shrink()
+                        : const SizedBox.shrink(),
                   ],
                 );
               },

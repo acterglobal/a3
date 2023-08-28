@@ -39,7 +39,7 @@ final spaceItemsProvider = FutureProvider.autoDispose
           softWrap: false,
         ),
         location: null,
-      )
+      ),
     ],
     data: (spaces) {
       spaces.sort((a, b) {
@@ -166,7 +166,7 @@ final sidebarItemsProvider = Provider.autoDispose
             softWrap: false,
           ),
           const SizedBox(height: 10),
-          const Divider(indent: 10, endIndent: 10)
+          const Divider(indent: 10, endIndent: 10),
         ],
       ),
       location: Routes.activities.route,
@@ -247,7 +247,7 @@ final bottomBarNavProvider =
       ),
       label: 'Search',
       initialLocation: Routes.search.route,
-    )
+    ),
   ];
 });
 

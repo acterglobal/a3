@@ -101,7 +101,7 @@ class _IntroProfileState extends State<IntroProfile> {
                                   Icons.arrow_forward_ios,
                                   color: Colors.black,
                                   size: 18,
-                                )
+                                ),
                               ],
                             ),
                           ),

@@ -74,7 +74,7 @@ class SpaceOverview extends ConsumerWidget {
                 RelatedSpacesCard(spaceId: spaceIdOrAlias),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

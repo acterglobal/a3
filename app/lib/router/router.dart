@@ -1,8 +1,8 @@
 import 'package:acter/common/dialogs/dialog_page.dart';
 import 'package:acter/common/dialogs/side_sheet_page.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/activities/pages/sessions_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
@@ -727,7 +727,7 @@ List<RouteBase> makeRoutes(Ref ref) {
             if (authGuarded != null) {
               return authGuarded;
             }
-            if (context.mounted && isDesktop(context)) {
+            if (context.mounted && isDesktop) {
               return Routes.dashboard.route;
             } else {
               return Routes.updates.route;

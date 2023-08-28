@@ -25,7 +25,7 @@ class SpaceMembersPage extends ConsumerWidget {
           'Members',
           style: Theme.of(context).textTheme.titleMedium,
         ),
-      )
+      ),
     ];
 
     if (myMembership.hasValue) {
