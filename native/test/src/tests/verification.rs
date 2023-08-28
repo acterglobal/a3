@@ -152,7 +152,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let bob_event = wait_for_verification_event(&mut bob_rx, "m.key.verification.key");
 
     // Bob gets the verification key from event
-    let emojis_from_alice = bob_event.get_emojis();
+    let emojis_from_alice = bob_event.get_emojis().await?;
     info!("emojis from alice: {:?}", emojis_from_alice);
 
     // Bob sends a key
@@ -165,7 +165,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let alice_event = wait_for_verification_event(&mut alice_rx, "m.key.verification.key");
 
     // Alice gets the verification key from event
-    let emojis_from_bob = alice_event.get_emojis();
+    let emojis_from_bob = alice_event.get_emojis().await?;
     info!("emojis from bob: {:?}", emojis_from_bob);
 
     // ----------------------------------------------------------------------------

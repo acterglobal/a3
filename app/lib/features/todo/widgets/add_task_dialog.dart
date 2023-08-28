@@ -151,7 +151,7 @@ class _InputWidgetState extends State<_InputWidget> {
                       ? Theme.of(context).colorScheme.neutral4
                       : Theme.of(context).colorScheme.tertiary,
                 ),
-              )
+              ),
             ],
           ),
         ],
@@ -245,7 +245,7 @@ class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
               widget.text,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.labelMedium,
-            )
+            ),
           ],
         ),
       ),

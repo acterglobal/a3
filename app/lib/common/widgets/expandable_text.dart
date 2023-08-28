@@ -35,7 +35,7 @@ class _ExpandableTextState extends State<ExpandableText>
             : GestureDetector(
                 onTap: onClickMore,
                 child: const Text('more'),
-              )
+              ),
       ],
     );
   }

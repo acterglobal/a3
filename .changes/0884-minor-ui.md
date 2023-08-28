@@ -1,0 +1,2 @@
+- Activities Cards now render HTML (if given)
+- Messages when a user changes name or avatar are a lot more legible now

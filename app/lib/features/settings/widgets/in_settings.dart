@@ -9,14 +9,13 @@ class InSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constrains) {
-        if (constrains.maxWidth > 700) {
+        if (constrains.maxWidth > 770) {
           return Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const SizedBox(
-                width: 350,
-                child: SettingsMenu(),
-              ),
-              Expanded(child: child),
+              const Flexible(flex: 1, child: SettingsMenu()),
+              Flexible(flex: 2, child: child),
             ],
           );
         }

@@ -8737,6 +8737,54 @@ class Api {
     return tmp7;
   }
 
+  FfiListVerificationEmoji? __verificationEventGetEmojisFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _verificationEventGetEmojisFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListVerificationEmoji");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListVerificationEmoji._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   bool? __verificationEventAcceptVerificationRequestFuturePoll(
     int boxed,
     int postCobject,
@@ -9043,54 +9091,6 @@ class Api {
       throw tmp9_0;
     }
     final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
-  FfiListVerificationEmoji? __verificationEventGetVerificationEmojiFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _verificationEventGetVerificationEmojiFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListVerificationEmoji");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListVerificationEmoji._(this, tmp13_1);
-    final tmp7 = tmp14;
     return tmp7;
   }
 
@@ -12387,6 +12387,16 @@ class Api {
       _TextDescFormattedBodyReturn Function(
         int,
       )>();
+  late final _textDescHasFormattedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__TextDesc_has_formatted");
+
+  late final _textDescHasFormatted = _textDescHasFormattedPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _imageDescNamePtr = _lookup<
       ffi.NativeFunction<
           _ImageDescNameReturn Function(
@@ -12696,6 +12706,16 @@ class Api {
           )>>("__ReactionRecord_timestamp");
 
   late final _reactionRecordTimestamp = _reactionRecordTimestampPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _reactionRecordSentByMePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__ReactionRecord_sent_by_me");
+
+  late final _reactionRecordSentByMe = _reactionRecordSentByMePtr.asFunction<
       int Function(
         int,
       )>();
@@ -18184,6 +18204,16 @@ class Api {
             int,
             int,
           )>();
+  late final _verificationEventEmojisPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__VerificationEvent_emojis");
+
+  late final _verificationEventEmojis = _verificationEventEmojisPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _verificationEventGetEmojisPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -18243,17 +18273,6 @@ class Api {
           int Function(
             int,
           )>();
-  late final _verificationEventWasTriggeredFromThisDevicePtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventWasTriggeredFromThisDeviceReturn Function(
-            ffi.Int64,
-          )>>("__VerificationEvent_was_triggered_from_this_device");
-
-  late final _verificationEventWasTriggeredFromThisDevice =
-      _verificationEventWasTriggeredFromThisDevicePtr.asFunction<
-          _VerificationEventWasTriggeredFromThisDeviceReturn Function(
-            int,
-          )>();
   late final _verificationEventAcceptSasVerificationPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -18284,17 +18303,6 @@ class Api {
 
   late final _verificationEventSendVerificationKey =
       _verificationEventSendVerificationKeyPtr.asFunction<
-          int Function(
-            int,
-          )>();
-  late final _verificationEventGetVerificationEmojiPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__VerificationEvent_get_verification_emoji");
-
-  late final _verificationEventGetVerificationEmoji =
-      _verificationEventGetVerificationEmojiPtr.asFunction<
           int Function(
             int,
           )>();
@@ -21018,6 +21026,21 @@ class Api {
             int,
             int,
           )>();
+  late final _verificationEventGetEmojisFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _VerificationEventGetEmojisFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__VerificationEvent_get_emojis_future_poll");
+
+  late final _verificationEventGetEmojisFuturePoll =
+      _verificationEventGetEmojisFuturePollPtr.asFunction<
+          _VerificationEventGetEmojisFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _verificationEventAcceptVerificationRequestFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _VerificationEventAcceptVerificationRequestFuturePollReturn Function(
@@ -21124,21 +21147,6 @@ class Api {
   late final _verificationEventSendVerificationKeyFuturePoll =
       _verificationEventSendVerificationKeyFuturePollPtr.asFunction<
           _VerificationEventSendVerificationKeyFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _verificationEventGetVerificationEmojiFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventGetVerificationEmojiFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__VerificationEvent_get_verification_emoji_future_poll");
-
-  late final _verificationEventGetVerificationEmojiFuturePoll =
-      _verificationEventGetVerificationEmojiFuturePollPtr.asFunction<
-          _VerificationEventGetVerificationEmojiFuturePollReturn Function(
             int,
             int,
             int,
@@ -27260,6 +27268,18 @@ class TextDesc {
     return tmp2;
   }
 
+  /// whether this has a formatted version
+  bool hasFormatted() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._textDescHasFormatted(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -27968,6 +27988,18 @@ class ReactionRecord {
     );
     final tmp3 = tmp1;
     final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// whether I am the sender of this reaction
+  bool sentByMe() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionRecordSentByMe(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 
@@ -38935,10 +38967,10 @@ class VerificationEvent {
   }
 
   /// Get emoji array
-  FfiListVerificationEmoji getEmojis() {
+  FfiListVerificationEmoji emojis() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventGetEmojis(
+    final tmp1 = _api._verificationEventEmojis(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -38947,6 +38979,23 @@ class VerificationEvent {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp4 = FfiListVerificationEmoji._(_api, tmp3_1);
     final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// Get emoji array
+  Future<FfiListVerificationEmoji> getEmojis() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._verificationEventGetEmojis(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__VerificationEvent_get_emojis_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__verificationEventGetEmojisFuturePoll);
     return tmp2;
   }
 
@@ -39024,34 +39073,6 @@ class VerificationEvent {
     return tmp2;
   }
 
-  /// Whether verification request was launched from this device
-  bool wasTriggeredFromThisDevice() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventWasTriggeredFromThisDevice(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    final tmp7 = tmp1.arg4;
-    if (tmp3 == 0) {
-      debugAllocation("handle error", tmp4, tmp5);
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      final tmp3_0 =
-          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
-      if (tmp5 > 0) {
-        final ffi.Pointer<ffi.Void> tmp4_0;
-        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-        _api.__deallocate(tmp4_0, tmp6, 1);
-      }
-      throw tmp3_0;
-    }
-    final tmp2 = tmp7 > 0;
-    return tmp2;
-  }
-
   /// Bob accepts the SAS verification
   Future<bool> acceptSasVerification() {
     var tmp0 = 0;
@@ -39100,23 +39121,6 @@ class VerificationEvent {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(
         tmp3_1, _api.__verificationEventSendVerificationKeyFuturePoll);
-    return tmp2;
-  }
-
-  /// Alice gets the verification emoji from Bob and vice versa
-  Future<FfiListVerificationEmoji> getVerificationEmoji() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventGetVerificationEmoji(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(
-        _api, tmp3_0, "__VerificationEvent_get_verification_emoji_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__verificationEventGetVerificationEmojiFuturePoll);
     return tmp2;
   }
 
@@ -41905,19 +41909,6 @@ class _VerificationEventGetContentReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _VerificationEventWasTriggeredFromThisDeviceReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint8()
-  external int arg4;
-}
-
 class _VerificationEmojiDescriptionReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -44408,6 +44399,21 @@ class _InvitationRejectFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _VerificationEventGetEmojisFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _VerificationEventAcceptVerificationRequestFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
@@ -44516,22 +44522,6 @@ class _VerificationEventSendVerificationKeyFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Uint8()
-  external int arg5;
-}
-
-class _VerificationEventGetVerificationEmojiFuturePollReturn
-    extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
   external int arg5;
 }
 

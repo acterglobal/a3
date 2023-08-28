@@ -120,7 +120,7 @@ class _IntroPageState extends State<IntroPage> {
                                           ),
                                         ],
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
                               );
@@ -145,7 +145,7 @@ class _IntroPageState extends State<IntroPage> {
                               ),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),

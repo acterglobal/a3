@@ -195,7 +195,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
               const SizedBox(height: 15),
@@ -236,7 +236,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                       );
                       parentNotifier.state = newSelectedSpaceId;
                     },
-                  )
+                  ),
                 ],
               ),
             ],
@@ -361,6 +361,9 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
         pathParameters: {'calendarId': eventId.toString()},
       );
     } catch (e) {
+      if (!context.mounted) {
+        return;
+      }
       context.pop();
       customMsgSnackbar(context, 'Some error occured $e');
     }

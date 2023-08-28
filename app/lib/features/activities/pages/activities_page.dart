@@ -10,12 +10,12 @@ import 'package:acter/features/activities/providers/notifiers/notifications_list
 import 'package:acter/features/activities/widgets/invitation_card.dart';
 import 'package:acter/features/activities/widgets/notification_card.dart';
 import 'package:acter/features/activities/widgets/session_card.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
@@ -41,36 +41,30 @@ class ActivitiesPage extends ConsumerWidget {
         } else if (sessions.length > 1) {
           children.add(
             SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsetsDirectional.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'You have ${sessions.length} unverified sessions log in',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.pushNamed(Routes.settingSessions.name);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.neutral,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.success,
-                        ),
-                        foregroundColor: Theme.of(context).colorScheme.neutral6,
-                        textStyle: Theme.of(context).textTheme.bodySmall,
+              child: Card(
+                child: ListTile(
+                  leading: const Icon(Atlas.warning_bold),
+                  title: Text(
+                    'There are ${sessions.length} unverified sessions logged in',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  trailing: ElevatedButton(
+                    onPressed: () {
+                      context.pushNamed(Routes.settingSessions.name);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.neutral,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                      child: const Text('Review'),
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.success,
+                      ),
+                      foregroundColor: Theme.of(context).colorScheme.neutral6,
+                      textStyle: Theme.of(context).textTheme.bodySmall,
                     ),
-                  ],
+                    child: const Text('Review'),
+                  ),
                 ),
               ),
             ),

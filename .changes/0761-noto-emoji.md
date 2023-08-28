@@ -1,0 +1,6 @@
+- Wide range Emoji support using Noto Emoji
+- Improved Emoji Picker Widget and Quick-Picker Items
+- Emoji reactions in chat can now be clicked to sent the same reaction
+- More positive start set of emoji in quick-picker
+- [fix] Emoji drawer now shows the correct users
+- [fix] Chat rooms are immediately loaded at startup
