@@ -1,5 +1,4 @@
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/features/tasks/widgets/task_entry.dart';
@@ -57,14 +56,14 @@ final tasksProvider =
 
 class TaskListCard extends ConsumerWidget {
   final TaskList taskList;
-  const TaskListCard({Key? key, required this.taskList}) : super(key: key);
+  final bool showSpace;
+  const TaskListCard({Key? key, required this.taskList, this.showSpace = true})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tasks = ref.watch(tasksProvider(taskList));
-    final space = taskList.space();
-    final spaceInfo = ref.watch(spaceProfileDataProvider(space));
-    final description = taskList.description();
+    final spaceId = taskList.spaceIdStr();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -72,24 +71,22 @@ class TaskListCard extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ListTile(
-                leading: spaceInfo.when(
-                  data: (spaceInfo) => ActerAvatar(
-                    mode: DisplayMode.Space,
-                    displayName: spaceInfo.displayName,
-                    uniqueId: space.getRoomId().toString(),
-                    avatar: spaceInfo.getAvatarImage(),
-                    size: 24,
-                  ),
-                  loading: () => null,
-                  error: (error, stackTrace) => null,
-                ),
                 title: Text(
                   taskList.name(),
                 ),
-                subtitle: description != null ? Text(description.body()) : null,
+                subtitle: showSpace
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Wrap(
+                          alignment: WrapAlignment.start,
+                          children: [
+                            SpaceChip(spaceId: spaceId),
+                          ],
+                        ),
+                      )
+                    : null,
               ),
               tasks.when(
                 data: (overview) {
@@ -122,7 +119,7 @@ class TaskListCard extends ConsumerWidget {
                           customMsgSnackbar(
                             context,
                             'Inline task creation not yet implemented',
-                          )
+                          ),
                         },
                         child: const Text('Add Task'),
                       ),
@@ -142,7 +139,7 @@ class TaskListCard extends ConsumerWidget {
                 },
                 error: (error, stack) => Text('error loading tasks: $error'),
                 loading: () => const Text('loading'),
-              )
+              ),
             ],
           ),
         ),
