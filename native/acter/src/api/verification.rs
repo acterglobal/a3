@@ -188,8 +188,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification request");
-                Ok(false)
+                bail!("Could not get verification request");
             })
             .await?
     }
@@ -221,8 +220,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification request");
-                Ok(false)
+                bail!("Could not get verification request");
             })
             .await?
     }
@@ -275,8 +273,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification request");
-                Ok(false)
+                bail!("Could not get verification request");
             })
             .await?
     }
@@ -308,8 +305,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification request");
-                Ok(false)
+                bail!("Could not get verification request");
             })
             .await?
     }
@@ -346,8 +342,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification object");
-                Ok(false)
+                bail!("Could not get verification object");
             })
             .await?
     }
@@ -379,8 +374,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification object");
-                Ok(false)
+                bail!("Could not get verification object");
             })
             .await?
     }
@@ -423,8 +417,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification object");
-                Ok(false)
+                bail!("Could not get verification object");
             })
             .await?
     }
@@ -456,8 +449,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification object");
-                Ok(false)
+                bail!("Could not get verification object");
             })
             .await?
     }
@@ -487,8 +479,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification object");
-                Ok(false)
+                bail!("Could not get verification object");
             })
             .await?
     }
