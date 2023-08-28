@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -92,7 +92,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
                 selected: isSelected(Routes.settingsLabs),
                 enabled: false,
                 onTap: () {
-                  isDesktop(context) || size.width > 770
+                  isDesktop || size.width > 770
                       ? context.goNamed(Routes.settingsLabs.name)
                       : context.pushNamed(Routes.settingsLabs.name);
                 },
@@ -103,7 +103,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
                 leading: const Icon(Atlas.info_circle_thin),
                 selected: isSelected(Routes.info),
                 onTap: () {
-                  isDesktop(context) || size.width > 770
+                  isDesktop || size.width > 770
                       ? context.goNamed(
                           Routes.spaceSettingsApps.name,
                           pathParameters: {'spaceId': spaceId},
