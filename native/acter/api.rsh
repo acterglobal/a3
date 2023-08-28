@@ -1793,7 +1793,10 @@ object VerificationEvent {
     fn get_content(key: string) -> Option<string>;
 
     /// Get emoji array
-    fn get_emojis() -> Vec<VerificationEmoji>;
+    fn emojis() -> Vec<VerificationEmoji>;
+
+    /// Get emoji array
+    fn get_emojis() -> Future<Result<Vec<VerificationEmoji>>>;
 
     /// Bob accepts the verification request from Alice
     fn accept_verification_request() -> Future<Result<bool>>;
@@ -1806,9 +1809,6 @@ object VerificationEvent {
 
     /// Alice starts the SAS verification
     fn start_sas_verification() -> Future<Result<bool>>;
-
-    /// Whether verification request was launched from this device
-    fn was_triggered_from_this_device() -> Result<bool>;
 
     /// Bob accepts the SAS verification
     fn accept_sas_verification() -> Future<Result<bool>>;
