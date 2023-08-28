@@ -1,6 +1,7 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter/features/settings/widgets/in_settings.dart';
+import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -18,7 +19,8 @@ class SettingsLabsPage extends ConsumerWidget {
       return value;
     }
 
-    return InSettings(
+    return WithSidebar(
+      sidebar: const SettingsMenu(),
       child: Scaffold(
         appBar: AppBar(title: const Text('App Labs')),
         body: SettingsList(
@@ -41,7 +43,7 @@ class SettingsLabsPage extends ConsumerWidget {
               title: const Text('Spaces'),
               tiles: [
                 SettingsTile.switchTile(
-                  title: const Text('Encryptd spaces'),
+                  title: const Text('Encrypted spaces'),
                   description: const Text('not yet supported'),
                   enabled: false,
                   initialValue: false,
@@ -62,8 +64,8 @@ class SettingsLabsPage extends ConsumerWidget {
                 SettingsTile.switchTile(
                   title: const Text('Tasks'),
                   description:
-                      const Text('Manage Tasks lists and Todos together'),
-                  initialValue: isActive(LabsFeature.tasks),
+                      const Text('Manage Tasks lists and ToDos together'),
+                  initialValue: false,
                   onToggle: (newVal) =>
                       updateFeatureState(LabsFeature.tasks, newVal),
                 ),

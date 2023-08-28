@@ -1,6 +1,5 @@
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_info.dart';
@@ -33,45 +32,32 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
   @override
   Widget build(BuildContext context) {
     // get platform of context.
-    final space = ref.watch(spaceProvider(widget.spaceIdOrAlias));
-    return space.when(
-      data: (space) {
-        final profileData = ref.watch(spaceProfileDataProvider(space));
-        return profileData.when(
-          data: (profile) => Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SafeArea(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.center,
-                    colors: <Color>[
-                      Theme.of(context).colorScheme.background,
-                      Theme.of(context).colorScheme.neutral,
-                    ],
-                  ),
+    final profileData =
+        ref.watch(spaceProfileDataForSpaceIdProvider(widget.spaceIdOrAlias));
+    return profileData.when(
+      data: (profile) => Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: DecoratedBox(
+            decoration: const BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+            ),
+            child: Column(
+              children: <Widget>[
+                _ShellToolbar(profile.space, widget.spaceIdOrAlias),
+                _ShellHeader(widget.spaceIdOrAlias, profile.profile),
+                TopNavBar(
+                  spaceId: widget.spaceIdOrAlias,
+                  key: Key('${widget.spaceIdOrAlias}::top-nav'),
                 ),
-                child: Column(
-                  children: <Widget>[
-                    _ShellToolbar(space, widget.spaceIdOrAlias),
-                    _ShellHeader(widget.spaceIdOrAlias, profile),
-                    TopNavBar(
-                      spaceId: widget.spaceIdOrAlias,
-                      key: Key('${widget.spaceIdOrAlias}::top-nav'),
-                    ),
-                    Expanded(
-                      child: widget.child,
-                    ),
-                  ],
+                Expanded(
+                  child: widget.child,
                 ),
-              ),
+              ],
             ),
           ),
-          error: (error, stack) => Text('Loading failed: $error'),
-          loading: () => const Text('Loading'),
-        );
-      },
+        ),
+      ),
       error: (error, stack) => Text('Loading failed: $error'),
       loading: () => const Text('Loading'),
     );
@@ -101,9 +87,9 @@ class _ShellToolbar extends ConsumerWidget {
         );
         submenu.add(
           PopupMenuItem(
-            onTap: () => customMsgSnackbar(
-              context,
-              'Edit Space is not implemented yet',
+            onTap: () => context.pushNamed(
+              Routes.spaceSettings.name,
+              pathParameters: {'spaceId': spaceId},
             ),
             child: const Text('Settings'),
           ),
@@ -182,12 +168,15 @@ class _ShellToolbar extends ConsumerWidget {
       btnText: 'No, Stay!',
       onPressedBtn: () => context.pop(),
       btn2Text: 'Yes, Leave!',
-      onPressedBtn2: () async => {
-        await space.leave(),
+      onPressedBtn2: () async {
+        await space.leave();
         // refresh spaces list
-        ref.invalidate(spacesProvider),
-        context.pop(),
-        context.goNamed(Routes.dashboard.name),
+        ref.invalidate(spacesProvider);
+        if (!context.mounted) {
+          return;
+        }
+        context.pop();
+        context.goNamed(Routes.dashboard.name);
       },
       btnColor: Colors.transparent,
       btn2Color: Theme.of(context).colorScheme.errorContainer,
@@ -270,7 +259,7 @@ class _ShellHeader extends ConsumerWidget {
                     textAlign: TextAlign.center,
                     textScaleFactor: 0.8,
                   ),
-                )
+                ),
             ],
           ),
         );

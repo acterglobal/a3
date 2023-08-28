@@ -10,6 +10,7 @@ import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
@@ -37,7 +38,23 @@ class CustomChatInput extends ConsumerWidget {
     final showReplyView = ref.watch(
       chatInputProvider.select((ci) => ci.showReplyView),
     );
-    Size size = MediaQuery.of(context).size;
+
+    void handleEmojiSelected(Category? category, Emoji emoji) {
+      final mentionState = ref.read(mentionKeyProvider).currentState!;
+      mentionState.controller!.text += emoji.emoji;
+      ref.read(chatInputProvider.notifier).showSendBtn(true);
+    }
+
+    void handleBackspacePressed() {
+      final mentionState = ref.read(mentionKeyProvider).currentState!;
+      final newValue =
+          mentionState.controller!.text.characters.skipLast(1).string;
+      mentionState.controller!.text = newValue;
+      if (newValue.isEmpty) {
+        ref.read(chatInputProvider.notifier).showSendBtn(false);
+      }
+    }
+
     return Column(
       children: [
         Visibility(
@@ -105,6 +122,9 @@ class CustomChatInput extends ConsumerWidget {
                                 context.pop();
                               }
                             } catch (e) {
+                              if (!context.mounted) {
+                                return;
+                              }
                               context.pop();
                               customMsgSnackbar(
                                 context,
@@ -144,7 +164,6 @@ class CustomChatInput extends ConsumerWidget {
             ),
           ),
           child: Container(
-            width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 15),
             color: Theme.of(context).colorScheme.onPrimary,
             child: Center(
@@ -173,7 +192,7 @@ class CustomChatInput extends ConsumerWidget {
                       },
                       loading: () => const CircularProgressIndicator(),
                     ),
-                    const Expanded(
+                    const Flexible(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: _TextInputWidget(),
@@ -197,8 +216,16 @@ class CustomChatInput extends ConsumerWidget {
             ),
           ),
         ),
-        EmojiPickerWidget(
-          size: size,
+        Visibility(
+          visible: ref.watch(chatInputProvider).emojiPickerVisible,
+          child: EmojiPickerWidget(
+            size: Size(
+              MediaQuery.of(context).size.width,
+              MediaQuery.of(context).size.height / 2,
+            ),
+            onEmojiSelected: handleEmojiSelected,
+            onBackspacePressed: handleBackspacePressed,
+          ),
         ),
       ],
     );
@@ -294,26 +321,25 @@ class CustomChatInput extends ConsumerWidget {
       ],
     );
   }
-
 }
 
-  Future<void> onSendButtonPressed(WidgetRef ref) async {
-    final inputNotifier = ref.read(chatInputProvider.notifier);
-    final roomNotifier = ref.read(chatRoomProvider.notifier);
-    final mentionState = ref.read(mentionKeyProvider).currentState!;
-    final markDownProvider = ref.read(messageMarkDownProvider);
-    final markDownNotifier = ref.read(messageMarkDownProvider.notifier);
+Future<void> onSendButtonPressed(WidgetRef ref) async {
+  final inputNotifier = ref.read(chatInputProvider.notifier);
+  final roomNotifier = ref.read(chatRoomProvider.notifier);
+  final mentionState = ref.read(mentionKeyProvider).currentState!;
+  final markDownProvider = ref.read(messageMarkDownProvider);
+  final markDownNotifier = ref.read(messageMarkDownProvider.notifier);
 
-    inputNotifier.showSendBtn(false);
-    String markdownText = mentionState.controller!.text;
-    int messageLength = markdownText.length;
-    markDownProvider.forEach((key, value) {
-      markdownText = markdownText.replaceAll(key, value);
-    });
-    await roomNotifier.handleSendPressed(markdownText, messageLength);
-    markDownNotifier.update((state) => {});
-    mentionState.controller!.clear();
-  }
+  inputNotifier.showSendBtn(false);
+  String markdownText = mentionState.controller!.text;
+  int messageLength = markdownText.length;
+  markDownProvider.forEach((key, value) {
+    markdownText = markdownText.replaceAll(key, value);
+  });
+  await roomNotifier.handleSendPressed(markdownText, messageLength);
+  markDownNotifier.update((state) => {});
+  mentionState.controller!.clear();
+}
 
 class _FileWidget extends ConsumerWidget {
   const _FileWidget(this.mimeType, this.file);
@@ -378,9 +404,11 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
     final chatInputState = ref.watch(chatInputProvider);
+    final width = MediaQuery.of(context).size.width;
     return FlutterMentions(
       key: mentionKey,
       suggestionPosition: SuggestionPosition.Top,
+      suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
       onMentionAdd: (Map<String, dynamic> roomMember) {
         _handleMentionAdd(roomMember, ref);
       },
@@ -405,8 +433,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
       onSubmitted: (value) => onSendButtonPressed(ref),
       style: Theme.of(context).textTheme.bodySmall,
       cursorColor: Theme.of(context).colorScheme.tertiary,
-      maxLines:
-          6,
+      maxLines: 6,
       minLines: 1,
       focusNode: ref.watch(chatInputFocusProvider),
       decoration: InputDecoration(
@@ -454,10 +481,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
               ),
               title: Row(
                 children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
+                  Text(title, style: Theme.of(context).textTheme.bodySmall),
                   const SizedBox(width: 15),
                   Text(
                     authorId,
@@ -469,7 +493,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
               ),
             );
           },
-        )
+        ),
       ],
     );
   }
@@ -521,67 +545,5 @@ class _ReplyContentWidget extends StatelessWidget {
       );
     }
     return messageWidget ?? const SizedBox.shrink();
-  }
-}
-
-class EmojiPickerWidget extends ConsumerStatefulWidget {
-  final Size size;
-
-  const EmojiPickerWidget({
-    Key? key,
-    required this.size,
-  }) : super(key: key);
-
-  @override
-  ConsumerState<EmojiPickerWidget> createState() =>
-      _EmojiPickerWidgetConsumerState();
-}
-
-class _EmojiPickerWidgetConsumerState extends ConsumerState<EmojiPickerWidget> {
-  @override
-  Widget build(BuildContext context) {
-    final chatInputState = ref.watch(chatInputProvider);
-    return Offstage(
-      offstage: !chatInputState.emojiPickerVisible,
-      child: SizedBox(
-        height: widget.size.height * 0.3,
-        child: EmojiPicker(
-          onEmojiSelected: handleEmojiSelected,
-          onBackspacePressed: handleBackspacePressed,
-          config: Config(
-            columns: 8,
-            bgColor: Theme.of(context).colorScheme.neutral,
-            emojiSizeMax: 36,
-            verticalSpacing: 0,
-            horizontalSpacing: 0,
-            initCategory: Category.SMILEYS,
-            recentTabBehavior: RecentTabBehavior.RECENT,
-            recentsLimit: 28,
-            noRecents: Text(
-              AppLocalizations.of(context)!.noRecents,
-            ),
-            tabIndicatorAnimDuration: kTabScrollDuration,
-            categoryIcons: const CategoryIcons(),
-            buttonMode: ButtonMode.MATERIAL,
-          ),
-        ),
-      ),
-    );
-  }
-
-  void handleEmojiSelected(Category? category, Emoji emoji) {
-    final mentionState = ref.read(mentionKeyProvider).currentState!;
-    mentionState.controller!.text += emoji.emoji;
-    ref.read(chatInputProvider.notifier).showSendBtn(true);
-  }
-
-  void handleBackspacePressed() {
-    final mentionState = ref.read(mentionKeyProvider).currentState!;
-    final newValue =
-        mentionState.controller!.text.characters.skipLast(1).string;
-    mentionState.controller!.text = newValue;
-    if (newValue.isEmpty) {
-      ref.read(chatInputProvider.notifier).showSendBtn(false);
-    }
   }
 }

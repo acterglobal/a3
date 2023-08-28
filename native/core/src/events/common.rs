@@ -10,7 +10,7 @@ pub use labels::Labels;
 pub use object_reference::{CalendarEventAction, ObjRef, RefDetails, TaskAction, TaskListAction};
 pub use rendering::{BrandIcon, Color, Colorize, Icon, Position};
 
-/// Default UTC Datetime Object
+/// Default UTC DateTime Object
 pub type UtcDateTime = DateTime<Utc>;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

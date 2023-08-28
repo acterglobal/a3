@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -8,6 +9,7 @@ import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -162,7 +164,7 @@ class _ChatBubble extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(height: 5),
-                          child
+                          child,
                         ],
                       )
                     : child,
@@ -226,7 +228,7 @@ class _ChatBubble extends ConsumerWidget {
   }
 }
 
-class _EmojiContainer extends StatefulWidget {
+class _EmojiContainer extends ConsumerStatefulWidget {
   final bool isAuthor;
   final types.Message message;
   final bool nextMessageInGroup;
@@ -238,10 +240,11 @@ class _EmojiContainer extends StatefulWidget {
   });
 
   @override
-  State<_EmojiContainer> createState() => _EmojiContainerState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      __EmojiContainerState();
 }
 
-class _EmojiContainerState extends State<_EmojiContainer>
+class __EmojiContainerState extends ConsumerState<_EmojiContainer>
     with TickerProviderStateMixin {
   late TabController tabBarController;
   List<Tab> reactionTabs = [];
@@ -261,34 +264,12 @@ class _EmojiContainerState extends State<_EmojiContainer>
         keys = reactions.keys.toList();
       }
     }
+    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Container(
-          margin: const EdgeInsets.all(2),
-          decoration: BoxDecoration(
-            color: keys.isNotEmpty
-                ? Theme.of(context).colorScheme.tertiary.withOpacity(0.1)
-                : null,
-            border: keys.isNotEmpty
-                ? Border.all(color: Theme.of(context).colorScheme.tertiary)
-                : null,
-            borderRadius: BorderRadius.only(
-              topLeft: widget.nextMessageInGroup
-                  ? const Radius.circular(12)
-                  : !widget.isAuthor
-                      ? const Radius.circular(0)
-                      : const Radius.circular(12),
-              topRight: widget.nextMessageInGroup
-                  ? const Radius.circular(12)
-                  : !widget.isAuthor
-                      ? const Radius.circular(12)
-                      : const Radius.circular(0),
-              bottomLeft: const Radius.circular(12),
-              bottomRight: const Radius.circular(12),
-            ),
-          ),
-          padding: const EdgeInsets.all(5),
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 3),
           child: Wrap(
             direction: Axis.horizontal,
             spacing: 5,
@@ -298,17 +279,34 @@ class _EmojiContainerState extends State<_EmojiContainer>
               Map<String, dynamic> reactions =
                   widget.message.metadata!['reactions'];
               final recordsCount = reactions[key]?.length;
-              return GestureDetector(
-                onTap: () {
+              var sentByMe = (reactions[key]! as List<ReactionRecord>)
+                  .any((x) => x.sentByMe());
+              return InkWell(
+                onLongPress: () {
                   showEmojiReactionsSheet(reactions);
                 },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(key),
-                    const SizedBox(width: 2),
-                    Text(recordsCount!.toString()),
-                  ],
+                onTap: () {
+                  if (sentByMe) {
+                    customMsgSnackbar(
+                      context,
+                      'Revoking emoji reactions not yet supported',
+                    );
+                  } else {
+                    chatRoomNotifier.sendEmojiReaction(widget.message.id, key);
+                  }
+                },
+                child: Chip(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 1, horizontal: 2),
+                  backgroundColor: sentByMe
+                      ? AppTheme.theme.colorScheme.inversePrimary
+                      : null,
+                  labelPadding: const EdgeInsets.only(left: 2, right: 1),
+                  avatar: Text(
+                    key,
+                    style: EmojiConfig.emojiTextStyle,
+                  ),
+                  label: Text(recordsCount!.toString()),
                 ),
               );
             }),
@@ -321,16 +319,53 @@ class _EmojiContainerState extends State<_EmojiContainer>
   //Emoji reaction info bottom sheet.
   void showEmojiReactionsSheet(Map<String, dynamic> reactions) {
     List<String> keys = reactions.keys.toList();
-    num count = 0;
+    Map<String, List<String>> reactionsByUsers = {};
+    Map<String, List<String>> usersByReaction = {};
+    reactions.forEach((key, value) {
+      usersByReaction.putIfAbsent(
+        key,
+        () => List<String>.empty(growable: true),
+      );
+      for (final reaction in value) {
+        final userId = reaction.senderId().toString();
+        reactionsByUsers.putIfAbsent(
+          userId,
+          () => List<String>.empty(growable: true),
+        );
+        usersByReaction[key]!.add(userId);
+        reactionsByUsers[userId]!.add(key);
+      }
+    });
+    // sort the users per item on the number of emojis sent - highest first
+    usersByReaction.forEach((key, users) {
+      users.sort(
+        (userIdA, userIdB) => reactionsByUsers[userIdB]!
+            .length
+            .compareTo(reactionsByUsers[userIdA]!.length),
+      );
+    });
+    final allUsers = reactionsByUsers.keys.toList();
+    allUsers.sort(
+      (userIdA, userIdB) => reactionsByUsers[userIdB]!
+          .length
+          .compareTo(reactionsByUsers[userIdA]!.length),
+    );
+
+    num total = 0;
     if (mounted) {
       setState(() {
         reactions.forEach((key, value) {
-          count += value.length;
+          total += value.length;
           reactionTabs.add(
-            Tab(text: '$key+${value.length}'),
+            Tab(
+              child: Chip(
+                avatar: Text(key, style: EmojiConfig.emojiTextStyle),
+                label: Text('${value.length}'),
+              ),
+            ),
           );
         });
-        reactionTabs.insert(0, (Tab(text: 'All $count')));
+        reactionTabs.insert(0, (Tab(child: Chip(label: Text('All $total')))));
         tabBarController = TabController(
           length: reactionTabs.length,
           vsync: this,
@@ -374,8 +409,15 @@ class _EmojiContainerState extends State<_EmojiContainer>
                   viewportFraction: 1.0,
                   controller: tabBarController,
                   children: [
-                    _ReactionListing(emojis: keys),
-                    for (var count in keys) _ReactionListing(emojis: [count]),
+                    _ReactionListing(
+                      users: allUsers,
+                      usersMap: reactionsByUsers,
+                    ),
+                    for (var key in keys)
+                      _ReactionListing(
+                        users: usersByReaction[key]!,
+                        usersMap: reactionsByUsers,
+                      ),
                   ],
                 ),
               ),
@@ -406,7 +448,7 @@ class _EmojiRow extends ConsumerWidget {
     return Visibility(
       visible: message.id == chatRoomNotifier.currentMessageId,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 202, maxHeight: 42),
+        constraints: const BoxConstraints(maxWidth: 238, maxHeight: 42),
         padding: const EdgeInsets.all(8),
         margin: !isAuthor
             ? const EdgeInsets.only(bottom: 8, left: 8)
@@ -477,18 +519,22 @@ class _OriginalMessageBuilder extends ConsumerWidget {
 }
 
 class _ReactionListing extends StatelessWidget {
-  final List<String> emojis;
+  final List<String> users;
+  final Map<String, List<String>> usersMap; // UserId -> List of Emoji
 
-  const _ReactionListing({required this.emojis});
+  const _ReactionListing({required this.users, required this.usersMap});
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 10),
       shrinkWrap: true,
-      itemCount: emojis.length,
+      itemCount: users.length,
       itemBuilder: (BuildContext context, int index) {
-        return EmojiReactionItem(emoji: emojis[index]);
+        return EmojiReactionItem(
+          userId: users[index],
+          emojis: usersMap[users[index]]!,
+        );
       },
       separatorBuilder: (BuildContext context, int index) {
         return const SizedBox(height: 12);

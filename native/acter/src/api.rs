@@ -37,10 +37,12 @@ mod receipt;
 mod room;
 mod rsvp;
 mod search;
+mod settings;
 mod spaces;
 mod stream;
 mod tasks;
 mod typing;
+mod utils;
 mod verification;
 
 pub use account::Account;
@@ -76,6 +78,10 @@ pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, MemberPermission, MembershipStatus, Room};
 pub use rsvp::{Rsvp, RsvpDraft, RsvpManager};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
+pub use settings::{
+    ActerAppSettings, ActerAppSettingsBuilder, EventsSettings, NewsSettings, PinsSettings,
+    RoomPowerLevels, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder,
+};
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
     RelationTargetType, Space, SpaceHierarchyListResult, SpaceHierarchyRoomInfo, SpaceRelation,
@@ -86,6 +92,7 @@ pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
 pub use typing::TypingEvent;
+pub use utils::parse_markdown;
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
 
 pub type DeviceId = matrix_sdk::ruma::OwnedDeviceId;

@@ -64,19 +64,19 @@ final chatsSearchProvider = StateProvider<List<Convo>>((ref) => []);
 final typingProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
 final chatRoomProvider =
-    StateNotifierProvider.autoDispose<ChatRoomNotifier, ChatRoomState>((ref) {
+    StateNotifierProvider<ChatRoomNotifier, ChatRoomState>((ref) {
   return ChatRoomNotifier(
     ref: ref,
   );
 });
 
 final messagesProvider =
-    StateNotifierProvider.autoDispose<MessagesNotifier, List<types.Message>>(
+    StateNotifierProvider<MessagesNotifier, List<types.Message>>(
   (ref) => MessagesNotifier(),
 );
 
 final chatInputProvider =
-    StateNotifierProvider.autoDispose<ChatInputNotifier, ChatInputState>(
+    StateNotifierProvider<ChatInputNotifier, ChatInputState>(
   (ref) => ChatInputNotifier(),
 );
 
@@ -95,3 +95,6 @@ final chatInputFocusProvider = StateProvider<FocusNode>((ref) => FocusNode());
 final currentConvoProvider = StateProvider<Convo?>((ref) => null);
 
 final paginationProvider = StateProvider.autoDispose<bool>((ref) => true);
+
+// for desktop only
+final showFullSplitView = StateProvider<bool>((ref) => false);

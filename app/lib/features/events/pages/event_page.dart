@@ -3,6 +3,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
+import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/features/events/providers/events_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -17,26 +18,36 @@ class CalendarEventPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final event = ref.watch(calendarEventProvider(calendarId));
+
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
           PageHeaderWidget(
             title: event.hasValue ? event.value!.title() : 'Loading Event',
             sectionColor: Colors.blue.shade200,
-            actions: [
-              PopupMenuButton(
-                itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
-                  PopupMenuItem(
-                    onTap: () => onEdit(ctx),
-                    child: const Text('Edit Event'),
-                  ),
-                  PopupMenuItem(
-                    onTap: () => onDelete(ctx),
-                    child: const Text('Delete Event'),
-                  ),
-                ],
-              ),
-            ],
+            actions: event.hasValue
+                ? [
+                    HasSpacePermission(
+                      spaceId: event.value!.roomIdStr(),
+                      permission: 'CanPostEvent',
+                      child: PopupMenuButton(
+                        itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
+                          PopupMenuItem(
+                            onTap: () => ctx.pushNamed(
+                              Routes.editCalendarEvent.name,
+                              pathParameters: {'calendarId': calendarId},
+                            ),
+                            child: const Text('Edit Event'),
+                          ),
+                          PopupMenuItem(
+                            onTap: () => onDelete(ctx),
+                            child: const Text('Delete Event'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ]
+                : [],
           ),
           event.when(
             data: (ev) {
@@ -130,13 +141,6 @@ class CalendarEventPage extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-
-  void onEdit(BuildContext context) {
-    context.pushNamed(
-      Routes.editCalendarEvent.name,
-      pathParameters: {'calendarId': calendarId},
     );
   }
 

@@ -1,7 +1,7 @@
-import 'dart:io';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoTask.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -152,46 +152,16 @@ class CommentInputState extends ConsumerState<CommentInput> {
                 ),
               ],
             ),
-            Offstage(
-              offstage: !emojiShowing,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 250,
-                child: EmojiPicker(
-                  onEmojiSelected: (Category? category, Emoji emoji) {
-                    onEmojiSelected(emoji);
-                  },
-                  onBackspacePressed: onBackspacePressed,
-                  config: Config(
-                    columns: 7,
-                    emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
-                    verticalSpacing: 0,
-                    horizontalSpacing: 0,
-                    initCategory: Category.RECENT,
-                    bgColor: Colors.white,
-                    indicatorColor: Colors.blue,
-                    iconColor: Colors.grey,
-                    iconColorSelected: Colors.blue,
-                    backspaceColor: Colors.blue,
-                    skinToneDialogBgColor: Colors.white,
-                    skinToneIndicatorColor: Colors.grey,
-                    enableSkinTones: true,
-                    recentTabBehavior: RecentTabBehavior.RECENT,
-                    recentsLimit: 28,
-                    noRecents: const Text(
-                      'No Recents',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black26,
-                      ),
-                    ),
-                    tabIndicatorAnimDuration: kTabScrollDuration,
-                    categoryIcons: const CategoryIcons(),
-                    buttonMode: ButtonMode.MATERIAL,
-                  ),
-                ),
+            EmojiPickerWidget(
+              size: Size(
+                MediaQuery.of(context).size.width,
+                MediaQuery.of(context).size.height / 2,
               ),
-            )
+              onEmojiSelected: (Category? category, Emoji emoji) {
+                onEmojiSelected(emoji);
+              },
+              onBackspacePressed: onBackspacePressed,
+            ),
           ],
         ),
       ),

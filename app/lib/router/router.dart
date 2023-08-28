@@ -1,8 +1,8 @@
 import 'package:acter/common/dialogs/dialog_page.dart';
 import 'package:acter/common/dialogs/side_sheet_page.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/activities/pages/sessions_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
@@ -16,6 +16,7 @@ import 'package:acter/features/events/pages/event_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/features/pins/dialogs/edit_pin_sheet.dart';
 import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/news/pages/simple_post.dart';
@@ -46,6 +47,8 @@ import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/tasks/pages/create_task_sidesheet.dart';
 import 'package:acter/features/tasks/pages/tasks_page.dart';
+import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
+import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/spaces/dialogs/create_space_sheet.dart';
 import 'package:acter/features/spaces/pages/join_space.dart';
 import 'package:acter/features/spaces/pages/spaces_page.dart';
@@ -194,6 +197,29 @@ List<RouteBase> makeRoutes(Ref ref) {
 
     GoRoute(
       parentNavigatorKey: rootNavKey,
+      name: Routes.editPin.name,
+      path: Routes.editPin.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: EditPinSheet(pinId: state.pathParameters['pinId']!),
+        );
+      },
+    ),
+
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
       name: Routes.createEvent.name,
       path: Routes.createEvent.route,
       pageBuilder: (context, state) {
@@ -322,28 +348,6 @@ List<RouteBase> makeRoutes(Ref ref) {
 
     GoRoute(
       parentNavigatorKey: rootNavKey,
-      name: Routes.chatroom.name,
-      path: Routes.chatroom.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const RoomPage(),
-        );
-      },
-      routes: <RouteBase>[
-        GoRoute(
-          parentNavigatorKey: rootNavKey,
-          path: 'profile',
-          name: Routes.chatProfile.name,
-          redirect: authGuardRedirect,
-          builder: (context, state) => const RoomProfilePage(),
-        ),
-      ],
-    ),
-
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
       name: Routes.createChat.name,
       path: Routes.createChat.route,
       pageBuilder: (context, state) {
@@ -388,6 +392,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           builder: (context, state) => const GalleryPage(),
         ),
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.myProfile.name,
           path: Routes.myProfile.route,
           redirect: authGuardRedirect,
@@ -399,6 +404,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.activities.name,
           path: Routes.activities.route,
           redirect: authGuardRedirect,
@@ -410,6 +416,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.settingSessions.name,
           path: Routes.settingSessions.route,
           redirect: authGuardRedirect,
@@ -422,6 +429,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.tasks.name,
           path: Routes.tasks.route,
           redirect: authGuardRedirect,
@@ -433,6 +441,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.pins.name,
           path: Routes.pins.route,
           redirect: authGuardRedirect,
@@ -445,6 +454,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.pin.name,
           path: Routes.pin.route,
           redirect: authGuardRedirect,
@@ -457,6 +467,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.calendarEvent.name,
           path: Routes.calendarEvent.route,
           redirect: authGuardRedirect,
@@ -471,6 +482,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.updates.name,
           path: Routes.updates.route,
           redirect: authGuardRedirect,
@@ -495,6 +507,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.chat.name,
           path: Routes.chat.route,
           redirect: authGuardRedirect,
@@ -504,6 +517,25 @@ List<RouteBase> makeRoutes(Ref ref) {
               child: const ChatPage(),
             );
           },
+        ),
+
+        GoRoute(
+          name: Routes.chatroom.name,
+          path: Routes.chatroom.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const RoomPage(),
+            );
+          },
+        ),
+
+        GoRoute(
+          name: Routes.chatProfile.name,
+          path: Routes.chatProfile.route,
+          redirect: authGuardRedirect,
+          builder: (context, state) => const RoomProfilePage(),
         ),
 
         GoRoute(
@@ -519,15 +551,14 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         // ---- SETTINGS
-
         GoRoute(
-          name: Routes.info.name,
-          path: Routes.info.route,
+          name: Routes.settings.name,
+          path: Routes.settings.route,
           redirect: authGuardRedirect,
           pageBuilder: (context, state) {
             return NoTransitionPage(
               key: state.pageKey,
-              child: const SettingsInfoPage(),
+              child: const SettingsMenuPage(),
             );
           },
         ),
@@ -542,19 +573,6 @@ List<RouteBase> makeRoutes(Ref ref) {
             );
           },
         ),
-
-        GoRoute(
-          name: Routes.settings.name,
-          path: Routes.settings.route,
-          redirect: authGuardRedirect,
-          pageBuilder: (context, state) {
-            return NoTransitionPage(
-              key: state.pageKey,
-              child: const SettingsMenuPage(),
-            );
-          },
-        ),
-
         GoRoute(
           name: Routes.settingsLabs.name,
           path: Routes.settingsLabs.route,
@@ -563,6 +581,47 @@ List<RouteBase> makeRoutes(Ref ref) {
             return NoTransitionPage(
               key: state.pageKey,
               child: const SettingsLabsPage(),
+            );
+          },
+        ),
+        GoRoute(
+          name: Routes.info.name,
+          path: Routes.info.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const SettingsInfoPage(),
+            );
+          },
+        ),
+
+        // ---- Space SETTINGS
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.spaceSettings.name,
+          path: Routes.spaceSettings.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceSettingsMenuIndexPage(
+                spaceId: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.spaceSettingsApps.name,
+          path: Routes.spaceSettingsApps.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceAppsSettingsPage(
+                spaceId: state.pathParameters['spaceId']!,
+              ),
             );
           },
         ),
@@ -716,7 +775,7 @@ List<RouteBase> makeRoutes(Ref ref) {
             if (authGuarded != null) {
               return authGuarded;
             }
-            if (context.mounted && isDesktop(context)) {
+            if (context.mounted && isDesktop) {
               return Routes.dashboard.route;
             } else {
               return Routes.updates.route;

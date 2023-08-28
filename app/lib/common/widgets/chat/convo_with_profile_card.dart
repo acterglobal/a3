@@ -1,5 +1,7 @@
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,6 +43,8 @@ class ConvoWithProfileCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final convo = ref.watch(currentConvoProvider);
+    final desktop = isDesktop;
     final avatar = ActerAvatar(
       uniqueId: roomId,
       mode: DisplayMode.GroupChat,
@@ -49,38 +53,49 @@ class ConvoWithProfileCard extends ConsumerWidget {
       size: 36,
     );
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        ListTile(
-          onTap: onTap,
-          onFocusChange: onFocusChange,
-          onLongPress: onLongPress,
-          leading: showParent
-              ? SpaceParentBadge(
-                  spaceId: roomId,
-                  badgeSize: 20,
-                  child: avatar,
-                )
-              : avatar,
-          title: Text(
-            profile.displayName ?? roomId,
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium!
-                .copyWith(fontWeight: FontWeight.w700),
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: subtitle,
-          trailing: trailing,
-        ),
-        Divider(
-          indent: 75,
-          endIndent: 10,
-          color: Theme.of(context).colorScheme.tertiary,
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              onTap: onTap,
+              selected: (desktop && convo != null)
+                  ? convo.getRoomIdStr() == roomId
+                      ? true
+                      : false
+                  : false,
+              selectedTileColor: Theme.of(context).colorScheme.primaryContainer,
+              onFocusChange: onFocusChange,
+              onLongPress: onLongPress,
+              leading: showParent
+                  ? SpaceParentBadge(
+                      spaceId: roomId,
+                      badgeSize: 20,
+                      child: avatar,
+                    )
+                  : avatar,
+              title: Text(
+                profile.displayName ?? roomId,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium!
+                    .copyWith(fontWeight: FontWeight.w700),
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: constraints.maxWidth < 300 ? null : subtitle,
+              trailing: constraints.maxWidth < 300 ? null : trailing,
+            ),
+            constraints.maxWidth < 300
+                ? const SizedBox.shrink()
+                : Divider(
+                    indent: 75,
+                    endIndent: 10,
+                    color: Theme.of(context).colorScheme.tertiary,
+                  ),
+          ],
+        );
+      },
     );
   }
 }

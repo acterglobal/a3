@@ -63,7 +63,7 @@ class TodoCard extends StatelessWidget {
                 isExpanded: isExpanded,
                 expandBtn: expandBtn,
               ),
-            )
+            ),
           ],
         ),
       ),

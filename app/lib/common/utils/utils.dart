@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:async';
 
-import 'package:acter/common/utils/constants.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -99,10 +98,6 @@ Future<bool> openLink(String target, BuildContext context) async {
     debugPrint('Opening external URL: $url');
     return await launchUrl(url);
   }
-}
-
-bool isDesktop(BuildContext context) {
-  return desktopPlatforms.contains(Theme.of(context).platform);
 }
 
 String randomString() {

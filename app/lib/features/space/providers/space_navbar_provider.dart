@@ -27,6 +27,7 @@ final tabsProvider =
     FutureProvider.family<List<TabEntry>, String>((ref, spaceId) async {
   final features = ref.watch(featuresProvider);
   final space = await ref.watch(maybeSpaceProvider(spaceId).future);
+
   bool isActive(f) => features.isActive(f);
   List<TabEntry> tabs = [
     TabEntry(
@@ -38,7 +39,8 @@ final tabsProvider =
   ];
 
   if (space != null && (await space.isActerSpace())) {
-    if (isActive(LabsFeature.pins)) {
+    final appSettings = await space.appSettings();
+    if (isActive(LabsFeature.pins) && appSettings.pins().active()) {
       tabs.add(
         TabEntry(
           key: const Key('pins'),
@@ -79,6 +81,18 @@ final tabsProvider =
         ),
       );
     }
+
+    if (isActive(LabsFeature.events) && appSettings.events().active()) {
+      tabs.add(
+        TabEntry(
+          key: const Key('events'),
+          label: 'Events',
+          makeIcon: (ctx) => const Icon(Atlas.calendar_schedule_thin),
+          target: Routes.spaceEvents.name,
+        ),
+      );
+    }
+
     tabs.add(
       TabEntry(
         key: const Key('chat'),
