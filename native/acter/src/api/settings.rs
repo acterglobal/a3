@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 pub use acter_core::events::settings::{
     ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleSettingWithTurnOff,
-    SimpleSettingWithTurnOffBuilder,
+    SimpleSettingWithTurnOffBuilder, TasksSettings,
 };
 
 use acter_core::events::{
@@ -10,6 +10,7 @@ use acter_core::events::{
     news::{NewsEntryEventContent, NewsEntryUpdateEvent},
     pins::PinEventContent,
     settings::ActerAppSettingsContentBuilder,
+    tasks::{TaskEventContent, TaskListEventContent},
 };
 use anyhow::{bail, Result};
 use matrix_sdk::{
@@ -47,6 +48,9 @@ impl ActerAppSettingsBuilder {
     pub fn events(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
         self.inner.events(value.map(|i| *i));
     }
+    pub fn tasks(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
+        self.inner.tasks(value.map(|i| *i));
+    }
 }
 
 pub struct RoomPowerLevels {
@@ -68,6 +72,18 @@ impl RoomPowerLevels {
     }
     pub fn events_key(&self) -> String {
         <CalendarEventEventContent as StaticEventContent>::TYPE.into()
+    }
+    pub fn task_lists(&self) -> Option<i64> {
+        self.get_for_key(<TaskListEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn task_lists_key(&self) -> String {
+        <TaskListEventContent as StaticEventContent>::TYPE.into()
+    }
+    pub fn tasks(&self) -> Option<i64> {
+        self.get_for_key(<TaskEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn tasks_key(&self) -> String {
+        <TaskEventContent as StaticEventContent>::TYPE.into()
     }
     pub fn pins(&self) -> Option<i64> {
         self.get_for_key(<PinEventContent as StaticEventContent>::TYPE.into())

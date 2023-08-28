@@ -1,6 +1,8 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +33,11 @@ class SettingsAndMembership {
   final Member? member;
 
   const SettingsAndMembership(
-      this.space, this.powerLevels, this.settings, this.member,);
+    this.space,
+    this.powerLevels,
+    this.settings,
+    this.member,
+  );
 }
 
 final spaceAppSettingsProvider = FutureProvider.autoDispose
@@ -53,6 +59,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spaceSettingsWatcher = ref.watch(spaceAppSettingsProvider(spaceId));
+    final provider = ref.watch(featuresProvider);
+    bool isActive(f) => provider.isActive(f);
 
     return WithSidebar(
       sidebar: SpaceSettingsMenu(
@@ -80,8 +88,10 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           final news = appSettings.news();
           final events = appSettings.events();
           final pins = appSettings.pins();
+          final tasks = appSettings.tasks();
 
           final moreSections = [];
+          final labActions = [];
           if (news.active()) {
             final currentPw = powerLevels.news();
             final pwText = maxPowerLevel == 100
@@ -250,6 +260,118 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             );
           }
 
+          if (isActive(LabsFeature.tasks)) {
+            labActions.add(
+              SettingsTile.switchTile(
+                title: const Text('Tasks'),
+                enabled: canEdit,
+                description: const Text(
+                  'Tasks & ToDoLists',
+                ),
+                initialValue: tasks.active(),
+                onToggle: (newVal) async {
+                  final updated = tasks.updater();
+                  updated.active(newVal);
+                  final builder = appSettings.updateBuilder();
+                  builder.tasks(updated.build());
+                  await space.updateAppSettings(builder);
+                },
+              ),
+            );
+            if (tasks.active()) {
+              final taskListCurrentPw = powerLevels.taskLists();
+              final tasksCurrentPw = powerLevels.tasks();
+              final pwTextTL = maxPowerLevel == 100
+                  ? powerLevelName(taskListCurrentPw)
+                  : 'Custom ($taskListCurrentPw)';
+              final pwTextT = maxPowerLevel == 100
+                  ? powerLevelName(tasksCurrentPw)
+                  : 'Custom ($tasksCurrentPw)';
+              moreSections.add(
+                SettingsSection(
+                  title: const Text('Tasks'),
+                  tiles: [
+                    SettingsTile(
+                      enabled: canEdit,
+                      title: const Text('TaskList PowerLevel'),
+                      description: const Text(
+                        'Minimum power level required to manage task lists',
+                      ),
+                      trailing: taskListCurrentPw != null
+                          ? Text(pwTextTL)
+                          : Text(defaultDesc),
+                      onPressed: (context) async {
+                        final newPowerLevel = await showDialog<int?>(
+                          context: context,
+                          builder: (BuildContext context) => ChangePowerLevel(
+                            featureName: 'Task Lists',
+                            currentPowerLevelName: maxPowerLevel == 100
+                                ? powerLevelName(taskListCurrentPw)
+                                : 'Custom',
+                            currentPowerLevel: taskListCurrentPw,
+                          ),
+                        );
+                        if (newPowerLevel != taskListCurrentPw) {
+                          await space.updateFeaturePowerLevels(
+                            powerLevels.taskListsKey(),
+                            newPowerLevel,
+                          );
+                          if (context.mounted) {
+                            customMsgSnackbar(
+                              context,
+                              'Power level update for task lists submitted',
+                            );
+                          }
+                        }
+                      },
+                    ),
+                    SettingsTile(
+                      enabled: canEdit,
+                      title: const Text('Tasks PowerLevel'),
+                      description: const Text(
+                        'Minimum power level required to interact with tasks',
+                      ),
+                      trailing: tasksCurrentPw != null
+                          ? Text(pwTextT)
+                          : Text(defaultDesc),
+                      onPressed: (context) async {
+                        final newPowerLevel = await showDialog<int?>(
+                          context: context,
+                          builder: (BuildContext context) => ChangePowerLevel(
+                            featureName: 'Tasks',
+                            currentPowerLevelName: maxPowerLevel == 100
+                                ? powerLevelName(tasksCurrentPw)
+                                : 'Custom',
+                            currentPowerLevel: tasksCurrentPw,
+                          ),
+                        );
+                        if (newPowerLevel != tasksCurrentPw) {
+                          await space.updateFeaturePowerLevels(
+                            powerLevels.tasksKey(),
+                            newPowerLevel,
+                          );
+                          if (context.mounted) {
+                            customMsgSnackbar(
+                              context,
+                              'Power level update for tasks submitted',
+                            );
+                          }
+                        }
+                      },
+                    ),
+                    SettingsTile.switchTile(
+                      title: const Text('Comments'),
+                      description: const Text('not yet supported'),
+                      enabled: false,
+                      initialValue: false,
+                      onToggle: (newVal) {},
+                    ),
+                  ],
+                ),
+              );
+            }
+          }
+
           return Scaffold(
             appBar: AppBar(title: const Text('Apps Settings')),
             body: SettingsList(
@@ -302,6 +424,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                         await space.updateAppSettings(builder);
                       },
                     ),
+                    ...labActions,
                   ],
                 ),
                 ...moreSections,

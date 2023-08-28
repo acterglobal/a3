@@ -1259,6 +1259,12 @@ object RoomPowerLevels {
     fn events_default() -> i64;
     fn users_default() -> i64;
     fn max_power_level() -> i64;
+
+    fn tasks() -> Option<i64>;
+    fn tasks_key() -> string;
+
+    fn task_lists() -> Option<i64>;
+    fn task_lists_key() -> string;
 }
 
 object SimpleSettingWithTurnOff {
@@ -1271,6 +1277,11 @@ object SimpleSettingWithTurnOffBuilder {
 }
 
 object NewsSettings {
+    fn active() -> bool;
+    fn updater() -> SimpleSettingWithTurnOffBuilder;
+}
+
+object TasksSettings {
     fn active() -> bool;
     fn updater() -> SimpleSettingWithTurnOffBuilder;
 }
@@ -1289,6 +1300,7 @@ object ActerAppSettings {
     fn news() -> NewsSettings;
     fn pins() -> PinsSettings;
     fn events() -> EventsSettings;
+    fn tasks() -> TasksSettings;
     fn update_builder() -> ActerAppSettingsBuilder;
 }
 
@@ -1296,6 +1308,7 @@ object ActerAppSettingsBuilder {
     fn news(news: Option<SimpleSettingWithTurnOff>);
     fn pins(pins: Option<SimpleSettingWithTurnOff>);
     fn events(events: Option<SimpleSettingWithTurnOff>);
+    fn tasks(tasks: Option<SimpleSettingWithTurnOff>);
 }
 
 object Space {
@@ -1465,6 +1478,8 @@ enum MemberPermission {
     CanPostNews,
     CanPostPin,
     CanPostEvent,
+    CanPostTaskList,
+    CanPostTask,
     CanBan,
     CanKick,
     CanInvite,

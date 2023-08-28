@@ -51,18 +51,7 @@ final tabsProvider =
       );
     }
 
-    if (isActive(LabsFeature.events)) {
-      tabs.add(
-        TabEntry(
-          key: const Key('events'),
-          label: 'Events',
-          makeIcon: (ctx) => const Icon(Atlas.calendar_schedule_thin),
-          target: Routes.spaceEvents.name,
-        ),
-      );
-    }
-
-    if (isActive(LabsFeature.tasks)) {
+    if (isActive(LabsFeature.tasks) && appSettings.tasks().active()) {
       tabs.add(
         TabEntry(
           key: const Key('tasks'),

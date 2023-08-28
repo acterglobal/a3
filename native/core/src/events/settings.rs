@@ -30,6 +30,7 @@ impl SimpleSettingWithTurnOff {
 pub type NewsSettings = SimpleSettingWithTurnOff;
 pub type PinsSettings = SimpleSettingWithTurnOff;
 pub type EventsSettings = SimpleSettingWithTurnOff;
+pub type TasksSettings = SimpleSettingWithTurnOff;
 
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Default)]
 #[ruma_event(type = "global.acter.app_settings", kind = State, state_key_type = EmptyStateKey)]
@@ -37,6 +38,7 @@ pub struct ActerAppSettingsContent {
     news: Option<NewsSettings>,
     pins: Option<NewsSettings>,
     events: Option<EventsSettings>,
+    tasks: Option<TasksSettings>,
 }
 
 impl ActerAppSettingsContent {
@@ -49,12 +51,16 @@ impl ActerAppSettingsContent {
     pub fn events(&self) -> EventsSettings {
         self.events.clone().unwrap_or_default()
     }
+    pub fn tasks(&self) -> TasksSettings {
+        self.tasks.clone().unwrap_or_default()
+    }
 
     pub fn updater(&self) -> ActerAppSettingsContentBuilder {
         ActerAppSettingsContentBuilder::default()
             .news(self.news.clone())
             .pins(self.pins.clone())
             .events(self.events.clone())
+            .tasks(self.tasks.clone())
             .to_owned()
     }
 }
