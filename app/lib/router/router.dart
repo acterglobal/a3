@@ -16,6 +16,7 @@ import 'package:acter/features/events/pages/event_page.dart';
 import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/features/pins/dialogs/edit_pin_sheet.dart';
 import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/news/pages/simple_post.dart';
@@ -189,6 +190,29 @@ List<RouteBase> makeRoutes(Ref ref) {
           child: CreatePinSheet(
             initialSelectedSpace: state.uri.queryParameters['spaceId'],
           ),
+        );
+      },
+    ),
+
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.editPin.name,
+      path: Routes.editPin.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: EditPinSheet(pinId: state.pathParameters['pinId']!),
         );
       },
     ),
@@ -379,6 +403,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.activities.name,
           path: Routes.activities.route,
           redirect: authGuardRedirect,
@@ -390,6 +415,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.settingSessions.name,
           path: Routes.settingSessions.route,
           redirect: authGuardRedirect,
@@ -402,6 +428,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.tasks.name,
           path: Routes.tasks.route,
           redirect: authGuardRedirect,
@@ -413,6 +440,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.pins.name,
           path: Routes.pins.route,
           redirect: authGuardRedirect,
@@ -425,6 +453,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.pin.name,
           path: Routes.pin.route,
           redirect: authGuardRedirect,
@@ -437,6 +466,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.calendarEvent.name,
           path: Routes.calendarEvent.route,
           redirect: authGuardRedirect,
@@ -451,6 +481,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.updates.name,
           path: Routes.updates.route,
           redirect: authGuardRedirect,

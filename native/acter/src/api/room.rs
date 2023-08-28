@@ -1,5 +1,6 @@
 use acter_core::{
     events::{
+        calendar::CalendarEventEventContent,
         news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
         pins::PinEventContent,
         settings::{ActerAppSettings, ActerAppSettingsContent},
@@ -76,6 +77,7 @@ pub enum MemberPermission {
     // Acter Specific actions
     CanPostNews,
     CanPostPin,
+    CanPostEvent,
     // moderation tools
     CanBan,
     CanInvite,
@@ -196,6 +198,21 @@ impl Member {
                 {
                     PermissionTest::Message(MessageLikeEventType::from(
                         <PinEventContent as StaticEventContent>::TYPE,
+                    ))
+                } else {
+                    // Not an acter space or Pins are not activated..
+                    return false;
+                }
+            }
+            MemberPermission::CanPostEvent => {
+                if self
+                    .acter_app_settings
+                    .as_ref()
+                    .map(|s| s.events().active())
+                    .unwrap_or_default()
+                {
+                    PermissionTest::Message(MessageLikeEventType::from(
+                        <CalendarEventEventContent as StaticEventContent>::TYPE,
                     ))
                 } else {
                     // Not an acter space or Pins are not activated..

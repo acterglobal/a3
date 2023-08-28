@@ -1079,6 +1079,53 @@ class Api {
     return tmp3;
   }
 
+  String? parseMarkdown(
+    String text,
+  ) {
+    final tmp0 = text;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    final tmp4 = _parseMarkdown(
+      tmp1,
+      tmp2,
+      tmp3,
+    );
+    final tmp6 = tmp4.arg0;
+    final tmp7 = tmp4.arg1;
+    final tmp8 = tmp4.arg2;
+    final tmp9 = tmp4.arg3;
+    if (tmp6 == 0) {
+      return null;
+    }
+    if (tmp8 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp7_ptr = ffi.Pointer.fromAddress(tmp7);
+    List<int> tmp7_buf = [];
+    final tmp7_precast = tmp7_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp8; i++) {
+      int char = tmp7_precast.elementAt(i).value;
+      tmp7_buf.add(char);
+    }
+    final tmp5 = utf8.decode(tmp7_buf, allowMalformed: true);
+    if (tmp9 > 0) {
+      final ffi.Pointer<ffi.Void> tmp7_0;
+      tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+      this.__deallocate(tmp7_0, tmp9 * 1, 1);
+    }
+    return tmp5;
+  }
+
   /// make convo settings builder
   CreateConvoSettingsBuilder newConvoSettingsBuilder() {
     final tmp0 = _newConvoSettingsBuilder();
@@ -10615,6 +10662,20 @@ class Api {
       int Function(
         int,
       )>();
+  late final _parseMarkdownPtr = _lookup<
+      ffi.NativeFunction<
+          _ParseMarkdownReturn Function(
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__parse_markdown");
+
+  late final _parseMarkdown = _parseMarkdownPtr.asFunction<
+      _ParseMarkdownReturn Function(
+        int,
+        int,
+        int,
+      )>();
   late final _newConvoSettingsBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function()>>(
           "__new_convo_settings_builder");
@@ -11602,6 +11663,23 @@ class Api {
             int,
             int,
           )>();
+  late final _pinUpdateBuilderContentMarkdownPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__PinUpdateBuilder_content_markdown");
+
+  late final _pinUpdateBuilderContentMarkdown =
+      _pinUpdateBuilderContentMarkdownPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _pinUpdateBuilderUnsetContentPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -11753,6 +11831,16 @@ class Api {
 
   late final _calendarEventEventId = _calendarEventEventIdPtr.asFunction<
       int Function(
+        int,
+      )>();
+  late final _calendarEventRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventRoomIdStrReturn Function(
+            ffi.Int64,
+          )>>("__CalendarEvent_room_id_str");
+
+  late final _calendarEventRoomIdStr = _calendarEventRoomIdStrPtr.asFunction<
+      _CalendarEventRoomIdStrReturn Function(
         int,
       )>();
   late final _calendarEventUpdateBuilderPtr = _lookup<
@@ -25628,6 +25716,32 @@ class PinUpdateBuilder {
     return;
   }
 
+  void contentMarkdown(
+    String text,
+  ) {
+    final tmp1 = text;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._pinUpdateBuilderContentMarkdown(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
   void unsetContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -25896,6 +26010,35 @@ class CalendarEvent {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_EventId");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = EventId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  String roomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -41160,6 +41303,7 @@ enum MemberPermissionTag {
   CanSendSticker,
   CanPostNews,
   CanPostPin,
+  CanPostEvent,
   CanBan,
   CanKick,
   CanInvite,
@@ -41206,54 +41350,58 @@ class MemberPermission {
 
         break;
       case 5:
-        this._tag = MemberPermissionTag.CanBan;
+        this._tag = MemberPermissionTag.CanPostEvent;
 
         break;
       case 6:
-        this._tag = MemberPermissionTag.CanKick;
+        this._tag = MemberPermissionTag.CanBan;
 
         break;
       case 7:
-        this._tag = MemberPermissionTag.CanInvite;
+        this._tag = MemberPermissionTag.CanKick;
 
         break;
       case 8:
-        this._tag = MemberPermissionTag.CanRedact;
+        this._tag = MemberPermissionTag.CanInvite;
 
         break;
       case 9:
-        this._tag = MemberPermissionTag.CanTriggerRoomNotification;
+        this._tag = MemberPermissionTag.CanRedact;
 
         break;
       case 10:
-        this._tag = MemberPermissionTag.CanUpgradeToActerSpace;
+        this._tag = MemberPermissionTag.CanTriggerRoomNotification;
 
         break;
       case 11:
-        this._tag = MemberPermissionTag.CanSetName;
+        this._tag = MemberPermissionTag.CanUpgradeToActerSpace;
 
         break;
       case 12:
-        this._tag = MemberPermissionTag.CanUpdateAvatar;
+        this._tag = MemberPermissionTag.CanSetName;
 
         break;
       case 13:
-        this._tag = MemberPermissionTag.CanSetTopic;
+        this._tag = MemberPermissionTag.CanUpdateAvatar;
 
         break;
       case 14:
-        this._tag = MemberPermissionTag.CanLinkSpaces;
+        this._tag = MemberPermissionTag.CanSetTopic;
 
         break;
       case 15:
-        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
+        this._tag = MemberPermissionTag.CanLinkSpaces;
 
         break;
       case 16:
-        this._tag = MemberPermissionTag.CanSetParentSpace;
+        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
 
         break;
       case 17:
+        this._tag = MemberPermissionTag.CanSetParentSpace;
+
+        break;
+      case 18:
         this._tag = MemberPermissionTag.CanChangeAppSettings;
 
         break;
@@ -41312,6 +41460,17 @@ class _RotateLogFileReturn extends ffi.Struct {
 }
 
 class _WriteLogReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _ParseMarkdownReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -41648,6 +41807,15 @@ class _CalendarEventDescriptionReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
+}
+
+class _CalendarEventRoomIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _CalendarEventUpdateBuilderReturn extends ffi.Struct {

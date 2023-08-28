@@ -24,6 +24,8 @@ object EfkDuration {}
 
 fn duration_from_secs(secs: u64) -> EfkDuration;
 
+fn parse_markdown(text: string) -> Option<string>;
+
 /// Representing a color
 object EfkColor {
     /// as rgba in u8
@@ -238,6 +240,7 @@ object PinUpdateBuilder {
 
     /// set the content for this pin
     fn content_text(text: string);
+    fn content_markdown(text: string);
     fn unset_content();
     fn unset_content_update();
 
@@ -284,6 +287,7 @@ object CalendarEvent {
     // fn locations() -> Vec<Location>;
     /// event id
     fn event_id() -> EventId;
+    fn room_id_str() -> string;
     /// update builder
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
@@ -1457,6 +1461,7 @@ enum MemberPermission {
     CanSendSticker,
     CanPostNews,
     CanPostPin,
+    CanPostEvent,
     CanBan,
     CanKick,
     CanInvite,

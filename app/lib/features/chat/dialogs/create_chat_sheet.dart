@@ -8,9 +8,8 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +44,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
     if (widget.initialSelectedSpaceId != null) {
       isSpaceRoom = true;
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        final notifier = ref.read(parentSpaceProvider.notifier);
+        final notifier = ref.read(selectedSpaceIdProvider.notifier);
         notifier.state = widget.initialSelectedSpaceId;
       });
     }
@@ -54,9 +53,8 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
-    final currentParentSpace = ref.watch(parentSpaceProvider);
-    final parentNotifier = ref.watch(parentSpaceProvider.notifier);
     final avatarUpload = ref.watch(_avatarProvider);
+    final currentParentSpace = ref.read(selectedSpaceIdProvider);
     return SideSheet(
       header: 'Create Chat',
       addActions: true,
@@ -65,8 +63,6 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text('Create a chat'),
-            const SizedBox(height: 15),
             Row(
               children: <Widget>[
                 Column(
@@ -130,36 +126,12 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
                   textInputType: TextInputType.multiline,
                   maxLines: 10,
                 ),
-                ListTile(
-                  title: Text(
-                    isSpaceRoom ? 'Selected Space' : 'No space selected',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  trailing: isSpaceRoom
-                      ? Consumer(
-                          builder: (context, ref, child) {
-                            return ref.watch(parentSpaceDetailsProvider).when(
-                                  data: (space) => space != null
-                                      ? SpaceChip(space: space)
-                                      : Text(currentParentSpace ?? ''),
-                                  error: (e, s) => Text('error: $e'),
-                                  loading: () => const Text('loading'),
-                                );
-                          },
-                        )
-                      : null,
-                  onTap: () async {
-                    if (!isSpaceRoom) {
-                      final newSelectedSpaceId = await selectSpaceDrawer(
-                        context: context,
-                        currentSpaceId: ref.read(parentSpaceProvider),
-                        title: const Text('Select space'),
-                      );
-                      parentNotifier.state = newSelectedSpaceId;
-                    } else {
-                      return;
-                    }
-                  },
+                const SelectSpaceFormField(
+                  canCheck: 'CanLinkSpaces',
+                  mandatory: true,
+                  title: 'Parent space',
+                  emptyText: 'optional parent space',
+                  selectTitle: 'Select parent space',
                 ),
               ],
             ),
@@ -258,7 +230,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
       if (avatarUri.isNotEmpty) {
         config.setAvatarUri(avatarUri); // convo creation will upload it
       }
-      final parentId = ref.read(parentSpaceProvider);
+      final parentId = ref.read(selectedSpaceIdProvider);
       if (parentId != null) {
         config.setParent(parentId);
       }
