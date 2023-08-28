@@ -73,7 +73,7 @@ class SpaceItem extends ConsumerWidget {
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),

@@ -41,11 +41,12 @@ class SettingsLabsPage extends ConsumerWidget {
               title: const Text('Spaces'),
               tiles: [
                 SettingsTile.switchTile(
-                    title: const Text('Encryptd spaces'),
-                    description: const Text('not yet supported'),
-                    enabled: false,
-                    initialValue: false,
-                    onToggle: (newVal) {},),
+                  title: const Text('Encryptd spaces'),
+                  description: const Text('not yet supported'),
+                  enabled: false,
+                  initialValue: false,
+                  onToggle: (newVal) {},
+                ),
               ],
             ),
             SettingsSection(

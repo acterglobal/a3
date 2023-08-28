@@ -1,4 +1,4 @@
-import 'package:acter/common/dialogs/pop_up_dialog.dart';;
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';

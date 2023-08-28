@@ -186,7 +186,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               color: Theme.of(context).colorScheme.tertiary,
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                     const SizedBox(height: 20),

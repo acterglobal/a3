@@ -495,6 +495,9 @@ object TextDesc {
 
     /// formatted text
     fn formatted_body() -> Option<string>;
+
+    /// whether this has a formatted version
+    fn has_formatted() -> bool;
 }
 
 object ImageDesc {
@@ -598,6 +601,9 @@ object ReactionRecord {
 
     /// when reaction was sent
     fn timestamp() -> u64;
+
+    /// whether I am the sender of this reaction
+    fn sent_by_me() -> bool;
 }
 
 object TimelineDiff {
@@ -1795,7 +1801,10 @@ object VerificationEvent {
     fn get_content(key: string) -> Option<string>;
 
     /// Get emoji array
-    fn get_emojis() -> Vec<VerificationEmoji>;
+    fn emojis() -> Vec<VerificationEmoji>;
+
+    /// Get emoji array
+    fn get_emojis() -> Future<Result<Vec<VerificationEmoji>>>;
 
     /// Bob accepts the verification request from Alice
     fn accept_verification_request() -> Future<Result<bool>>;
@@ -1808,9 +1817,6 @@ object VerificationEvent {
 
     /// Alice starts the SAS verification
     fn start_sas_verification() -> Future<Result<bool>>;
-
-    /// Whether verification request was launched from this device
-    fn was_triggered_from_this_device() -> Result<bool>;
 
     /// Bob accepts the SAS verification
     fn accept_sas_verification() -> Future<Result<bool>>;

@@ -42,15 +42,8 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
             backgroundColor: Colors.transparent,
             body: SafeArea(
               child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.center,
-                    colors: <Color>[
-                      Theme.of(context).colorScheme.background,
-                      Theme.of(context).colorScheme.neutral,
-                    ],
-                  ),
+                decoration: const BoxDecoration(
+                  gradient: AppTheme.primaryGradient,
                 ),
                 child: Column(
                   children: <Widget>[
@@ -182,12 +175,15 @@ class _ShellToolbar extends ConsumerWidget {
       btnText: 'No, Stay!',
       onPressedBtn: () => context.pop(),
       btn2Text: 'Yes, Leave!',
-      onPressedBtn2: () async => {
-        await space.leave(),
+      onPressedBtn2: () async {
+        await space.leave();
         // refresh spaces list
-        ref.invalidate(spacesProvider),
-        context.pop(),
-        context.goNamed(Routes.dashboard.name),
+        ref.invalidate(spacesProvider);
+        if (!context.mounted) {
+          return;
+        }
+        context.pop();
+        context.goNamed(Routes.dashboard.name);
       },
       btnColor: Colors.transparent,
       btn2Color: Theme.of(context).colorScheme.errorContainer,
@@ -270,7 +266,7 @@ class _ShellHeader extends ConsumerWidget {
                     textAlign: TextAlign.center,
                     textScaleFactor: 0.8,
                   ),
-                )
+                ),
             ],
           ),
         );

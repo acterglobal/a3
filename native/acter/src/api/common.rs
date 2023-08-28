@@ -124,6 +124,9 @@ impl TextDesc {
     pub(crate) fn set_formatted_body(&mut self, text: Option<String>) {
         self.formatted_body = text;
     }
+    pub fn has_formatted(&self) -> bool {
+        self.formatted_body.is_some()
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -384,18 +387,28 @@ impl FileDesc {
 pub struct ReactionRecord {
     sender_id: OwnedUserId,
     timestamp: MilliSecondsSinceUnixEpoch,
+    sent_by_me: bool,
 }
 
 impl ReactionRecord {
-    pub(crate) fn new(sender_id: OwnedUserId, timestamp: MilliSecondsSinceUnixEpoch) -> Self {
+    pub(crate) fn new(
+        sender_id: OwnedUserId,
+        timestamp: MilliSecondsSinceUnixEpoch,
+        sent_by_me: bool,
+    ) -> Self {
         ReactionRecord {
             sender_id,
             timestamp,
+            sent_by_me,
         }
     }
 
     pub fn sender_id(&self) -> OwnedUserId {
         self.sender_id.clone()
+    }
+
+    pub fn sent_by_me(&self) -> bool {
+        self.sent_by_me
     }
 
     pub fn timestamp(&self) -> u64 {

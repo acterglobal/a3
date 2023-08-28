@@ -163,7 +163,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                   usernamePattern.hasMatch(newValue.text)
                               ? newValue
                               : oldValue;
-                        })
+                        }),
                       ],
                         style: Theme.of(context).textTheme.labelLarge,
                         cursorColor: Theme.of(context).colorScheme.tertiary2,
@@ -300,7 +300,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               color: Theme.of(context).colorScheme.tertiary,
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                     const SizedBox(height: 20),

@@ -39,7 +39,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
                 size: 24,
               ),
             ),
-          )
+          ),
         ],
       ),
       body: Padding(
@@ -64,9 +64,9 @@ class _BookmarksPageState extends State<BookmarksPage> {
                             SizedBox(width: 8),
                             Icon(Atlas.arrow_right_circle, size: 18),
                           ],
-                        )
+                        ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -113,7 +113,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
                       ),
                       child: const Text('Okay'),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
