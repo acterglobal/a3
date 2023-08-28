@@ -53,7 +53,9 @@ dependencies:
   flutter_keyboard_visibility: ^5.4.0
   expandable_text: ^2.3.0
   cached_network_image: ^3.2.1
-  flutter_mentions: ^2.0.1
+  flutter_mentions:
+    git:
+      url: https://github.com/gtalha07/flutter_mentions.git
   flutter_matrix_html:
     git:
       url: https://github.com/acterglobal/flutter_matrix_html.git

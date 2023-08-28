@@ -37,41 +37,50 @@ extension CustomColorScheme on ColorScheme {
   Color get badgeUrgent => const Color(0xFF93000A);
 }
 
-const brandColorScheme = ColorScheme.dark(
-  brightness: Brightness.dark,
-  primary: Color(0xFF9CCAFF),
-  onPrimary: Color(0xFF003257),
-  primaryContainer: Color(0xFF00497B),
-  onPrimaryContainer: Color(0xFFD0E4FF),
-  secondary: Color(0xFF9ACBFF),
-  onSecondary: Color(0xFF003355),
-  secondaryContainer: Color(0xFF004A79),
-  onSecondaryContainer: Color(0xFFD0E4FF),
-  tertiary: Color(0xFFFFB77B),
-  onTertiary: Color(0xFF4D2700),
-  tertiaryContainer: Color(0xFF6D3A00),
-  onTertiaryContainer: Color(0xFFFFDCC2),
-  error: Color(0xFFFFB4AB),
-  errorContainer: Color(0xFF93000A),
-  onError: Color(0xFF690005),
-  onErrorContainer: Color(0xFFFFDAD6),
-  background: Color(0xFF001B3D),
-  onBackground: Color(0xFFD6E3FF),
-  surface: Color(0xFF001B3D),
-  onSurface: Color(0xFFD6E3FF),
-  surfaceVariant: Color(0xFF42474E),
-  onSurfaceVariant: Color(0xFFC2C7CF),
-  outline: Color(0xFF8C9199),
-  onInverseSurface: Color(0xFF001B3D),
-  inverseSurface: Color(0xFFD6E3FF),
-  inversePrimary: Color(0xFF0062A1),
-  shadow: Color(0xFF000000),
-  surfaceTint: Color(0xFF9CCAFF),
-  outlineVariant: Color(0xFF42474E),
-  scrim: Color(0xFF000000),
-);
-
 class AppTheme {
+  static const brandColorScheme = ColorScheme.dark(
+    brightness: Brightness.dark,
+    primary: Color(0xFF9CCAFF),
+    onPrimary: Color(0xFF003257),
+    primaryContainer: Color(0xFF00497B),
+    onPrimaryContainer: Color(0xFFD0E4FF),
+    secondary: Color(0xFF9ACBFF),
+    onSecondary: Color(0xFF003355),
+    secondaryContainer: Color(0xFF004A79),
+    onSecondaryContainer: Color(0xFFD0E4FF),
+    tertiary: Color(0xFFFFB77B),
+    onTertiary: Color(0xFF4D2700),
+    tertiaryContainer: Color(0xFF6D3A00),
+    onTertiaryContainer: Color(0xFFFFDCC2),
+    error: Color(0xFFFFB4AB),
+    errorContainer: Color(0xFF93000A),
+    onError: Color(0xFF690005),
+    onErrorContainer: Color(0xFFFFDAD6),
+    background: Color(0xFF001B3D),
+    onBackground: Color(0xFFD6E3FF),
+    surface: Color(0xFF001B3D),
+    onSurface: Color(0xFFD6E3FF),
+    surfaceVariant: Color(0xFF42474E),
+    onSurfaceVariant: Color(0xFFC2C7CF),
+    outline: Color(0xFF8C9199),
+    onInverseSurface: Color(0xFF001B3D),
+    inverseSurface: Color(0xFFD6E3FF),
+    inversePrimary: Color(0xFF0062A1),
+    shadow: Color(0xFF000000),
+    surfaceTint: Color(0xFF9CCAFF),
+    outlineVariant: Color(0xFF42474E),
+    scrim: Color(0xFF000000),
+  );
+
+  static const primaryGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.center,
+    colors: <Color>[
+      Color(0xFF001B3D),
+      Color(0xFF121212),
+    ],
+  );
+
   static ThemeData get theme {
     return ThemeData(
       fontFamily: 'Inter',

@@ -75,20 +75,19 @@ class CustomMessageBuilder extends StatelessWidget {
       case 'm.key.verification.start':
         break;
       case 'm.room.encrypted':
-        String text =
-            '***Failed to decrypt message. Re-request session keys.***';
+        String text = 'Failed to decrypt message. Re-request session keys';
         return Container(
           padding: const EdgeInsets.all(18),
           child: Text(
             text,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall!
-                .copyWith(color: Theme.of(context).colorScheme.neutral5),
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  color: Theme.of(context).colorScheme.neutral5,
+                  fontStyle: FontStyle.italic,
+                ),
           ),
         );
       case 'm.room.redaction':
-        String text = '***This message has been deleted.***';
+        String text = 'Message deleted';
         return Container(
           padding: const EdgeInsets.all(18),
           child: Text(

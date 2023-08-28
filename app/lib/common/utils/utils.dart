@@ -101,10 +101,6 @@ Future<bool> openLink(String target, BuildContext context) async {
   }
 }
 
-bool isDesktop(BuildContext context) {
-  return desktopPlatforms.contains(Theme.of(context).platform);
-}
-
 String randomString() {
   final random = Random.secure();
   final values = List<int>.generate(16, (i) => random.nextInt(255));

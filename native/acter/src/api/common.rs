@@ -124,6 +124,9 @@ impl TextDesc {
     pub(crate) fn set_formatted_body(&mut self, text: Option<String>) {
         self.formatted_body = text;
     }
+    pub fn has_formatted(&self) -> bool {
+        self.formatted_body.is_some()
+    }
 }
 
 #[derive(Clone, Debug)]

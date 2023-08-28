@@ -274,17 +274,6 @@ class MemberListEntry extends ConsumerWidget {
           );
         }
       }
-
-      // if (submenu.isNotEmpty) {
-      //   // add divider
-      //   submenu.add(const PopupMenuDivider());
-      // }
-      // submenu.add(
-      //   PopupMenuItem(
-      //     onTap: () => _handleLeaveSpace(context, space, ref),
-      //     child: const Text('Leave Space'),
-      //   ),
-      // );
     }
 
     return PopupMenuButton(
@@ -304,7 +293,6 @@ class MemberListEntry extends ConsumerWidget {
     final profile = ref.watch(memberProfileProvider(userId));
     final memberStatus = member.membershipStatusStr();
     final List<Widget> trailing = [];
-    debugPrint(memberStatus);
     if (memberStatus == 'Admin') {
       trailing.add(
         const Tooltip(
@@ -340,7 +328,11 @@ class MemberListEntry extends ConsumerWidget {
             avatar: data.getAvatarImage(),
             displayName: data.displayName,
           ),
-          loading: () => const Text('loading'),
+          loading: () => ActerAvatar(
+            mode: DisplayMode.User,
+            uniqueId: userId,
+            size: 36,
+          ),
           error: (e, t) {
             debugPrint('loading avatar failed: $e');
             return ActerAvatar(
@@ -352,11 +344,28 @@ class MemberListEntry extends ConsumerWidget {
           },
         ),
         title: profile.when(
-          data: (data) => Text(data.displayName ?? userId),
-          loading: () => Text(userId),
-          error: (e, s) => Text('loading profile failed: $e'),
+          data: (data) => Text(
+            data.displayName ?? userId,
+            style: Theme.of(context).textTheme.bodyMedium,
+            overflow: TextOverflow.ellipsis,
+          ),
+          loading: () => Text(
+            userId,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          error: (e, s) {
+            debugPrint('loading Profile failed $e');
+            return const SizedBox.shrink();
+          },
         ),
-        subtitle: Text(userId),
+        subtitle: Text(
+          userId,
+          style: Theme.of(context)
+              .textTheme
+              .labelLarge!
+              .copyWith(color: Theme.of(context).colorScheme.neutral5),
+          overflow: TextOverflow.ellipsis,
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,

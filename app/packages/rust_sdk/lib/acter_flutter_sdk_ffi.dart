@@ -12339,6 +12339,16 @@ class Api {
       _TextDescFormattedBodyReturn Function(
         int,
       )>();
+  late final _textDescHasFormattedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__TextDesc_has_formatted");
+
+  late final _textDescHasFormatted = _textDescHasFormattedPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _imageDescNamePtr = _lookup<
       ffi.NativeFunction<
           _ImageDescNameReturn Function(
@@ -27193,6 +27203,18 @@ class TextDesc {
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// whether this has a formatted version
+  bool hasFormatted() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._textDescHasFormatted(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 

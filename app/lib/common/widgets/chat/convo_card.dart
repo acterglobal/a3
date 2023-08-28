@@ -1,9 +1,11 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -39,6 +41,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
 
   @override
   Widget build(BuildContext context) {
+    final location = ref.watch(currentRoutingLocation);
     final client = ref.watch(clientProvider);
     String roomId = widget.room.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
@@ -52,10 +55,18 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
           ref
               .read(currentConvoProvider.notifier)
               .update((state) => widget.room);
-          context.pushNamed(
-            Routes.chatroom.name,
-            pathParameters: {'roomId': roomId},
-          );
+
+          if (!isDesktop) {
+            context.pushNamed(
+              Routes.chatroom.name,
+              pathParameters: {'roomId': roomId},
+            );
+          } else if (location != Routes.chat.route) {
+            context.pushNamed(
+              Routes.chatroom.name,
+              pathParameters: {'roomId': roomId},
+            );
+          }
         },
         subtitle: _SubtitleWidget(
           room: widget.room,
@@ -167,14 +178,17 @@ class _SubtitleWidget extends ConsumerWidget {
             return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    '${simplifyUserId(sender)}: ',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall!
-                        .copyWith(fontWeight: FontWeight.w700),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      '${simplifyUserId(sender)}: ',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall!
+                          .copyWith(fontWeight: FontWeight.w700),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
                 Flexible(
@@ -194,7 +208,6 @@ class _SubtitleWidget extends ConsumerWidget {
               ],
             );
         }
-        return const SizedBox.shrink();
       case 'm.reaction':
         TextDesc? textDesc = eventItem.textDesc();
         if (textDesc == null) {
@@ -208,14 +221,17 @@ class _SubtitleWidget extends ConsumerWidget {
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(
-                '${simplifyUserId(sender)}: ',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontWeight: FontWeight.w700),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  '${simplifyUserId(sender)}: ',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
             Flexible(
@@ -237,19 +253,25 @@ class _SubtitleWidget extends ConsumerWidget {
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(
-                '${simplifyUserId(sender)}: ',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontWeight: FontWeight.w700),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  '${simplifyUserId(sender)}: ',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
-            Text(
-              eventItem.textDesc()!.body(),
-              style: Theme.of(context).textTheme.bodySmall,
+            Flexible(
+              child: Text(
+                eventItem.textDesc()!.body(),
+                style: Theme.of(context).textTheme.bodySmall,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         );
@@ -257,20 +279,28 @@ class _SubtitleWidget extends ConsumerWidget {
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(
-                '${simplifyUserId(sender)}: ',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontWeight: FontWeight.w700),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  '${simplifyUserId(sender)}: ',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
             Flexible(
               child: Text(
-                '***This message has been deleted***',
-                style: Theme.of(context).textTheme.bodySmall,
+                'This message has been deleted',
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: Theme.of(context).colorScheme.neutral5,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w700,
+                    ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -279,20 +309,27 @@ class _SubtitleWidget extends ConsumerWidget {
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(
-                '${simplifyUserId(sender)}: ',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontWeight: FontWeight.w700),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  '${simplifyUserId(sender)}: ',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
             Flexible(
               child: Text(
-                '***Failed to decrypt message. Re-request session keys***',
-                style: Theme.of(context).textTheme.bodySmall,
+                'Failed to decrypt message. Re-request session keys',
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: Theme.of(context).colorScheme.neutral5,
+                      fontStyle: FontStyle.italic,
+                    ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -310,14 +347,17 @@ class _SubtitleWidget extends ConsumerWidget {
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(
-                '${simplifyUserId(sender)}: ',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontWeight: FontWeight.w700),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  '${simplifyUserId(sender)}: ',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
             Flexible(
