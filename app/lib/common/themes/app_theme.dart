@@ -81,6 +81,8 @@ class AppTheme {
     ],
   );
 
+  static MaterialStateProperty<Color?> dangerState =
+      MaterialStateProperty.all(brandColorScheme.error);
   static ThemeData get theme {
     return ThemeData(
       fontFamily: 'Inter',

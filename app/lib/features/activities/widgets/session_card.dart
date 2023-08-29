@@ -97,12 +97,14 @@ class SessionCard extends ConsumerWidget {
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: const Text('Auth data needed'),
+          title: const Text('Authentication required'),
           content: Wrap(
             children: [
-              const Text('Please input password of your account.'),
+              const Text(
+                  'Please provide your user password to confirm you want to end that session.',),
               TextField(
                 controller: passwordController,
+                obscureText: true,
                 decoration: const InputDecoration(hintText: 'Password'),
               ),
             ],
