@@ -42,6 +42,15 @@ pub async fn sanitize_user(
     Ok((user_id, true))
 }
 
+pub async fn destroy_local_data(
+    base_path: String,
+    username: String,
+    default_homeserver_name: String,
+) -> Result<bool> {
+    let (user_id, fallback) = sanitize_user(&username, &default_homeserver_name).await?;
+    platform::destroy_local_data(base_path, user_id.to_string()).await
+}
+
 // public for only integration test, not api.rsh
 pub async fn make_client_config(
     base_path: String,

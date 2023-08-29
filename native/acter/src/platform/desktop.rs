@@ -3,6 +3,10 @@ use matrix_sdk::ClientBuilder;
 
 use super::native;
 
+pub async fn destroy_local_data(base_path: String, home_dir: String) -> Result<bool> {
+    native::destroy_local_data(base_path, home_dir).await
+}
+
 pub async fn new_client_config(
     base_path: String,
     home_dir: String,
