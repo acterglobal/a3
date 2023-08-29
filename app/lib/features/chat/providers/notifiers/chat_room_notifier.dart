@@ -245,7 +245,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.room.encrypted':
         final metadata = {
           'itemType': 'event',
-          'eventType': orgEventItem.eventType()
+          'eventType': eventType,
         };
         repliedTo = types.CustomMessage(
           author: types.User(id: orgEventItem.sender()),
@@ -257,7 +257,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.room.redaction':
         final metadata = {
           'itemType': 'event',
-          'eventType': orgEventItem.eventType()
+          'eventType': eventType,
         };
         repliedTo = types.CustomMessage(
           author: types.User(id: orgEventItem.sender()),
@@ -524,6 +524,27 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.emote':
+            TextDesc? description = eventItem.textDesc();
+            if (description != null) {
+              String? formattedBody = description.formattedBody();
+              String body = description.body(); // always exists
+              Map<String, dynamic> metadata = {};
+              if (inReplyTo != null) {
+                metadata['repliedTo'] = inReplyTo;
+              }
+              if (reactions.isNotEmpty) {
+                metadata['reactions'] = reactions;
+              }
+              // check whether string only contains emoji(s).
+              metadata['enlargeEmoji'] = isOnlyEmojis(body);
+              return types.TextMessage(
+                author: author,
+                createdAt: createdAt,
+                id: eventId,
+                metadata: metadata,
+                text: formattedBody ?? body,
+              );
+            }
             break;
           case 'm.file':
             FileDesc? description = eventItem.fileDesc();
@@ -621,7 +642,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 metadata['reactions'] = reactions;
               }
               // check whether string only contains emoji(s).
-              metadata['enlargeEmoji'] = isOnlyEmojis(description.body());
+              metadata['enlargeEmoji'] = isOnlyEmojis(body);
               return types.TextMessage(
                 author: author,
                 createdAt: createdAt,

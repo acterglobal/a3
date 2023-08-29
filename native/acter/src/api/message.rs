@@ -1513,7 +1513,13 @@ impl RoomMessage {
                     }
                 }
             }
-            MessageType::Emote(content) => {}
+            MessageType::Emote(content) => {
+                if let Some(formatted) = &content.formatted {
+                    if formatted.format == MessageFormat::Html {
+                        text_desc.set_formatted_body(Some(formatted.body.clone()));
+                    }
+                }
+            }
             MessageType::Image(content) => {
                 image_desc = content.info.as_ref().map(|info| {
                     ImageDesc::new(
@@ -1604,7 +1610,13 @@ impl RoomMessage {
                     }
                 }
             }
-            MessageType::Emote(content) => {}
+            MessageType::Emote(content) => {
+                if let Some(formatted) = &content.formatted {
+                    if formatted.format == MessageFormat::Html {
+                        text_desc.set_formatted_body(Some(formatted.body.clone()));
+                    }
+                }
+            }
             MessageType::Image(content) => {
                 image_desc = content.info.as_ref().map(|info| {
                     ImageDesc::new(
@@ -2394,6 +2406,11 @@ impl RoomMessage {
                         }
                     }
                     MessageType::Emote(content) => {
+                        if let Some(formatted) = &content.formatted {
+                            if formatted.format == MessageFormat::Html {
+                                text_desc.set_formatted_body(Some(formatted.body.clone()));
+                            }
+                        }
                         if sent_by_me {
                             is_editable = true;
                         }
