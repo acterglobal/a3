@@ -7,7 +7,10 @@ NotificationBrief briefForChat(ffi.Notification notification) {
   final message = notification.roomMessage();
   const route = Routes.chatroom;
   if (convo == null || message == null) {
-    return const NotificationBrief(title: 'unsupported chat message', route: route);
+    return const NotificationBrief(
+      title: 'unsupported chat message',
+      route: route,
+    );
   }
 
   ffi.RoomEventItem? eventItem = message.eventItem();
@@ -40,13 +43,6 @@ NotificationBrief briefForChat(ffi.Notification notification) {
     case 'm.room.topic':
     case 'm.space.child':
     case 'm.space.parent':
-    case 'm.key.verification.accept':
-    case 'm.key.verification.cancel':
-    case 'm.key.verification.done':
-    case 'm.key.verification.key':
-    case 'm.key.verification.mac':
-    case 'm.key.verification.ready':
-    case 'm.key.verification.start':
     case 'm.room.message':
       String? subType = eventItem.subType();
       switch (subType) {

@@ -146,13 +146,6 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'm.room.topic':
       case 'm.space.child':
       case 'm.space.parent':
-      case 'm.key.verification.accept':
-      case 'm.key.verification.cancel':
-      case 'm.key.verification.done':
-      case 'm.key.verification.key':
-      case 'm.key.verification.mac':
-      case 'm.key.verification.ready':
-      case 'm.key.verification.start':
       case 'm.room.message':
         String? subType = eventItem.subType();
         switch (subType) {

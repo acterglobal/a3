@@ -66,13 +66,6 @@ class CustomMessageBuilder extends StatelessWidget {
       case 'm.call.candidates':
       case 'm.call.hangup':
       case 'm.call.invite':
-      case 'm.key.verification.accept':
-      case 'm.key.verification.cancel':
-      case 'm.key.verification.done':
-      case 'm.key.verification.key':
-      case 'm.key.verification.mac':
-      case 'm.key.verification.ready':
-      case 'm.key.verification.start':
         break;
       case 'm.room.encrypted':
         String text = 'Failed to decrypt message. Re-request session keys';
