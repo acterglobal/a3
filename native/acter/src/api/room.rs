@@ -1321,65 +1321,6 @@ impl Room {
                         let msg = RoomMessage::call_invite_from_event(e, r.room_id().to_owned());
                         Ok(msg)
                     }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationAccept(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_accept_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationCancel(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_cancel_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationDone(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_done_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::KeyVerificationKey(
-                        MessageLikeEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::key_verification_key_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::KeyVerificationMac(
-                        MessageLikeEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::key_verification_mac_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationReady(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_ready_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationStart(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_start_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
                     Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::Reaction(
                         MessageLikeEvent::Original(e),
                     ))) => {
