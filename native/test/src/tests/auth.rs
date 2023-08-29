@@ -6,7 +6,7 @@ use anyhow::Result;
 use tempfile::TempDir;
 use tracing::warn;
 
-use crate::utils::default_user_password;
+use crate::utils::{default_user_password, login_test_user, random_user_with_random_space};
 
 #[tokio::test]
 async fn guest_can_login() -> Result<()> {
@@ -114,5 +114,30 @@ async fn kyra_can_restore() -> Result<()> {
         .user_id()
         .expect("Login by token seems to be not working");
     assert_eq!(uid, user_id);
+    Ok(())
+}
+
+#[tokio::test]
+async fn can_deactivate_user() -> Result<()> {
+    let _ = env_logger::try_init();
+    let username = {
+        let (client, _space_id) = random_user_with_random_space("deactivate_me").await?;
+        // password in tests can be figured out from the username
+        let username = client.user_id().expect("we just logged in");
+        let password = default_user_password(username.localpart());
+        print!("with password: {password}");
+        assert!(client.deactivate(password).await?, "deactivation failed");
+        username
+    };
+
+    // now trying to login or should fail as the user has been deactivated
+    // and registration is blocked because it is in use.
+
+    assert!(
+        login_test_user(username.localpart().to_string())
+            .await
+            .is_err(),
+        "Was still able to login or register that username"
+    );
     Ok(())
 }

@@ -19,6 +19,9 @@ fn guest_client(basepath: string, default_homeserver_name: string, default_homes
 /// Create a new client from the registration token
 fn register_with_token(basepath: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: string) -> Future<Result<Client>>;
 
+/// destroy the local data of a session 
+fn destroy_local_data(basepath: string, userId: string, default_homeserver_name: string) -> Future<Result<bool>>;
+
 /// Representing a time frame
 object EfkDuration {}
 
@@ -1633,6 +1636,11 @@ object CreateSpaceSettings {}
 
 /// Main entry point for `acter`.
 object Client {
+
+    // deactivate the account. This can not be reversed. The username will 
+    // be blocked from any future usage, all personal data will be removed.
+    fn deactivate(password: string) -> Future<Result<bool>>;
+
     // Special
 
     /// start the sync
