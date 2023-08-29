@@ -196,7 +196,7 @@ impl RoomEventItem {
         keys
     }
 
-    pub fn reaction_items(&self, key: String) -> Option<Vec<ReactionRecord>> {
+    pub fn reaction_records(&self, key: String) -> Option<Vec<ReactionRecord>> {
         if self.reactions.contains_key(&key) {
             Some(self.reactions[&key].clone())
         } else {

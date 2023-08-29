@@ -12567,18 +12567,18 @@ class Api {
           int Function(
             int,
           )>();
-  late final _roomEventItemReactionItemsPtr = _lookup<
+  late final _roomEventItemReactionRecordsPtr = _lookup<
       ffi.NativeFunction<
-          _RoomEventItemReactionItemsReturn Function(
+          _RoomEventItemReactionRecordsReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__RoomEventItem_reaction_items");
+          )>>("__RoomEventItem_reaction_records");
 
-  late final _roomEventItemReactionItems =
-      _roomEventItemReactionItemsPtr.asFunction<
-          _RoomEventItemReactionItemsReturn Function(
+  late final _roomEventItemReactionRecords =
+      _roomEventItemReactionRecordsPtr.asFunction<
+          _RoomEventItemReactionRecordsReturn Function(
             int,
             int,
             int,
@@ -27692,7 +27692,7 @@ class RoomEventItem {
   }
 
   /// the details that users reacted using this emote key in this message
-  FfiListReactionRecord? reactionItems(
+  FfiListReactionRecord? reactionRecords(
     String key,
   ) {
     final tmp1 = key;
@@ -27709,7 +27709,7 @@ class RoomEventItem {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._roomEventItemReactionItems(
+    final tmp5 = _api._roomEventItemReactionRecords(
       tmp0,
       tmp2,
       tmp3,
@@ -42089,7 +42089,7 @@ class _RoomEventItemInReplyToReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _RoomEventItemReactionItemsReturn extends ffi.Struct {
+class _RoomEventItemReactionRecordsReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

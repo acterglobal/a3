@@ -460,7 +460,7 @@ object RoomEventItem {
     fn reaction_keys() -> Vec<string>;
 
     /// the details that users reacted using this emote key in this message
-    fn reaction_items(key: string) -> Option<Vec<ReactionRecord>>;
+    fn reaction_records(key: string) -> Option<Vec<ReactionRecord>>;
 
     /// Whether this message is editable
     fn is_editable() -> bool;
