@@ -1519,7 +1519,7 @@ impl RoomMessage {
                     ImageDesc::new(
                         content.body.clone(),
                         content.source.clone(),
-                        *info.to_owned(),
+                        *info.clone(),
                     )
                 });
             }
@@ -1528,13 +1528,8 @@ impl RoomMessage {
                     AudioDesc::new(
                         content.body.clone(),
                         content.source.clone(),
-                        *info.to_owned(),
+                        *info.clone(),
                     )
-                });
-            }
-            MessageType::Audio(content) => {
-                audio_desc = content.info.as_ref().map(|info| {
-                    AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone())
                 });
             }
             MessageType::Video(content) => {
@@ -1542,7 +1537,7 @@ impl RoomMessage {
                     VideoDesc::new(
                         content.body.clone(),
                         content.source.clone(),
-                        *info.to_owned(),
+                        *info.clone(),
                     )
                 });
             }
@@ -1551,7 +1546,7 @@ impl RoomMessage {
                     FileDesc::new(
                         content.body.clone(),
                         content.source.clone(),
-                        *info.to_owned(),
+                        *info.clone(),
                     )
                 });
             }
@@ -1615,7 +1610,7 @@ impl RoomMessage {
                     ImageDesc::new(
                         content.body.clone(),
                         content.source.clone(),
-                        *info.to_owned(),
+                        *info.clone(),
                     )
                 });
             }
@@ -1624,16 +1619,7 @@ impl RoomMessage {
                     AudioDesc::new(
                         content.body.clone(),
                         content.source.clone(),
-                        *info.to_owned(),
-                    )
-                });
-            }
-            MessageType::Audio(content) => {
-                audio_desc = content.info.as_ref().map(|info| {
-                    AudioDesc::new(
-                        content.body.clone(),
-                        content.source.clone(),
-                        *info.to_owned(),
+                        *info.clone(),
                     )
                 });
             }
@@ -1642,7 +1628,7 @@ impl RoomMessage {
                     VideoDesc::new(
                         content.body.clone(),
                         content.source.clone(),
-                        *info.to_owned(),
+                        *info.clone(),
                     )
                 });
             }
@@ -1651,7 +1637,7 @@ impl RoomMessage {
                     FileDesc::new(
                         content.body.clone(),
                         content.source.clone(),
-                        *info.to_owned(),
+                        *info.clone(),
                     )
                 });
             }
@@ -2415,15 +2401,6 @@ impl RoomMessage {
                     MessageType::Image(content) => {
                         image_desc = content.info.as_ref().map(|info| {
                             ImageDesc::new(
-                                content.body.clone(),
-                                content.source.clone(),
-                                *info.clone(),
-                            )
-                        });
-                    }
-                    MessageType::Audio(content) => {
-                        audio_desc = content.info.as_ref().map(|info| {
-                            AudioDesc::new(
                                 content.body.clone(),
                                 content.source.clone(),
                                 *info.clone(),
