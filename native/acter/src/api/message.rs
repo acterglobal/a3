@@ -1522,38 +1522,22 @@ impl RoomMessage {
             }
             MessageType::Image(content) => {
                 image_desc = content.info.as_ref().map(|info| {
-                    ImageDesc::new(
-                        content.body.clone(),
-                        content.source.clone(),
-                        *info.clone(),
-                    )
+                    ImageDesc::new(content.body.clone(), content.source.clone(), *info.clone())
                 });
             }
             MessageType::Audio(content) => {
                 audio_desc = content.info.as_ref().map(|info| {
-                    AudioDesc::new(
-                        content.body.clone(),
-                        content.source.clone(),
-                        *info.clone(),
-                    )
+                    AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone())
                 });
             }
             MessageType::Video(content) => {
                 video_desc = content.info.as_ref().map(|info| {
-                    VideoDesc::new(
-                        content.body.clone(),
-                        content.source.clone(),
-                        *info.clone(),
-                    )
+                    VideoDesc::new(content.body.clone(), content.source.clone(), *info.clone())
                 });
             }
             MessageType::File(content) => {
                 file_desc = content.info.as_ref().map(|info| {
-                    FileDesc::new(
-                        content.body.clone(),
-                        content.source.clone(),
-                        *info.clone(),
-                    )
+                    FileDesc::new(content.body.clone(), content.source.clone(), *info.clone())
                 });
             }
             _ => {}
@@ -1619,38 +1603,22 @@ impl RoomMessage {
             }
             MessageType::Image(content) => {
                 image_desc = content.info.as_ref().map(|info| {
-                    ImageDesc::new(
-                        content.body.clone(),
-                        content.source.clone(),
-                        *info.clone(),
-                    )
+                    ImageDesc::new(content.body.clone(), content.source.clone(), *info.clone())
                 });
             }
             MessageType::Audio(content) => {
                 audio_desc = content.info.as_ref().map(|info| {
-                    AudioDesc::new(
-                        content.body.clone(),
-                        content.source.clone(),
-                        *info.clone(),
-                    )
+                    AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone())
                 });
             }
             MessageType::Video(content) => {
                 video_desc = content.info.as_ref().map(|info| {
-                    VideoDesc::new(
-                        content.body.clone(),
-                        content.source.clone(),
-                        *info.clone(),
-                    )
+                    VideoDesc::new(content.body.clone(), content.source.clone(), *info.clone())
                 });
             }
             MessageType::File(content) => {
                 file_desc = content.info.as_ref().map(|info| {
-                    FileDesc::new(
-                        content.body.clone(),
-                        content.source.clone(),
-                        *info.clone(),
-                    )
+                    FileDesc::new(content.body.clone(), content.source.clone(), *info.clone())
                 });
             }
             _ => {}
