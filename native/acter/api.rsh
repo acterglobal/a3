@@ -24,6 +24,8 @@ object EfkDuration {}
 
 fn duration_from_secs(secs: u64) -> EfkDuration;
 
+fn parse_markdown(text: string) -> Option<string>;
+
 /// Representing a color
 object EfkColor {
     /// as rgba in u8
@@ -238,6 +240,7 @@ object PinUpdateBuilder {
 
     /// set the content for this pin
     fn content_text(text: string);
+    fn content_markdown(text: string);
     fn unset_content();
     fn unset_content_update();
 
@@ -284,6 +287,7 @@ object CalendarEvent {
     // fn locations() -> Vec<Location>;
     /// event id
     fn event_id() -> EventId;
+    fn room_id_str() -> string;
     /// update builder
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
@@ -597,6 +601,9 @@ object ReactionRecord {
 
     /// when reaction was sent
     fn timestamp() -> u64;
+
+    /// whether I am the sender of this reaction
+    fn sent_by_me() -> bool;
 }
 
 object TimelineDiff {
@@ -1239,6 +1246,55 @@ object SpaceRelations {
     fn query_hierarchy(from: Option<string>) -> Future<Result<SpaceHierarchyListResult>>;
 }
 
+object RoomPowerLevels {
+    fn news() -> Option<i64>;
+    fn news_key() -> string;
+    fn events() -> Option<i64>;
+    fn events_key() -> string;
+    fn pins() -> Option<i64>;
+    fn pins_key() -> string;
+    fn events_default() -> i64;
+    fn users_default() -> i64;
+    fn max_power_level() -> i64;
+}
+
+object SimpleSettingWithTurnOff {
+
+}
+
+object SimpleSettingWithTurnOffBuilder {
+    fn active(active: bool);
+    fn build() -> Result<SimpleSettingWithTurnOff>;
+}
+
+object NewsSettings {
+    fn active() -> bool;
+    fn updater() -> SimpleSettingWithTurnOffBuilder;
+}
+
+object EventsSettings {
+    fn active() -> bool;
+    fn updater() -> SimpleSettingWithTurnOffBuilder;
+}
+
+object PinsSettings {
+    fn active() -> bool;
+    fn updater() -> SimpleSettingWithTurnOffBuilder;
+}
+
+object ActerAppSettings {
+    fn news() -> NewsSettings;
+    fn pins() -> PinsSettings;
+    fn events() -> EventsSettings;
+    fn update_builder() -> ActerAppSettingsBuilder;
+}
+
+object ActerAppSettingsBuilder {
+    fn news(news: Option<SimpleSettingWithTurnOff>);
+    fn pins(pins: Option<SimpleSettingWithTurnOff>);
+    fn events(events: Option<SimpleSettingWithTurnOff>);
+}
+
 object Space {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
@@ -1374,9 +1430,21 @@ object Space {
 
     /// leave this room
     fn leave() -> Future<Result<bool>>;
+
+    /// the power levels currently set up
+    fn power_levels() -> Future<Result<RoomPowerLevels>>;
+
+    /// current App Settings
+    fn app_settings() -> Future<Result<ActerAppSettings>>;
+
+    /// Whenever this is submitted;
+    fn update_app_settings(new_settings: ActerAppSettingsBuilder) -> Future<Result<string>>;
     
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
+
+    /// update the power level for a feature
+    fn update_feature_power_levels(feature: string, level: Option<i32>) -> Future<Result<bool>>;
 
 }
 
@@ -1393,6 +1461,7 @@ enum MemberPermission {
     CanSendSticker,
     CanPostNews,
     CanPostPin,
+    CanPostEvent,
     CanBan,
     CanKick,
     CanInvite,
@@ -1404,7 +1473,8 @@ enum MemberPermission {
     CanSetTopic,
     CanLinkSpaces,
     CanUpdatePowerLevels,
-    CanSetParentSpace
+    CanSetParentSpace,
+    CanChangeAppSettings
 }
 
 object Member {

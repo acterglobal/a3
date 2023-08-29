@@ -26,7 +26,7 @@ impl Notification {
         let room = client.room_by_id_typed(&notification.room_id);
         let (is_space, is_acter_space) = if let Some(room) = &room {
             if room.is_space() {
-                (true, room.is_acter_space().await)
+                (true, is_acter_space(room).await)
             } else {
                 (false, false)
             }

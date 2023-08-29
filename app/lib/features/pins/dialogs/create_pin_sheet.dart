@@ -3,9 +3,9 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
-import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,7 +13,6 @@ import 'package:go_router/go_router.dart';
 
 // interface data providers
 final titleProvider = StateProvider<String>((ref) => '');
-final selectedTypeProvider = StateProvider<String>((ref) => 'link');
 final textProvider = StateProvider<String>((ref) => '');
 final linkProvider = StateProvider<String>((ref) => '');
 
@@ -27,7 +26,6 @@ class CreatePinSheet extends ConsumerStatefulWidget {
 
 class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _typeController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -44,10 +42,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
     final titleInput = ref.watch(titleProvider);
     final titleNotifier = ref.watch(titleProvider.notifier);
     final textNotifier = ref.watch(textProvider.notifier);
-    final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final spaceNotifier = ref.watch(selectedSpaceIdProvider.notifier);
-    final selectedSpace = currentSelectedSpace != null;
-    final typeNotifier = ref.watch(selectedTypeProvider.notifier);
+    final linkNotifier = ref.watch(linkProvider.notifier);
+
     return SideSheet(
       header: 'Create new Pin',
       addActions: true,
@@ -62,21 +58,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Row(
                   children: [
-                    DropdownMenu<String>(
-                      initialSelection: 'link',
-                      controller: _typeController,
-                      label: const Text('Type'),
-                      dropdownMenuEntries: const [
-                        DropdownMenuEntry(label: 'Link', value: 'link'),
-                        DropdownMenuEntry(label: 'Text', value: 'text'),
-                      ],
-                      onSelected: (String? typus) {
-                        if (typus != null) {
-                          typeNotifier.state = typus;
-                        }
-                      },
-                    ),
-                    const SizedBox(width: 6),
                     Expanded(
                       child: SizedBox(
                         height: 52,
@@ -102,48 +83,35 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                   ],
                 ),
               ),
-              Consumer(builder: contentBuilder),
-              FormField(
-                builder: (state) => GestureDetector(
-                  onTap: () async {
-                    final newSelectedSpaceId = await selectSpaceDrawer(
-                      context: context,
-                      currentSpaceId: ref.read(selectedSpaceIdProvider),
-                      canCheck: 'CanPostPin',
-                      title: const Text('Select space'),
-                    );
-                    spaceNotifier.state = newSelectedSpaceId;
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        selectedSpace ? 'Space' : 'Please select a space',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(width: 15),
-                      state.errorText != null
-                          ? Text(
-                              state.errorText!,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall!
-                                  .copyWith(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                            )
-                          : Container(),
-                      const SizedBox(height: 10),
-                      selectedSpace
-                          ? Consumer(builder: spaceBuilder)
-                          : Container(),
-                    ],
+              TextFormField(
+                decoration: InputDecoration(
+                  icon: const Icon(Atlas.link_thin),
+                  hintText: 'https://',
+                  labelText: 'link',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
                   ),
                 ),
-                validator: (x) => (ref.read(selectedSpaceIdProvider) != null)
-                    ? null
-                    : 'You must select a space',
+                validator: (value) => (value != null && value.isNotEmpty)
+                    ? textNotifier.state.isEmpty
+                        ? 'Text or URL must be given'
+                        : null
+                    : 'Please enter a link',
+                onChanged: (String? value) {
+                  linkNotifier.state = value ?? '';
+                },
               ),
+              MdEditorWithPreview(
+                validator: (value) => (value != null && value.isNotEmpty)
+                    ? linkNotifier.state.isEmpty
+                        ? 'Text or URL must be given'
+                        : null
+                    : 'Please enter a text',
+                onChanged: (String? value) {
+                  textNotifier.state = value ?? '';
+                },
+              ),
+              const SelectSpaceFormField(canCheck: 'CanPostPin'),
             ],
           ),
         ),
@@ -178,11 +146,14 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 final spaceId = ref.read(selectedSpaceIdProvider);
                 final space = await ref.read(spaceProvider(spaceId!).future);
                 final pinDraft = space.pinDraft();
+                final text = ref.read(textProvider);
+                final url = ref.read(linkProvider);
                 pinDraft.title(ref.read(titleProvider));
-                if (ref.read(selectedTypeProvider) == 'text') {
-                  pinDraft.contentMarkdown(ref.read(textProvider));
-                } else {
-                  pinDraft.url(ref.read(linkProvider));
+                if (text.isNotEmpty) {
+                  pinDraft.contentMarkdown(text);
+                }
+                if (url.isNotEmpty) {
+                  pinDraft.url(url);
                 }
                 final pinId = await pinDraft.send();
                 // reset providers
@@ -222,63 +193,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
           child: const Text('Create Pin'),
         ),
       ],
-    );
-  }
-
-  Widget contentBuilder(BuildContext context, WidgetRef ref, Widget? child) {
-    final subselection = ref.watch(selectedTypeProvider);
-    final textNotifier = ref.watch(textProvider.notifier);
-    final linkNotifier = ref.watch(linkProvider.notifier);
-    if (subselection == 'text') {
-      return Expanded(
-        child: TextFormField(
-          decoration: InputDecoration(
-            hintText: 'The content of the pin',
-            labelText: 'Content',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
-            ),
-          ),
-          textAlignVertical: TextAlignVertical.top,
-          expands: true,
-          minLines: null,
-          maxLines: null,
-          keyboardType: TextInputType.multiline,
-          validator: (value) => (value != null && value.isNotEmpty)
-              ? null
-              : 'Please enter a text',
-          onChanged: (String? value) {
-            textNotifier.state = value ?? '';
-          },
-        ),
-      );
-    } else {
-      return TextFormField(
-        decoration: InputDecoration(
-          icon: const Icon(Atlas.link_thin),
-          hintText: 'https://',
-          labelText: 'link',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
-        ),
-        validator: (value) =>
-            (value != null && value.isNotEmpty) ? null : 'Please enter a link',
-        onChanged: (String? value) {
-          linkNotifier.state = value ?? '';
-        },
-      );
-    }
-  }
-
-  Widget spaceBuilder(BuildContext context, WidgetRef ref, Widget? child) {
-    final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
-    final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    return spaceDetails.when(
-      data: (space) =>
-          space != null ? SpaceChip(space: space) : Text(currentSelectedSpace!),
-      error: (e, s) => Text('error: $e'),
-      loading: () => const Text('loading'),
     );
   }
 }

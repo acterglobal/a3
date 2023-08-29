@@ -97,11 +97,11 @@ class TaskCard extends StatelessWidget {
                           child: Text(
                             '${task.commentsManager.commentsCount()}',
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),

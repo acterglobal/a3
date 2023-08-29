@@ -383,7 +383,7 @@ class PublicSpaceSelector extends ConsumerWidget {
                     final List<String> servers = [
                       id.namedGroup('server_name') ?? '',
                       id.namedGroup('server_name2') ?? '',
-                      id.namedGroup('server_name3') ?? ''
+                      id.namedGroup('server_name3') ?? '',
                     ].where((e) => e.isNotEmpty).toList();
                     return Card(
                       child: ListTile(
@@ -445,7 +445,7 @@ class PublicSpaceSelector extends ConsumerWidget {
           label: e.name ?? e.value,
           value: e.value,
         ),
-      )
+      ),
     ];
     if (val != null && val.isNotEmpty) {
       menuItems.add(

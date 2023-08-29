@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +40,7 @@ class SettingsMenu extends ConsumerWidget {
             leading: const Icon(Atlas.lab_appliance_thin),
             selected: isSelected(Routes.settingsLabs),
             onTap: () {
-              isDesktop(context) || size.width > 770
+              isDesktop || size.width > 770
                   ? context.goNamed(Routes.settingsLabs.name)
                   : context.pushNamed(Routes.settingsLabs.name);
             },
@@ -50,7 +50,7 @@ class SettingsMenu extends ConsumerWidget {
             leading: const Icon(Atlas.info_circle_thin),
             selected: isSelected(Routes.info),
             onTap: () {
-              isDesktop(context) || size.width > 770
+              isDesktop || size.width > 770
                   ? context.goNamed(Routes.info.name)
                   : context.pushNamed(Routes.info.name);
             },

@@ -56,7 +56,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
               .read(currentConvoProvider.notifier)
               .update((state) => widget.room);
 
-          if (!isDesktop(context)) {
+          if (!isDesktop) {
             context.pushNamed(
               Routes.chatroom.name,
               pathParameters: {'roomId': roomId},

@@ -97,7 +97,7 @@ class RelatedSpacesPage extends ConsumerWidget {
 
               if (spaces.parents.isNotEmpty || spaces.mainParent != null) {
                 List<Widget> children = [
-                  const Expanded(child: Text('Parents'))
+                  const Expanded(child: Text('Parents')),
                 ];
                 if (checkPermission('CanSetParentSpace')) {
                   children.add(
@@ -231,7 +231,7 @@ class RelatedSpacesPage extends ConsumerWidget {
 
               if (spaces.otherRelations.isNotEmpty || canLinkSpace) {
                 List<Widget> children = [
-                  const Expanded(child: Text('Recommended Spaces'))
+                  const Expanded(child: Text('Recommended Spaces')),
                 ];
                 if (canLinkSpace) {
                   children.add(
@@ -287,14 +287,14 @@ class RelatedSpacesPage extends ConsumerWidget {
                 child: Center(
                   child: Text('Loading failed: $error'),
                 ),
-              )
+              ),
             ],
             loading: () => [
               const SliverToBoxAdapter(
                 child: Center(
                   child: Text('Loading'),
                 ),
-              )
+              ),
             ],
           ),
         ],

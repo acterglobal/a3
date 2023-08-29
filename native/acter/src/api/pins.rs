@@ -407,6 +407,12 @@ impl PinUpdateBuilder {
         self
     }
 
+    pub fn content_markdown(&mut self, body: String) -> &mut Self {
+        self.content
+            .content(Some(Some(TextMessageEventContent::markdown(body))));
+        self
+    }
+
     pub fn unset_content(&mut self) -> &mut Self {
         self.content.content(Some(None));
         self

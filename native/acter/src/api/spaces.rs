@@ -611,13 +611,6 @@ impl Space {
     }
 
     // for only cli run_marking_space, not api.rsh
-    pub async fn is_acter_space(&self) -> Result<bool> {
-        let inner = self.inner.clone();
-        Ok(RUNTIME
-            .spawn(async move { is_acter_space(&inner).await })
-            .await?)
-    }
-
     pub fn get_room_id(&self) -> OwnedRoomId {
         self.room_id().to_owned()
     }

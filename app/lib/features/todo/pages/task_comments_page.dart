@@ -223,7 +223,7 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
                     ),
                     Text(
                       options[index],
-                    )
+                    ),
                   ],
                 ),
               ),

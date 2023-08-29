@@ -1,4 +1,5 @@
-import 'package:acter/features/settings/widgets/in_settings.dart';
+import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:flutter/material.dart';
 
 class SettingsLicensesPage extends StatelessWidget {
@@ -6,6 +7,6 @@ class SettingsLicensesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const InSettings(child: LicensePage());
+    return const WithSidebar(sidebar: SettingsMenu(), child: LicensePage());
   }
 }

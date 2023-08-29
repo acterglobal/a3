@@ -97,7 +97,7 @@ class RoomProfilePage extends ConsumerWidget {
                         Icon(
                           Icons.exit_to_app_outlined,
                           color: Theme.of(context).colorScheme.errorContainer,
-                        )
+                        ),
                       ],
                     ),
                   ),
