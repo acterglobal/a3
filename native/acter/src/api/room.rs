@@ -25,6 +25,7 @@ use matrix_sdk::{
             relation::Annotation,
             room::{
                 avatar::ImageInfo as AvatarImageInfo,
+                join_rules::{AllowRule, JoinRule},
                 message::{
                     AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
                     ForwardThread, ImageMessageEventContent, MessageType, RoomMessageEvent,
@@ -34,7 +35,7 @@ use matrix_sdk::{
                 ImageInfo,
             },
             AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent,
-            MessageLikeEventType, StateEvent, StateEventType,
+            MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
         },
         room::RoomType,
         EventId, Int, OwnedEventId, OwnedMxcUri, OwnedUserId, TransactionId, UInt, UserId,
@@ -42,10 +43,6 @@ use matrix_sdk::{
     Client, RoomMemberships, RoomState,
 };
 use matrix_sdk_ui::timeline::RoomExt;
-use ruma::events::{
-    room::join_rules::{AllowRule, JoinRule},
-    EventContent, StateEventContent, StaticEventContent, StaticStateEventContent,
-};
 use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tracing::{error, info};
 

@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -42,11 +43,8 @@ class SpaceInfo extends ConsumerWidget {
                 ),
               );
             case 'restricted':
-              final roomIds = space
-                  .restrictedRoomIdsStr()
-                  .toList()
-                  .map((e) => e.toDartString())
-                  .join(', ');
+              final roomIds =
+                  asDartStringList(space.restrictedRoomIdsStr()).join(', ');
               joinRule = Tooltip(
                 message: 'Anyone from these rooms can join: $roomIds',
                 child: Icon(
@@ -65,11 +63,8 @@ class SpaceInfo extends ConsumerWidget {
                 ),
               );
             case 'knock_restricted':
-              final roomIds = space
-                  .restrictedRoomIdsStr()
-                  .toList()
-                  .map((e) => e.toDartString())
-                  .join(', ');
+              final roomIds =
+                  asDartStringList(space.restrictedRoomIdsStr()).join(', ');
               joinRule = Tooltip(
                 message: 'Anyone from these rooms can ask to join: $roomIds',
                 child: Icon(
