@@ -1633,6 +1633,11 @@ object CreateSpaceSettings {}
 
 /// Main entry point for `acter`.
 object Client {
+
+    // deactivate the account. This can not be reversed. The username will 
+    // be blocked from any future usage, all personal data will be removed.
+    fn deactivate(password: string) -> Future<Result<bool>>;
+
     // Special
 
     /// start the sync
