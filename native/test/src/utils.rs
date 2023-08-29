@@ -39,6 +39,22 @@ pub fn default_user_password(username: &str) -> String {
     }
 }
 
+pub async fn login_test_user(username: String) -> Result<Client> {
+    ensure_user(
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
+        username,
+        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
+        "acter-integration-tests".to_owned(),
+        StoreConfig::default(),
+    )
+    .await
+}
+
 pub async fn random_user_with_template(
     prefix: &str,
     template: &str,
