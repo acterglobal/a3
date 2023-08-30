@@ -52,13 +52,13 @@ Future<void> initializeNotifications() async {
           channelName: 'Basic notifications',
           channelDescription: 'Notification channel for basic tests',
           defaultColor: const Color(0xFF9D50DD),
-          ledColor: Colors.white,)
+          ledColor: Colors.white,),
     ],
     // Channel groups are only visual and are not required
     channelGroups: [
       NotificationChannelGroup(
           channelGroupKey: 'basic_channel_group',
-          channelGroupName: 'Basic group',)
+          channelGroupName: 'Basic group',),
     ],
     debug: true,
   );

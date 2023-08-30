@@ -135,7 +135,7 @@ pub(crate) async fn devide_spaces_from_convos(
     filter: Option<SpaceFilter>,
 ) -> (Vec<Space>, Vec<Convo>) {
     let filter = filter.unwrap_or_default();
-    let (spaces, convos, _) = futures::stream::iter(client.clone().rooms().into_iter())
+    let (spaces, convos, _) = futures::stream::iter(client.rooms().into_iter())
         .filter(|room| futures::future::ready(filter.should_include(room)))
         .fold(
             (Vec::new(), Vec::new(), client),
@@ -449,7 +449,7 @@ impl Client {
 impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
         let core = CoreClient::new(client).await?;
-        let cl = Client {
+        let mut cl = Client {
             core,
             state: Arc::new(RwLock::new(state)),
             invitation_controller: InvitationController::new(),
@@ -460,6 +460,9 @@ impl Client {
             convo_controller: ConvoController::new(),
             notifications: Arc::new(channel(25).0),
         };
+
+        let (_spaces, convos) = devide_spaces_from_convos(cl.clone(), None).await;
+        cl.convo_controller.load_rooms(&convos);
         Ok(cl)
     }
 

@@ -49,30 +49,31 @@ class _PinListItemState extends ConsumerState<PinListItem> {
       }
     }
 
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: openItem,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            ListTile(
-              key: Key(pin.eventIdStr()), // FIXME: causes crashes in ffigen
-              leading:
-                  Icon(isLink ? Atlas.link_chain_thin : Atlas.document_thin),
-              title: Text(pin.title()),
-              subtitle: widget.showSpace ? SpaceChip(spaceId: spaceId) : null,
-              onTap: onTap,
-              trailing: IconButton(
-                icon: isLink
-                    ? const Icon(Icons.open_in_full_sharp)
-                    : const Icon(Icons.chevron_right_sharp),
-                onPressed: openItem,
-              ),
-            ),
-          ],
+    return InkWell(
+      onTap: onTap,
+      onLongPress: openItem,
+      child: Card(
+        child: ListTile(
+          key: Key(pin.eventIdStr()), // FIXME: causes crashes in ffigen
+          leading: Icon(isLink ? Atlas.link_chain_thin : Atlas.document_thin),
+          title: Text(pin.title()),
+          titleTextStyle: Theme.of(context).textTheme.headlineSmall,
+          subtitle: widget.showSpace
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    children: [SpaceChip(spaceId: spaceId)],
+                  ),
+                )
+              : null,
+          onTap: onTap,
+          trailing: IconButton(
+            icon: isLink
+                ? const Icon(Icons.open_in_full_sharp)
+                : const Icon(Icons.chevron_right_sharp),
+            onPressed: openItem,
+          ),
         ),
       ),
     );

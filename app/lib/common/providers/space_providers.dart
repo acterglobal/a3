@@ -33,6 +33,14 @@ final spaceProvider =
   throw 'Space not found';
 });
 
+/// Load the SpaceProfile Data right from the spaceId
+final spaceProfileDataForSpaceIdProvider = FutureProvider.autoDispose
+    .family<SpaceWithProfileData, String>((ref, spaceId) async {
+  final space = await ref.watch(spaceProvider(spaceId).future);
+  final profileData = await ref.watch(spaceProfileDataProvider(space).future);
+  return SpaceWithProfileData(space, profileData);
+});
+
 /// Attempts to map a spaceId to the space, but could come back empty (null) rather than throw.
 /// keeps up to date with underlying client even if the space wasn't found initially,
 final maybeSpaceProvider =
@@ -419,11 +427,14 @@ final spaceHierarchyProfileProvider = FutureProvider.autoDispose
   return ProfileData(space.name(), avatar.data());
 });
 
-final isActerSpaceProvider =
-    FutureProvider.autoDispose.family<bool, String>((ref, spaceId) async {
+final acterAppSettingsProvider = FutureProvider.autoDispose
+    .family<ActerAppSettings?, String>((ref, spaceId) async {
   final space = await ref.watch(maybeSpaceProvider(spaceId).future);
   if (space == null) {
-    return false;
+    return null;
   }
-  return await space.isActerSpace();
+  if (!await space.isActerSpace()) {
+    return null;
+  }
+  return await space.appSettings();
 });

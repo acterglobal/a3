@@ -12,6 +12,15 @@ use std::{
 
 use crate::RUNTIME;
 
+pub async fn destroy_local_data(base_path: String, home_dir: String) -> Result<bool> {
+    let data_path = sanitize(&base_path, &home_dir);
+    if Path::new(&data_path).try_exists()? {
+        std::fs::remove_dir_all(&data_path)?;
+        return Ok(true);
+    }
+    Ok(false)
+}
+
 pub async fn new_client_config(
     base_path: String,
     home_dir: String,

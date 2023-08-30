@@ -11,6 +11,7 @@ use matrix_sdk::{
     },
     Client as SdkClient, ClientBuilder, SessionMeta,
 };
+use ruma::api::client::uiaa::Password;
 use tracing::{error, info};
 
 use super::{
@@ -39,6 +40,15 @@ pub async fn sanitize_user(
     let user_id = OwnedUserId::try_from(format!("{formatted_username}:{default_homeserver_name}"))?;
 
     Ok((user_id, true))
+}
+
+pub async fn destroy_local_data(
+    base_path: String,
+    username: String,
+    default_homeserver_name: String,
+) -> Result<bool> {
+    let (user_id, fallback) = sanitize_user(&username, &default_homeserver_name).await?;
+    platform::destroy_local_data(base_path, user_id.to_string()).await
 }
 
 // public for only integration test, not api.rsh
@@ -331,4 +341,20 @@ pub async fn register_with_token_under_config(
             login_client(client, user_id, password, Some(user_agent)).await
         })
         .await?
+}
+
+impl Client {
+    pub async fn deactivate(&self, password: String) -> Result<bool> {
+        // ToDo: make this a proper User-Interactive Flow rather than hardcoded for
+        //       password-only instance.
+        let account = self.account()?;
+        RUNTIME
+            .spawn(async move {
+                let auth_data =
+                    AuthData::Password(Password::new(account.user_id().into(), password.clone()));
+                account.deactivate(None, Some(auth_data)).await?;
+                Ok(true)
+            })
+            .await?
+    }
 }

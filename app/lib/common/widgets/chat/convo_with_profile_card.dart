@@ -1,5 +1,5 @@
 import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -44,7 +44,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final convo = ref.watch(currentConvoProvider);
-    final desktop = isDesktop(context);
+    final desktop = isDesktop;
     final avatar = ActerAvatar(
       uniqueId: roomId,
       mode: DisplayMode.GroupChat,
@@ -92,7 +92,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
                     indent: 75,
                     endIndent: 10,
                     color: Theme.of(context).colorScheme.tertiary,
-                  )
+                  ),
           ],
         );
       },

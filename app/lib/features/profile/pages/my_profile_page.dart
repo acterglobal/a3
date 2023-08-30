@@ -1,6 +1,8 @@
+import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
@@ -144,10 +146,6 @@ class MyProfile extends ConsumerWidget {
           appBar: AppBar(
             title: const Text('My profile'),
             actions: [
-              IconButton(
-                icon: const Icon(Atlas.construction_tools_thin),
-                onPressed: () => context.pushNamed(Routes.settings.name),
-              ),
               PopupMenuButton(
                 itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                   PopupMenuItem(
@@ -247,6 +245,41 @@ class MyProfile extends ConsumerWidget {
                             },
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 30),
+                      OutlinedButton.icon(
+                        icon: const Icon(Atlas.construction_tools_thin),
+                        onPressed: () =>
+                            context.pushNamed(Routes.settings.name),
+                        label: const Text('App Settings'),
+                      ),
+                      const SizedBox(height: 10),
+                      OutlinedButton.icon(
+                        icon: const Icon(Atlas.laptop_screen_thin),
+                        onPressed: () =>
+                            context.pushNamed(Routes.settingSessions.name),
+                        label: const Text('Sessions'),
+                      ),
+                      const SizedBox(height: 30),
+                      OutlinedButton.icon(
+                        icon: const Icon(Atlas.exit_thin),
+                        onPressed: () => logoutConfirmationDialog(context, ref),
+                        label: const Text('Logout'),
+                      ),
+                      const SizedBox(height: 45),
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppTheme.brandColorScheme.error,
+                          backgroundColor: AppTheme.brandColorScheme.onError,
+                          side: BorderSide(
+                            width: 1,
+                            color: AppTheme.brandColorScheme.error,
+                          ),
+                        ),
+                        icon: const Icon(Atlas.trash_can_thin),
+                        onPressed: () =>
+                            deactivationConfirmationDialog(context, ref),
+                        label: const Text('Deactivate account'),
                       ),
                     ],
                   ),

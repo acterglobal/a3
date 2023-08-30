@@ -30,6 +30,7 @@ dependencies = [
  "mime_guess",
  "oslog",
  "parse-env-filter",
+ "pulldown-cmark",
  "ruma",
  "sanitize-filename-reader-friendly",
  "serde",

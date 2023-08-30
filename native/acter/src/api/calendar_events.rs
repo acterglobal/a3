@@ -156,6 +156,9 @@ impl CalendarEvent {
     pub fn event_id(&self) -> OwnedEventId {
         self.inner.event_id().to_owned()
     }
+    pub fn room_id_str(&self) -> String {
+        self.inner.room_id().to_string()
+    }
 }
 
 /// Custom functions

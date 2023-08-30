@@ -20,6 +20,8 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
       state = state.copyWith(emojiPickerVisible: value);
 
   void setReplyWidget(Widget? child) {
-    state = state.copyWith(replyWidget: child);
+    if (mounted) {
+      state = state.copyWith(replyWidget: child);
+    }
   }
 }
