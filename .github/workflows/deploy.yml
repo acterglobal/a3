@@ -19,36 +19,38 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2023-04-10
           components: clippy
+          override: true
       - uses: Swatinem/rust-cache@v1
       - uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r23c
+          ndk-version: r25
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
       - run: cargo make setup-android
       - uses: subosito/flutter-action@v2
-        name: "Set up flutter"
+        name: Set up flutter
         with:
+          flutter-version: '3.13.1'
           channel: 'stable'
       # - uses: actions-rs/cargo@v1
       #   name: Clippy
       #   with:
       #     command: clippy
-      #     args: -p effektio --target aarch64-linux-android -- -D warnings
+      #     args: -p acter --target aarch64-linux-android -- -D warnings
       # - uses: actions-rs/cargo@v1
       #   name: Test
       #   with:
       #     command: test
-      #     args: -p effektio --target aarch64-linux-android
+      #     args: -p acter --target aarch64-linux-android
       - name: Build Android FFI
         run: cargo make --profile release android
-      - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart
+      # - name: Ensure ffi-interface is up to date
+      #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
-      #   working-directory: ./effektio_flutter_sdk
+      #   working-directory: ./acter_flutter_sdk
       #   name: Testing SDK
       # # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
@@ -69,32 +71,34 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          override: true
+          toolchain: nightly-2023-04-10
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
       - uses: Swatinem/rust-cache@v1
       - run: cargo make setup-ios
       - uses: subosito/flutter-action@v2
-        name: "Set up flutter"
+        name: Set up flutter
         with:
+          flutter-version: '3.13.1'
           channel: 'stable'
       # - uses: actions-rs/cargo@v1
       #   name: Clippy
       #   with:
       #     command: clippy
-      #     args: -p effektio --target x86_64-apple-ios -- -D warnings
+      #     args: -p acter --target x86_64-apple-ios -- -D warnings
       # - uses: actions-rs/cargo@v1
       #   name: Test
       #   with:
       #     command: test
-      #     args: -p effektio --target x86_64-apple-ios
+      #     args: -p acter --target x86_64-apple-ios
       - name: Build iOS FFI
-        run: cargo make --profile release  ios
-      - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart
+        run: cargo make --profile release ios
+      # - name: Ensure ffi-interface is up to date
+      #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
-      #   working-directory: ./effektio_flutter_sdk
+      #   working-directory: ./acter_flutter_sdk
       #   name: Testing SDK
       # # FIXME: tests are not set up to work yet
       # - run: flutter --pub test

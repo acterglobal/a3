@@ -2,6 +2,7 @@
 .vagrant/
 .sconsign.dblite
 .svn/
+Classes/libacter.h
 
 .DS_Store
 *.swp

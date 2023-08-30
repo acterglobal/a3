@@ -1,26 +1,28 @@
-name: effektio_flutter_sdk
+name: acter_flutter_sdk
 description: A new flutter plugin project.
 version: 0.0.1
-homepage: 'https://doc.effektio.org/'
+homepage: 'https://doc.acter.global/'
 publish_to: "none"
 
 environment:
-  sdk: ">=2.16.0-134.1.beta <3.0.0"
+  sdk: ">=2.18.0 <4.0.0"
   flutter: ">=2.5.0"
 
 dependencies:
   async: ^2.8.2
-  ffi: ^1.1.2
+  ffi: ^2.0.1
   flutter:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
   isolate: ^2.1.1
-  shared_preferences: ^2.0.12
-  flutter_rust_bridge: "1.14.0"
-  path_provider: "2.0.8"
-  string_validator: ^0.3.0
+  shared_preferences: ^2.2.0
+  path_provider: ^2.0.14
+  path: ^1.8.2
   package_info: ^2.0.2
+  plugin_platform_interface: ^2.1.5
+  logging: ^1.2.0
+  meta: ^1.9.1
 
 dev_dependencies:
   flutter_test:
@@ -40,19 +42,19 @@ flutter:
   plugin:
     platforms:
       android:
-        package: org.effektio.effektio_flutter_sdk
-        pluginClass: EffektioFlutterSdkPlugin
+        package: global.acter.acter_flutter_sdk
+        pluginClass: ActerFlutterSdkPlugin
       ios:
-        pluginClass: EffektioFlutterSdkPlugin
+        pluginClass: ActerFlutterSdkPlugin
       web:
-        pluginClass: EffektioFlutterSdkWeb
-        fileName: effektio_flutter_sdk_web.dart
+        pluginClass: ActerFlutterSdkWeb
+        fileName: acter_flutter_sdk_web.dart
       linux:
-        pluginClass: EffektioFlutterSdkPlugin
+        pluginClass: ActerFlutterSdkPlugin
       windows:
-        pluginClass: EffektioFlutterSdkPlugin
+        pluginClass: ActerFlutterSdkPlugin
       macos:
-        pluginClass: EffektioFlutterSdkPlugin
+        pluginClass: ActerFlutterSdkPlugin
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

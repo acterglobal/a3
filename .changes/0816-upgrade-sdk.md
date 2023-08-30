@@ -1,0 +1,3 @@
+- This update covers the latest `matrix-sdk` prior to `indexmap` upgrade. I couldn't accept `indexmap` upgrade, because it causes version conflict between many crates.
+- `proc-macro2` version pinning is removed from `a3` project, and it is kept in `ffi-gen`.
+- Changed some code in login, because new `matrix-sdk` introduced `AuthSession`.

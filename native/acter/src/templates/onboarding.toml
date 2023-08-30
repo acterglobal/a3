@@ -1,0 +1,50 @@
+name = "Onboarding Template"
+version = "0.1.1"
+
+[inputs]
+main = { type = "user", is-default = true, required = true, description = "The starting user" }
+space = { type = "space", is-default = true, required = true, description = "The acter space" }
+
+[objects]
+start_list = { type = "task-list", name = "{{ main.display_name }}'s Acter onboarding list" }
+
+[objects.acter-website-pin]
+type = "pin"
+title = "Acter Website"
+url = "https://acter.global"
+
+[objects.acter-source-pin]
+type = "pin"
+title = "Acter Source Code"
+url = "https://github.com/acterglobal/a3"
+
+[objects.acter-twitter-pin]
+type = "pin"
+title = "Acter Twitter"
+url = "https://twitter.com/acterHQ"
+
+[objects.acter-onboarding-event]
+type = "calendar-event"
+title = "Onboarding on Acter"
+utc_start = "{{ future(mins=1).as_rfc3339 }}"
+utc_end = "{{ future(days=7).as_rfc3339 }}"
+
+[objects.task_1]
+type = "task"
+title = "Scroll through the news"
+assignees = ["{{ main.user_id }}"]
+"m.relates_to" = { event_id = "{{ start_list.id }}" }
+utc_due = "{{ future(mins=5).as_rfc3339 }}"
+
+[objects.task_2]
+type = "task"
+title = "Scroll through the news"
+assignees = ["{{ main.user_id }}"]
+"m.relates_to" = { event_id = "{{ start_list.id }}" }
+utc_due = "{{ future(days=1).as_rfc3339 }}"
+
+[objects.example-news-item]
+type = "news-entry"
+slides = [
+  { body = "This is the news section. Swipe down for more.", info = { size = 3264047, mimetype = "image/jpeg", thumbnail_info = { w = 400, h = 600, mimetype = "image/jpeg", size = 130511   }, w = 3840, h = 5760, "xyz.amorgan.blurhash" = "TQF=,g?uIo},={X5$c#+V@t2sRjF", thumbnail_url = "mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD" }, msgtype = "m.image", url = "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG" }
+]

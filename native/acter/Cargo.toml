@@ -1,0 +1,95 @@
+[package]
+name = "acter"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.63"
+description = "SDK of the acter app"
+homepage = "https://effekto.org"
+repository = "https://github.com/acterglobal/a3"
+license-file = "../../LICENSE.txt"
+
+[features]
+default = ["dart"]
+testing = ["dep:matrix-sdk-base"]
+cbindgen = []
+dart = []
+
+[build-dependencies]
+ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "span-support" }
+cbindgen = "0.24.3"
+
+[dependencies]
+anyhow = "1.0.51"
+async-stream =  "0.3.4"
+chrono =  "0.4"
+derive_builder = "0.10.2"
+eyeball-im = "0.2"
+fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
+ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "span-support" }
+futures = "0.3.17"
+futures-signals = "0.3.31"
+lazy_static = "1.4"
+log = "0.4"
+log-panics = "2.0.0"
+mime = "0.3.16"
+mime_guess = "2.0.4"
+parse-env-filter = "0.1.0"
+strum = { workspace = true }
+ruma = { workspace = true }
+sanitize-filename-reader-friendly = "2.2.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = "1"
+tokio-stream = "0.1.14"
+tracing = { version = "0.1.29", default-features = false, features = ["log"] }
+url = "2.2.2"
+
+# for markdown support.
+pulldown-cmark = { version = "0.9.1", default-features = false }
+
+[dev-dependencies]
+tempfile = "3.3.0"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+[dependencies.acter-core]
+path = "../core"
+features = ["templates"]
+
+[dependencies.matrix-sdk]
+workspace = true
+features = [
+    "anyhow",
+    "e2e-encryption",
+    "markdown",
+#   "qrcode",
+    "rustls-tls",
+    "bundled-sqlite",
+]
+
+[dependencies.matrix-sdk-base]
+workspace = true
+optional = true
+
+#   ----   WASM
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+tracing-wasm = "0.2.1"
+wasm-bindgen-futures = "0.4.28"
+
+#   ----   non-WASM
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+matrix-sdk-sqlite = { workspace = true }
+matrix-sdk-ui = { workspace = true }
+
+#   ----   ANDROID
+[target.'cfg(target_os = "android")'.dependencies]
+android_logger = "0.12"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+tracing-android = "0.2"
+
+#   ----   IOS
+[target.'cfg(any(target_os = "ios", target_os = "macos"))'.dependencies]
+oslog = "0.2"
+
+[lib]
+name = "acter"
+crate-type = ["cdylib", "staticlib", "lib"]

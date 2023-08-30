@@ -10,15 +10,13 @@ toc = true
 top = false
 +++
 
-
 ## Requirements
 
 You'll need a recent:
- - [Rustup](https://rustup.rs/) setup for Rust
- - Android NDK / XCode setup for the target - and device or simulator set up
- - [flutter](https://docs.flutter.dev/get-started/install)
 
-_Note_ on the Android NDK. We use `cargo-ndk` internally, which we've only tested with NDK r23. If you have troubles, try removing the NDK and installing version r23.
+- [Rustup](https://rustup.rs/) setup for Rust
+- Android NDK / XCode setup for the target - and device or simulator set up
+- [flutter](https://docs.flutter.dev/get-started/install)
 
 ## Setup
 

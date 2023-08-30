@@ -1,7 +1,7 @@
 [env]
 CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
-CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS = ["native/effektio"]
-ANDROID_PLATFORM_VERSION = "28"
+CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS = ["native/acter"]
+ANDROID_PLATFORM_VERSION = "23"
 TARGET_PLUGIN = "app/packages/rust_sdk"
 LIB_OUT_DIR = "debug"
 TARGET_OS = "unknown"
@@ -16,11 +16,12 @@ LIB_OUT_DIR = "release"
 [tasks.setup-android]
 # set up the system for android
 script = [
-    "cargo install cargo-ndk",
+    "cargo install cargo-ndk@3.2.0",
 ]
 
 [tasks.setup-ios]
 # set up the system for iOS
+condition = { platforms = ["mac"] }
 script = [
     "cargo install cargo-lipo",
 ]
@@ -36,8 +37,8 @@ dependencies = [
 script_runner = "@duckscript"
 script = [
     """
-    cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/effektio/bindings.dart \
-    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/lib/effektio_flutter_sdk_ffi.dart
+    cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/acter/bindings.dart \
+    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/lib/acter_flutter_sdk_ffi.dart
     """,
 ]
 dependencies = [
@@ -52,7 +53,7 @@ dependencies = [
 
 [tasks.flutter-get]
 # update flutter dependencies
-script_runner = "@duckscript"
+script_runner = "@shell"
 script = [
     "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}",
     "flutter pub get",
@@ -67,7 +68,7 @@ args = ["fmt", "--", "--emit=files"]
 
 [tasks.check-ffi]
 command = "cargo"
-args = ["check", "-p", "effektio"]
+args = ["check", "-p", "acter"]
 
 [tasks.test-flow]
 disabled = true
@@ -75,10 +76,10 @@ disabled = true
 [tasks.android-dev]
 # development android x86_64 emulator
 dependencies = [
-    "ffigen",
     "pre-android",
     "android-x86_64",
     "android-x86_64-release",
+    "ffigen",
     "post-android-x86_64",
     "post-android",
 ]
@@ -87,10 +88,10 @@ dependencies = [
 [tasks.android-ci]
 # development android i686 emulator
 dependencies = [
-    "ffigen",
     "pre-android",
     "android-i686",
     "android-i686-release",
+    "ffigen",
     "post-android-i686",
     "post-android",
 ]
@@ -106,40 +107,135 @@ dependencies = [
 ]
 
 
+[tasks.mock-data]
+command = "cargo"
+args = ["run", "-p", "acter-cli", "mock", "http://localhost:8118"]
+
+[tasks.fixup]
+dependencies = [
+    "format-fixup",
+    "clippy-fixup",
+]
+
+[tasks.format-fixup]
+command = "cargo"
+args = ["fmt", "--all"]
+
+[tasks.clippy-fixup]
+command = "cargo"
+args = ["clippy", "--all", "--tests", "--allow-dirty", "--allow-staged", "--fix"]
+
 [tasks.build]
 # Runs the rust compiler.
 dependencies = ["android"]
 command = "cargo"
-args = ["build", "-p", "effektio", "--release"]
+args = ["build", "-p", "acter", "--release"]
 
 [tasks.build.mac]
 # Runs the rust compiler.
 dependencies = ["android", "ios"]
 
 [tasks.ios]
-# build iOS targets
-dependencies = ["ios-build", "ios-release", "post-ios"]
-
-[tasks.ios-build]
-condition = { platforms = ["mac"], env_true = ["DEV"] }
 # Build ios targets.
-command = "cargo"
-args = ["lipo", "--targets", "aarch64-apple-ios-sim"]
+condition = { platforms = ["mac"] }
+dependencies = [
+    "ios-aarch64-apple-ios",
+    "ios-aarch64-apple-ios-release",
+    "ios-x86_64-apple-ios",
+    "ios-aarch64-apple-ios-sim",
+    "post-ios",
+    "post-ios-release"
+]
 
-[tasks.ios-release]
-condition = { platforms = ["mac"], env_true = ["RELEASE"] }
-# Build ios targets.
+[tasks.cargo-build-dev]
+private = true
+condition = { env_true = ["DEV"], env_set = ["CARGO_BUILD_TARGET"] }
+#env = { CARGO_BUILD_RUSTFLAGS = "-C strip=debuginfo" }
 command = "cargo"
-args = ["lipo", "--release"]
+args = [
+    "build",
+    "--target",
+    "${CARGO_BUILD_TARGET}",
+    "-Zbuild-std",
+]
+
+[tasks.cargo-build-release]
+private = true
+condition = { env_true = ["RELEASE"], env_set = ["CARGO_BUILD_TARGET"] }
+command = "cargo"
+args = [
+    "build",
+    "--target",
+    "${CARGO_BUILD_TARGET}",
+    "-Zbuild-std",
+    "--release"
+]
+
+
+[tasks.ios-aarch64-apple-ios]
+private = true
+condition = { env_true = ["DEV"] }
+env = { CARGO_BUILD_TARGET = "aarch64-apple-ios" }
+run_task = "cargo-build-dev"
+
+[tasks.ios-aarch64-apple-ios-release]
+private = true
+condition = { env_true = ["RELEASE"] }
+env = { CARGO_BUILD_TARGET = "aarch64-apple-ios" }
+run_task = "cargo-build-release"
+
+[tasks.ios-x86_64-apple-ios]
+private = true
+condition = { env_true = ["DEV"] }
+env = { CARGO_BUILD_TARGET = "x86_64-apple-ios" }
+run_task = "cargo-build-dev"
+
+[tasks.ios-x86_64-apple-ios-release]
+private = true
+condition = { env_true = ["RELEASE"] }
+env = { CARGO_BUILD_TARGET = "x86_64-apple-ios" }
+run_task = "cargo-build-release"
+
+[tasks.ios-aarch64-apple-ios-sim]
+private = true
+condition = { env_true = ["DEV"] }
+env = { CARGO_BUILD_TARGET = "aarch64-apple-ios-sim" }
+run_task = "cargo-build-dev"
+
+[tasks.ios-aarch64-apple-ios-sim-release]
+private = true
+condition = { env_true = ["RELEASE"] }
+env = { CARGO_BUILD_TARGET = "aarch64-apple-ios-sim" }
+run_task = "cargo-build-release"
 
 [tasks.post-ios]
-dependencies = ["ffigen"]
-script_runner = "@duckscript"
-condition = { platforms = ["mac"] }
+script_runner = "@shell"
+condition = { env_true = ["DEV"] }
 script = [
     """
-    cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/universal/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.a \
-    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/lib${CARGO_MAKE_CRATE_FS_NAME}.a
+    LIBNAME=libacter.a
+    mkdir -p ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/ios-sim-lipo
+    LIPO_LIB=${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/ios-sim-lipo/$LIBNAME
+
+    lipo -create -output $LIPO_LIB \
+            ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-ios-sim/release/$LIBNAME \
+            ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/x86_64-apple-ios/release/$LIBNAME \
+            ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-ios/${LIB_OUT_DIR}/$LIBNAME
+
+
+    cp "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/bindings.h" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/Classes/libacter.h"
+    cp "$LIPO_LIB" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/$LIBNAME"
+    """,
+]
+
+[tasks.post-ios-release]
+script_runner = "@shell"
+condition = { env_true = ["RELEASE"] }
+script = [
+    """
+    LIBNAME=libacter.a
+    cp "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/bindings.h" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/Classes/libacter.h"
+    cp "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-ios/${LIB_OUT_DIR}/$LIBNAME" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/$LIBNAME"
     """,
 ]
 
@@ -174,7 +270,6 @@ args = [
     "--target",
     "${ANDROID_BUILD_TARGET}",
     "build",
-    "-Zbuild-std",
 ]
 
 [tasks.android-build-release]
@@ -188,7 +283,6 @@ args = [
     "--target",
     "${ANDROID_BUILD_TARGET}",
     "build",
-    "-Zbuild-std",
     "--release"
 ]
 
@@ -289,51 +383,57 @@ dependencies = ["ffigen"]
 [tasks.desktop]
 # Build rust SDK for desktop
 dependencies = [
-    "ffigen",
     "desktop-build",
     "desktop-build-release",
     "desktop-build-release-mac",
+    "ffigen",
     "copy-desktop-lib",
+    "copy-desktop-lib-release",
 ]
 
 [tasks.desktop-build]
 private = true
 condition = { env_true = ["DEV"] }
-script_runner = "@duckscript"
 command = "cargo"
 args = ["build", "--lib"]
 
 [tasks.desktop-build-release]
 private = true
 condition = { env_true = ["RELEASE"], platforms = ["windows", "linux"] }
-script_runner = "@duckscript"
 command = "cargo"
 args = ["build", "--lib", "--release"]
 
 [tasks.desktop-build-release-mac]
 private = true
 condition = { platforms = ["mac"], env_true = ["RELEASE"] }
-script_runner = "bash"
+script_runner = "@shell"
 script = [
     """
+    export MAC_LIPO=${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
+    export MACOSX_DEPLOYMENT_TARGET=10.14
     cargo build --lib --target x86_64-apple-darwin --release
+    export MACOSX_DEPLOYMENT_TARGET=11
     cargo build --lib --target aarch64-apple-darwin --release
 
     # fix inner reference name
-    install_name_tool -id "@rpath/libeffektio.dylib" ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-darwin/release/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
-    install_name_tool -id "@rpath/libeffektio.dylib" ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/x86_64-apple-darwin/release/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
+    install_name_tool -id "@rpath/libacter.dylib" ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-darwin/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
+    install_name_tool -id "@rpath/libacter.dylib" ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/x86_64-apple-darwin/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
 
     lipo -create \
-    -output ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib \
-    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-darwin/release/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib \
-    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/x86_64-apple-darwin/release/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
-"""
+        -output $MAC_LIPO \
+        "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-darwin/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib" \
+        "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/x86_64-apple-darwin/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib"
+    cp "$MAC_LIPO" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/macos/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib"
+    cp "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/bindings.h" \
+        "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/macos/Classes/libacter.h"
+    """,
 ]
 
 
 [tasks.copy-desktop-lib]
 # Copy desktop library to plugin
 script_runner = "@duckscript"
+condition = { env_true = ["DEV"] }
 script = [
     """
     os = os_family
@@ -342,6 +442,22 @@ script = [
         cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.so ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/linux/lib${CARGO_MAKE_CRATE_FS_NAME}.so
     elseif eq ${os} "mac"
         cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/macos/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
+    elseif eq ${os} "windows"
+        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/${CARGO_MAKE_CRATE_FS_NAME}.dll ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/windows/${CARGO_MAKE_CRATE_FS_NAME}.dll
+    end
+    """
+]
+
+[tasks.copy-desktop-lib-release]
+# Copy desktop library to plugin
+script_runner = "@duckscript"
+condition = { env_true = ["RELEASE"] }
+script = [
+    """
+    os = os_family
+
+    if eq ${os} "linux"
+        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.so ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/linux/lib${CARGO_MAKE_CRATE_FS_NAME}.so
     elseif eq ${os} "windows"
         cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/${CARGO_MAKE_CRATE_FS_NAME}.dll ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/windows/${CARGO_MAKE_CRATE_FS_NAME}.dll
     end

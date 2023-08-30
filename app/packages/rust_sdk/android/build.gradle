@@ -1,4 +1,4 @@
-group 'org.effektio.effektio_flutter_sdk'
+group 'global.acter.acter_flutter_sdk'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -25,16 +25,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 31
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
+    compileSdkVersion 33
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'

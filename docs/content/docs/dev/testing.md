@@ -29,19 +29,36 @@ async fn testing_my_feature() -> Result<()> {
 
 ## Flutter
 
-_Note_: We currently don't have proper widget tests. So this is mainly here for when we do have them available.
+_Note_: We currently don't have proper widget unit tests. So this is mainly here for when we do have them available.
 
 ```
 cd app
 flutter test
 ```
 
-
 ## Integration Tests
 
 ### Infrastructure
 
-You need a fresh [`synapse` matrix backend](https://matrix-org.github.io/synapse/latest/) with the following settings included (in the `homeserver.yaml`):
+You need a fresh [`synapse` matrix backend](https://matrix-org.github.io/synapse/latest/) with a specific configuration. We recommend to just use our docker-compose setup for that to run them locally - for an installation guide see below. As a team member with access to bitwarden, you can also run them against the stageing / testing instances (see below).
+
+#### Docker Container
+
+We have a `docker` container image available with that setup already for you at `lightyear/acter-synapse-ci:latest`. Easiest is to use `docker-compose up -d` to run it locally from the root directory. This will also create the necessary `admin` account.
+
+**Alternatives**
+
+<details>
+<summary><strong>Using the shared testing servers</strong></summary>
+
+If you are a team member with access to bitwarden, you can also use the staging and testing instances we have set up. They registered with a registration token to prevent unauthorized access, which are also prefixed to each password and thus need to be supplied for running the tests. Currently the following servers are available for testing with mock-data pre-installed, the registration tokens can be found in bitwarden under the same name.
+
+- **`m-1.acter.global`** (`export DEFAULT_HOMESERVER_URL=https://matrix.m-1.acter.global DEFAULT_HOMESERVER_NAME=m-1.acter.global`)
+</details>
+<details>
+<summary><strong>Custom Synapse-Server</strong></summary>
+
+If you can't or don't want to use the docker containers, you'll need a synapse matrix backend with the following settings included (in the `homeserver.yaml`):
 
 ```yaml
 allow_guest_access: true
@@ -69,7 +86,10 @@ Please change `bind_addresses` of `listeners` from `['::1', '127.0.0.1']` to `['
 
 To avoid the change of server URL under VMWare, you can use NAT mode not Bridged mode as network.
 
-#### Ubuntu VM Guide under sqlite
+</details>
+
+<details>
+<summary><strong>Ubuntu VM Guide under sqlite</strong></summary>
 
 ```shell
 sudo apt update
@@ -88,9 +108,9 @@ sudo apt install matrix-synapse-py3
 
 At the end of `sudo apt install matrix-synapse-py3`, you will get the following dialog.
 
-![Ubuntu ServerName](../../../static/images/ubuntu-servername.png)
+![Ubuntu ServerName](/images/ubuntu-servername.png)
 
-You have to enter `ds9.effektio.org` in this dialog, that is domain applied to all users in `effektio-test`.
+Keep `localhost` in this dialog, that is domain applied to all users in `acter-test`.
 `server_name` in `/etc/matrix-synapse/homeserver.yaml` seems to not affect synapse config and the setting of this dialog during installation affects synapse config clearly.
 
 In `homeserver.yaml`, you have to change `bind_addresses: ['::1', '127.0.0.1']` to `bind_addresses: ['0.0.0.0']`.
@@ -162,7 +182,16 @@ sudo systemctl status matrix-synapse
 
 You needn't to add `admin` user with `register_new_matrix_user`.
 
-#### Ubuntu VM Guide under postgresql
+#### Firewall
+
+If you are running synapse on a virtual or remote machine and API call is not working, you can update the firewall rules to allow access to the ports. To turn off the public profile of a server firewall on a `Ubuntu` linux, you can use `gufw` and disable it like so:
+
+![Ubuntu Firewall](/images/ubuntu-firewall.png)
+
+</details>
+
+<details>
+<summary><strong>Ubuntu VM Guide under postgresql</strong></summary>
 
 ```shell
 sudo apt update
@@ -181,9 +210,9 @@ sudo apt install matrix-synapse-py3
 
 At the end of `sudo apt install matrix-synapse-py3`, you will get the following dialog.
 
-![Ubuntu ServerName](../../../static/images/ubuntu-servername.png)
+![Ubuntu ServerName](/images/ubuntu-servername.png)
 
-You have to enter `ds9.effektio.org` in this dialog, that is domain applied to all users in `effektio-test`.
+Keep `localhost` in this dialog, that is domain applied to all users in `acter-test`.
 `server_name` in `homeserver.yaml` seems to not affect synapse config and the setting of this dialog during installation affects synapse config clearly.
 
 In `homeserver.yaml`, you have to change `bind_addresses: ['::1', '127.0.0.1']` to `bind_addresses: ['0.0.0.0']`.
@@ -305,21 +334,22 @@ sudo systemctl status matrix-synapse
 
 You needn't to add `admin` user with `register_new_matrix_user`.
 
-#### Docker Container
-We have a `docker` container image available with that setup already for you at `lightyear/effektio-synapse-ci:latest`. Easiest is to use `docker-compose up -d` to run it locally from the root directory. This will also create the necessary `admin` account.
-
 #### Firewall
 
 If you are running synapse on a virtual or remote machine and API call is not working, you can update the firewall rules to allow access to the ports. To turn off the public profile of a server firewall on a `Ubuntu` linux, you can use `gufw` and disable it like so:
 
-![Ubuntu Firewall](../../../static/images/ubuntu-firewall.png)
+![Ubuntu Firewall](/images/ubuntu-firewall.png)
+
+</details>
 
 #### Mock data
+
 The integration tests expect a certain set of `mock` data. You can easily get this set up by running
 
-`cargo run -p effektio-cli -- mock $HOMESERVER`
+`cargo run -p acter-cli -- mock --homeserver-url $HOMESERVER --homeserver-name localhost`
 
 **Reset docker**
+
 To start the docker-compose afresh:
 
 1. stop the service with `docker-compose stop`
@@ -327,38 +357,73 @@ To start the docker-compose afresh:
 3. start the service with `docker-compose up -d`
 
 **Reset database (in case of SQLite)**
+
 1. Stop service with `sudo systemctl stop matrix-synapse`
 2. Delete this file `/var/lib/matrix-synapse/homeserver.db`
 3. Start service with `sudo systemctl start matrix-synapse`
-4. Run this command `cargo run -p effektio-cli -- mock $HOMESERVER`
+4. Run this command `cargo run -p acter-cli -- mock --homeserver-url $HOMESERVER --homeserver-name localhost`
 
 Don't forget to rerun the `mock data` generation again.
 
+**Reset database (in case of PostgreSQL)**
+
+1. Stop service with `sudo systemctl stop matrix-synapse`
+2. Delete and recreate the database
+
+```
+sudo su - postgres
+psql
+DROP DATABASE synapse;
+CREATE DATABASE synapse ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER "synapseuser";
+\q
+```
+
+3. Start service with `sudo systemctl start matrix-synapse`
+4. Run this command `cargo run -p acter-cli mock --homeserver-url http://192.168.142.130:8008 --homeserver-name ds9.acter.global`
+
+This server name must be the same as one in `/etc/matrix-synapse/conf.d/server_name.yaml`.
+
 ### Rust integration tests
 
-To run the rust integration tests, you need a fresh integration testing infrastructure (see above) availabe at `$HOMESERVER`. Assuming you are running the docker-compose setup, this would be `http://localhost:8118` (which is the fallback default, so you don't have to put it into your environment). Then you can run the integration test with:
+To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at `$HOMESERVER`. Assuming you are running the docker-compose setup, this would be `http://localhost:8118` (which is the fallback default, so you don't have to put it into your environment). Then you can run the integration test with:
 
-#### Custom Environment variable under Windows PowerShell
+<details><summary><strong>Custom Environment variable under Windows PowerShell</strong></summary>
 
 You can set up environment variable for `cargo` as following (assuming the server is accessible at `10.0.0.1:8008` and log level is `info`):
 
 ```bash
-$env:HOMESERVER="http://10.0.0.1:8008"; $env:RUST_LOG="info"; cargo test -p effektio-test -- --nocapture
+$env:HOMESERVER="http://10.0.0.1:8008"; $env:RUST_LOG="info"; cargo test -p acter-test -- --nocapture
 ```
 
-#### Custom Environment variable under Linux Shell
+</details>
+
+<details><summary><strong>Custom Environment variable under Linux Shell</strong></summary>
 
 You can set up environment variable for `cargo` as following (assuming the server is available at `10.0.0.1:8008` and log level is `warn`):
 
 ```bash
-HOMESERVER="http://10.0.0.1:8008" RUST_LOG="warn" cargo test -p effektio-test -- --nocapture
+HOMESERVER="http://10.0.0.1:8008" RUST_LOG="warn" cargo test -p acter-test -- --nocapture
 ```
+
+</details>
 
 ### Flutter UI integration tests
 
-To run the rust integration tests, you need a fresh integration testing infrastructure (see above) availabe at `$HOMESERVER` and an Android Emulator up and running. Build the App and run the tests with:
+Flutter integration tests can be found `app/integration_test/features`. We use (a forked) [`flutter_gherkin`](https://github.com/acterglobal/flutter_gherkin) to write and run our tests.
+
+**Running**
+
+To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at `$DEFAULT_HOMESERVER_URL` with the `$DEFAULT_HOMESERVER_NAME` set. The following will build the App and run the tests with on the default target (or you specify it via `-d`, e.g. `-d linux` or `-d windows`).
+
+_Reminder_: If running against the testing/staging server, you need the registration token from Bitwarden to access the server.
 
 ```
 cd app
-flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=$HOMESERVER
+flutter test integration_test/gherkin_suite_test.dart --dart-define DEFAULT_HOMESERVER_URL=$DEFAULT_HOMESERVER_URL --dart-define DEFAULT_HOMESERVER_NAME=$DEFAULT_HOMESERVER_NAME --dart-define REGISTRATION_TOKEN=$REGISTRATION_TOKEN
 ```
+
+**From Visual Studio Code**
+
+If you have the [Flutter extension for vscode](https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter) you can also run the `Run Integration Tests (acter)` launch commend from within your VSCode to run the tests directly or use the `Run Local Integration Tests` on the specific test from within your editor. To **debug** an integration tests, use the `Debug Integration Tests (acter)` on the specific test from within the editor - which allows you to add breakpoints and debugging widgets as usual:
+
+![](/images/integration-tests-debug-vscode-example.png)

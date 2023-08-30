@@ -1,0 +1,42 @@
+{# Default page template used for blog contents #}
+
+{% extends "page.html" %}
+{% import 'macros/nightly-macros.html' as nightly_macros -%}
+
+{% block seo %}
+  {# This value is matched by the config.extra.menu.main->section #}
+  {% set_global current_section = 'blog' %}
+  {{ super() }}
+{% endblock seo %}
+
+{% block body %}
+  {% set page_class = "blog single" %}
+{% endblock body %}
+
+{% block header %}
+  {{ macros_header::header(current_section=current_section)}}
+{% endblock header %}
+
+{% block content %}
+<div class="wrap container" role="document">
+  <div class="content">
+    <div class="row justify-content-center">
+      <div class="col-md-12 col-lg-10 col-xxl-8">
+        <article>
+          <div class="blog-header">
+            <h1>{{ page.title }}</h1>
+          </div>
+          <h2>Changes</h2>
+          {{ page.content | safe }}
+
+          <h3>Install</h3>
+          <h4>Desktop:</h4>
+          {{ nightly_macros::nightly_desktop_install_buttons(tag_date=page.date) }}
+          <h4>On mobile:</h4>
+          {{ nightly_macros::nightly_mobile_install_buttons(tag_date=page.date) }}
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,3 @@
+- [feature] On desktop, chats overview section will now support split view and be adaptive, making it easier for navigation and see the content all in one view.
+- [fix] Setting section UI improvements.
+- [fix] Space chats routing.

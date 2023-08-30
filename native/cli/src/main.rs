@@ -1,18 +1,17 @@
 #![warn(clippy::all)]
 
-use anyhow::Result;
-use clap::Parser;
-
 mod action;
 mod config;
 
-use config::EffektioCliConfig;
-use flexi_logger::Logger;
+use anyhow::Result;
+use clap::Parser;
+use config::ActerCliConfig;
+use env_logger::Builder;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let cli = EffektioCliConfig::parse();
-    Logger::try_with_str(cli.log)?.start()?;
+    let cli = ActerCliConfig::parse();
+    Builder::default().parse_filters(&cli.log).try_init()?;
     cli.action.run().await?;
     Ok(())
 }

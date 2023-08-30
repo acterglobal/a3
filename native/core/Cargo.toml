@@ -1,32 +1,60 @@
 [package]
-name = "effektio-core"
-authors = [ "ben@effektio.org" ]
+name = "acter-core"
+authors = [ "ben@acter.global" ]
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.58"
-description = "Core types and features of the effektio app"
+description = "Core types and features of the acter app"
 homepage = "https://effekto.org"
-repository = "https://github.com/effektio/effektio"
+repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
 [features]
-with-mocks = ["fake", "rand"]
+templates = ["toml", "minijinja", "indexmap", "tokio-retry"]
 
 [dependencies]
-assign = "1.1.1"
-chrono = {version = "0.4", default-features = false, features = ["serde"]}
+tokio = { version = "1", features = ["rt", "macros"]}
+async-recursion = "1"
+chrono = { version = "0.4", default-features = false, features = ["serde", "clock"] }
 chrono-tz = { version = "0.5", default-features = false, features = ["serde"] }
 csscolorparser = { version = "0.5.0", features = ["serde"] }
+dashmap = "5.4.0"
+derive-getters = "0.2.0"
+derive_builder = "0.11.2"
+enum_dispatch = "0.3.10"
+futures = "0.3.24"
+mime_guess = "2.0.4"
 serde = "1.0.136"
 serde_json = "1.0.82"
 serde_repr = "0.1"
+strum = { workspace = true }
+thiserror = "1.0"
+tracing = { version = "0.1.37", features = ["log"] }
 url = { version = "2.2.2", features = ["serde"] }
-matrix-sdk = { workspace = true }
 
-# with-mocks
-fake = { version = "2.4", optional = true, features = ["derive"] }
-rand = { version = "0.8", optional = true }
+# templates
+async-stream = "0.3.4"
+indexmap = { version = "1.9.2", optional = true }
+minijinja = { version = "0.30.5", optional = true, features = ["builtins"] }
+tokio-retry = { version = "0.3.0", optional = true }
+toml = { version = "0.7.2", optional = true, features = ["preserve_order"] }
+
+[dependencies.matrix-sdk]
+workspace = true
+default-features = false
+features = ["rustls-tls", "markdown"]
+
+[dev-dependencies]
+anyhow = "1.0.69"
+env_logger = "0.10.0"
+tracing = { version = "0.1.37", default-features = false, features = ["log"] }
 
 [dev-dependencies.matrix-sdk]
 workspace = true
 features = ["rustls-tls"]
+default-features = false
+
+[dev-dependencies.matrix-sdk-base]
+workspace = true
+default-features = false
+

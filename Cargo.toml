@@ -1,24 +1,41 @@
 [workspace]
 members = [
   "native/*",
+  "util/mr_minutes"
 ]
 
-default-members = ["native/effektio"]
+default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "afda63f9e2cc44e8cc7c1dca6b50264ee31a2c26"
+rev = "01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7"
 default-features = false
-features = ["rustls-tls"]
+features = ["experimental-sliding-sync"]
 
 [workspace.dependencies.matrix-sdk-base]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "afda63f9e2cc44e8cc7c1dca6b50264ee31a2c26"
+rev = "01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7"
 default-features = false
+
+[workspace.dependencies.matrix-sdk-sqlite]
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7"
+default-features = false
+features = ["crypto-store", "state-store"]
+
+[workspace.dependencies.matrix-sdk-ui]
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "01ceec43b11a7b1fe7db337cc9f7b52dde5e4ce7"
+default-features = false
+features = ["e2e-encryption"]
 
 [workspace.dependencies.ruma]
 git = "https://github.com/ruma/ruma"
-rev = "ed100afddb5fb30f1ccf368d7e712a3a483e63bf"
+rev = "5fde57460aaa71e16ac68f79376843089f9c3dfc"
+features = ["client-api-c", "compat-user-id"]
+
+[workspace.dependencies]
+strum = { version = "0.24.1", features = ["derive"] }
 
 [profile.release]
 panic = "unwind"

@@ -2,7 +2,7 @@
 title = "Contributing"
 
 sort_by = "weight"
-weight = 5
+weight = 50
 template = "docs/section.html"
 
 +++

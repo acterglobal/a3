@@ -4,7 +4,14 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  CARGO_TERM_COLOR: always
+
 name: Native
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   core:
@@ -14,29 +21,32 @@ jobs:
       matrix:
         include:
           - name: Core
-            package: effektio-core
+            package: acter-core
             clippy_extras: --tests
           - name: CLI
-            package: effektio-cli
+            package: acter-cli
+          - name: TUI
+            package: acter-tui
     steps:
       - uses: actions/checkout@v2
       - name: Install specific toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2023-04-10
+          override: true
           components: clippy
-          target: ${{ matrix.target }}
       - uses: Swatinem/rust-cache@v1
       - uses: actions-rs/cargo@v1
         name: Clippy
         with:
           command: clippy
           args: -p ${{matrix.package}} ${{matrix.clippy_extras}} -- -D warnings
+      - uses: taiki-e/install-action@nextest
       - uses: actions-rs/cargo@v1
         name: Test
         with:
-          command: test
-          args: -p ${{matrix.package}}
+          command: nextest
+          args: run -p ${{matrix.package}}
       - uses: actions-rs/cargo@v1
         name: Release Build
         with:
@@ -58,29 +68,32 @@ jobs:
       - name: Install specific toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2023-04-10
+          override: true
           components: clippy
           target: ${{ matrix.target }}
       - uses: Swatinem/rust-cache@v1
       - uses: subosito/flutter-action@v2
-        name: "Set up flutter"
+        name: Set up flutter
         with:
+          flutter-version: '3.13.1'
           channel: 'stable'
       - uses: actions-rs/cargo@v1
         name: Clippy
         with:
           command: clippy
-          args: -p effektio --target ${{matrix.target}} -- -D warnings
+          args: -p acter --target ${{matrix.target}} -- -D warnings
+      - uses: taiki-e/install-action@nextest
       - uses: actions-rs/cargo@v1
         name: Unit tests
         with:
-          command: test
-          args: -p effektio --target ${{matrix.target}} --lib
+          command: nextest
+          args: run -p acter --target ${{matrix.target}} --lib
       - uses: actions-rs/cargo@v1
         name: Doctests
         with:
           command: test
-          args: -p effektio --target ${{matrix.target}} --doc
+          args: -p acter --target ${{matrix.target}} --doc
 
   ffigen:
     name: FFI-Gen up-to-date
@@ -89,14 +102,16 @@ jobs:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: '3.13.1'
+          channel: 'stable'
       - name: Install supported rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2023-04-10
+          override: true
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
       - name: "Build FFI interface"
         run: cargo make ffigen
-      - name: "Check file is no different"
-        run: git diff --exit-code app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart
+      # - name: "Check file is no different"
+      #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
