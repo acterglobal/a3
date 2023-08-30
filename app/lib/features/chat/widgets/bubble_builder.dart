@@ -278,9 +278,8 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
               String key = keys[index];
               Map<String, dynamic> reactions =
                   widget.message.metadata!['reactions'];
-              final recordsCount = reactions[key]?.length;
-              var sentByMe = (reactions[key]! as List<ReactionRecord>)
-                  .any((x) => x.sentByMe());
+              List<ReactionRecord> records = reactions[key]!;
+              final sentByMe = records.any((x) => x.sentByMe());
               return InkWell(
                 onLongPress: () {
                   showEmojiReactionsSheet(reactions);
@@ -296,17 +295,21 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
                   }
                 },
                 child: Chip(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 1, horizontal: 2),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 1,
+                    horizontal: 2,
+                  ),
                   backgroundColor: sentByMe
                       ? AppTheme.theme.colorScheme.inversePrimary
                       : null,
-                  labelPadding: const EdgeInsets.only(left: 2, right: 1),
-                  avatar: Text(
-                    key,
-                    style: EmojiConfig.emojiTextStyle,
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(key),
+                      const SizedBox(width: 5),
+                      Text(records.length.toString()),
+                    ],
                   ),
-                  label: Text(recordsCount!.toString()),
                 ),
               );
             }),
