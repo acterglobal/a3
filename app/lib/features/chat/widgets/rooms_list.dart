@@ -51,7 +51,8 @@ class RoomsListWidget extends ConsumerWidget {
                         hintStyle: const TextStyle(color: Colors.white),
                         suffixIcon: GestureDetector(
                           onTap: () {
-                            searchNotifier.update((state) => !state);
+                            searchNotifier.update((state) => false);
+                            chatsNotifier.searchRoom(null);
                           },
                           child: const Icon(
                             Icons.close,
