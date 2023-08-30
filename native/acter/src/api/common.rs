@@ -393,7 +393,12 @@ pub struct LocationDesc {
 
 impl LocationDesc {
     pub fn new(body: String, geo_uri: String) -> Self {
-        LocationDesc { body, geo_uri, thumbnail_source: None, thumbnail_info: None }
+        LocationDesc {
+            body,
+            geo_uri,
+            thumbnail_source: None,
+            thumbnail_info: None,
+        }
     }
 
     pub fn body(&self) -> String {
@@ -409,7 +414,9 @@ impl LocationDesc {
     }
 
     pub fn thumbnail_source(&self) -> Option<MediaSource> {
-        self.thumbnail_source.clone().map(|inner| MediaSource { inner })
+        self.thumbnail_source
+            .clone()
+            .map(|inner| MediaSource { inner })
     }
 
     pub(crate) fn set_thumbnail_info(&mut self, value: SdkThumbnailInfo) {
@@ -417,7 +424,9 @@ impl LocationDesc {
     }
 
     pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
-        self.thumbnail_info.clone().map(|inner| ThumbnailInfo { inner })
+        self.thumbnail_info
+            .clone()
+            .map(|inner| ThumbnailInfo { inner })
     }
 }
 
