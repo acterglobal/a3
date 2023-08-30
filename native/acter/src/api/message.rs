@@ -1088,7 +1088,7 @@ impl RoomMessage {
             _ => "Unknown sync item".to_string(),
         };
         let mut text_desc = TextDesc::new(fallback, None);
-        match event.content.msgtype.clone() {
+        match event.content.msgtype {
             MessageType::Text(content) => {
                 if let Some(formatted) = &content.formatted {
                     if formatted.format == MessageFormat::Html {
@@ -1163,7 +1163,7 @@ impl RoomMessage {
             _ => "Unknown sync item".to_string(),
         };
         let mut text_desc = TextDesc::new(fallback, None);
-        match event.content.msgtype.clone() {
+        match event.content.msgtype {
             MessageType::Text(content) => {
                 if let Some(formatted) = &content.formatted {
                     if formatted.format == MessageFormat::Html {
