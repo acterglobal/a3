@@ -38,26 +38,28 @@ class CustomMessageBuilder extends StatelessWidget {
       case 'm.room.topic':
       case 'm.space.child':
       case 'm.space.parent':
-      case 'm.room.member':
-        String? text = message.metadata?['body'];
-        return text == null
-            ? const SizedBox.shrink()
-            : Container(
-                padding: const EdgeInsets.only(left: 10, bottom: 5),
-                child: RichText(
-                  text: TextSpan(
-                    text: message.author.id,
-                    style: Theme.of(context).textTheme.bodySmall,
-                    children: [
-                      const WidgetSpan(child: SizedBox(width: 3)),
-                      TextSpan(
-                        text: text,
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                    ],
-                  ),
+        String? body = message.metadata?['body'];
+        if (body == null) {
+          return const SizedBox.shrink();
+        }
+        return Container(
+          padding: const EdgeInsets.only(left: 10, bottom: 5),
+          child: RichText(
+            text: TextSpan(
+              text: message.author.id,
+              style: Theme.of(context).textTheme.bodySmall,
+              children: [
+                const WidgetSpan(
+                  child: SizedBox(width: 3),
                 ),
-              );
+                TextSpan(
+                  text: body,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+              ],
+            ),
+          ),
+        );
     }
 
     // message event
@@ -79,6 +81,42 @@ class CustomMessageBuilder extends StatelessWidget {
                 ),
           ),
         );
+      case 'm.room.member':
+        String? body = message.metadata?['body'];
+        if (body == null) {
+          return const SizedBox.shrink();
+        }
+        return Container(
+          padding: const EdgeInsets.only(left: 10, bottom: 5),
+          child: RichText(
+            text: TextSpan(
+              text: message.author.id,
+              style: Theme.of(context).textTheme.bodySmall,
+              children: [
+                const WidgetSpan(
+                  child: SizedBox(width: 3),
+                ),
+                TextSpan(
+                  text: body,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+              ],
+            ),
+          ),
+        );
+      case 'm.room.message':
+        if (message.metadata?['subType'] == 'm.location') {
+          return Container(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              children: [
+                Text(message.metadata?['body']),
+                Text(message.metadata?['geoUri']),
+              ],
+            ),
+          );
+        }
+        break;
       case 'm.room.redaction':
         String text = 'Message deleted';
         return Container(
@@ -98,33 +136,8 @@ class CustomMessageBuilder extends StatelessWidget {
           constraints: const BoxConstraints(minWidth: 57),
           child: Image.memory(
             base64Decode(message.metadata?['base64']),
-            errorBuilder: (
-              BuildContext context,
-              Object url,
-              StackTrace? error,
-            ) {
-              return Text('Could not load image due to $error');
-            },
-            frameBuilder: (
-              BuildContext context,
-              Widget child,
-              int? frame,
-              bool wasSynchronouslyLoaded,
-            ) {
-              if (wasSynchronouslyLoaded) {
-                return child;
-              }
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: frame != null
-                    ? child
-                    : const SizedBox(
-                        height: 60,
-                        width: 60,
-                        child: CircularProgressIndicator(strokeWidth: 6),
-                      ),
-              );
-            },
+            errorBuilder: stickerErrorBuilder,
+            frameBuilder: stickerFrameBuilder,
             cacheWidth: 256,
             width: messageWidth.toDouble() / 2,
             fit: BoxFit.cover,
@@ -133,5 +146,34 @@ class CustomMessageBuilder extends StatelessWidget {
     }
 
     return const SizedBox();
+  }
+
+  Widget stickerErrorBuilder(
+    BuildContext context,
+    Object url,
+    StackTrace? error,
+  ) {
+    return Text('Could not load image due to $error');
+  }
+
+  Widget stickerFrameBuilder(
+    BuildContext context,
+    Widget child,
+    int? frame,
+    bool wasSynchronouslyLoaded,
+  ) {
+    if (wasSynchronouslyLoaded) {
+      return child;
+    }
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 200),
+      child: frame != null
+          ? child
+          : const SizedBox(
+              height: 60,
+              width: 60,
+              child: CircularProgressIndicator(strokeWidth: 6),
+            ),
+    );
   }
 }

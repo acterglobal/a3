@@ -243,27 +243,25 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.space.parent':
         break;
       case 'm.room.encrypted':
-        final metadata = {
-          'itemType': 'event',
-          'eventType': eventType,
-        };
         repliedTo = types.CustomMessage(
           author: types.User(id: orgEventItem.sender()),
           createdAt: orgEventItem.originServerTs(),
           id: orgEventItem.eventId(),
-          metadata: metadata,
+          metadata: {
+            'itemType': 'event',
+            'eventType': eventType,
+          },
         );
         break;
       case 'm.room.redaction':
-        final metadata = {
-          'itemType': 'event',
-          'eventType': eventType,
-        };
         repliedTo = types.CustomMessage(
           author: types.User(id: orgEventItem.sender()),
           createdAt: orgEventItem.originServerTs(),
           id: orgEventItem.eventId(),
-          metadata: metadata,
+          metadata: {
+            'itemType': 'event',
+            'eventType': eventType,
+          },
         );
         break;
       case 'm.call.answer':
@@ -588,6 +586,49 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.location':
+            LocationDesc? description = eventItem.locationDesc();
+            if (description != null) {
+              Map<String, dynamic> metadata = {
+                'itemType': 'event',
+                'eventType': eventType,
+                'subType': subType,
+                'body': description.body(),
+                'geoUri': description.geoUri(),
+              };
+              if (inReplyTo != null) {
+                metadata['repliedTo'] = inReplyTo;
+              }
+              if (reactions.isNotEmpty) {
+                metadata['reactions'] = reactions;
+              }
+              final thumbnailSource = description.thumbnailSource();
+              if (thumbnailSource != null) {
+                metadata['thumbnailSource'] = thumbnailSource.toString();
+              }
+              final thumbnailInfo = description.thumbnailInfo();
+              final mimetype = thumbnailInfo?.mimetype();
+              final size = thumbnailInfo?.size();
+              final width = thumbnailInfo?.width();
+              final height = thumbnailInfo?.height();
+              if (mimetype != null) {
+                metadata['thumbnailMimetype'] = mimetype;
+              }
+              if (size != null) {
+                metadata['thumbnailSize'] = size;
+              }
+              if (width != null) {
+                metadata['thumbnailWidth'] = width;
+              }
+              if (height != null) {
+                metadata['thumbnailHeight'] = height;
+              }
+              return types.CustomMessage(
+                author: author,
+                createdAt: createdAt,
+                id: eventId,
+                metadata: metadata,
+              );
+            }
             break;
           case 'm.notice':
             TextDesc? description = eventItem.textDesc();
@@ -678,7 +719,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (description != null) {
           Map<String, dynamic> metadata = {
             'itemType': 'event',
-            'eventType': 'm.sticker',
+            'eventType': eventType,
             'name': description.name(),
             'size': description.size() ?? 0,
             'width': description.width()?.toDouble(),

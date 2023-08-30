@@ -28,9 +28,9 @@ use matrix_sdk::{
                 join_rules::{AllowRule, JoinRule},
                 message::{
                     AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-                    ForwardThread, ImageMessageEventContent, MessageType, RoomMessageEvent,
-                    RoomMessageEventContent, TextMessageEventContent, VideoInfo,
-                    VideoMessageEventContent,
+                    ForwardThread, ImageMessageEventContent, LocationMessageEventContent,
+                    MessageType, RoomMessageEvent, RoomMessageEventContent,
+                    TextMessageEventContent, VideoInfo, VideoMessageEventContent,
                 },
                 ImageInfo,
             },
@@ -982,6 +982,41 @@ impl Room {
                 };
                 let data = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(data))
+            })
+            .await?
+    }
+
+    pub async fn send_location_message(
+        &self,
+        body: String,
+        geo_uri: String,
+    ) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message as file to a room we are not in")
+        };
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+                let location_content = LocationMessageEventContent::new(body, geo_uri);
+                let content = RoomMessageEventContent::new(MessageType::Location(location_content));
+                let txn_id = TransactionId::new();
+                let response = room.send(content, Some(&txn_id)).await?;
+                Ok(response.event_id)
             })
             .await?
     }

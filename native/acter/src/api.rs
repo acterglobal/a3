@@ -60,8 +60,8 @@ pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdate
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
-    duration_from_secs, AudioDesc, DeviceRecord, FileDesc, ImageDesc, MediaSource, OptionBuffer,
-    OptionString, ReactionRecord, TextDesc, ThumbnailInfo, VideoDesc,
+    duration_from_secs, AudioDesc, DeviceRecord, FileDesc, ImageDesc, LocationDesc, MediaSource,
+    OptionBuffer, OptionString, ReactionRecord, TextDesc, ThumbnailInfo, VideoDesc,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, CreateConvoSettings, CreateConvoSettingsBuilder,
