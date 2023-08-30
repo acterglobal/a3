@@ -1,4 +1,5 @@
 use ffi_gen::FfiGen;
+use std::env;
 use std::path::PathBuf;
 
 static API_DESC_FILENAME: &str = "api.rsh";
@@ -15,6 +16,16 @@ fn main() {
         "cargo:rerun-if-changed={}",
         path.as_path().to_str().unwrap()
     );
+    // FIXME: hack to ensure that sqlite compiles correctly for android x86_64bit emulator versions
+    //        see https://github.com/rusqlite/rusqlite/issues/1380#issuecomment-1689765485
+    let target = env::var("TARGET").unwrap();
+    if target == "x86_64-linux-android" {
+        let ndk_home = env::var("ANDROID_NDK_HOME").expect(
+            "ANDROID_NDK_HOME variable needs to be set for us to build for x86_64-linux-android ",
+        );
+        println!("cargo:rustc-link-lib=static=clang_rt.builtins-x86_64-android");
+        println!("cargo:rustc-link-search={ndk_home}/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/14.0.7/lib/linux");
+    }
 
     if std::env::var("SKIP_FFIGEN").is_err() && std::env::var("CARGO_FEATURE_DART").is_ok() {
         // general FFI-gen
