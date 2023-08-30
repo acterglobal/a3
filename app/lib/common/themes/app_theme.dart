@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
 
+@pragma('vm:platform-const')
 bool isDesktop = (Platform.isLinux || Platform.isWindows || Platform.isMacOS);
 
 const emojiFallbackFonts = [
-  'Apple Color Emoji', // we fallback to system fonts first
-  'Segoe UI Emoji',
   'NotoEmoji',
 ];
 const emojiFont = 'NotoEmoji';
