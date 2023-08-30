@@ -137,6 +137,7 @@ class _TextWidget extends ConsumerWidget {
               message.text,
               style: emojiTextStyle.copyWith(
                 overflow: isReply ? TextOverflow.ellipsis : null,
+                fontFamily: emojiFont
               ),
               maxLines: isReply ? 3 : null,
             )

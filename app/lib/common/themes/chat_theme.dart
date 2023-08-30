@@ -52,8 +52,6 @@ class ActerChatTheme extends ChatTheme {
     Color primaryColor = const Color(0xffFF8E00),
     TextStyle receivedEmojiMessageTextStyle = const TextStyle(
       fontSize: 40,
-      fontFamily: emojiFont,
-      fontFamilyFallback: emojiFallbackFonts,
     ),
     TextStyle? receivedMessageBodyBoldTextStyle,
     TextStyle? receivedMessageBodyCodeTextStyle,
@@ -90,8 +88,6 @@ class ActerChatTheme extends ChatTheme {
     Widget? sendingIcon,
     TextStyle sentEmojiMessageTextStyle = const TextStyle(
       fontSize: 40,
-      fontFamily: emojiFont,
-      fontFamilyFallback: emojiFallbackFonts,
     ),
     TextStyle? sentMessageBodyBoldTextStyle,
     TextStyle? sentMessageBodyCodeTextStyle,
