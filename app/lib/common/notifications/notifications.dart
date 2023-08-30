@@ -1,7 +1,33 @@
+import 'dart:io';
+
 import 'package:acter/common/notifications/models.dart';
 import 'package:acter/router/router.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:plain_notification_token/plain_notification_token.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+
+final plainNotificationToken = PlainNotificationToken();
+final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+const bool isProduction = bool.fromEnvironment('dart.vm.product');
+
+const appIdPrefix = String.fromEnvironment(
+  'PUSH_APP_PREFIX',
+  defaultValue: 'global.acter.a3',
+);
+
+const appName = String.fromEnvironment(
+  'PUSH_APP_NAME',
+  defaultValue: 'Acter',
+);
+
+const pushServerUrl = String.fromEnvironment(
+  'PUSH_URL',
+  defaultValue: 'https://localhost:8228/_matrix/push/v1/notify',
+);
 
 class NotificationController {
   /// Use this method to detect when a new notification or a schedule is created
@@ -47,44 +73,100 @@ Future<void> initializeNotifications() async {
     // 'resource://drawable/res_app_icon',
     [
       NotificationChannel(
-          channelGroupKey: 'basic_channel_group',
-          channelKey: 'basic_channel',
-          channelName: 'Basic notifications',
-          channelDescription: 'Notification channel for basic tests',
-          defaultColor: const Color(0xFF9D50DD),
-          ledColor: Colors.white,),
+        channelGroupKey: 'basic_channel_group',
+        channelKey: 'basic_channel',
+        channelName: 'Basic notifications',
+        channelDescription: 'Notification channel for basic tests',
+        defaultColor: const Color(0xFF9D50DD),
+        ledColor: Colors.white,
+      ),
     ],
     // Channel groups are only visual and are not required
     channelGroups: [
       NotificationChannelGroup(
-          channelGroupKey: 'basic_channel_group',
-          channelGroupName: 'Basic group',),
+        channelGroupKey: 'basic_channel_group',
+        channelGroupName: 'Basic group',
+      ),
     ],
     debug: true,
   );
 }
 
-Future<void> requestNotificationsPermissions() async {
-  AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-    if (!isAllowed) {
-      // This is just a basic example. For real apps, you must show some
-      // friendly dialog box before call the request method.
-      // This is very important to not harm the user experience
-      AwesomeNotifications().requestPermissionToSendNotifications();
+Future<bool> setupPushNotifications(
+  Client client, {
+  forced = false,
+}) async {
+  if (!(Platform.isAndroid || Platform.isIOS || Platform.isLinux)) {
+    // we are only supporting this on a limited set of platforms at the moment.
+    return false;
+  }
+
+  final isAllowed = await AwesomeNotifications().isNotificationAllowed();
+  final userId = client.userId().toString();
+  final SharedPreferences preferences = await sharedPrefs();
+  final prefKey = '$userId.rejected_notifications';
+  if (!isAllowed) {
+    // check whether we were already rejected and thus shouldn't ask again
+    if (!forced && (preferences.getBool(prefKey) ?? false)) {
+      // we need to be forced to continue
+      return false;
     }
-  });
+    // TASK: show some extra dialog here?
+    final requested =
+        await AwesomeNotifications().requestPermissionToSendNotifications();
+    if (!requested) {
+      // we were bluntly rejected, save and don't them bother again:
+      preferences.setBool(prefKey, false);
+      return false;
+    }
+  }
+
+  if (Platform.isLinux) {
+    // that's it for us on here.
+    return true;
+  }
+
+  final String? token = await plainNotificationToken.getToken();
+  if (token == null) {
+    return false;
+  }
+
+  late String name;
+  late String appId;
+  if (Platform.isIOS) {
+    final iOsInfo = await deviceInfo.iosInfo;
+    name = iOsInfo.name;
+    appId = '$appIdPrefix.android';
+  } else if (Platform.isAndroid) {
+    final androidInfo = await deviceInfo.androidInfo;
+    name = androidInfo.host; // FIXME: confirm this is what we actually want?!?
+    if (isProduction) {
+      appId = '$appIdPrefix.ios';
+    } else {
+      appId = '$appIdPrefix.ios.dev';
+    }
+  }
+
+  await client.addPusher(appId, token, name, appName, pushServerUrl, null);
+
+  debugPrint(
+    ' ---- notification pusher sent: $appName ($appId) on $name ($token) to $pushServerUrl',
+  );
+
+  return true;
 }
 
 Future<void> setupNotificationsListeners() async {
   // Only after at least the action method is set, the notification events are delivered
   AwesomeNotifications().setListeners(
-      onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-      onNotificationCreatedMethod:
-          NotificationController.onNotificationCreatedMethod,
-      onNotificationDisplayedMethod:
-          NotificationController.onNotificationDisplayedMethod,
-      onDismissActionReceivedMethod:
-          NotificationController.onDismissActionReceivedMethod,);
+    onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+    onNotificationCreatedMethod:
+        NotificationController.onNotificationCreatedMethod,
+    onNotificationDisplayedMethod:
+        NotificationController.onNotificationDisplayedMethod,
+    onDismissActionReceivedMethod:
+        NotificationController.onDismissActionReceivedMethod,
+  );
 }
 
 Future<void> notify(NotificationBrief brief) async {

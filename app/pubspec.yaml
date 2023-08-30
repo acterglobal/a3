@@ -122,6 +122,8 @@ dependencies:
   logging: ^1.2.0
   args: ^2.4.2
   breadcrumbs: ^0.1.0
+  device_info_plus: ^9.0.3
+  plain_notification_token: ^0.0.4
 
 dev_dependencies:
   flutter_test:

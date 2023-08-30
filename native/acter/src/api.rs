@@ -33,6 +33,7 @@ mod news;
 mod notifications;
 mod pins;
 mod profile;
+mod push;
 mod receipt;
 mod room;
 mod rsvp;

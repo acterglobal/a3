@@ -1791,6 +1791,9 @@ object Client {
     /// listen to incoming notifications
     fn notifications_stream() -> Stream<Notification>;
 
+    /// add another http pusher to the notification system
+    fn add_pusher(app_id: string, token: string, device_name: string, app_name: string, server_url: string, lang: Option<string>) -> Future<Result<bool>>;
+
 }
 
 object OptionString {
