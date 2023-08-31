@@ -693,8 +693,14 @@ object Convo {
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<EventId>>;
 
+    /// Edit the existing event with plain text
+    fn edit_plain_message(event_id: string, new_msg: string) -> Future<Result<EventId>>;
+
     /// Send a text message in MarkDown format to the room
     fn send_formatted_message(markdown_message: string) -> Future<Result<EventId>>;
+
+    /// Edit the existing event with MarkDown text
+    fn edit_formatted_message(event_id: string, new_msg: string) -> Future<Result<EventId>>;
 
     /// Send reaction about existing event
     fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;

@@ -22,13 +22,13 @@ use matrix_sdk::{
         events::{
             reaction::ReactionEventContent,
             receipt::ReceiptThread,
-            relation::Annotation,
+            relation::{Annotation, Replacement},
             room::{
                 avatar::ImageInfo as AvatarImageInfo,
                 message::{
                     AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-                    ForwardThread, ImageMessageEventContent, MessageType, RoomMessageEvent,
-                    RoomMessageEventContent, TextMessageEventContent, VideoInfo,
+                    ForwardThread, ImageMessageEventContent, MessageType, Relation,
+                    RoomMessageEvent, RoomMessageEventContent, TextMessageEventContent, VideoInfo,
                     VideoMessageEventContent,
                 },
                 ImageInfo,
@@ -249,10 +249,12 @@ pub struct Room {
 impl Room {
     pub async fn is_acter_space(&self) -> Result<bool> {
         let inner = self.room.clone();
-        Ok(RUNTIME
+        let result = RUNTIME
             .spawn(async move { is_acter_space(&inner).await })
-            .await?)
+            .await?;
+        Ok(result)
     }
+
     pub async fn get_my_membership(&self) -> Result<Member> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
@@ -612,6 +614,65 @@ impl Room {
             .await?
     }
 
+    pub async fn edit_plain_message(
+        &self,
+        event_id: String,
+        new_msg: String,
+    ) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        let client = self.room.client();
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
+                let timeline_event = room.event(&event_id).await?;
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    bail!("Can't edit an event not sent by own user");
+                }
+
+                let replacement = Replacement::new(
+                    event_id.to_owned(),
+                    MessageType::text_plain(new_msg.to_string()),
+                );
+                let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
+                edited_content.relates_to = Some(Relation::Replacement(replacement));
+
+                let txn_id = TransactionId::new();
+                let response = room.send(edited_content, Some(&txn_id)).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
     pub async fn send_formatted_message(&self, markdown: String) -> Result<OwnedEventId> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
@@ -637,6 +698,65 @@ impl Room {
                 let content = RoomMessageEventContent::text_markdown(markdown);
                 let txn_id = TransactionId::new();
                 let response = room.send(content, Some(&txn_id)).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn edit_formatted_message(
+        &self,
+        event_id: String,
+        new_msg: String,
+    ) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        let client = self.room.client();
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
+                let timeline_event = room.event(&event_id).await?;
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    bail!("Can't edit an event not sent by own user");
+                }
+
+                let replacement = Replacement::new(
+                    event_id.to_owned(),
+                    MessageType::text_markdown(new_msg.to_string()),
+                );
+                let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
+                edited_content.relates_to = Some(Relation::Replacement(replacement));
+
+                let txn_id = TransactionId::new();
+                let response = room.send(edited_content, Some(&txn_id)).await?;
                 Ok(response.event_id)
             })
             .await?
