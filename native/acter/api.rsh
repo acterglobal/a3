@@ -769,6 +769,12 @@ object Convo {
     /// edit the file message
     fn edit_file_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u32>) -> Future<Result<EventId>>;
 
+    /// send the location message to this room
+    fn send_location_message(body: string, geo_uri: string) -> Future<Result<EventId>>;
+
+    /// edit the location message
+    fn edit_location_message(event_id: string, body: string, geo_uri: string) -> Future<Result<EventId>>;
+
     /// get the user status on this room
     fn room_type() -> string;
 
