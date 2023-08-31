@@ -315,16 +315,15 @@ impl Room {
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("MIME type should be given")?;
                 let buf = std::fs::read(path).context("File should be read")?;
-                let upload_resp = client.media().upload(&content_type, buf).await?;
+                let response = client.media().upload(&content_type, buf).await?;
 
+                let content_uri = response.content_uri;
                 let info = assign!(AvatarImageInfo::new(), {
-                    blurhash: upload_resp.blurhash,
+                    blurhash: response.blurhash,
                     mimetype: Some(content_type.to_string()),
                 });
-                let change_resp = room
-                    .set_avatar_url(&upload_resp.content_uri, Some(info))
-                    .await?;
-                Ok(upload_resp.content_uri)
+                let response = room.set_avatar_url(&content_uri, Some(info)).await?;
+                Ok(content_uri)
             })
             .await?
     }
@@ -931,7 +930,7 @@ impl Room {
                 }
 
                 let content_type: mime::Mime = mimetype.parse()?;
-                let upload_resp = client.media().upload(&content_type, image_buf).await?;
+                let response = client.media().upload(&content_type, image_buf).await?;
 
                 let info = assign!(ImageInfo::new(), {
                     height: height.map(UInt::from),
@@ -939,8 +938,7 @@ impl Room {
                     mimetype: Some(mimetype),
                     size: size.map(UInt::from),
                 });
-                let mut image_content =
-                    ImageMessageEventContent::plain(name, upload_resp.content_uri);
+                let mut image_content = ImageMessageEventContent::plain(name, response.content_uri);
                 image_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Image(image_content.clone()));
@@ -1085,15 +1083,14 @@ impl Room {
                 }
 
                 let content_type: mime::Mime = mimetype.parse()?;
-                let upload_resp = client.media().upload(&content_type, audio_buf).await?;
+                let response = client.media().upload(&content_type, audio_buf).await?;
 
                 let info = assign!(AudioInfo::new(), {
                     duration: secs.map(|x| Duration::from_secs(x as u64)),
                     mimetype: Some(mimetype),
                     size: size.map(UInt::from),
                 });
-                let mut audio_content =
-                    AudioMessageEventContent::plain(name, upload_resp.content_uri);
+                let mut audio_content = AudioMessageEventContent::plain(name, response.content_uri);
                 audio_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Audio(audio_content.clone()));
@@ -1247,7 +1244,7 @@ impl Room {
                 }
 
                 let content_type: mime::Mime = mimetype.parse()?;
-                let upload_resp = client.media().upload(&content_type, video_buf).await?;
+                let response = client.media().upload(&content_type, video_buf).await?;
 
                 let info = assign!(VideoInfo::new(), {
                     duration: secs.map(|x| Duration::from_secs(x as u64)),
@@ -1256,8 +1253,7 @@ impl Room {
                     mimetype: Some(mimetype),
                     size: size.map(UInt::from),
                 });
-                let mut video_content =
-                    VideoMessageEventContent::plain(name, upload_resp.content_uri);
+                let mut video_content = VideoMessageEventContent::plain(name, response.content_uri);
                 video_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Video(video_content.clone()));
@@ -1398,14 +1394,13 @@ impl Room {
                 }
 
                 let content_type: mime::Mime = mimetype.parse()?;
-                let upload_resp = client.media().upload(&content_type, file_buf).await?;
+                let response = client.media().upload(&content_type, file_buf).await?;
 
                 let info = assign!(FileInfo::new(), {
                     mimetype: Some(mimetype),
                     size: size.map(UInt::from),
                 });
-                let mut file_content =
-                    FileMessageEventContent::plain(name, upload_resp.content_uri);
+                let mut file_content = FileMessageEventContent::plain(name, response.content_uri);
                 file_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::File(file_content.clone()));
