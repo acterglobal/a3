@@ -636,7 +636,7 @@ impl RoomMessage {
             event.event_id.to_string(),
             event.sender.to_string(),
             event.origin_server_ts.get().into(),
-            "m.room.canonical.alias".to_string(),
+            "m.room.canonical_alias".to_string(),
         );
         let alt_aliases = event
             .content
@@ -665,7 +665,7 @@ impl RoomMessage {
             event.event_id.to_string(),
             event.sender.to_string(),
             event.origin_server_ts.get().into(),
-            "m.room.canonical.alias".to_string(),
+            "m.room.canonical_alias".to_string(),
         );
         let alt_aliases = event
             .content
@@ -842,7 +842,7 @@ impl RoomMessage {
             event.event_id.to_string(),
             event.sender.to_string(),
             event.origin_server_ts.get().into(),
-            "m.room.history.visibility".to_string(),
+            "m.room.history_visibility".to_string(),
         );
         let text_desc = TextDesc::new(
             format!(
@@ -863,7 +863,7 @@ impl RoomMessage {
             event.event_id.to_string(),
             event.sender.to_string(),
             event.origin_server_ts.get().into(),
-            "m.room.history.visibility".to_string(),
+            "m.room.history_visibility".to_string(),
         );
         let text_desc = TextDesc::new(
             format!(
@@ -1286,7 +1286,7 @@ impl RoomMessage {
             event.event_id.to_string(),
             event.sender.to_string(),
             event.origin_server_ts.get().into(),
-            "m.room.pinned.events".to_string(),
+            "m.room.pinned_events".to_string(),
         );
         let text_desc = TextDesc::new(
             format!("pinned {} events", event.content.pinned.len()),
@@ -1304,7 +1304,7 @@ impl RoomMessage {
             event.event_id.to_string(),
             event.sender.to_string(),
             event.origin_server_ts.get().into(),
-            "m.room.pinned.events".to_string(),
+            "m.room.pinned_events".to_string(),
         );
         let text_desc = TextDesc::new(
             format!("pinned {} events", event.content.pinned.len()),
@@ -1322,7 +1322,7 @@ impl RoomMessage {
             event.event_id.to_string(),
             event.sender.to_string(),
             event.origin_server_ts.get().into(),
-            "m.room.power.levels".to_string(),
+            "m.room.power_levels".to_string(),
         );
         let users = event
             .content
@@ -1344,7 +1344,7 @@ impl RoomMessage {
             event.event_id.to_string(),
             event.sender.to_string(),
             event.origin_server_ts.get().into(),
-            "m.room.power.levels".to_string(),
+            "m.room.power_levels".to_string(),
         );
         let users = event
             .content
@@ -1406,7 +1406,7 @@ impl RoomMessage {
             event.event_id.to_string(),
             event.sender.to_string(),
             event.origin_server_ts.get().into(),
-            "m.room.server.acl".to_string(),
+            "m.room.server_acl".to_string(),
         );
         let allow = event.content.allow.join(", ");
         let deny = event.content.deny.join(", ");
@@ -1429,7 +1429,7 @@ impl RoomMessage {
             event.event_id.to_string(),
             event.sender.to_string(),
             event.origin_server_ts.get().into(),
-            "m.room.server.acl".to_string(),
+            "m.room.server_acl".to_string(),
         );
         let allow = event.content.allow.join(", ");
         let deny = event.content.deny.join(", ");
@@ -1452,7 +1452,7 @@ impl RoomMessage {
             event.event_id.to_string(),
             event.sender.to_string(),
             event.origin_server_ts.get().into(),
-            "m.room.third.party.invite".to_string(),
+            "m.room.third_party_invite".to_string(),
         );
         let text_desc = TextDesc::new(format!("invited {}", event.content.display_name), None);
         event_item.set_text_desc(text_desc);
@@ -1467,7 +1467,7 @@ impl RoomMessage {
             event.event_id.to_string(),
             event.sender.to_string(),
             event.origin_server_ts.get().into(),
-            "m.room.third.party.invite".to_string(),
+            "m.room.third_party_invite".to_string(),
         );
         let text_desc = TextDesc::new(format!("invited {}", event.content.display_name), None);
         event_item.set_text_desc(text_desc);

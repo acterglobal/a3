@@ -131,17 +131,17 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'm.call.invite':
       case 'm.room.aliases':
       case 'm.room.avatar':
-      case 'm.room.canonical.alias':
+      case 'm.room.canonical_alias':
       case 'm.room.create':
       case 'm.room.encryption':
       case 'm.room.guest.access':
-      case 'm.room.history.visibility':
+      case 'm.room.history_visibility':
       case 'm.room.join.rules':
       case 'm.room.name':
-      case 'm.room.pinned.events':
-      case 'm.room.power.levels':
-      case 'm.room.server.acl':
-      case 'm.room.third.party.invite':
+      case 'm.room.pinned_events':
+      case 'm.room.power_levels':
+      case 'm.room.server_acl':
+      case 'm.room.third_party_invite':
       case 'm.room.tombstone':
       case 'm.room.topic':
       case 'm.space.child':
