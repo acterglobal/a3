@@ -26,6 +26,8 @@ class CreatePinSheet extends ConsumerStatefulWidget {
 
 class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
   final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _linkController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -39,10 +41,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final titleInput = ref.watch(titleProvider);
-    final titleNotifier = ref.watch(titleProvider.notifier);
-    final textNotifier = ref.watch(textProvider.notifier);
-    final linkNotifier = ref.watch(linkProvider.notifier);
+    bool hasLinkOrText() {
+      return _linkController.text.isNotEmpty || _textController.text.isNotEmpty;
+    }
 
     return SideSheet(
       header: 'Create new Pin',
@@ -70,9 +71,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                             ),
                           ),
                           controller: _titleController,
-                          onChanged: (String? value) {
-                            titleNotifier.state = value ?? '';
-                          },
                           validator: (value) =>
                               (value != null && value.isNotEmpty)
                                   ? null
@@ -92,24 +90,14 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
-                validator: (value) => (value != null && value.isNotEmpty)
-                    ? textNotifier.state.isEmpty
-                        ? 'Text or URL must be given'
-                        : null
-                    : 'Please enter a link',
-                onChanged: (String? value) {
-                  linkNotifier.state = value ?? '';
-                },
+                controller: _linkController,
+                validator: (value) =>
+                    hasLinkOrText() ? null : 'Text or URL must be given',
               ),
               MdEditorWithPreview(
-                validator: (value) => (value != null && value.isNotEmpty)
-                    ? linkNotifier.state.isEmpty
-                        ? 'Text or URL must be given'
-                        : null
-                    : 'Please enter a text',
-                onChanged: (String? value) {
-                  textNotifier.state = value ?? '';
-                },
+                validator: (value) =>
+                    hasLinkOrText() ? null : 'Text or URL must be given',
+                controller: _textController,
               ),
               const SelectSpaceFormField(canCheck: 'CanPostPin'),
             ],
@@ -146,8 +134,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 final spaceId = ref.read(selectedSpaceIdProvider);
                 final space = await ref.read(spaceProvider(spaceId!).future);
                 final pinDraft = space.pinDraft();
-                final text = ref.read(textProvider);
-                final url = ref.read(linkProvider);
+                final text = _textController.text;
+                final url = _linkController.text;
                 pinDraft.title(ref.read(titleProvider));
                 if (text.isNotEmpty) {
                   pinDraft.contentMarkdown(text);
@@ -157,8 +145,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                 }
                 final pinId = await pinDraft.send();
                 // reset providers
-                titleNotifier.state = '';
-                textNotifier.state = '';
+                _textController.text = '';
+                _linkController.text = '';
 
                 // We are doing as expected, but the lints triggers.
                 // ignore: use_build_context_synchronously
@@ -181,9 +169,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: titleInput.isNotEmpty
-                ? Theme.of(context).colorScheme.success
-                : Theme.of(context).colorScheme.success.withOpacity(0.6),
+            backgroundColor: Theme.of(context).colorScheme.success,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
             ),
