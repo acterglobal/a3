@@ -713,8 +713,14 @@ object Convo {
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<EventId>>;
 
+    /// Edit the existing event with plain text
+    fn edit_plain_message(event_id: string, new_msg: string) -> Future<Result<EventId>>;
+
     /// Send a text message in MarkDown format to the room
     fn send_formatted_message(markdown_message: string) -> Future<Result<EventId>>;
+
+    /// Edit the existing event with MarkDown text
+    fn edit_formatted_message(event_id: string, new_msg: string) -> Future<Result<EventId>>;
 
     /// Send reaction about existing event
     fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;
@@ -727,6 +733,9 @@ object Convo {
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
+    /// edit the image message
+    fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<EventId>>;
+
     /// send the audio message to this room
     fn send_audio_message(uri: string, name: string, mimetype: string, secs: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
 
@@ -734,6 +743,9 @@ object Convo {
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// edit the audio message
+    fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, secs: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
 
     /// send the video message to this room
     fn send_video_message(uri: string, name: string, mimetype: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, size: Option<u32>, blurhash: Option<string>) -> Future<Result<EventId>>;
@@ -743,6 +755,9 @@ object Convo {
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
+    /// edit the video message
+    fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
+
     /// send the file message to this room
     fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<EventId>>;
 
@@ -750,6 +765,15 @@ object Convo {
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// edit the file message
+    fn edit_file_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u32>) -> Future<Result<EventId>>;
+
+    /// send the location message to this room
+    fn send_location_message(body: string, geo_uri: string) -> Future<Result<EventId>>;
+
+    /// edit the location message
+    fn edit_location_message(event_id: string, body: string, geo_uri: string) -> Future<Result<EventId>>;
 
     /// get the user status on this room
     fn room_type() -> string;
