@@ -5,7 +5,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -41,7 +40,6 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
 
   @override
   Widget build(BuildContext context) {
-    final location = ref.watch(currentRoutingLocation);
     final client = ref.watch(clientProvider);
     String roomId = widget.room.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
@@ -56,17 +54,10 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
               .read(currentConvoProvider.notifier)
               .update((state) => widget.room);
 
-          if (!isDesktop) {
-            context.pushNamed(
-              Routes.chatroom.name,
-              pathParameters: {'roomId': roomId},
-            );
-          } else if (location != Routes.chat.route) {
-            context.pushNamed(
-              Routes.chatroom.name,
-              pathParameters: {'roomId': roomId},
-            );
-          }
+          context.pushNamed(
+            Routes.chatroom.name,
+            pathParameters: {'roomId': roomId},
+          );
         },
         subtitle: _SubtitleWidget(
           room: widget.room,
