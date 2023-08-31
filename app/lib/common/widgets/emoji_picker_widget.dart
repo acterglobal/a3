@@ -61,6 +61,7 @@ class EmojiPickerWidget extends StatelessWidget {
                 bgColor: Theme.of(context).colorScheme.background,
                 recentTabBehavior: RecentTabBehavior.RECENT,
                 recentsLimit: 28,
+                emojiTextStyle: EmojiConfig.emojiTextStyle,
               ),
             ),
           ),

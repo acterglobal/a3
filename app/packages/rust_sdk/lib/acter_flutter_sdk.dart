@@ -402,6 +402,7 @@ class ActerSdk {
       _index = clients.length - 1;
       rethrow;
     }
+    await _persistSessions();
     String appDocPath = await appDir();
 
     return await _api.destroyLocalData(appDocPath, userId, defaultServerName);

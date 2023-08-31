@@ -64,7 +64,7 @@ class EmojiRow extends StatelessWidget {
                 child: Text(
                   emoji,
                   style:
-                      EmojiConfig.emojiTextStyle.copyWith(fontSize: size ?? 18),
+                      (EmojiConfig.emojiTextStyle ?? const TextStyle()).copyWith(fontSize: size ?? 18),
                 ),
               ),
             InkWell(
