@@ -44,8 +44,8 @@ NotificationBrief briefForChat(ffi.Notification notification) {
     case 'm.space.child':
     case 'm.space.parent':
     case 'm.room.message':
-      String? subType = eventItem.subType();
-      switch (subType) {
+      String? msgType = eventItem.msgType();
+      switch (msgType) {
         case 'm.audio':
         case 'm.file':
         case 'm.image':
@@ -58,7 +58,7 @@ NotificationBrief briefForChat(ffi.Notification notification) {
         case 'm.text':
           return NotificationBrief.fromTextDesc(eventItem.textDesc(), route);
       }
-      return NotificationBrief(title: subType ?? eventType, route: route);
+      return NotificationBrief(title: msgType ?? eventType, route: route);
 
     case 'm.reaction':
     case 'm.sticker':

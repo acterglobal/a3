@@ -439,7 +439,7 @@ object RoomEventItem {
     fn event_type() -> string;
 
     /// the type of massage, like text, image, audio, video, file etc
-    fn sub_type() -> Option<string>;
+    fn msg_type() -> Option<string>;
 
     /// contains text fallback and formatted text
     fn text_desc() -> Option<TextDesc>;

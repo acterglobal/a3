@@ -98,7 +98,7 @@ pub struct RoomEventItem {
     sender: String,
     origin_server_ts: u64,
     event_type: String,
-    sub_type: Option<String>,
+    msg_type: Option<String>,
     text_desc: Option<TextDesc>,
     image_desc: Option<ImageDesc>,
     audio_desc: Option<AudioDesc>,
@@ -117,7 +117,7 @@ impl RoomEventItem {
             sender,
             origin_server_ts,
             event_type,
-            sub_type: None,
+            msg_type: None,
             text_desc: None,
             image_desc: None,
             audio_desc: None,
@@ -146,12 +146,12 @@ impl RoomEventItem {
         self.event_type.clone()
     }
 
-    pub fn sub_type(&self) -> Option<String> {
-        self.sub_type.clone()
+    pub fn msg_type(&self) -> Option<String> {
+        self.msg_type.clone()
     }
 
-    pub(crate) fn set_sub_type(&mut self, value: String) {
-        self.sub_type = Some(value);
+    pub(crate) fn set_msg_type(&mut self, value: String) {
+        self.msg_type = Some(value);
     }
 
     pub fn text_desc(&self) -> Option<TextDesc> {
@@ -930,27 +930,27 @@ impl RoomMessage {
         );
         let fallback = match event.content.membership {
             MembershipState::Join => {
-                event_item.set_sub_type("Joined".to_string());
+                event_item.set_msg_type("Joined".to_string());
                 "joined".to_string()
             }
             MembershipState::Leave => {
-                event_item.set_sub_type("Left".to_string());
+                event_item.set_msg_type("Left".to_string());
                 "left".to_string()
             }
             MembershipState::Ban => {
-                event_item.set_sub_type("Banned".to_string());
+                event_item.set_msg_type("Banned".to_string());
                 "banned".to_string()
             }
             MembershipState::Invite => {
-                event_item.set_sub_type("Invited".to_string());
+                event_item.set_msg_type("Invited".to_string());
                 "invited".to_string()
             }
             MembershipState::Knock => {
-                event_item.set_sub_type("Knocked".to_string());
+                event_item.set_msg_type("Knocked".to_string());
                 "knocked".to_string()
             }
             _ => {
-                event_item.set_sub_type("ProfileChanged".to_string());
+                event_item.set_msg_type("ProfileChanged".to_string());
                 match (
                     &event.content.displayname,
                     &event.content.avatar_url,
@@ -1005,27 +1005,27 @@ impl RoomMessage {
         );
         let fallback = match event.content.membership {
             MembershipState::Join => {
-                event_item.set_sub_type("Joined".to_string());
+                event_item.set_msg_type("Joined".to_string());
                 "joined".to_string()
             }
             MembershipState::Leave => {
-                event_item.set_sub_type("Left".to_string());
+                event_item.set_msg_type("Left".to_string());
                 "left".to_string()
             }
             MembershipState::Ban => {
-                event_item.set_sub_type("Banned".to_string());
+                event_item.set_msg_type("Banned".to_string());
                 "banned".to_string()
             }
             MembershipState::Invite => {
-                event_item.set_sub_type("Invited".to_string());
+                event_item.set_msg_type("Invited".to_string());
                 "invited".to_string()
             }
             MembershipState::Knock => {
-                event_item.set_sub_type("Knocked".to_string());
+                event_item.set_msg_type("Knocked".to_string());
                 "knocked".to_string()
             }
             _ => {
-                event_item.set_sub_type("ProfileChanged".to_string());
+                event_item.set_msg_type("ProfileChanged".to_string());
                 match (
                     &event.content.displayname,
                     &event.content.avatar_url,
@@ -1086,7 +1086,7 @@ impl RoomMessage {
                 }
             }
         }
-        event_item.set_sub_type(event.content.msgtype().to_string());
+        event_item.set_msg_type(event.content.msgtype().to_string());
         let fallback = match event.content.msgtype.clone() {
             MessageType::Audio(content) => "sent an audio.".to_string(),
             MessageType::Emote(content) => content.body,
@@ -1174,7 +1174,7 @@ impl RoomMessage {
             "m.room.message".to_string(),
         );
         event_item.set_editable(sent_by_me);
-        event_item.set_sub_type(event.content.msgtype().to_string());
+        event_item.set_msg_type(event.content.msgtype().to_string());
         let fallback = match event.content.msgtype.clone() {
             MessageType::Audio(content) => "sent an audio.".to_string(),
             MessageType::Emote(content) => content.body,
@@ -1666,7 +1666,7 @@ impl RoomMessage {
                     origin_server_ts,
                     "m.room.message".to_string(),
                 );
-                result.set_sub_type(msg_type.msgtype().to_string());
+                result.set_msg_type(msg_type.msgtype().to_string());
                 for (key, value) in event.reactions().iter() {
                     let records = value
                         .senders()
@@ -1812,71 +1812,71 @@ impl RoomMessage {
                 );
                 let fallback = match m.change() {
                     Some(MembershipChange::None) => {
-                        result.set_sub_type("None".to_string());
+                        result.set_msg_type("None".to_string());
                         "not changed membership".to_string()
                     }
                     Some(MembershipChange::Error) => {
-                        result.set_sub_type("Error".to_string());
+                        result.set_msg_type("Error".to_string());
                         "error in membership change".to_string()
                     }
                     Some(MembershipChange::Joined) => {
-                        result.set_sub_type("Joined".to_string());
+                        result.set_msg_type("Joined".to_string());
                         "joined".to_string()
                     }
                     Some(MembershipChange::Left) => {
-                        result.set_sub_type("Left".to_string());
+                        result.set_msg_type("Left".to_string());
                         "left".to_string()
                     }
                     Some(MembershipChange::Banned) => {
-                        result.set_sub_type("Banned".to_string());
+                        result.set_msg_type("Banned".to_string());
                         "banned".to_string()
                     }
                     Some(MembershipChange::Unbanned) => {
-                        result.set_sub_type("Unbanned".to_string());
+                        result.set_msg_type("Unbanned".to_string());
                         "unbanned".to_string()
                     }
                     Some(MembershipChange::Kicked) => {
-                        result.set_sub_type("Kicked".to_string());
+                        result.set_msg_type("Kicked".to_string());
                         "kicked".to_string()
                     }
                     Some(MembershipChange::Invited) => {
-                        result.set_sub_type("Invited".to_string());
+                        result.set_msg_type("Invited".to_string());
                         "invited".to_string()
                     }
                     Some(MembershipChange::KickedAndBanned) => {
-                        result.set_sub_type("KickedAndBanned".to_string());
+                        result.set_msg_type("KickedAndBanned".to_string());
                         "kicked and banned".to_string()
                     }
                     Some(MembershipChange::InvitationAccepted) => {
-                        result.set_sub_type("InvitationAccepted".to_string());
+                        result.set_msg_type("InvitationAccepted".to_string());
                         "accepted invitation".to_string()
                     }
                     Some(MembershipChange::InvitationRejected) => {
-                        result.set_sub_type("InvitationRejected".to_string());
+                        result.set_msg_type("InvitationRejected".to_string());
                         "rejected invitation".to_string()
                     }
                     Some(MembershipChange::InvitationRevoked) => {
-                        result.set_sub_type("InvitationRevoked".to_string());
+                        result.set_msg_type("InvitationRevoked".to_string());
                         "revoked invitation".to_string()
                     }
                     Some(MembershipChange::Knocked) => {
-                        result.set_sub_type("Knocked".to_string());
+                        result.set_msg_type("Knocked".to_string());
                         "knocked".to_string()
                     }
                     Some(MembershipChange::KnockAccepted) => {
-                        result.set_sub_type("KnockAccepted".to_string());
+                        result.set_msg_type("KnockAccepted".to_string());
                         "accepted knock".to_string()
                     }
                     Some(MembershipChange::KnockRetracted) => {
-                        result.set_sub_type("KnockRetracted".to_string());
+                        result.set_msg_type("KnockRetracted".to_string());
                         "retracted knock".to_string()
                     }
                     Some(MembershipChange::KnockDenied) => {
-                        result.set_sub_type("KnockDenied".to_string());
+                        result.set_msg_type("KnockDenied".to_string());
                         "denied knock".to_string()
                     }
                     Some(MembershipChange::NotImplemented) => {
-                        result.set_sub_type("NotImplemented".to_string());
+                        result.set_msg_type("NotImplemented".to_string());
                         "not implemented change".to_string()
                     }
                     None => "unknown error".to_string(),
@@ -1893,7 +1893,7 @@ impl RoomMessage {
                     origin_server_ts,
                     "m.room.member".to_string(),
                 );
-                result.set_sub_type("ProfileChange".to_string());
+                result.set_msg_type("ProfileChange".to_string());
                 if let Some(change) = p.displayname_change() {
                     let text_desc = match (&change.old, &change.new) {
                         (Some(old), Some(new)) => {

@@ -68,6 +68,18 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     return false;
   }
 
+  // get the repliedTo field from metadata
+  String? _getRepliedTo(types.Message message) {
+    final metadata = message.metadata;
+    if (metadata == null) {
+      return null;
+    }
+    if (!metadata.containsKey('repliedTo')) {
+      return null;
+    }
+    return metadata['repliedTo'];
+  }
+
   // parses `RoomMessage` event to `types.Message` and updates messages list
   Future<void> _parseEvent(TimelineDiff timelineEvent) async {
     debugPrint('DiffRx: ${timelineEvent.action()}');
@@ -81,16 +93,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             break;
           }
           messagesNotifier.insertMessage(0, message);
-          if (message.metadata != null &&
-              message.metadata!.containsKey('repliedTo')) {
-            await _fetchOriginalContent(
-              message.metadata?['repliedTo'],
-              message.id,
-            );
+          final repliedTo = _getRepliedTo(message);
+          if (repliedTo != null) {
+            await _fetchOriginalContent(repliedTo, message.id);
           }
           RoomEventItem? eventItem = m.eventItem();
           if (eventItem != null) {
-            await _fetchEventContent(eventItem.subType(), message.id);
+            await _fetchEventBinary(eventItem.msgType(), message.id);
           }
         }
         break;
@@ -110,16 +119,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           // update event may be fetched prior to insert event
           messagesNotifier.replaceMessage(index, message);
         }
-        if (message.metadata != null &&
-            message.metadata!.containsKey('repliedTo')) {
-          await _fetchOriginalContent(
-            message.metadata?['repliedTo'],
-            message.id,
-          );
+        final repliedTo = _getRepliedTo(message);
+        if (repliedTo != null) {
+          await _fetchOriginalContent(repliedTo, message.id);
         }
         RoomEventItem? eventItem = m.eventItem();
         if (eventItem != null) {
-          await _fetchEventContent(eventItem.subType(), message.id);
+          await _fetchEventBinary(eventItem.msgType(), message.id);
         }
         break;
       case 'Remove':
@@ -136,16 +142,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           break;
         }
         messagesNotifier.insertMessage(0, message);
-        if (message.metadata != null &&
-            message.metadata!.containsKey('repliedTo')) {
-          await _fetchOriginalContent(
-            message.metadata?['repliedTo'],
-            message.id,
-          );
+        final repliedTo = _getRepliedTo(message);
+        if (repliedTo != null) {
+          await _fetchOriginalContent(repliedTo, message.id);
         }
         RoomEventItem? eventItem = m.eventItem();
         if (eventItem != null) {
-          await _fetchEventContent(eventItem.subType(), message.id);
+          await _fetchEventBinary(eventItem.msgType(), message.id);
         }
         break;
       case 'PushFront':
@@ -155,16 +158,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           break;
         }
         messagesNotifier.addMessage(message);
-        if (message.metadata != null &&
-            message.metadata!.containsKey('repliedTo')) {
-          await _fetchOriginalContent(
-            message.metadata?['repliedTo'],
-            message.id,
-          );
+        final repliedTo = _getRepliedTo(message);
+        if (repliedTo != null) {
+          await _fetchOriginalContent(repliedTo, message.id);
         }
         RoomEventItem? eventItem = m.eventItem();
         if (eventItem != null) {
-          await _fetchEventContent(eventItem.subType(), message.id);
+          await _fetchEventBinary(eventItem.msgType(), message.id);
         }
         break;
       case 'PopBack':
@@ -270,7 +270,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.call.invite':
         break;
       case 'm.room.message':
-        String? orgMsgType = orgEventItem.subType();
+        String? orgMsgType = orgEventItem.msgType();
         switch (orgMsgType) {
           case 'm.text':
             TextDesc? description = orgEventItem.textDesc();
@@ -485,15 +485,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             metadata: {
               'itemType': 'event',
               'eventType': eventType,
-              'subType': eventItem.subType(),
+              'msgType': eventItem.msgType(),
               'body': formattedBody ?? body,
             },
           );
         }
         break;
       case 'm.room.message':
-        String? subType = eventItem.subType();
-        switch (subType) {
+        String? msgType = eventItem.msgType();
+        switch (msgType) {
           case 'm.audio':
             AudioDesc? description = eventItem.audioDesc();
             if (description != null) {
@@ -591,7 +591,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               Map<String, dynamic> metadata = {
                 'itemType': 'event',
                 'eventType': eventType,
-                'subType': subType,
+                'msgType': msgType,
                 'body': description.body(),
                 'geoUri': description.geoUri(),
               };
@@ -642,8 +642,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 text: formattedBody ?? body,
                 metadata: {
                   'itemType': 'event',
-                  'msgType': eventItem.subType(),
                   'eventType': eventType,
+                  'msgType': msgType,
                 },
               );
             }
@@ -661,7 +661,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 metadata: {
                   'itemType': 'event',
                   'eventType': eventType,
-                  'msgType': eventItem.subType(),
+                  'msgType': msgType,
                 },
               );
             }
@@ -744,20 +744,20 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     return null;
   }
 
-  // fetch event media content for message.
-  Future<void> _fetchEventContent(String? subType, String eventId) async {
-    switch (subType) {
+  // fetch event media binary for message.
+  Future<void> _fetchEventBinary(String? msgType, String eventId) async {
+    switch (msgType) {
       case 'm.audio':
-        await _fetchAudioContent(eventId);
+        await _fetchAudioBinary(eventId);
         break;
       case 'm.video':
-        await _fetchVideoContent(eventId);
+        await _fetchVideoBinary(eventId);
         break;
     }
   }
 
   // fetch audio content for message.
-  Future<void> _fetchAudioContent(String eventId) async {
+  Future<void> _fetchAudioBinary(String eventId) async {
     final room = ref.read(currentConvoProvider)!;
     final messages = ref.read(messagesProvider);
     final messagesNotifier = ref.read(messagesProvider.notifier);
@@ -772,7 +772,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // fetch video conent for message
-  Future<void> _fetchVideoContent(String eventId) async {
+  Future<void> _fetchVideoBinary(String eventId) async {
     final room = ref.read(currentConvoProvider)!;
     final messages = ref.read(messagesProvider);
     final messagesNotifier = ref.read(messagesProvider.notifier);

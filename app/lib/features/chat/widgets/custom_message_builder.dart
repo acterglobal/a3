@@ -105,7 +105,7 @@ class CustomMessageBuilder extends StatelessWidget {
           ),
         );
       case 'm.room.message':
-        if (message.metadata?['subType'] == 'm.location') {
+        if (message.metadata?['msgType'] == 'm.location') {
           return Container(
             padding: const EdgeInsets.all(18),
             child: Column(

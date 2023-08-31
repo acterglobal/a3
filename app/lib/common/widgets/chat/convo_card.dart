@@ -147,8 +147,7 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'm.space.child':
       case 'm.space.parent':
       case 'm.room.message':
-        String? subType = eventItem.subType();
-        switch (subType) {
+        switch (eventItem.msgType()) {
           case 'm.audio':
           case 'm.file':
           case 'm.image':
