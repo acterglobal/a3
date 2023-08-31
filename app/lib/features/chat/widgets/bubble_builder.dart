@@ -39,11 +39,11 @@ class BubbleBuilder extends ConsumerWidget {
     final chatInputState = ref.watch(chatInputProvider);
     final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
-    String msgType = '';
+    String eventType = '';
     if (message.metadata!.containsKey('eventType')) {
-      msgType = message.metadata?['eventType'];
+      eventType = message.metadata?['eventType'];
     }
-    bool isMemberEvent = msgType == 'm.room.member';
+    bool isMemberEvent = eventType == 'm.room.member';
 
     return isMemberEvent
         ? child

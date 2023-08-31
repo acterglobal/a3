@@ -5,7 +5,7 @@ use matrix_sdk::ruma::{
         macros::EventContent,
         room::message::{
             AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-            TextMessageEventContent, VideoMessageEventContent,
+            LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
         },
     },
     OwnedMxcUri,
@@ -29,6 +29,8 @@ pub enum NewsContent {
     Audio(AudioMessageEventContent),
     /// A file message.
     File(FileMessageEventContent),
+    /// A location message.
+    Location(LocationMessageEventContent),
 }
 
 impl NewsContent {
@@ -37,6 +39,7 @@ impl NewsContent {
             NewsContent::Audio(_) => "audio".to_owned(),
             NewsContent::File(_) => "file".to_owned(),
             NewsContent::Image(_) => "image".to_owned(),
+            NewsContent::Location(_) => "location".to_owned(),
             NewsContent::Text(_) => "text".to_owned(),
             NewsContent::Video(_) => "video".to_owned(),
         }
@@ -59,6 +62,13 @@ impl NewsContent {
     pub fn image(&self) -> Option<ImageMessageEventContent> {
         match self {
             NewsContent::Image(content) => Some(content.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn location(&self) -> Option<LocationMessageEventContent> {
+        match self {
+            NewsContent::Location(content) => Some(content.clone()),
             _ => None,
         }
     }
@@ -123,6 +133,13 @@ impl NewsSlide {
     pub fn new_file(body: String, url: OwnedMxcUri) -> Self {
         NewsSlide {
             content: NewsContent::File(FileMessageEventContent::plain(body, url)),
+            references: vec![],
+        }
+    }
+
+    pub fn new_location(body: String, geo_uri: String) -> Self {
+        NewsSlide {
+            content: NewsContent::Location(LocationMessageEventContent::new(body, geo_uri)),
             references: vec![],
         }
     }
