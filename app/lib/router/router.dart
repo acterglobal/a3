@@ -519,6 +519,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.chatroom.name,
           path: Routes.chatroom.route,
           redirect: authGuardRedirect,
@@ -531,6 +532,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.chatProfile.name,
           path: Routes.chatProfile.route,
           redirect: authGuardRedirect,

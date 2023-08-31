@@ -18,9 +18,9 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
     );
   }
 
-  void searchRoom(String data) async {
+  void searchRoom(String? data) async {
     List<Convo> temp = [];
-    if (data.isNotEmpty) {
+    if (data != null && data.isNotEmpty) {
       for (var element in asyncChats.requireValue) {
         final name = await element
                 .getProfile()
