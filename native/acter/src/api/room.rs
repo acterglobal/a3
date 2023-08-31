@@ -25,16 +25,17 @@ use matrix_sdk::{
             relation::Annotation,
             room::{
                 avatar::ImageInfo as AvatarImageInfo,
+                join_rules::{AllowRule, JoinRule},
                 message::{
                     AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-                    ForwardThread, ImageMessageEventContent, MessageType, RoomMessageEvent,
-                    RoomMessageEventContent, TextMessageEventContent, VideoInfo,
-                    VideoMessageEventContent,
+                    ForwardThread, ImageMessageEventContent, LocationMessageEventContent,
+                    MessageType, RoomMessageEvent, RoomMessageEventContent,
+                    TextMessageEventContent, VideoInfo, VideoMessageEventContent,
                 },
                 ImageInfo,
             },
             AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent,
-            MessageLikeEventType, StateEvent, StateEventType,
+            MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
         },
         room::RoomType,
         EventId, Int, OwnedEventId, OwnedMxcUri, OwnedUserId, TransactionId, UInt, UserId,
@@ -42,10 +43,6 @@ use matrix_sdk::{
     Client, RoomMemberships, RoomState,
 };
 use matrix_sdk_ui::timeline::RoomExt;
-use ruma::events::{
-    room::join_rules::{AllowRule, JoinRule},
-    EventContent, StateEventContent, StaticEventContent, StaticStateEventContent,
-};
 use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tracing::{error, info};
 
@@ -989,6 +986,41 @@ impl Room {
             .await?
     }
 
+    pub async fn send_location_message(
+        &self,
+        body: String,
+        geo_uri: String,
+    ) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message as file to a room we are not in")
+        };
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+                let location_content = LocationMessageEventContent::new(body, geo_uri);
+                let content = RoomMessageEventContent::new(MessageType::Location(location_content));
+                let txn_id = TransactionId::new();
+                let response = room.send(content, Some(&txn_id)).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
     pub fn room_type(&self) -> String {
         match self.room.state() {
             RoomState::Joined => "joined".to_string(),
@@ -1431,65 +1463,6 @@ impl Room {
                         MessageLikeEvent::Original(e),
                     ))) => {
                         let msg = RoomMessage::call_invite_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationAccept(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_accept_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationCancel(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_cancel_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationDone(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_done_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::KeyVerificationKey(
-                        MessageLikeEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::key_verification_key_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::KeyVerificationMac(
-                        MessageLikeEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::key_verification_mac_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationReady(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_ready_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationStart(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_start_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
                         Ok(msg)
                     }
                     Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::Reaction(

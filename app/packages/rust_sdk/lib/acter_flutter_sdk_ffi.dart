@@ -11146,6 +11146,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _newsSlideLocationDescPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsSlideLocationDescReturn Function(
+            ffi.Int64,
+          )>>("__NewsSlide_location_desc");
+
+  late final _newsSlideLocationDesc = _newsSlideLocationDescPtr.asFunction<
+      _NewsSlideLocationDescReturn Function(
+        int,
+      )>();
   late final _newsEntrySlidesCountPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -12661,14 +12671,14 @@ class Api {
       _RoomEventItemEventTypeReturn Function(
         int,
       )>();
-  late final _roomEventItemSubTypePtr = _lookup<
+  late final _roomEventItemMsgTypePtr = _lookup<
       ffi.NativeFunction<
-          _RoomEventItemSubTypeReturn Function(
+          _RoomEventItemMsgTypeReturn Function(
             ffi.Int64,
-          )>>("__RoomEventItem_sub_type");
+          )>>("__RoomEventItem_msg_type");
 
-  late final _roomEventItemSubType = _roomEventItemSubTypePtr.asFunction<
-      _RoomEventItemSubTypeReturn Function(
+  late final _roomEventItemMsgType = _roomEventItemMsgTypePtr.asFunction<
+      _RoomEventItemMsgTypeReturn Function(
         int,
       )>();
   late final _roomEventItemTextDescPtr = _lookup<
@@ -12721,6 +12731,17 @@ class Api {
       _RoomEventItemFileDescReturn Function(
         int,
       )>();
+  late final _roomEventItemLocationDescPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemLocationDescReturn Function(
+            ffi.Int64,
+          )>>("__RoomEventItem_location_desc");
+
+  late final _roomEventItemLocationDesc =
+      _roomEventItemLocationDescPtr.asFunction<
+          _RoomEventItemLocationDescReturn Function(
+            int,
+          )>();
   late final _roomEventItemInReplyToPtr = _lookup<
       ffi.NativeFunction<
           _RoomEventItemInReplyToReturn Function(
@@ -12742,18 +12763,18 @@ class Api {
           int Function(
             int,
           )>();
-  late final _roomEventItemReactionItemsPtr = _lookup<
+  late final _roomEventItemReactionRecordsPtr = _lookup<
       ffi.NativeFunction<
-          _RoomEventItemReactionItemsReturn Function(
+          _RoomEventItemReactionRecordsReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__RoomEventItem_reaction_items");
+          )>>("__RoomEventItem_reaction_records");
 
-  late final _roomEventItemReactionItems =
-      _roomEventItemReactionItemsPtr.asFunction<
-          _RoomEventItemReactionItemsReturn Function(
+  late final _roomEventItemReactionRecords =
+      _roomEventItemReactionRecordsPtr.asFunction<
+          _RoomEventItemReactionRecordsReturn Function(
             int,
             int,
             int,
@@ -13152,6 +13173,48 @@ class Api {
       _FileDescThumbnailSourceReturn Function(
         int,
       )>();
+  late final _locationDescBodyPtr = _lookup<
+      ffi.NativeFunction<
+          _LocationDescBodyReturn Function(
+            ffi.Int64,
+          )>>("__LocationDesc_body");
+
+  late final _locationDescBody = _locationDescBodyPtr.asFunction<
+      _LocationDescBodyReturn Function(
+        int,
+      )>();
+  late final _locationDescGeoUriPtr = _lookup<
+      ffi.NativeFunction<
+          _LocationDescGeoUriReturn Function(
+            ffi.Int64,
+          )>>("__LocationDesc_geo_uri");
+
+  late final _locationDescGeoUri = _locationDescGeoUriPtr.asFunction<
+      _LocationDescGeoUriReturn Function(
+        int,
+      )>();
+  late final _locationDescThumbnailInfoPtr = _lookup<
+      ffi.NativeFunction<
+          _LocationDescThumbnailInfoReturn Function(
+            ffi.Int64,
+          )>>("__LocationDesc_thumbnail_info");
+
+  late final _locationDescThumbnailInfo =
+      _locationDescThumbnailInfoPtr.asFunction<
+          _LocationDescThumbnailInfoReturn Function(
+            int,
+          )>();
+  late final _locationDescThumbnailSourcePtr = _lookup<
+      ffi.NativeFunction<
+          _LocationDescThumbnailSourceReturn Function(
+            ffi.Int64,
+          )>>("__LocationDesc_thumbnail_source");
+
+  late final _locationDescThumbnailSource =
+      _locationDescThumbnailSourcePtr.asFunction<
+          _LocationDescThumbnailSourceReturn Function(
+            int,
+          )>();
   late final _reactionRecordSenderIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -14433,6 +14496,16 @@ class Api {
 
   late final _attachmentFileBinary = _attachmentFileBinaryPtr.asFunction<
       int Function(
+        int,
+      )>();
+  late final _attachmentLocationDescPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentLocationDescReturn Function(
+            ffi.Int64,
+          )>>("__Attachment_location_desc");
+
+  late final _attachmentLocationDesc = _attachmentLocationDescPtr.asFunction<
+      _AttachmentLocationDescReturn Function(
         int,
       )>();
   late final _attachmentsManagerAttachmentsPtr = _lookup<
@@ -24537,6 +24610,25 @@ class NewsSlide {
     return tmp2;
   }
 
+  /// if this is a location, hand over the description
+  LocationDesc? locationDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSlideLocationDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_LocationDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = LocationDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -27734,10 +27826,10 @@ class RoomEventItem {
   }
 
   /// the type of massage, like text, image, audio, video, file etc
-  String? subType() {
+  String? msgType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemSubType(
+    final tmp1 = _api._roomEventItemMsgType(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -27862,6 +27954,25 @@ class RoomEventItem {
     return tmp2;
   }
 
+  /// contains body and geo uri
+  LocationDesc? locationDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemLocationDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_LocationDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = LocationDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// original event id, if this msg is reply to another msg
   String? inReplyTo() {
     var tmp0 = 0;
@@ -27913,7 +28024,7 @@ class RoomEventItem {
   }
 
   /// the details that users reacted using this emote key in this message
-  FfiListReactionRecord? reactionItems(
+  FfiListReactionRecord? reactionRecords(
     String key,
   ) {
     final tmp1 = key;
@@ -27930,7 +28041,7 @@ class RoomEventItem {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._roomEventItemReactionItems(
+    final tmp5 = _api._roomEventItemReactionRecords(
       tmp0,
       tmp2,
       tmp3,
@@ -28879,6 +28990,116 @@ class FileDesc {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._fileDescThumbnailSource(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MediaSource");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MediaSource._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class LocationDesc {
+  final Api _api;
+  final _Box _box;
+
+  LocationDesc._(this._api, this._box);
+
+  /// body
+  String body() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._locationDescBody(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// geo uri
+  String geoUri() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._locationDescGeoUri(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// thumbnail info
+  ThumbnailInfo? thumbnailInfo() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._locationDescThumbnailInfo(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ThumbnailInfo");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = ThumbnailInfo._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// thumbnail source
+  MediaSource? thumbnailSource() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._locationDescThumbnailSource(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -31718,6 +31939,25 @@ class Attachment {
     final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_file_binary_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentFileBinaryFuturePoll);
+    return tmp2;
+  }
+
+  /// if this is a location, hand over the description
+  LocationDesc? locationDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentLocationDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_LocationDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = LocationDesc._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -41906,6 +42146,13 @@ class _NewsSlideFileDescReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _NewsSlideLocationDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _NewsEntryGetSlideReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -42284,7 +42531,7 @@ class _RoomEventItemEventTypeReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomEventItemSubTypeReturn extends ffi.Struct {
+class _RoomEventItemMsgTypeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -42330,6 +42577,13 @@ class _RoomEventItemFileDescReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _RoomEventItemLocationDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _RoomEventItemInReplyToReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -42341,7 +42595,7 @@ class _RoomEventItemInReplyToReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _RoomEventItemReactionItemsReturn extends ffi.Struct {
+class _RoomEventItemReactionRecordsReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -42614,6 +42868,38 @@ class _FileDescThumbnailSourceReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _LocationDescBodyReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _LocationDescGeoUriReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _LocationDescThumbnailInfoReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _LocationDescThumbnailSourceReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _TimelineDiffActionReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -42722,6 +43008,13 @@ class _AttachmentVideoDescReturn extends ffi.Struct {
 }
 
 class _AttachmentFileDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _AttachmentLocationDescReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

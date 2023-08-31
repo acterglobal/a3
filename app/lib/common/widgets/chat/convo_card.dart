@@ -122,31 +122,23 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'm.call.invite':
       case 'm.room.aliases':
       case 'm.room.avatar':
-      case 'm.room.canonical.alias':
+      case 'm.room.canonical_alias':
       case 'm.room.create':
       case 'm.room.encryption':
       case 'm.room.guest.access':
-      case 'm.room.history.visibility':
+      case 'm.room.history_visibility':
       case 'm.room.join.rules':
       case 'm.room.name':
-      case 'm.room.pinned.events':
-      case 'm.room.power.levels':
-      case 'm.room.server.acl':
-      case 'm.room.third.party.invite':
+      case 'm.room.pinned_events':
+      case 'm.room.power_levels':
+      case 'm.room.server_acl':
+      case 'm.room.third_party_invite':
       case 'm.room.tombstone':
       case 'm.room.topic':
       case 'm.space.child':
       case 'm.space.parent':
-      case 'm.key.verification.accept':
-      case 'm.key.verification.cancel':
-      case 'm.key.verification.done':
-      case 'm.key.verification.key':
-      case 'm.key.verification.mac':
-      case 'm.key.verification.ready':
-      case 'm.key.verification.start':
       case 'm.room.message':
-        String? subType = eventItem.subType();
-        switch (subType) {
+        switch (eventItem.msgType()) {
           case 'm.audio':
           case 'm.file':
           case 'm.image':

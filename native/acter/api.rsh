@@ -106,6 +106,9 @@ object NewsSlide {
     fn file_desc() -> Option<FileDesc>;
     /// if this is a file, hand over the data
     fn file_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is a location, hand over the description
+    fn location_desc() -> Option<LocationDesc>;
 }
 
 /// A news entry
@@ -439,7 +442,7 @@ object RoomEventItem {
     fn event_type() -> string;
 
     /// the type of massage, like text, image, audio, video, file etc
-    fn sub_type() -> Option<string>;
+    fn msg_type() -> Option<string>;
 
     /// contains text fallback and formatted text
     fn text_desc() -> Option<TextDesc>;
@@ -456,6 +459,9 @@ object RoomEventItem {
     /// contains source data, name, mimetype and size
     fn file_desc() -> Option<FileDesc>;
 
+    /// contains body and geo uri
+    fn location_desc() -> Option<LocationDesc>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -463,7 +469,7 @@ object RoomEventItem {
     fn reaction_keys() -> Vec<string>;
 
     /// the details that users reacted using this emote key in this message
-    fn reaction_items(key: string) -> Option<Vec<ReactionRecord>>;
+    fn reaction_records(key: string) -> Option<Vec<ReactionRecord>>;
 
     /// Whether this message is editable
     fn is_editable() -> bool;
@@ -590,6 +596,20 @@ object FileDesc {
 
     /// file size in bytes
     fn size() -> Option<u32>;
+
+    /// thumbnail info
+    fn thumbnail_info() -> Option<ThumbnailInfo>;
+
+    /// thumbnail source
+    fn thumbnail_source() -> Option<MediaSource>;
+}
+
+object LocationDesc {
+    /// body
+    fn body() -> string;
+
+    /// geo uri
+    fn geo_uri() -> string;
 
     /// thumbnail info
     fn thumbnail_info() -> Option<ThumbnailInfo>;
@@ -854,6 +874,9 @@ object Attachment {
     fn file_desc() -> Option<FileDesc>;
     /// if this is a file, hand over the data
     fn file_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is a location, hand over the description
+    fn location_desc() -> Option<LocationDesc>;
 }
 
 /// Reference to the attachments section of a particular item
