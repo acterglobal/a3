@@ -24,9 +24,9 @@ const appName = String.fromEnvironment(
   defaultValue: 'Acter',
 );
 
-const pushServerUrl = String.fromEnvironment(
-  'PUSH_URL',
-  defaultValue: 'https://localhost:8228/_matrix/push/v1/notify',
+const pushServer = String.fromEnvironment(
+  'PUSH_SERVER',
+  defaultValue: '',
 );
 
 class NotificationController {
@@ -100,7 +100,11 @@ Future<bool> setupPushNotifications(
     // we are only supporting this on a limited set of platforms at the moment.
     return false;
   }
-
+  if (pushServer.isEmpty) {
+    // no server given. Ignoring
+    return false;
+  }
+  const pushServerUrl = 'https://$pushServer/_matrix/push/v1/notify';
   final isAllowed = await AwesomeNotifications().isNotificationAllowed();
   final userId = client.userId().toString();
   final SharedPreferences preferences = await sharedPrefs();
