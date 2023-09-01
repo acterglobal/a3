@@ -136,15 +136,16 @@ Future<bool> setupPushNotifications(
   if (Platform.isIOS) {
     final iOsInfo = await deviceInfo.iosInfo;
     name = iOsInfo.name;
-    appId = '$appIdPrefix.android';
-  } else if (Platform.isAndroid) {
-    final androidInfo = await deviceInfo.androidInfo;
-    name = androidInfo.host; // FIXME: confirm this is what we actually want?!?
     if (isProduction) {
       appId = '$appIdPrefix.ios';
     } else {
       appId = '$appIdPrefix.ios.dev';
     }
+  } else if (Platform.isAndroid) {
+    final androidInfo = await deviceInfo.androidInfo;
+    name =
+        androidInfo.device; // FIXME: confirm this is what we actually want?!?
+    appId = '$appIdPrefix.android';
   }
 
   await client.addPusher(appId, token, name, appName, pushServerUrl, null);
