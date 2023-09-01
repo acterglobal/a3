@@ -15,32 +15,48 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:jiffy/jiffy.dart';
 
+final zeroTime = Jiffy.parseFromMicrosecondsSinceEpoch(0);
+
+class SortableConversation {
+  final Jiffy? time;
+  final Convo conversation;
+  const SortableConversation(this.conversation, this.time);
+}
+
+List<Convo> filterConvos(List<Convo> convoList) {
+  convoList.retainWhere((room) => room.isJoined());
+  List<SortableConversation> sortedConversations =
+      convoList.map((conversation) {
+    final serverTs =
+        conversation.latestMessage()?.eventItem()?.originServerTs();
+    Jiffy? time;
+    if (serverTs != null) {
+      time = Jiffy.parseFromMillisecondsSinceEpoch(serverTs);
+    }
+    return SortableConversation(conversation, time);
+  }).toList()
+        ..sort(
+          (a, b) => (b.time ?? zeroTime).isAfter((a.time ?? zeroTime)) ? 1 : -1,
+        );
+
+  return sortedConversations.map((item) => item.conversation).toList();
+}
+
 // chats stream provider
 final chatStreamProvider = StreamProvider<List<Convo>>((ref) async* {
   final client = ref.watch(clientProvider)!;
+  final convoList = filterConvos((await client.convos()).toList());
+  if (convoList.isNotEmpty) {
+    yield convoList;
+  }
   StreamSubscription<FfiListConvo>? subscription;
   StreamController<List<Convo>> controller = StreamController<List<Convo>>();
   subscription = client.convosRx().listen((event) {
     controller.add(event.toList());
     debugPrint('Acter Conversations Stream');
   });
-  await for (var convoList in controller.stream) {
-    convoList.retainWhere((room) => room.isJoined());
-    List<Map<String, dynamic>> sortedConversations =
-        convoList.map((conversation) {
-      final time = Jiffy.parseFromMillisecondsSinceEpoch(
-        conversation.latestMessage()!.eventItem()!.originServerTs(),
-      );
-      return {'time': time, 'conversation': conversation};
-    }).toList()
-          ..sort(
-            (a, b) => (b['time'] as Jiffy).isAfter(a['time'] as Jiffy) ? -1 : 1,
-          );
-
-    final conversations = sortedConversations.reversed
-        .map((item) => (item['conversation']) as Convo)
-        .toList();
-    //FIXME: how to check empty chats ?
+  await for (final convoList in controller.stream) {
+    final conversations = filterConvos(convoList);
     if (conversations.isNotEmpty) {
       yield conversations;
     }
