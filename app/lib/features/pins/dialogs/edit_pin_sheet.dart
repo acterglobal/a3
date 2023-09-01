@@ -47,6 +47,10 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
 
   @override
   Widget build(BuildContext context) {
+    bool hasLinkOrText() {
+      return _urlController.text.isNotEmpty || _textController.text.isNotEmpty;
+    }
+
     return SideSheet(
       header: 'Edit Pin',
       addActions: true,
@@ -92,19 +96,13 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
-                validator: (value) => (value != null && value.isNotEmpty)
-                    ? null
-                    : _textController.text.isEmpty
-                        ? 'Text or URL must be given'
-                        : null,
+                validator: (value) =>
+                    hasLinkOrText() ? null : 'Text or URL must be given',
                 controller: _urlController,
               ),
               MdEditorWithPreview(
-                validator: (value) => (value != null && value.isNotEmpty)
-                    ? null
-                    : _urlController.text.isEmpty
-                        ? 'Text or URL must be given'
-                        : null,
+                validator: (value) =>
+                    hasLinkOrText() ? null : 'Text or URL must be given',
                 controller: _textController,
               ),
             ],
