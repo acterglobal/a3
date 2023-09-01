@@ -193,7 +193,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 popUpDialog(
                   context: context,
                   title: Text(
-                    '$displayMsg failed: \n $err"',
+                    '$displayMsg failed: \n $err',
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   isLoader: false,

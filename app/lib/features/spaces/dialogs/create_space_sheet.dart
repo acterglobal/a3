@@ -294,7 +294,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       popUpDialog(
         context: context,
         title: Text(
-          'Creating Space failed: \n $err"',
+          'Creating Space failed: \n $err',
           style: Theme.of(context).textTheme.titleSmall,
         ),
         isLoader: false,

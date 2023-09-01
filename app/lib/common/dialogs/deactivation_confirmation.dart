@@ -14,9 +14,13 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
     context: context,
     builder: (BuildContext ctx) {
       return AlertDialog(
-        title: Text('Deactivate Account',
-            style: TextStyle(
-                color: AppTheme.brandColorScheme.error, fontSize: 32,),),
+        title: Text(
+          'Deactivate Account',
+          style: TextStyle(
+            color: AppTheme.brandColorScheme.error,
+            fontSize: 32,
+          ),
+        ),
         content: SingleChildScrollView(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 650),
@@ -104,7 +108,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
                 popUpDialog(
                   context: context,
                   title: Text(
-                    'Deactivating failed: \n $err"',
+                    'Deactivating failed: \n $err',
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   isLoader: false,
