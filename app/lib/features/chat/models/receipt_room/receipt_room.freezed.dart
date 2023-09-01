@@ -16,7 +16,8 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ReceiptRoom {
-  Map<String, ReceiptUser> get users => throw _privateConstructorUsedError;
+  String get roomId => throw _privateConstructorUsedError;
+  Map<String, List<String>> get receipts => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ReceiptRoomCopyWith<ReceiptRoom> get copyWith =>
@@ -29,7 +30,7 @@ abstract class $ReceiptRoomCopyWith<$Res> {
           ReceiptRoom value, $Res Function(ReceiptRoom) then) =
       _$ReceiptRoomCopyWithImpl<$Res, ReceiptRoom>;
   @useResult
-  $Res call({Map<String, ReceiptUser> users});
+  $Res call({String roomId, Map<String, List<String>> receipts});
 }
 
 /// @nodoc
@@ -45,13 +46,18 @@ class _$ReceiptRoomCopyWithImpl<$Res, $Val extends ReceiptRoom>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? users = null,
+    Object? roomId = null,
+    Object? receipts = null,
   }) {
     return _then(_value.copyWith(
-      users: null == users
-          ? _value.users
-          : users // ignore: cast_nullable_to_non_nullable
-              as Map<String, ReceiptUser>,
+      roomId: null == roomId
+          ? _value.roomId
+          : roomId // ignore: cast_nullable_to_non_nullable
+              as String,
+      receipts: null == receipts
+          ? _value.receipts
+          : receipts // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
     ) as $Val);
   }
 }
@@ -64,7 +70,7 @@ abstract class _$$_ReceiptRoomCopyWith<$Res>
       __$$_ReceiptRoomCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Map<String, ReceiptUser> users});
+  $Res call({String roomId, Map<String, List<String>> receipts});
 }
 
 /// @nodoc
@@ -78,13 +84,18 @@ class __$$_ReceiptRoomCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? users = null,
+    Object? roomId = null,
+    Object? receipts = null,
   }) {
     return _then(_$_ReceiptRoom(
-      users: null == users
-          ? _value._users
-          : users // ignore: cast_nullable_to_non_nullable
-              as Map<String, ReceiptUser>,
+      roomId: null == roomId
+          ? _value.roomId
+          : roomId // ignore: cast_nullable_to_non_nullable
+              as String,
+      receipts: null == receipts
+          ? _value._receipts
+          : receipts // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
     ));
   }
 }
@@ -92,21 +103,25 @@ class __$$_ReceiptRoomCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_ReceiptRoom implements _ReceiptRoom {
-  const _$_ReceiptRoom({final Map<String, ReceiptUser> users = const {}})
-      : _users = users;
+  const _$_ReceiptRoom(
+      {required this.roomId,
+      final Map<String, List<String>> receipts = const {}})
+      : _receipts = receipts;
 
-  final Map<String, ReceiptUser> _users;
+  @override
+  final String roomId;
+  final Map<String, List<String>> _receipts;
   @override
   @JsonKey()
-  Map<String, ReceiptUser> get users {
-    if (_users is EqualUnmodifiableMapView) return _users;
+  Map<String, List<String>> get receipts {
+    if (_receipts is EqualUnmodifiableMapView) return _receipts;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(_users);
+    return EqualUnmodifiableMapView(_receipts);
   }
 
   @override
   String toString() {
-    return 'ReceiptRoom(users: $users)';
+    return 'ReceiptRoom(roomId: $roomId, receipts: $receipts)';
   }
 
   @override
@@ -114,12 +129,13 @@ class _$_ReceiptRoom implements _ReceiptRoom {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_ReceiptRoom &&
-            const DeepCollectionEquality().equals(other._users, _users));
+            (identical(other.roomId, roomId) || other.roomId == roomId) &&
+            const DeepCollectionEquality().equals(other._receipts, _receipts));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_users));
+  int get hashCode => Object.hash(
+      runtimeType, roomId, const DeepCollectionEquality().hash(_receipts));
 
   @JsonKey(ignore: true)
   @override
@@ -129,11 +145,14 @@ class _$_ReceiptRoom implements _ReceiptRoom {
 }
 
 abstract class _ReceiptRoom implements ReceiptRoom {
-  const factory _ReceiptRoom({final Map<String, ReceiptUser> users}) =
-      _$_ReceiptRoom;
+  const factory _ReceiptRoom(
+      {required final String roomId,
+      final Map<String, List<String>> receipts}) = _$_ReceiptRoom;
 
   @override
-  Map<String, ReceiptUser> get users;
+  String get roomId;
+  @override
+  Map<String, List<String>> get receipts;
   @override
   @JsonKey(ignore: true)
   _$$_ReceiptRoomCopyWith<_$_ReceiptRoom> get copyWith =>

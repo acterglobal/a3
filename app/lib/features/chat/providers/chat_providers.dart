@@ -2,13 +2,15 @@ import 'dart:async';
 import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
+import 'package:acter/features/chat/models/receipt_room/receipt_room.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_input_notifier.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_list_notifier.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart';
 import 'package:acter/features/chat/providers/notifiers/messages_notifier.dart';
+import 'package:acter/features/chat/providers/notifiers/receipts_notifier.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Convo, FfiListConvo;
+    show Convo, FfiListConvo, ReceiptEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,6 +51,29 @@ final chatStreamProvider = StreamProvider<List<Convo>>((ref) async* {
     debugPrint('disposing conversation stream');
     await subscription?.cancel();
   });
+});
+
+final receiptStreamProvider = StreamProvider((ref) async* {
+  final client = ref.watch(clientProvider)!;
+  StreamSubscription<ReceiptEvent>? subscription;
+  StreamController<ReceiptEvent> controller = StreamController<ReceiptEvent>();
+  subscription = client.receiptEventRx()!.listen((event) {
+    controller.add(event);
+  });
+
+  yield* controller.stream;
+
+  ref.onDispose(() async {
+    debugPrint('disposing receipts stream');
+    await subscription?.cancel();
+  });
+});
+
+// initial room receipts
+final roomReceiptsProvider =
+    StateNotifierProvider<RoomReceiptsNotifier, ReceiptRoom>((ref) {
+  final convo = ref.watch(currentConvoProvider)!;
+  return RoomReceiptsNotifier(room: convo, ref: ref);
 });
 
 // CHAT PAGE state provider

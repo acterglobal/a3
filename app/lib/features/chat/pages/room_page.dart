@@ -11,6 +11,7 @@ import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
+import 'package:acter/features/chat/widgets/status_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
@@ -95,6 +96,12 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
       child: child,
     );
   }
+
+  Widget statusBuilder(
+    types.Message message, {
+    required BuildContext context,
+  }) =>
+      StatusBuilder(message, context);
 
   @override
   Widget build(BuildContext context) {
@@ -240,6 +247,7 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               bubbleBuilder: bubbleBuilder,
               imageMessageBuilder: imageMessageBuilder,
               customMessageBuilder: customMessageBuilder,
+              // customStatusBuilder: statusBuilder,
               showUserAvatars: true,
               onMessageLongPress: roomNotifier.handleMessageTap,
               onEndReached: roomNotifier.handleEndReached,

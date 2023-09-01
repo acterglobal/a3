@@ -64,7 +64,6 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
           latestMessage: widget.room.latestMessage(),
         ),
         trailing: _TrailingWidget(
-          // controller: receiptController,
           room: widget.room,
           latestMessage: widget.room.latestMessage(),
           activeMembers: activeMembers,

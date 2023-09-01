@@ -384,6 +384,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // maps [RoomMessage] to [types.Message].
   types.Message? _parseMessage(RoomMessage message) {
+    final room = ref.read(currentConvoProvider);
     RoomVirtualItem? virtualItem = message.virtualItem();
     if (virtualItem != null) {
       // should not return null, before we can keep track of index in diff receiver
@@ -415,6 +416,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       String k = key.toDartString();
       reactions[k] = eventItem.reactionItems(k)?.toList();
     }
+
+    final roomReceipts = ref.read(roomReceiptsProvider);
+    final activeMembers =
+        ref.read(chatMembersProvider(room!.getRoomIdStr())).requireValue;
+
     // state event
     switch (eventType) {
       case 'm.policy.rule.room':
@@ -441,10 +447,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           author: author,
           createdAt: createdAt,
           id: eventId,
+          status: activeMembers.length > roomReceipts.receipts[eventId]!.length
+              ? types.Status.delivered
+              : types.Status.seen,
+          showStatus: true,
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
             'body': eventItem.textDesc()?.body(),
+            'seenBy': roomReceipts.receipts[eventId],
           },
         );
     }
@@ -465,7 +476,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
       case 'm.reaction':
       case 'm.room.encrypted':
-        final metadata = {'itemType': 'event', 'eventType': eventType};
+        final metadata = {
+          'itemType': 'event',
+          'eventType': eventType,
+          'seenBy': roomReceipts.receipts[eventId],
+        };
         if (inReplyTo != null) {
           metadata['repliedTo'] = inReplyTo;
         }
@@ -474,9 +489,17 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           createdAt: createdAt,
           id: eventId,
           metadata: metadata,
+          status: activeMembers.length > roomReceipts.receipts[eventId]!.length
+              ? types.Status.delivered
+              : types.Status.seen,
+          showStatus: true,
         );
       case 'm.room.redaction':
-        final metadata = {'itemType': 'event', 'eventType': eventType};
+        final metadata = {
+          'itemType': 'event',
+          'eventType': eventType,
+          'seenBy': roomReceipts.receipts[eventId],
+        };
         if (inReplyTo != null) {
           metadata['repliedTo'] = inReplyTo;
         }
@@ -485,6 +508,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           createdAt: createdAt,
           id: eventId,
           metadata: metadata,
+          status: activeMembers.length > roomReceipts.receipts[eventId]!.length
+              ? types.Status.delivered
+              : types.Status.seen,
+          showStatus: true,
         );
       case 'm.room.member':
         TextDesc? description = eventItem.textDesc();
@@ -500,7 +527,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               'eventType': eventType,
               'subType': eventItem.subType(),
               'body': formattedBody ?? body,
+              'seenBy': roomReceipts.receipts[eventId],
             },
+            status:
+                activeMembers.length > roomReceipts.receipts[eventId]!.length
+                    ? types.Status.delivered
+                    : types.Status.seen,
+            showStatus: true,
           );
         }
         break;
@@ -510,7 +543,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.audio':
             AudioDesc? description = eventItem.audioDesc();
             if (description != null) {
-              Map<String, dynamic> metadata = {'base64': ''};
+              Map<String, dynamic> metadata = {
+                'base64': '',
+                'seenBy': roomReceipts.receipts[eventId]
+              };
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -527,6 +563,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 name: description.name(),
                 size: description.size() ?? 0,
                 uri: description.source().url(),
+                status: activeMembers.length >
+                        roomReceipts.receipts[eventId]!.length
+                    ? types.Status.delivered
+                    : types.Status.seen,
+                showStatus: true,
               );
             }
             break;
@@ -535,7 +576,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.file':
             FileDesc? description = eventItem.fileDesc();
             if (description != null) {
-              Map<String, dynamic> metadata = {};
+              Map<String, dynamic> metadata = {
+                'seenBy': roomReceipts.receipts[eventId],
+              };
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -551,13 +594,19 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 name: description.name(),
                 size: description.size() ?? 0,
                 uri: description.source().url(),
+                status: activeMembers.length >
+                        roomReceipts.receipts[eventId]!.length
+                    ? types.Status.delivered
+                    : types.Status.seen,
               );
             }
             break;
           case 'm.image':
             ImageDesc? description = eventItem.imageDesc();
             if (description != null) {
-              Map<String, dynamic> metadata = {};
+              Map<String, dynamic> metadata = {
+                'seenBy': roomReceipts.receipts[eventId],
+              };
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -574,6 +623,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 size: description.size() ?? 0,
                 uri: description.source().url(),
                 width: description.width()?.toDouble(),
+                status: activeMembers.length >
+                        roomReceipts.receipts[eventId]!.length
+                    ? types.Status.delivered
+                    : types.Status.seen,
               );
             }
             break;
@@ -593,7 +646,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                   'itemType': 'event',
                   'msgType': eventItem.subType(),
                   'eventType': eventType,
+                  'seenBy': roomReceipts.receipts[eventId],
                 },
+                status: activeMembers.length >
+                        roomReceipts.receipts[eventId]!.length
+                    ? types.Status.delivered
+                    : types.Status.seen,
               );
             }
             break;
@@ -611,7 +669,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                   'itemType': 'event',
                   'eventType': eventType,
                   'msgType': eventItem.subType(),
+                  'seenBy': roomReceipts.receipts[eventId],
                 },
+                status: activeMembers.length >
+                        roomReceipts.receipts[eventId]!.length
+                    ? types.Status.delivered
+                    : types.Status.seen,
               );
             }
             break;
@@ -620,7 +683,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             if (description != null) {
               String? formattedBody = description.formattedBody();
               String body = description.body(); // always exists
-              Map<String, dynamic> metadata = {};
+              Map<String, dynamic> metadata = {
+                'seenBy': roomReceipts.receipts[eventId],
+              };
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -635,13 +700,20 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 id: eventId,
                 metadata: metadata,
                 text: formattedBody ?? body,
+                status: activeMembers.length >
+                        roomReceipts.receipts[eventId]!.length
+                    ? types.Status.delivered
+                    : types.Status.seen,
               );
             }
             break;
           case 'm.video':
             VideoDesc? description = eventItem.videoDesc();
             if (description != null) {
-              Map<String, dynamic> metadata = {'base64': ''};
+              Map<String, dynamic> metadata = {
+                'base64': '',
+                'seenBy': roomReceipts.receipts[eventId],
+              };
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -656,6 +728,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 name: description.name(),
                 size: description.size() ?? 0,
                 uri: description.source().url(),
+                status: activeMembers.length >
+                        roomReceipts.receipts[eventId]!.length
+                    ? types.Status.delivered
+                    : types.Status.seen,
               );
             }
             break;
@@ -674,6 +750,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             'width': description.width()?.toDouble(),
             'height': description.height()?.toDouble(),
             'base64': '',
+            'seenBy': roomReceipts.receipts[eventId],
           };
           if (inReplyTo != null) {
             metadata['repliedTo'] = inReplyTo;
@@ -686,6 +763,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             createdAt: createdAt,
             id: eventId,
             metadata: metadata,
+            status:
+                activeMembers.length > roomReceipts.receipts[eventId]!.length
+                    ? types.Status.delivered
+                    : types.Status.seen,
           );
         }
         break;
