@@ -194,8 +194,8 @@ pub struct VideoMetadata {
 #[cfg(feature = "video-meta")]
 pub async fn parse_video(uri: String) -> Result<Option<VideoMetadata>> {
     let path = PathBuf::from(uri);
-    let mut buf = fs::read(path)?;
-    let mut cursor = io::Cursor::new(&buf);
+    let mut buf = std::fs::read(path)?;
+    let mut cursor = std::io::Cursor::new(&buf);
     let context = mp4parse::read_mp4(&mut cursor).expect("read_mp4 failed");
     if let Some(track_header) = context.tracks[0].tkhd.clone() {
         Ok(Some(VideoMetadata {
