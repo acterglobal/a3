@@ -276,28 +276,44 @@ class CustomChatInput extends ConsumerWidget {
   Widget replyBuilder(BuildContext context, WidgetRef ref, Widget? child) {
     final roomNotifier = ref.watch(chatRoomProvider.notifier);
     final authorId = roomNotifier.repliedToMessage!.author.id;
-    final replyProfile = ref.watch(memberProfileProvider(authorId));
+
     final inputNotifier = ref.watch(chatInputProvider.notifier);
+    final replyMember = ref.watch(chatMemberProvider(authorId));
+
     return Row(
       children: [
-        replyProfile.when(
-          data: (profile) => ActerAvatar(
-            mode: DisplayMode.User,
-            uniqueId: authorId,
-            displayName: profile.displayName ?? authorId,
-            avatar: profile.getAvatarImage(),
-            size: profile.hasAvatar() ? 12 : 24,
-          ),
-          error: (e, st) {
-            debugPrint('Error loading avatar due to $e');
-            return ActerAvatar(
-              mode: DisplayMode.User,
-              uniqueId: authorId,
-              displayName: authorId,
-              size: 24,
+        replyMember.maybeWhen(
+          data: (member) {
+            final memberProfile = ref.watch(memberProfileProvider(member));
+            return memberProfile.when(
+              data: (profile) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: ActerAvatar(
+                    mode: DisplayMode.User,
+                    uniqueId: authorId,
+                    displayName: profile.displayName ?? authorId,
+                    avatar: profile.getAvatarImage(),
+                    size: profile.hasAvatar() ? 14 : 28,
+                  ),
+                );
+              },
+              error: (e, st) {
+                debugPrint('ERROR loading avatar due to $e');
+                return Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: ActerAvatar(
+                    uniqueId: authorId,
+                    displayName: authorId,
+                    mode: DisplayMode.User,
+                    size: 28,
+                  ),
+                );
+              },
+              loading: () => const CircularProgressIndicator(),
             );
           },
-          loading: () => const CircularProgressIndicator(),
+          orElse: () => const SizedBox.shrink(),
         ),
         const SizedBox(width: 5),
         Text(

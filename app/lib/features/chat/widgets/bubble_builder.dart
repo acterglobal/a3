@@ -187,43 +187,49 @@ class _ChatBubble extends ConsumerWidget {
     Widget? child,
   ) {
     final authorId = message.repliedMessage!.author.id;
-    final replyProfile = ref.watch(memberProfileProvider(authorId));
-    return Row(
-      children: [
-        replyProfile.when(
-          data: (profile) => ActerAvatar(
-            uniqueId: authorId,
-            displayName: profile.displayName,
-            mode: DisplayMode.User,
-            avatar: profile.getAvatarImage(),
-            size: profile.hasAvatar() ? 12 : 24,
-          ),
-          error: (err, stackTrace) {
-            debugPrint('Failed to load profile due to $err');
-            return ActerAvatar(
-              uniqueId: authorId,
-              displayName: authorId,
-              mode: DisplayMode.User,
-              size: 24,
-            );
-          },
-          loading: () => const CircularProgressIndicator(),
-        ),
-        const SizedBox(width: 5),
-        replyProfile.when(
-          data: (profile) => Text(
-            profile.displayName ?? '',
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  color: Theme.of(context).colorScheme.tertiary,
-                ),
-          ),
-          error: (err, stackTrace) {
-            debugPrint('Failed to load profile due to $err');
-            return const Text('');
-          },
-          loading: () => const CircularProgressIndicator(),
-        ),
-      ],
+    final replyMember = ref.watch(chatMemberProvider(authorId));
+    return replyMember.maybeWhen(
+      data: (member) {
+        final memberProfile = ref.watch(memberProfileProvider(member));
+        return Row(
+          children: <Widget>[
+            memberProfile.when(
+              data: (profile) => ActerAvatar(
+                uniqueId: authorId,
+                displayName: profile.displayName,
+                mode: DisplayMode.User,
+                avatar: profile.getAvatarImage(),
+                size: profile.hasAvatar() ? 12 : 24,
+              ),
+              error: (err, stackTrace) {
+                debugPrint('Failed to load profile due to $err');
+                return ActerAvatar(
+                  uniqueId: authorId,
+                  displayName: authorId,
+                  mode: DisplayMode.User,
+                  size: 24,
+                );
+              },
+              loading: () => const CircularProgressIndicator(),
+            ),
+            const SizedBox(width: 5),
+            memberProfile.when(
+              data: (profile) => Text(
+                profile.displayName ?? '',
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: Theme.of(context).colorScheme.tertiary,
+                    ),
+              ),
+              error: (err, stackTrace) {
+                debugPrint('Failed to load profile due to $err');
+                return const Text('');
+              },
+              loading: () => const CircularProgressIndicator(),
+            ),
+          ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
     );
   }
 }
@@ -522,7 +528,10 @@ class _ReactionListing extends StatelessWidget {
   final List<String> users;
   final Map<String, List<String>> usersMap; // UserId -> List of Emoji
 
-  const _ReactionListing({required this.users, required this.usersMap});
+  const _ReactionListing({
+    required this.users,
+    required this.usersMap,
+  });
 
   @override
   Widget build(BuildContext context) {

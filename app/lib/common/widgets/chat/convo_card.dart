@@ -50,14 +50,18 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
         showParent: widget.showParent,
         profile: profile,
         onTap: () {
-          ref
-              .read(currentConvoProvider.notifier)
-              .update((state) => widget.room);
-
-          context.pushNamed(
-            Routes.chatroom.name,
-            pathParameters: {'roomId': roomId},
-          );
+          if (isDesktop) {
+            ref.read(roomIdProvider.notifier).update((state) => roomId);
+            context.goNamed(
+              Routes.chatroom.name,
+              pathParameters: {'roomId': roomId},
+            );
+          } else {
+            context.pushNamed(
+              Routes.chatroom.name,
+              pathParameters: {'roomId': roomId},
+            );
+          }
         },
         subtitle: _SubtitleWidget(
           room: widget.room,

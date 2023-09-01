@@ -1,7 +1,6 @@
 import 'dart:async';
-
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:flutter/material.dart';
@@ -290,7 +289,7 @@ class MemberListEntry extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userId = member.userId().toString();
-    final profile = ref.watch(memberProfileProvider(userId));
+    final profile = ref.watch(memberProfileProvider(member));
     final memberStatus = member.membershipStatusStr();
     final List<Widget> trailing = [];
     if (memberStatus == 'Admin') {

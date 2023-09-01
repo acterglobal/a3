@@ -33,7 +33,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
   @override
   void initState() {
     super.initState();
-    _checkIfSpacesPresent();
+    WidgetsBinding.instance.addPostFrameCallback((timestamp) {
+      _checkIfSpacesPresent();
+    });
   }
 
   void _checkIfSpacesPresent() {
@@ -77,7 +79,6 @@ class _DashboardState extends ConsumerState<Dashboard> {
     final client = ref.watch(clientProvider)!;
     final provider = ref.watch(featuresProvider);
     bool isActive(f) => provider.isActive(f);
-
     List<Widget> children = [];
     if (isActive(LabsFeature.events)) {
       children.add(const MyEventsSection());

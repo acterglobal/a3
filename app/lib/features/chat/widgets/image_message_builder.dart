@@ -6,9 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // cached image binary provider.
 final _imageBinaryProvider =
-    FutureProvider.family<Uint8List, String>((ref, eventId) async {
-  final room = ref.watch(currentConvoProvider)!;
-  return await room.imageBinary(eventId).then((value) => value.asTypedList());
+    FutureProvider.family.autoDispose<Uint8List?, String>((ref, eventId) async {
+  final room = ref.read(chatRoomProvider.notifier).asyncRoom.requireValue;
+  try {
+    return await room.imageBinary(eventId).then((value) => value.asTypedList());
+  } catch (e) {
+    return null;
+  }
 });
 
 class ImageMessageBuilder extends ConsumerWidget {
@@ -37,7 +41,7 @@ class ImageMessageBuilder extends ConsumerWidget {
                 maxWidth: MediaQuery.of(context).size.width * 0.2,
               ),
               child: Image.memory(
-                data,
+                data!,
                 frameBuilder: (
                   BuildContext context,
                   Widget child,
@@ -74,7 +78,7 @@ class ImageMessageBuilder extends ConsumerWidget {
               maxWidth: MediaQuery.of(context).size.width * 0.3,
             ),
             child: Image.memory(
-              data,
+              data!,
               frameBuilder: (
                 BuildContext context,
                 Widget child,

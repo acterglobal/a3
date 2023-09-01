@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/widgets/quick_actions_builder.dart';
 import 'package:acter/features/search/widgets/spaces_builder.dart';
@@ -94,7 +96,12 @@ class QuickJump extends ConsumerWidget {
                 ),
               ),
               onPressed: () {
-                navigateTo(route: Routes.chat);
+                final roomId = ref.watch(roomIdProvider);
+                if (isDesktop) {
+                  navigateTo(target: '/chat/$roomId');
+                } else {
+                  navigateTo(route: Routes.chat);
+                }
               },
               icon: const Icon(
                 Atlas.chats_thin,

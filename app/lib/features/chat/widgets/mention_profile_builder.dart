@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,25 +16,33 @@ class MentionProfileBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mentionProfile = ref.watch(memberProfileProvider(authorId));
-    return mentionProfile.when(
-      data: (profile) => ActerAvatar(
-        mode: DisplayMode.User,
-        uniqueId: authorId,
-        avatar: profile.getAvatarImage(),
-        displayName: title,
-        size: profile.hasAvatar() ? 18 : 36,
-      ),
-      error: (e, st) {
-        debugPrint('ERROR loading avatar due to $e');
-        return ActerAvatar(
-          mode: DisplayMode.User,
-          uniqueId: authorId,
-          displayName: title,
-          size: 36,
+    final mentionMember = ref.watch(chatMemberProvider(authorId));
+    return mentionMember.maybeWhen(
+      data: (member) {
+        final memberProfile = ref.watch(memberProfileProvider(member));
+        return memberProfile.when(
+          data: (profile) {
+            return ActerAvatar(
+              mode: DisplayMode.User,
+              uniqueId: authorId,
+              displayName: profile.displayName ?? authorId,
+              avatar: profile.getAvatarImage(),
+              size: profile.hasAvatar() ? 18 : 36,
+            );
+          },
+          error: (e, st) {
+            debugPrint('ERROR loading avatar due to $e');
+            return ActerAvatar(
+              uniqueId: authorId,
+              displayName: authorId,
+              mode: DisplayMode.User,
+              size: 36,
+            );
+          },
+          loading: () => const CircularProgressIndicator(),
         );
       },
-      loading: () => const CircularProgressIndicator(),
+      orElse: () => const SizedBox.shrink(),
     );
   }
 }

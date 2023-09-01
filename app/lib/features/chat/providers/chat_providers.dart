@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -7,8 +9,7 @@ import 'package:acter/features/chat/providers/notifiers/chat_list_notifier.dart'
 import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart';
 import 'package:acter/features/chat/providers/notifiers/messages_notifier.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Convo, FfiListConvo;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter/material.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,10 +17,11 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:jiffy/jiffy.dart';
 
 // chats stream provider
-final chatStreamProvider = StreamProvider<List<Convo>>((ref) async* {
+final chatStreamProvider = StreamProvider<List<ffi.Convo>>((ref) async* {
   final client = ref.watch(clientProvider)!;
-  StreamSubscription<FfiListConvo>? subscription;
-  StreamController<List<Convo>> controller = StreamController<List<Convo>>();
+  StreamSubscription<ffi.FfiListConvo>? subscription;
+  StreamController<List<ffi.Convo>> controller =
+      StreamController<List<ffi.Convo>>();
   subscription = client.convosRx().listen((event) {
     controller.add(event.toList());
     debugPrint('Acter Conversations Stream');
@@ -38,10 +40,16 @@ final chatStreamProvider = StreamProvider<List<Convo>>((ref) async* {
           );
 
     final conversations = sortedConversations.reversed
-        .map((item) => (item['conversation']) as Convo)
+        .map((item) => (item['conversation']) as ffi.Convo)
         .toList();
     //FIXME: how to check empty chats ?
     if (conversations.isNotEmpty) {
+      if (isDesktop) {
+        ref
+            .watch(roomIdProvider.notifier)
+            .update((state) => conversations[0].getRoomIdStr());
+      }
+
       yield conversations;
     }
   }
@@ -59,13 +67,17 @@ final chatListProvider = StateNotifierProvider<ChatListNotifier, ChatListState>(
   ),
 );
 
-final chatsSearchProvider = StateProvider<List<Convo>>((ref) => []);
+final chatsSearchProvider = StateProvider<List<ffi.Convo>>((ref) => []);
 
 final typingProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
+final roomIdProvider = StateProvider<String>((ref) => '');
+
 final chatRoomProvider =
     StateNotifierProvider<ChatRoomNotifier, ChatRoomState>((ref) {
+  final roomIdOrAlias = ref.watch(roomIdProvider);
   return ChatRoomNotifier(
+    asyncRoom: ref.watch(chatProvider(roomIdOrAlias)),
     ref: ref,
   );
 });
@@ -92,9 +104,11 @@ final mentionKeyProvider = StateProvider<GlobalKey<FlutterMentionsState>>(
 
 final chatInputFocusProvider = StateProvider<FocusNode>((ref) => FocusNode());
 
-final currentConvoProvider = StateProvider<Convo?>((ref) => null);
-
 final paginationProvider = StateProvider.autoDispose<bool>((ref) => true);
 
-// for desktop only
-final showFullSplitView = StateProvider<bool>((ref) => false);
+final chatMemberProvider =
+    FutureProvider.family<ffi.Member, String>((ref, userId) async {
+  final roomId = ref.watch(roomIdProvider);
+  final room = await ref.watch(chatProvider(roomId).future);
+  return await room.getMember(userId);
+});

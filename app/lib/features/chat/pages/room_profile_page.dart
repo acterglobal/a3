@@ -6,7 +6,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
-import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -15,18 +14,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class RoomProfilePage extends ConsumerWidget {
+  final String roomIdOrAlias;
   const RoomProfilePage({
+    required this.roomIdOrAlias,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final room = ref.watch(currentConvoProvider)!;
-    final convoProfile = ref.watch(chatProfileDataProvider(room));
-    final roomId = room.getRoomIdStr();
-    final members = ref.watch(chatMembersProvider(roomId));
-    final myMembership = ref.watch(spaceMembershipProvider(roomId));
-    final location = ref.watch(currentRoutingLocation);
+    final roomNotifier = ref.watch(chatRoomProvider.notifier);
+    final convoProfile =
+        ref.watch(chatProfileDataProvider(roomNotifier.asyncRoom.requireValue));
+    final members = ref.watch(chatMembersProvider(roomIdOrAlias));
+    final myMembership = ref.watch(spaceMembershipProvider(roomIdOrAlias));
     final List<Widget> topMenu = [
       members.when(
         data: (list) {
@@ -54,7 +54,7 @@ class RoomProfilePage extends ConsumerWidget {
             color: Theme.of(context).colorScheme.surface,
             onPressed: () => context.pushNamed(
               Routes.spaceInvite.name,
-              pathParameters: {'spaceId': roomId},
+              pathParameters: {'spaceId': roomIdOrAlias},
             ),
           ),
         );
@@ -68,19 +68,6 @@ class RoomProfilePage extends ConsumerWidget {
         slivers: [
           SliverAppBar(
             backgroundColor: Theme.of(context).colorScheme.neutral,
-            leading: Visibility(
-              visible: location == Routes.chat.route,
-              replacement: IconButton(
-                onPressed: () => context.pop(),
-                icon: const Icon(Icons.chevron_left),
-              ),
-              child: IconButton(
-                onPressed: () => ref
-                    .read(showFullSplitView.notifier)
-                    .update((state) => false),
-                icon: const Icon(Atlas.xmark_circle_thin),
-              ),
-            ),
             elevation: 0.0,
             actions: <Widget>[
               PopupMenuButton<int>(
@@ -116,12 +103,12 @@ class RoomProfilePage extends ConsumerWidget {
                     ),
                     child: SpaceParentBadge(
                       badgeSize: 20,
-                      spaceId: roomId,
+                      spaceId: roomIdOrAlias,
                       child: convoProfile.when(
                         data: (profile) => ActerAvatar(
                           mode: DisplayMode.GroupChat,
-                          uniqueId: roomId,
-                          displayName: profile.displayName ?? roomId,
+                          uniqueId: roomIdOrAlias,
+                          displayName: profile.displayName ?? roomIdOrAlias,
                           avatar: profile.getAvatarImage(),
                           size: 75,
                         ),
@@ -129,8 +116,8 @@ class RoomProfilePage extends ConsumerWidget {
                           debugPrint('Some error occured $err');
                           return ActerAvatar(
                             mode: DisplayMode.GroupChat,
-                            uniqueId: roomId,
-                            displayName: roomId,
+                            uniqueId: roomIdOrAlias,
+                            displayName: roomIdOrAlias,
                             size: 75,
                           );
                         },
@@ -141,7 +128,7 @@ class RoomProfilePage extends ConsumerWidget {
                 ),
                 convoProfile.when(
                   data: (profile) => Text(
-                    profile.displayName ?? roomId,
+                    profile.displayName ?? roomIdOrAlias,
                     softWrap: true,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleMedium,
@@ -149,7 +136,7 @@ class RoomProfilePage extends ConsumerWidget {
                   error: (err, stackTrace) {
                     debugPrint('Some error occured $err');
                     return Text(
-                      roomId,
+                      roomIdOrAlias,
                       overflow: TextOverflow.clip,
                       style: Theme.of(context).textTheme.titleSmall,
                     );
@@ -168,7 +155,7 @@ class RoomProfilePage extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
-                      roomId,
+                      roomIdOrAlias,
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             color: Theme.of(context).colorScheme.neutral5,
                           ),
@@ -184,7 +171,7 @@ class RoomProfilePage extends ConsumerWidget {
                     onPressed: () async {
                       Clipboard.setData(
                         ClipboardData(
-                          text: roomId,
+                          text: roomIdOrAlias,
                         ),
                       );
                       customMsgSnackbar(
@@ -202,7 +189,7 @@ class RoomProfilePage extends ConsumerWidget {
             sliver: SliverToBoxAdapter(
               child: Center(
                 child: Text(
-                  room.topic() ?? '',
+                  roomNotifier.asyncRoom.requireValue.topic() ?? '',
                   style: Theme.of(context).textTheme.bodySmall,
                   softWrap: true,
                   textAlign: TextAlign.center,

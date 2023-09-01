@@ -1,6 +1,8 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
+import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -14,8 +16,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 const fallbackSidebarIdx = 1;
 const fallbackBottomBarIdx = 0;
 
-final spaceItemsProvider = FutureProvider.autoDispose
-    .family<List<SidebarNavigationItem>, BuildContext>((ref, context) async {
+final spaceItemsProvider =
+    FutureProvider.family<List<SidebarNavigationItem>, BuildContext>(
+        (ref, context) async {
   final spaces = ref.watch(spacesProvider);
 
   return spaces.when(
@@ -122,10 +125,12 @@ final activitiesIconProvider = Provider.family<Widget, BuildContext>(
 );
 
 // provider that returns a string value
-final sidebarItemsProvider = Provider.autoDispose
-    .family<List<SidebarNavigationItem>, BuildContext>((ref, context) {
+final sidebarItemsProvider =
+    Provider.family<List<SidebarNavigationItem>, BuildContext>((ref, context) {
   final config = ref.watch(spaceItemsProvider(context));
+  final roomId = ref.watch(roomIdProvider);
   final activitiesIcon = ref.watch(activitiesIconProvider(context));
+  final chatIcon = ref.watch(chatListProvider).isLoading;
   final features = [
     SidebarNavigationItem(
       icon: const Icon(Atlas.magnifying_glass_thin),
@@ -146,16 +151,25 @@ final sidebarItemsProvider = Provider.autoDispose
       ),
       location: Routes.dashboard.route,
     ),
-    SidebarNavigationItem(
-      // icon: const Badge(child: Icon(Atlas.chats_thin)), // TODO: Badge example
-      icon: const Icon(Atlas.chats_thin),
-      label: Text(
-        'Chat',
-        style: Theme.of(context).textTheme.labelSmall,
-        softWrap: false,
-      ),
-      location: Routes.chat.route,
-    ),
+    chatIcon
+        ? SidebarNavigationItem(
+            icon: const Icon(Atlas.arrows_dots_rotate_thin),
+            label: Text(
+              'Loading Chats',
+              style: Theme.of(context).textTheme.labelSmall,
+              softWrap: true,
+            ),
+          )
+        : SidebarNavigationItem(
+            // icon: const Badge(child: Icon(Atlas.chats_thin)), // TODO: Badge example
+            icon: const Icon(Atlas.chats_thin),
+            label: Text(
+              'Chat',
+              style: Theme.of(context).textTheme.labelSmall,
+              softWrap: false,
+            ),
+            location: '/chat/$roomId',
+          ),
     SidebarNavigationItem(
       icon: activitiesIcon,
       label: Column(
@@ -186,10 +200,10 @@ final sidebarItemsProvider = Provider.autoDispose
 });
 
 final currentSelectedSidebarIndexProvider =
-    Provider.autoDispose.family<int, BuildContext>((ref, context) {
+    Provider.family<int, BuildContext>((ref, context) {
   final items = ref.watch(sidebarItemsProvider(context));
   final location = ref.watch(currentRoutingLocation);
-  debugPrint('location: $location');
+  // debugPrint('location: $location');
   final index = items.indexWhere(
     (t) => t.location != null && location.startsWith(t.location!),
   );

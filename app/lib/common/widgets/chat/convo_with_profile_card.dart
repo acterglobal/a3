@@ -1,7 +1,9 @@
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,7 +45,8 @@ class ConvoWithProfileCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final convo = ref.watch(currentConvoProvider);
+    final currId = ref.watch(roomIdProvider);
+    final location = ref.watch(currentRoutingLocation);
     final desktop = isDesktop;
     final avatar = ActerAvatar(
       uniqueId: roomId,
@@ -60,8 +63,8 @@ class ConvoWithProfileCard extends ConsumerWidget {
           children: <Widget>[
             ListTile(
               onTap: onTap,
-              selected: (desktop && convo != null)
-                  ? convo.getRoomIdStr() == roomId
+              selected: (desktop && location.startsWith(Routes.chat.route))
+                  ? roomId == currId
                       ? true
                       : false
                   : false,

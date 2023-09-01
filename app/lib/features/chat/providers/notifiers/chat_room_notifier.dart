@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:acter/common/providers/common_providers.dart';
@@ -15,14 +14,17 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:mime/mime.dart';
 
 class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
+  final AsyncValue<Convo> asyncRoom;
   final Ref ref;
   TimelineStream? timeline;
   String? currentMessageId;
   types.Message? repliedToMessage;
   List<File> fileList = [];
   late Client client;
+  late Convo convo;
 
   ChatRoomNotifier({
+    required this.asyncRoom,
     required this.ref,
   }) : super(const ChatRoomState.loading()) {
     _init();
@@ -30,29 +32,33 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   void _init() async {
-    client = ref.watch(clientProvider)!;
-    try {
-      final room = ref.read(currentConvoProvider)!;
-      timeline = await room.timelineStream();
-      StreamSubscription<TimelineDiff>? subscription;
-      subscription = timeline?.diffRx().listen((event) async {
-        await _parseEvent(event);
-      });
-      bool hasMore = false;
-      do {
-        hasMore = await timeline!.paginateBackwards(10);
-        // wait for diffRx to be finished
-        sleep(const Duration(milliseconds: 100));
-      } while (hasMore && ref.read(messagesProvider).length < 10);
-      ref.onDispose(() async {
-        debugPrint('disposing message stream');
-        await subscription?.cancel();
-      });
-    } catch (e) {
-      state = ChatRoomState.error(
-        'Some error occured loading room ${e.toString()}',
-      );
-    }
+    client = ref.read(clientProvider)!;
+    asyncRoom.when(
+      data: (room) async {
+        convo = room;
+        timeline = await room.timelineStream();
+        StreamSubscription<TimelineDiff>? subscription;
+        subscription = timeline?.diffRx().listen((event) async {
+          await _parseEvent(event);
+        });
+        bool hasMore = false;
+        do {
+          hasMore = await timeline!.paginateBackwards(10);
+        } while (hasMore && ref.read(messagesProvider).length < 10);
+        if (ref.read(messagesProvider).isNotEmpty) {
+          state = const ChatRoomState.loaded();
+        }
+        ref.onDispose(() async {
+          debugPrint('disposing message stream');
+          await subscription?.cancel();
+        });
+      },
+      error: (err, st) {
+        debugPrint('Error loading room $err');
+        state = ChatRoomState.error(err.toString());
+      },
+      loading: () => state = const ChatRoomState.loading(),
+    );
   }
 
   void isLoaded() => state = const ChatRoomState.loaded();
@@ -97,10 +103,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           if (repliedTo != null) {
             await _fetchOriginalContent(repliedTo, message.id);
           }
-          RoomEventItem? eventItem = m.eventItem();
-          if (eventItem != null) {
-            await _fetchEventBinary(eventItem.msgType(), message.id);
-          }
         }
         break;
       case 'Set':
@@ -123,10 +125,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (repliedTo != null) {
           await _fetchOriginalContent(repliedTo, message.id);
         }
-        RoomEventItem? eventItem = m.eventItem();
-        if (eventItem != null) {
-          await _fetchEventBinary(eventItem.msgType(), message.id);
-        }
+
         break;
       case 'Remove':
         int index = timelineEvent.index()!;
@@ -146,10 +145,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (repliedTo != null) {
           await _fetchOriginalContent(repliedTo, message.id);
         }
-        RoomEventItem? eventItem = m.eventItem();
-        if (eventItem != null) {
-          await _fetchEventBinary(eventItem.msgType(), message.id);
-        }
+
         break;
       case 'PushFront':
         RoomMessage m = timelineEvent.value()!;
@@ -162,10 +158,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (repliedTo != null) {
           await _fetchOriginalContent(repliedTo, message.id);
         }
-        RoomEventItem? eventItem = m.eventItem();
-        if (eventItem != null) {
-          await _fetchEventBinary(eventItem.msgType(), message.id);
-        }
+
         break;
       case 'PopBack':
         final messages = ref.read(messagesProvider);
@@ -190,9 +183,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   Future<void> _fetchMentionRecords() async {
-    final convo = ref.read(currentConvoProvider)!;
-    final activeMembers =
-        await ref.read(chatMembersProvider(convo.getRoomIdStr()).future);
+    final activeMembers = await ref.read(
+      chatMembersProvider(convo.getRoomIdStr()).future,
+    );
     List<Map<String, dynamic>> mentionRecords = [];
     final mentionListNotifier = ref.read(mentionListProvider.notifier);
     for (int i = 0; i < activeMembers.length; i++) {
@@ -211,8 +204,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // fetch original content media for reply msg, i.e. text/image/file etc.
   Future<void> _fetchOriginalContent(String originalId, String replyId) async {
-    final room = ref.read(currentConvoProvider)!;
-    final roomMsg = await room.getMessage(originalId);
+    final roomMsg = await convo.getMessage(originalId);
 
     // reply is allowed for only EventItem not VirtualItem
     // user should be able to get original event as RoomMessage
@@ -292,9 +284,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.image':
             ImageDesc? description = orgEventItem.imageDesc();
             if (description != null) {
-              room.imageBinary(originalId).then((data) {
-                repliedToContent['base64'] = base64Encode(data.asTypedList());
-              });
               repliedTo = types.ImageMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
@@ -310,9 +299,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.audio':
             AudioDesc? description = orgEventItem.audioDesc();
             if (description != null) {
-              room.audioBinary(originalId).then((data) {
-                repliedToContent['content'] = base64Encode(data.asTypedList());
-              });
               repliedTo = types.AudioMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
@@ -328,9 +314,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.video':
             VideoDesc? description = orgEventItem.videoDesc();
             if (description != null) {
-              room.videoBinary(originalId).then((data) {
-                repliedToContent['content'] = base64Encode(data.asTypedList());
-              });
               repliedTo = types.VideoMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
@@ -497,7 +480,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.audio':
             AudioDesc? description = eventItem.audioDesc();
             if (description != null) {
-              Map<String, dynamic> metadata = {'base64': ''};
+              Map<String, dynamic> metadata = {};
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -692,7 +675,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.video':
             VideoDesc? description = eventItem.videoDesc();
             if (description != null) {
-              Map<String, dynamic> metadata = {'base64': ''};
+              Map<String, dynamic> metadata = {};
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -744,48 +727,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     return null;
   }
 
-  // fetch event media binary for message.
-  Future<void> _fetchEventBinary(String? msgType, String eventId) async {
-    switch (msgType) {
-      case 'm.audio':
-        await _fetchAudioBinary(eventId);
-        break;
-      case 'm.video':
-        await _fetchVideoBinary(eventId);
-        break;
-    }
-  }
-
-  // fetch audio content for message.
-  Future<void> _fetchAudioBinary(String eventId) async {
-    final room = ref.read(currentConvoProvider)!;
-    final messages = ref.read(messagesProvider);
-    final messagesNotifier = ref.read(messagesProvider.notifier);
-    final data = await room.audioBinary(eventId);
-    int index = messages.indexWhere((x) => x.id == eventId);
-    if (index != -1) {
-      final metadata = messages[index].metadata ?? {};
-      metadata['base64'] = base64Encode(data.asTypedList());
-      messages[index] = messages[index].copyWith(metadata: metadata);
-      messagesNotifier.replaceMessage(index, messages[index]);
-    }
-  }
-
-  // fetch video conent for message
-  Future<void> _fetchVideoBinary(String eventId) async {
-    final room = ref.read(currentConvoProvider)!;
-    final messages = ref.read(messagesProvider);
-    final messagesNotifier = ref.read(messagesProvider.notifier);
-    final data = await room.videoBinary(eventId);
-    int index = messages.indexWhere((x) => x.id == eventId);
-    if (index != -1) {
-      final metadata = messages[index].metadata ?? {};
-      metadata['base64'] = base64Encode(data.asTypedList());
-      messages[index] = messages[index].copyWith(metadata: metadata);
-      messagesNotifier.replaceMessage(index, messages[index]);
-    }
-  }
-
   // Pagination Control
   Future<void> handleEndReached() async {
     bool hasMore = ref.read(paginationProvider);
@@ -827,7 +768,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   Future<void> handleFileUpload() async {
-    var room = ref.read(currentConvoProvider)!;
     var chatInputNotifier = ref.read(chatInputProvider.notifier);
     if (fileList.isNotEmpty) {
       try {
@@ -839,7 +779,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             var bytes = file.readAsBytesSync();
             var image = await decodeImageFromList(bytes);
             if (repliedToMessage != null) {
-              await room.sendImageReply(
+              await convo.sendImageReply(
                 file.path,
                 fileName,
                 mimeType,
@@ -854,7 +794,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               chatInputNotifier.toggleReplyView(false);
               chatInputNotifier.setReplyWidget(null);
             } else {
-              await room.sendImageMessage(
+              await convo.sendImageMessage(
                 file.path,
                 fileName,
                 mimeType,
@@ -870,7 +810,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           } else if (mimeType.startsWith('/video')) {
           } else {
             if (repliedToMessage != null) {
-              await room.sendFileReply(
+              await convo.sendFileReply(
                 file.path,
                 fileName,
                 mimeType,
@@ -882,7 +822,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               chatInputNotifier.toggleReplyView(false);
               chatInputNotifier.setReplyWidget(null);
             } else {
-              await room.sendFileMessage(
+              await convo.sendFileMessage(
                 file.path,
                 fileName,
                 mimeType,
@@ -902,12 +842,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     String markdownMessage,
     int messageLength,
   ) async {
-    final room = ref.read(currentConvoProvider)!;
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
-    await room.typingNotice(false);
+    await convo.typingNotice(false);
     if (repliedToMessage != null) {
-      await room.sendTextReply(
+      await convo.sendTextReply(
         markdownMessage,
         repliedToMessage!.id,
         null,
@@ -917,7 +856,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       inputNotifier.toggleReplyView(false);
       inputNotifier.setReplyWidget(null);
     } else {
-      await room.sendFormattedMessage(markdownMessage);
+      await convo.sendFormattedMessage(markdownMessage);
     }
   }
 
@@ -938,19 +877,16 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // send typing event from client
   Future<bool> typingNotice(bool typing) async {
-    final room = ref.read(currentConvoProvider)!;
-    return await room.typingNotice(typing);
+    return await convo.typingNotice(typing);
   }
 
   // send emoji reaction to message event
   Future<void> sendEmojiReaction(String eventId, String emoji) async {
-    final room = ref.read(currentConvoProvider)!;
-    await room.sendReaction(eventId, emoji);
+    await convo.sendReaction(eventId, emoji);
   }
 
 // delete message event
   Future<void> redactRoomMessage(String eventId) async {
-    final room = ref.read(currentConvoProvider)!;
-    await room.redactMessage(eventId, '', null);
+    await convo.redactMessage(eventId, '', null);
   }
 }

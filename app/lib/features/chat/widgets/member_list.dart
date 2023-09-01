@@ -12,10 +12,17 @@ class MemberList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final convo = ref.watch(currentConvoProvider);
-    final roomId = convo!.getRoomIdStr();
-    final members = ref.watch(chatMembersProvider(roomId));
-    final myMembership = ref.watch(spaceMembershipProvider(roomId));
+    final roomNotifier = ref.watch(chatRoomProvider.notifier);
+    final members = ref.watch(
+      chatMembersProvider(
+        roomNotifier.asyncRoom.requireValue.getRoomIdStr(),
+      ),
+    );
+    final myMembership = ref.watch(
+      spaceMembershipProvider(
+        roomNotifier.asyncRoom.requireValue.getRoomIdStr(),
+      ),
+    );
 
     return members.when(
       data: (members) {
@@ -36,7 +43,7 @@ class MemberList extends ConsumerWidget {
               padding: const EdgeInsets.all(8.0),
               child: MemberListEntry(
                 member: member,
-                convo: convo,
+                convo: roomNotifier.asyncRoom.requireValue,
                 myMembership: myMembership.valueOrNull,
               ),
             );

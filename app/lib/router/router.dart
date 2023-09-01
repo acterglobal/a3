@@ -8,6 +8,7 @@ import 'package:acter/features/activities/pages/sessions_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/dialogs/create_chat_sheet.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
+import 'package:acter/features/chat/pages/chat_shell.dart';
 import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/events/dialogs/create_event_sheet.dart';
@@ -90,6 +91,10 @@ final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>(
 
 final GlobalKey<NavigatorState> shellNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'shell',
+);
+
+final GlobalKey<NavigatorState> chatShellKey = GlobalKey<NavigatorState>(
+  debugLabel: 'chat',
 );
 
 final GlobalKey<NavigatorState> spaceNavKey = GlobalKey<NavigatorState>(
@@ -504,39 +509,79 @@ List<RouteBase> makeRoutes(Ref ref) {
             );
           },
         ),
-
+        // Chat Nested (Mobile)
         GoRoute(
-          parentNavigatorKey: shellNavKey,
           name: Routes.chat.name,
           path: Routes.chat.route,
           redirect: authGuardRedirect,
-          pageBuilder: (context, state) {
+          pageBuilder: (context, state) => NoTransitionPage(
+            key: state.pageKey,
+            child: const ChatPage(),
+          ),
+          routes: <RouteBase>[
+            GoRoute(
+              name: 'room',
+              path: ':roomId',
+              redirect: authGuardRedirect,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: RoomPage(
+                  roomIdOrAlias: state.pathParameters['roomId']!,
+                ),
+              ),
+              routes: <RouteBase>[
+                GoRoute(
+                  name: 'profile',
+                  path: 'profile',
+                  redirect: authGuardRedirect,
+                  pageBuilder: (context, state) => NoTransitionPage(
+                    key: state.pageKey,
+                    child: RoomProfilePage(
+                      roomIdOrAlias: state.pathParameters['roomId']!,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        // Chat Sub-Shell (Desktop)
+        ShellRoute(
+          navigatorKey: chatShellKey,
+          pageBuilder: (context, state, child) {
             return NoTransitionPage(
               key: state.pageKey,
-              child: const ChatPage(),
+              child: ChatShell(
+                child: child,
+              ),
             );
           },
-        ),
-
-        GoRoute(
-          parentNavigatorKey: shellNavKey,
-          name: Routes.chatroom.name,
-          path: Routes.chatroom.route,
-          redirect: authGuardRedirect,
-          pageBuilder: (context, state) {
-            return NoTransitionPage(
-              key: state.pageKey,
-              child: const RoomPage(),
-            );
-          },
-        ),
-
-        GoRoute(
-          parentNavigatorKey: shellNavKey,
-          name: Routes.chatProfile.name,
-          path: Routes.chatProfile.route,
-          redirect: authGuardRedirect,
-          builder: (context, state) => const RoomProfilePage(),
+          routes: <RouteBase>[
+            GoRoute(
+              parentNavigatorKey: chatShellKey,
+              name: Routes.chatroom.name,
+              path: Routes.chatroom.route,
+              redirect: authGuardRedirect,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: RoomPage(
+                  roomIdOrAlias: state.pathParameters['roomId']!,
+                ),
+              ),
+            ),
+            GoRoute(
+              parentNavigatorKey: chatShellKey,
+              name: Routes.chatProfile.name,
+              path: Routes.chatProfile.route,
+              redirect: authGuardRedirect,
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: RoomProfilePage(
+                  roomIdOrAlias: state.pathParameters['roomId']!,
+                ),
+              ),
+            ),
+          ],
         ),
 
         GoRoute(
