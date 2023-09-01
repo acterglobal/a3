@@ -30,15 +30,19 @@ mod device;
 mod invitation;
 mod message;
 mod news;
+mod notifications;
 mod pins;
 mod profile;
 mod receipt;
 mod room;
+mod rsvp;
 mod search;
+mod settings;
 mod spaces;
 mod stream;
 mod tasks;
 mod typing;
+mod utils;
 mod verification;
 
 pub use account::Account;
@@ -48,25 +52,26 @@ pub use acter_core::{
 };
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
-    guest_client, login_new_client, login_new_client_under_config, login_with_token,
-    login_with_token_under_config, make_client_config, register_under_config, register_with_token,
-    register_with_token_under_config, sanitize_user,
+    destroy_local_data, guest_client, login_new_client, login_new_client_under_config,
+    login_with_token, login_with_token_under_config, make_client_config, register_under_config,
+    register_with_token, register_with_token_under_config, sanitize_user,
 };
 pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
-    duration_from_secs, AudioDesc, FileDesc, ImageDesc, MediaSource, OptionBuffer, OptionText,
-    ReactionDesc, TextDesc, ThumbnailInfo, VideoDesc,
+    duration_from_secs, AudioDesc, DeviceRecord, FileDesc, ImageDesc, LocationDesc, MediaSource,
+    OptionBuffer, OptionString, ReactionRecord, TextDesc, ThumbnailInfo, VideoDesc,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, CreateConvoSettings, CreateConvoSettingsBuilder,
 };
 pub use core::time::Duration as EfkDuration;
-pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
+pub use device::{DeviceChangedEvent, DeviceLeftEvent};
 pub use invitation::Invitation;
 pub use message::{RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
+pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
@@ -74,17 +79,24 @@ pub use room::{
     Member, MemberPermission, MembershipStatus, Room, SendAudioResult, SendImageResult,
     SendVideoResult,
 };
+pub use rsvp::{Rsvp, RsvpDraft, RsvpManager};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
+pub use settings::{
+    ActerAppSettings, ActerAppSettingsBuilder, EventsSettings, NewsSettings, PinsSettings,
+    RoomPowerLevels, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder,
+};
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
-    RelationTargetType, Space, SpaceRelation, SpaceRelations,
+    RelationTargetType, Space, SpaceHierarchyListResult, SpaceHierarchyRoomInfo, SpaceRelation,
+    SpaceRelations,
 };
 pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
 pub use typing::TypingEvent;
-pub use verification::{VerificationEmoji, VerificationEvent};
+pub use utils::parse_markdown;
+pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
 
 pub type DeviceId = matrix_sdk::ruma::OwnedDeviceId;
 pub type EventId = matrix_sdk::ruma::OwnedEventId;

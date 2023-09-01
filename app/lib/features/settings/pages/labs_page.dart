@@ -1,6 +1,7 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter/features/settings/widgets/in_settings.dart';
+import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -18,22 +19,41 @@ class SettingsLabsPage extends ConsumerWidget {
       return value;
     }
 
-    return InSettings(
+    return WithSidebar(
+      sidebar: const SettingsMenu(),
       child: Scaffold(
         appBar: AppBar(title: const Text('App Labs')),
         body: SettingsList(
           sections: [
             SettingsSection(
-              title: const Text('Apps'),
+              title: const Text('Notifications'),
               tiles: [
                 SettingsTile.switchTile(
-                  title: const Text('Tasks'),
-                  description:
-                      const Text('Manage Tasks lists and Todos together'),
-                  initialValue: isActive(LabsFeature.tasks),
+                  title: const Text('Show Notifications'),
+                  description: const Text(
+                    'Only supported on Linux, iOS and Android right now',
+                  ),
+                  initialValue: isActive(LabsFeature.showNotifications),
                   onToggle: (newVal) =>
-                      updateFeatureState(LabsFeature.tasks, newVal),
+                      updateFeatureState(LabsFeature.showNotifications, newVal),
                 ),
+              ],
+            ),
+            SettingsSection(
+              title: const Text('Spaces'),
+              tiles: [
+                SettingsTile.switchTile(
+                  title: const Text('Encrypted spaces'),
+                  description: const Text('not yet supported'),
+                  enabled: false,
+                  initialValue: false,
+                  onToggle: (newVal) {},
+                ),
+              ],
+            ),
+            SettingsSection(
+              title: const Text('Apps'),
+              tiles: [
                 SettingsTile.switchTile(
                   title: const Text('Events'),
                   description: const Text('Shared Calendar and events'),
@@ -42,12 +62,13 @@ class SettingsLabsPage extends ConsumerWidget {
                       updateFeatureState(LabsFeature.events, newVal),
                 ),
                 SettingsTile.switchTile(
-                  title: const Text('Pins'),
-                  description: const Text('Pins'),
-                  initialValue: isActive(LabsFeature.pins),
-                  onToggle: (newVal) =>
-                      updateFeatureState(LabsFeature.pins, newVal),
+                  title: const Text('Tasks'),
                   enabled: false,
+                  description:
+                      const Text('Manage Tasks lists and ToDos together'),
+                  initialValue: false,
+                  onToggle: (newVal) =>
+                      updateFeatureState(LabsFeature.tasks, newVal),
                 ),
                 SettingsTile.switchTile(
                   title: const Text('Polls'),
@@ -64,30 +85,6 @@ class SettingsLabsPage extends ConsumerWidget {
                   onToggle: (newVal) =>
                       updateFeatureState(LabsFeature.cobudget, newVal),
                   enabled: false,
-                ),
-              ],
-            ),
-            SettingsSection(
-              title: const Text('Search'),
-              tiles: [
-                SettingsTile.switchTile(
-                  title: const Text('Search Spaces'),
-                  description: const Text('Include spaces in search'),
-                  initialValue: isActive(LabsFeature.searchSpaces),
-                  onToggle: (newVal) =>
-                      updateFeatureState(LabsFeature.searchSpaces, newVal),
-                ),
-              ],
-            ),
-            SettingsSection(
-              title: const Text('Tasks'),
-              tiles: [
-                SettingsTile.switchTile(
-                  title: const Text('CoBudget'),
-                  description: const Text('Manage budgets cooperatively'),
-                  initialValue: false,
-                  onToggle: (newVal) => {},
-                  enabled: isActive(LabsFeature.tasks),
                 ),
               ],
             ),

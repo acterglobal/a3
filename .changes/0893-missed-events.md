@@ -1,0 +1,11 @@
+- Implement emote event handling
+- Remove verification event handling from room module
+- Simplify the constructor of `RoomEventItem` and `RoomMessage`
+- Implement location event handling
+- The names of some events were changed via new matrix-sdk upgrade:
+  - `m.room.canonical.alias` -> `m.room.canonical_alias`
+  - `m.room.history.visibility` -> `m.room.history_visibility`
+  - `m.room.pinned.events` -> `m.room.pinned_events`
+  - `m.room.power.levels` -> `m.room.power_levels`
+  - `m.room.server.acl` -> `m.room.server_acl`
+  - `m.room.third.party.invite` -> `m.room.third_party_invite`

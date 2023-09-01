@@ -4,13 +4,13 @@ use matrix_sdk::ruma::events::{
     macros::EventContent,
     room::message::{
         AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-        TextMessageEventContent, VideoMessageEventContent,
+        LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
     },
 };
 use serde::{Deserialize, Serialize};
 
 use super::{Colorize, ObjRef, Update};
-use crate::util::deserialize_some;
+use crate::{util::deserialize_some, Result};
 
 // if you change the order of these enum variables, enum value will change and parsing of old content will fail
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -26,6 +26,8 @@ pub enum NewsContent {
     Audio(AudioMessageEventContent),
     /// A file message.
     File(FileMessageEventContent),
+    /// A location message.
+    Location(LocationMessageEventContent),
 }
 
 impl NewsContent {
@@ -34,6 +36,7 @@ impl NewsContent {
             NewsContent::Audio(_) => "audio".to_owned(),
             NewsContent::File(_) => "file".to_owned(),
             NewsContent::Image(_) => "image".to_owned(),
+            NewsContent::Location(_) => "location".to_owned(),
             NewsContent::Text(_) => "text".to_owned(),
             NewsContent::Video(_) => "video".to_owned(),
         }
@@ -56,6 +59,13 @@ impl NewsContent {
     pub fn image(&self) -> Option<ImageMessageEventContent> {
         match self {
             NewsContent::Image(content) => Some(content.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn location(&self) -> Option<LocationMessageEventContent> {
+        match self {
+            NewsContent::Location(content) => Some(content.clone()),
             _ => None,
         }
     }
@@ -137,7 +147,7 @@ pub struct NewsEntryUpdateEventContent {
 }
 
 impl NewsEntryUpdateEventContent {
-    pub fn apply(&self, task: &mut NewsEntryEventContent) -> crate::Result<bool> {
+    pub fn apply(&self, task: &mut NewsEntryEventContent) -> Result<bool> {
         let mut updated = false;
         if let Some(slides) = &self.slides {
             task.slides = slides.clone();

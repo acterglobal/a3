@@ -28,6 +28,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
 
   @override
   Widget build(BuildContext context) {
+    final client = ref.watch(clientProvider)!;
     final newsList = ref.watch(newsListProvider);
     return newsList.when(
       data: (data) {
@@ -40,7 +41,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
               LikeAnimation.run(index);
             },
             child: NewsItem(
-              client: ref.read(clientProvider)!,
+              client: client,
               news: data[index],
               index: index,
             ),

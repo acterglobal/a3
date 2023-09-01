@@ -19,6 +19,9 @@ fn guest_client(basepath: string, default_homeserver_name: string, default_homes
 /// Create a new client from the registration token
 fn register_with_token(basepath: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: string) -> Future<Result<Client>>;
 
+/// destroy the local data of a session 
+fn destroy_local_data(basepath: string, userId: string, default_homeserver_name: string) -> Future<Result<bool>>;
+
 /// Representing a time frame
 object EfkDuration {
     /// convert it into seconds
@@ -26,6 +29,8 @@ object EfkDuration {
 }
 
 fn duration_from_secs(secs: u64) -> EfkDuration;
+
+fn parse_markdown(text: string) -> Option<string>;
 
 /// Representing a color
 object EfkColor {
@@ -104,6 +109,9 @@ object NewsSlide {
     fn file_desc() -> Option<FileDesc>;
     /// if this is a file, hand over the data
     fn file_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is a location, hand over the description
+    fn location_desc() -> Option<LocationDesc>;
 }
 
 /// A news entry
@@ -241,6 +249,7 @@ object PinUpdateBuilder {
 
     /// set the content for this pin
     fn content_text(text: string);
+    fn content_markdown(text: string);
     fn unset_content();
     fn unset_content_update();
 
@@ -287,8 +296,11 @@ object CalendarEvent {
     // fn locations() -> Vec<Location>;
     /// event id
     fn event_id() -> EventId;
+    fn room_id_str() -> string;
     /// update builder
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
+    /// get RSVP manager
+    fn rsvp_manager() -> Future<Result<RsvpManager>>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -336,6 +348,51 @@ object CalendarEventDraft {
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
+}
+
+object RsvpManager {
+    /// whether manager has rsvp entries
+    fn has_rsvp_entries() -> bool;
+
+    /// get total rsvp count
+    fn total_rsvp_count() -> u32;
+
+    /// get rsvp entries
+    fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
+
+    /// get Yes/Maybe/No/None for the user's own status
+    fn my_status() -> Future<Result<OptionString>>;
+
+    /// get the count of Yes/Maybe/No
+    fn count_at_status(status: string) -> Future<Result<u32>>;
+
+    /// get the user-ids that have responded said way for each status
+    fn users_at_status(status: string) -> Future<Result<Vec<UserId>>>;
+
+    /// create rsvp draft
+    fn rsvp_draft() -> Result<RsvpDraft>;
+
+    /// get informed about changes to this manager
+    fn subscribe_stream() -> Stream<()>;
+}
+
+object RsvpDraft {
+    /// set status of this RSVP
+    fn status(status: string) -> RsvpDraft;
+
+    /// create this RSVP
+    fn send() -> Future<Result<EventId>>;
+}
+
+object Rsvp {
+    /// get sender of this rsvp
+    fn sender() -> UserId;
+
+    /// get timestamp of this rsvp
+    fn origin_server_ts() -> u64;
+
+    /// get status of this rsvp
+    fn status() -> string;
 }
 
 object MediaSource {
@@ -388,7 +445,7 @@ object RoomEventItem {
     fn event_type() -> string;
 
     /// the type of massage, like text, image, audio, video, file etc
-    fn sub_type() -> Option<string>;
+    fn msg_type() -> Option<string>;
 
     /// contains text fallback and formatted text
     fn text_desc() -> Option<TextDesc>;
@@ -405,6 +462,9 @@ object RoomEventItem {
     /// contains source data, name, mimetype and size
     fn file_desc() -> Option<FileDesc>;
 
+    /// contains body and geo uri
+    fn location_desc() -> Option<LocationDesc>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -412,14 +472,14 @@ object RoomEventItem {
     fn reaction_keys() -> Vec<string>;
 
     /// the details that users reacted using this emote key in this message
-    fn reaction_desc(key: string) -> Option<ReactionDesc>;
+    fn reaction_records(key: string) -> Option<Vec<ReactionRecord>>;
 
     /// Whether this message is editable
     fn is_editable() -> bool;
 }
 
 object RoomVirtualItem {
-    /// one of DayDivider/LoadingIndicator/ReadMarker/TimelineStart
+    /// DayDivider or ReadMarker
     fn event_type() -> string;
 
     /// contains description text
@@ -447,6 +507,9 @@ object TextDesc {
 
     /// formatted text
     fn formatted_body() -> Option<string>;
+
+    /// whether this has a formatted version
+    fn has_formatted() -> bool;
 }
 
 object ImageDesc {
@@ -544,12 +607,29 @@ object FileDesc {
     fn thumbnail_source() -> Option<MediaSource>;
 }
 
-object ReactionDesc {
-    /// how many times this key was clicked
-    fn count() -> u32;
+object LocationDesc {
+    /// body
+    fn body() -> string;
 
-    /// which users selected this key
-    fn senders() -> Vec<string>;
+    /// geo uri
+    fn geo_uri() -> string;
+
+    /// thumbnail info
+    fn thumbnail_info() -> Option<ThumbnailInfo>;
+
+    /// thumbnail source
+    fn thumbnail_source() -> Option<MediaSource>;
+}
+
+object ReactionRecord {
+    /// who sent reaction
+    fn sender_id() -> UserId;
+
+    /// when reaction was sent
+    fn timestamp() -> u64;
+
+    /// whether I am the sender of this reaction
+    fn sent_by_me() -> bool;
 }
 
 object TimelineDiff {
@@ -574,7 +654,7 @@ object TimelineStream {
     /// Fires whenever new event arrived
     fn next() -> Future<Result<RoomMessage>>;
 
-    /// Get the next count messages backwards,
+    /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
     /// modify the room message
@@ -678,8 +758,14 @@ object Convo {
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<EventId>>;
 
+    /// Edit the existing event with plain text
+    fn edit_plain_message(event_id: string, new_msg: string) -> Future<Result<EventId>>;
+
     /// Send a text message in MarkDown format to the room
     fn send_formatted_message(markdown_message: string) -> Future<Result<EventId>>;
+
+    /// Edit the existing event with MarkDown text
+    fn edit_formatted_message(event_id: string, new_msg: string) -> Future<Result<EventId>>;
 
     /// Send reaction about existing event
     fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;
@@ -692,6 +778,9 @@ object Convo {
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
+    /// edit the image message
+    fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<EventId>>;
+
     /// send the audio message to this room
     fn send_audio_message(url_or_path: string, body: string) -> Future<Result<SendAudioResult>>;
 
@@ -699,6 +788,9 @@ object Convo {
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// edit the audio message
+    fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, secs: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
 
     /// send the video message to this room
     fn send_video_message(url_or_path: string, body: string, blurhash: Option<string>) -> Future<Result<SendVideoResult>>;
@@ -708,6 +800,9 @@ object Convo {
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
+    /// edit the video message
+    fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
+
     /// send the file message to this room
     fn send_file_message(url_or_path: string, body: string) -> Future<Result<EventId>>;
 
@@ -715,6 +810,15 @@ object Convo {
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// edit the file message
+    fn edit_file_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u32>) -> Future<Result<EventId>>;
+
+    /// send the location message to this room
+    fn send_location_message(body: string, geo_uri: string) -> Future<Result<EventId>>;
+
+    /// edit the location message
+    fn edit_location_message(event_id: string, body: string, geo_uri: string) -> Future<Result<EventId>>;
 
     /// get the user status on this room
     fn room_type() -> string;
@@ -766,6 +870,8 @@ object Convo {
 
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
+
+    fn is_joined() -> bool;
 }
 
 object CommentDraft {
@@ -837,6 +943,9 @@ object Attachment {
     fn file_desc() -> Option<FileDesc>;
     /// if this is a file, hand over the data
     fn file_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is a location, hand over the description
+    fn location_desc() -> Option<LocationDesc>;
 }
 
 /// Reference to the attachments section of a particular item
@@ -1172,11 +1281,40 @@ object TaskListUpdateBuilder {
     fn send() -> Future<Result<EventId>>;
 }
 
+
 enum RelationTargetType {
     Unknown,
     ChatRoom,
     Space,
     ActerSpace
+}
+
+/// remote info
+object SpaceHierarchyRoomInfo {
+    fn name() -> Option<string>;
+    //fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
+    fn topic() -> Option<string>;
+    fn num_joined_members() -> u64;
+    fn world_readable() -> bool;
+    fn guest_can_join() -> bool;
+    fn is_space() -> bool;
+    fn avatar_url_str() -> Option<string>;
+    fn join_rule_str() -> string;
+    /// whether to have avatar
+    fn has_avatar() -> bool;
+
+    /// get the binary data of avatar
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
+    // recommended server to try to join via
+    fn via_server_name() -> Option<string>;
+}
+
+object SpaceHierarchyListResult {
+    /// to be used for the next `since`
+    fn next_batch() -> Option<string>;
+    /// get the chunk of items in this response
+    fn rooms() -> Future<Result<Vec<SpaceHierarchyRoomInfo>>>;
 }
 
 object SpaceRelation {
@@ -1191,12 +1329,65 @@ object SpaceRelation {
 }
 
 object SpaceRelations {
+    //fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
     /// do we have a canonical parent?!?
     fn main_parent() -> Option<SpaceRelation>;
     /// other parents we belong to
     fn other_parents() -> Vec<SpaceRelation>;
     /// children
     fn children() -> Vec<SpaceRelation>;
+    /// query for children from the server
+    fn query_hierarchy(from: Option<string>) -> Future<Result<SpaceHierarchyListResult>>;
+}
+
+object RoomPowerLevels {
+    fn news() -> Option<i64>;
+    fn news_key() -> string;
+    fn events() -> Option<i64>;
+    fn events_key() -> string;
+    fn pins() -> Option<i64>;
+    fn pins_key() -> string;
+    fn events_default() -> i64;
+    fn users_default() -> i64;
+    fn max_power_level() -> i64;
+}
+
+object SimpleSettingWithTurnOff {
+
+}
+
+object SimpleSettingWithTurnOffBuilder {
+    fn active(active: bool);
+    fn build() -> Result<SimpleSettingWithTurnOff>;
+}
+
+object NewsSettings {
+    fn active() -> bool;
+    fn updater() -> SimpleSettingWithTurnOffBuilder;
+}
+
+object EventsSettings {
+    fn active() -> bool;
+    fn updater() -> SimpleSettingWithTurnOffBuilder;
+}
+
+object PinsSettings {
+    fn active() -> bool;
+    fn updater() -> SimpleSettingWithTurnOffBuilder;
+}
+
+object ActerAppSettings {
+    fn news() -> NewsSettings;
+    fn pins() -> PinsSettings;
+    fn events() -> EventsSettings;
+    fn update_builder() -> ActerAppSettingsBuilder;
+}
+
+object ActerAppSettingsBuilder {
+    fn news(news: Option<SimpleSettingWithTurnOff>);
+    fn pins(pins: Option<SimpleSettingWithTurnOff>);
+    fn events(events: Option<SimpleSettingWithTurnOff>);
 }
 
 object Space {
@@ -1215,11 +1406,15 @@ object Space {
     /// Change the avatar of the room
     fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
 
+    fn set_acter_space_states() -> Future<Result<bool>>;
+
     /// Remove the avatar of the room
     fn remove_avatar() -> Future<Result<EventId>>;
 
     /// what is the description / topic
     fn topic() -> Option<string>;
+
+    fn is_joined() -> bool;
 
     /// set description / topic of the room
     fn set_topic(topic: string) -> Future<Result<EventId>>;
@@ -1250,6 +1445,18 @@ object Space {
 
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
+
+    /// whether or not this space is public
+    fn is_public() -> bool;
+
+    /// join rules for this space.
+    fn join_rule_str() -> string;
+
+    /// the ids of the rooms the restriction applies to
+    fn restricted_room_ids_str() -> Vec<string>;
+
+    /// whether or not this space has been marked as an 'acter' one
+    fn is_acter_space() -> Future<Result<bool>>;
 
     /// the Tasks lists of this Space
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
@@ -1334,8 +1541,20 @@ object Space {
     /// send reply as file
     fn send_file_reply(url_or_path: string, body: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
+    /// the power levels currently set up
+    fn power_levels() -> Future<Result<RoomPowerLevels>>;
+
+    /// current App Settings
+    fn app_settings() -> Future<Result<ActerAppSettings>>;
+
+    /// Whenever this is submitted;
+    fn update_app_settings(new_settings: ActerAppSettingsBuilder) -> Future<Result<string>>;
+    
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
+
+    /// update the power level for a feature
+    fn update_feature_power_levels(feature: string, level: Option<i32>) -> Future<Result<bool>>;
 
 }
 
@@ -1352,17 +1571,20 @@ enum MemberPermission {
     CanSendSticker,
     CanPostNews,
     CanPostPin,
+    CanPostEvent,
     CanBan,
     CanKick,
     CanInvite,
     CanRedact,
     CanTriggerRoomNotification,
+    CanUpgradeToActerSpace,
     CanSetName,
     CanUpdateAvatar,
     CanSetTopic,
     CanLinkSpaces,
     CanUpdatePowerLevels,
-    CanSetParentSpace
+    CanSetParentSpace,
+    CanChangeAppSettings
 }
 
 object Member {
@@ -1388,7 +1610,7 @@ object Account {
     fn user_id() -> UserId;
 
     /// The display_name of the account
-    fn display_name() -> Future<Result<OptionText>>;
+    fn display_name() -> Future<Result<OptionString>>;
 
     /// Change the display name of the account
     fn set_display_name(name: string) -> Future<Result<bool>>;
@@ -1439,6 +1661,25 @@ object PublicSearchResult {
     fn total_room_count_estimate() -> Option<u64>;
     /// get the chunk of items in this response
     fn chunks() -> Vec<PublicSearchResultItem>;
+}
+
+object Notification {
+    fn read() -> bool;
+    // fn room_id() -> OwnedRoomId;
+    fn room_id_str() -> string;
+    fn has_room() -> bool;
+    fn is_space() -> bool;
+    fn is_acter_space() -> bool;
+    fn space() -> Option<Space>;
+    fn room_message() -> Option<RoomMessage>;
+    fn convo() -> Option<Convo>;
+}
+
+object NotificationListResult {
+    /// to be used for the next `since`
+    fn next_batch() -> Option<string>;
+    /// get the chunk of items in this response
+    fn notifications() -> Future<Result<Vec<Notification>>>;
 }
 
 /// make convo settings builder
@@ -1502,6 +1743,11 @@ object CreateSpaceSettings {}
 
 /// Main entry point for `acter`.
 object Client {
+
+    // deactivate the account. This can not be reversed. The username will 
+    // be blocked from any future usage, all personal data will be removed.
+    fn deactivate(password: string) -> Future<Result<bool>>;
+
     // Special
 
     /// start the sync
@@ -1533,7 +1779,7 @@ object Client {
     fn user_id() -> Result<UserId>;
 
     /// get convo room
-    fn convo(room_or_id: string) -> Future<Result<Convo>>;
+    fn convo(room_id_or_alias: string) -> Future<Result<Convo>>;
 
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Result<UserProfile>;
@@ -1559,9 +1805,8 @@ object Client {
     /// search the public directory for spaces
     fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
 
-    /// Get the following space the user is part of by
-    /// roomId or room alias;
-    fn get_space(id_or_alias: string) -> Future<Result<Space>>;
+    /// Get the space that user belongs to
+    fn get_space(room_id_or_alias: string) -> Future<Result<Space>>;
 
     /// Get the Pinned Links for the client
     fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
@@ -1584,6 +1829,9 @@ object Client {
     /// Get the verification event receiver
     fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
 
+    /// Get session manager that returns all/verified/unverified/inactive session list
+    fn session_manager() -> SessionManager;
+
     /// Return the event handler of device changed
     fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
 
@@ -1595,9 +1843,6 @@ object Client {
 
     /// Return the receipt event receiver
     fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
-
-    /// Return the message receiver
-    fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
 
     /// create convo
     fn create_convo(settings: CreateConvoSettings) -> Future<Result<RoomId>>;
@@ -1646,9 +1891,16 @@ object Client {
 
     /// Fetch the calendar event or use its event_id to wait for it to come down the wire
     fn wait_for_calendar_event(key: string, timeout: Option<EfkDuration>) -> Future<Result<CalendarEvent>>;
+
+    /// list the currently queued notifications
+    fn list_notifications(since: Option<string>, only: Option<string>) -> Future<Result<NotificationListResult>>;
+
+    /// listen to incoming notifications
+    fn notifications_stream() -> Stream<Notification>;
+
 }
 
-object OptionText {
+object OptionString {
     /// get text
     fn text() -> Option<string>;
 }
@@ -1672,7 +1924,7 @@ object UserProfile {
     fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<OptionText>>;
+    fn get_display_name() -> Future<Result<OptionString>>;
 }
 
 object RoomProfile {
@@ -1686,7 +1938,7 @@ object RoomProfile {
     fn get_thumbnail(width: u32, height: u32) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<OptionText>>;
+    fn get_display_name() -> Future<Result<OptionString>>;
 }
 
 object Invitation {
@@ -1722,11 +1974,14 @@ object VerificationEvent {
     /// Get user id of event sender
     fn sender() -> string;
 
-    /// An error code for why the process/request was cancelled by the user.
-    fn cancel_code() -> Option<string>;
+    /// Get content by field
+    fn get_content(key: string) -> Option<string>;
 
-    /// A description for why the process/request was cancelled by the user.
-    fn reason() -> Option<string>;
+    /// Get emoji array
+    fn emojis() -> Vec<VerificationEmoji>;
+
+    /// Get emoji array
+    fn get_emojis() -> Future<Result<Vec<VerificationEmoji>>>;
 
     /// Bob accepts the verification request from Alice
     fn accept_verification_request() -> Future<Result<bool>>;
@@ -1740,9 +1995,6 @@ object VerificationEvent {
     /// Alice starts the SAS verification
     fn start_sas_verification() -> Future<Result<bool>>;
 
-    /// Whether verification request was launched from this device
-    fn was_triggered_from_this_device() -> Result<bool>;
-
     /// Bob accepts the SAS verification
     fn accept_sas_verification() -> Future<Result<bool>>;
 
@@ -1751,9 +2003,6 @@ object VerificationEvent {
 
     /// Alice sends the verification key to Bob and vice versa
     fn send_verification_key() -> Future<Result<bool>>;
-
-    /// Alice gets the verification emoji from Bob and vice versa
-    fn get_verification_emoji() -> Future<Result<Vec<VerificationEmoji>>>;
 
     /// Alice says to Bob that SAS verification matches and vice versa
     fn confirm_sas_verification() -> Future<Result<bool>>;
@@ -1771,6 +2020,17 @@ object VerificationEmoji {
 
     /// text description of emoji unicode
     fn description() -> string;
+}
+
+object SessionManager {
+    fn all_sessions() -> Future<Result<Vec<DeviceRecord>>>;
+
+    /// Force to logout another devices
+    /// Authentication is required to do so
+    fn delete_devices(dev_ids: Vec<string>, username: string, password: string) -> Future<Result<bool>>;
+
+    /// Trigger verification of another device
+    fn request_verification(dev_id: string) -> Future<Result<bool>>;
 }
 
 /// Deliver receipt event from rust to flutter
@@ -1820,15 +2080,6 @@ object DeviceLeftEvent {
 
 /// Provide various device infos
 object DeviceRecord {
-    /// whether this device was verified
-    fn verified() -> bool;
-
-    /// whether this device was deleted
-    fn deleted() -> bool;
-
-    /// get the id of this device user
-    fn user_id() -> UserId;
-
     /// get the id of this device
     fn device_id() -> DeviceId;
 
@@ -1840,6 +2091,12 @@ object DeviceRecord {
 
     /// last seen timestamp of this device in milliseconds
     fn last_seen_ts() -> Option<u64>;
+
+    /// whether it was verified
+    fn is_verified() -> bool;
+
+    /// whether it is active
+    fn is_active() -> bool;
 }
 
 /// Deliver typing event from rust to flutter

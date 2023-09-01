@@ -8,9 +8,8 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -38,16 +37,16 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   @override
   void initState() {
     super.initState();
-    Future(() {
-      ref.read(parentSpaceProvider.notifier).state =
-          widget.initialParentsSpaceId;
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
+      parentNotifier.state = widget.initialParentsSpaceId;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(titleProvider);
-    final currentParentSpace = ref.watch(parentSpaceProvider);
+    final currentParentSpace = ref.watch(selectedSpaceIdProvider);
     final parentSelected = currentParentSpace != null;
     return SideSheet(
       header: parentSelected ? 'Create Subspace' : 'Create Space',
@@ -71,34 +70,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                       padding: EdgeInsets.only(bottom: 5),
                       child: Text('Avatar'),
                     ),
-                    Consumer(
-                      builder: (context, ref, child) {
-                        final avatarUpload = ref.watch(avatarProvider);
-                        return GestureDetector(
-                          onTap: _handleAvatarUpload,
-                          child: Container(
-                            height: 75,
-                            width: 75,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: avatarUpload.isNotEmpty
-                                ? Image.file(
-                                    File(avatarUpload),
-                                    fit: BoxFit.cover,
-                                  )
-                                : Icon(
-                                    Atlas.up_arrow_from_bracket_thin,
-                                    color:
-                                        Theme.of(context).colorScheme.neutral4,
-                                  ),
-                          ),
-                        );
-                      },
-                    ),
+                    Consumer(builder: avatarBuilder),
                   ],
                 ),
                 const SizedBox(width: 15),
@@ -164,36 +136,12 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                   textInputType: TextInputType.multiline,
                   maxLines: 10,
                 ),
-                ListTile(
-                  title: Text(
-                    parentSelected
-                        ? 'Parent space'
-                        : 'No parent space selected',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  trailing: parentSelected
-                      ? Consumer(
-                          builder: (context, ref, child) =>
-                              ref.watch(parentSpaceDetailsProvider).when(
-                                    data: (space) => space != null
-                                        ? SpaceChip(space: space)
-                                        : Text(currentParentSpace),
-                                    error: (e, s) => Text('error: $e'),
-                                    loading: () => const Text('loading'),
-                                  ),
-                        )
-                      : null,
-                  onTap: () async {
-                    final currentSpaceId = ref.read(parentSpaceProvider);
-                    final newSelectedSpaceId = await selectSpaceDrawer(
-                      context: context,
-                      currentSpaceId: currentSpaceId,
-                      title: const Text('Select parent space'),
-                    );
-                    ref.read(parentSpaceProvider.notifier).state =
-                        newSelectedSpaceId;
-                  },
-                )
+                const SelectSpaceFormField(
+                  canCheck: 'CanLinkSpaces',
+                  mandatory: false,
+                  title: 'Parent space',
+                  selectTitle: 'Select parent space',
+                ),
               ],
             ),
           ],
@@ -246,6 +194,30 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
   }
 
+  Widget avatarBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final avatarUpload = ref.watch(avatarProvider);
+    return GestureDetector(
+      onTap: _handleAvatarUpload,
+      child: Container(
+        height: 75,
+        width: 75,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: avatarUpload.isNotEmpty
+            ? Image.file(
+                File(avatarUpload),
+                fit: BoxFit.cover,
+              )
+            : Icon(
+                Atlas.up_arrow_from_bracket_thin,
+                color: Theme.of(context).colorScheme.neutral4,
+              ),
+      ),
+    );
+  }
+
   void _handleTitleChange(String? value) {
     ref.read(titleProvider.notifier).update((state) => value!);
   }
@@ -257,8 +229,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
     if (result != null) {
       File file = File(result.files.single.path!);
-      String filepath = file.path;
-      ref.read(avatarProvider.notifier).update((state) => filepath);
+      ref.read(avatarProvider.notifier).update((state) => file.path);
     } else {
       // user cancelled the picker
     }
@@ -277,40 +248,61 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       ),
       isLoader: true,
     );
+    try {
+      final sdk = await ref.read(sdkProvider.future);
+      final config = sdk.newSpaceSettingsBuilder();
+      config.setName(spaceName);
+      if (description.isNotEmpty) {
+        config.setTopic(description);
+      }
+      final localUri = ref.read(avatarProvider);
+      if (localUri.isNotEmpty) {
+        config.setAvatarUri(localUri); // space creation will upload it
+      }
+      final parentRoomId = ref.read(selectedSpaceIdProvider);
+      if (parentRoomId != null) {
+        config.setParent(parentRoomId);
+      }
+      final client = ref.read(clientProvider)!;
+      final roomId = await client.createActerSpace(config.build());
+      if (parentRoomId != null) {
+        final space = await ref.read(spaceProvider(parentRoomId).future);
+        await space.addChildSpace(roomId.toString());
+      }
 
-    final sdk = await ref.watch(sdkProvider.future);
-    var config = sdk.newSpaceSettingsBuilder();
-    config.setName(spaceName);
-    if (description.isNotEmpty) {
-      config.setTopic(description);
-    }
-    var localUri = ref.read(avatarProvider);
-    if (localUri.isNotEmpty) {
-      config.setAvatarUri(localUri); // space creation will upload it
-    }
-    final parentRoomId = ref.watch(parentSpaceProvider);
-    if (parentRoomId != null) {
-      config.setParent(parentRoomId);
-    }
-    final client = ref.read(clientProvider)!;
-    final roomId = await client.createActerSpace(config.build());
-    if (parentRoomId != null) {
-      final space = await ref.read(spaceProvider(parentRoomId).future);
-      await space.addChildSpace(roomId.toString());
-    }
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
 
-    // We are doing as expected, but the lints triggers.
-    // ignore: use_build_context_synchronously
-    if (!context.mounted) {
-      return;
-    }
+      Navigator.of(context, rootNavigator: true).pop();
+      context.goNamed(
+        Routes.space.name,
+        pathParameters: {
+          'spaceId': roomId.toString(),
+        },
+      );
+    } catch (err) {
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
+      Navigator.of(context, rootNavigator: true).pop();
 
-    Navigator.of(context, rootNavigator: true).pop();
-    context.goNamed(
-      Routes.space.name,
-      pathParameters: {
-        'spaceId': roomId.toString(),
-      },
-    );
+      popUpDialog(
+        context: context,
+        title: Text(
+          'Creating Space failed: \n $err"',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        isLoader: false,
+        btnText: 'Close',
+        onPressedBtn: () {
+          Navigator.of(context, rootNavigator: true).pop();
+        },
+      );
+    }
   }
 }

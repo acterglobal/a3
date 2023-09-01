@@ -1,12 +1,10 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
 class AuthStateNotifier extends StateNotifier<bool> {
@@ -15,14 +13,11 @@ class AuthStateNotifier extends StateNotifier<bool> {
   AuthStateNotifier(this.ref) : super(false);
 
   Future<String?> login(String username, String password) async {
-    final sdk = await ref.watch(sdkProvider.future);
+    final sdk = await ref.read(sdkProvider.future);
     try {
       final client = await sdk.login(username, password);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
-      ref.watch(clientProvider.notifier).state = client;
-      // inject chat dependencies once actual client is logged in.
-      Get.replace(ChatRoomController(client: client));
-      // Get.replace(ReceiptController(client: client));
+      ref.read(clientProvider.notifier).state = client;
       return null;
     } catch (e) {
       debugPrint('$e');
@@ -32,7 +27,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
 
   Future<void> makeGuest(BuildContext? context) async {
     state = true;
-    final sdk = await ref.watch(sdkProvider.future);
+    final sdk = await ref.read(sdkProvider.future);
     try {
       final client = await sdk.newGuestClient(setAsCurrent: true);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
@@ -53,7 +48,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     String token,
     BuildContext context,
   ) async {
-    final sdk = await ref.watch(sdkProvider.future);
+    final sdk = await ref.read(sdkProvider.future);
     try {
       final client = await sdk.register(username, password, displayName, token);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
@@ -71,14 +66,16 @@ class AuthStateNotifier extends StateNotifier<bool> {
   }
 
   Future<void> logout(BuildContext context) async {
-    final sdk = await ref.watch(sdkProvider.future);
+    final sdk = await ref.read(sdkProvider.future);
     final stillHasClient = await sdk.logout();
+    final loggedInNotifier = ref.read(isLoggedInProvider.notifier);
+    final clientNotifier = ref.read(clientProvider.notifier);
     if (stillHasClient) {
       debugPrint('Still has clients, dropping back to other');
-      ref.read(isLoggedInProvider.notifier).update((state) => true);
+      loggedInNotifier.update((state) => true);
       ref.invalidate(clientProvider);
       ref.invalidate(spacesProvider);
-      ref.read(clientProvider.notifier).state = sdk.currentClient;
+      clientNotifier.state = sdk.currentClient;
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
       if (context.mounted) {
@@ -86,7 +83,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
       }
     } else {
       debugPrint('No clients left, redir to onboarding');
-      ref.read(isLoggedInProvider.notifier).update((state) => false);
+      loggedInNotifier.update((state) => false);
       ref.invalidate(clientProvider);
       ref.invalidate(spacesProvider);
 

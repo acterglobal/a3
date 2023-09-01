@@ -1,5 +1,6 @@
 import 'package:acter/features/bug_report/providers/notifiers/bug_report_notifier.dart';
-import 'package:acter/features/settings/widgets/in_settings.dart';
+import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -29,7 +30,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return InSettings(
+    return WithSidebar(
+      sidebar: const SettingsMenu(),
       child: Scaffold(
         appBar: AppBar(title: const Text('App Info')),
         body: SettingsList(
@@ -106,9 +108,9 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
   Future<void> fetchRustLogSettings() async {
     final preferences = await sharedPrefs();
     final rustLog = preferences.getString(rustLogKey) ?? defaultLogSetting;
-    setState(() {
-      rustLogSetting = rustLog;
-    });
+    if (mounted) {
+      setState(() => rustLogSetting = rustLog);
+    }
   }
 
   Future<void> setRustLogSettings(String? settings) async {

@@ -97,7 +97,7 @@ class TaskDetailPage extends StatelessWidget {
       'Copy Link',
       'Close Comment',
       'Delete',
-      'View change log'
+      'View change log',
     ];
     List<Icon> optionIcons = [
       const Icon(
@@ -153,7 +153,7 @@ class TaskDetailPage extends StatelessWidget {
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
-            )
+            ),
           ],
         );
       },
@@ -193,7 +193,7 @@ class _NameWidget extends StatelessWidget {
         children: <Widget>[
           InkWell(
             onTap: () async {
-              var eventId = await controller.updateToDoTask(
+              final eventId = await controller.updateToDoTask(
                 task,
                 list,
                 null,
@@ -283,7 +283,7 @@ class _AssignWidget extends StatelessWidget {
             '+ Assign',
             style: Theme.of(context).textTheme.labelSmall,
           ),
-        )
+        ),
       ],
     );
   }
@@ -333,13 +333,13 @@ class _DueDateWidget extends StatelessWidget {
       'Later Today',
       'Tomorrow',
       'Next Week',
-      'Pick a Date & Time'
+      'Pick a Date & Time',
     ];
     const List<Icon> optionIcons = [
       Icon(Atlas.clock),
       Icon(Atlas.calendar),
       Icon(Atlas.calendar),
-      Icon(Atlas.calendar_schedule)
+      Icon(Atlas.calendar_schedule),
     ];
 
     showModalBottomSheet(
@@ -370,7 +370,9 @@ class _DueDateWidget extends StatelessWidget {
                 },
               );
               if (pickedDate != null) {
-                setState(() => selectedDate = pickedDate);
+                if (context.mounted) {
+                  setState(() => selectedDate = pickedDate);
+                }
               } else {
                 if (context.mounted) Navigator.pop(context);
               }
@@ -418,9 +420,7 @@ class _DueDateWidget extends StatelessWidget {
                       );
                       // Navigator.pop(context);
                     },
-                    child: const Text(
-                      'Done',
-                    ),
+                    child: const Text('Done'),
                   ),
                 ),
                 const Divider(
@@ -436,41 +436,43 @@ class _DueDateWidget extends StatelessWidget {
                     options.length,
                     (index) => ListTile(
                       onTap: () {
-                        final now = DateTime.now();
-                        setState(() {
-                          tappedIdx = index;
-                          switch (index) {
-                            case 0:
-                              selectedDate = now;
-                              break;
-                            case 1:
-                              selectedDate = DateTime(
-                                now.year,
-                                now.month,
-                                now.day + 1,
-                              );
-                              break;
-                            case 2:
-                              DateTime nextWeek = now.add(
-                                const Duration(days: 7),
-                              );
-                              int weekDay = nextWeek.weekday;
-                              if (weekDay == 7) {
-                                selectedDate = nextWeek;
-                              } else {
-                                selectedDate = nextWeek.subtract(
-                                  Duration(days: weekDay - 1),
+                        if (context.mounted) {
+                          setState(() {
+                            final now = DateTime.now();
+                            tappedIdx = index;
+                            switch (index) {
+                              case 0:
+                                selectedDate = now;
+                                break;
+                              case 1:
+                                selectedDate = DateTime(
+                                  now.year,
+                                  now.month,
+                                  now.day + 1,
                                 );
-                              }
-                              break;
-                            case 3:
-                              Future.delayed(
-                                const Duration(seconds: 0),
-                                () => internalShowDatePicker(context),
-                              );
-                              break;
-                          }
-                        });
+                                break;
+                              case 2:
+                                DateTime nextWeek = now.add(
+                                  const Duration(days: 7),
+                                );
+                                int weekDay = nextWeek.weekday;
+                                if (weekDay == 7) {
+                                  selectedDate = nextWeek;
+                                } else {
+                                  selectedDate = nextWeek.subtract(
+                                    Duration(days: weekDay - 1),
+                                  );
+                                }
+                                break;
+                              case 3:
+                                Future.delayed(
+                                  const Duration(seconds: 0),
+                                  () => internalShowDatePicker(context),
+                                );
+                                break;
+                            }
+                          });
+                        }
                       },
                       tileColor: Colors.transparent,
                       selected: tappedIdx != null && tappedIdx == index,
@@ -540,7 +542,7 @@ class _AddFileWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -561,7 +563,7 @@ class _AddFileWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -582,7 +584,7 @@ class _AddFileWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -750,7 +752,7 @@ class _DiscussionWidget extends StatelessWidget {
                   ),
                 );
               },
-            )
+            ),
           ],
         ),
       ),
@@ -789,7 +791,7 @@ class _DiscussionWidget extends StatelessWidget {
                   children: [
                     optionIcons[index],
                     const SizedBox(height: 8),
-                    Text(options[index])
+                    Text(options[index]),
                   ],
                 ),
               ),

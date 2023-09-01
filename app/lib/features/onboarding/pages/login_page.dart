@@ -1,13 +1,14 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
-import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -38,8 +39,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (!inCI && network == NetworkStatus.Off) {
         showNoInternetNotification();
       } else {
-        final notifier = ref.read(authStateProvider.notifier);
-        final loginSuccess = await notifier.login(
+        final authNotifier = ref.read(authStateProvider.notifier);
+        final loginSuccess = await authNotifier.login(
           username.text,
           password.text,
         );
@@ -90,22 +91,64 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     const SizedBox(height: 20),
                     Text(AppLocalizations.of(context)!.loginContinue),
                     const SizedBox(height: 40),
-                    LoginTextField(
-                      key: LoginPageKeys.usernameField,
-                      hintText: AppLocalizations.of(context)!.username,
-                      controller: username,
-                      validatorText:
-                          AppLocalizations.of(context)!.emptyUsername,
-                      type: LoginOnboardingTextFieldEnum.userName,
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      height: 60,
+                      child: TextFormField(
+                        key: LoginPageKeys.usernameField,
+                        obscureText: false,
+                        controller: username,
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context)!.username,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
+                        style: Theme.of(context).textTheme.labelLarge,
+                        cursorColor: Theme.of(context).colorScheme.tertiary2,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return AppLocalizations.of(context)!.emptyUsername;
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          username.text = value;
+                          username.selection = TextSelection.fromPosition(
+                            TextPosition(offset: username.text.length),
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(height: 20),
-                    LoginTextField(
-                      key: LoginPageKeys.passwordField,
-                      hintText: AppLocalizations.of(context)!.password,
-                      controller: password,
-                      validatorText:
-                          AppLocalizations.of(context)!.emptyPassword,
-                      type: LoginOnboardingTextFieldEnum.password,
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      height: 60,
+                      child: TextFormField(
+                        key: LoginPageKeys.passwordField,
+                        controller: password,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context)!.password,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
+                        style: Theme.of(context).textTheme.labelLarge,
+                        cursorColor: Theme.of(context).colorScheme.tertiary2,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return AppLocalizations.of(context)!.emptyPassword;
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          password.text = value;
+                          password.selection = TextSelection.fromPosition(
+                            TextPosition(offset: password.text.length),
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(height: 40),
                     Container(
@@ -143,7 +186,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               color: Theme.of(context).colorScheme.tertiary,
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                     const SizedBox(height: 20),

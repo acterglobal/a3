@@ -17,11 +17,8 @@ image-meta = ["dep:imagesize"]
 audio-meta = ["dep:lofty", "dep:lofty_attr"]
 video-meta = ["dep:mp4parse"]
 
-[patch.crates-io]
-proc-macro2 = "=1.0.55" # fix issue 'Your compiler does not support spans which is required by genco'
-
 [build-dependencies]
-ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "leaking-no-drop"}
+ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "span-support" }
 cbindgen = "0.24.3"
 
 [dependencies]
@@ -31,7 +28,7 @@ chrono =  "0.4"
 derive_builder = "0.10.2"
 eyeball-im = "0.2"
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
-ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "leaking-no-drop" }
+ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "span-support" }
 futures = "0.3.17"
 futures-signals = "0.3.31"
 imagesize = { version = "0.12", optional = true }
@@ -52,6 +49,9 @@ tokio = "1"
 tokio-stream = "0.1.14"
 tracing = { version = "0.1.29", default-features = false, features = ["log"] }
 url = "2.2.2"
+
+# for markdown support.
+pulldown-cmark = { version = "0.9.1", default-features = false }
 
 [dev-dependencies]
 tempfile = "3.3.0"

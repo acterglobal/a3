@@ -8,24 +8,26 @@ use matrix_sdk::{
         },
         assign,
         events::{
-            macros::EventContent,
-            room::avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
-            space::parent::SpaceParentEventContent,
+            room::{
+                avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+                join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+            },
+            space::{child::SpaceChildEventContent, parent::SpaceParentEventContent},
             InitialStateEvent,
         },
         room::RoomType,
         serde::Raw,
-        MxcUri, OwnedRoomId, OwnedUserId, RoomId, UserId,
+        MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId, UserId,
     },
 };
 use serde::{Deserialize, Serialize};
-use std::{fs, path::PathBuf};
+use std::path::PathBuf;
 use strum::Display;
 use tracing::error;
 
 use crate::{
     client::CoreClient,
-    error::Result,
+    error::{Error, Result},
     statics::{default_acter_space_states, PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
 };
 
@@ -140,7 +142,7 @@ pub struct SpaceRelation {
     room_id: OwnedRoomId,
     suggested: bool,
     target_type: RelationTargetType,
-    via: Vec<String>,
+    via: Vec<OwnedServerName>,
 }
 
 impl SpaceRelation {
@@ -157,7 +159,7 @@ impl SpaceRelation {
     }
 
     pub fn via(&self) -> Vec<String> {
-        self.via.clone()
+        self.via.iter().map(|x| x.to_string()).collect()
     }
 }
 
@@ -180,29 +182,6 @@ impl SpaceRelations {
     pub fn children(&self) -> Vec<SpaceRelation> {
         self.children.clone()
     }
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(type = "m.space.child", kind = State, state_key_type = OwnedRoomId)]
-struct SpaceChildStateEventContent {
-    #[serde(default)]
-    suggested: bool,
-
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    order: Option<String>,
-
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    via: Vec<String>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(type = "m.space.parent", kind = State, state_key_type = OwnedRoomId)]
-struct SpaceParentStateEventContent {
-    #[serde(default)]
-    canonical: bool,
-
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    via: Vec<String>,
 }
 
 impl CoreClient {
@@ -234,7 +213,7 @@ impl CoreClient {
                 let path = PathBuf::from(avatar_uri);
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().expect("MIME type should be given");
-                let buf = fs::read(path).expect("File should be read");
+                let buf = std::fs::read(path).expect("File should be read");
                 let response = client.media().upload(&content_type, buf).await?;
 
                 let info = assign!(ImageInfo::new(), {
@@ -250,11 +229,22 @@ impl CoreClient {
         };
 
         if let Some(parent) = parent {
+            let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
+                return Err(Error::HomeserverMissesHostname);
+            };
             let parent_event = InitialStateEvent::<SpaceParentEventContent> {
-                content: SpaceParentEventContent::new(true),
-                state_key: parent,
+                content: assign!(SpaceParentEventContent::new(true), {
+                    via: Some(vec![homeserver]),
+                }),
+                state_key: parent.clone(),
             };
             initial_states.push(parent_event.to_raw_any());
+            // if we have a parent, by default we allow access to the subspace.
+            let join_rule =
+                InitialRoomJoinRulesEvent::new(RoomJoinRulesEventContent::restricted(vec![
+                    AllowRule::room_membership(parent),
+                ]));
+            initial_states.push(join_rule.to_raw_any());
         };
 
         let request = assign!(CreateRoomRequest::new(), {
@@ -263,9 +253,9 @@ impl CoreClient {
             is_direct: false,
             invite: invites,
             room_alias_name: alias,
-            name: name,
-            visibility: visibility,
-            topic: topic,
+            name,
+            visibility,
+            topic,
         });
         let room = client.create_room(request).await?;
         Ok(room.room_id().to_owned())
@@ -278,11 +268,13 @@ impl CoreClient {
         let mut parents = Vec::new();
         let mut children = Vec::new();
 
-        let parents_events: Vec<Raw<SyncSpaceParentStateEvent>> =
-            room.get_state_events_static().await?;
+        let parents_events = room
+            .get_state_events_static::<SpaceParentEventContent>()
+            .await?;
 
-        let children_events: Vec<Raw<SyncSpaceChildStateEvent>> =
-            room.get_state_events_static().await?;
+        let children_events = room
+            .get_state_events_static::<SpaceChildEventContent>()
+            .await?;
 
         for raw in parents_events {
             let ev = match raw.deserialize() {
@@ -297,7 +289,7 @@ impl CoreClient {
                 }
             };
 
-            let Some(original) = ev.as_original() else {
+            let Some(original) = ev.original_content() else {
                 // FIXME: handle redactions
                 continue
             };
@@ -319,10 +311,10 @@ impl CoreClient {
                 target_type,
                 room_id: target.to_owned(),
                 suggested: false,
-                via: original.content.via.clone(),
+                via: original.via.clone().unwrap_or(vec![]),
             };
 
-            if original.content.canonical {
+            if original.canonical {
                 if let Some(prev_canonical) = main_parent.take() {
                     // maybe replacing according to spec
                     if me.room_id < prev_canonical.room_id {
@@ -354,7 +346,7 @@ impl CoreClient {
                 }
             };
 
-            let Some(original) = ev.as_original() else {
+            let Some(original) = ev.original_content() else {
                 // FIXME: handle redactions
                 continue
             };
@@ -372,16 +364,12 @@ impl CoreClient {
                 RelationTargetType::Unknown
             };
 
-            let order = original
-                .content
-                .order
-                .clone()
-                .unwrap_or_else(|| target.to_string());
+            let order = original.order.clone().unwrap_or_else(|| target.to_string());
             let me = SpaceRelation {
                 target_type,
                 room_id: target.to_owned(),
-                suggested: original.content.suggested,
-                via: original.content.via.clone(),
+                suggested: original.suggested,
+                via: original.via.clone().unwrap_or(vec![]),
             };
             children.push((order, me))
         }

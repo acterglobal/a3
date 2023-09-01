@@ -67,7 +67,7 @@ class _StartPageState extends State<StartPage> {
           const Text(
             'Gather people in one or multiple spaces & create your own organizational structure.',
             style: TextStyle(fontSize: 17, color: Colors.white),
-          )
+          ),
         ],
       ),
     ),
@@ -268,9 +268,9 @@ class _StartPageState extends State<StartPage> {
             Expanded(
               child: PageView.builder(
                 onPageChanged: (index) {
-                  setState(() {
-                    _pageIndex = index;
-                  });
+                  if (mounted) {
+                    setState(() => _pageIndex = index);
+                  }
                 },
                 itemCount: onBoardingPages.length,
                 controller: _pageController,
@@ -296,7 +296,7 @@ class _StartPageState extends State<StartPage> {
                         onBoardingPages[index].description,
                         const SizedBox(
                           height: 20,
-                        )
+                        ),
                       ],
                     ),
                   );
@@ -347,7 +347,7 @@ class _StartPageState extends State<StartPage> {
                             Icon(
                               Icons.arrow_forward_ios,
                               size: 16,
-                            )
+                            ),
                           ],
                         ),
                       ),

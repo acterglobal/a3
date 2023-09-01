@@ -51,7 +51,7 @@ class SidebarWidget extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Visibility(
-            visible: !ref.watch(clientProvider)!.isGuest(),
+            visible: !isGuest,
             child: Container(
               key: Keys.avatar,
               margin: const EdgeInsets.only(top: 8),
@@ -61,7 +61,7 @@ class SidebarWidget extends ConsumerWidget {
               ),
             ),
           ),
-          const Divider(indent: 18, endIndent: 18)
+          const Divider(indent: 18, endIndent: 18),
         ],
       ),
       trailing: Expanded(
@@ -80,7 +80,7 @@ class SidebarWidget extends ConsumerWidget {
                       'Report',
                       style: Theme.of(context).textTheme.labelSmall,
                       softWrap: false,
-                    )
+                    ),
                   ],
                 ),
               ),

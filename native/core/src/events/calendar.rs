@@ -4,22 +4,13 @@ use matrix_sdk::ruma::events::{macros::EventContent, room::message::TextMessageE
 use serde::{Deserialize, Serialize};
 use tracing::trace;
 
-use crate::util::deserialize_some;
+use crate::{util::deserialize_some, Result};
 
 /// Calendar Events
 /// modeled after [JMAP Calendar Events](https://jmap.io/spec-calendars.html#calendar-events), extensions to
 /// [ietf rfc8984](https://www.rfc-editor.org/rfc/rfc8984.html#name-event).
 ///
-use super::{BelongsTo, Color, Icon, Update, UtcDateTime};
-
-/// Event Location
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(tag = "type")]
-pub enum RsvpState {
-    Yes,
-    Maybe,
-    No,
-}
+use super::{Color, Icon, Update, UtcDateTime};
 
 /// Event Location
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -220,7 +211,7 @@ pub struct CalendarEventUpdateEventContent {
 }
 
 impl CalendarEventUpdateEventContent {
-    pub fn apply(&self, calendar_event: &mut CalendarEventEventContent) -> crate::Result<bool> {
+    pub fn apply(&self, calendar_event: &mut CalendarEventEventContent) -> Result<bool> {
         let mut updated = false;
         if let Some(title) = &self.title {
             calendar_event.title = title.clone();
@@ -276,17 +267,4 @@ impl CalendarEventUpdateEventContent {
 
         Ok(updated)
     }
-}
-
-/// The RSVP Event
-#[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder)]
-#[ruma_event(type = "global.acter.dev.rsvp", kind = MessageLike)]
-#[builder(name = "RsvpBuilder", derive(Debug))]
-pub struct RsvpEventContent {
-    #[builder(setter(into))]
-    #[serde(rename = "m.relates_to")]
-    pub calendar_event: BelongsTo,
-
-    /// The the response by this user
-    pub rsvp: RsvpState,
 }

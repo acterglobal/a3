@@ -157,7 +157,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.10.6'
+          flutter-version: '3.13.1'
           channel: 'stable'
 
       - name: Flutter info
@@ -294,6 +294,9 @@ jobs:
       - build
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PAT }}
+
       - name: Install rust
         uses: actions-rs/toolchain@v1
         with:
@@ -315,6 +318,9 @@ jobs:
 
       - name: Tag for nightly release
         run: |
+
+          git config --global user.name 'Sari'
+          git config --global user.email 'acter-sari@users.noreply.github.com'
           git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
           git commit -m "Add nightly ${{ needs.tags.outputs.tag }} to docs"
           git tag nightly-${{ needs.tags.outputs.tag }}

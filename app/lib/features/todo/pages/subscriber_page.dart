@@ -113,9 +113,7 @@
 //                               width: 1.0, color: AppCommonTheme.secondaryColor,),
 //                         ),
 //                         onChanged: (newValue) {
-//                           setState(() {
-//                             controller.handleCheckClick(index);
-//                           });
+//                           controller.handleCheckClick(index);
 //                         },
 //                       ),
 //                     );

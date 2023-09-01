@@ -45,25 +45,27 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
 
   // apply existing data to fields
   void _editEventData() async {
-    final calendarEvent =
-        await ref.read(calendarEventProvider(widget.calendarId!).future);
-    ref.read(_titleProvider.notifier).update((state) => calendarEvent.title());
+    final calendarEvent = await ref.read(
+      calendarEventProvider(widget.calendarId!).future,
+    );
+    final titleNotifier = ref.read(_titleProvider.notifier);
+    final dateNotifier = ref.read(_dateProvider.notifier);
+    final startTimeNotifier = ref.read(_startTimeProvider.notifier);
+    final endTimeNotifier = ref.read(_endTimeProvider.notifier);
+
+    titleNotifier.update((state) => calendarEvent.title());
     // parse RFC3393 date time
     final dartDateTime = toDartDatetime(calendarEvent.utcStart());
     final dartEndTime = toDartDatetime(calendarEvent.utcEnd());
-    ref.read(_dateProvider.notifier).update(
-          (state) => DateTime(
-            dartDateTime.year,
-            dartDateTime.month,
-            dartDateTime.day,
-          ),
-        );
-    ref
-        .read(_startTimeProvider.notifier)
-        .update((state) => TimeOfDay.fromDateTime(dartDateTime));
-    ref
-        .read(_endTimeProvider.notifier)
-        .update((state) => TimeOfDay.fromDateTime(dartEndTime));
+    dateNotifier.update(
+      (state) => DateTime(
+        dartDateTime.year,
+        dartDateTime.month,
+        dartDateTime.day,
+      ),
+    );
+    startTimeNotifier.update((state) => TimeOfDay.fromDateTime(dartDateTime));
+    endTimeNotifier.update((state) => TimeOfDay.fromDateTime(dartEndTime));
 
     _nameController.text = ref.read(_titleProvider);
     _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
@@ -217,7 +219,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
             const SizedBox(height: 15),
@@ -355,7 +357,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
   }
 
   Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
+    DateTime? picked = await showDatePicker(
       context: context,
       initialDate: ref.read(_dateProvider),
       initialDatePickerMode: DatePickerMode.day,
@@ -369,26 +371,25 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
   }
 
   Future<void> _selectStartTime() async {
-    final TimeOfDay? picked = await showTimePicker(
+    TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_startTimeProvider),
     );
     if (picked != null && context.mounted) {
       ref.read(_startTimeProvider.notifier).update((state) => picked);
-      var time = ref.read(_startTimeProvider).format(context);
+      final time = ref.read(_startTimeProvider).format(context);
       _startTimeController.text = time;
     }
   }
 
   Future<void> _selectEndTime() async {
-    final TimeOfDay? picked = await showTimePicker(
+    TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: ref.read(_endTimeProvider),
     );
     if (picked != null && context.mounted) {
       ref.read(_endTimeProvider.notifier).update((state) => picked);
-
-      var time = ref.read(_endTimeProvider).format(context);
+      final time = ref.read(_endTimeProvider).format(context);
       _endTimeController.text = time;
     }
   }

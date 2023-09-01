@@ -19,6 +19,7 @@ use std::{
     ops::Deref,
 };
 use tokio::sync::broadcast::Receiver;
+use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
 
 use super::{client::Client, spaces::Space, RUNTIME};
@@ -155,6 +156,9 @@ impl CalendarEvent {
     pub fn event_id(&self) -> OwnedEventId {
         self.inner.event_id().to_owned()
     }
+    pub fn room_id_str(&self) -> String {
+        self.inner.room_id().to_string()
+    }
 }
 
 /// Custom functions
@@ -189,11 +193,11 @@ impl CalendarEvent {
         })
     }
 
-    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
-        tokio_stream::wrappers::BroadcastStream::new(self.subscribe()).map(|f| true)
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe()).map(|f| true)
     }
 
-    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
+    pub fn subscribe(&self) -> Receiver<()> {
         let key = self.inner.event_id().to_string();
         self.client.subscribe(key)
     }
@@ -209,6 +213,20 @@ impl CalendarEvent {
                     models::CommentsManager::from_store_and_event_id(client.store(), &event_id)
                         .await;
                 Ok(crate::CommentsManager::new(client, room, inner))
+            })
+            .await?
+    }
+
+    pub async fn rsvp_manager(&self) -> Result<crate::RsvpManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.inner.event_id().to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::RsvpManager::from_store_and_event_id(client.store(), &event_id).await;
+                Ok(crate::RsvpManager::new(client, room, inner))
             })
             .await?
     }

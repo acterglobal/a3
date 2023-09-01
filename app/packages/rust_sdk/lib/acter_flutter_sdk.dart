@@ -55,7 +55,7 @@ Color convertColor(ffi.EfkColor? primary, Color fallback) {
   if (primary == null) {
     return fallback;
   }
-  var data = primary.rgbaU8();
+  final data = primary.rgbaU8();
   return Color.fromARGB(
     data[3],
     data[0],
@@ -303,7 +303,7 @@ class ActerSdk {
     );
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
-      var client = _clients.removeAt(0);
+      final client = _clients.removeAt(0);
       unawaited(
         client.logout().catchError((e) {
           developer.log(
@@ -377,6 +377,37 @@ class ActerSdk {
     return _clients;
   }
 
+  Future<bool> deactivateAndDestroyCurrentClient(
+    String password,
+  ) async {
+    final client = currentClient;
+    if (client == null) {
+      return false;
+    }
+
+    final userId = client.userId().toString();
+
+    // take it out of the loop
+    if (_index >= 0 && _index < _clients.length) {
+      _clients.removeAt(_index);
+      _index = _index > 0 ? _index - 1 : 0;
+    }
+    try {
+      if (!await client.deactivate(password)) {
+        throw 'Deactivating the client failed';
+      }
+    } catch (e) {
+      // reset the client locally
+      _clients.add(client);
+      _index = clients.length - 1;
+      rethrow;
+    }
+    await _persistSessions();
+    String appDocPath = await appDir();
+
+    return await _api.destroyLocalData(appDocPath, userId, defaultServerName);
+  }
+
   ffi.CreateConvoSettingsBuilder newConvoSettingsBuilder() {
     return _api.newConvoSettingsBuilder();
   }
@@ -387,6 +418,10 @@ class ActerSdk {
 
   String rotateLogFile() {
     return _api.rotateLogFile();
+  }
+
+  String? parseMarkdown(String text) {
+    return _api.parseMarkdown(text);
   }
 
   void writeLog(String text, String level) {

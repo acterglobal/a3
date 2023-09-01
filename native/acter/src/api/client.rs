@@ -1,13 +1,13 @@
 use acter_core::{
     client::CoreClient, executor::Executor, models::AnyActerModel, spaces::is_acter_space,
-    store::Store, templates::Engine, RestoreToken,
+    store::Store, templates::Engine, CustomAuthSession, RestoreToken,
 };
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
 use futures::{
-    future::{join_all, ready},
-    pin_mut, stream, Stream, StreamExt,
+    pin_mut,
+    stream::{Stream, StreamExt},
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
@@ -15,21 +15,21 @@ use matrix_sdk::{
     event_handler::EventHandlerHandle,
     media::{MediaFormat, MediaRequest},
     room::Room as SdkRoom,
-    Client as SdkClient, LoopCtrl, RumaApiError,
-};
-use ruma::{
-    api::client::{
-        error::{ErrorBody, ErrorKind},
-        Error,
+    ruma::{
+        api::client::{
+            error::{ErrorBody, ErrorKind},
+            push::get_notifications::v3::Notification as RumaNotification,
+            Error,
+        },
+        device_id,
+        events::room::MediaSource,
+        OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
+        OwnedServerName, OwnedUserId, RoomOrAliasId, UserId,
     },
-    device_id,
-    events::room::MediaSource,
-    OwnedDeviceId, OwnedMxcUri, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId,
-    RoomId, UserId,
+    Client as SdkClient, LoopCtrl, RumaApiError,
 };
 use std::{
     collections::{BTreeMap, HashMap},
-    fs,
     ops::Deref,
     path::PathBuf,
     sync::{
@@ -39,13 +39,16 @@ use std::{
 };
 use tokio::{
     sync::{
-        broadcast::{channel, Receiver},
+        broadcast::{channel, Receiver, Sender},
         Mutex, RwLock,
     },
     task::JoinHandle,
+    time,
 };
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
+
+use crate::Notification;
 
 use super::{
     account::Account,
@@ -87,6 +90,7 @@ pub struct Client {
     pub(crate) typing_controller: TypingController,
     pub(crate) receipt_controller: ReceiptController,
     pub(crate) convo_controller: ConvoController,
+    pub(crate) notifications: Arc<Sender<RumaNotification>>,
 }
 
 impl Deref for Client {
@@ -131,8 +135,8 @@ pub(crate) async fn devide_spaces_from_convos(
     filter: Option<SpaceFilter>,
 ) -> (Vec<Space>, Vec<Convo>) {
     let filter = filter.unwrap_or_default();
-    let (spaces, convos, _) = stream::iter(client.clone().rooms().into_iter())
-        .filter(|room| ready(filter.should_include(room)))
+    let (spaces, convos, _) = futures::stream::iter(client.rooms().into_iter())
+        .filter(|room| futures::future::ready(filter.should_include(room)))
         .fold(
             (Vec::new(), Vec::new(), client),
             async move |(mut spaces, mut convos, client), room| {
@@ -319,8 +323,15 @@ impl Client {
             let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
             history.lock_mut().start(space_ids);
 
-            join_all(spaces.iter_mut().map(|space| async {
-                if !space.is_acter_space().await {
+            futures::future::join_all(spaces.iter_mut().map(|space| async {
+                let is_acter_space = match space.is_acter_space().await {
+                    Ok(b) => b,
+                    Err(error) => {
+                        error!(room_id=?space.room_id(), ?error, "checking for is-acter-space status failed");
+                        false
+                    }
+                };
+                if !is_acter_space {
                     trace!(room_id=?space.room_id(), "not an acter space");
                     history.lock_mut().unknow_room(&space.room_id().to_owned());
                     return;
@@ -354,7 +365,7 @@ impl Client {
     ) -> Result<()> {
         trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
 
-        join_all(
+        futures::future::join_all(
             new_spaces
                 .into_iter()
                 .map(|room| Space::new(self.clone(), Room { room }))
@@ -438,7 +449,7 @@ impl Client {
 impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
         let core = CoreClient::new(client).await?;
-        let cl = Client {
+        let mut cl = Client {
             core,
             state: Arc::new(RwLock::new(state)),
             invitation_controller: InvitationController::new(),
@@ -447,7 +458,11 @@ impl Client {
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
             convo_controller: ConvoController::new(),
+            notifications: Arc::new(channel(25).0),
         };
+
+        let (_spaces, convos) = devide_spaces_from_convos(cl.clone(), None).await;
+        cl.convo_controller.load_rooms(&convos);
         Ok(cl)
     }
 
@@ -481,11 +496,12 @@ impl Client {
         // sync event is the event that my device was off so it may be timed out possibly
         // in fact, when user opens app, he sees old verification popup sometimes
         // in order to avoid this issue, comment out sync event
-        // self.verification_controller.add_sync_event_handler(&client);
+        self.verification_controller.add_sync_event_handler(&client);
 
         let mut invitation_controller = self.invitation_controller.clone();
         let mut device_controller = self.device_controller.clone();
         let mut convo_controller = self.convo_controller.clone();
+        let notifications = self.notifications.clone();
 
         let (first_synced_tx, first_synced_rx) = channel(1);
         let first_synced_arc = Arc::new(first_synced_tx);
@@ -511,6 +527,7 @@ impl Client {
             let history_loading = history_loading.clone();
             let first_sync_task = first_sync_task.clone();
             let room_handles = room_handles.clone();
+            let notifications = notifications.clone();
 
             // fetch the events that received when offline
             client
@@ -629,6 +646,12 @@ impl Client {
                             w.is_syncing = true;
                         }
                     }
+                    for ev in response.notifications.into_values() {
+                        for item in ev {
+                            trace!("Sending notification");
+                            notifications.send(item);
+                        }
+                    }
 
                     trace!("ready for the next round");
                     Ok(LoopCtrl::Continue)
@@ -672,7 +695,11 @@ impl Client {
             Err(e) => false,
         };
         let result = serde_json::to_string(&RestoreToken {
-            session,
+            session: CustomAuthSession {
+                user_id: session.meta().user_id.clone(),
+                device_id: session.meta().device_id.clone(),
+                access_token: session.access_token().to_string(),
+            },
             homeurl,
             is_guest,
         })?;
@@ -706,7 +733,7 @@ impl Client {
             .spawn(async move {
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("MIME type should be given")?;
-                let buf = fs::read(path).context("File should be read")?;
+                let buf = std::fs::read(path).context("File should be read")?;
                 let response = client.media().upload(&content_type, buf).await?;
                 Ok(response.content_uri)
             })
@@ -725,13 +752,72 @@ impl Client {
         self.core.client().user_id()
     }
 
-    pub(crate) fn room(&self, room_name: String) -> Result<Room> {
-        let room_id = RoomId::parse(room_name)?;
+    pub async fn room(&self, room_id_or_alias: String) -> Result<Room> {
+        let id_or_alias = OwnedRoomOrAliasId::try_from(room_id_or_alias).expect("just checked");
+        self.room_typed(&id_or_alias).await
+    }
+
+    pub async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
+        if room_id_or_alias.is_room_id() {
+            let room_id = OwnedRoomId::try_from(room_id_or_alias.as_str()).expect("just checked");
+            return self.room_by_id_typed(&room_id).context("Room not found");
+        }
+
+        let room_alias =
+            OwnedRoomAliasId::try_from(room_id_or_alias.as_str()).expect("just checked");
+        self.room_by_alias_typed(&room_alias).await
+    }
+
+    pub fn room_by_id_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
         self.core
             .client()
-            .get_room(&room_id)
-            .context("Room not found")
+            .get_room(room_id)
             .map(|room| Room { room })
+    }
+
+    pub async fn room_by_alias_typed(&self, room_alias: &OwnedRoomAliasId) -> Result<Room> {
+        for r in self.core.client().rooms() {
+            // looping locally first
+            if let Some(con_alias) = r.canonical_alias() {
+                if &con_alias == room_alias {
+                    return Ok(Room { room: r });
+                }
+            }
+            for alt_alias in r.alt_aliases() {
+                if &alt_alias == room_alias {
+                    return Ok(Room { room: r });
+                }
+            }
+        }
+        // nothing found, try remote:
+        let response = self.core.client().resolve_room_alias(room_alias).await?;
+        self.room_by_id_typed(&response.room_id)
+            .context("Room not found")
+    }
+
+    pub fn notifications_stream(&self) -> impl Stream<Item = Notification> {
+        let client = self.clone();
+        BroadcastStream::new(self.notifications.subscribe())
+            .then(move |r| {
+                let client = client.clone();
+                RUNTIME.spawn(async move {
+                    let res = Notification::new(r?, client.clone()).await;
+                    anyhow::Ok(res)
+                })
+            })
+            .filter_map(|r| async {
+                match r {
+                    Ok(Ok(n)) => Some(n),
+                    Ok(Err(e)) => {
+                        error!(?e, "Failure in notifications stream");
+                        None
+                    }
+                    Err(e) => {
+                        error!(?e, "Failure in notifications stream processing");
+                        None
+                    }
+                }
+            })
     }
 
     pub fn subscribe_stream(&self, key: String) -> impl Stream<Item = bool> {
@@ -755,7 +841,7 @@ impl Client {
                 let Some(tm) = timeout else {
                     return Ok(waiter.await?);
                 };
-                Ok(tokio::time::timeout(*Box::leak(tm), waiter).await??)
+                Ok(time::timeout(*Box::leak(tm), waiter).await??)
             })
             .await?
     }
@@ -820,7 +906,7 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
-                match client.logout().await {
+                match client.matrix_auth().logout().await {
                     Ok(resp) => Ok(true),
                     Err(e) => {
                         error!("logout error: {:?}", e);

@@ -49,7 +49,9 @@ class ActerChatTheme extends ChatTheme {
     double messageInsetsHorizontal = 20,
     double messageInsetsVertical = 16,
     Color primaryColor = const Color(0xffFF8E00),
-    TextStyle receivedEmojiMessageTextStyle = const TextStyle(fontSize: 40),
+    TextStyle receivedEmojiMessageTextStyle = const TextStyle(
+      fontSize: 40,
+    ),
     TextStyle? receivedMessageBodyBoldTextStyle,
     TextStyle? receivedMessageBodyCodeTextStyle,
     TextStyle? receivedMessageBodyLinkTextStyle,
@@ -83,7 +85,9 @@ class ActerChatTheme extends ChatTheme {
     Widget? sendButtonIcon,
     EdgeInsets? sendButtonMargin,
     Widget? sendingIcon,
-    TextStyle sentEmojiMessageTextStyle = const TextStyle(fontSize: 40),
+    TextStyle sentEmojiMessageTextStyle = const TextStyle(
+      fontSize: 40,
+    ),
     TextStyle? sentMessageBodyBoldTextStyle,
     TextStyle? sentMessageBodyCodeTextStyle,
     TextStyle? sentMessageBodyLinkTextStyle,

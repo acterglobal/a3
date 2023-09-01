@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
-import 'package:acter/common/widgets/reaction_pop_up_config.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
@@ -30,50 +30,55 @@ import 'package:flutter/material.dart';
 typedef StringsCallBack = void Function(String emoji, String messageId);
 
 class EmojiRow extends StatelessWidget {
+  final double? size;
   EmojiRow({
     Key? key,
     required this.onEmojiTap,
-    this.emojiConfiguration,
+    this.size,
   }) : super(key: key);
 
   final StringCallback onEmojiTap;
-  final EmojiConfiguration? emojiConfiguration;
   final List<String> _emojiUnicodes = [
     heart,
+    thumbsUp,
+    prayHands,
     faceWithTears,
+    clappingHands,
+    raisedHands,
     astonishedFace,
-    disappointedFace,
-    angryFace,
   ];
 
   @override
   Widget build(BuildContext context) {
-    final emojiList = emojiConfiguration?.emojiList ?? _emojiUnicodes;
-    final size = emojiConfiguration?.size;
+    final emojiList = _emojiUnicodes;
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Wrap(
           direction: Axis.horizontal,
           spacing: 5.0,
-          children: List.generate(
-            emojiList.length,
-            (index) => InkWell(
-              onTap: () => onEmojiTap(emojiList[index]),
-              child: Text(
-                emojiList[index],
-                style: TextStyle(fontSize: size ?? 18),
+          children: [
+            for (var emoji in emojiList)
+              InkWell(
+                onTap: () => onEmojiTap(emoji),
+                child: Text(
+                  emoji,
+                  style:
+                      (EmojiConfig.emojiTextStyle ?? const TextStyle()).copyWith(fontSize: size ?? 18),
+                ),
+              ),
+            InkWell(
+              onTap: () => _showBottomSheet(context),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 3),
+                child: Icon(
+                  Atlas.dots_horizontal_thin,
+                  color: Theme.of(context).colorScheme.neutral5,
+                  size: 18,
+                ),
               ),
             ),
-          ),
-        ),
-        IconButton(
-          padding: const EdgeInsets.only(bottom: 5.0),
-          icon: Icon(
-            Atlas.plus_circle,
-            color: Colors.grey.shade600,
-            size: size ?? 28,
-          ),
-          onPressed: () => _showBottomSheet(context),
+          ],
         ),
       ],
     );
@@ -82,9 +87,10 @@ class EmojiRow extends StatelessWidget {
   void _showBottomSheet(BuildContext context) => showModalBottomSheet<void>(
         context: context,
         builder: (context) => EmojiPickerWidget(
-          onSelected: (emoji) {
+          withBoarder: true,
+          onEmojiSelected: (category, emoji) {
             Navigator.pop(context);
-            onEmojiTap(emoji);
+            onEmojiTap(emoji.emoji);
           },
         ),
       );

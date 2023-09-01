@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
@@ -38,7 +39,7 @@ final spaceItemsProvider = FutureProvider.autoDispose
           softWrap: false,
         ),
         location: null,
-      )
+      ),
     ],
     data: (spaces) {
       spaces.sort((a, b) {
@@ -70,12 +71,15 @@ final spaceItemsProvider = FutureProvider.autoDispose
             location: '/$roomId',
           ),
           data: (info) => SidebarNavigationItem(
-            icon: ActerAvatar(
-              uniqueId: roomId,
-              displayName: info.displayName,
-              mode: DisplayMode.Space,
-              avatar: info.getAvatarImage(),
-              size: 48,
+            icon: SpaceParentBadge(
+              spaceId: roomId,
+              child: ActerAvatar(
+                uniqueId: roomId,
+                displayName: info.displayName,
+                mode: DisplayMode.Space,
+                avatar: info.getAvatarImage(),
+                size: 48,
+              ),
             ),
             label: Text(
               info.displayName ?? roomId,
@@ -162,7 +166,7 @@ final sidebarItemsProvider = Provider.autoDispose
             softWrap: false,
           ),
           const SizedBox(height: 10),
-          const Divider(indent: 10, endIndent: 10)
+          const Divider(indent: 10, endIndent: 10),
         ],
       ),
       location: Routes.activities.route,
@@ -243,7 +247,7 @@ final bottomBarNavProvider =
       ),
       label: 'Search',
       initialLocation: Routes.search.route,
-    )
+    ),
   ];
 });
 

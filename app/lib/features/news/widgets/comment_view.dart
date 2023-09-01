@@ -89,10 +89,10 @@ class CommentViewState extends State<CommentView> {
                                     fontSize: 14,
                                   ),
                                 ),
-                              )
+                              ),
                             ],
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -111,7 +111,7 @@ class CommentViewState extends State<CommentView> {
                         widget.commentModel.likeCount.toString(),
                         style: const TextStyle(color: Colors.white),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ],
@@ -119,7 +119,9 @@ class CommentViewState extends State<CommentView> {
           ),
           GestureDetector(
             onTap: () {
-              setState(() => replyView = !replyView);
+              if (mounted) {
+                setState(() => replyView = !replyView);
+              }
             },
             child: Padding(
               padding: const EdgeInsets.fromLTRB(52, 12, 0, 8),
@@ -145,7 +147,7 @@ class CommentViewState extends State<CommentView> {
                 );
               },
             ),
-          )
+          ),
         ],
       ),
     );

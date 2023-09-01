@@ -15,7 +15,7 @@ void onBoardingDialog({
     useRootNavigator: true,
     enableDrag: false,
     isScrollControlled: true,
-    context: (context),
+    context: context,
     builder: (context) {
       return FractionallySizedBox(
         heightFactor: 1.0,
@@ -52,7 +52,7 @@ void onBoardingDialog({
                             Theme.of(context).textTheme.headlineLarge!.copyWith(
                                   color: Theme.of(context).colorScheme.tertiary,
                                 ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -90,7 +90,7 @@ void onBoardingDialog({
                     Text(
                       'Let\'s get started!',
                       style: Theme.of(context).textTheme.bodyMedium,
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -118,7 +118,7 @@ void onBoardingDialog({
                         btnText,
                       ),
                       const SizedBox(width: 10),
-                      const Icon(Icons.chevron_right_outlined)
+                      const Icon(Icons.chevron_right_outlined),
                     ],
                   ),
                 ),
@@ -156,7 +156,7 @@ void onBoardingDialog({
                           children: <Widget>[
                             Text('Skip'),
                             SizedBox(width: 5),
-                            Icon(Icons.chevron_right)
+                            Icon(Icons.chevron_right),
                           ],
                         ),
                       ),

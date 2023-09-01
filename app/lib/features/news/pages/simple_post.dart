@@ -1,31 +1,21 @@
-import 'package:acter/common/snackbars/custom_msg.dart';
-import 'package:acter/features/news/providers/news_providers.dart';
-import 'package:cross_file_image/cross_file_image.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/side_sheet.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
 
-final selectedSpaceIdProvider = StateProvider<String?>((ref) => null);
-final selectedSpaceDetailsProvider =
-    FutureProvider.autoDispose<SpaceItem?>((ref) async {
-  final selectedSpaceId = ref.watch(selectedSpaceIdProvider);
-  if (selectedSpaceId == null) {
-    return null;
-  }
-
-  final spaces = await ref.watch(briefSpaceItemsProviderWithMembership.future);
-  return spaces.firstWhere((element) => element.roomId == selectedSpaceId);
-});
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/md_editor_with_preview.dart';
+import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:cross_file_image/cross_file_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 
 // upload avatar path
 final selectedImageProvider = StateProvider<XFile?>((ref) => null);
@@ -44,8 +34,8 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
 
   @override
   Widget build(BuildContext context) {
-    final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final selectedSpace = currentSelectedSpace != null;
+    final imageNotifier = ref.watch(selectedImageProvider.notifier);
+    final captionNotifier = ref.watch(textProvider.notifier);
     return SideSheet(
       header: 'Create new Update',
       addActions: true,
@@ -58,113 +48,39 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Consumer(
-                  builder: (context, ref, child) {
-                    final selectedImage = ref.watch(selectedImageProvider);
-                    if (selectedImage != null) {
-                      return SizedBox(
-                        height: 300,
-                        child: InkWell(
-                          onTap: () async {
-                            ref.read(selectedImageProvider.notifier).state =
-                                null;
-                          },
-                          child: Center(
-                            child: Image(
-                              image: XFileImage(selectedImage),
-                            ),
-                          ),
+                child: Consumer(builder: imageBuilder),
+              ),
+              imageNotifier.state == null
+                  ? MdEditorWithPreview(
+                      hintText: 'Text Update',
+                      labelText: 'Text Update',
+                      validator: (value) {
+                        if (value != null && value.isNotEmpty) {
+                          return null;
+                        }
+                        if (imageNotifier.state != null) {
+                          return null;
+                        }
+                        return 'Please enter a text or add an image';
+                      },
+                      onChanged: (String? value) {
+                        captionNotifier.state = value ?? '';
+                      },
+                    )
+                  : Expanded(
+                      child: TextFormField(
+                        textAlignVertical: TextAlignVertical.top,
+                        decoration: const InputDecoration(
+                          hintText: 'Text caption',
+                          labelText: 'Image Caption',
                         ),
-                      );
-                    }
-
-                    return SizedBox(
-                      height: 300,
-                      child: InkWell(
-                        onTap: () async {
-                          final XFile? image = await picker.pickImage(
-                            source: ImageSource.gallery,
-                          );
-                          ref.read(selectedImageProvider.notifier).state =
-                              image;
-                        },
-                        child: const Center(
-                          child: Text('select an image (optional)'),
-                        ),
+                        expands: true,
+                        minLines: null,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
                       ),
-                    );
-                  },
-                ),
-              ),
-              Expanded(
-                child: TextFormField(
-                  textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(
-                    hintText:
-                        (ref.read(selectedImageProvider.notifier).state == null)
-                            ? 'The update you want to share'
-                            : 'Text caption',
-                    labelText:
-                        ref.read(selectedImageProvider.notifier).state == null
-                            ? 'Text Update'
-                            : 'Image Caption',
-                  ),
-                  expands: true,
-                  minLines: null,
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  validator: (value) => (value != null && value.isNotEmpty) ||
-                          ref.read(selectedImageProvider.notifier).state != null
-                      ? null
-                      : 'Please enter a text or add an image',
-                  onChanged: (String? value) {
-                    ref.read(textProvider.notifier).state = value ?? '';
-                  },
-                ),
-              ),
-              FormField(
-                builder: (state) => ListTile(
-                  title: Text(
-                    selectedSpace ? 'Space' : 'Please select a space',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  subtitle: state.errorText != null
-                      ? Text(
-                          state.errorText!,
-                          style:
-                              Theme.of(context).textTheme.bodySmall!.copyWith(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                        )
-                      : null,
-                  trailing: selectedSpace
-                      ? Consumer(
-                          builder: (context, ref, child) =>
-                              ref.watch(selectedSpaceDetailsProvider).when(
-                                    data: (space) => space != null
-                                        ? SpaceChip(space: space)
-                                        : Text(currentSelectedSpace),
-                                    error: (e, s) => Text('error: $e'),
-                                    loading: () => const Text('loading'),
-                                  ),
-                        )
-                      : null,
-                  onTap: () async {
-                    final currentSpaceId = ref.read(selectedSpaceIdProvider);
-                    final newSelectedSpaceId = await selectSpaceDrawer(
-                      context: context,
-                      currentSpaceId: currentSpaceId,
-                      canCheck: 'CanPostNews',
-                      title: const Text('Select space'),
-                    );
-                    ref.read(selectedSpaceIdProvider.notifier).state =
-                        newSelectedSpaceId;
-                  },
-                ),
-                validator: (x) => (ref.read(selectedSpaceIdProvider) != null)
-                    ? null
-                    : 'You must select a space',
-              ),
+                    ),
+              const SelectSpaceFormField(canCheck: 'CanPostNews'),
             ],
           ),
         ),
@@ -207,15 +123,16 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 isLoader: true,
               );
 
-              final space = await ref.watch(spaceProvider(spaceId!).future);
+              final space = await ref.read(spaceProvider(spaceId!).future);
               NewsEntryDraft draft = space.newsDraft();
               if (file == null) {
                 draft.addTextSlide(caption);
               } else {
-                if (file.mimeType != null) {
-                  if (file.mimeType!.startsWith('image/')) {
+                String? mimeType = file.mimeType ?? lookupMimeType(file.path);
+                if (mimeType != null) {
+                  if (mimeType.startsWith('image/')) {
                     Uint8List bytes = await file.readAsBytes();
-                    var decodedImage = await decodeImageFromList(bytes);
+                    final decodedImage = await decodeImageFromList(bytes);
                     await draft.addImageSlide(
                       caption,
                       file.path,
@@ -232,7 +149,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                     }
                     customMsgSnackbar(
                       context,
-                      'Posting of ${file.mimeType} not yet supported',
+                      'Posting of $mimeType not yet supported',
                     );
                     return;
                   }
@@ -253,8 +170,8 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               try {
                 await draft.send();
                 // reset fields
-                ref.read(textProvider.notifier).state = '';
-                ref.read(selectedImageProvider.notifier).state = null;
+                captionNotifier.state = '';
+                imageNotifier.state = null;
                 // close both
 
                 // We are doing as expected, but the lints triggers.
@@ -299,6 +216,40 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
           child: const Text('Post Update'),
         ),
       ],
+    );
+  }
+
+  Widget imageBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final selectedImage = ref.watch(selectedImageProvider);
+    if (selectedImage != null) {
+      return SizedBox(
+        height: 300,
+        child: InkWell(
+          onTap: () {
+            final imageNotifier = ref.read(selectedImageProvider.notifier);
+            imageNotifier.state = null;
+          },
+          child: Center(
+            child: Image(
+              image: XFileImage(selectedImage),
+            ),
+          ),
+        ),
+      );
+    }
+    return SizedBox(
+      height: 300,
+      child: InkWell(
+        onTap: () async {
+          final imageNotifier = ref.read(selectedImageProvider.notifier);
+          imageNotifier.state = await picker.pickImage(
+            source: ImageSource.gallery,
+          );
+        },
+        child: const Center(
+          child: Text('select an image (optional)'),
+        ),
+      ),
     );
   }
 }

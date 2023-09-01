@@ -10,6 +10,7 @@ use matrix_sdk::ruma::events::{
 use serde::{Deserialize, Serialize};
 
 use super::{BelongsTo, Update};
+use crate::Result;
 
 // if you change the order of these enum variables, enum value will change and parsing of old content will fail
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -99,7 +100,7 @@ pub struct AttachmentUpdateEventContent {
 }
 
 impl AttachmentUpdateEventContent {
-    pub fn apply(&self, task: &mut AttachmentEventContent) -> crate::Result<bool> {
+    pub fn apply(&self, task: &mut AttachmentEventContent) -> Result<bool> {
         task.content = self.content.clone();
         Ok(true)
     }

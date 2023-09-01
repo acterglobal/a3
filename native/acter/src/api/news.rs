@@ -8,7 +8,7 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
-use futures::{io::Cursor, stream::StreamExt};
+use futures::stream::StreamExt;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Joined, Room},
@@ -17,8 +17,8 @@ use matrix_sdk::{
         events::room::{
             message::{
                 AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-                ImageMessageEventContent, TextMessageEventContent, VideoInfo,
-                VideoMessageEventContent,
+                ImageMessageEventContent, LocationMessageEventContent, TextMessageEventContent,
+                VideoInfo, VideoMessageEventContent,
             },
             ImageInfo,
         },
@@ -27,18 +27,17 @@ use matrix_sdk::{
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
-    fs,
     ops::Deref,
     path::PathBuf,
 };
 use tokio::sync::broadcast::Receiver;
+use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::trace;
-use url::Url;
 
 use super::{
     api::FfiBuffer,
     client::Client,
-    common::{AudioDesc, FileDesc, ImageDesc, VideoDesc},
+    common::{AudioDesc, FileDesc, ImageDesc, LocationDesc, VideoDesc},
     spaces::Space,
     RUNTIME,
 };
@@ -193,6 +192,7 @@ impl NewsSlide {
             NewsContent::Audio(AudioMessageEventContent { body, .. }) => body.clone(),
             NewsContent::Video(VideoMessageEventContent { body, .. }) => body.clone(),
             NewsContent::File(FileMessageEventContent { body, .. }) => body.clone(),
+            NewsContent::Location(LocationMessageEventContent { body, .. }) => body.clone(),
             NewsContent::Text(TextMessageEventContent {
                 formatted, body, ..
             }) => {
@@ -260,6 +260,14 @@ impl NewsSlide {
         let content = self.inner.content().file().context("Not a file")?;
         self.client.source_binary(content.source).await
     }
+
+    pub fn location_desc(&self) -> Option<LocationDesc> {
+        self.inner.content().location().and_then(|content| {
+            content
+                .info
+                .map(|info| LocationDesc::new(content.body, content.geo_uri))
+        })
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -323,11 +331,11 @@ impl NewsEntry {
         })
     }
 
-    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
-        tokio_stream::wrappers::BroadcastStream::new(self.subscribe()).map(|_| true)
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe()).map(|_| true)
     }
 
-    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
+    pub fn subscribe(&self) -> Receiver<()> {
         let key = self.content.event_id().to_string();
         self.client.subscribe(key)
     }
@@ -400,7 +408,7 @@ impl NewsEntryDraft {
             .spawn(async move {
                 let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
                 if url.is_valid() {
-                    return anyhow::Ok(ImageMessageEventContent::plain(body, url.into(), None));
+                    return anyhow::Ok(ImageMessageEventContent::plain(body, url.into()));
                 }
                 let path = PathBuf::from(url_or_path.clone());
                 let guess = mime_guess::from_path(path.clone());
@@ -410,15 +418,15 @@ impl NewsEntryDraft {
                     bail!("Image slide accepts only image file");
                 }
                 let mut content = if room.is_encrypted().await? {
-                    let mut reader = fs::File::open(path)?;
+                    let mut reader = std::fs::File::open(path)?;
                     let encrypted_file = client
                         .prepare_encrypted_file(&content_type, &mut reader)
                         .await?;
                     ImageMessageEventContent::encrypted(body, encrypted_file)
                 } else {
-                    let buf = fs::read(path)?;
+                    let buf = std::fs::read(path)?;
                     let response = client.media().upload(&content_type, buf).await?;
-                    ImageMessageEventContent::plain(body, response.content_uri, None)
+                    ImageMessageEventContent::plain(body, response.content_uri)
                 };
                 let info = assign!(ImageInfo::new(), {
                     height: height.and_then(UInt::new),
@@ -436,7 +444,7 @@ impl NewsEntryDraft {
             client: self.client.clone(),
             room: self.room.clone().into(),
             inner: news::NewsSlide {
-                content: news::NewsContent::Image(image_content),
+                content: NewsContent::Image(image_content),
                 references: Default::default(),
             },
         });
@@ -458,7 +466,7 @@ impl NewsEntryDraft {
             .spawn(async move {
                 let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
                 if url.is_valid() {
-                    return anyhow::Ok(AudioMessageEventContent::plain(body, url.into(), None));
+                    return anyhow::Ok(AudioMessageEventContent::plain(body, url.into()));
                 }
                 let path = PathBuf::from(url_or_path);
                 let guess = mime_guess::from_path(path.clone());
@@ -468,15 +476,15 @@ impl NewsEntryDraft {
                     bail!("Audio slide accepts only audio file");
                 }
                 let mut content = if room.is_encrypted().await? {
-                    let mut reader = fs::File::open(path)?;
+                    let mut reader = std::fs::File::open(path)?;
                     let encrypted_file = client
                         .prepare_encrypted_file(&content_type, &mut reader)
                         .await?;
                     AudioMessageEventContent::encrypted(body, encrypted_file)
                 } else {
-                    let buf = fs::read(path)?;
+                    let buf = std::fs::read(path)?;
                     let response = client.media().upload(&content_type, buf).await?;
-                    AudioMessageEventContent::plain(body, response.content_uri, None)
+                    AudioMessageEventContent::plain(body, response.content_uri)
                 };
                 let info = assign!(AudioInfo::new(), {
                     duration: secs.map(|x| Duration::new(x, 0)),
@@ -518,7 +526,7 @@ impl NewsEntryDraft {
             .spawn(async move {
                 let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
                 if url.is_valid() {
-                    return anyhow::Ok(VideoMessageEventContent::plain(body, url.into(), None));
+                    return anyhow::Ok(VideoMessageEventContent::plain(body, url.into()));
                 }
                 let path = PathBuf::from(url_or_path.clone());
                 let guess = mime_guess::from_path(path.clone());
@@ -528,15 +536,15 @@ impl NewsEntryDraft {
                     bail!("Video slide accepts only video file");
                 }
                 let mut content = if room.is_encrypted().await? {
-                    let mut reader = fs::File::open(path)?;
+                    let mut reader = std::fs::File::open(path)?;
                     let encrypted_file = client
                         .prepare_encrypted_file(&content_type, &mut reader)
                         .await?;
                     VideoMessageEventContent::encrypted(body, encrypted_file)
                 } else {
-                    let buf = fs::read(path)?;
+                    let buf = std::fs::read(path)?;
                     let response = client.media().upload(&content_type, buf).await?;
-                    VideoMessageEventContent::plain(body, response.content_uri, None)
+                    VideoMessageEventContent::plain(body, response.content_uri)
                 };
                 let info = assign!(VideoInfo::new(), {
                     duration: secs.map(|x| Duration::new(x, 0)),
@@ -576,7 +584,7 @@ impl NewsEntryDraft {
             .spawn(async move {
                 let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
                 if url.is_valid() {
-                    return anyhow::Ok(FileMessageEventContent::plain(body, url.into(), None));
+                    return anyhow::Ok(FileMessageEventContent::plain(body, url.into()));
                 }
                 let path = PathBuf::from(url_or_path.clone());
                 let guess = mime_guess::from_path(path.clone());
@@ -585,15 +593,15 @@ impl NewsEntryDraft {
                     .unwrap_or(mime_guess::mime::APPLICATION_OCTET_STREAM);
                 let mimetype = content_type.to_string();
                 let mut content = if room.is_encrypted().await? {
-                    let mut reader = fs::File::open(path)?;
+                    let mut reader = std::fs::File::open(path)?;
                     let encrypted_file = client
                         .prepare_encrypted_file(&content_type, &mut reader)
                         .await?;
                     FileMessageEventContent::encrypted(body, encrypted_file)
                 } else {
-                    let buf = fs::read(path)?;
+                    let buf = std::fs::read(path)?;
                     let response = client.media().upload(&content_type, buf).await?;
-                    FileMessageEventContent::plain(body, response.content_uri, None)
+                    FileMessageEventContent::plain(body, response.content_uri)
                 };
                 let info = assign!(FileInfo::new(), {
                     mimetype: Some(mimetype),

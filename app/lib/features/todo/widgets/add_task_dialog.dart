@@ -24,15 +24,15 @@ class _AddTaskDialogBoxState extends State<AddTaskDialog> {
   int idx = 0;
 
   void setSelectedDate(DateTime? time) {
-    setState(() {
-      _selectedDate = time;
-    });
+    if (mounted) {
+      setState(() => _selectedDate = time);
+    }
   }
 
   void setBtnIndex(int index) {
-    setState(() {
-      idx = index;
-    });
+    if (mounted) {
+      setState(() => idx = index);
+    }
   }
 
   @override
@@ -151,7 +151,7 @@ class _InputWidgetState extends State<_InputWidget> {
                       ? Theme.of(context).colorScheme.neutral4
                       : Theme.of(context).colorScheme.tertiary,
                 ),
-              )
+              ),
             ],
           ),
         ],
@@ -160,18 +160,20 @@ class _InputWidgetState extends State<_InputWidget> {
   }
 
   void handleInputChange(String value) {
-    setState(() {
-      titleInputController.text = value;
-      // prevent setting cursor position
-      titleInputController.selection = TextSelection.fromPosition(
-        TextPosition(offset: titleInputController.text.length),
-      );
-    });
+    if (mounted) {
+      setState(() {
+        titleInputController.text = value;
+        // prevent setting cursor position
+        titleInputController.selection = TextSelection.fromPosition(
+          TextPosition(offset: titleInputController.text.length),
+        );
+      });
+    }
   }
 
   Future<void> handleTaskCreate() async {
     if (titleInputController.text.isNotEmpty) {
-      var eventId = await controller.createToDoTask(
+      final eventId = await controller.createToDoTask(
         name: titleInputController.text,
         dueDate: widget.selectedDate,
         list: widget.list,
@@ -206,19 +208,21 @@ class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
     return InkWell(
       onTap: () {
         final now = DateTime.now();
-        setState(() {
-          widget.updateIndex(widget.buttonIndex);
-          if (widget.buttonIndex == 1) {
-            widget.updateSelected(now);
-          } else if (widget.buttonIndex == 2) {
-            widget.updateSelected(DateTime(now.year, now.month, now.day + 1));
-          } else if (widget.buttonIndex == 3) {
-            Future.delayed(
-              const Duration(seconds: 0),
-              () => handleDatePicker(context),
-            );
-          }
-        });
+        if (mounted) {
+          setState(() {
+            widget.updateIndex(widget.buttonIndex);
+            if (widget.buttonIndex == 1) {
+              widget.updateSelected(now);
+            } else if (widget.buttonIndex == 2) {
+              widget.updateSelected(DateTime(now.year, now.month, now.day + 1));
+            } else if (widget.buttonIndex == 3) {
+              Future.delayed(
+                const Duration(seconds: 0),
+                () => handleDatePicker(context),
+              );
+            }
+          });
+        }
       },
       child: Container(
         padding: const EdgeInsets.symmetric(
@@ -241,7 +245,7 @@ class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
               widget.text,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.labelMedium,
-            )
+            ),
           ],
         ),
       ),
@@ -250,19 +254,21 @@ class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
 
   void handleClick() {
     final now = DateTime.now();
-    setState(() {
-      widget.updateIndex(widget.buttonIndex);
-      if (widget.buttonIndex == 1) {
-        widget.updateSelected(now);
-      } else if (widget.buttonIndex == 2) {
-        widget.updateSelected(DateTime(now.year, now.month, now.day + 1));
-      } else if (widget.buttonIndex == 3) {
-        Future.delayed(
-          const Duration(seconds: 0),
-          () => handleDatePicker(context),
-        );
-      }
-    });
+    if (mounted) {
+      setState(() {
+        widget.updateIndex(widget.buttonIndex);
+        if (widget.buttonIndex == 1) {
+          widget.updateSelected(now);
+        } else if (widget.buttonIndex == 2) {
+          widget.updateSelected(DateTime(now.year, now.month, now.day + 1));
+        } else if (widget.buttonIndex == 3) {
+          Future.delayed(
+            const Duration(seconds: 0),
+            () => handleDatePicker(context),
+          );
+        }
+      });
+    }
   }
 
   Future<void> handleDatePicker(BuildContext ctx) async {
@@ -284,14 +290,16 @@ class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
       },
     );
     if (pickedDate != null) {
-      setState(() {
-        widget.updateSelected(pickedDate);
-      });
+      if (mounted) {
+        setState(() => widget.updateSelected(pickedDate));
+      }
     } else {
-      setState(() {
-        widget.updateSelected(null);
-        widget.updateIndex(0);
-      });
+      if (mounted) {
+        setState(() {
+          widget.updateSelected(null);
+          widget.updateIndex(0);
+        });
+      }
     }
   }
 }

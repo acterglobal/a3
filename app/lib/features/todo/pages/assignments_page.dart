@@ -63,9 +63,9 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
                             SizedBox(width: 8),
                             Icon(Atlas.arrow_right_circle, size: 18),
                           ],
-                        )
+                        ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),

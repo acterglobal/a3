@@ -1,7 +1,7 @@
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use futures::{
     channel::mpsc::{channel, Receiver, Sender},
-    StreamExt,
+    stream::StreamExt,
 };
 use matrix_sdk::{
     config::SyncSettings,
@@ -10,33 +10,29 @@ use matrix_sdk::{
     },
     event_handler::{Ctx, EventHandlerHandle},
     ruma::{
+        api::client::uiaa::{AuthData, Password, UserIdentifier},
+        assign, device_id,
         events::{
-            forwarded_room_key::ToDeviceForwardedRoomKeyEvent,
-            key::verification::{
-                cancel::CancelCode, request::ToDeviceKeyVerificationRequestEvent,
-                VerificationMethod,
-            },
+            key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
             room::{
-                encrypted::{OriginalSyncRoomEncryptedEvent, ToDeviceRoomEncryptedEvent},
+                encrypted::OriginalSyncRoomEncryptedEvent,
                 message::{MessageType, OriginalSyncRoomMessageEvent},
             },
-            room_key::ToDeviceRoomKeyEvent,
-            room_key_request::ToDeviceRoomKeyRequestEvent,
-            secret::{
-                request::{RequestAction, ToDeviceSecretRequestEvent},
-                send::ToDeviceSecretSendEvent,
-            },
-            EventContent,
+            AnyToDeviceEvent, EventContent,
         },
         OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId,
     },
     Client as SdkClient,
 };
-use std::sync::Arc;
+use std::{
+    collections::HashMap,
+    sync::Arc,
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
 use tokio::sync::Mutex;
 use tracing::{error, info};
 
-use super::{client::Client, RUNTIME};
+use super::{client::Client, common::DeviceRecord, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct VerificationEvent {
@@ -48,12 +44,10 @@ pub struct VerificationEvent {
     /// for sync message
     txn_id: Option<OwnedTransactionId>,
     sender: OwnedUserId,
-    /// for request/ready/start events
-    other_device_id: Option<OwnedDeviceId>,
-    /// for cancel event
-    cancel_code: Option<CancelCode>,
-    /// for cancel event
-    reason: Option<String>,
+    /// event content
+    content: HashMap<String, String>,
+    /// emoji array
+    emojis: Vec<VerificationEmoji>,
 }
 
 impl VerificationEvent {
@@ -65,9 +59,6 @@ impl VerificationEvent {
         event_id: Option<OwnedEventId>,
         txn_id: Option<OwnedTransactionId>,
         sender: OwnedUserId,
-        other_device_id: Option<OwnedDeviceId>,
-        cancel_code: Option<CancelCode>,
-        reason: Option<String>,
     ) -> Self {
         VerificationEvent {
             client,
@@ -76,9 +67,8 @@ impl VerificationEvent {
             event_id,
             txn_id,
             sender,
-            other_device_id,
-            cancel_code,
-            reason,
+            content: Default::default(),
+            emojis: Default::default(),
         }
     }
 
@@ -98,12 +88,72 @@ impl VerificationEvent {
         self.sender.to_string()
     }
 
-    pub fn cancel_code(&self) -> Option<String> {
-        self.cancel_code.clone().map(|e| e.to_string())
+    pub(crate) fn set_content(&mut self, key: String, value: String) {
+        self.content.insert(key, value);
     }
 
-    pub fn reason(&self) -> Option<String> {
-        self.reason.clone()
+    pub fn get_content(&self, key: String) -> Option<String> {
+        self.content.get(&key).cloned()
+    }
+
+    pub(crate) fn set_emojis(&mut self, emojis: Vec<VerificationEmoji>) {
+        self.emojis.clone_from(&emojis);
+    }
+
+    // when this device triggered verification of other device, it can get emojis from SAS state
+    pub fn emojis(&self) -> Vec<VerificationEmoji> {
+        self.emojis.clone()
+    }
+
+    // when other device triggered verification of this device, it can get emojis from remote server
+    pub async fn get_emojis(&self) -> Result<Vec<VerificationEmoji>> {
+        let client = self.client.clone();
+        let sender = self.sender.clone();
+        let event_id = self.event_id.clone();
+        let txn_id = self.txn_id.clone();
+        RUNTIME
+            .spawn(async move {
+                if let Some(event_id) = event_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, event_id.as_str())
+                        .await
+                    {
+                        let Some(items) = sas.emoji() else {
+                            bail!("No emojis found. Aborted.");
+                        };
+                        let sequence = items
+                            .iter()
+                            .map(|e| VerificationEmoji {
+                                symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
+                                description: e.description.to_string(),
+                            })
+                            .collect::<Vec<VerificationEmoji>>();
+                        return Ok(sequence);
+                    }
+                } else if let Some(txn_id) = txn_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, txn_id.as_str())
+                        .await
+                    {
+                        let Some(items) = sas.emoji() else {
+                            bail!("No emojis found. Aborted.");
+                        };
+                        let sequence = items
+                            .iter()
+                            .map(|e| VerificationEmoji {
+                                symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
+                                description: e.description.to_string(),
+                            })
+                            .collect::<Vec<VerificationEmoji>>();
+                        return Ok(sequence);
+                    }
+                }
+                // request may be timed out
+                bail!("Could not get verification object");
+            })
+            .await?
     }
 
     pub async fn accept_verification_request(&self) -> Result<bool> {
@@ -138,8 +188,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification request");
-                Ok(false)
+                bail!("Could not get verification request");
             })
             .await?
     }
@@ -171,8 +220,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification request");
-                Ok(false)
+                bail!("Could not get verification request");
             })
             .await?
     }
@@ -225,8 +273,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification request");
-                Ok(false)
+                bail!("Could not get verification request");
             })
             .await?
     }
@@ -258,21 +305,9 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification request");
-                Ok(false)
+                bail!("Could not get verification request");
             })
             .await?
-    }
-
-    pub fn was_triggered_from_this_device(&self) -> Result<bool> {
-        let device_id = self
-            .client
-            .device_id()
-            .context("guest user cannot get device id")?;
-        match self.other_device_id.clone() {
-            Some(other_device_id) => Ok(other_device_id == *device_id),
-            None => Ok(false),
-        }
     }
 
     pub async fn accept_sas_verification(&self) -> Result<bool> {
@@ -307,8 +342,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification object");
-                Ok(false)
+                bail!("Could not get verification object");
             })
             .await?
     }
@@ -340,8 +374,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification object");
-                Ok(false)
+                bail!("Could not get verification object");
             })
             .await?
     }
@@ -353,59 +386,6 @@ impl VerificationEvent {
             .spawn(async move {
                 client.sync_once(SyncSettings::default()).await?; // send_outgoing_requests is called there
                 Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn get_verification_emoji(&self) -> Result<Vec<VerificationEmoji>> {
-        let client = self.client.clone();
-        let sender = self.sender.clone();
-        let event_id = self.event_id.clone();
-        let txn_id = self.txn_id.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(event_id) = event_id {
-                    if let Some(Verification::SasV1(sas)) = client
-                        .encryption()
-                        .get_verification(&sender, event_id.as_str())
-                        .await
-                    {
-                        if let Some(items) = sas.emoji() {
-                            let sequence = items
-                                .iter()
-                                .map(|e| VerificationEmoji {
-                                    symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
-                                    description: e.description.to_string(),
-                                })
-                                .collect::<Vec<VerificationEmoji>>();
-                            return Ok(sequence);
-                        } else {
-                            return Ok(vec![]);
-                        }
-                    }
-                } else if let Some(txn_id) = txn_id {
-                    if let Some(Verification::SasV1(sas)) = client
-                        .encryption()
-                        .get_verification(&sender, txn_id.as_str())
-                        .await
-                    {
-                        if let Some(items) = sas.emoji() {
-                            let sequence = items
-                                .iter()
-                                .map(|e| VerificationEmoji {
-                                    symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
-                                    description: e.description.to_string(),
-                                })
-                                .collect::<Vec<VerificationEmoji>>();
-                            return Ok(sequence);
-                        } else {
-                            return Ok(vec![]);
-                        }
-                    }
-                }
-                // request may be timed out
-                info!("Could not get verification object");
-                Ok(vec![])
             })
             .await?
     }
@@ -437,8 +417,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification object");
-                Ok(false)
+                bail!("Could not get verification object");
             })
             .await?
     }
@@ -470,8 +449,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification object");
-                Ok(false)
+                bail!("Could not get verification object");
             })
             .await?
     }
@@ -501,8 +479,7 @@ impl VerificationEvent {
                     }
                 }
                 // request may be timed out
-                info!("Could not get verification object");
-                Ok(false)
+                bail!("Could not get verification object");
             })
             .await?
     }
@@ -557,17 +534,20 @@ async fn request_verification_handler(
                 let device_id = client.device_id().expect("Device not found");
                 let event_type = "m.key.verification.create".to_string();
                 info!("{} got {}", device_id, event_type);
-                let msg = VerificationEvent::new(
+                let mut msg = VerificationEvent::new(
                     client.clone(),
                     controller.clone(),
                     event_type,
                     event_id.clone(),
                     txn_id.clone(),
                     sender.clone(),
-                    None,
-                    None,
-                    None,
                 );
+                let methods = our_methods
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<String>>()
+                    .join(",");
+                msg.set_content("our_methods".to_string(), methods);
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
                         error!("Dropping event for {}: {}", event_id, e);
@@ -584,17 +564,21 @@ async fn request_verification_handler(
                 let device_id = client.device_id().expect("Device not found");
                 let event_type = "m.key.verification.request".to_string();
                 info!("{} got {}", device_id, event_type);
-                let msg = VerificationEvent::new(
+                let mut msg = VerificationEvent::new(
                     client.clone(),
                     controller.clone(),
                     event_type,
                     event_id.clone(),
                     txn_id.clone(),
                     sender.clone(),
-                    Some(other_device_id.clone()),
-                    None,
-                    None,
                 );
+                let methods = their_methods
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<String>>()
+                    .join(",");
+                msg.set_content("their_methods".to_string(), methods);
+                msg.set_content("other_device_id".to_string(), other_device_id.to_string());
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
                         error!("Dropping event for {}: {}", event_id, e);
@@ -612,17 +596,27 @@ async fn request_verification_handler(
                 let device_id = client.device_id().expect("Device not found");
                 let event_type = "m.key.verification.ready".to_string();
                 info!("{} got {}", device_id, event_type);
-                let msg = VerificationEvent::new(
+                let mut msg = VerificationEvent::new(
                     client.clone(),
                     controller.clone(),
                     event_type,
                     event_id.clone(),
                     txn_id.clone(),
                     sender.clone(),
-                    Some(other_device_id.clone()),
-                    None,
-                    None,
                 );
+                let methods = their_methods
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<String>>()
+                    .join(",");
+                msg.set_content("their_methods".to_string(), methods);
+                let methods = our_methods
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<String>>()
+                    .join(",");
+                msg.set_content("our_methods".to_string(), methods);
+                msg.set_content("other_device_id".to_string(), other_device_id.to_string());
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
                         error!("Dropping event for {}: {}", event_id, e);
@@ -649,9 +643,6 @@ async fn request_verification_handler(
                     event_id.clone(),
                     txn_id.clone(),
                     sender.clone(),
-                    None,
-                    None,
-                    None,
                 );
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
@@ -667,17 +658,19 @@ async fn request_verification_handler(
                 let device_id = client.device_id().expect("Device not found");
                 let event_type = "m.key.verification.cancel".to_string();
                 info!("{} got {}", device_id, event_type);
-                let msg = VerificationEvent::new(
+                let mut msg = VerificationEvent::new(
                     client.clone(),
                     controller.clone(),
                     event_type,
                     event_id.clone(),
                     txn_id.clone(),
                     sender.clone(),
-                    None,
-                    Some(cancel_info.cancel_code().clone()),
-                    Some(cancel_info.reason().to_string()),
                 );
+                msg.set_content(
+                    "cancel_code".to_string(),
+                    cancel_info.cancel_code().to_string(),
+                );
+                msg.set_content("reason".to_string(), cancel_info.reason().to_string());
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
                         error!("Dropping event for {}: {}", event_id, e);
@@ -715,16 +708,28 @@ async fn sas_verification_handler(
                 let device_id = client.device_id().expect("Device not found");
                 let event_type = "m.key.verification.key".to_string();
                 info!("{} got {}", device_id, event_type);
-                let msg = VerificationEvent::new(
+                let mut msg = VerificationEvent::new(
                     client.clone(),
                     controller.clone(),
                     event_type,
                     event_id.clone(),
                     txn_id.clone(),
                     sender.clone(),
-                    None,
-                    None,
-                    None,
+                );
+                if let Some(auth_string) = emojis {
+                    let sequence = auth_string
+                        .emojis
+                        .iter()
+                        .map(|e| VerificationEmoji {
+                            symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
+                            description: e.description.to_string(),
+                        })
+                        .collect::<Vec<VerificationEmoji>>();
+                    msg.set_emojis(sequence);
+                }
+                msg.set_content(
+                    "decimals".to_string(),
+                    serde_json::to_string(&decimals).unwrap(),
                 );
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
@@ -742,17 +747,24 @@ async fn sas_verification_handler(
                 let device_id = client.device_id().expect("Device not found");
                 let event_type = "m.key.verification.done".to_string();
                 info!("{} got {}", device_id, event_type);
-                let msg = VerificationEvent::new(
+                let mut msg = VerificationEvent::new(
                     client.clone(),
                     controller.clone(),
                     event_type,
                     event_id.clone(),
                     txn_id.clone(),
                     sender.clone(),
-                    None,
-                    None,
-                    None,
                 );
+                let devices = verified_devices
+                    .iter()
+                    .map(|x| x.device_id().to_string())
+                    .collect::<Vec<String>>();
+                msg.set_content("verified_devices".to_string(), devices.join(","));
+                let identifiers = verified_identities
+                    .iter()
+                    .map(|x| x.user_id().to_string())
+                    .collect::<Vec<String>>();
+                msg.set_content("verified_identities".to_string(), identifiers.join(","));
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
                         error!("Dropping event for {}: {}", event_id, e);
@@ -767,17 +779,19 @@ async fn sas_verification_handler(
                 let device_id = client.device_id().expect("Device not found");
                 let event_type = "m.key.verification.cancel".to_string();
                 info!("{} got {}", device_id, event_type);
-                let msg = VerificationEvent::new(
+                let mut msg = VerificationEvent::new(
                     client.clone(),
                     controller.clone(),
                     event_type,
                     event_id.clone(),
                     txn_id.clone(),
                     sender.clone(),
-                    None,
-                    Some(cancel_info.cancel_code().clone()),
-                    Some(cancel_info.reason().to_string()),
                 );
+                msg.set_content(
+                    "cancel_code".to_string(),
+                    cancel_info.cancel_code().to_string(),
+                );
+                msg.set_content("reason".to_string(), cancel_info.reason().to_string());
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
                         error!("Dropping event for {}: {}", event_id, e);
@@ -792,16 +806,46 @@ async fn sas_verification_handler(
                 let device_id = client.device_id().expect("Device not found");
                 let event_type = "m.key.verification.start".to_string();
                 info!("{} got {}", device_id, event_type);
-                let msg = VerificationEvent::new(
+                let mut msg = VerificationEvent::new(
                     client.clone(),
                     controller.clone(),
                     event_type,
                     event_id.clone(),
                     txn_id.clone(),
                     sender.clone(),
-                    None,
-                    None,
-                    None,
+                );
+                let key_agreement_protocols = protocols
+                    .key_agreement_protocols
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<String>>();
+                msg.set_content(
+                    "key_agreement_protocols".to_string(),
+                    key_agreement_protocols.join(","),
+                );
+                let hashes = protocols
+                    .hashes
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<String>>();
+                msg.set_content("hashes".to_string(), hashes.join(","));
+                let message_authentication_codes = protocols
+                    .message_authentication_codes
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<String>>();
+                msg.set_content(
+                    "message_authentication_codes".to_string(),
+                    message_authentication_codes.join(","),
+                );
+                let short_authentication_string = protocols
+                    .short_authentication_string
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<String>>();
+                msg.set_content(
+                    "short_authentication_string".to_string(),
+                    short_authentication_string.join(","),
                 );
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
@@ -816,17 +860,25 @@ async fn sas_verification_handler(
                 let device_id = client.device_id().expect("Device not found");
                 let event_type = "m.key.verification.accept".to_string();
                 info!("{} got {}", device_id, event_type);
-                let msg = VerificationEvent::new(
+                let mut msg = VerificationEvent::new(
                     client.clone(),
                     controller.clone(),
                     event_type,
                     event_id.clone(),
                     txn_id.clone(),
                     sender.clone(),
-                    None,
-                    None,
-                    None,
                 );
+                msg.set_content(
+                    "key_agreement_protocol".to_string(),
+                    accepted_protocols.key_agreement_protocol.to_string(),
+                );
+                msg.set_content("hash".to_string(), accepted_protocols.hash.to_string());
+                let short_auth_string = accepted_protocols
+                    .short_auth_string
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<String>>();
+                msg.set_content("short_auth_string".to_string(), short_auth_string.join(","));
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
                         error!("Dropping event for {}: {}", event_id, e);
@@ -847,9 +899,6 @@ async fn sas_verification_handler(
                     event_id.clone(),
                     txn_id.clone(),
                     sender.clone(),
-                    None,
-                    None,
-                    None,
                 );
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
@@ -869,14 +918,7 @@ pub(crate) struct VerificationController {
     event_tx: Sender<VerificationEvent>,
     event_rx: Arc<Mutex<Option<Receiver<VerificationEvent>>>>,
     sync_key_verification_request_handle: Option<EventHandlerHandle>,
-    sync_room_encrypted_handle: Option<EventHandlerHandle>,
-    to_device_key_verification_request_handle: Option<EventHandlerHandle>,
-    to_device_room_encrypted_handle: Option<EventHandlerHandle>,
-    to_device_room_key_handle: Option<EventHandlerHandle>,
-    to_device_room_key_request_handle: Option<EventHandlerHandle>,
-    to_device_forwarded_room_key_handle: Option<EventHandlerHandle>,
-    to_device_secret_send_handle: Option<EventHandlerHandle>,
-    to_device_secret_request_handle: Option<EventHandlerHandle>,
+    any_to_device_handle: Option<EventHandlerHandle>,
 }
 
 impl VerificationController {
@@ -886,14 +928,7 @@ impl VerificationController {
             event_tx: tx,
             event_rx: Arc::new(Mutex::new(Some(rx))),
             sync_key_verification_request_handle: None,
-            sync_room_encrypted_handle: None,
-            to_device_key_verification_request_handle: None,
-            to_device_room_encrypted_handle: None,
-            to_device_room_key_handle: None,
-            to_device_room_key_request_handle: None,
-            to_device_forwarded_room_key_handle: None,
-            to_device_secret_send_handle: None,
-            to_device_secret_request_handle: None,
+            any_to_device_handle: None,
         }
     }
 
@@ -914,31 +949,16 @@ impl VerificationController {
                         event_type.to_string(),
                         Some(ev.event_id.clone()),
                         None,
-                        ev.sender.clone(),
-                        None,
-                        None,
-                        None,
+                        ev.sender,
                     );
                     if let Err(e) = me.event_tx.try_send(msg) {
-                        error!("Dropping event for {}: {}", ev.event_id.clone(), e);
+                        error!("Dropping event for {}: {}", ev.event_id, e);
                     }
                     // from then on, accept_verification_request takes over
                 }
             },
         );
         self.sync_key_verification_request_handle = Some(handle);
-
-        client.add_event_handler_context(self.clone());
-        let handle = client.add_event_handler(
-            |ev: OriginalSyncRoomEncryptedEvent,
-             c: SdkClient,
-             Ctx(mut me): Ctx<VerificationController>| async move {
-                let device_id = c.device_id().expect("guest user cannot get device id");
-                let event_type = ev.content.event_type();
-                info!("{} got {}", device_id, event_type);
-            },
-        );
-        self.sync_room_encrypted_handle = Some(handle);
     }
 
     pub fn remove_sync_event_handler(&mut self, client: &SdkClient) {
@@ -946,162 +966,313 @@ impl VerificationController {
             client.remove_event_handler(handle);
             self.sync_key_verification_request_handle = None;
         }
-        if let Some(handle) = self.sync_room_encrypted_handle.clone() {
-            client.remove_event_handler(handle);
-            self.sync_room_encrypted_handle = None;
-        }
     }
 
     pub fn add_to_device_event_handler(&mut self, client: &SdkClient) {
         client.add_event_handler_context(self.clone());
         let handle = client.add_event_handler(
-            |ev: ToDeviceKeyVerificationRequestEvent,
+            |ev: AnyToDeviceEvent,
              c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let device_id = c.device_id().expect("guest user cannot get device id");
-                let event_type = ev.content.event_type();
-                info!("{} got {}", device_id, event_type);
-                let txn_id = ev.content.transaction_id;
-                let methods = ev.content.methods.clone();
-                let msg = VerificationEvent::new(
-                    c,
-                    me.clone(),
-                    event_type.to_string(),
-                    None,
-                    Some(txn_id.clone()),
-                    ev.sender.clone(),
-                    Some(ev.content.from_device.clone()),
-                    None,
-                    None,
-                );
-                if let Err(e) = me.event_tx.try_send(msg) {
-                    error!("Dropping transaction for {}: {}", txn_id, e);
-                }
-            },
-        );
-        self.to_device_key_verification_request_handle = Some(handle);
-
-        client.add_event_handler_context(self.clone());
-        let handle = client.add_event_handler(
-            |ev: ToDeviceRoomEncryptedEvent,
-             c: SdkClient,
-             Ctx(mut me): Ctx<VerificationController>| async move {
-                let device_id = c.device_id().expect("guest user cannot get device id");
-                let event_type = ev.content.event_type();
-                info!("{} got {}", device_id, event_type);
-            },
-        );
-        self.to_device_room_encrypted_handle = Some(handle);
-
-        client.add_event_handler_context(self.clone());
-        let handle =
-            client.add_event_handler(
-                |ev: ToDeviceRoomKeyEvent,
-                 c: SdkClient,
-                 Ctx(mut me): Ctx<VerificationController>| async move {
-                    let device_id = c.device_id().expect("guest user cannot get device id");
-                    let event_type = ev.content.event_type();
-                    info!("{} got {}", device_id, event_type);
-                },
-            );
-        self.to_device_room_key_handle = Some(handle);
-
-        client.add_event_handler_context(self.clone());
-        let handle = client.add_event_handler(
-            |ev: ToDeviceRoomKeyRequestEvent,
-             c: SdkClient,
-             Ctx(mut me): Ctx<VerificationController>| async move {
-                let device_id = c.device_id().expect("guest user cannot get device id");
-                let event_type = ev.content.event_type();
-                info!("{} got {}", device_id, event_type);
-            },
-        );
-        self.to_device_room_key_request_handle = Some(handle);
-
-        client.add_event_handler_context(self.clone());
-        let handle = client.add_event_handler(
-            |ev: ToDeviceForwardedRoomKeyEvent,
-             c: SdkClient,
-             Ctx(mut me): Ctx<VerificationController>| async move {
-                let device_id = c.device_id().expect("guest user cannot get device id");
-                let event_type = ev.content.event_type();
-                info!("{} got {}", device_id, event_type);
-            },
-        );
-        self.to_device_forwarded_room_key_handle = Some(handle);
-
-        client.add_event_handler_context(self.clone());
-        let handle = client.add_event_handler(
-            |ev: ToDeviceSecretSendEvent,
-             c: SdkClient,
-             Ctx(mut me): Ctx<VerificationController>| async move {
-                let device_id = c.device_id().expect("guest user cannot get device id");
-                let event_type = ev.content.event_type();
-                info!("{} got {}", device_id, event_type);
-            },
-        );
-        self.to_device_secret_send_handle = Some(handle);
-
-        client.add_event_handler_context(self.clone());
-        let handle = client.add_event_handler(
-            |ev: ToDeviceSecretRequestEvent,
-             c: SdkClient,
-             Ctx(mut me): Ctx<VerificationController>| async move {
-                let device_id = c.device_id().expect("guest user cannot get device id");
-                let event_type = ev.content.event_type();
-                info!("{} got {}", device_id, event_type);
-                info!("ToDeviceSecretRequestEvent: {:?}", ev);
-                let secret_name = match &ev.content.action {
-                    RequestAction::Request(s) => s,
-                    // We ignore cancellations here since there's nothing to serve.
-                    RequestAction::RequestCancellation => return,
-                    action => {
-                        error!("Unknown secret request action");
-                        return;
+                match ev {
+                    AnyToDeviceEvent::KeyVerificationRequest(evt) => {
+                        let event_type = evt.content.event_type();
+                        info!("{} got {}", device_id, event_type);
+                        let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
+                            event_type.to_string(),
+                            None,
+                            Some(evt.content.transaction_id.clone()),
+                            evt.sender,
+                        );
+                        msg.set_content("from_device".to_string(), evt.content.from_device.to_string());
+                        let methods = evt.content.methods.iter().map(|x| x.to_string()).collect::<Vec<String>>();
+                        msg.set_content("methods".to_string(), methods.join(","));
+                        msg.set_content("timestamp".to_string(), evt.content.timestamp.get().to_string());
+                        if let Err(e) = me.event_tx.try_send(msg) {
+                            error!("Dropping transaction for {}: {}", evt.content.transaction_id, e);
+                        }
                     }
-                };
-                if let Ok(Some(device)) = c
-                    .encryption()
-                    .get_device(&ev.sender, &ev.content.requesting_device_id)
-                    .await
-                {
-                    let user_id = c.user_id().expect("guest user cannot get user id");
-                    if device.user_id() == user_id && device.is_verified() {}
+                    AnyToDeviceEvent::KeyVerificationReady(evt) => {
+                        let event_type = evt.content.event_type();
+                        info!("{} got {}", device_id, event_type);
+                        let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
+                            event_type.to_string(),
+                            None,
+                            Some(evt.content.transaction_id.clone()),
+                            evt.sender,
+                        );
+                        msg.set_content("from_device".to_string(), evt.content.from_device.to_string());
+                        let methods = evt.content.methods.iter().map(|x| x.to_string()).collect::<Vec<String>>();
+                        msg.set_content("methods".to_string(), methods.join(","));
+                        if let Err(e) = me.event_tx.try_send(msg) {
+                            error!("Dropping transaction for {}: {}", evt.content.transaction_id, e);
+                        }
+                    }
+                    AnyToDeviceEvent::KeyVerificationStart(evt) => {
+                        let event_type = evt.content.event_type();
+                        info!("{} got {}", device_id, event_type);
+                        let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
+                            event_type.to_string(),
+                            None,
+                            Some(evt.content.transaction_id.clone()),
+                            evt.sender,
+                        );
+                        msg.set_content("from_device".to_string(), evt.content.from_device.to_string());
+                        match evt.content.method {
+                            StartMethod::SasV1(content) => {
+                                let key_agreement_protocols = content
+                                    .key_agreement_protocols
+                                    .iter()
+                                    .map(|x| x.to_string())
+                                    .collect::<Vec<String>>();
+                                msg.set_content("key_agreement_protocols".to_string(), key_agreement_protocols.join(","));
+                                let hashes = content
+                                    .hashes
+                                    .iter()
+                                    .map(|x| x.to_string())
+                                    .collect::<Vec<String>>();
+                                msg.set_content("hashes".to_string(), hashes.join(","));
+                                let message_authentication_codes = content
+                                    .message_authentication_codes
+                                    .iter()
+                                    .map(|x| x.to_string())
+                                    .collect::<Vec<String>>();
+                                msg.set_content("message_authentication_codes".to_string(), message_authentication_codes.join(","));
+                                let short_authentication_string = content
+                                    .short_authentication_string
+                                    .iter()
+                                    .map(|x| x.to_string())
+                                    .collect::<Vec<String>>();
+                                msg.set_content("short_authentication_string".to_string(), short_authentication_string.join(","));
+                            }
+                            StartMethod::ReciprocateV1(content) => {
+                                let secret = serde_json::to_string(&content.secret).unwrap();
+                                msg.set_content("secret".to_string(), secret);
+                            }
+                            _ => {}
+                        }
+                        if let Err(e) = me.event_tx.try_send(msg) {
+                            error!("Dropping transaction for {}: {}", evt.content.transaction_id, e);
+                        }
+                    }
+                    AnyToDeviceEvent::KeyVerificationKey(evt) => {
+                        let event_type = evt.content.event_type();
+                        info!("{} got {}", device_id, event_type);
+                        let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
+                            event_type.to_string(),
+                            None,
+                            Some(evt.content.transaction_id.clone()),
+                            evt.sender,
+                        );
+                        msg.set_content("key".to_string(), evt.content.key.to_string());
+                        if let Err(e) = me.event_tx.try_send(msg) {
+                            error!("Dropping transaction for {}: {}", evt.content.transaction_id, e);
+                        }
+                    }
+                    AnyToDeviceEvent::KeyVerificationAccept(evt) => {
+                        let event_type = evt.content.event_type();
+                        info!("{} got {}", device_id, event_type);
+                        let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
+                            event_type.to_string(),
+                            None,
+                            Some(evt.content.transaction_id.clone()),
+                            evt.sender,
+                        );
+                        if let AcceptMethod::SasV1(content) = evt.content.method {
+                            msg.set_content("hash".to_string(), content.hash.to_string());
+                            msg.set_content("key_agreement_protocol".to_string(), content.key_agreement_protocol.to_string());
+                            msg.set_content("message_authentication_code".to_string(), content.message_authentication_code.to_string());
+                            let short_authentication_string = content
+                                .short_authentication_string
+                                .iter()
+                                .map(|x| x.as_str().into())
+                                .collect::<Vec<String>>();
+                            msg.set_content("short_authentication_string".to_string(), short_authentication_string.join(","));
+                            msg.set_content("commitment".to_string(), content.commitment.to_string());
+                        }
+                        if let Err(e) = me.event_tx.try_send(msg) {
+                            error!("Dropping transaction for {}: {}", evt.content.transaction_id, e);
+                        }
+                    }
+                    AnyToDeviceEvent::KeyVerificationCancel(evt) => {
+                        let event_type = evt.content.event_type();
+                        info!("{} got {}", device_id, event_type);
+                        let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
+                            event_type.to_string(),
+                            None,
+                            Some(evt.content.transaction_id.clone()),
+                            evt.sender,
+                        );
+                        msg.set_content("code".to_string(), evt.content.code.to_string());
+                        msg.set_content("reason".to_string(), evt.content.reason);
+                        if let Err(e) = me.event_tx.try_send(msg) {
+                            error!("Dropping transaction for {}: {}", evt.content.transaction_id, e);
+                        }
+                    }
+                    AnyToDeviceEvent::KeyVerificationMac(evt) => {
+                        let event_type = evt.content.event_type();
+                        info!("{} got {}", device_id, event_type);
+                        let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
+                            event_type.to_string(),
+                            None,
+                            Some(evt.content.transaction_id.clone()),
+                            evt.sender,
+                        );
+                        msg.set_content("keys".to_string(), evt.content.keys.to_string());
+                        let mac = serde_json::to_string(&evt.content.mac).unwrap();
+                        msg.set_content("mac".to_string(), mac);
+                        if let Err(e) = me.event_tx.try_send(msg) {
+                            error!("Dropping transaction for {}: {}", evt.content.transaction_id, e);
+                        }
+                    }
+                    AnyToDeviceEvent::KeyVerificationDone(evt) => {
+                        let event_type = evt.content.event_type();
+                        info!("{} got {}", device_id, event_type);
+                        let msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
+                            event_type.to_string(),
+                            None,
+                            Some(evt.content.transaction_id.clone()),
+                            evt.sender,
+                        );
+                        if let Err(e) = me.event_tx.try_send(msg) {
+                            error!("Dropping transaction for {}: {}", evt.content.transaction_id, e);
+                        }
+                    }
+                    _ => {}
                 }
             },
         );
-        self.to_device_secret_request_handle = Some(handle);
+        self.any_to_device_handle = Some(handle);
     }
 
     pub fn remove_to_device_event_handler(&mut self, client: &SdkClient) {
-        if let Some(handle) = self.to_device_key_verification_request_handle.clone() {
+        if let Some(handle) = self.any_to_device_handle.clone() {
             client.remove_event_handler(handle);
-            self.to_device_key_verification_request_handle = None;
+            self.any_to_device_handle = None;
         }
-        if let Some(handle) = self.to_device_room_encrypted_handle.clone() {
-            client.remove_event_handler(handle);
-            self.to_device_room_encrypted_handle = None;
-        }
-        if let Some(handle) = self.to_device_room_key_handle.clone() {
-            client.remove_event_handler(handle);
-            self.to_device_room_key_handle = None;
-        }
-        if let Some(handle) = self.to_device_room_key_request_handle.clone() {
-            client.remove_event_handler(handle);
-            self.to_device_room_key_request_handle = None;
-        }
-        if let Some(handle) = self.to_device_forwarded_room_key_handle.clone() {
-            client.remove_event_handler(handle);
-            self.to_device_forwarded_room_key_handle = None;
-        }
-        if let Some(handle) = self.to_device_secret_send_handle.clone() {
-            client.remove_event_handler(handle);
-            self.to_device_secret_send_handle = None;
-        }
-        if let Some(handle) = self.to_device_secret_request_handle.clone() {
-            client.remove_event_handler(handle);
-            self.to_device_secret_request_handle = None;
-        }
+    }
+}
+
+pub struct SessionManager {
+    client: SdkClient,
+}
+
+impl SessionManager {
+    pub async fn all_sessions(&self) -> Result<Vec<DeviceRecord>> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let user_id = client.user_id().context("User not found")?;
+                let response = client.devices().await?;
+                let crypto_devices = client
+                    .encryption()
+                    .get_user_devices(user_id)
+                    .await
+                    .context("Couldn't get crypto devices")?;
+                let mut sessions = vec![];
+                for device in response.devices {
+                    let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
+                        d.is_cross_signed_by_owner() || d.is_verified_with_cross_signing()
+                    });
+                    let mut is_active = false;
+                    if let Some(last_seen_ts) = device.last_seen_ts {
+                        let limit = SystemTime::now()
+                            .checked_sub(Duration::from_secs(90 * 24 * 60 * 60))
+                            .context("Couldn't get time of 90 days ago")?
+                            .duration_since(UNIX_EPOCH)
+                            .context("Couldn't calculate duration from Unix epoch")?;
+                        let secs: u64 = last_seen_ts.as_secs().into();
+                        if secs < limit.as_secs() {
+                            is_active = true;
+                        }
+                    }
+                    sessions.push(DeviceRecord::new(
+                        device.device_id.clone(),
+                        device.display_name.clone(),
+                        device.last_seen_ts,
+                        device.last_seen_ip.clone(),
+                        is_verified,
+                        is_active,
+                    ));
+                }
+                info!("all sessions: {:?}", sessions);
+                Ok(sessions)
+            })
+            .await?
+    }
+
+    pub async fn delete_devices(
+        &self,
+        dev_ids: &mut Vec<String>,
+        username: String,
+        password: String,
+    ) -> Result<bool> {
+        let client = self.client.clone();
+        let devices = (*dev_ids)
+            .iter()
+            .map(|x| x.as_str().into())
+            .collect::<Vec<OwnedDeviceId>>();
+        RUNTIME
+            .spawn(async move {
+                if let Err(e) = client.delete_devices(&devices, None).await {
+                    if let Some(info) = e.as_uiaa_response() {
+                        let pass_data = assign!(Password::new(
+                            UserIdentifier::UserIdOrLocalpart(username),
+                            password,
+                        ), {
+                            session: info.session.clone(),
+                        });
+                        let auth_data = AuthData::Password(pass_data);
+                        client.delete_devices(&devices, Some(auth_data)).await?;
+                    } else {
+                        return Ok(false);
+                    }
+                }
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn request_verification(&self, dev_id: String) -> Result<bool> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let user_id = client.user_id().context("User not found")?;
+                if let Some(device) = client
+                    .encryption()
+                    .get_device(user_id, device_id!(dev_id.as_str()))
+                    .await
+                    .context("Couldn't get crypto device")?
+                {
+                    let is_verified = device.is_cross_signed_by_owner()
+                        || device.is_verified_with_cross_signing();
+                    if !is_verified {
+                        let request = device
+                            .request_verification()
+                            .await
+                            .context("Failed to request verification")?;
+                    }
+                }
+                Ok(true)
+            })
+            .await?
     }
 }
 
@@ -1111,5 +1282,10 @@ impl Client {
             Ok(mut r) => r.take(),
             Err(e) => None,
         }
+    }
+
+    pub fn session_manager(&self) -> SessionManager {
+        let client = self.core.client().clone();
+        SessionManager { client }
     }
 }

@@ -6,7 +6,10 @@ use super::{
     super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
     TaskList, TASKS_KEY,
 };
-use crate::events::tasks::{TaskEventContent, TaskUpdateBuilder, TaskUpdateEventContent};
+use crate::{
+    events::tasks::{TaskEventContent, TaskUpdateBuilder, TaskUpdateEventContent},
+    Result,
+};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Task {
@@ -69,7 +72,7 @@ impl ActerModel for Task {
         &[Capability::Commentable, Capability::HasAttachments]
     }
 
-    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
         default_model_execute(store, self.into()).await
     }
 
@@ -79,7 +82,7 @@ impl ActerModel for Task {
         )])
     }
 
-    fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
+    fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
         let AnyActerModel::TaskUpdate(update) = model else {
             return Ok(false)
         };
@@ -125,7 +128,7 @@ impl ActerModel for TaskUpdate {
         &self.meta.event_id
     }
 
-    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
         default_model_execute(store, self.into()).await
     }
 

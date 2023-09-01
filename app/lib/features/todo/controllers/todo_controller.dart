@@ -10,7 +10,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         Comment,
         CommentDraft,
         CommentsManager,
-        OptionText,
+        OptionString,
         RoomId,
         RoomProfile,
         Space,
@@ -51,7 +51,7 @@ class ToDoController extends GetxController {
     String? avatarUri,
   ) async {
     final sdk = await ActerSdk.instance;
-    var config = sdk.newSpaceSettingsBuilder();
+    final config = sdk.newSpaceSettingsBuilder();
     config.setName(name);
     if (description != null) {
       config.setTopic(description);
@@ -70,7 +70,7 @@ class ToDoController extends GetxController {
     if (listTeams.isNotEmpty) {
       for (var team in listTeams) {
         RoomProfile profile = team.getProfile();
-        OptionText displayName = await profile.getDisplayName();
+        OptionString displayName = await profile.getDisplayName();
         // Team avatars are yet to be implemented.
         Team item = Team(
           id: team.getRoomId().toString(),
@@ -87,7 +87,7 @@ class ToDoController extends GetxController {
     List<Space> groups = (await client.spaces()).toList();
     for (var group in groups) {
       RoomProfile profile = group.getProfile();
-      OptionText dispName = await profile.getDisplayName();
+      OptionString dispName = await profile.getDisplayName();
       Team team = Team(
         id: group.getRoomId().toString(),
         name: dispName.text(),
@@ -121,7 +121,7 @@ class ToDoController extends GetxController {
     List<String> assignees = [];
     List<String> subscribers = [];
 
-    var tasksList = (await list.tasks()).toList();
+    final tasksList = (await list.tasks()).toList();
     if (tasksList.isNotEmpty) {
       for (Task task in tasksList) {
         if (task.assignees().isNotEmpty) {
@@ -141,8 +141,8 @@ class ToDoController extends GetxController {
           taskUpdateDraft: task.updateBuilder(),
           commentsManager: commentsManager,
           assignees: assignees,
-          categories: asDartStringList(task.categories().toList()) ?? [],
-          tags: asDartStringList(task.keywords().toList()) ?? [],
+          categories: asDartStringList(task.categories()),
+          tags: asDartStringList(task.keywords()),
           subscribers: subscribers,
           description: task.descriptionText() ?? '',
           priority: task.priority() ?? 0,
@@ -182,7 +182,7 @@ class ToDoController extends GetxController {
   ) async {
     final Space space = await client.getSpace(teamId);
     final RoomProfile profile = space.getProfile();
-    final OptionText dispName = await profile.getDisplayName();
+    final OptionString dispName = await profile.getDisplayName();
     final Team team = Team(
       id: space.getRoomId().toString(),
       name: dispName.text(),
@@ -190,7 +190,7 @@ class ToDoController extends GetxController {
     final TaskListDraft listDraft = space.taskListDraft();
     listDraft.name(name);
     listDraft.descriptionText(description ?? '');
-    var eventId = (await listDraft.send()).toString();
+    final eventId = (await listDraft.send()).toString();
     TaskList list = await client.waitForTaskList(eventId, null);
     final ToDoList newItem = ToDoList(
       name: list.name(),

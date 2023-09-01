@@ -30,12 +30,12 @@ Widget elevatedButton(
 }
 
 class VerificationProcess {
-  bool wasTriggeredFromThisDevice;
+  bool verifiyingThisDevice;
   String stage;
   String? finishedMsg;
 
   VerificationProcess({
-    required this.wasTriggeredFromThisDevice,
+    required this.verifiyingThisDevice,
     required this.stage,
   });
 }
@@ -63,7 +63,7 @@ class CrossSigning {
 
   void _installDeviceEvent() {
     _deviceChangedPoller = client.deviceChangedEventRx()?.listen((event) async {
-      var records = await event.deviceRecords(false);
+      final records = await event.deviceRecords(false);
       for (var record in records) {
         debugPrint('found device id: ${record.deviceId()}');
       }
@@ -138,7 +138,7 @@ class CrossSigning {
     }
     // this case is bob side
     _processMap[flowId] = VerificationProcess(
-      wasTriggeredFromThisDevice: event.wasTriggeredFromThisDevice(),
+      verifiyingThisDevice: true, // this device is requested for verification
       stage: 'm.key.verification.request',
     );
     acceptingRequest = false;
@@ -258,7 +258,7 @@ class CrossSigning {
     } else {
       // this device is alice side
       _processMap[flowId] = VerificationProcess(
-        wasTriggeredFromThisDevice: event.wasTriggeredFromThisDevice(),
+        verifiyingThisDevice: false, // other device is ready for verification
         stage: 'm.key.verification.ready',
       );
     }
@@ -297,7 +297,7 @@ class CrossSigning {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  _processMap[flowId]!.wasTriggeredFromThisDevice
+                  _processMap[flowId]!.verifiyingThisDevice
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
                 ),
@@ -441,7 +441,7 @@ class CrossSigning {
               ),
               const SizedBox(width: 5),
               Text(
-                _processMap[flowId]?.wasTriggeredFromThisDevice == true
+                _processMap[flowId]?.verifiyingThisDevice == true
                     ? AppLocalizations.of(context)!.verifyThisSession
                     : AppLocalizations.of(context)!.verifySession,
               ),
@@ -539,7 +539,7 @@ class CrossSigning {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    _processMap[flowId]?.wasTriggeredFromThisDevice == true
+                    _processMap[flowId]?.verifiyingThisDevice == true
                         ? AppLocalizations.of(context)!.verifyThisSession
                         : AppLocalizations.of(context)!.verifySession,
                   ),
@@ -603,7 +603,7 @@ class CrossSigning {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    _processMap[flowId]?.wasTriggeredFromThisDevice == true
+                    _processMap[flowId]?.verifiyingThisDevice == true
                         ? AppLocalizations.of(context)!.verifyThisSession
                         : AppLocalizations.of(context)!.verifySession,
                   ),
@@ -691,7 +691,7 @@ class CrossSigning {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  _processMap[flowId]?.wasTriggeredFromThisDevice == true
+                  _processMap[flowId]?.verifiyingThisDevice == true
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
                 ),
@@ -735,14 +735,14 @@ class CrossSigning {
       return;
     }
     _processMap[flowId]?.stage = 'm.key.verification.key';
-    event.getVerificationEmoji().then((emoji) {
+    event.getEmojis().then((emojis) {
       showModalBottomSheet(
         context: rootNavKey.currentContext!,
         builder: (BuildContext context) => Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
           ),
-          child: _buildOnKey(context, event, flowId, emoji),
+          child: _buildOnKey(context, event, flowId, emojis),
         ),
         isDismissible: false,
       );
@@ -753,10 +753,10 @@ class CrossSigning {
     BuildContext context,
     VerificationEvent event,
     String flowId,
-    FfiListVerificationEmoji emoji,
+    FfiListVerificationEmoji emojis,
   ) {
-    List<int> emojiCodes = emoji.map((e) => e.symbol()).toList();
-    List<String> emojiDescriptions = emoji.map((e) => e.description()).toList();
+    List<int> codes = emojis.map((e) => e.symbol()).toList();
+    List<String> descriptions = emojis.map((e) => e.description()).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
@@ -775,7 +775,7 @@ class CrossSigning {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  _processMap[flowId]?.wasTriggeredFromThisDevice == true
+                  _processMap[flowId]?.verifiyingThisDevice == true
                       ? AppLocalizations.of(context)!.verifyThisSession
                       : AppLocalizations.of(context)!.verifySession,
                 ),
@@ -819,17 +819,17 @@ class CrossSigning {
                 padding: const EdgeInsets.only(top: 10),
                 child: GridView.count(
                   crossAxisCount: isDesktop ? 7 : 4,
-                  children: List.generate(emoji.length, (index) {
+                  children: List.generate(emojis.length, (index) {
                     return GridTile(
                       child: Column(
                         children: <Widget>[
                           Text(
-                            String.fromCharCode(emojiCodes[index]),
+                            String.fromCharCode(codes[index]),
                             style: const TextStyle(fontSize: 32),
                             textAlign: TextAlign.center,
                           ),
                           Text(
-                            emojiDescriptions[index],
+                            descriptions[index],
                             maxLines: 1,
                             textAlign: TextAlign.center,
                           ),
@@ -871,7 +871,7 @@ class CrossSigning {
       children: [
         Container(
           padding: const EdgeInsets.only(left: 20),
-          width: MediaQuery.of(context).size.width * 0.48,
+          width: MediaQuery.of(context).size.width * 0.18,
           child: elevatedButton(
             AppLocalizations.of(context)!.verificationSasDoNotMatch,
             Theme.of(context).colorScheme.success,
@@ -888,7 +888,7 @@ class CrossSigning {
         const Spacer(flex: 1),
         Container(
           padding: const EdgeInsets.only(right: 20),
-          width: MediaQuery.of(context).size.width * 0.48,
+          width: MediaQuery.of(context).size.width * 0.18,
           child: elevatedButton(
             AppLocalizations.of(context)!.verificationSasMatch,
             Theme.of(context).colorScheme.success,
@@ -954,7 +954,7 @@ class CrossSigning {
     if (process.finishedMsg != null) {
       return process.finishedMsg!;
     }
-    if (process.wasTriggeredFromThisDevice) {
+    if (process.verifiyingThisDevice) {
       return AppLocalizations.of(context)!.verificationConclusionOkSelfNotice;
     }
     return AppLocalizations.of(context)!.verificationConclusionOkDone;

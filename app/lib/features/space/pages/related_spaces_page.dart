@@ -2,7 +2,11 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
+import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
+import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
@@ -10,43 +14,8 @@ import 'package:go_router/go_router.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter/common/utils/routes.dart';
-
-class ChildItem extends StatelessWidget {
-  final SpaceItem space;
-  const ChildItem({Key? key, required this.space}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final profile = space.spaceProfileData;
-    final roomId = space.roomId;
-    return Card(
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.inversePrimary,
-          width: 1.5,
-        ),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      color: Theme.of(context).colorScheme.surface,
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(15),
-        onTap: () => context.go('/$roomId'),
-        title: Text(
-          profile.displayName ?? roomId,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        leading: ActerAvatar(
-          mode: DisplayMode.Space,
-          displayName: profile.displayName,
-          uniqueId: roomId,
-          avatar: profile.getAvatarImage(),
-          size: 48,
-        ),
-        trailing: const Icon(Icons.more_vert),
-      ),
-    );
-  }
-}
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
 class RelatedSpacesPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -54,7 +23,7 @@ class RelatedSpacesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaces = ref.watch(relatedSpaceItemsProvider(spaceIdOrAlias));
+    final spaces = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
     // get platform of context.
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -75,10 +44,60 @@ class RelatedSpacesPage extends ConsumerWidget {
               }
 
               final canLinkSpace = checkPermission('CanLinkSpaces');
+              void addSubspaceHeading(String title, bool withTools) {
+                List<Widget> children = [Expanded(child: Text(title))];
+                if (canLinkSpace && withTools) {
+                  children.add(
+                    PopupMenuButton(
+                      icon: Icon(
+                        Atlas.plus_circle,
+                        color: Theme.of(context).colorScheme.neutral5,
+                      ),
+                      iconSize: 28,
+                      color: Theme.of(context).colorScheme.surface,
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                        PopupMenuItem(
+                          onTap: () => context.pushNamed(
+                            Routes.createSpace.name,
+                            queryParameters: {'parentSpaceId': spaceIdOrAlias},
+                          ),
+                          child: const Row(
+                            children: <Widget>[
+                              Text('Create Subspace'),
+                              Spacer(),
+                              Icon(Atlas.connection),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          onTap: () => customMsgSnackbar(
+                            context,
+                            'Link space feature isn\'t implemented yet',
+                          ),
+                          child: const Row(
+                            children: <Widget>[
+                              Text('Add existing Space'),
+                              Spacer(),
+                              Icon(Atlas.link_chain_thin),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                items.add(
+                  SliverToBoxAdapter(
+                    child: Row(
+                      children: children,
+                    ),
+                  ),
+                );
+              }
 
               if (spaces.parents.isNotEmpty || spaces.mainParent != null) {
                 List<Widget> children = [
-                  const Expanded(child: Text('Parents'))
+                  const Expanded(child: Text('Parents')),
                 ];
                 if (checkPermission('CanSetParentSpace')) {
                   children.add(
@@ -133,7 +152,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                 final space = spaces.mainParent!;
                 items.add(
                   SliverToBoxAdapter(
-                    child: ChildItem(key: Key(space.roomId), space: space),
+                    child:
+                        SpaceCard(key: Key(space.getRoomIdStr()), space: space),
                   ),
                 );
               }
@@ -148,85 +168,70 @@ class RelatedSpacesPage extends ConsumerWidget {
                       ),
                       itemBuilder: (context, index) {
                         final space = spaces.parents[index];
-                        return ChildItem(key: Key(space.roomId), space: space);
+                        return SpaceCard(
+                          key: Key(space.getRoomIdStr()),
+                          space: space,
+                          showParent: false,
+                        );
                       },
                     ),
                   );
                 }
               }
-
-              if (spaces.children.isNotEmpty || canLinkSpace) {
-                List<Widget> children = [
-                  const Expanded(child: Text('Subspaces'))
-                ];
-                if (canLinkSpace) {
-                  children.add(
-                    PopupMenuButton(
-                      icon: Icon(
-                        Atlas.plus_circle,
-                        color: Theme.of(context).colorScheme.neutral5,
-                      ),
-                      iconSize: 28,
-                      color: Theme.of(context).colorScheme.surface,
-                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                        PopupMenuItem(
-                          onTap: () => context.pushNamed(
-                            Routes.createSpace.name,
-                            queryParameters: {'parentSpaceId': spaceIdOrAlias},
-                          ),
-                          child: const Row(
-                            children: <Widget>[
-                              Text('Create Subspace'),
-                              Spacer(),
-                              Icon(Atlas.connection),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          onTap: () => customMsgSnackbar(
-                            context,
-                            'Link space feature isn\'t implemented yet',
-                          ),
-                          child: const Row(
-                            children: <Widget>[
-                              Text('Add existing Space'),
-                              Spacer(),
-                              Icon(Atlas.link_chain_thin),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
+              if (spaces.knownSubspaces.isNotEmpty) {
+                if (spaces.hasMoreSubspaces) {
+                  addSubspaceHeading('My Subspaces', false);
+                } else {
+                  addSubspaceHeading('Subspaces', true);
                 }
                 items.add(
-                  SliverToBoxAdapter(
-                    child: Row(
-                      children: children,
-                    ),
-                  ),
-                );
-              }
-
-              if (spaces.children.isNotEmpty) {
-                items.add(
                   SliverGrid.builder(
-                    itemCount: spaces.children.length,
+                    itemCount: spaces.knownSubspaces.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: max(1, min(widthCount, minCount)),
                       childAspectRatio: 4,
                     ),
                     itemBuilder: (context, index) {
-                      final space = spaces.children[index];
-                      return ChildItem(key: Key(space.roomId), space: space);
+                      final space = spaces.knownSubspaces[index];
+                      return SpaceCard(
+                        key: Key(space.getRoomIdStr()),
+                        space: space,
+                        showParent: false,
+                      );
                     },
                   ),
                 );
               }
+              if (spaces.hasMoreSubspaces) {
+                if (spaces.knownSubspaces.isEmpty) {
+                  addSubspaceHeading('Subspaces', true);
+                } else {
+                  addSubspaceHeading('More Subspaces', true);
+                }
+                items.add(
+                  RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
+                    firstPageKey: const Next(isStart: true),
+                    provider: remoteSpaceHierarchyProvider(spaces),
+                    itemBuilder: (context, item, index) =>
+                        SpaceHierarchyCard(space: item),
+                    pagedBuilder: (controller, builder) => PagedSliverList(
+                      pagingController: controller,
+                      builderDelegate: builder,
+                    ),
+                  ),
+                );
+              }
+
+              if (spaces.knownSubspaces.isEmpty &&
+                  !spaces.hasMoreSubspaces &&
+                  canLinkSpace) {
+                // fallback if there are no subspaces show, allow admins to access the buttons
+                addSubspaceHeading('Subspaces', true);
+              }
 
               if (spaces.otherRelations.isNotEmpty || canLinkSpace) {
                 List<Widget> children = [
-                  const Expanded(child: Text('Recommended Spaces'))
+                  const Expanded(child: Text('Recommended Spaces')),
                 ];
                 if (canLinkSpace) {
                   children.add(
@@ -262,7 +267,10 @@ class RelatedSpacesPage extends ConsumerWidget {
                     ),
                     itemBuilder: (context, index) {
                       final space = spaces.otherRelations[index];
-                      return ChildItem(key: Key(space.roomId), space: space);
+                      return SpaceCard(
+                        key: Key(space.getRoomIdStr()),
+                        space: space,
+                      );
                     },
                   ),
                 );
@@ -279,14 +287,14 @@ class RelatedSpacesPage extends ConsumerWidget {
                 child: Center(
                   child: Text('Loading failed: $error'),
                 ),
-              )
+              ),
             ],
             loading: () => [
               const SliverToBoxAdapter(
                 child: Center(
                   child: Text('Loading'),
                 ),
-              )
+              ),
             ],
           ),
         ],

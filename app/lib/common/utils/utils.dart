@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:async';
 
-import 'package:acter/common/utils/constants.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +68,25 @@ String formatDt(CalendarEvent e) {
   }
 }
 
+String jiffyTime(int timeInterval) {
+  final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
+  final now = Jiffy.now().startOf(Unit.day);
+  if (now.isSame(jiffyTime, unit: Unit.day)) {
+    // (00:00 AM/PM)
+    return jiffyTime.jm;
+  } else {
+    final yesterday = now.subtract(days: 1);
+    final week = now.subtract(weeks: 1);
+    if (jiffyTime.isBetween(yesterday, now)) {
+      return 'Yesterday';
+    } else if (jiffyTime.isBetween(week, now)) {
+      return jiffyTime.EEEE;
+    } else {
+      return jiffyTime.yMd;
+    }
+  }
+}
+
 Future<bool> openLink(String target, BuildContext context) async {
   final Uri? url = Uri.tryParse(target);
   if (url == null || !url.hasAuthority) {
@@ -79,10 +98,6 @@ Future<bool> openLink(String target, BuildContext context) async {
     debugPrint('Opening external URL: $url');
     return await launchUrl(url);
   }
-}
-
-bool isDesktop(BuildContext context) {
-  return desktopPlatforms.contains(Theme.of(context).platform);
 }
 
 String randomString() {
@@ -204,13 +219,11 @@ String? getIssueId(String url) {
 }
 
 ///helper function to convert list ffiString object to DartString.
-List<String>? asDartStringList(List<FfiString> list) {
-  if (list.isNotEmpty) {
-    final List<String> stringList =
-        list.map((ffiString) => ffiString.toDartString()).toList();
-    return stringList;
+List<String> asDartStringList(FfiListFfiString data) {
+  if (data.isEmpty) {
+    return [];
   }
-  return null;
+  return data.toList().map((e) => e.toDartString()).toList();
 }
 
 // ignore: constant_identifier_names
@@ -230,7 +243,7 @@ enum LabsFeature {
   discussions,
 
   // searchOptions
-  searchSpaces,
+  showNotifications,
   ;
 
   static List<LabsFeature> get defaults =>

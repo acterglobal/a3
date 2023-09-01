@@ -4,11 +4,11 @@ use matrix_sdk::{
     ruma::{OwnedMxcUri, OwnedUserId},
     Account as SdkAccount,
 };
-use std::{fs, ops::Deref, path::PathBuf};
+use std::{ops::Deref, path::PathBuf};
 
 use super::{
     api::FfiBuffer,
-    common::{OptionBuffer, OptionText},
+    common::{OptionBuffer, OptionString},
     RUNTIME,
 };
 
@@ -34,12 +34,12 @@ impl Account {
         self.user_id.clone()
     }
 
-    pub async fn display_name(&self) -> Result<OptionText> {
+    pub async fn display_name(&self) -> Result<OptionString> {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
                 let name = account.get_display_name().await?;
-                Ok(OptionText::new(name))
+                Ok(OptionString::new(name))
             })
             .await?
     }
@@ -79,8 +79,10 @@ impl Account {
         }
         RUNTIME
             .spawn(async move {
-                let buf = fs::read(path).context("File should be read")?;
-                let new_url = account.upload_avatar(&content_type, buf).await?;
+                let guess = mime_guess::from_path(path.clone());
+                let content_type = guess.first().context("MIME type should be given")?;
+                let data = std::fs::read(path).context("File should be read")?;
+                let new_url = account.upload_avatar(&content_type, data).await?;
                 Ok(new_url)
             })
             .await?

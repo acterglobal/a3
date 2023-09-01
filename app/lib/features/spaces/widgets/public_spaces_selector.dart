@@ -2,12 +2,11 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:acter_avatar/acter_avatar.dart';
-import 'package:atlas_icons/atlas_icons.dart';
-
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
@@ -78,12 +77,13 @@ class PublicSearchState extends PagedState<Next?, PublicSearchResultItem> {
 final serverTypeAheadController =
     Provider.autoDispose<TextEditingController>((ref) {
   final controller = TextEditingController();
+  final typeNotifier = ref.read(serverTypeAheadProvider.notifier);
   controller.addListener(() {
-    ref.read(serverTypeAheadProvider.notifier).state = controller.text;
+    typeNotifier.state = controller.text;
   });
   ref.onDispose(() {
     controller.dispose();
-    ref.read(serverTypeAheadProvider.notifier).state = null;
+    typeNotifier.state = null;
   });
   return controller;
 });
@@ -110,10 +110,10 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchState>
   final Ref ref;
 
   void setup() {
-    ref.watch(searchValueProvider.notifier).addListener((state) {
+    ref.read(searchValueProvider.notifier).addListener((state) {
       readData();
     });
-    ref.watch(selectedServerProvider.notifier).addListener((state) {
+    ref.read(selectedServerProvider.notifier).addListener((state) {
       readData();
     });
   }
@@ -147,7 +147,7 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchState>
     }
 
     final pageReq = page.next ?? '';
-    final client = ref.watch(clientProvider)!;
+    final client = ref.read(clientProvider)!;
     final searchValue = state.searchValue;
     final server = state.server;
     try {
@@ -183,6 +183,7 @@ final publicSearchProvider = StateNotifierProvider.autoDispose<
 class PublicSpaceItem extends ConsumerWidget {
   final PublicSearchResultItem space;
   final OnSelectedInnerFn onSelected;
+
   const PublicSpaceItem({
     super.key,
     required this.space,
@@ -191,13 +192,8 @@ class PublicSpaceItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final withInfo = ref.watch(maybeSpaceInfoProvider(space.roomIdStr()));
-
-    ActerAvatar fallbackAvatar() => ActerAvatar(
-          mode: DisplayMode.Space,
-          uniqueId: space.roomIdStr(),
-          displayName: space.name(),
-        );
+    final spaceId = space.roomIdStr();
+    final withInfo = ref.watch(maybeSpaceInfoProvider(spaceId));
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -224,7 +220,7 @@ class PublicSpaceItem extends ConsumerWidget {
                 data: (data) => data != null
                     ? ActerAvatar(
                         mode: DisplayMode.Space,
-                        uniqueId: space.roomIdStr(),
+                        uniqueId: spaceId,
                         size: 48,
                         displayName: data.spaceProfileData.displayName,
                         avatar: data.spaceProfileData.hasAvatar()
@@ -232,7 +228,15 @@ class PublicSpaceItem extends ConsumerWidget {
                             : null,
                       )
                     : fallbackAvatar(),
-                error: (e, a) => Text('loading failed: $e'),
+                error: (e, a) {
+                  debugPrint('loading failed: $e');
+                  return ActerAvatar(
+                    mode: DisplayMode.Space,
+                    uniqueId: spaceId,
+                    size: 48,
+                    displayName: spaceId,
+                  );
+                },
                 loading: fallbackAvatar,
               ),
               title: Text(space.name() ?? 'no display name'),
@@ -272,6 +276,14 @@ class PublicSpaceItem extends ConsumerWidget {
       ),
     );
   }
+
+  ActerAvatar fallbackAvatar() {
+    return ActerAvatar(
+      mode: DisplayMode.Space,
+      uniqueId: space.roomIdStr(),
+      displayName: space.name(),
+    );
+  }
 }
 
 class PublicSpaceSelector extends ConsumerWidget {
@@ -281,6 +293,7 @@ class PublicSpaceSelector extends ConsumerWidget {
   final OnSelectedMatchFn? onSelectedMatch;
   final bool canMatchAlias;
   final bool canMatchId;
+
   const PublicSpaceSelector({
     super.key,
     this.title,
@@ -294,6 +307,7 @@ class PublicSpaceSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final searchTextCtrl = ref.watch(searchController);
+    final searchValueNotifier = ref.watch(searchValueProvider.notifier);
     return CustomScrollView(
       slivers: [
         SliverAppBar(
@@ -317,50 +331,14 @@ class PublicSpaceSelector extends ConsumerWidget {
                       ),
                       labelText: 'search space',
                     ),
-                    onChanged: (String value) async {
-                      ref.read(searchValueProvider.notifier).state = value;
+                    onChanged: (String value) {
+                      searchValueNotifier.state = value;
                     },
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 5),
-                  child: Consumer(
-                    builder: (context, ref, child) {
-                      final controller = ref.watch(serverTypeAheadController);
-                      final val = ref.watch(serverTypeAheadProvider);
-                      final List<DropdownMenuEntry<String>> menuItems = [
-                        ...defaultServers.map(
-                          (e) => DropdownMenuEntry(
-                            label: e.name ?? e.value,
-                            value: e.value,
-                          ),
-                        )
-                      ];
-
-                      if (val != null && val.isNotEmpty) {
-                        menuItems.add(
-                          DropdownMenuEntry(
-                            leadingIcon: const Icon(Atlas.plus_circle_thin),
-                            label: val,
-                            value: val,
-                          ),
-                        );
-                      }
-                      return DropdownMenu<String>(
-                        controller: controller,
-                        initialSelection:
-                            ref.read(selectedServerProvider.notifier).state,
-                        label: const Text('Server'),
-                        dropdownMenuEntries: menuItems,
-                        onSelected: (String? typus) {
-                          if (typus != null) {
-                            ref.read(selectedServerProvider.notifier).state =
-                                typus;
-                          }
-                        },
-                      );
-                    },
-                  ),
+                  child: Consumer(builder: serverTypeBuilder),
                 ),
               ],
             ),
@@ -405,7 +383,7 @@ class PublicSpaceSelector extends ConsumerWidget {
                     final List<String> servers = [
                       id.namedGroup('server_name') ?? '',
                       id.namedGroup('server_name2') ?? '',
-                      id.namedGroup('server_name3') ?? ''
+                      id.namedGroup('server_name3') ?? '',
                     ].where((e) => e.isNotEmpty).toList();
                     return Card(
                       child: ListTile(
@@ -453,6 +431,43 @@ class PublicSpaceSelector extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget serverTypeBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+    final selectedServer = ref.watch(selectedServerProvider);
+
+    final controller = ref.watch(serverTypeAheadController);
+    final val = ref.watch(serverTypeAheadProvider);
+    final List<DropdownMenuEntry<String>> menuItems = [
+      ...defaultServers.map(
+        (e) => DropdownMenuEntry(
+          label: e.name ?? e.value,
+          value: e.value,
+        ),
+      ),
+    ];
+    if (val != null && val.isNotEmpty) {
+      menuItems.add(
+        DropdownMenuEntry(
+          leadingIcon: const Icon(Atlas.plus_circle_thin),
+          label: val,
+          value: val,
+        ),
+      );
+    }
+
+    return DropdownMenu<String>(
+      controller: controller,
+      initialSelection: selectedServer,
+      label: const Text('Server'),
+      dropdownMenuEntries: menuItems,
+      onSelected: (String? typus) {
+        if (typus != null) {
+          final notifier = ref.read(selectedServerProvider.notifier);
+          notifier.state = typus;
+        }
+      },
     );
   }
 }

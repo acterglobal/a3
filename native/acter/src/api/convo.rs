@@ -1,7 +1,6 @@
-use acter_core::statics::default_acter_convo_states;
+use acter_core::{statics::default_acter_convo_states, Error};
 use anyhow::{bail, Result};
 use derive_builder::Builder;
-use futures::channel::mpsc::{channel, Receiver, Sender};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
@@ -18,6 +17,7 @@ use matrix_sdk::{
             room::{
                 avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
                 encrypted::OriginalSyncRoomEncryptedEvent,
+                join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
                 member::{MembershipState, OriginalSyncRoomMemberEvent},
                 message::OriginalSyncRoomMessageEvent,
                 redaction::SyncRoomRedactionEvent,
@@ -30,9 +30,8 @@ use matrix_sdk::{
     },
     Client as SdkClient, RoomMemberships,
 };
-use std::{fs, ops::Deref, path::PathBuf, sync::Arc};
-use tokio::sync::Mutex;
-use tracing::{error, info};
+use std::{ops::Deref, path::PathBuf};
+use tracing::info;
 
 use super::{
     client::Client,
@@ -68,12 +67,12 @@ impl Convo {
             for event in events {
                 // show only message event as latest message in chat room list
                 // skip the state event
-                if let Ok(AnySyncTimelineEvent::MessageLike(m)) = event.event.deserialize() {
-                    if let Some(msg) = sync_event_to_message(event.clone(), room.clone()) {
-                        self.set_latest_message(msg);
-                        return;
-                    }
+                // if let Ok(AnySyncTimelineEvent::MessageLike(m)) = event.event.deserialize() {
+                if let Some(msg) = sync_event_to_message(&event.event, room.room_id().to_owned()) {
+                    self.set_latest_message(msg);
+                    return;
                 }
+                // }
             }
         }
     }
@@ -128,8 +127,6 @@ impl Deref for Convo {
 #[derive(Clone, Debug)]
 pub(crate) struct ConvoController {
     convos: Mutable<Vec<Convo>>,
-    incoming_event_tx: Sender<RoomMessage>,
-    incoming_event_rx: Arc<Mutex<Option<Receiver<RoomMessage>>>>,
     encrypted_event_handle: Option<EventHandlerHandle>,
     message_event_handle: Option<EventHandlerHandle>,
     member_event_handle: Option<EventHandlerHandle>,
@@ -138,11 +135,8 @@ pub(crate) struct ConvoController {
 
 impl ConvoController {
     pub fn new() -> Self {
-        let (incoming_tx, incoming_rx) = channel::<RoomMessage>(10); // dropping after more than 10 items queued
         ConvoController {
             convos: Default::default(),
-            incoming_event_tx: incoming_tx,
-            incoming_event_rx: Arc::new(Mutex::new(Some(incoming_rx))),
             encrypted_event_handle: None,
             message_event_handle: None,
             member_event_handle: None,
@@ -246,15 +240,12 @@ impl ConvoController {
                 let ev = raw_event
                     .deserialize_as::<OriginalSyncRoomEncryptedEvent>()
                     .unwrap();
-                let msg = RoomMessage::room_encrypted_from_sync_event(ev, room);
-                convo.set_latest_message(msg.clone());
+                let msg = RoomMessage::room_encrypted_from_sync_event(ev, room_id.to_owned());
+                convo.set_latest_message(msg);
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                     convos.remove(idx);
                     convos.insert(0, convo);
-                    if let Err(e) = self.incoming_event_tx.try_send(msg) {
-                        error!("Dropping ephemeral event for {}: {}", room_id, e);
-                    }
                 } else {
                     convos.insert(0, convo);
                 }
@@ -273,17 +264,19 @@ impl ConvoController {
         if let SdkRoom::Joined(joined) = room {
             let mut convos = self.convos.lock_mut();
             let room_id = room.room_id();
+            let sent_by_me = if let Some(user_id) = room.client().user_id() {
+                ev.sender == user_id
+            } else {
+                false
+            };
 
             let mut convo = Convo::new(Room { room: room.clone() });
-            let msg = RoomMessage::room_message_from_sync_event(ev, room, true);
-            convo.set_latest_message(msg.clone());
+            let msg = RoomMessage::room_message_from_sync_event(ev, room_id.to_owned(), sent_by_me);
+            convo.set_latest_message(msg);
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                 convos.remove(idx);
                 convos.insert(0, convo);
-                if let Err(e) = self.incoming_event_tx.try_send(msg) {
-                    error!("Dropping ephemeral event for {}: {}", room_id, e);
-                }
             } else {
                 convos.insert(0, convo);
             }
@@ -305,15 +298,12 @@ impl ConvoController {
                 let room_id = room.room_id();
 
                 let mut convo = Convo::new(Room { room: room.clone() });
-                let msg = RoomMessage::room_member_from_sync_event(ev, room);
-                convo.set_latest_message(msg.clone());
+                let msg = RoomMessage::room_member_from_sync_event(ev, room_id.to_owned());
+                convo.set_latest_message(msg);
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                     convos.remove(idx);
                     convos.insert(0, convo);
-                    if let Err(e) = self.incoming_event_tx.try_send(msg) {
-                        error!("Dropping ephemeral event for {}: {}", room_id, e);
-                    }
                 } else {
                     convos.insert(0, convo);
                 }
@@ -325,12 +315,13 @@ impl ConvoController {
         let mut convos = self.convos.lock_mut();
 
         if let Some(prev_content) = ev.unsigned.prev_content {
+            let room_id = room.room_id();
             match (prev_content.membership, ev.content.membership) {
                 (MembershipState::Invite, MembershipState::Join) => {
                     // when user accepted invitation, this event is called twice
                     // i don't know that reason
                     // anyway i prevent this event from being called twice
-                    if !convos.iter().any(|x| x.room_id() == room.room_id()) {
+                    if !convos.iter().any(|x| x.room_id() == room_id) {
                         // add new room
                         let convo = Convo::new(Room { room: room.clone() });
                         convos.insert(0, convo);
@@ -338,7 +329,6 @@ impl ConvoController {
                 }
                 (MembershipState::Join, MembershipState::Leave) => {
                     // remove existing room
-                    let room_id = room.room_id();
                     if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                         convos.remove(idx);
                     }
@@ -349,7 +339,7 @@ impl ConvoController {
     }
 
     // reorder room list on OriginalSyncRoomRedactionEvent
-    async fn process_room_redaction(
+    fn process_room_redaction(
         &mut self,
         ev: SyncRoomRedactionEvent,
         room: &SdkRoom,
@@ -361,15 +351,12 @@ impl ConvoController {
             let room_id = room.room_id();
 
             let mut convo = Convo::new(Room { room: room.clone() });
-            let msg = RoomMessage::room_redaction_from_sync_event(ev, room);
-            convo.set_latest_message(msg.clone());
+            let msg = RoomMessage::room_redaction_from_sync_event(ev, room_id.to_owned());
+            convo.set_latest_message(msg);
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                 convos.remove(idx);
                 convos.insert(0, convo);
-                if let Err(e) = self.incoming_event_tx.try_send(msg) {
-                    error!("Dropping ephemeral event for {}: {}", room_id, e);
-                }
             } else {
                 convos.insert(0, convo);
             }
@@ -461,7 +448,7 @@ impl Client {
                         let path = PathBuf::from(avatar_uri);
                         let guess = mime_guess::from_path(path.clone());
                         let content_type = guess.first().expect("MIME type should be given");
-                        let buf = fs::read(path).expect("File should be read");
+                        let buf = std::fs::read(path).expect("File should be read");
                         let response = client.media().upload(&content_type, buf).await?;
 
                         let info = assign!(ImageInfo::new(), {
@@ -477,11 +464,22 @@ impl Client {
                 }
 
                 if let Some(parent) = settings.parent {
+                    let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
+                      return Err(Error::HomeserverMissesHostname)?;
+                    };
                     let parent_event = InitialStateEvent::<SpaceParentEventContent> {
-                        content: SpaceParentEventContent::new(true),
-                        state_key: parent,
+                        content: assign!(SpaceParentEventContent::new(true), {
+                            via: Some(vec![homeserver]),
+                        }),
+                        state_key: parent.clone(),
                     };
                     initial_states.push(parent_event.to_raw_any());
+                    // if we have a parent, by default we allow access to the subspace.
+                    let join_rule =
+                        InitialRoomJoinRulesEvent::new(RoomJoinRulesEventContent::restricted(vec![
+                            AllowRule::room_membership(parent),
+                        ]));
+                    initial_states.push(join_rule.to_raw_any());
                 };
 
                 let request = assign!(CreateRoomRequest::new(), {
@@ -517,15 +515,15 @@ impl Client {
         })
     }
 
-    pub async fn convo(&self, name_or_id: String) -> Result<Convo> {
+    pub async fn convo(&self, room_id_or_alias: String) -> Result<Convo> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let Ok(room) = me.room(name_or_id) else {
+                let Ok(room) = me.room(room_id_or_alias).await else {
                     bail!("Neither roomId nor alias provided");
                 };
-                if room.is_acter_space().await {
-                    bail!("Not a regular convo but an acter space!");
+                if room.is_space() {
+                    bail!("Not a regular convo but an (acter) space!");
                 }
                 Ok(Convo::new(room))
             })
@@ -534,12 +532,5 @@ impl Client {
 
     pub fn convos_rx(&self) -> SignalStream<MutableSignalCloned<Vec<Convo>>> {
         self.convo_controller.convos.signal_cloned().to_stream()
-    }
-
-    pub fn incoming_message_rx(&self) -> Option<Receiver<RoomMessage>> {
-        match self.convo_controller.incoming_event_rx.try_lock() {
-            Ok(mut r) => r.take(),
-            Err(e) => None,
-        }
     }
 }

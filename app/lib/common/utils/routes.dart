@@ -20,12 +20,14 @@ enum Routes {
   updates('/updates'),
   search('/search'),
   activities('/activities'),
+  settingSessions('/settings/sessions'),
   tasks('/tasks'),
 
   // --- chat
   chat('/chat'),
   createChat('/chat/create'),
   chatroom('/chat/:roomId([!#][^/]+)'), // !roomId, #roomName
+  chatProfile('/:roomId([!#][^/]+)/profile'),
 
   // -- spaces
   spaces('/spaces'),
@@ -39,11 +41,15 @@ enum Routes {
   spacePins('/:spaceId([!#][^/]+)/pins'),
   spaceEvents('/:spaceId([!#][^/]+)/events'),
   spaceChats('/:spaceId([!#][^/]+)/chats'),
+  // -- space Settings
+  spaceSettings('/:spaceId([!#][^/]+)/settings'),
+  spaceSettingsApps('/:spaceId([!#][^/]+)/settings/app'),
 
   // -- pins
 
   pins('/pins'),
   pin('/pins/:pinId'),
+  editPin('/pins/:pinId/edit'),
 
   // -- events
   createEvent('/events/create'),

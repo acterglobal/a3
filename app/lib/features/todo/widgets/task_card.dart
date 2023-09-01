@@ -19,7 +19,7 @@ class TaskCard extends StatelessWidget {
   });
 
   Future<void> _handleUpdate() async {
-    var eventId = await controller.updateToDoTask(
+    final eventId = await controller.updateToDoTask(
       task,
       todoList,
       null,
@@ -97,11 +97,11 @@ class TaskCard extends StatelessWidget {
                           child: Text(
                             '${task.commentsManager.commentsCount()}',
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),

@@ -4,25 +4,28 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
-use matrix_sdk::room::{Joined, Room};
-use ruma::{
-    assign,
-    events::room::{
-        message::{
-            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-            ImageMessageEventContent, VideoInfo, VideoMessageEventContent,
+use futures::stream::StreamExt;
+use matrix_sdk::{
+    room::{Joined, Room},
+    ruma::{
+        assign,
+        events::room::{
+            message::{
+                AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+                ImageMessageEventContent, LocationMessageEventContent, VideoInfo,
+                VideoMessageEventContent,
+            },
+            ImageInfo,
         },
-        ImageInfo,
+        MxcUri, OwnedEventId, OwnedUserId, UInt,
     },
-    MxcUri, OwnedEventId, OwnedUserId, UInt,
 };
 use std::{fs, ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
+use tokio_stream::Stream;
 
 use super::{api::FfiBuffer, client::Client, RUNTIME};
-use futures::stream::StreamExt;
-
-use crate::{AudioDesc, FileDesc, ImageDesc, VideoDesc};
+use crate::{AudioDesc, FileDesc, ImageDesc, LocationDesc, VideoDesc};
 
 impl Client {
     pub async fn wait_for_attachment(
@@ -133,6 +136,14 @@ impl Attachment {
         let content = self.inner.content().file().context("Not a file")?;
         self.client.source_binary(content.source).await
     }
+
+    pub fn location_desc(&self) -> Option<LocationDesc> {
+        self.inner.content().location().and_then(|content| {
+            content
+                .info
+                .map(|info| LocationDesc::new(content.body, content.geo_uri))
+        })
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -180,6 +191,7 @@ impl AttachmentsManager {
             inner,
         }
     }
+
     pub fn stats(&self) -> models::AttachmentsStats {
         self.inner.stats().clone()
     }
@@ -244,7 +256,7 @@ impl AttachmentsManager {
             .spawn(async move {
                 let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
                 if url.is_valid() {
-                    return anyhow::Ok(ImageMessageEventContent::plain(body, url.into(), None));
+                    return anyhow::Ok(ImageMessageEventContent::plain(body, url.into()));
                 }
                 let path = PathBuf::from(url_or_path.clone());
                 let guess = mime_guess::from_path(path.clone());
@@ -262,7 +274,7 @@ impl AttachmentsManager {
                 } else {
                     let buf = fs::read(url_or_path)?;
                     let response = client.media().upload(&content_type, buf).await?;
-                    ImageMessageEventContent::plain(body, response.content_uri, None)
+                    ImageMessageEventContent::plain(body, response.content_uri)
                 };
                 let info = assign!(ImageInfo::new(), {
                     height: height.and_then(UInt::new),
@@ -302,7 +314,7 @@ impl AttachmentsManager {
             .spawn(async move {
                 let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
                 if url.is_valid() {
-                    return anyhow::Ok(AudioMessageEventContent::plain(body, url.into(), None));
+                    return anyhow::Ok(AudioMessageEventContent::plain(body, url.into()));
                 }
                 let path = PathBuf::from(url_or_path.clone());
                 let guess = mime_guess::from_path(path.clone());
@@ -320,7 +332,7 @@ impl AttachmentsManager {
                 } else {
                     let buf = fs::read(url_or_path)?;
                     let response = client.media().upload(&content_type, buf).await?;
-                    AudioMessageEventContent::plain(body, response.content_uri, None)
+                    AudioMessageEventContent::plain(body, response.content_uri)
                 };
                 let info = assign!(AudioInfo::new(), {
                     duration: secs.map(|x| Duration::new(x, 0)),
@@ -362,7 +374,7 @@ impl AttachmentsManager {
             .spawn(async move {
                 let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
                 if url.is_valid() {
-                    return anyhow::Ok(VideoMessageEventContent::plain(body, url.into(), None));
+                    return anyhow::Ok(VideoMessageEventContent::plain(body, url.into()));
                 }
                 let path = PathBuf::from(url_or_path.clone());
                 let guess = mime_guess::from_path(path.clone());
@@ -380,7 +392,7 @@ impl AttachmentsManager {
                 } else {
                     let buf = fs::read(url_or_path)?;
                     let response = client.media().upload(&content_type, buf).await?;
-                    VideoMessageEventContent::plain(body, response.content_uri, None)
+                    VideoMessageEventContent::plain(body, response.content_uri)
                 };
                 let info = assign!(VideoInfo::new(), {
                     duration: secs.map(|x| Duration::new(x, 0)),
@@ -420,7 +432,7 @@ impl AttachmentsManager {
             .spawn(async move {
                 let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
                 if url.is_valid() {
-                    return anyhow::Ok(FileMessageEventContent::plain(body, url.into(), None));
+                    return anyhow::Ok(FileMessageEventContent::plain(body, url.into()));
                 }
                 let path = PathBuf::from(url_or_path.clone());
                 let guess = mime_guess::from_path(path.clone());
@@ -437,7 +449,7 @@ impl AttachmentsManager {
                 } else {
                     let buf = fs::read(url_or_path)?;
                     let response = client.media().upload(&content_type, buf).await?;
-                    FileMessageEventContent::plain(body, response.content_uri, None)
+                    FileMessageEventContent::plain(body, response.content_uri)
                 };
                 let info = assign!(FileInfo::new(), {
                     mimetype: Some(mimetype),
@@ -457,11 +469,11 @@ impl AttachmentsManager {
         })
     }
 
-    pub fn subscribe_stream(&self) -> impl tokio_stream::Stream<Item = bool> {
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
         self.client.subscribe_stream(self.inner.update_key())
     }
 
-    pub fn subscribe(&self) -> tokio::sync::broadcast::Receiver<()> {
+    pub fn subscribe(&self) -> Receiver<()> {
         self.client.subscribe(self.inner.update_key())
     }
 }
