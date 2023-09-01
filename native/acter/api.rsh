@@ -703,6 +703,14 @@ object SendVideoResult {
     fn height() -> Option<u64>;
 }
 
+object SendFileResult {
+    /// get event id
+    fn event_id() -> EventId;
+
+    /// get file size
+    fn file_size() -> Option<u64>;
+}
+
 object Convo {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
@@ -779,7 +787,7 @@ object Convo {
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// edit the image message
-    fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<EventId>>;
+    fn edit_image_message(event_id: string, url_or_path: string, body: string, blurhash: Option<string>) -> Future<Result<SendImageResult>>;
 
     /// send the audio message to this room
     fn send_audio_message(url_or_path: string, body: string) -> Future<Result<SendAudioResult>>;
@@ -790,7 +798,7 @@ object Convo {
     fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// edit the audio message
-    fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, secs: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
+    fn edit_audio_message(event_id: string, url_or_path: string, body: string) -> Future<Result<SendAudioResult>>;
 
     /// send the video message to this room
     fn send_video_message(url_or_path: string, body: string, blurhash: Option<string>) -> Future<Result<SendVideoResult>>;
@@ -801,10 +809,10 @@ object Convo {
     fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// edit the video message
-    fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
+    fn edit_video_message(event_id: string, url_or_path: string, body: string, blurhash: Option<string>) -> Future<Result<SendVideoResult>>;
 
     /// send the file message to this room
-    fn send_file_message(url_or_path: string, body: string) -> Future<Result<EventId>>;
+    fn send_file_message(url_or_path: string, body: string) -> Future<Result<SendFileResult>>;
 
     /// decrypted file buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -812,7 +820,7 @@ object Convo {
     fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// edit the file message
-    fn edit_file_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u32>) -> Future<Result<EventId>>;
+    fn edit_file_message(event_id: string, url_or_path: string, body: string) -> Future<Result<SendFileResult>>;
 
     /// send the location message to this room
     fn send_location_message(body: string, geo_uri: string) -> Future<Result<EventId>>;
@@ -1513,7 +1521,7 @@ object Space {
     fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// send the file message to this room
-    fn send_file_message(url_or_path: string, body: string) -> Future<Result<EventId>>;
+    fn send_file_message(url_or_path: string, body: string) -> Future<Result<SendFileResult>>;
 
     /// decrypted file buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable

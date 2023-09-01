@@ -912,17 +912,13 @@ impl Room {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn edit_image_message(
         &self,
         event_id: String,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u32>,
-        width: Option<u32>,
-        height: Option<u32>,
-    ) -> Result<OwnedEventId> {
+        url_or_path: String,
+        body: String,
+        blurhash: Option<String>,
+    ) -> Result<SendImageResult> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -947,9 +943,6 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let path = PathBuf::from(uri);
-                let mut image_buf = std::fs::read(path)?;
-
                 let timeline_event = room.event(&event_id).await?;
                 let event_content = timeline_event
                     .event
@@ -966,17 +959,50 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let content_type: mime_guess::Mime = mimetype.parse()?;
-                let response = client.media().upload(&content_type, image_buf).await?;
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                let mut file_size = None;
+                let mut width = None;
+                let mut height = None;
+                let image_content = if url.is_valid() {
+                    ImageMessageEventContent::plain(body, url.into())
+                } else {
+                    let path = PathBuf::from(url_or_path);
+                    let guess = mime_guess::from_path(path.clone());
+                    let content_type = guess.first().context("No MIME type")?;
+                    let mimetype = content_type.to_string();
+                    if !mimetype.starts_with("image/") {
+                        bail!("Image message accepts only image file");
+                    }
+                    let mut content = if room.is_encrypted().await? {
+                        let mut reader = std::fs::File::open(path.clone())?;
+                        let encrypted_file = client
+                            .prepare_encrypted_file(&content_type, &mut reader)
+                            .await?;
+                        ImageMessageEventContent::encrypted(body, encrypted_file)
+                    } else {
+                        let buf = std::fs::read(path.clone())?;
+                        let response = client.media().upload(&content_type, buf).await?;
+                        ImageMessageEventContent::plain(body, response.content_uri)
+                    };
+                    let buf = std::fs::read(path.clone())?;
+                    let size = buf.len() as u64;
+                    file_size = Some(size);
+                    let mut info = assign!(ImageInfo::new(), {
+                        mimetype: Some(mimetype),
+                        size: UInt::new(size),
+                        blurhash,
+                    });
+                    #[cfg(feature = "image-meta")]
+                    if let Ok(size) = imagesize::size(path.to_string_lossy().to_string()) {
+                        info.width = UInt::new(size.width as u64);
+                        info.height = UInt::new(size.height as u64);
+                        width = Some(size.width as u64);
+                        height = Some(size.height as u64);
+                    }
+                    content.info = Some(Box::new(info));
+                    content
+                };
 
-                let info = assign!(ImageInfo::new(), {
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
-                    mimetype: Some(mimetype),
-                    size: size.map(UInt::from),
-                });
-                let mut image_content = ImageMessageEventContent::plain(name, response.content_uri);
-                image_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Image(image_content.clone()));
                 let replacement =
@@ -985,7 +1011,13 @@ impl Room {
 
                 let txn_id = TransactionId::new();
                 let response = room.send(edited_content, Some(&txn_id)).await?;
-                Ok(response.event_id)
+
+                Ok(SendImageResult {
+                    event_id: response.event_id,
+                    file_size,
+                    width,
+                    height,
+                })
             })
             .await?
     }
@@ -1101,16 +1133,12 @@ impl Room {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn edit_audio_message(
         &self,
         event_id: String,
-        uri: String,
-        name: String,
-        mimetype: String,
-        secs: Option<u32>,
-        size: Option<u32>,
-    ) -> Result<OwnedEventId> {
+        url_or_path: String,
+        body: String,
+    ) -> Result<SendAudioResult> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -1135,9 +1163,6 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let path = PathBuf::from(uri);
-                let mut audio_buf = std::fs::read(path)?;
-
                 let timeline_event = room.event(&event_id).await?;
                 let event_content = timeline_event
                     .event
@@ -1154,16 +1179,46 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let content_type: mime_guess::Mime = mimetype.parse()?;
-                let response = client.media().upload(&content_type, audio_buf).await?;
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                let mut file_size = None;
+                let mut duration = None;
+                let audio_content = if url.is_valid() {
+                    AudioMessageEventContent::plain(body, url.into())
+                } else {
+                    let path = PathBuf::from(url_or_path);
+                    let guess = mime_guess::from_path(path.clone());
+                    let content_type = guess.first().context("No MIME type")?;
+                    let mimetype = content_type.to_string();
+                    if !mimetype.starts_with("audio/") {
+                        bail!("Audio message accepts only audio file");
+                    }
+                    let mut content = if room.is_encrypted().await? {
+                        let mut reader = std::fs::File::open(path.clone())?;
+                        let encrypted_file = client
+                            .prepare_encrypted_file(&content_type, &mut reader)
+                            .await?;
+                        AudioMessageEventContent::encrypted(body, encrypted_file)
+                    } else {
+                        let buf = std::fs::read(path.clone())?;
+                        let response = client.media().upload(&content_type, buf).await?;
+                        AudioMessageEventContent::plain(body, response.content_uri)
+                    };
+                    let buf = std::fs::read(path.clone())?;
+                    let size = buf.len() as u64;
+                    file_size = Some(size);
+                    let mut info = assign!(AudioInfo::new(), {
+                        size: UInt::new(size),
+                    });
+                    #[cfg(feature = "audio-meta")]
+                    if let Ok(probe) = Probe::open(path) {
+                        if let Ok(tagged_file) = probe.read() {
+                            info.duration = Some(tagged_file.properties().duration());
+                        }
+                    }
+                    content.info = Some(Box::new(info));
+                    content
+                };
 
-                let info = assign!(AudioInfo::new(), {
-                    duration: secs.map(|x| Duration::from_secs(x as u64)),
-                    mimetype: Some(mimetype),
-                    size: size.map(UInt::from),
-                });
-                let mut audio_content = AudioMessageEventContent::plain(name, response.content_uri);
-                audio_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Audio(audio_content.clone()));
                 let replacement =
@@ -1172,7 +1227,12 @@ impl Room {
 
                 let txn_id = TransactionId::new();
                 let response = room.send(edited_content, Some(&txn_id)).await?;
-                Ok(response.event_id)
+
+                Ok(SendAudioResult {
+                    event_id: response.event_id,
+                    file_size,
+                    duration,
+                })
             })
             .await?
     }
@@ -1299,18 +1359,13 @@ impl Room {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn edit_video_message(
         &self,
         event_id: String,
-        uri: String,
-        name: String,
-        mimetype: String,
-        secs: Option<u32>,
-        height: Option<u32>,
-        width: Option<u32>,
-        size: Option<u32>,
-    ) -> Result<OwnedEventId> {
+        url_or_path: String,
+        body: String,
+        blurhash: Option<String>,
+    ) -> Result<SendVideoResult> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -1335,9 +1390,6 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let path = PathBuf::from(uri);
-                let mut video_buf = std::fs::read(path)?;
-
                 let timeline_event = room.event(&event_id).await?;
                 let event_content = timeline_event
                     .event
@@ -1354,18 +1406,53 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let content_type: mime_guess::Mime = mimetype.parse()?;
-                let response = client.media().upload(&content_type, video_buf).await?;
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                let mut file_size = None;
+                let mut duration = None;
+                let mut width = None;
+                let mut height = None;
+                let video_content = if url.is_valid() {
+                    VideoMessageEventContent::plain(body, url.into())
+                } else {
+                    let path = PathBuf::from(url_or_path.clone());
+                    let guess = mime_guess::from_path(path.clone());
+                    let content_type = guess.first().context("No MIME type")?;
+                    let mimetype = content_type.to_string();
+                    if !mimetype.starts_with("video/") {
+                        bail!("Video message accepts only video file");
+                    }
+                    let mut content = if room.is_encrypted().await? {
+                        let mut reader = std::fs::File::open(path.clone())?;
+                        let encrypted_file = client
+                            .prepare_encrypted_file(&content_type, &mut reader)
+                            .await?;
+                        VideoMessageEventContent::encrypted(body, encrypted_file)
+                    } else {
+                        let buf = std::fs::read(path.clone())?;
+                        let response = client.media().upload(&content_type, buf).await?;
+                        VideoMessageEventContent::plain(body, response.content_uri)
+                    };
+                    let buf = std::fs::read(path)?;
+                    let size = buf.len() as u64;
+                    file_size = Some(size);
+                    let mut info = assign!(VideoInfo::new(), {
+                        mimetype: Some(mimetype),
+                        size: UInt::new(size),
+                        blurhash,
+                    });
+                    #[cfg(feature = "video-meta")]
+                    if let Ok(Some(metadata)) = parse_video(url_or_path).await {
+                        info.duration = Some(Duration::from_secs(metadata.duration));
+                        info.width = UInt::new(metadata.width as u64);
+                        info.height = UInt::new(metadata.height as u64);
+                        duration = info.duration.clone();
+                        width = Some(metadata.width);
+                        height = Some(metadata.height);
+                    }
+                    content.info = Some(Box::new(info));
+                    content
+                };
 
-                let info = assign!(VideoInfo::new(), {
-                    duration: secs.map(|x| Duration::from_secs(x as u64)),
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
-                    mimetype: Some(mimetype),
-                    size: size.map(UInt::from),
-                });
-                let mut video_content = VideoMessageEventContent::plain(name, response.content_uri);
-                video_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Video(video_content.clone()));
                 let replacement =
@@ -1374,7 +1461,14 @@ impl Room {
 
                 let txn_id = TransactionId::new();
                 let response = room.send(edited_content, Some(&txn_id)).await?;
-                Ok(response.event_id)
+
+                Ok(SendVideoResult {
+                    event_id: response.event_id,
+                    file_size,
+                    duration,
+                    width,
+                    height,
+                })
             })
             .await?
     }
@@ -1383,7 +1477,7 @@ impl Room {
         &self,
         url_or_path: String,
         body: String,
-    ) -> Result<OwnedEventId> {
+    ) -> Result<SendFileResult> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -1443,7 +1537,10 @@ impl Room {
                 let content = RoomMessageEventContent::new(MessageType::File(file_content));
                 let response = room.send(content, None).await?;
 
-                Ok(response.event_id)
+                Ok(SendFileResult {
+                    event_id: response.event_id,
+                    file_size,
+                })
             })
             .await?
     }
@@ -1482,11 +1579,9 @@ impl Room {
     pub async fn edit_file_message(
         &self,
         event_id: String,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u32>,
-    ) -> Result<OwnedEventId> {
+        url_or_path: String,
+        body: String,
+    ) -> Result<SendFileResult> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -1511,9 +1606,6 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let path = PathBuf::from(uri);
-                let mut file_buf = std::fs::read(path)?;
-
                 let timeline_event = room.event(&event_id).await?;
                 let event_content = timeline_event
                     .event
@@ -1530,15 +1622,39 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let content_type: mime_guess::Mime = mimetype.parse()?;
-                let response = client.media().upload(&content_type, file_buf).await?;
+                let url = Box::<MxcUri>::from(url_or_path.as_str()); // http not allowed for remote url
+                let mut file_size = None;
+                let file_content = if url.is_valid() {
+                    FileMessageEventContent::plain(body, url.into())
+                } else {
+                    let path = PathBuf::from(url_or_path);
+                    let guess = mime_guess::from_path(path.clone());
+                    let content_type = guess
+                        .first()
+                        .unwrap_or(mime_guess::mime::APPLICATION_OCTET_STREAM);
+                    let mimetype = content_type.to_string();
+                    let mut content = if room.is_encrypted().await? {
+                        let mut reader = std::fs::File::open(path.clone())?;
+                        let encrypted_file = client
+                            .prepare_encrypted_file(&content_type, &mut reader)
+                            .await?;
+                        FileMessageEventContent::encrypted(body, encrypted_file)
+                    } else {
+                        let buf = std::fs::read(path.clone())?;
+                        let response = client.media().upload(&content_type, buf).await?;
+                        FileMessageEventContent::plain(body, response.content_uri)
+                    };
+                    let buf = std::fs::read(path)?;
+                    let size = buf.len() as u64;
+                    file_size = Some(size);
+                    let info = assign!(FileInfo::new(), {
+                        mimetype: Some(mimetype),
+                        size: UInt::new(size),
+                    });
+                    content.info = Some(Box::new(info));
+                    content
+                };
 
-                let info = assign!(FileInfo::new(), {
-                    mimetype: Some(mimetype),
-                    size: size.map(UInt::from),
-                });
-                let mut file_content = FileMessageEventContent::plain(name, response.content_uri);
-                file_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::File(file_content.clone()));
                 let replacement =
@@ -1547,7 +1663,11 @@ impl Room {
 
                 let txn_id = TransactionId::new();
                 let response = room.send(edited_content, Some(&txn_id)).await?;
-                Ok(response.event_id)
+
+                Ok(SendFileResult {
+                    event_id: response.event_id,
+                    file_size,
+                })
             })
             .await?
     }
@@ -2644,5 +2764,20 @@ impl SendVideoResult {
 
     pub fn height(&self) -> Option<u32> {
         self.height
+    }
+}
+
+pub struct SendFileResult {
+    event_id: OwnedEventId,
+    file_size: Option<u64>, // unknown for remote url
+}
+
+impl SendFileResult {
+    pub fn event_id(&self) -> OwnedEventId {
+        self.event_id.clone()
+    }
+
+    pub fn file_size(&self) -> Option<u64> {
+        self.file_size
     }
 }
