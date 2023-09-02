@@ -85,6 +85,7 @@ use matrix_sdk_ui::timeline::{
     EventSendState, EventTimelineItem, MembershipChange, TimelineItem, TimelineItemContent,
     VirtualTimelineItem,
 };
+use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, sync::Arc};
 use tracing::info;
 
@@ -92,7 +93,7 @@ use super::common::{
     AudioDesc, FileDesc, ImageDesc, LocationDesc, ReactionRecord, TextDesc, VideoDesc,
 };
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomEventItem {
     event_id: String,
     sender: String,
@@ -242,7 +243,7 @@ impl RoomEventItem {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomVirtualItem {
     event_type: String,
     desc: Option<String>,
@@ -262,7 +263,7 @@ impl RoomVirtualItem {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomMessage {
     item_type: String,
     room_id: OwnedRoomId,

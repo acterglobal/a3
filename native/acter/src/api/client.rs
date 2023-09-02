@@ -145,7 +145,7 @@ pub(crate) async fn devide_spaces_from_convos(
                 if inner.is_space() {
                     spaces.push(Space::new(client.clone(), inner));
                 } else {
-                    convos.push(Convo::new(inner));
+                    convos.push(Convo::new(client.clone(), inner));
                 }
 
                 (spaces, convos, client)
@@ -462,7 +462,7 @@ impl Client {
         };
 
         let (_spaces, convos) = devide_spaces_from_convos(cl.clone(), None).await;
-        cl.convo_controller.load_rooms(&convos);
+        cl.convo_controller.load_rooms(convos).await;
         Ok(cl)
     }
 
@@ -489,7 +489,7 @@ impl Client {
         self.invitation_controller.add_event_handler(&client);
         self.typing_controller.add_event_handler(&client);
         self.receipt_controller.add_event_handler(&client);
-        self.convo_controller.add_event_handler(&client);
+        self.convo_controller.add_event_handler(&me);
 
         self.verification_controller
             .add_to_device_event_handler(&client);
@@ -576,7 +576,7 @@ impl Client {
                         // divide_spaces_from_convos must be called after first sync
                         let (spaces, convos) =
                             devide_spaces_from_convos(me.clone(), Some(filter)).await;
-                        convo_controller.load_rooms(&convos).await;
+                        convo_controller.load_rooms(convos).await;
                         // load invitations after first sync
                         invitation_controller.load_invitations(&client).await;
 
@@ -707,14 +707,7 @@ impl Client {
     }
 
     pub async fn convos(&self) -> Result<Vec<Convo>> {
-        let client = self.clone();
-        let filter = SpaceFilterBuilder::default().build()?;
-        RUNTIME
-            .spawn(async move {
-                let (spaces, convos) = devide_spaces_from_convos(client, Some(filter)).await;
-                Ok(convos)
-            })
-            .await?
+        Ok(self.convo_controller.convos())
     }
 
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {

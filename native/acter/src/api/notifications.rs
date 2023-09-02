@@ -84,7 +84,9 @@ impl Notification {
     }
 
     pub fn convo(&self) -> Option<Convo> {
-        self.room.as_ref().map(|r| Convo::new(r.clone()))
+        self.room
+            .as_ref()
+            .map(|r| Convo::new(self.client.clone(), r.clone()))
     }
 }
 
