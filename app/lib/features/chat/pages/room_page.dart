@@ -100,15 +100,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     var messages = ref.watch(messagesProvider);
     final roomNotifier = ref.watch(chatRoomProvider.notifier);
     final activeMembers = ref.watch(chatMembersProvider(widget.roomIdOrAlias));
-    ref.listen(
-      roomIdProvider,
-      ((previous, next) {
-        if (previous != next) {
-          chatRoomState = ref.refresh(chatRoomProvider);
-          ref.read(messagesProvider.notifier).reset();
-        }
-      }),
-    );
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.neutral,

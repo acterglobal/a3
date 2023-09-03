@@ -28,13 +28,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     required this.ref,
   }) : super(const ChatRoomState.loading()) {
     _init();
-    _fetchMentionRecords();
   }
 
   void _init() async {
     client = ref.read(clientProvider)!;
+
     asyncRoom.when(
       data: (room) async {
+        // reset messages when room is changed.
+        ref.read(messagesProvider.notifier).reset();
         convo = room;
         timeline = await room.timelineStream();
         StreamSubscription<TimelineDiff>? subscription;
@@ -47,6 +49,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         } while (hasMore && ref.read(messagesProvider).length < 10);
         if (ref.read(messagesProvider).isNotEmpty) {
           state = const ChatRoomState.loaded();
+          _fetchMentionRecords();
         }
         ref.onDispose(() async {
           debugPrint('disposing message stream');

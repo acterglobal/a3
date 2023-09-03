@@ -1,8 +1,10 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/activities/util.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,11 +74,13 @@ class NotificationCard extends ConsumerWidget {
           builder: (ctx, ref, child) {
             final profile = ref.watch(chatProfileDataProvider(convo));
             return InkWell(
-              onTap: () => ctx.goNamed(
-                Routes.chatroom.name,
-                pathParameters: {'roomId': roomId},
-                extra: convo,
-              ),
+              onTap: () {
+                ref.read(roomIdProvider.notifier).update((state) => roomId);
+                ctx.goNamed(
+                  Routes.chatroom.name,
+                  pathParameters: {'roomId': roomId},
+                );
+              },
               child: profile.when(
                 data: (profile) => ActerAvatar(
                   mode: DisplayMode.GroupChat,
@@ -125,12 +129,16 @@ class NotificationCard extends ConsumerWidget {
         onTap: () {
           switch (brief.route) {
             case Routes.chatroom:
-              context.pushNamed(
-                Routes.chatroom.name,
-                pathParameters: {
-                  'roomId': roomId,
-                }, // FIXME: fails at the moment
-              );
+              ref.read(roomIdProvider.notifier).update((state) => roomId);
+              isDesktop
+                  ? context.goNamed(
+                      Routes.chatroom.name,
+                      pathParameters: {'roomId': roomId},
+                    )
+                  : context.pushNamed(
+                      Routes.chatroom.name,
+                      pathParameters: {'roomId': roomId},
+                    );
               return;
             default:
             // nothing for now.

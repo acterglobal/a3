@@ -16,7 +16,6 @@ class ConvoCard extends ConsumerStatefulWidget {
   final Convo room;
 
   /// Whether or not to render the parent Icon
-  ///
   final bool showParent;
 
   const ConvoCard({
@@ -50,8 +49,8 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
         showParent: widget.showParent,
         profile: profile,
         onTap: () {
+          ref.read(roomIdProvider.notifier).update((state) => roomId);
           if (isDesktop) {
-            ref.read(roomIdProvider.notifier).update((state) => roomId);
             context.goNamed(
               Routes.chatroom.name,
               pathParameters: {'roomId': roomId},

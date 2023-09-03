@@ -509,7 +509,8 @@ List<RouteBase> makeRoutes(Ref ref) {
             );
           },
         ),
-        // Chat Nested (Mobile)
+
+        // We keep this route for mobile view (stacked navigation)
         GoRoute(
           name: Routes.chat.name,
           path: Routes.chat.route,
@@ -518,33 +519,8 @@ List<RouteBase> makeRoutes(Ref ref) {
             key: state.pageKey,
             child: const ChatPage(),
           ),
-          routes: <RouteBase>[
-            GoRoute(
-              name: 'room',
-              path: ':roomId',
-              redirect: authGuardRedirect,
-              pageBuilder: (context, state) => NoTransitionPage(
-                key: state.pageKey,
-                child: RoomPage(
-                  roomIdOrAlias: state.pathParameters['roomId']!,
-                ),
-              ),
-              routes: <RouteBase>[
-                GoRoute(
-                  name: 'profile',
-                  path: 'profile',
-                  redirect: authGuardRedirect,
-                  pageBuilder: (context, state) => NoTransitionPage(
-                    key: state.pageKey,
-                    child: RoomProfilePage(
-                      roomIdOrAlias: state.pathParameters['roomId']!,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
         ),
+
         // Chat Sub-Shell (Desktop)
         ShellRoute(
           navigatorKey: chatShellKey,
@@ -558,7 +534,6 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
           routes: <RouteBase>[
             GoRoute(
-              parentNavigatorKey: chatShellKey,
               name: Routes.chatroom.name,
               path: Routes.chatroom.route,
               redirect: authGuardRedirect,
@@ -570,7 +545,6 @@ List<RouteBase> makeRoutes(Ref ref) {
               ),
             ),
             GoRoute(
-              parentNavigatorKey: chatShellKey,
               name: Routes.chatProfile.name,
               path: Routes.chatProfile.route,
               redirect: authGuardRedirect,
