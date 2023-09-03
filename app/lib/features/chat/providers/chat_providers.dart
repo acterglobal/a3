@@ -15,8 +15,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:jiffy/jiffy.dart';
 
-final zeroTime = Jiffy.parseFromMicrosecondsSinceEpoch(0);
-
 class SortableConversation {
   final Jiffy? time;
   final Convo conversation;
@@ -25,21 +23,14 @@ class SortableConversation {
 
 List<Convo> filterConvos(List<Convo> convoList) {
   convoList.retainWhere((room) => room.isJoined());
-  List<SortableConversation> sortedConversations =
-      convoList.map((conversation) {
-    final serverTs =
-        conversation.latestMessage()?.eventItem()?.originServerTs();
-    Jiffy? time;
-    if (serverTs != null) {
-      time = Jiffy.parseFromMillisecondsSinceEpoch(serverTs);
-    }
-    return SortableConversation(conversation, time);
-  }).toList()
-        ..sort(
-          (a, b) => (b.time ?? zeroTime).isAfter((a.time ?? zeroTime)) ? 1 : -1,
-        );
+  convoList.sort(
+    (a, b) => Jiffy.parseFromMillisecondsSinceEpoch(b.latestMessageTs())
+            .isAfter(Jiffy.parseFromMillisecondsSinceEpoch(a.latestMessageTs()))
+        ? 1
+        : -1,
+  );
 
-  return sortedConversations.map((item) => item.conversation).toList();
+  return convoList;
 }
 
 // chats stream provider

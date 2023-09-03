@@ -109,6 +109,14 @@ impl Convo {
         self.latest_message = Some(msg);
     }
 
+    pub fn latest_message_ts(&self) -> u64 {
+        self.latest_message
+            .as_ref()
+            .and_then(|m| m.event_item())
+            .map(|e| e.origin_server_ts())
+            .unwrap_or_default()
+    }
+
     pub fn latest_message(&self) -> Option<RoomMessage> {
         self.latest_message.clone()
     }

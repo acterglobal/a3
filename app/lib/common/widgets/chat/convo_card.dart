@@ -43,6 +43,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     final client = ref.watch(clientProvider);
     String roomId = widget.room.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
+    final latestMsg = widget.room.latestMessage();
     // ToDo: UnreadCounter
     return convoProfile.when(
       data: (profile) => ConvoWithProfileCard(
@@ -61,12 +62,12 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
         },
         subtitle: _SubtitleWidget(
           room: widget.room,
-          latestMessage: widget.room.latestMessage(),
+          latestMessage: latestMsg,
         ),
         trailing: _TrailingWidget(
           // controller: receiptController,
           room: widget.room,
-          latestMessage: widget.room.latestMessage(),
+          latestMessage: latestMsg,
           activeMembers: activeMembers,
           userId: client!.userId().toString(),
         ),

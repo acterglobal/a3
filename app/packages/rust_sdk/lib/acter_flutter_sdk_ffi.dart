@@ -13842,6 +13842,16 @@ class Api {
       _ConvoLatestMessageReturn Function(
         int,
       )>();
+  late final _convoLatestMessageTsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__Convo_latest_message_ts");
+
+  late final _convoLatestMessageTs = _convoLatestMessageTsPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _convoGetMyMembershipPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -30402,6 +30412,18 @@ class Convo {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomMessage");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = RoomMessage._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Latest message timestamp or 0
+  int latestMessageTs() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoLatestMessageTs(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
     return tmp2;
   }
 
