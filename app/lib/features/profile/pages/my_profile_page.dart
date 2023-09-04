@@ -3,6 +3,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
@@ -139,33 +140,19 @@ class MyProfile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final account = ref.watch(accountProfileProvider);
+    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
+
     return account.when(
       data: (data) {
         final userId = data.account.userId().toString();
         return Scaffold(
           appBar: AppBar(
             title: const Text('My profile'),
-            actions: [
-              PopupMenuButton(
-                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                  PopupMenuItem(
-                    onTap: () => logoutConfirmationDialog(context, ref),
-                    child: Row(
-                      children: [
-                        const Icon(Atlas.exit_thin),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: Text(
-                            AppLocalizations.of(context)!.logOut,
-                            style: Theme.of(context).textTheme.labelSmall,
-                            softWrap: false,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            actions: const [
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text('Edit',style: TextStyle(color: Color(0xffFF8E00)),),
+              )
             ],
           ),
           body: SingleChildScrollView(
@@ -183,7 +170,7 @@ class MyProfile extends ConsumerWidget {
                   ),
                 ),
                 Container(
-                  width: MediaQuery.of(context).size.width - 100,
+                  width: isDesktop ? 400 : MediaQuery.of(context).size.width -100,
                   alignment: Alignment.center,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -206,47 +193,64 @@ class MyProfile extends ConsumerWidget {
                             uniqueId: userId,
                             avatar: data.profile.getAvatarImage(),
                             displayName: data.profile.displayName,
-                            size: 100,
+                            size: 80,
                           ),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(data.profile.displayName ?? ''),
-                          IconButton(
-                            iconSize: 14,
-                            icon: const Icon(Atlas.pencil_edit_thin),
-                            onPressed: () async {
-                              await updateDisplayName(
-                                data,
-                                context,
-                                ref,
-                              );
-                            },
-                          ),
-                        ],
+                      Text(
+                        data.profile.displayName ?? '',
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(userId),
-                          IconButton(
-                            iconSize: 14,
-                            icon: const Icon(Atlas.pages),
-                            onPressed: () async {
-                              Clipboard.setData(
-                                ClipboardData(text: userId),
-                              );
-                              customMsgSnackbar(
-                                context,
-                                'Username copied to clipboard',
-                              );
-                            },
-                          ),
-                        ],
+                      Text(
+                        userId,
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 15),
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF122D46),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child:   const Column(
+                          children: [
+                             ProfileTile(icon: Atlas.bell_reminder,title: 'Notifications',),
+                             Divider(indent: 40,endIndent: 10,),
+                             ProfileTile(icon: Atlas.link,title: 'Linked Devices',),
+
+
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                        Container(
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF122D46),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child:   const Column(
+                          children: [
+                             ProfileTile(icon: Atlas.check_shield,title: 'Privacy & Security',),
+                             Divider(indent: 40,endIndent: 10,),
+                             ProfileTile(icon: Atlas.gear,title: 'Settings',),
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: 5),
+                    Container(
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF122D46),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child:   const Column(
+                          children: [
+                             ProfileTile(icon: Atlas.star,title: 'Rate us',),
+                          ],
+                        ),
+                      ),
+
                       OutlinedButton.icon(
                         icon: const Icon(Atlas.construction_tools_thin),
                         onPressed: () =>
@@ -282,6 +286,7 @@ class MyProfile extends ConsumerWidget {
                         label: const Text('Deactivate account'),
                       ),
                     ],
+                    
                   ),
                 ),
                 const SizedBox(height: 25),
@@ -292,6 +297,37 @@ class MyProfile extends ConsumerWidget {
       },
       error: (e, trace) => Text('error: $e'),
       loading: () => const Text('loading'),
+    );
+  }
+}
+
+class ProfileTile extends StatelessWidget {
+
+   const ProfileTile({
+    super.key, required this.icon, required this.title,
+  });
+
+ final IconData icon;
+ final String title;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+               Icon(icon),
+               const SizedBox(width: 10,),
+          Text(title),
+            ],
+          ),
+          const Icon(Icons.arrow_forward_ios,size: 19,)
+        ],
+      ),
     );
   }
 }
