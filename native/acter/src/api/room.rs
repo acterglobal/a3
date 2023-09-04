@@ -22,19 +22,20 @@ use matrix_sdk::{
         events::{
             reaction::ReactionEventContent,
             receipt::ReceiptThread,
-            relation::Annotation,
+            relation::{Annotation, Replacement},
             room::{
                 avatar::ImageInfo as AvatarImageInfo,
+                join_rules::{AllowRule, JoinRule},
                 message::{
                     AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-                    ForwardThread, ImageMessageEventContent, MessageType, RoomMessageEvent,
-                    RoomMessageEventContent, TextMessageEventContent, VideoInfo,
-                    VideoMessageEventContent,
+                    ForwardThread, ImageMessageEventContent, LocationMessageEventContent,
+                    MessageType, Relation, RoomMessageEvent, RoomMessageEventContent,
+                    TextMessageEventContent, VideoInfo, VideoMessageEventContent,
                 },
                 ImageInfo,
             },
             AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent,
-            MessageLikeEventType, StateEvent, StateEventType,
+            MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
         },
         room::RoomType,
         EventId, Int, OwnedEventId, OwnedMxcUri, OwnedUserId, TransactionId, UInt, UserId,
@@ -42,10 +43,6 @@ use matrix_sdk::{
     Client, RoomMemberships, RoomState,
 };
 use matrix_sdk_ui::timeline::RoomExt;
-use ruma::events::{
-    room::join_rules::{AllowRule, JoinRule},
-    EventContent, StateEventContent, StaticEventContent, StaticStateEventContent,
-};
 use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tracing::{error, info};
 
@@ -249,10 +246,12 @@ pub struct Room {
 impl Room {
     pub async fn is_acter_space(&self) -> Result<bool> {
         let inner = self.room.clone();
-        Ok(RUNTIME
+        let result = RUNTIME
             .spawn(async move { is_acter_space(&inner).await })
-            .await?)
+            .await?;
+        Ok(result)
     }
+
     pub async fn get_my_membership(&self) -> Result<Member> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
@@ -313,16 +312,15 @@ impl Room {
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("MIME type should be given")?;
                 let buf = std::fs::read(path).context("File should be read")?;
-                let upload_resp = client.media().upload(&content_type, buf).await?;
+                let response = client.media().upload(&content_type, buf).await?;
 
+                let content_uri = response.content_uri;
                 let info = assign!(AvatarImageInfo::new(), {
-                    blurhash: upload_resp.blurhash,
+                    blurhash: response.blurhash,
                     mimetype: Some(content_type.to_string()),
                 });
-                let change_resp = room
-                    .set_avatar_url(&upload_resp.content_uri, Some(info))
-                    .await?;
-                Ok(upload_resp.content_uri)
+                let response = room.set_avatar_url(&content_uri, Some(info)).await?;
+                Ok(content_uri)
             })
             .await?
     }
@@ -586,7 +584,7 @@ impl Room {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
-            bail!("Can't send message to a room we are not in")
+            bail!("Can't send message as plain text to a room we are not in")
         };
 
         let my_id = room
@@ -612,11 +610,70 @@ impl Room {
             .await?
     }
 
+    pub async fn edit_plain_message(
+        &self,
+        event_id: String,
+        new_msg: String,
+    ) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't edit message as plain text to a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        let client = self.room.client();
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
+                let timeline_event = room.event(&event_id).await?;
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    bail!("Can't edit an event not sent by own user");
+                }
+
+                let replacement = Replacement::new(
+                    event_id.to_owned(),
+                    MessageType::text_plain(new_msg.to_string()),
+                );
+                let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
+                edited_content.relates_to = Some(Relation::Replacement(replacement));
+
+                let txn_id = TransactionId::new();
+                let response = room.send(edited_content, Some(&txn_id)).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
     pub async fn send_formatted_message(&self, markdown: String) -> Result<OwnedEventId> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
-            bail!("Can't send message to a room we are not in")
+            bail!("Can't send message as formatted text to a room we are not in")
         };
 
         let my_id = room
@@ -637,6 +694,65 @@ impl Room {
                 let content = RoomMessageEventContent::text_markdown(markdown);
                 let txn_id = TransactionId::new();
                 let response = room.send(content, Some(&txn_id)).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn edit_formatted_message(
+        &self,
+        event_id: String,
+        new_msg: String,
+    ) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't edit message as formatted text to a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        let client = self.room.client();
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
+                let timeline_event = room.event(&event_id).await?;
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    bail!("Can't edit an event not sent by own user");
+                }
+
+                let replacement = Replacement::new(
+                    event_id.to_owned(),
+                    MessageType::text_markdown(new_msg.to_string()),
+                );
+                let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
+                edited_content.relates_to = Some(Relation::Replacement(replacement));
+
+                let txn_id = TransactionId::new();
+                let response = room.send(edited_content, Some(&txn_id)).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -729,7 +845,7 @@ impl Room {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
-            bail!("Can't read message from a room we are not in")
+            bail!("Can't read message as image from a room we are not in")
         };
         let client = self.room.client();
 
@@ -752,6 +868,84 @@ impl Room {
                 };
                 let data = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(data))
+            })
+            .await?
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub async fn edit_image_message(
+        &self,
+        event_id: String,
+        uri: String,
+        name: String,
+        mimetype: String,
+        size: Option<u32>,
+        width: Option<u32>,
+        height: Option<u32>,
+    ) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't edit message as image to a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        let client = self.room.client();
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
+                let path = PathBuf::from(uri);
+                let mut image_buf = std::fs::read(path)?;
+
+                let timeline_event = room.event(&event_id).await?;
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    bail!("Can't edit an event not sent by own user");
+                }
+
+                let content_type: mime::Mime = mimetype.parse()?;
+                let response = client.media().upload(&content_type, image_buf).await?;
+
+                let info = assign!(ImageInfo::new(), {
+                    height: height.map(UInt::from),
+                    width: width.map(UInt::from),
+                    mimetype: Some(mimetype),
+                    size: size.map(UInt::from),
+                });
+                let mut image_content = ImageMessageEventContent::plain(name, response.content_uri);
+                image_content.info = Some(Box::new(info));
+                let mut edited_content =
+                    RoomMessageEventContent::new(MessageType::Image(image_content.clone()));
+                let replacement =
+                    Replacement::new(event_id.to_owned(), MessageType::Image(image_content));
+                edited_content.relates_to = Some(Relation::Replacement(replacement));
+
+                let txn_id = TransactionId::new();
+                let response = room.send(edited_content, Some(&txn_id)).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -805,7 +999,7 @@ impl Room {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
-            bail!("Can't read message from a room we are not in")
+            bail!("Can't read message as audio from a room we are not in")
         };
         let client = self.room.client();
 
@@ -828,6 +1022,82 @@ impl Room {
                 };
                 let data = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(data))
+            })
+            .await?
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub async fn edit_audio_message(
+        &self,
+        event_id: String,
+        uri: String,
+        name: String,
+        mimetype: String,
+        secs: Option<u32>,
+        size: Option<u32>,
+    ) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't edit message as audio to a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        let client = self.room.client();
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
+                let path = PathBuf::from(uri);
+                let mut audio_buf = std::fs::read(path)?;
+
+                let timeline_event = room.event(&event_id).await?;
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    bail!("Can't edit an event not sent by own user");
+                }
+
+                let content_type: mime::Mime = mimetype.parse()?;
+                let response = client.media().upload(&content_type, audio_buf).await?;
+
+                let info = assign!(AudioInfo::new(), {
+                    duration: secs.map(|x| Duration::from_secs(x as u64)),
+                    mimetype: Some(mimetype),
+                    size: size.map(UInt::from),
+                });
+                let mut audio_content = AudioMessageEventContent::plain(name, response.content_uri);
+                audio_content.info = Some(Box::new(info));
+                let mut edited_content =
+                    RoomMessageEventContent::new(MessageType::Audio(audio_content.clone()));
+                let replacement =
+                    Replacement::new(event_id.to_owned(), MessageType::Audio(audio_content));
+                edited_content.relates_to = Some(Relation::Replacement(replacement));
+
+                let txn_id = TransactionId::new();
+                let response = room.send(edited_content, Some(&txn_id)).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -888,7 +1158,7 @@ impl Room {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
-            bail!("Can't read message from a room we are not in")
+            bail!("Can't read message as video from a room we are not in")
         };
         let client = self.room.client();
 
@@ -911,6 +1181,86 @@ impl Room {
                 };
                 let data = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(data))
+            })
+            .await?
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub async fn edit_video_message(
+        &self,
+        event_id: String,
+        uri: String,
+        name: String,
+        mimetype: String,
+        secs: Option<u32>,
+        height: Option<u32>,
+        width: Option<u32>,
+        size: Option<u32>,
+    ) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't edit message as video to a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        let client = self.room.client();
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
+                let path = PathBuf::from(uri);
+                let mut video_buf = std::fs::read(path)?;
+
+                let timeline_event = room.event(&event_id).await?;
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    bail!("Can't edit an event not sent by own user");
+                }
+
+                let content_type: mime::Mime = mimetype.parse()?;
+                let response = client.media().upload(&content_type, video_buf).await?;
+
+                let info = assign!(VideoInfo::new(), {
+                    duration: secs.map(|x| Duration::from_secs(x as u64)),
+                    height: height.map(UInt::from),
+                    width: width.map(UInt::from),
+                    mimetype: Some(mimetype),
+                    size: size.map(UInt::from),
+                });
+                let mut video_content = VideoMessageEventContent::plain(name, response.content_uri);
+                video_content.info = Some(Box::new(info));
+                let mut edited_content =
+                    RoomMessageEventContent::new(MessageType::Video(video_content.clone()));
+                let replacement =
+                    Replacement::new(event_id.to_owned(), MessageType::Video(video_content));
+                edited_content.relates_to = Some(Relation::Replacement(replacement));
+
+                let txn_id = TransactionId::new();
+                let response = room.send(edited_content, Some(&txn_id)).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -962,7 +1312,7 @@ impl Room {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
-            bail!("Can't read message from a room we are not in")
+            bail!("Can't read message as file from a room we are not in")
         };
         let client = self.room.client();
 
@@ -985,6 +1335,174 @@ impl Room {
                 };
                 let data = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(data))
+            })
+            .await?
+    }
+
+    pub async fn edit_file_message(
+        &self,
+        event_id: String,
+        uri: String,
+        name: String,
+        mimetype: String,
+        size: Option<u32>,
+    ) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't edit message as file to a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        let client = self.room.client();
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
+                let path = PathBuf::from(uri);
+                let mut file_buf = std::fs::read(path)?;
+
+                let timeline_event = room.event(&event_id).await?;
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    bail!("Can't edit an event not sent by own user");
+                }
+
+                let content_type: mime::Mime = mimetype.parse()?;
+                let response = client.media().upload(&content_type, file_buf).await?;
+
+                let info = assign!(FileInfo::new(), {
+                    mimetype: Some(mimetype),
+                    size: size.map(UInt::from),
+                });
+                let mut file_content = FileMessageEventContent::plain(name, response.content_uri);
+                file_content.info = Some(Box::new(info));
+                let mut edited_content =
+                    RoomMessageEventContent::new(MessageType::File(file_content.clone()));
+                let replacement =
+                    Replacement::new(event_id.to_owned(), MessageType::File(file_content));
+                edited_content.relates_to = Some(Relation::Replacement(replacement));
+
+                let txn_id = TransactionId::new();
+                let response = room.send(edited_content, Some(&txn_id)).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn send_location_message(
+        &self,
+        body: String,
+        geo_uri: String,
+    ) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message as location to a room we are not in")
+        };
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+                let location_content = LocationMessageEventContent::new(body, geo_uri);
+                let content = RoomMessageEventContent::new(MessageType::Location(location_content));
+                let txn_id = TransactionId::new();
+                let response = room.send(content, Some(&txn_id)).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn edit_location_message(
+        &self,
+        event_id: String,
+        body: String,
+        geo_uri: String,
+    ) -> Result<OwnedEventId> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't edit message as location to a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        let client = self.room.client();
+
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
+                let timeline_event = room.event(&event_id).await?;
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    bail!("Can't edit an event not sent by own user");
+                }
+
+                let location_content = LocationMessageEventContent::new(body, geo_uri);
+                let mut edited_content =
+                    RoomMessageEventContent::new(MessageType::Location(location_content.clone()));
+                let replacement =
+                    Replacement::new(event_id.to_owned(), MessageType::Location(location_content));
+                edited_content.relates_to = Some(Relation::Replacement(replacement));
+
+                let txn_id = TransactionId::new();
+                let response = room.send(edited_content, Some(&txn_id)).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -1431,65 +1949,6 @@ impl Room {
                         MessageLikeEvent::Original(e),
                     ))) => {
                         let msg = RoomMessage::call_invite_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationAccept(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_accept_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationCancel(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_cancel_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationDone(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_done_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::KeyVerificationKey(
-                        MessageLikeEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::key_verification_key_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::KeyVerificationMac(
-                        MessageLikeEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::key_verification_mac_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationReady(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_ready_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(
-                        AnyMessageLikeEvent::KeyVerificationStart(MessageLikeEvent::Original(e)),
-                    )) => {
-                        let msg = RoomMessage::key_verification_start_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
                         Ok(msg)
                     }
                     Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::Reaction(

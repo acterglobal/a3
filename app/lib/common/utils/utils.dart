@@ -219,13 +219,11 @@ String? getIssueId(String url) {
 }
 
 ///helper function to convert list ffiString object to DartString.
-List<String>? asDartStringList(List<FfiString> list) {
-  if (list.isNotEmpty) {
-    final List<String> stringList =
-        list.map((ffiString) => ffiString.toDartString()).toList();
-    return stringList;
+List<String> asDartStringList(FfiListFfiString data) {
+  if (data.isEmpty) {
+    return [];
   }
-  return null;
+  return data.toList().map((e) => e.toDartString()).toList();
 }
 
 // ignore: constant_identifier_names

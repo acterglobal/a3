@@ -1,16 +1,22 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class WithSidebar extends StatelessWidget {
   final Widget child;
   final Widget sidebar;
-  const WithSidebar({Key? key, required this.child, required this.sidebar})
-      : super(key: key);
+  final bool preferSidebar;
+  const WithSidebar({
+    Key? key,
+    required this.child,
+    required this.sidebar,
+    this.preferSidebar = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constrains) {
-        if (constrains.maxWidth > 770) {
+        if (constrains.maxWidth > 770 && isDesktop) {
           return Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -20,7 +26,7 @@ class WithSidebar extends StatelessWidget {
             ],
           );
         }
-        return child;
+        return preferSidebar ? sidebar : child;
       },
     );
   }
