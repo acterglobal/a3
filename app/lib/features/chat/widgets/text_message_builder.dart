@@ -4,6 +4,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
@@ -11,12 +12,14 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TextMessageBuilder extends ConsumerStatefulWidget {
+  final Convo convo;
   final types.TextMessage message;
   final int messageWidth;
   final bool isReply;
 
   const TextMessageBuilder({
     Key? key,
+    required this.convo,
     required this.message,
     this.isReply = false,
     required this.messageWidth,
@@ -112,14 +115,15 @@ class _TextMessageBuilderConsumerState
     types.TextMessage message,
     types.PreviewData previewData,
   ) {
-    final messages = ref.read(messagesProvider);
+    final messages = ref.read(chatStateProvider(widget.convo)).messages;
     final index = messages.indexWhere((x) => x.id == message.id);
     if (index != -1) {
       final updatedMessage = (messages[index] as types.TextMessage).copyWith(
         previewData: previewData,
       );
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        final messagesNotifier = ref.read(messagesProvider.notifier);
+        final messagesNotifier =
+            ref.read(chatStateProvider(widget.convo).notifier);
         messagesNotifier.replaceMessage(index, updatedMessage);
       });
     }

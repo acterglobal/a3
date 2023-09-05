@@ -40,6 +40,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final userId = ref.watch(clientProvider)!.userId().toString();
     final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     final chatInputState = ref.watch(chatInputProvider);
+    final chatState = ref.watch(chatStateProvider(widget.convo));
     final repliedToMessage = chatInputState.repliedToMessage;
     final currentMessageId = chatInputState.currentMessageId;
     final accountProfile = ref.watch(accountProfileProvider);
@@ -49,7 +50,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
 
     bool isAuthor() {
       if (currentMessageId != null) {
-        final messages = ref.read(messagesProvider);
+        final messages = chatState.messages;
         int index = messages.indexWhere((x) => x.id == currentMessageId);
         if (index != -1) {
           return userId == messages[index].author.id;

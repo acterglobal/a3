@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -14,15 +13,13 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   final Ref ref;
   final Convo convo;
-  final String userId;
   TimelineStream? timeline;
   StreamSubscription<TimelineDiff>? subscription;
 
   ChatRoomNotifier({
     required this.convo,
-    required this.userId,
     required this.ref,
-  }) : super(const ChatRoomState.loading()) {
+  }) : super(const ChatRoomState()) {
     _init();
     _fetchMentionRecords();
   }
@@ -33,24 +30,60 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       subscription = timeline?.diffRx().listen((event) async {
         await _parseEvent(event);
       });
-      bool hasMore = false;
       do {
-        hasMore = await timeline!.paginateBackwards(10);
-        // wait for diffRx to be finished
-        sleep(const Duration(milliseconds: 100));
-      } while (hasMore && ref.read(messagesProvider).length < 10);
+        await loadMore();
+        await Future.delayed(const Duration(milliseconds: 1000), () => null);
+      } while (state.hasMore && state.messages.length < 10);
       ref.onDispose(() async {
         debugPrint('disposing message stream');
         await subscription?.cancel();
       });
     } catch (e) {
-      state = ChatRoomState.error(
-        'Some error occured loading room ${e.toString()}',
+      state = state.copyWith(
+        loading: ChatRoomLoadingState.error(
+          'Some error occurred loading room ${e.toString()}',
+        ),
       );
     }
   }
 
-  void isLoaded() => state = const ChatRoomState.loaded();
+  Future<void> loadMore() async {
+    final hasMore = await timeline!.paginateBackwards(20);
+    // wait for diffRx to be finished
+    state = state.copyWith(hasMore: hasMore);
+  }
+
+  // Messages CRUD
+  void addMessage(types.Message m) =>
+      state = state.copyWith(messages: [...state.messages, m]);
+
+  void insertMessage(int to, types.Message m) {
+    List<types.Message> newState = [...state.messages];
+    if (to < newState.length) {
+      newState.insert(to, m);
+    } else {
+      newState.add(m);
+    }
+    state = state.copyWith(messages: newState);
+  }
+
+  void replaceMessage(int index, types.Message m) {
+    if (index < state.messages.length) {
+      List<types.Message> newState = [...state.messages];
+      newState[index] = m;
+      state = state.copyWith(messages: newState);
+    }
+  }
+
+  void removeMessage(int idx) {
+    if (idx < state.messages.length) {
+      List<types.Message> newState = [...state.messages];
+      newState.removeAt(idx);
+      state = state.copyWith(messages: newState);
+    }
+  }
+
+  void resetMessages() => state = state.copyWith(messages: []);
 
   // get the repliedTo field from metadata
   String? _getRepliedTo(types.Message message) {
@@ -67,7 +100,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   // parses `RoomMessage` event to `types.Message` and updates messages list
   Future<void> _parseEvent(TimelineDiff timelineEvent) async {
     debugPrint('DiffRx: ${timelineEvent.action()}');
-    final messagesNotifier = ref.read(messagesProvider.notifier);
     switch (timelineEvent.action()) {
       case 'Append':
         List<RoomMessage> messages = timelineEvent.values()!.toList();
@@ -76,7 +108,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           if (message == null || message is types.UnsupportedMessage) {
             break;
           }
-          messagesNotifier.insertMessage(0, message);
+          insertMessage(0, message);
           final repliedTo = _getRepliedTo(message);
           if (repliedTo != null) {
             await _fetchOriginalContent(repliedTo, message.id);
@@ -94,14 +126,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (message == null || message is types.UnsupportedMessage) {
           break;
         }
-        int index = ref
-            .read(messagesProvider)
-            .indexWhere((msg) => message.id == msg.id);
+        int index = state.messages.indexWhere((msg) => message.id == msg.id);
         if (index == -1) {
-          messagesNotifier.addMessage(message);
+          addMessage(message);
         } else {
           // update event may be fetched prior to insert event
-          messagesNotifier.replaceMessage(index, message);
+          replaceMessage(index, message);
         }
         final repliedTo = _getRepliedTo(message);
         if (repliedTo != null) {
@@ -114,9 +144,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
       case 'Remove':
         int index = timelineEvent.index()!;
-        final messages = ref.read(messagesProvider);
+        final messages = state.messages;
         if (index < messages.length) {
-          messagesNotifier.removeMessage(messages.length - 1 - index);
+          removeMessage(messages.length - 1 - index);
         }
         break;
       case 'PushBack':
@@ -125,7 +155,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (message == null || message is types.UnsupportedMessage) {
           break;
         }
-        messagesNotifier.insertMessage(0, message);
+        insertMessage(0, message);
         final repliedTo = _getRepliedTo(message);
         if (repliedTo != null) {
           await _fetchOriginalContent(repliedTo, message.id);
@@ -141,7 +171,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (message == null || message is types.UnsupportedMessage) {
           break;
         }
-        messagesNotifier.addMessage(message);
+        addMessage(message);
         final repliedTo = _getRepliedTo(message);
         if (repliedTo != null) {
           await _fetchOriginalContent(repliedTo, message.id);
@@ -152,19 +182,19 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
       case 'PopBack':
-        final messages = ref.read(messagesProvider);
+        final messages = state.messages;
         if (messages.isNotEmpty) {
-          messagesNotifier.removeMessage(0);
+          removeMessage(0);
         }
         break;
       case 'PopFront':
-        final messages = ref.read(messagesProvider);
+        final messages = state.messages;
         if (messages.isNotEmpty) {
-          messagesNotifier.removeMessage(messages.length - 1);
+          removeMessage(messages.length - 1);
         }
         break;
       case 'Clear':
-        messagesNotifier.reset();
+        resetMessages();
         break;
       case 'Reset':
         break;
@@ -347,11 +377,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
     }
 
-    final messages = ref.read(messagesProvider);
+    final messages = state.messages;
     int index = messages.indexWhere((x) => x.id == replyId);
     if (index != -1 && repliedTo != null) {
-      messages[index] = messages[index].copyWith(repliedMessage: repliedTo);
-      ref.read(messagesProvider.notifier).state = messages;
+      replaceMessage(
+        index,
+        messages[index].copyWith(repliedMessage: repliedTo),
+      );
     }
   }
 
@@ -361,7 +393,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     if (virtualItem != null) {
       // should not return null, before we can keep track of index in diff receiver
       return types.UnsupportedMessage(
-        author: types.User(id: userId),
+        author: const types.User(id: 'virtual'),
         id: UniqueKey().toString(),
         metadata: {
           'itemType': 'virtual',
@@ -740,39 +772,34 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // fetch audio content for message.
   Future<void> _fetchAudioBinary(String eventId) async {
-    final messages = ref.read(messagesProvider);
-    final messagesNotifier = ref.read(messagesProvider.notifier);
+    final messages = state.messages;
     final data = await convo.audioBinary(eventId);
     int index = messages.indexWhere((x) => x.id == eventId);
     if (index != -1) {
       final metadata = messages[index].metadata ?? {};
       metadata['base64'] = base64Encode(data.asTypedList());
       messages[index] = messages[index].copyWith(metadata: metadata);
-      messagesNotifier.replaceMessage(index, messages[index]);
+      replaceMessage(index, messages[index]);
     }
   }
 
   // fetch video conent for message
   Future<void> _fetchVideoBinary(String eventId) async {
-    final messages = ref.read(messagesProvider);
-    final messagesNotifier = ref.read(messagesProvider.notifier);
+    final messages = state.messages;
     final data = await convo.videoBinary(eventId);
     int index = messages.indexWhere((x) => x.id == eventId);
     if (index != -1) {
       final metadata = messages[index].metadata ?? {};
       metadata['base64'] = base64Encode(data.asTypedList());
       messages[index] = messages[index].copyWith(metadata: metadata);
-      messagesNotifier.replaceMessage(index, messages[index]);
+      replaceMessage(index, messages[index]);
     }
   }
 
   // Pagination Control
   Future<void> handleEndReached() async {
-    bool hasMore = ref.read(paginationProvider);
-    if (hasMore) {
-      hasMore = await timeline!.paginateBackwards(10);
-      ref.read(paginationProvider.notifier).update((state) => hasMore);
-      debugPrint('backward pagination has more: $hasMore');
+    if (state.hasMore) {
+      await loadMore();
     }
   }
 }

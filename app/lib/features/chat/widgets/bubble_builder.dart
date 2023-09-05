@@ -490,6 +490,7 @@ class _OriginalMessageBuilder extends ConsumerWidget {
     if (message.repliedMessage is types.TextMessage) {
       final w = message.repliedMessage!.metadata!['messageLength'] * 38.5;
       return TextMessageBuilder(
+        convo: convo,
         message: message.repliedMessage as types.TextMessage,
         messageWidth: w.toInt(),
         isReply: true,

@@ -1,5 +1,4 @@
-import 'package:acter/features/chat/pages/chat_select_page.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

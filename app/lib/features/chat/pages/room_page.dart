@@ -64,31 +64,6 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     }
   }
 
-  Widget avatarBuilder(String userId) {
-    return AvatarBuilder(userId: userId);
-  }
-
-  Widget textMessageBuilder(
-    types.TextMessage m, {
-    required int messageWidth,
-    required bool showName,
-  }) {
-    return TextMessageBuilder(
-      message: m,
-      messageWidth: messageWidth,
-    );
-  }
-
-  Widget customMessageBuilder(
-    types.CustomMessage message, {
-    required int messageWidth,
-  }) {
-    return CustomMessageBuilder(
-      message: message,
-      messageWidth: messageWidth,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final location = ref.watch(currentRoutingLocation);
@@ -96,7 +71,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     final convo = widget.convo;
     final convoProfile = ref.watch(chatProfileDataProvider(convo));
     final activeMembers = ref.watch(chatMembersProvider(convo.getRoomIdStr()));
-    var messages = ref.watch(messagesProvider); //(convo.getRoomIdStr()));
+    final chatState = ref.watch(chatStateProvider(convo));
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.neutral,
@@ -182,7 +157,16 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         ),
         body: Chat(
           customBottomWidget: CustomChatInput(convo: convo),
-          textMessageBuilder: textMessageBuilder,
+          textMessageBuilder: (
+            types.TextMessage m, {
+            required int messageWidth,
+            required bool showName,
+          }) =>
+              TextMessageBuilder(
+            convo: widget.convo,
+            message: m,
+            messageWidth: messageWidth,
+          ),
           l10n: ChatL10nEn(
             emptyChatPlaceholder: '',
             attachmentButtonAccessibilityLabel: '',
@@ -191,14 +175,14 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             sendButtonAccessibilityLabel: '',
           ),
           timeFormat: DateFormat.jm(),
-          messages: messages,
+          messages: chatState.messages,
           onSendPressed: (types.PartialText partialText) {},
           user: types.User(id: client!.userId().toString()),
           // disable image preview
           disableImageGallery: true,
           // custom avatar builder
-          avatarBuilder: avatarBuilder,
-          isLastPage: !ref.watch(paginationProvider),
+          avatarBuilder: (String userId) => AvatarBuilder(userId: userId),
+          isLastPage: !chatState.hasMore,
           bubbleBuilder: (
             Widget child, {
             required types.Message message,
@@ -220,10 +204,18 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             message: message,
             messageWidth: messageWidth,
           ),
-          customMessageBuilder: customMessageBuilder,
+          customMessageBuilder: (
+            types.CustomMessage message, {
+            required int messageWidth,
+          }) =>
+              CustomMessageBuilder(
+            message: message,
+            messageWidth: messageWidth,
+          ),
           showUserAvatars: true,
           onMessageLongPress: handleMessageTap,
-          // onEndReached: roomNotifier.handleEndReached,
+          onEndReached:
+              ref.read(chatStateProvider(convo).notifier).handleEndReached,
           onEndReachedThreshold: 0.75,
           onBackgroundTap: onBackgroundTap,
           //Custom Theme class, see lib/common/store/chatTheme.dart

@@ -1,19 +1,16 @@
 import 'dart:async';
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_input_notifier.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_list_notifier.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart';
-import 'package:acter/features/chat/providers/notifiers/messages_notifier.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Convo, FfiListConvo;
 import 'package:flutter/material.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:jiffy/jiffy.dart';
 
 List<Convo> filterConvos(List<Convo> convoList) {
@@ -65,11 +62,6 @@ final chatsSearchProvider = StateProvider<List<Convo>>((ref) => []);
 
 final typingProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
-final messagesProvider =
-    StateNotifierProvider<MessagesNotifier, List<types.Message>>(
-  (ref) => MessagesNotifier(),
-);
-
 final chatInputProvider =
     StateNotifierProvider<ChatInputNotifier, ChatInputState>(
   (ref) => ChatInputNotifier(),
@@ -85,11 +77,11 @@ final mentionKeyProvider = StateProvider<GlobalKey<FlutterMentionsState>>(
   (ref) => GlobalKey<FlutterMentionsState>(),
 );
 
-final selectedChatIdProvider = StateProvider<String?>((ref) => null);
-
 final chatInputFocusProvider = StateProvider<FocusNode>((ref) => FocusNode());
-
-final paginationProvider = StateProvider.autoDispose<bool>((ref) => true);
+final chatStateProvider =
+    StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, Convo>(
+  (ref, convo) => ChatRoomNotifier(ref: ref, convo: convo),
+);
 
 // for desktop only
 final showFullSplitView = StateProvider<bool>((ref) => false);
