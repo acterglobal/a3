@@ -100,7 +100,7 @@ final paginationProvider = StateProvider.autoDispose<bool>((ref) => true);
 
 final chatMemberProfileProvider =
     FutureProvider.family<ProfileData, String>((ref, userId) async {
-  // Eventually we need to figure out a way to track room as this can fail.
+  // Eventually we need to figure keeping this reference in a safe way as this can fail.
   final convo = ref.watch(currentConvoProvider)!;
   final member = await convo.getMember(userId);
   final profile = await ref.watch(memberProfileProvider(member).future);
