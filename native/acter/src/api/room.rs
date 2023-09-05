@@ -17,7 +17,10 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Room as SdkRoom, RoomMember},
     ruma::{
-        api::client::receipt::create_receipt::v3::ReceiptType as CreateReceiptType,
+        api::client::{
+            receipt::create_receipt::v3::ReceiptType as CreateReceiptType,
+            room::report_content::v3::Request as ReportContentRequest,
+        },
         assign,
         events::{
             reaction::ReactionEventContent,
@@ -2384,6 +2387,34 @@ impl Room {
                     .update_power_levels(vec![(&user_id, Int::from(level))])
                     .await?;
                 Ok(resp.event_id)
+            })
+            .await?
+    }
+
+    pub async fn report_content(
+        &self,
+        event_id: String,
+        score: Option<i32>,
+        reason: Option<String>,
+    ) -> Result<bool> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't update power level in a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        let int_score = score.map(|value| value.into());
+
+        RUNTIME
+            .spawn(async move {
+                let request = ReportContentRequest::new(
+                    room.room_id().to_owned(),
+                    event_id,
+                    int_score,
+                    reason,
+                );
+                room.client().send(request, None).await?;
+                Ok(true)
             })
             .await?
     }
