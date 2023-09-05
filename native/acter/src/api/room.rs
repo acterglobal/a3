@@ -2400,7 +2400,7 @@ impl Room {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
-            bail!("Can't update power level in a room we are not in")
+            bail!("Can't block content in a room we are not in")
         };
         let event_id = EventId::parse(event_id)?;
         let int_score = score.map(|value| value.into());
