@@ -236,6 +236,26 @@ impl Member {
             PermissionTest::StateEvent(state) => self.member.can_send_state(state),
         }
     }
+
+    pub async fn ignore(&self) -> Result<bool> {
+        let member = self.member.clone();
+        RUNTIME
+            .spawn(async move {
+                member.ignore().await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn unignore(&self) -> Result<bool> {
+        let member = self.member.clone();
+        RUNTIME
+            .spawn(async move {
+                member.unignore().await?;
+                Ok(true)
+            })
+            .await?
+    }
 }
 
 #[derive(Clone, Debug)]

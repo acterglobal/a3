@@ -1543,6 +1543,12 @@ object Member {
     /// Whether this user is allowed to perform the given action
     //fn can(permission: MemberPermission) -> bool;
     fn can_string(permission: string) -> bool;
+
+    /// add this member to ignore list
+    fn ignore() -> Future<Result<bool>>;
+
+    /// remove this member from ignore list
+    fn unignore() -> Future<Result<bool>>;
 }
 
 object Account {
