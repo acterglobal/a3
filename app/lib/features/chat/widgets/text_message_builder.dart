@@ -103,8 +103,25 @@ class _TextMessageBuilderConsumerState
 
   void onPreviewDataFetched(types.PreviewData previewData) {
     if (widget.message.previewData == null) {
-      final roomNotifier = ref.read(chatRoomProvider.notifier);
-      roomNotifier.handlePreviewDataFetched(widget.message, previewData);
+      handlePreviewDataFetched(widget.message, previewData);
+    }
+  }
+
+  // preview message link
+  void handlePreviewDataFetched(
+    types.TextMessage message,
+    types.PreviewData previewData,
+  ) {
+    final messages = ref.read(messagesProvider);
+    final index = messages.indexWhere((x) => x.id == message.id);
+    if (index != -1) {
+      final updatedMessage = (messages[index] as types.TextMessage).copyWith(
+        previewData: previewData,
+      );
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        final messagesNotifier = ref.read(messagesProvider.notifier);
+        messagesNotifier.replaceMessage(index, updatedMessage);
+      });
     }
   }
 }

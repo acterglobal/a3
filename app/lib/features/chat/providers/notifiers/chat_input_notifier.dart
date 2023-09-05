@@ -1,6 +1,8 @@
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:io';
 
 class ChatInputNotifier extends StateNotifier<ChatInputState> {
   ChatInputNotifier() : super(const ChatInputState());
@@ -23,5 +25,17 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
     if (mounted) {
       state = state.copyWith(replyWidget: child);
     }
+  }
+
+  void setRepliedToMessage(Message? message) {
+    state = state.copyWith(repliedToMessage: message);
+  }
+
+  void setCurrentMessageId(String? messageId) {
+    state = state.copyWith(currentMessageId: messageId);
+  }
+
+  void updateFileList(List<File>? files) {
+    state = state.copyWith(fileList: files ?? []);
   }
 }

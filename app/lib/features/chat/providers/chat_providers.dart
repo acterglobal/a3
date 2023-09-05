@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -14,12 +15,6 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:jiffy/jiffy.dart';
-
-class SortableConversation {
-  final Jiffy? time;
-  final Convo conversation;
-  const SortableConversation(this.conversation, this.time);
-}
 
 List<Convo> filterConvos(List<Convo> convoList) {
   convoList.retainWhere((room) => room.isJoined());
@@ -70,13 +65,6 @@ final chatsSearchProvider = StateProvider<List<Convo>>((ref) => []);
 
 final typingProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
-final chatRoomProvider =
-    StateNotifierProvider<ChatRoomNotifier, ChatRoomState>((ref) {
-  return ChatRoomNotifier(
-    ref: ref,
-  );
-});
-
 final messagesProvider =
     StateNotifierProvider<MessagesNotifier, List<types.Message>>(
   (ref) => MessagesNotifier(),
@@ -97,9 +85,9 @@ final mentionKeyProvider = StateProvider<GlobalKey<FlutterMentionsState>>(
   (ref) => GlobalKey<FlutterMentionsState>(),
 );
 
-final chatInputFocusProvider = StateProvider<FocusNode>((ref) => FocusNode());
+final selectedChatIdProvider = StateProvider<String?>((ref) => null);
 
-final currentConvoProvider = StateProvider<Convo?>((ref) => null);
+final chatInputFocusProvider = StateProvider<FocusNode>((ref) => FocusNode());
 
 final paginationProvider = StateProvider.autoDispose<bool>((ref) => true);
 

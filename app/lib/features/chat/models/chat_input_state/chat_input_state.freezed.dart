@@ -22,6 +22,9 @@ mixin _$ChatInputState {
   bool get emojiRowVisible => throw _privateConstructorUsedError;
   bool get emojiPickerVisible => throw _privateConstructorUsedError;
   bool get attachmentVisible => throw _privateConstructorUsedError;
+  List<File> get fileList => throw _privateConstructorUsedError;
+  String? get currentMessageId => throw _privateConstructorUsedError;
+  types.Message? get repliedToMessage => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ChatInputStateCopyWith<ChatInputState> get copyWith =>
@@ -40,7 +43,10 @@ abstract class $ChatInputStateCopyWith<$Res> {
       bool sendBtnVisible,
       bool emojiRowVisible,
       bool emojiPickerVisible,
-      bool attachmentVisible});
+      bool attachmentVisible,
+      List<File> fileList,
+      String? currentMessageId,
+      types.Message? repliedToMessage});
 }
 
 /// @nodoc
@@ -62,6 +68,9 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
     Object? emojiRowVisible = null,
     Object? emojiPickerVisible = null,
     Object? attachmentVisible = null,
+    Object? fileList = null,
+    Object? currentMessageId = freezed,
+    Object? repliedToMessage = freezed,
   }) {
     return _then(_value.copyWith(
       showReplyView: null == showReplyView
@@ -88,6 +97,18 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
           ? _value.attachmentVisible
           : attachmentVisible // ignore: cast_nullable_to_non_nullable
               as bool,
+      fileList: null == fileList
+          ? _value.fileList
+          : fileList // ignore: cast_nullable_to_non_nullable
+              as List<File>,
+      currentMessageId: freezed == currentMessageId
+          ? _value.currentMessageId
+          : currentMessageId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      repliedToMessage: freezed == repliedToMessage
+          ? _value.repliedToMessage
+          : repliedToMessage // ignore: cast_nullable_to_non_nullable
+              as types.Message?,
     ) as $Val);
   }
 }
@@ -106,7 +127,10 @@ abstract class _$$_ChatInputStateCopyWith<$Res>
       bool sendBtnVisible,
       bool emojiRowVisible,
       bool emojiPickerVisible,
-      bool attachmentVisible});
+      bool attachmentVisible,
+      List<File> fileList,
+      String? currentMessageId,
+      types.Message? repliedToMessage});
 }
 
 /// @nodoc
@@ -126,6 +150,9 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
     Object? emojiRowVisible = null,
     Object? emojiPickerVisible = null,
     Object? attachmentVisible = null,
+    Object? fileList = null,
+    Object? currentMessageId = freezed,
+    Object? repliedToMessage = freezed,
   }) {
     return _then(_$_ChatInputState(
       showReplyView: null == showReplyView
@@ -152,6 +179,18 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
           ? _value.attachmentVisible
           : attachmentVisible // ignore: cast_nullable_to_non_nullable
               as bool,
+      fileList: null == fileList
+          ? _value._fileList
+          : fileList // ignore: cast_nullable_to_non_nullable
+              as List<File>,
+      currentMessageId: freezed == currentMessageId
+          ? _value.currentMessageId
+          : currentMessageId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      repliedToMessage: freezed == repliedToMessage
+          ? _value.repliedToMessage
+          : repliedToMessage // ignore: cast_nullable_to_non_nullable
+              as types.Message?,
     ));
   }
 }
@@ -165,7 +204,11 @@ class _$_ChatInputState implements _ChatInputState {
       this.sendBtnVisible = false,
       this.emojiRowVisible = false,
       this.emojiPickerVisible = false,
-      this.attachmentVisible = false});
+      this.attachmentVisible = false,
+      final List<File> fileList = const [],
+      this.currentMessageId = null,
+      this.repliedToMessage = null})
+      : _fileList = fileList;
 
   @override
   @JsonKey()
@@ -185,10 +228,25 @@ class _$_ChatInputState implements _ChatInputState {
   @override
   @JsonKey()
   final bool attachmentVisible;
+  final List<File> _fileList;
+  @override
+  @JsonKey()
+  List<File> get fileList {
+    if (_fileList is EqualUnmodifiableListView) return _fileList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_fileList);
+  }
+
+  @override
+  @JsonKey()
+  final String? currentMessageId;
+  @override
+  @JsonKey()
+  final types.Message? repliedToMessage;
 
   @override
   String toString() {
-    return 'ChatInputState(showReplyView: $showReplyView, replyWidget: $replyWidget, sendBtnVisible: $sendBtnVisible, emojiRowVisible: $emojiRowVisible, emojiPickerVisible: $emojiPickerVisible, attachmentVisible: $attachmentVisible)';
+    return 'ChatInputState(showReplyView: $showReplyView, replyWidget: $replyWidget, sendBtnVisible: $sendBtnVisible, emojiRowVisible: $emojiRowVisible, emojiPickerVisible: $emojiPickerVisible, attachmentVisible: $attachmentVisible, fileList: $fileList, currentMessageId: $currentMessageId, repliedToMessage: $repliedToMessage)';
   }
 
   @override
@@ -207,12 +265,26 @@ class _$_ChatInputState implements _ChatInputState {
             (identical(other.emojiPickerVisible, emojiPickerVisible) ||
                 other.emojiPickerVisible == emojiPickerVisible) &&
             (identical(other.attachmentVisible, attachmentVisible) ||
-                other.attachmentVisible == attachmentVisible));
+                other.attachmentVisible == attachmentVisible) &&
+            const DeepCollectionEquality().equals(other._fileList, _fileList) &&
+            (identical(other.currentMessageId, currentMessageId) ||
+                other.currentMessageId == currentMessageId) &&
+            (identical(other.repliedToMessage, repliedToMessage) ||
+                other.repliedToMessage == repliedToMessage));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, showReplyView, replyWidget,
-      sendBtnVisible, emojiRowVisible, emojiPickerVisible, attachmentVisible);
+  int get hashCode => Object.hash(
+      runtimeType,
+      showReplyView,
+      replyWidget,
+      sendBtnVisible,
+      emojiRowVisible,
+      emojiPickerVisible,
+      attachmentVisible,
+      const DeepCollectionEquality().hash(_fileList),
+      currentMessageId,
+      repliedToMessage);
 
   @JsonKey(ignore: true)
   @override
@@ -228,7 +300,10 @@ abstract class _ChatInputState implements ChatInputState {
       final bool sendBtnVisible,
       final bool emojiRowVisible,
       final bool emojiPickerVisible,
-      final bool attachmentVisible}) = _$_ChatInputState;
+      final bool attachmentVisible,
+      final List<File> fileList,
+      final String? currentMessageId,
+      final types.Message? repliedToMessage}) = _$_ChatInputState;
 
   @override
   bool get showReplyView;
@@ -242,6 +317,12 @@ abstract class _ChatInputState implements ChatInputState {
   bool get emojiPickerVisible;
   @override
   bool get attachmentVisible;
+  @override
+  List<File> get fileList;
+  @override
+  String? get currentMessageId;
+  @override
+  types.Message? get repliedToMessage;
   @override
   @JsonKey(ignore: true)
   _$$_ChatInputStateCopyWith<_$_ChatInputState> get copyWith =>

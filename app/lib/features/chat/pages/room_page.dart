@@ -15,6 +15,7 @@ import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -24,26 +25,41 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-class RoomPage extends ConsumerStatefulWidget {
-  const RoomPage({
+class RoomPage extends ConsumerWidget {
+  final String roomId;
+  const RoomPage({required this.roomId, super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(chatProvider(roomId)).when(
+          data: (convo) => ChatRoom(convo: convo),
+          error: (e, s) => Center(child: Text('Loading room failed: $e')),
+          loading: () => const Center(child: Text('loading...')),
+        );
+  }
+}
+
+class ChatRoom extends ConsumerStatefulWidget {
+  final Convo convo;
+  const ChatRoom({
+    required this.convo,
     Key? key,
   }) : super(key: key);
 
   @override
-  ConsumerState<RoomPage> createState() => _RoomPageConsumerState();
+  ConsumerState<ChatRoom> createState() => _ChatRoomConsumerState();
 }
 
-class _RoomPageConsumerState extends ConsumerState<RoomPage> {
+class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
   void onBackgroundTap() {
     final emojiRowVisible = ref.read(
       chatInputProvider.select((ci) {
         return ci.emojiRowVisible;
       }),
     );
-    final roomNotifier = ref.read(chatRoomProvider.notifier);
     final inputNotifier = ref.read(chatInputProvider.notifier);
     if (emojiRowVisible) {
-      roomNotifier.currentMessageId = null;
+      inputNotifier.setCurrentMessageId(null);
       inputNotifier.emojiRowVisible(false);
     }
   }
@@ -63,16 +79,6 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     );
   }
 
-  Widget imageMessageBuilder(
-    types.ImageMessage message, {
-    required int messageWidth,
-  }) {
-    return ImageMessageBuilder(
-      message: message,
-      messageWidth: messageWidth,
-    );
-  }
-
   Widget customMessageBuilder(
     types.CustomMessage message, {
     required int messageWidth,
@@ -83,44 +89,14 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
     );
   }
 
-  Widget bubbleBuilder(
-    Widget child, {
-    required types.Message message,
-    required bool nextMessageInGroup,
-  }) {
-    return BubbleBuilder(
-      message: message,
-      nextMessageInGroup: nextMessageInGroup,
-      enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
-      child: child,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final location = ref.watch(currentRoutingLocation);
     final client = ref.watch(clientProvider);
-    var chatRoomState = ref.watch(chatRoomProvider);
-    var messages = ref.watch(messagesProvider);
-    final roomNotifier = ref.watch(chatRoomProvider.notifier);
-    final convo = ref.watch(currentConvoProvider);
-    final convoProfile = ref.watch(chatProfileDataProvider(convo!));
+    final convo = widget.convo;
+    final convoProfile = ref.watch(chatProfileDataProvider(convo));
     final activeMembers = ref.watch(chatMembersProvider(convo.getRoomIdStr()));
-    ref.listen(messagesProvider, (previous, next) {
-      if (next.isNotEmpty) {
-        roomNotifier.isLoaded();
-      }
-    });
-
-    ref.listen(
-      currentConvoProvider,
-      ((previous, next) {
-        if (previous != next) {
-          chatRoomState = ref.refresh(chatRoomProvider);
-          messages = ref.refresh(messagesProvider);
-        }
-      }),
-    );
+    var messages = ref.watch(messagesProvider); //(convo.getRoomIdStr()));
     return WithSidebar(
       sidebar: const RoomsListWidget(),
       child: OrientationBuilder(
@@ -209,51 +185,74 @@ class _RoomPageConsumerState extends ConsumerState<RoomPage> {
               ),
             ],
           ),
-          body: chatRoomState.when(
-            loading: () => const Center(
-              child: SizedBox(
-                height: 15,
-                width: 15,
-                child: CircularProgressIndicator(),
-              ),
+          body: Chat(
+            customBottomWidget: CustomChatInput(convo: convo),
+            textMessageBuilder: textMessageBuilder,
+            l10n: ChatL10nEn(
+              emptyChatPlaceholder: '',
+              attachmentButtonAccessibilityLabel: '',
+              fileButtonAccessibilityLabel: '',
+              inputPlaceholder: AppLocalizations.of(context)!.message,
+              sendButtonAccessibilityLabel: '',
             ),
-            error: (e) => Text('Failed to load messages due to $e'),
-            loaded: () => Chat(
-              customBottomWidget: const CustomChatInput(),
-              textMessageBuilder: textMessageBuilder,
-              l10n: ChatL10nEn(
-                emptyChatPlaceholder: '',
-                attachmentButtonAccessibilityLabel: '',
-                fileButtonAccessibilityLabel: '',
-                inputPlaceholder: AppLocalizations.of(context)!.message,
-                sendButtonAccessibilityLabel: '',
-              ),
-              timeFormat: DateFormat.jm(),
-              messages: messages,
-              onSendPressed: (types.PartialText partialText) {},
-              user: types.User(id: client!.userId().toString()),
-              // disable image preview
-              disableImageGallery: true,
-              // custom avatar builder
-              avatarBuilder: avatarBuilder,
-              isLastPage: !ref.watch(paginationProvider),
-              bubbleBuilder: bubbleBuilder,
-              imageMessageBuilder: imageMessageBuilder,
-              customMessageBuilder: customMessageBuilder,
-              showUserAvatars: true,
-              onMessageLongPress: roomNotifier.handleMessageTap,
-              onEndReached: roomNotifier.handleEndReached,
-              onEndReachedThreshold: 0.75,
-              onBackgroundTap: onBackgroundTap,
-              //Custom Theme class, see lib/common/store/chatTheme.dart
-              theme: const ActerChatTheme(
-                sendButtonIcon: Icon(Atlas.paper_airplane),
-                documentIcon: Icon(Atlas.file_thin, size: 18),
-              ),
+            timeFormat: DateFormat.jm(),
+            messages: messages,
+            onSendPressed: (types.PartialText partialText) {},
+            user: types.User(id: client!.userId().toString()),
+            // disable image preview
+            disableImageGallery: true,
+            // custom avatar builder
+            avatarBuilder: avatarBuilder,
+            isLastPage: !ref.watch(paginationProvider),
+            bubbleBuilder: (
+              Widget child, {
+              required types.Message message,
+              required bool nextMessageInGroup,
+            }) =>
+                BubbleBuilder(
+              convo: convo,
+              message: message,
+              nextMessageInGroup: nextMessageInGroup,
+              enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
+              child: child,
+            ),
+            imageMessageBuilder: (
+              types.ImageMessage message, {
+              required int messageWidth,
+            }) =>
+                ImageMessageBuilder(
+              convo: convo,
+              message: message,
+              messageWidth: messageWidth,
+            ),
+            customMessageBuilder: customMessageBuilder,
+            showUserAvatars: true,
+            onMessageLongPress: handleMessageTap,
+            // onEndReached: roomNotifier.handleEndReached,
+            onEndReachedThreshold: 0.75,
+            onBackgroundTap: onBackgroundTap,
+            //Custom Theme class, see lib/common/store/chatTheme.dart
+            theme: const ActerChatTheme(
+              sendButtonIcon: Icon(Atlas.paper_airplane),
+              documentIcon: Icon(Atlas.file_thin, size: 18),
             ),
           ),
         ),
       ),
     );
+  }
+
+  // message tap action
+  Future<void> handleMessageTap(
+    BuildContext context,
+    types.Message message,
+  ) async {
+    final inputNotifier = ref.read(chatInputProvider.notifier);
+    if (ref.read(chatInputProvider).showReplyView) {
+      inputNotifier.toggleReplyView(false);
+      inputNotifier.setReplyWidget(null);
+    }
+    inputNotifier.setCurrentMessageId(message.id);
+    inputNotifier.emojiRowVisible(true);
   }
 }

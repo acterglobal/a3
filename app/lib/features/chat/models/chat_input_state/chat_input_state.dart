@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 part 'chat_input_state.freezed.dart';
 
@@ -12,5 +15,8 @@ class ChatInputState with _$ChatInputState {
     @Default(false) bool emojiRowVisible,
     @Default(false) bool emojiPickerVisible,
     @Default(false) bool attachmentVisible,
+    @Default([]) List<File> fileList,
+    @Default(null) String? currentMessageId,
+    @Default(null) types.Message? repliedToMessage,
   }) = _ChatInputState;
 }

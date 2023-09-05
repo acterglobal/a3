@@ -1,34 +1,52 @@
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
-// cached image binary provider.
-final _imageBinaryProvider =
-    FutureProvider.family<Uint8List, String>((ref, eventId) async {
-  final room = ref.watch(currentConvoProvider)!;
-  return await room.imageBinary(eventId).then((value) => value.asTypedList());
-});
-
-class ImageMessageBuilder extends ConsumerWidget {
+class ImageMessageBuilder extends StatefulWidget {
   final types.ImageMessage message;
   final int messageWidth;
   final bool isReplyContent;
+  final Convo convo;
 
   const ImageMessageBuilder({
     Key? key,
+    required this.convo,
     required this.message,
     required this.messageWidth,
     this.isReplyContent = false,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final imageData = ref.watch(_imageBinaryProvider(message.id));
+  _ImageMessageBuilderState createState() => _ImageMessageBuilderState();
+}
+
+class _ImageMessageBuilderState extends State<ImageMessageBuilder> {
+  AsyncValue<Uint8List> imageData = AsyncValue.loading();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> loadImage() async {
+    try {
+      imageData = AsyncValue.data(
+        await widget.convo
+            .imageBinary(widget.message.id)
+            .then((value) => value.asTypedList()),
+      );
+    } catch (e, s) {
+      imageData = AsyncValue.error(e, s);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return imageData.when(
       data: (data) {
-        if (isReplyContent) {
+        if (widget.isReplyContent) {
           return ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: ConstrainedBox(

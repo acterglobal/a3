@@ -1,5 +1,6 @@
 import 'package:acter/common/dialogs/dialog_page.dart';
 import 'package:acter/common/dialogs/side_sheet_page.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -524,9 +525,11 @@ List<RouteBase> makeRoutes(Ref ref) {
           path: Routes.chatroom.route,
           redirect: authGuardRedirect,
           pageBuilder: (context, state) {
+            final roomId = state.pathParameters['roomId']!;
+            ref.read(selectedChatIdProvider.notifier).state = roomId;
             return NoTransitionPage(
               key: state.pageKey,
-              child: const RoomPage(),
+              child: RoomPage(roomId: roomId),
             );
           },
         ),
@@ -536,7 +539,14 @@ List<RouteBase> makeRoutes(Ref ref) {
           name: Routes.chatProfile.name,
           path: Routes.chatProfile.route,
           redirect: authGuardRedirect,
-          builder: (context, state) => const RoomProfilePage(),
+          pageBuilder: (context, state) {
+            final roomId = state.pathParameters['roomId']!;
+            ref.read(selectedChatIdProvider.notifier).state = roomId;
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: RoomProfilePage(roomId: roomId),
+            );
+          },
         ),
 
         GoRoute(

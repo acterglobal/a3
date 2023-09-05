@@ -2,6 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
+// final roomNotifier = ref.watch(chatRoomProvider.notifier);
+// var chatRoomState = ref.watch(chatRoomProvider);
+// ref.listen(messagesProvider, (previous, next) {
+//   if (next.isNotEmpty) {
+//     roomNotifier.isLoaded();
+//   }
+// });
+
+// ref.listen(
+//   currentConvoProvider,
+//   ((previous, next) {
+//     if (previous != next) {
+//       chatRoomState = ref.refresh(chatRoomProvider);
+//       messages = ref.refresh(messagesProvider);
+//     }
+//   }),
+// );
+
 class MessagesNotifier extends StateNotifier<List<types.Message>> {
   MessagesNotifier() : super([]);
 

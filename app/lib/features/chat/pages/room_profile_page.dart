@@ -15,15 +15,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class RoomProfilePage extends ConsumerWidget {
+  final String roomId;
   const RoomProfilePage({
+    required this.roomId,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final room = ref.watch(currentConvoProvider)!;
-    final convoProfile = ref.watch(chatProfileDataProvider(room));
-    final roomId = room.getRoomIdStr();
+    final convo = ref.watch(chatProvider(roomId));
+    final convoProfile = ref.watch(chatProfileDataProviderById(roomId));
     final members = ref.watch(chatMembersProvider(roomId));
     final myMembership = ref.watch(spaceMembershipProvider(roomId));
     final location = ref.watch(currentRoutingLocation);
@@ -200,13 +201,17 @@ class RoomProfilePage extends ConsumerWidget {
           SliverPadding(
             padding: const EdgeInsets.all(8.0),
             sliver: SliverToBoxAdapter(
-              child: Center(
-                child: Text(
-                  room.topic() ?? '',
-                  style: Theme.of(context).textTheme.bodySmall,
-                  softWrap: true,
-                  textAlign: TextAlign.center,
+              child: convo.when(
+                data: (data) => Center(
+                  child: Text(
+                    data.topic() ?? '',
+                    style: Theme.of(context).textTheme.bodySmall,
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
+                loading: () => const Text('loading...'),
+                error: (e, s) => Text('Error: $e'),
               ),
             ),
           ),
@@ -219,7 +224,11 @@ class RoomProfilePage extends ConsumerWidget {
               ),
             ),
           ),
-          const MemberList(),
+          convo.when(
+            data: (data) => MemberList(convo: data),
+            loading: () => const Text('loading...'),
+            error: (e, s) => Text('Error: $e'),
+          ),
         ],
       ),
     );

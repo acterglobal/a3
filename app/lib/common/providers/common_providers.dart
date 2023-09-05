@@ -4,7 +4,6 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/network_notifier.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Account, Convo, Member, OptionString, UserProfile;
@@ -61,6 +60,12 @@ final chatProfileDataProvider =
   return ProfileData(displayName.text(), avatar.data());
 });
 
+final chatProfileDataProviderById =
+    FutureProvider.family<ProfileData, String>((ref, roomId) async {
+  final chat = await ref.watch(chatProvider(roomId).future);
+  return (await ref.watch(chatProfileDataProvider(chat).future));
+});
+
 final chatsProvider = FutureProvider<List<Convo>>((ref) async {
   final client = ref.watch(clientProvider)!;
   // FIXME: how to get informed about updates!?!
@@ -88,6 +93,16 @@ final relatedChatsProvider = FutureProvider.autoDispose
       .knownChats;
 });
 
+final selectedChatIdProvider = StateProvider<String?>((ref) => null);
+
+final currentConvoProvider = FutureProvider<Convo?>((ref) async {
+  final roomId = ref.watch(selectedChatIdProvider);
+  if (roomId == null) {
+    throw 'No chat selected';
+  }
+  return await ref.watch(chatProvider(roomId).future);
+});
+
 // Member Providers
 final memberProfileProvider =
     FutureProvider.family<ProfileData, String>((ref, userId) async {
@@ -105,6 +120,9 @@ final memberProfileProvider =
 
 final memberProvider =
     FutureProvider.family<Member?, String>((ref, userId) async {
-  final convo = ref.watch(currentConvoProvider);
-  return await convo!.getMember(userId);
+  final convo = await ref.watch(currentConvoProvider.future);
+  if (convo == null) {
+    throw 'No chat selected';
+  }
+  return await convo.getMember(userId);
 });
