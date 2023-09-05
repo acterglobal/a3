@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -187,7 +186,7 @@ class _ChatBubble extends ConsumerWidget {
     Widget? child,
   ) {
     final authorId = message.repliedMessage!.author.id;
-    final replyProfile = ref.watch(memberProfileProvider(authorId));
+    final replyProfile = ref.watch(chatMemberProfileProvider(authorId));
     return Row(
       children: [
         replyProfile.when(

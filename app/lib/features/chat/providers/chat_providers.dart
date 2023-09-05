@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -96,5 +98,13 @@ final currentConvoProvider = StateProvider<Convo?>((ref) => null);
 
 final paginationProvider = StateProvider.autoDispose<bool>((ref) => true);
 
+final chatMemberProfileProvider =
+    FutureProvider.family<ProfileData, String>((ref, userId) async {
+  // Eventually we need to figure out a way to track room as this can fail.
+  final convo = ref.watch(currentConvoProvider)!;
+  final member = await convo.getMember(userId);
+  final profile = await ref.watch(memberProfileProvider(member).future);
+  return profile;
+});
 // for desktop only
 final showFullSplitView = StateProvider<bool>((ref) => false);

@@ -276,7 +276,7 @@ class CustomChatInput extends ConsumerWidget {
   Widget replyBuilder(BuildContext context, WidgetRef ref, Widget? child) {
     final roomNotifier = ref.watch(chatRoomProvider.notifier);
     final authorId = roomNotifier.repliedToMessage!.author.id;
-    final replyProfile = ref.watch(memberProfileProvider(authorId));
+    final replyProfile = ref.watch(chatMemberProfileProvider(authorId));
     final inputNotifier = ref.watch(chatInputProvider.notifier);
     return Row(
       children: [
