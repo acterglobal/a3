@@ -15,7 +15,7 @@ class EmojiReactionItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(memberProfileProvider(userId));
+    final profile = ref.watch(memberProfileByIdProvider(userId));
 
     return ListTile(
       leading: profile.when(

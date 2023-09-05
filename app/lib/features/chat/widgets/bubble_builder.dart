@@ -198,7 +198,7 @@ class _ChatBubble extends ConsumerWidget {
     Widget? child,
   ) {
     final authorId = message.repliedMessage!.author.id;
-    final replyProfile = ref.watch(memberProfileProvider(authorId));
+    final replyProfile = ref.watch(memberProfileByIdProvider(authorId));
     return Row(
       children: [
         replyProfile.when(

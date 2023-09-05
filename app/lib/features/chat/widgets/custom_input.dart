@@ -390,7 +390,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final roomId = widget.convo.getRoomIdStr();
     final chatInputState = ref.watch(chatInputProvider(roomId));
     final authorId = chatInputState.repliedToMessage!.author.id;
-    final replyProfile = ref.watch(memberProfileProvider(authorId));
+    final replyProfile = ref.watch(memberProfileByIdProvider(authorId));
     final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
       children: [

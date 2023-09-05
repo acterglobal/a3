@@ -13,7 +13,7 @@ class AvatarBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberProfile = ref.watch(memberProfileProvider(userId));
+    final memberProfile = ref.watch(memberProfileByIdProvider(userId));
     return memberProfile.when(
       data: (profile) {
         return Padding(

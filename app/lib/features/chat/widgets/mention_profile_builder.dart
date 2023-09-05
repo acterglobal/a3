@@ -15,7 +15,7 @@ class MentionProfileBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mentionProfile = ref.watch(memberProfileProvider(authorId));
+    final mentionProfile = ref.watch(memberProfileByIdProvider(authorId));
     return mentionProfile.when(
       data: (profile) => ActerAvatar(
         mode: DisplayMode.User,

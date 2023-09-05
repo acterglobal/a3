@@ -120,18 +120,22 @@ final currentConvoProvider = FutureProvider<Convo?>((ref) async {
 });
 
 // Member Providers
-final memberProfileProvider =
+// TODO: improve this to be reusable for space and chat members alike.
+final memberProfileByIdProvider =
     FutureProvider.family<ProfileData, String>((ref, userId) async {
-  final member = ref.watch(memberProvider(userId));
-  return member.maybeWhen(
-    data: (data) async {
-      UserProfile profile = data!.getProfile();
-      OptionString displayName = await profile.getDisplayName();
-      final avatar = await profile.getThumbnail(62, 60);
-      return ProfileData(displayName.text(), avatar.data());
-    },
-    orElse: () => ProfileData('', null),
-  );
+  final member = await ref.watch(memberProvider(userId).future);
+  if (member == null) {
+    throw 'Member not found';
+  }
+  return await ref.watch(memberProfileProvider(member).future);
+});
+
+final memberProfileProvider =
+    FutureProvider.family<ProfileData, Member>((ref, member) async {
+  UserProfile profile = member.getProfile();
+  OptionString displayName = await profile.getDisplayName();
+  final avatar = await profile.getThumbnail(62, 60);
+  return ProfileData(displayName.text(), avatar.data());
 });
 
 final memberProvider =
