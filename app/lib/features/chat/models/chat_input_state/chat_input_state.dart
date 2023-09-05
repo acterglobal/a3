@@ -11,6 +11,7 @@ class ChatInputState with _$ChatInputState {
   const factory ChatInputState({
     @Default(false) bool showReplyView,
     @Default(null) Widget? replyWidget,
+    @Default(true) bool allowEdit,
     @Default(false) bool sendBtnVisible,
     @Default(false) bool emojiRowVisible,
     @Default(false) bool emojiPickerVisible,
@@ -18,5 +19,6 @@ class ChatInputState with _$ChatInputState {
     @Default([]) List<File> fileList,
     @Default(null) String? currentMessageId,
     @Default(null) types.Message? repliedToMessage,
+    @Default({}) Map<String, String> mentionReplacements,
   }) = _ChatInputState;
 }

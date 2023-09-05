@@ -27,6 +27,13 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
     }
   }
 
+  void addMention(String displayName, String authorId) {
+    final mentionReplacements = Map.of(state.mentionReplacements);
+    mentionReplacements['@$displayName'] =
+        '[$displayName](https://matrix.to/#/$authorId)';
+    state = state.copyWith(mentionReplacements: mentionReplacements);
+  }
+
   void setRepliedToMessage(Message? message) {
     state = state.copyWith(repliedToMessage: message);
   }
@@ -37,5 +44,19 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
 
   void updateFileList(List<File>? files) {
     state = state.copyWith(fileList: files ?? []);
+  }
+
+  void prepareSending() {
+    state = state.copyWith(sendBtnVisible: false, allowEdit: false);
+  }
+
+  void sendingFailed() {
+    // reset the state;
+    state = state.copyWith(sendBtnVisible: true, allowEdit: true);
+  }
+
+  void messageSent() {
+    // reset the state;
+    state = const ChatInputState();
   }
 }

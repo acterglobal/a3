@@ -51,18 +51,7 @@ class ChatRoom extends ConsumerStatefulWidget {
 }
 
 class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
-  void onBackgroundTap() {
-    final emojiRowVisible = ref.read(
-      chatInputProvider.select((ci) {
-        return ci.emojiRowVisible;
-      }),
-    );
-    final inputNotifier = ref.read(chatInputProvider.notifier);
-    if (emojiRowVisible) {
-      inputNotifier.setCurrentMessageId(null);
-      inputNotifier.emojiRowVisible(false);
-    }
-  }
+  void onBackgroundTap() {}
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +61,8 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     final convoProfile = ref.watch(chatProfileDataProvider(convo));
     final activeMembers = ref.watch(chatMembersProvider(convo.getRoomIdStr()));
     final chatState = ref.watch(chatStateProvider(convo));
+
+    final roomId = widget.convo.getRoomIdStr();
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.neutral,
@@ -213,11 +204,33 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             messageWidth: messageWidth,
           ),
           showUserAvatars: true,
-          onMessageLongPress: handleMessageTap,
+          onMessageLongPress: (
+            BuildContext context,
+            types.Message message,
+          ) async {
+            final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+            if (ref.read(chatInputProvider(roomId)).showReplyView) {
+              inputNotifier.toggleReplyView(false);
+              inputNotifier.setReplyWidget(null);
+            }
+            inputNotifier.setCurrentMessageId(message.id);
+            inputNotifier.emojiRowVisible(true);
+          },
           onEndReached:
               ref.read(chatStateProvider(convo).notifier).handleEndReached,
           onEndReachedThreshold: 0.75,
-          onBackgroundTap: onBackgroundTap,
+          onBackgroundTap: () {
+            final emojiRowVisible = ref.read(
+              chatInputProvider(roomId).select((ci) {
+                return ci.emojiRowVisible;
+              }),
+            );
+            final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+            if (emojiRowVisible) {
+              inputNotifier.setCurrentMessageId(null);
+              inputNotifier.emojiRowVisible(false);
+            }
+          },
           //Custom Theme class, see lib/common/store/chatTheme.dart
           theme: const ActerChatTheme(
             sendButtonIcon: Icon(Atlas.paper_airplane),
@@ -226,19 +239,5 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         ),
       ),
     );
-  }
-
-  // message tap action
-  Future<void> handleMessageTap(
-    BuildContext context,
-    types.Message message,
-  ) async {
-    final inputNotifier = ref.read(chatInputProvider.notifier);
-    if (ref.read(chatInputProvider).showReplyView) {
-      inputNotifier.toggleReplyView(false);
-      inputNotifier.setReplyWidget(null);
-    }
-    inputNotifier.setCurrentMessageId(message.id);
-    inputNotifier.emojiRowVisible(true);
   }
 }

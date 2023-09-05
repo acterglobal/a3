@@ -63,15 +63,13 @@ final chatsSearchProvider = StateProvider<List<Convo>>((ref) => []);
 final typingProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
 final chatInputProvider =
-    StateNotifierProvider<ChatInputNotifier, ChatInputState>(
-  (ref) => ChatInputNotifier(),
+    StateNotifierProvider.family<ChatInputNotifier, ChatInputState, String>(
+  (ref, roomId) => ChatInputNotifier(),
 );
 
 // chat room mention list
 final mentionListProvider =
     StateProvider<List<Map<String, dynamic>>>((ref) => []);
-
-final messageMarkDownProvider = StateProvider<Map<String, String>>((ref) => {});
 
 final mentionKeyProvider = StateProvider<GlobalKey<FlutterMentionsState>>(
   (ref) => GlobalKey<FlutterMentionsState>(),

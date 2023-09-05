@@ -37,9 +37,10 @@ class BubbleBuilder extends ConsumerWidget {
     final client = ref.watch(clientProvider);
     final myId = client!.userId().toString();
     final isAuthor = (myId == message.author.id);
+    final roomId = convo.getRoomIdStr();
 
-    final chatInputState = ref.watch(chatInputProvider);
-    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
+    final chatInputState = ref.watch(chatInputProvider(roomId));
+    final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     String eventType = '';
     if (message.metadata!.containsKey('eventType')) {
       eventType = message.metadata?['eventType'];
@@ -110,13 +111,15 @@ class _ChatBubble extends ConsumerWidget {
     final client = ref.watch(clientProvider);
     final myId = client!.userId().toString();
     final isAuthor = (myId == message.author.id);
+    final roomId = convo.getRoomIdStr();
 
     bool hasRepliedMessage = message.repliedMessage != null;
     return Column(
       crossAxisAlignment:
           isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
-        _EmojiRow(onEmojiTap: sendEmojiReaction, message: message),
+        _EmojiRow(
+            roomId: roomId, onEmojiTap: sendEmojiReaction, message: message),
         const SizedBox(height: 4),
         enlargeEmoji
             ? child
@@ -448,9 +451,11 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
 
 class _EmojiRow extends ConsumerWidget {
   final types.Message message;
+  final String roomId;
   final Function(String messageId, String value) onEmojiTap;
 
-  const _EmojiRow({required this.onEmojiTap, required this.message});
+  const _EmojiRow(
+      {required this.roomId, required this.onEmojiTap, required this.message});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -458,7 +463,7 @@ class _EmojiRow extends ConsumerWidget {
     final myId = client!.userId().toString();
     final isAuthor = (myId == message.author.id);
 
-    final chatInputState = ref.watch(chatInputProvider);
+    final chatInputState = ref.watch(chatInputProvider(roomId));
     return Visibility(
       visible: message.id == chatInputState.currentMessageId,
       child: Container(

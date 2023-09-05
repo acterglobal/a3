@@ -38,14 +38,15 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   @override
   Widget build(BuildContext context) {
     final userId = ref.watch(clientProvider)!.userId().toString();
-    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
-    final chatInputState = ref.watch(chatInputProvider);
+    final roomId = widget.convo.getRoomIdStr();
+    final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    final chatInputState = ref.watch(chatInputProvider(roomId));
     final chatState = ref.watch(chatStateProvider(widget.convo));
     final repliedToMessage = chatInputState.repliedToMessage;
     final currentMessageId = chatInputState.currentMessageId;
     final accountProfile = ref.watch(accountProfileProvider);
     final showReplyView = ref.watch(
-      chatInputProvider.select((ci) => ci.showReplyView),
+      chatInputProvider(roomId).select((ci) => ci.showReplyView),
     );
 
     bool isAuthor() {
@@ -62,7 +63,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     void handleEmojiSelected(Category? category, Emoji emoji) {
       final mentionState = ref.read(mentionKeyProvider).currentState!;
       mentionState.controller!.text += emoji.emoji;
-      ref.read(chatInputProvider.notifier).showSendBtn(true);
+      ref.read(chatInputProvider(roomId).notifier).showSendBtn(true);
     }
 
     void handleBackspacePressed() {
@@ -71,7 +72,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           mentionState.controller!.text.characters.skipLast(1).string;
       mentionState.controller!.text = newValue;
       if (newValue.isEmpty) {
-        ref.read(chatInputProvider.notifier).showSendBtn(false);
+        ref.read(chatInputProvider(roomId).notifier).showSendBtn(false);
       }
     }
 
@@ -191,7 +192,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    accountProfile.when(
+                    accountProfile.maybeWhen(
                       data: (data) => ActerAvatar(
                         uniqueId: userId,
                         mode: DisplayMode.User,
@@ -199,23 +200,20 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                         avatar: data.profile.getAvatarImage(),
                         size: data.profile.hasAvatar() ? 18 : 36,
                       ),
-                      error: (e, st) {
-                        debugPrint('Error loading due to $e');
-                        return ActerAvatar(
-                          uniqueId: userId,
-                          mode: DisplayMode.User,
-                          displayName: userId,
-                          size: 36,
-                        );
-                      },
-                      loading: () => const CircularProgressIndicator(),
+                      orElse: () => ActerAvatar(
+                        uniqueId: userId,
+                        mode: DisplayMode.User,
+                        displayName: userId,
+                        size: 36,
+                      ),
                     ),
                     Flexible(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: _TextInputWidget(
                           convo: widget.convo,
-                          onSendButtonPressed: () => onSendButtonPressed(ref),
+                          onSendButtonPressed: () =>
+                              onSendButtonPressed(context, ref),
                         ),
                       ),
                     ),
@@ -228,7 +226,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                     ),
                     if (chatInputState.sendBtnVisible)
                       InkWell(
-                        onTap: () => onSendButtonPressed(ref),
+                        onTap: () => onSendButtonPressed(context, ref),
                         child: const Icon(Atlas.paper_airplane),
                       ),
                   ],
@@ -238,7 +236,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           ),
         ),
         Visibility(
-          visible: ref.watch(chatInputProvider).emojiPickerVisible,
+          visible: ref.watch(chatInputProvider(roomId)).emojiPickerVisible,
           child: EmojiPickerWidget(
             size: Size(
               MediaQuery.of(context).size.width,
@@ -270,8 +268,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   }
 
   void handleAttachment(WidgetRef ref, BuildContext ctx) async {
-    var chatInputStateNotifier = ref.read(chatInputProvider.notifier);
-    var chatInputState = ref.read(chatInputProvider);
+    final roomId = widget.convo.getRoomIdStr();
+    var chatInputStateNotifier = ref.read(chatInputProvider(roomId).notifier);
+    var chatInputState = ref.read(chatInputProvider(roomId));
     var newList = await handleFileSelection(ctx);
     chatInputStateNotifier.updateFileList(newList);
     if (ctx.mounted) {
@@ -314,8 +313,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   }
 
   Future<void> handleFileUpload() async {
-    final chatInputState = ref.read(chatInputProvider);
-    final chatInputNotifier = ref.read(chatInputProvider.notifier);
+    final roomId = widget.convo.getRoomIdStr();
+    final chatInputState = ref.read(chatInputProvider(roomId));
+    final chatInputNotifier = ref.read(chatInputProvider(roomId).notifier);
     final convo = widget.convo;
 
     if (chatInputState.fileList.isNotEmpty) {
@@ -387,10 +387,11 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   }
 
   Widget replyBuilder(BuildContext context, WidgetRef ref, Widget? child) {
-    final chatInputState = ref.watch(chatInputProvider);
+    final roomId = widget.convo.getRoomIdStr();
+    final chatInputState = ref.watch(chatInputProvider(roomId));
     final authorId = chatInputState.repliedToMessage!.author.id;
     final replyProfile = ref.watch(memberProfileProvider(authorId));
-    final inputNotifier = ref.watch(chatInputProvider.notifier);
+    final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
       children: [
         replyProfile.when(
@@ -435,21 +436,29 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     );
   }
 
-  Future<void> onSendButtonPressed(WidgetRef ref) async {
-    final inputNotifier = ref.read(chatInputProvider.notifier);
+  Future<void> onSendButtonPressed(BuildContext context, WidgetRef ref) async {
+    final roomId = widget.convo.getRoomIdStr();
+    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    final mentionReplacements =
+        ref.read(chatInputProvider(roomId)).mentionReplacements;
     final mentionState = ref.read(mentionKeyProvider).currentState!;
-    final markDownProvider = ref.read(messageMarkDownProvider);
-    final markDownNotifier = ref.read(messageMarkDownProvider.notifier);
 
-    inputNotifier.showSendBtn(false);
+    inputNotifier.prepareSending();
     String markdownText = mentionState.controller!.text;
     int messageLength = markdownText.length;
-    markDownProvider.forEach((key, value) {
+    mentionReplacements.forEach((key, value) {
       markdownText = markdownText.replaceAll(key, value);
     });
-    await handleSendPressed(markdownText, messageLength);
-    markDownNotifier.update((state) => {});
-    mentionState.controller!.clear();
+    try {
+      await handleSendPressed(markdownText, messageLength);
+      inputNotifier.messageSent();
+      mentionState.controller!.clear();
+    } catch (e) {
+      if (context.mounted) {
+        customMsgSnackbar(context, 'Error sending message: $e');
+      }
+      inputNotifier.sendingFailed();
+    }
   }
 
   // // push messages in convo
@@ -458,8 +467,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     int messageLength,
   ) async {
     final convo = widget.convo;
-    final chatInputState = ref.watch(chatInputProvider);
-    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
+    final roomId = widget.convo.getRoomIdStr();
+    final chatInputState = ref.watch(chatInputProvider(roomId));
+    final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await convo.typingNotice(false);
@@ -470,7 +480,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         null,
       );
       chatInputNotifier.setRepliedToMessage(null);
-      final inputNotifier = ref.read(chatInputProvider.notifier);
+      final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
       inputNotifier.toggleReplyView(false);
       inputNotifier.setReplyWidget(null);
     } else {
@@ -539,15 +549,21 @@ class _TextInputWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mentionList = ref.watch(mentionListProvider);
     final mentionKey = ref.watch(mentionKeyProvider);
-    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
-    final chatInputState = ref.watch(chatInputProvider);
+    final roomId = convo.getRoomIdStr();
+    final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    final chatInputState = ref.watch(chatInputProvider(roomId));
     final width = MediaQuery.of(context).size.width;
     return FlutterMentions(
-      key: mentionKey,
+      // key: mentionKey,
       suggestionPosition: SuggestionPosition.Top,
       suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
       onMentionAdd: (Map<String, dynamic> roomMember) {
-        _handleMentionAdd(roomMember, ref);
+        String authorId = roomMember['link'];
+        String displayName = roomMember['display'] ?? authorId;
+
+        ref
+            .read(chatInputProvider(roomId).notifier)
+            .addMention(displayName, authorId);
       },
       suggestionListDecoration: BoxDecoration(
         color: Theme.of(context).colorScheme.neutral2,
@@ -567,7 +583,8 @@ class _TextInputWidget extends ConsumerWidget {
         }
       },
       textInputAction: TextInputAction.send,
-      onSubmitted: (value) => onSendButtonPressed(ref),
+      enabled: chatInputState.allowEdit,
+      onSubmitted: (value) => onSendButtonPressed(context, ref),
       style: Theme.of(context).textTheme.bodySmall,
       cursorColor: Theme.of(context).colorScheme.tertiary,
       maxLines: 6,
@@ -635,14 +652,6 @@ class _TextInputWidget extends ConsumerWidget {
     );
   }
 
-  void _handleMentionAdd(Map<String, dynamic> roomMember, WidgetRef ref) {
-    String authorId = roomMember['link'];
-    String displayName = roomMember['display'] ?? authorId;
-    ref.read(messageMarkDownProvider).addAll({
-      '@$displayName': '[$displayName](https://matrix.to/#/$authorId)',
-    });
-  }
-
   // send typing event from client
   Future<bool> typingNotice(bool typing) async {
     return await convo.typingNotice(typing);
@@ -689,6 +698,6 @@ class _ReplyContentWidget extends StatelessWidget {
         ),
       );
     }
-    return messageWidget ?? const SizedBox.shrink();
+    return messageWidget;
   }
 }
