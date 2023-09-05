@@ -100,7 +100,7 @@ impl Convo {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let mut records: Vec<ReceiptRecord> = vec![];
+                let mut records = vec![];
                 for member in room.members(RoomMemberships::ACTIVE).await? {
                     let user_id = member.user_id();
                     if let Some((event_id, receipt)) = room
@@ -214,7 +214,7 @@ impl ConvoController {
     }
 
     pub async fn load_rooms(&mut self, convos: &Vec<Convo>) {
-        let mut rooms: Vec<Convo> = vec![];
+        let mut rooms = vec![];
         for convo in convos {
             let mut convo = convo.clone();
             convo.fetch_latest_message().await;

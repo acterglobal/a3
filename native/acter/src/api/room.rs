@@ -1622,7 +1622,7 @@ impl Room {
                     .store()
                     .get_user_ids(room.room_id(), RoomMemberships::INVITE)
                     .await?;
-                let mut members: Vec<Member> = vec![];
+                let mut members = vec![];
                 for user_id in invited.iter() {
                     if let Some(member) = room.get_member(user_id).await? {
                         members.push(Member {
