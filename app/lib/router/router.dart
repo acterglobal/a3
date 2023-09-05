@@ -9,6 +9,7 @@ import 'package:acter/features/activities/pages/sessions_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/dialogs/create_chat_sheet.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
+import 'package:acter/features/chat/pages/chats_shell.dart';
 import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/events/dialogs/create_event_sheet.dart';
@@ -95,6 +96,10 @@ final GlobalKey<NavigatorState> shellNavKey = GlobalKey<NavigatorState>(
 
 final GlobalKey<NavigatorState> spaceNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'space',
+);
+
+final GlobalKey<NavigatorState> chatShellKey = GlobalKey<NavigatorState>(
+  debugLabel: 'chat',
 );
 
 List<RouteBase> makeRoutes(Ref ref) {
@@ -507,46 +512,53 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         GoRoute(
-          parentNavigatorKey: shellNavKey,
           name: Routes.chat.name,
           path: Routes.chat.route,
           redirect: authGuardRedirect,
-          pageBuilder: (context, state) {
-            return NoTransitionPage(
-              key: state.pageKey,
-              child: const ChatPage(),
-            );
-          },
+          pageBuilder: (context, state) => NoTransitionPage(
+            key: state.pageKey,
+            child: const ChatPage(),
+          ),
         ),
 
-        GoRoute(
-          parentNavigatorKey: shellNavKey,
-          name: Routes.chatroom.name,
-          path: Routes.chatroom.route,
-          redirect: authGuardRedirect,
-          pageBuilder: (context, state) {
-            final roomId = state.pathParameters['roomId']!;
-            ref.read(selectedChatIdProvider.notifier).state = roomId;
+        ShellRoute(
+          navigatorKey: chatShellKey,
+          pageBuilder: (context, state, child) {
             return NoTransitionPage(
               key: state.pageKey,
-              child: RoomPage(roomId: roomId),
+              child: ChatShell(
+                child: child,
+              ),
             );
           },
-        ),
-
-        GoRoute(
-          parentNavigatorKey: shellNavKey,
-          name: Routes.chatProfile.name,
-          path: Routes.chatProfile.route,
-          redirect: authGuardRedirect,
-          pageBuilder: (context, state) {
-            final roomId = state.pathParameters['roomId']!;
-            ref.read(selectedChatIdProvider.notifier).state = roomId;
-            return NoTransitionPage(
-              key: state.pageKey,
-              child: RoomProfilePage(roomId: roomId),
-            );
-          },
+          routes: <RouteBase>[
+            GoRoute(
+              name: Routes.chatroom.name,
+              path: Routes.chatroom.route,
+              redirect: authGuardRedirect,
+              pageBuilder: (context, state) {
+                final roomId = state.pathParameters['roomId']!;
+                ref.read(selectedChatIdProvider.notifier).state = roomId;
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: RoomPage(roomId: roomId),
+                );
+              },
+            ),
+            GoRoute(
+              name: Routes.chatProfile.name,
+              path: Routes.chatProfile.route,
+              redirect: authGuardRedirect,
+              pageBuilder: (context, state) {
+                final roomId = state.pathParameters['roomId']!;
+                ref.read(selectedChatIdProvider.notifier).state = roomId;
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: RoomProfilePage(roomId: roomId),
+                );
+              },
+            ),
+          ],
         ),
 
         GoRoute(
