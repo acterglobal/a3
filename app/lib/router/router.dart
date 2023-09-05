@@ -8,7 +8,7 @@ import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/activities/pages/sessions_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/dialogs/create_chat_sheet.dart';
-import 'package:acter/features/chat/pages/chat_page.dart';
+import 'package:acter/features/chat/pages/chat_select_page.dart';
 import 'package:acter/features/chat/pages/chats_shell.dart';
 import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
@@ -104,6 +104,7 @@ final GlobalKey<NavigatorState> chatShellKey = GlobalKey<NavigatorState>(
 
 List<RouteBase> makeRoutes(Ref ref) {
   final tabKeyNotifier = ref.watch(selectedTabKeyProvider.notifier);
+  final selectedChatNotifier = ref.watch(selectedChatIdProvider.notifier);
   return [
     GoRoute(
       name: Routes.intro.name,
@@ -511,16 +512,6 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
 
-        GoRoute(
-          name: Routes.chat.name,
-          path: Routes.chat.route,
-          redirect: authGuardRedirect,
-          pageBuilder: (context, state) => NoTransitionPage(
-            key: state.pageKey,
-            child: const ChatPage(),
-          ),
-        ),
-
         ShellRoute(
           navigatorKey: chatShellKey,
           pageBuilder: (context, state, child) {
@@ -533,12 +524,24 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
           routes: <RouteBase>[
             GoRoute(
+              name: Routes.chat.name,
+              path: Routes.chat.route,
+              redirect: authGuardRedirect,
+              pageBuilder: (context, state) {
+                selectedChatNotifier.select(null);
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: const ChatSelectPage(),
+                );
+              },
+            ),
+            GoRoute(
               name: Routes.chatroom.name,
               path: Routes.chatroom.route,
               redirect: authGuardRedirect,
               pageBuilder: (context, state) {
                 final roomId = state.pathParameters['roomId']!;
-                ref.read(selectedChatIdProvider.notifier).state = roomId;
+                selectedChatNotifier.select(roomId);
                 return NoTransitionPage(
                   key: state.pageKey,
                   child: RoomPage(roomId: roomId),
@@ -551,7 +554,7 @@ List<RouteBase> makeRoutes(Ref ref) {
               redirect: authGuardRedirect,
               pageBuilder: (context, state) {
                 final roomId = state.pathParameters['roomId']!;
-                ref.read(selectedChatIdProvider.notifier).state = roomId;
+                selectedChatNotifier.select(roomId);
                 return NoTransitionPage(
                   key: state.pageKey,
                   child: RoomProfilePage(roomId: roomId),
