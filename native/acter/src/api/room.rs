@@ -17,7 +17,10 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Room as SdkRoom, RoomMember},
     ruma::{
-        api::client::receipt::create_receipt::v3::ReceiptType as CreateReceiptType,
+        api::client::{
+            receipt::create_receipt::v3::ReceiptType as CreateReceiptType,
+            room::report_content::v3::Request as ReportContentRequest,
+        },
         assign,
         events::{
             reaction::ReactionEventContent,
@@ -235,6 +238,26 @@ impl Member {
             PermissionTest::Message(msg) => self.member.can_send_message(msg),
             PermissionTest::StateEvent(state) => self.member.can_send_state(state),
         }
+    }
+
+    pub async fn ignore(&self) -> Result<bool> {
+        let member = self.member.clone();
+        RUNTIME
+            .spawn(async move {
+                member.ignore().await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn unignore(&self) -> Result<bool> {
+        let member = self.member.clone();
+        RUNTIME
+            .spawn(async move {
+                member.unignore().await?;
+                Ok(true)
+            })
+            .await?
     }
 }
 
@@ -1599,7 +1622,7 @@ impl Room {
                     .store()
                     .get_user_ids(room.room_id(), RoomMemberships::INVITE)
                     .await?;
-                let mut members: Vec<Member> = vec![];
+                let mut members = vec![];
                 for user_id in invited.iter() {
                     if let Some(member) = room.get_member(user_id).await? {
                         members.push(Member {
@@ -2364,6 +2387,34 @@ impl Room {
                     .update_power_levels(vec![(&user_id, Int::from(level))])
                     .await?;
                 Ok(resp.event_id)
+            })
+            .await?
+    }
+
+    pub async fn report_content(
+        &self,
+        event_id: String,
+        score: Option<i32>,
+        reason: Option<String>,
+    ) -> Result<bool> {
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't block content in a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        let int_score = score.map(|value| value.into());
+
+        RUNTIME
+            .spawn(async move {
+                let request = ReportContentRequest::new(
+                    room.room_id().to_owned(),
+                    event_id,
+                    int_score,
+                    reason,
+                );
+                room.client().send(request, None).await?;
+                Ok(true)
             })
             .await?
     }
