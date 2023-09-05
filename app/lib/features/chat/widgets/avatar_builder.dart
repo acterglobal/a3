@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,7 +13,7 @@ class AvatarBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberProfile = ref.watch(memberProfileProvider(userId));
+    final memberProfile = ref.watch(chatMemberProfileProvider(userId));
     return memberProfile.when(
       data: (profile) {
         return Padding(

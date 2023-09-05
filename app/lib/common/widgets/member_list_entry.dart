@@ -290,7 +290,7 @@ class MemberListEntry extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userId = member.userId().toString();
-    final profile = ref.watch(memberProfileProvider(userId));
+    final profile = ref.watch(memberProfileProvider(member));
     final memberStatus = member.membershipStatusStr();
     final List<Widget> trailing = [];
     if (memberStatus == 'Admin') {
