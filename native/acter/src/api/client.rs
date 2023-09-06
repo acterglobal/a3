@@ -9,7 +9,10 @@ use futures::{
     pin_mut,
     stream::{Stream, StreamExt},
 };
-use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
+use futures_signals::{
+    signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream},
+    signal_vec::MutableVec,
+};
 use matrix_sdk::{
     config::SyncSettings,
     event_handler::EventHandlerHandle,
@@ -90,6 +93,7 @@ pub struct Client {
     pub(crate) typing_controller: TypingController,
     pub(crate) receipt_controller: ReceiptController,
     pub(crate) convo_controller: ConvoController,
+    pub(crate) spaces: MutableVec<Space>,
     pub(crate) notifications: Arc<Sender<RumaNotification>>,
 }
 
@@ -128,31 +132,6 @@ impl Default for SpaceFilter {
             include_invited: true,
         }
     }
-}
-
-pub(crate) async fn devide_spaces_from_convos(
-    client: Client,
-    filter: Option<SpaceFilter>,
-) -> (Vec<Space>, Vec<Convo>) {
-    let filter = filter.unwrap_or_default();
-    let (spaces, convos, _) = futures::stream::iter(client.rooms().into_iter())
-        .filter(|room| futures::future::ready(filter.should_include(room)))
-        .fold(
-            (Vec::new(), Vec::new(), client),
-            async move |(mut spaces, mut convos, client), room| {
-                let inner = Room { room: room.clone() };
-
-                if inner.is_space() {
-                    spaces.push(Space::new(client.clone(), inner));
-                } else {
-                    convos.push(Convo::new(client.clone(), inner));
-                }
-
-                (spaces, convos, client)
-            },
-        )
-        .await;
-    (spaces, convos)
 }
 
 #[derive(Clone, Debug, Default)]
@@ -452,6 +431,7 @@ impl Client {
         let mut cl = Client {
             core,
             state: Arc::new(RwLock::new(state)),
+            spaces: Default::default(),
             invitation_controller: InvitationController::new(),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(),
@@ -461,9 +441,32 @@ impl Client {
             notifications: Arc::new(channel(25).0),
         };
 
-        let (_spaces, convos) = devide_spaces_from_convos(cl.clone(), None).await;
-        cl.convo_controller.load_rooms(convos).await;
+        cl.load_from_cache(None).await;
         Ok(cl)
+    }
+
+    async fn load_from_cache(&self, filter: Option<SpaceFilter>) {
+        let filter = filter.unwrap_or_default();
+        let (spaces, convos) = futures::stream::iter(self.rooms().into_iter())
+            .filter(|room| futures::future::ready(filter.should_include(room)))
+            .fold(
+                (Vec::new(), Vec::new()),
+                async move |(mut spaces, mut convos), room| {
+                    let inner = Room { room: room.clone() };
+
+                    if inner.is_space() {
+                        spaces.push(Space::new(self.clone(), inner));
+                    } else {
+                        convos.push(Convo::new(self.clone(), inner));
+                    }
+
+                    (spaces, convos)
+                },
+            )
+            .await;
+
+        self.spaces.lock_mut().replace_cloned(spaces);
+        self.convo_controller.load_rooms(convos).await;
     }
 
     pub fn store(&self) -> &Store {
@@ -570,13 +573,8 @@ impl Client {
                     {
                         info!("received first sync");
                         trace!(user_id=?client.user_id(), "initial synced");
-                        let filter = SpaceFilterBuilder::default()
-                            .build()
-                            .expect("Builder SpaceFilter doesn't fail");
                         // divide_spaces_from_convos must be called after first sync
-                        let (spaces, convos) =
-                            devide_spaces_from_convos(me.clone(), Some(filter)).await;
-                        convo_controller.load_rooms(convos).await;
+                        // FIXME: refresh convos and spaces
                         // load invitations after first sync
                         invitation_controller.load_invitations(&client).await;
 

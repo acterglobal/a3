@@ -55,11 +55,7 @@ use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
 
 use super::{
-    client::{devide_spaces_from_convos, Client, SpaceFilterBuilder},
-    common::OptionBuffer,
-    room::Room,
-    search::PublicSearchResult,
-    RUNTIME,
+    client::Client, common::OptionBuffer, room::Room, search::PublicSearchResult, RUNTIME,
 };
 
 #[derive(Debug, Clone)]
@@ -784,43 +780,31 @@ impl Client {
     }
 
     pub async fn spaces(&self) -> Result<Vec<Space>> {
-        let c = self.clone();
-        let filter = SpaceFilterBuilder::default().include_left(false).build()?;
-        RUNTIME
-            .spawn(async move {
-                let (spaces, convos) = devide_spaces_from_convos(c, Some(filter)).await;
-                Ok(spaces)
-            })
-            .await?
+        Ok(self.spaces.lock_ref().to_vec())
     }
 
     pub async fn get_space(&self, room_id_or_alias: String) -> Result<Space> {
-        if let Ok(room_id) = OwnedRoomId::try_from(room_id_or_alias.clone()) {
-            // alias passes here too
-            if let Some(room) = self.get_room(&room_id) {
-                let space = Space {
-                    client: self.clone(),
-                    inner: Room { room },
-                };
-                return Ok(space);
+        let room_id = match OwnedRoomId::try_from(room_id_or_alias.clone()) {
+            Ok(room_id) => room_id,
+            Err(e) => {
+                if let Ok(alias_id) = OwnedRoomAliasId::try_from(room_id_or_alias) {
+                    let me = self.clone();
+                    RUNTIME
+                        .spawn(async move {
+                            anyhow::Ok(me.resolve_room_alias(&alias_id).await?.room_id)
+                        })
+                        .await??
+                } else {
+                    bail!("Neither roomId nor alias provided");
+                }
             }
-        }
-        // if None, it is alias
-        if let Ok(alias_id) = OwnedRoomAliasId::try_from(room_id_or_alias) {
-            let me = self.clone();
-            RUNTIME
-                .spawn(async move {
-                    let response = me.resolve_room_alias(&alias_id).await?;
-                    for space in me.spaces().await?.into_iter() {
-                        if space.inner.room.room_id() == response.room_id {
-                            return Ok(space);
-                        }
-                    }
-                    bail!("Room with alias not found");
-                })
-                .await?
-        } else {
-            bail!("Neither roomId nor alias provided");
-        }
+        };
+
+        self.spaces
+            .lock_ref()
+            .iter()
+            .find(|s| s.room_id() == &room_id)
+            .map(Clone::clone)
+            .context("Space not found")
     }
 }
