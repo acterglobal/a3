@@ -78,7 +78,7 @@ impl Convo {
     }
 
     pub fn set_latest_message(&mut self, msg: Box<RoomMessage>) {
-        self.latest_message = Some(*msg.clone());
+        self.latest_message = Some(*msg);
     }
 
     pub fn latest_message(&self) -> Option<RoomMessage> {
