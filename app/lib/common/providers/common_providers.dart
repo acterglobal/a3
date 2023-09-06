@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/network_notifier.dart';
+import 'package:acter/common/providers/notifiers/chat_notifier.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Account, Convo, Member, OptionString, UserProfile;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -48,9 +48,19 @@ final accountProfileProvider = FutureProvider((ref) async {
   return AccountProfile(account, profile);
 });
 
+/// Provider the profile data of a the given space, keeps up to date with underlying client
+final convoProvider =
+    AsyncNotifierProvider.family<AsyncConvoNotifier, Convo?, Convo>(
+  () => AsyncConvoNotifier(),
+);
+
 // Chat Providers
 final chatProfileDataProvider =
-    FutureProvider.family<ProfileData, Convo>((ref, chat) async {
+    FutureProvider.family<ProfileData, Convo>((ref, convo) async {
+  final chat = await ref.watch(convoProvider(convo).future);
+  if (chat == null) {
+    throw 'Chat not accessible';
+  }
   // FIXME: how to get informed about updates!?!
   final profile = chat.getProfile();
   final displayName = await profile.getDisplayName();
@@ -59,6 +69,15 @@ final chatProfileDataProvider =
   }
   final avatar = await profile.getThumbnail(48, 48);
   return ProfileData(displayName.text(), avatar.data());
+});
+
+final latestMessageProvider =
+    FutureProvider.autoDispose.family<RoomMessage?, Convo>((ref, convo) async {
+  final chat = await ref.watch(convoProvider(convo).future);
+  if (chat == null) {
+    throw 'Chat not accessible';
+  }
+  return chat.latestMessage();
 });
 
 final chatProfileDataProviderById =

@@ -43,31 +43,40 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     final client = ref.watch(clientProvider);
     String roomId = widget.room.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
-    final latestMsg = widget.room.latestMessage();
+    final latestMsg = ref.watch(latestMessageProvider(widget.room));
     // ToDo: UnreadCounter
     return convoProfile.when(
       data: (profile) => ConvoWithProfileCard(
-        roomId: roomId,
-        showParent: widget.showParent,
-        profile: profile,
-        onTap: () {
-          context.pushNamed(
-            Routes.chatroom.name,
-            pathParameters: {'roomId': roomId},
-          );
-        },
-        subtitle: _SubtitleWidget(
-          room: widget.room,
-          latestMessage: latestMsg,
-        ),
-        trailing: _TrailingWidget(
-          // controller: receiptController,
-          room: widget.room,
-          latestMessage: latestMsg,
-          activeMembers: activeMembers,
-          userId: client!.userId().toString(),
-        ),
-      ),
+          roomId: roomId,
+          showParent: widget.showParent,
+          profile: profile,
+          onTap: () {
+            context.pushNamed(
+              Routes.chatroom.name,
+              pathParameters: {'roomId': roomId},
+            );
+          },
+          subtitle: latestMsg.when(
+              data: (latestMsg) => latestMsg != null
+                  ? _SubtitleWidget(
+                      room: widget.room,
+                      latestMessage: latestMsg,
+                    )
+                  : const SizedBox.shrink(),
+              error: (e, s) => Text('Error: $e'),
+              loading: () => const SizedBox.shrink()),
+          trailing: latestMsg.when(
+              data: (latestMsg) => latestMsg != null
+                  ? _TrailingWidget(
+                      // controller: receiptController,
+                      room: widget.room,
+                      latestMessage: latestMsg,
+                      activeMembers: activeMembers,
+                      userId: client!.userId().toString(),
+                    )
+                  : const SizedBox.shrink(),
+              error: (e, s) => Text('Error: $e'),
+              loading: () => const SizedBox.shrink())),
       error: (error, stackTrace) => const Text('Failed to load Conversation'),
       loading: () => const CircularProgressIndicator(),
     );
@@ -84,7 +93,7 @@ class _SubtitleWidget extends ConsumerWidget {
     required this.latestMessage,
   });
   final Convo room;
-  final RoomMessage? latestMessage;
+  final RoomMessage latestMessage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -101,10 +110,7 @@ class _SubtitleWidget extends ConsumerWidget {
         );
       }
     }
-    if (latestMessage == null) {
-      return const SizedBox.shrink();
-    }
-    RoomEventItem? eventItem = latestMessage!.eventItem();
+    RoomEventItem? eventItem = latestMessage.eventItem();
     if (eventItem == null) {
       return const SizedBox.shrink();
     }
@@ -375,22 +381,19 @@ class _SubtitleWidget extends ConsumerWidget {
 class _TrailingWidget extends ConsumerWidget {
   final Convo room;
   final List<Member> activeMembers;
-  final RoomMessage? latestMessage;
+  final RoomMessage latestMessage;
   final String? userId;
 
   const _TrailingWidget({
     required this.room,
     required this.activeMembers,
-    this.latestMessage,
+    required this.latestMessage,
     required this.userId,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (latestMessage == null) {
-      return const SizedBox.shrink();
-    }
-    RoomEventItem? eventItem = latestMessage!.eventItem();
+    RoomEventItem? eventItem = latestMessage.eventItem();
     if (eventItem == null) {
       return const SizedBox.shrink();
     }
@@ -399,7 +402,7 @@ class _TrailingWidget extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          jiffyTime(latestMessage!.eventItem()!.originServerTs()),
+          jiffyTime(latestMessage.eventItem()!.originServerTs()),
           style: Theme.of(context).textTheme.labelMedium,
         ),
       ],
