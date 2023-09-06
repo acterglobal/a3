@@ -69,7 +69,7 @@ impl Convo {
                 // skip the state event
                 // if let Ok(AnySyncTimelineEvent::MessageLike(m)) = event.event.deserialize() {
                 if let Some(msg) = sync_event_to_message(&event.event, room.room_id().to_owned()) {
-                    self.set_latest_message(msg);
+                    self.set_latest_message(Box::new(msg));
                     return;
                 }
                 // }
@@ -77,11 +77,8 @@ impl Convo {
         }
     }
 
-    fn set_latest_message(&mut self, mut msg: RoomMessage) {
-        if let Some(mut event_item) = msg.event_item() {
-            msg.set_event_item(Some(event_item));
-        }
-        self.latest_message = Some(msg);
+    pub fn set_latest_message(&mut self, msg: Box<RoomMessage>) {
+        self.latest_message = Some(*msg.clone());
     }
 
     pub fn latest_message(&self) -> Option<RoomMessage> {
@@ -241,7 +238,7 @@ impl ConvoController {
                     .deserialize_as::<OriginalSyncRoomEncryptedEvent>()
                     .unwrap();
                 let msg = RoomMessage::room_encrypted_from_sync_event(ev, room_id.to_owned());
-                convo.set_latest_message(msg);
+                convo.set_latest_message(Box::new(msg));
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                     convos.remove(idx);
@@ -272,7 +269,7 @@ impl ConvoController {
 
             let mut convo = Convo::new(Room { room: room.clone() });
             let msg = RoomMessage::room_message_from_sync_event(ev, room_id.to_owned(), sent_by_me);
-            convo.set_latest_message(msg);
+            convo.set_latest_message(Box::new(msg));
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                 convos.remove(idx);
@@ -299,7 +296,7 @@ impl ConvoController {
 
                 let mut convo = Convo::new(Room { room: room.clone() });
                 let msg = RoomMessage::room_member_from_sync_event(ev, room_id.to_owned());
-                convo.set_latest_message(msg);
+                convo.set_latest_message(Box::new(msg));
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                     convos.remove(idx);
@@ -352,7 +349,7 @@ impl ConvoController {
 
             let mut convo = Convo::new(Room { room: room.clone() });
             let msg = RoomMessage::room_redaction_from_sync_event(ev, room_id.to_owned());
-            convo.set_latest_message(msg);
+            convo.set_latest_message(Box::new(msg));
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                 convos.remove(idx);

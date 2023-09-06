@@ -13832,6 +13832,18 @@ class Api {
       int Function(
         int,
       )>();
+  late final _convoSetLatestMessagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Convo_set_latest_message");
+
+  late final _convoSetLatestMessage = _convoSetLatestMessagePtr.asFunction<
+      void Function(
+        int,
+        int,
+      )>();
   late final _convoLatestMessagePtr = _lookup<
       ffi.NativeFunction<
           _ConvoLatestMessageReturn Function(
@@ -30384,6 +30396,22 @@ class Convo {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__convoTimelineStreamFuturePoll);
     return tmp2;
+  }
+
+  /// Update the last message of room
+  void setLatestMessage(
+    RoomMessage msg,
+  ) {
+    final tmp1 = msg;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._convoSetLatestMessage(
+      tmp0,
+      tmp2,
+    );
+    return;
   }
 
   /// The last message sent to the room

@@ -82,9 +82,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // parses `RoomMessage` event to `types.Message` and updates messages list
   Future<void> _parseEvent(TimelineDiff timelineEvent) async {
-    debugPrint('DiffRx: ${timelineEvent.action()}');
+    final action = timelineEvent.action();
+    debugPrint('DiffRx: $action');
     final messagesNotifier = ref.read(messagesProvider.notifier);
-    switch (timelineEvent.action()) {
+    final chatsNotifier = ref.read(chatListProvider.notifier);
+    switch (action) {
       case 'Append':
         List<RoomMessage> messages = timelineEvent.values()!.toList();
         for (var m in messages) {
@@ -103,7 +105,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           }
         }
         break;
-      case 'Set':
       case 'Insert':
         RoomMessage m = timelineEvent.value()!;
         final message = _parseMessage(m);
@@ -127,6 +128,31 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (eventItem != null) {
           await _fetchEventBinary(eventItem.msgType(), message.id);
         }
+        break;
+      case 'Set': // used to update UnableToDecrypt message
+        RoomMessage m = timelineEvent.value()!;
+        final message = _parseMessage(m);
+        if (message == null || message is types.UnsupportedMessage) {
+          break;
+        }
+        int index = ref
+            .read(messagesProvider)
+            .indexWhere((msg) => message.id == msg.id);
+        if (index == -1) {
+          messagesNotifier.addMessage(message);
+        } else {
+          // update event may be fetched prior to insert event
+          messagesNotifier.replaceMessage(index, message);
+        }
+        final repliedTo = _getRepliedTo(message);
+        if (repliedTo != null) {
+          await _fetchOriginalContent(repliedTo, message.id);
+        }
+        RoomEventItem? eventItem = m.eventItem();
+        if (eventItem != null) {
+          await _fetchEventBinary(eventItem.msgType(), message.id);
+        }
+        chatsNotifier.updateLatestMessage(m);
         break;
       case 'Remove':
         int index = timelineEvent.index()!;
