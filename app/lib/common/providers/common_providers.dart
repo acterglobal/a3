@@ -4,7 +4,6 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/network_notifier.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Account, Convo, Member, OptionString, UserProfile;
@@ -89,22 +88,11 @@ final relatedChatsProvider = FutureProvider.autoDispose
 });
 
 // Member Providers
+// TODO: improve this to be reusable for space and chat members alike.
 final memberProfileProvider =
-    FutureProvider.family<ProfileData, String>((ref, userId) async {
-  final member = ref.watch(memberProvider(userId));
-  return member.maybeWhen(
-    data: (data) async {
-      UserProfile profile = data!.getProfile();
-      OptionString displayName = await profile.getDisplayName();
-      final avatar = await profile.getThumbnail(62, 60);
-      return ProfileData(displayName.text(), avatar.data());
-    },
-    orElse: () => ProfileData('', null),
-  );
-});
-
-final memberProvider =
-    FutureProvider.family<Member?, String>((ref, userId) async {
-  final convo = ref.watch(currentConvoProvider);
-  return await convo!.getMember(userId);
+    FutureProvider.family<ProfileData, Member>((ref, member) async {
+  UserProfile profile = member.getProfile();
+  OptionString displayName = await profile.getDisplayName();
+  final avatar = await profile.getThumbnail(62, 60);
+  return ProfileData(displayName.text(), avatar.data());
 });
