@@ -170,7 +170,8 @@ class MyProfile extends ConsumerWidget {
                   ),
                 ),
                 Container(
-                  width: isDesktop ? 400 : MediaQuery.of(context).size.width -100,
+                  width: isDesktop ? 400 : MediaQuery.of(context).size.width -15,
+                  margin:  const EdgeInsets.symmetric(horizontal: 20),
                   alignment: Alignment.center,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -325,7 +326,7 @@ class ProfileTile extends StatelessWidget {
           Text(title),
             ],
           ),
-          const Icon(Icons.arrow_forward_ios,size: 19,)
+          const Icon(Icons.arrow_forward_ios,size: 19,),
         ],
       ),
     );
