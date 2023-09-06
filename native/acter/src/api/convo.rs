@@ -30,8 +30,12 @@ use matrix_sdk::{
     },
     Client as SdkClient, RoomMemberships,
 };
-use std::{ops::Deref, path::PathBuf};
-use tracing::info;
+use std::{
+    ops::Deref,
+    path::PathBuf,
+    sync::{Arc, RwLock},
+};
+use tracing::{error, info};
 
 use super::{
     client::Client,
@@ -45,7 +49,7 @@ use super::{
 pub struct Convo {
     client: Client,
     inner: Room,
-    latest_message: Option<RoomMessage>,
+    latest_message: Arc<RwLock<Option<RoomMessage>>>,
 }
 
 impl Convo {
@@ -57,7 +61,7 @@ impl Convo {
         }
     }
 
-    async fn fetch_latest_message(&mut self) {
+    async fn fetch_latest_message(&self) {
         let room = self.room.clone();
         if let Ok(msg) = self
             .client
@@ -65,12 +69,10 @@ impl Convo {
             .get_raw(&self.latest_msg_storage_key())
             .await
         {
-            println!("room message found, setting");
-            self.set_latest_message(msg, false);
+            self.set_latest_message(msg, false, true).await;
             return;
         }
 
-        print!("attempting to load message from remote");
         let options = MessagesOptions::backward();
         if let Ok(messages) = room.messages(options).await {
             let events = messages
@@ -83,7 +85,7 @@ impl Convo {
                 // skip the state event
                 // if let Ok(AnySyncTimelineEvent::MessageLike(m)) = event.event.deserialize() {
                 if let Some(msg) = sync_event_to_message(&event.event, room.room_id().to_owned()) {
-                    self.set_latest_message(msg, true).await;
+                    self.set_latest_message(msg, true, true).await;
                     return;
                 }
                 // }
@@ -95,7 +97,23 @@ impl Convo {
         format!("{}::latest_msg", self.room.room_id())
     }
 
-    async fn set_latest_message(&mut self, mut msg: RoomMessage, update_store: bool) {
+    async fn set_latest_message(&self, msg: RoomMessage, update_store: bool, only_if_empty: bool) {
+        match self.latest_message.write() {
+            Err(e) => error!(
+                ?e,
+                id = ?self.room.room_id(),
+                "Acquiring the latest message rw lock failed"
+            ),
+            Ok(mut e) => {
+                if e.is_some() && only_if_empty {
+                    // we do not do anything
+                    info!("Skipping: already set and we aren't supposed to overwrite");
+                    return;
+                }
+                *e = Some(msg.clone());
+            }
+        };
+
         if (update_store) {
             if let Err(e) = self
                 .client
@@ -103,22 +121,42 @@ impl Convo {
                 .set_raw(&self.latest_msg_storage_key(), &msg)
                 .await
             {
-                tracing::error!(room_id = ?self.room.room_id(), error=?e, "Error saving latest message")
+                error!(room_id = ?self.room.room_id(), error=?e, "Error saving latest message")
             }
         }
-        self.latest_message = Some(msg);
     }
 
     pub fn latest_message_ts(&self) -> u64 {
-        self.latest_message
-            .as_ref()
-            .and_then(|m| m.event_item())
-            .map(|e| e.origin_server_ts())
-            .unwrap_or_default()
+        match self.latest_message.read() {
+            Err(e) => {
+                error!(
+                    ?e,
+                    id = ?self.room.room_id(),
+                    "Acquiring the latest message read lock failed"
+                );
+                return 0;
+            }
+            Ok(o) => o
+                .as_ref()
+                .and_then(|m| m.event_item())
+                .map(|e| e.origin_server_ts())
+                .unwrap_or_default(),
+        }
     }
 
     pub fn latest_message(&self) -> Option<RoomMessage> {
-        self.latest_message.clone()
+        let latest_message = match self.latest_message.read() {
+            Err(e) => {
+                error!(
+                    ?e,
+                    id = ?self.room.room_id(),
+                    "Acquiring the latest message read lock failed"
+                );
+                return None;
+            }
+            Ok(o) => o.clone(),
+        };
+        latest_message
     }
 
     pub fn get_room_id(&self) -> OwnedRoomId {
@@ -282,11 +320,11 @@ impl ConvoController {
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                     let mut convo = convos.remove(idx);
-                    convo.set_latest_message(msg, true);
+                    convo.set_latest_message(msg, true, false);
                     convos.insert(0, convo.clone());
                 } else {
                     let mut convo = Convo::new(client.clone(), Room { room: room.clone() });
-                    convo.set_latest_message(msg, true);
+                    convo.set_latest_message(msg, true, false);
                     convos.insert(0, convo);
                 }
             }
@@ -314,11 +352,11 @@ impl ConvoController {
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                 let mut convo = convos.remove(idx);
-                convo.set_latest_message(msg, true);
+                convo.set_latest_message(msg, true, false);
                 convos.insert(0, convo.clone());
             } else {
                 let mut convo = Convo::new(client.clone(), Room { room: room.clone() });
-                convo.set_latest_message(msg, true);
+                convo.set_latest_message(msg, true, false);
                 convos.insert(0, convo);
             }
         }
@@ -342,11 +380,11 @@ impl ConvoController {
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                     let mut convo = convos.remove(idx);
-                    convo.set_latest_message(msg, true);
+                    convo.set_latest_message(msg, true, false);
                     convos.insert(0, convo.clone());
                 } else {
                     let mut convo = Convo::new(client.clone(), Room { room: room.clone() });
-                    convo.set_latest_message(msg, true);
+                    convo.set_latest_message(msg, true, false);
                     convos.insert(0, convo);
                 }
             }
@@ -391,11 +429,11 @@ impl ConvoController {
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                 let mut convo = convos.remove(idx);
-                convo.set_latest_message(msg, true);
+                convo.set_latest_message(msg, true, false);
                 convos.insert(0, convo.clone());
             } else {
                 let mut convo = Convo::new(client.clone(), Room { room: room.clone() });
-                convo.set_latest_message(msg, true);
+                convo.set_latest_message(msg, true, false);
                 convos.insert(0, convo);
             }
         }
@@ -549,24 +587,19 @@ impl Client {
             .await?;
         Ok(Convo {
             client: self.clone(),
-            latest_message: None,
+            latest_message: Default::default(),
             inner: room,
         })
     }
 
     pub async fn convo(&self, room_id_or_alias: String) -> Result<Convo> {
-        let me = self.clone();
-        RUNTIME
-            .spawn(async move {
-                let Ok(room) = me.room(room_id_or_alias).await else {
-                    bail!("Neither roomId nor alias provided");
-                };
-                if room.is_space() {
-                    bail!("Not a regular convo but an (acter) space!");
-                }
-                Ok(Convo::new(me.clone(), room))
-            })
-            .await?
+        let room_str = room_id_or_alias.as_str();
+        for convo in self.convo_controller.convos.lock_ref().iter() {
+            if convo.get_room_id().as_str() == room_str {
+                return Ok(convo.clone());
+            }
+        }
+        bail!("Room not found");
     }
 
     pub fn convos_rx(&self) -> SignalStream<MutableSignalCloned<Vec<Convo>>> {
