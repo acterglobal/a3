@@ -11,7 +11,9 @@ use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{
     room::{Joined, Room},
-    ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId, OwnedUserId},
+    ruma::{
+        events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId, OwnedUserId,
+    },
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
