@@ -59,8 +59,8 @@ features = ["templates"]
 workspace = true
 features = [
     "anyhow",
+    "automatic-room-key-forwarding",
     "bundled-sqlite",
-    "e2e-encryption",
     "markdown",
 #   "qrcode",
     "rustls-tls",
