@@ -72,6 +72,13 @@ struct HistoryState {
 
 // internal API
 impl Space {
+    pub(crate) fn update_room(self, room: Room) -> Self {
+        let Space { client, .. } = self;
+        Space {
+            client,
+            inner: room,
+        }
+    }
     pub(crate) async fn setup_handles(&self) -> Vec<EventHandlerHandle> {
         self.room
             .client()

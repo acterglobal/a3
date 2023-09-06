@@ -10,8 +10,8 @@ use futures::{
     stream::{Stream, StreamExt},
 };
 use futures_signals::{
-    signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream},
-    signal_vec::MutableVec,
+    signal::{Mutable, MutableLockMut, MutableSignalCloned, SignalExt, SignalStream},
+    signal_vec::{MutableVec, MutableVecLockMut},
 };
 use matrix_sdk::{
     config::SyncSettings,
@@ -441,13 +441,31 @@ impl Client {
             notifications: Arc::new(channel(25).0),
         };
 
-        cl.load_from_cache(None).await;
+        cl.load_from_cache().await;
         Ok(cl)
     }
 
-    async fn load_from_cache(&self, filter: Option<SpaceFilter>) {
+    async fn load_from_cache(&self) {
+        let (spaces, chats) = self.get_spaces_and_chats(None).await;
+        self.spaces.lock_mut().replace_cloned(
+            spaces
+                .into_iter()
+                .map(|r| Space::new(self.clone(), r))
+                .collect(),
+        );
+        self.convo_controller
+            .load_rooms(
+                chats
+                    .into_iter()
+                    .map(|r| Convo::new(self.clone(), r))
+                    .collect(),
+            )
+            .await;
+    }
+
+    async fn get_spaces_and_chats(&self, filter: Option<SpaceFilter>) -> (Vec<Room>, Vec<Room>) {
         let filter = filter.unwrap_or_default();
-        let (spaces, convos) = futures::stream::iter(self.rooms().into_iter())
+        futures::stream::iter(self.rooms().into_iter())
             .filter(|room| futures::future::ready(filter.should_include(room)))
             .fold(
                 (Vec::new(), Vec::new()),
@@ -455,18 +473,85 @@ impl Client {
                     let inner = Room { room: room.clone() };
 
                     if inner.is_space() {
-                        spaces.push(Space::new(self.clone(), inner));
+                        spaces.push(inner);
                     } else {
-                        convos.push(Convo::new(self.clone(), inner));
+                        convos.push(inner);
                     }
 
                     (spaces, convos)
                 },
             )
-            .await;
+            .await
+    }
 
-        self.spaces.lock_mut().replace_cloned(spaces);
-        self.convo_controller.load_rooms(convos).await;
+    async fn refresh_rooms(&self, changed_rooms: Vec<&OwnedRoomId>) {
+        let update_keys = {
+            let mut updated: Vec<String> = vec![];
+            let mut trigger_spaces_key = false;
+
+            let mut chats = self.convo_controller.convos.lock_mut();
+            let mut spaces = self.spaces.lock_mut();
+
+            let remove_from = |target: &mut MutableVecLockMut<Space>, r_id| {
+                if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
+                    target.remove(idx);
+                    true
+                } else {
+                    false
+                }
+            };
+
+            let remove_from_chat = |target: &mut MutableLockMut<Vec<Convo>>, r_id| {
+                if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
+                    target.remove(idx);
+                }
+            };
+
+            for r_id in changed_rooms {
+                let Some(room) = self.core.client().get_room(&r_id) else {
+                    if remove_from(&mut spaces, r_id) {
+                        trigger_spaces_key = true;
+                    }
+                    remove_from_chat(&mut chats, r_id);
+                    continue
+                };
+
+                let inner = Room { room: room.clone() };
+
+                if inner.is_space() {
+                    if let Some(space_idx) = spaces.iter().position(|s| s.room_id() == r_id) {
+                        let space = spaces.remove(space_idx).update_room(inner);
+                        spaces.insert_cloned(space_idx, space);
+                    } else {
+                        // not found yet, we need to trigger the `SPACES` key
+                        // and add it
+                        trigger_spaces_key = true;
+                        spaces.push_cloned(Space::new(self.clone(), inner))
+                    }
+                    // also clear from convos if it was in there...
+                    remove_from_chat(&mut chats, r_id);
+                    updated.push(r_id.to_string());
+                } else {
+                    if let Some(chat_idx) = chats.iter().position(|s| s.room_id() == r_id) {
+                        let chat = chats.remove(chat_idx).update_room(inner);
+                        chats.insert(chat_idx, chat);
+                    } else {
+                        chats.push(Convo::new(self.clone(), inner))
+                    }
+                    // also clear from convos if it was in there...
+                    if remove_from(&mut spaces, r_id) {
+                        trigger_spaces_key = true;
+                    }
+                    updated.push(r_id.to_string());
+                }
+            }
+
+            if trigger_spaces_key {
+                updated.push("SPACES".to_owned());
+            }
+            updated
+        };
+        self.executor().notify(update_keys);
     }
 
     pub fn store(&self) -> &Store {
@@ -573,9 +658,6 @@ impl Client {
                     {
                         info!("received first sync");
                         trace!(user_id=?client.user_id(), "initial synced");
-                        // divide_spaces_from_convos must be called after first sync
-                        // FIXME: refresh convos and spaces
-                        // load invitations after first sync
                         invitation_controller.load_invitations(&client).await;
 
                         initial.store(false, Ordering::SeqCst);
@@ -624,12 +706,10 @@ impl Client {
                         .keys()
                         .chain(response.rooms.leave.keys())
                         .chain(response.rooms.invite.keys())
-                        .map(|id| id.to_string()) // FIXME: handle aliases, too?!?
-                        .collect::<Vec<String>>();
+                        .collect::<Vec<_>>();
 
                     if (!changed_rooms.is_empty()) {
-                        changed_rooms.push("SPACES".to_owned());
-                        me.executor().notify(changed_rooms);
+                        me.refresh_rooms(changed_rooms).await;
                     }
 
                     if let Ok(mut w) = state.try_write() {

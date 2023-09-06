@@ -61,6 +61,19 @@ impl Convo {
         }
     }
 
+    pub(crate) fn update_room(self, room: Room) -> Self {
+        let Convo {
+            client,
+            latest_message,
+            ..
+        } = self;
+        Convo {
+            client,
+            latest_message,
+            inner: room,
+        }
+    }
+
     async fn fetch_latest_message(&self) {
         let room = self.room.clone();
         if let Ok(msg) = self
@@ -197,7 +210,7 @@ impl Deref for Convo {
 
 #[derive(Clone, Debug)]
 pub(crate) struct ConvoController {
-    convos: Mutable<Vec<Convo>>,
+    pub(crate) convos: Mutable<Vec<Convo>>,
     encrypted_event_handle: Option<EventHandlerHandle>,
     message_event_handle: Option<EventHandlerHandle>,
     member_event_handle: Option<EventHandlerHandle>,
