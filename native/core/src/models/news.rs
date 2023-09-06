@@ -1,4 +1,4 @@
-use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId};
+use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
@@ -27,6 +27,10 @@ impl Deref for NewsEntry {
 impl NewsEntry {
     pub fn room_id(&self) -> &RoomId {
         &self.meta.room_id
+    }
+
+    pub fn sender(&self) -> &UserId {
+        &self.meta.sender
     }
 
     pub fn key_from_event(event_id: &EventId) -> String {

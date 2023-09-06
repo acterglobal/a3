@@ -11770,6 +11770,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _newsEntrySenderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NewsEntry_sender");
+
+  late final _newsEntrySender = _newsEntrySenderPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _newsEntryDraftAddTextSlidePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -12306,6 +12316,16 @@ class Api {
       _ActerPinRoomIdStrReturn Function(
         int,
       )>();
+  late final _acterPinSenderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ActerPin_sender");
+
+  late final _acterPinSender = _acterPinSenderPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _acterPinUpdateBuilderPtr = _lookup<
       ffi.NativeFunction<
           _ActerPinUpdateBuilderReturn Function(
@@ -12578,6 +12598,16 @@ class Api {
 
   late final _calendarEventRoomIdStr = _calendarEventRoomIdStrPtr.asFunction<
       _CalendarEventRoomIdStrReturn Function(
+        int,
+      )>();
+  late final _calendarEventSenderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CalendarEvent_sender");
+
+  late final _calendarEventSender = _calendarEventSenderPtr.asFunction<
+      int Function(
         int,
       )>();
   late final _calendarEventUpdateBuilderPtr = _lookup<
@@ -25816,6 +25846,21 @@ class NewsEntry {
     return tmp2;
   }
 
+  /// get sender id
+  UserId sender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntrySender(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -26941,6 +26986,21 @@ class ActerPin {
     return tmp2;
   }
 
+  /// sender id
+  UserId sender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinSender(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
+
   /// make a builder for updating the pin
   PinUpdateBuilder updateBuilder() {
     var tmp0 = 0;
@@ -27406,6 +27466,7 @@ class CalendarEvent {
     return tmp2;
   }
 
+  /// room id
   String roomIdStr() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -27432,6 +27493,21 @@ class CalendarEvent {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// sender id
+  UserId sender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventSender(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
     return tmp2;
   }
 

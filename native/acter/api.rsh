@@ -126,6 +126,9 @@ object NewsEntry {
 
     /// get room id
     fn room_id() -> RoomId;
+
+    /// get sender id
+    fn sender() -> UserId;
 }
 
 object NewsEntryDraft {
@@ -223,6 +226,9 @@ object ActerPin {
     /// the room/space this item belongs to
     fn room_id_str() -> string;
 
+    /// sender id
+    fn sender() -> UserId;
+
     /// make a builder for updating the pin
     fn update_builder() -> Result<PinUpdateBuilder>;
 
@@ -293,7 +299,10 @@ object CalendarEvent {
     // fn locations() -> Vec<Location>;
     /// event id
     fn event_id() -> EventId;
+    /// room id
     fn room_id_str() -> string;
+    /// sender id
+    fn sender() -> UserId;
     /// update builder
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
