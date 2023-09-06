@@ -1,11 +1,11 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
-class CustomButton extends StatelessWidget {
+class DefaultButton extends StatelessWidget {
   final void Function()? onPressed;
   final String title;
 
-  const CustomButton({
+  const DefaultButton({
     Key? key,
     required this.onPressed,
     required this.title,

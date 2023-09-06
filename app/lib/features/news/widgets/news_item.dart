@@ -62,7 +62,7 @@ class NewsItem extends ConsumerWidget {
 
       case 'text':
         return Stack(
-          children: [
+          children: <Widget>[
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(left: 8, right: 80, bottom: 8),
@@ -90,12 +90,9 @@ class NewsItem extends ConsumerWidget {
                 ),
               ),
             ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: NewsSideBar(
-                news: news,
-                index: index,
-              ),
+            NewsSideBar(
+              news: news,
+              index: index,
             ),
           ],
         );
