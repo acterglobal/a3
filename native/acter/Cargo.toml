@@ -59,11 +59,11 @@ features = ["templates"]
 workspace = true
 features = [
     "anyhow",
+    "bundled-sqlite",
     "e2e-encryption",
     "markdown",
 #   "qrcode",
     "rustls-tls",
-    "bundled-sqlite",
 ]
 
 [dependencies.matrix-sdk-base]
