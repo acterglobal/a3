@@ -42,8 +42,7 @@ use matrix_sdk::{
     },
     Client, RoomMemberships, RoomState,
 };
-use matrix_sdk_ui::timeline::RoomExt;
-use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
+use std::{io::Write, ops::Deref, path::PathBuf};
 use tracing::{error, info};
 
 use super::{
@@ -51,7 +50,6 @@ use super::{
     api::FfiBuffer,
     message::RoomMessage,
     profile::{RoomProfile, UserProfile},
-    stream::TimelineStream,
     RUNTIME,
 };
 
@@ -514,18 +512,6 @@ impl Room {
                     member,
                     acter_app_settings: acter_app_settings.clone(),
                 })
-            })
-            .await?
-    }
-
-    pub async fn timeline_stream(&self) -> Result<TimelineStream> {
-        let room = self.room.clone();
-
-        RUNTIME
-            .spawn(async move {
-                let timeline = Arc::new(room.timeline().await);
-                let stream = TimelineStream::new(room, timeline);
-                Ok(stream)
             })
             .await?
     }

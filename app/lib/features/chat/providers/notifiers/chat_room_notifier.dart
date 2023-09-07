@@ -85,7 +85,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     final action = timelineEvent.action();
     debugPrint('DiffRx: $action');
     final messagesNotifier = ref.read(messagesProvider.notifier);
-    final chatsNotifier = ref.read(chatListProvider.notifier);
     switch (action) {
       case 'Append':
         List<RoomMessage> messages = timelineEvent.values()!.toList();
@@ -105,6 +104,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           }
         }
         break;
+      case 'Set': // used to update UnableToDecrypt message
       case 'Insert':
         RoomMessage m = timelineEvent.value()!;
         final message = _parseMessage(m);
@@ -128,31 +128,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (eventItem != null) {
           await _fetchEventBinary(eventItem.msgType(), message.id);
         }
-        break;
-      case 'Set': // used to update UnableToDecrypt message
-        RoomMessage m = timelineEvent.value()!;
-        final message = _parseMessage(m);
-        if (message == null || message is types.UnsupportedMessage) {
-          break;
-        }
-        int index = ref
-            .read(messagesProvider)
-            .indexWhere((msg) => message.id == msg.id);
-        if (index == -1) {
-          messagesNotifier.addMessage(message);
-        } else {
-          // update event may be fetched prior to insert event
-          messagesNotifier.replaceMessage(index, message);
-        }
-        final repliedTo = _getRepliedTo(message);
-        if (repliedTo != null) {
-          await _fetchOriginalContent(repliedTo, message.id);
-        }
-        RoomEventItem? eventItem = m.eventItem();
-        if (eventItem != null) {
-          await _fetchEventBinary(eventItem.msgType(), message.id);
-        }
-        chatsNotifier.updateLatestMessage(m);
         break;
       case 'Remove':
         int index = timelineEvent.index()!;

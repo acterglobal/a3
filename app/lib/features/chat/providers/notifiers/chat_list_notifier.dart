@@ -47,24 +47,4 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
     convos.insert(to, convo);
     state = ChatListState.data(chats: convos);
   }
-
-  // used to update UnableToDecrypt message
-  void updateLatestMessage(RoomMessage msg) {
-    final convos = asyncChats.requireValue;
-    for (var i = 0; i < convos.length; i++) {
-      final oldMsg = convos[i].latestMessage();
-      if (oldMsg != null) {
-        final eventItem = oldMsg.eventItem();
-        if (eventItem != null) {
-          if (eventItem.eventId() == msg.eventItem()?.eventId()) {
-            final convo = convos.removeAt(i);
-            convo.setLatestMessage(msg);
-            convos.insert(i, convo);
-            state = ChatListState.data(chats: convos);
-            break;
-          }
-        }
-      }
-    }
-  }
 }

@@ -686,9 +686,6 @@ object Convo {
     /// Get the timeline for the room
     fn timeline_stream() -> Future<Result<TimelineStream>>;
 
-    /// Update the last message of room
-    fn set_latest_message(msg: RoomMessage);
-
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;
 
