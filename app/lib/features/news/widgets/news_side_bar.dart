@@ -1,7 +1,10 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/sheets/default_bottom_sheet.dart';
+import 'package:acter/common/widgets/default_bottom_sheet.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
+import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -10,6 +13,8 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final _ignoreUserProvider = StateProvider<bool>((ref) => false);
 
 class NewsSideBar extends ConsumerWidget {
   final ffi.NewsEntry news;
@@ -43,7 +48,53 @@ class NewsSideBar extends ConsumerWidget {
     final List<PopupMenuEntry> submenu = isDesktop
         ? [
             PopupMenuItem(
-              onTap: () {},
+              onTap: () => showAdaptiveDialog(
+                context: context,
+                builder: (context) => DefaultDialog(
+                  title: Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Report this post',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                  ),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Report this post to your homeserver administrator. If space is encrypted, your administrator wouldn\'t be able to read or view it.',
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                            color: Theme.of(context).colorScheme.neutral6,
+                          ),
+                    ),
+                  ),
+                  description: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: InputTextField(
+                      hintText: 'Reason',
+                      textInputType: TextInputType.multiline,
+                      maxLines: 15,
+                    ),
+                  ),
+                  actions: <Widget>[
+                    DefaultButton(
+                      onPressed: () =>
+                          Navigator.of(context, rootNavigator: true).pop(),
+                      title: 'Close',
+                      isOutlined: true,
+                    ),
+                    DefaultButton(
+                      onPressed: () {},
+                      title: 'Report',
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.onError,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               child: Text(
                 'Report this post',
                 style: actionLabelStyle!.copyWith(
@@ -63,7 +114,7 @@ class NewsSideBar extends ConsumerWidget {
           color: fgColor,
           index: index,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 10),
         isDesktop
             ? PopupMenuButton(
                 itemBuilder: (context) {
@@ -76,11 +127,12 @@ class NewsSideBar extends ConsumerWidget {
                 ),
               )
             : InkWell(
-                onTap: () => defaultBottomSheet(
+                onTap: () => showModalBottomSheet(
                   context: context,
-                  content:
-                      _BottomSheetActions(actionLabelStyle: actionLabelStyle),
-                  sheetHeight: 100.0,
+                  builder: (context) => DefaultBottomSheet(
+                    content:
+                        _BottomSheetActions(actionLabelStyle: actionLabelStyle),
+                  ),
                 ),
                 child: _SideBarItem(
                   icon: const Icon(Atlas.dots_horizontal_thin),
@@ -146,20 +198,81 @@ class _SideBarItem extends StatelessWidget {
 
 class _BottomSheetActions extends ConsumerWidget {
   final TextStyle? actionLabelStyle;
-  const _BottomSheetActions({required this.actionLabelStyle});
+  const _BottomSheetActions({this.actionLabelStyle});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final size = MediaQuery.of(context).size;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         GestureDetector(
+          onTap: () => showAdaptiveDialog(
+            context: context,
+            builder: (context) => DefaultDialog(
+              title: Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Report this post',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+              ),
+              subtitle: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Report this post to your homeserver administrator. If space is encrypted, your administrator wouldn\'t be able to read or view it.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+              description: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InputTextField(
+                  hintText: 'Reason',
+                  textInputType: TextInputType.multiline,
+                  maxLines: size.height < 600 ? 15 : 5,
+                ),
+              ),
+              actions: <Widget>[
+                DefaultButton(
+                  onPressed: () =>
+                      Navigator.of(context, rootNavigator: true).pop(),
+                  title: 'Close',
+                  isOutlined: true,
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                DefaultButton(
+                  onPressed: () {},
+                  title: 'Report',
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.onError,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
               'Report this Post',
-              style: actionLabelStyle!
-                  .copyWith(color: Theme.of(context).colorScheme.error),
+              style: actionLabelStyle!.copyWith(
+                color: Theme.of(context).colorScheme.error,
+              ),
             ),
           ),
         ),

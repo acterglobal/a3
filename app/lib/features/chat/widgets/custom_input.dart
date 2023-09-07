@@ -1,13 +1,13 @@
 import 'dart:io';
-
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
+import 'package:acter/common/widgets/input_text_field.dart';
+import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
@@ -22,19 +22,19 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:mime/mime.dart';
 
+final _ignoreUserProvider = StateProvider<bool>((ref) => false);
+
 class CustomChatInput extends ConsumerWidget {
   const CustomChatInput({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userId = ref.watch(clientProvider)!.userId().toString();
     final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     final chatInputState = ref.watch(chatInputProvider);
     final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
     final repliedToMessage =
         ref.watch(chatRoomProvider.notifier).repliedToMessage;
     final isAuthor = ref.watch(chatRoomProvider.notifier).isAuthor();
-    final accountProfile = ref.watch(accountProfileProvider);
     final showReplyView = ref.watch(
       chatInputProvider.select((ci) => ci.showReplyView),
     );
@@ -99,54 +99,153 @@ class CustomChatInput extends ConsumerWidget {
                 InkWell(
                   onTap: () {
                     if (isAuthor) {
-                      popUpDialog(
+                      showAdaptiveDialog(
                         context: context,
-                        title: const Text(
-                          'Are you sure you want to delete this message? This action cannot be undone.',
+                        builder: (context) => DefaultDialog(
+                          title: const Text(
+                            'Are you sure you want to delete this message? This action cannot be undone.',
+                          ),
+                          actions: <Widget>[
+                            DefaultButton(
+                              onPressed: () => context.pop(),
+                              title: 'No',
+                              isOutlined: true,
+                            ),
+                            DefaultButton(
+                              onPressed: () async {
+                                final messageId = ref
+                                    .read(chatRoomProvider.notifier)
+                                    .currentMessageId;
+                                if (messageId != null) {
+                                  try {
+                                    await chatRoomNotifier
+                                        .redactRoomMessage(messageId);
+                                    chatInputNotifier.emojiRowVisible(false);
+                                    chatRoomNotifier.currentMessageId = null;
+                                    if (context.mounted) {
+                                      context.pop();
+                                    }
+                                  } catch (e) {
+                                    if (!context.mounted) {
+                                      return;
+                                    }
+                                    context.pop();
+                                    customMsgSnackbar(
+                                      context,
+                                      e.toString(),
+                                    );
+                                  }
+                                } else {
+                                  debugPrint(messageId);
+                                }
+                              },
+                              title: 'Yes',
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.onError,
+                              ),
+                            ),
+                          ],
                         ),
-                        btnText: 'No',
-                        btn2Text: 'Yes',
-                        btn2Color: Theme.of(context).colorScheme.onError,
-                        onPressedBtn: () => context.pop(),
-                        onPressedBtn2: () async {
-                          final messageId = ref
-                              .read(chatRoomProvider.notifier)
-                              .currentMessageId;
-                          if (messageId != null) {
-                            try {
-                              await chatRoomNotifier
-                                  .redactRoomMessage(messageId);
-                              chatInputNotifier.emojiRowVisible(false);
-                              chatRoomNotifier.currentMessageId = null;
-                              if (context.mounted) {
-                                context.pop();
-                              }
-                            } catch (e) {
-                              if (!context.mounted) {
-                                return;
-                              }
-                              context.pop();
-                              customMsgSnackbar(
-                                context,
-                                e.toString(),
-                              );
-                            }
-                          } else {
-                            debugPrint(messageId);
-                          }
-                        },
                       );
                     } else {
-                      customMsgSnackbar(
-                        context,
-                        'Report message isn\'t implemented yet',
+                      showAdaptiveDialog(
+                        context: context,
+                        builder: (context) => DefaultDialog(
+                          title: Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 12,
+                              ),
+                              child: Text(
+                                'Report Content',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                            ),
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Report this message to your homeserver administrator. If space is encrypted, your administrator wouldn\'t be able to read or view it.',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.neutral5,
+                                  ),
+                            ),
+                          ),
+                          description: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: InputTextField(
+                                  hintText: 'Reason',
+                                  textInputType: TextInputType.multiline,
+                                  maxLines: 15,
+                                ),
+                              ),
+                              Consumer(
+                                builder: (context, ref, child) {
+                                  return CheckboxListTile(
+                                    controlAffinity:
+                                        ListTileControlAffinity.leading,
+                                    title: Text(
+                                      'Ignore User (optional)',
+                                      style:
+                                          Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                    subtitle: Text(
+                                      'Mark to hide all current and future content from this user',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelMedium!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .neutral5,
+                                          ),
+                                    ),
+                                    value: ref.watch(_ignoreUserProvider),
+                                    onChanged: (value) => ref
+                                        .read(_ignoreUserProvider.notifier)
+                                        .update(
+                                          (state) => value!,
+                                        ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          actions: <Widget>[
+                            DefaultButton(
+                              onPressed: () =>
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop(),
+                              title: 'Close',
+                              isOutlined: true,
+                            ),
+                            DefaultButton(
+                              onPressed: () {},
+                              title: 'Report',
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.onError,
+                              ),
+                            ),
+                          ],
+                        ),
                       );
                     }
                   },
                   child: Text(
-                    isAuthor ? 'Unsend' : 'Report',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    isAuthor ? 'Delete' : 'Report',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
                     ),
                   ),
                 ),
@@ -172,26 +271,8 @@ class CustomChatInput extends ConsumerWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    accountProfile.when(
-                      data: (data) => ActerAvatar(
-                        uniqueId: userId,
-                        mode: DisplayMode.User,
-                        displayName: data.profile.displayName ?? userId,
-                        avatar: data.profile.getAvatarImage(),
-                        size: data.profile.hasAvatar() ? 18 : 36,
-                      ),
-                      error: (e, st) {
-                        debugPrint('Error loading due to $e');
-                        return ActerAvatar(
-                          uniqueId: userId,
-                          mode: DisplayMode.User,
-                          displayName: userId,
-                          size: 36,
-                        );
-                      },
-                      loading: () => const CircularProgressIndicator(),
-                    ),
+                  children: <Widget>[
+                    const UserAvatarWidget(size: 20),
                     const Flexible(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -238,37 +319,52 @@ class CustomChatInput extends ConsumerWidget {
       var selectionList = chatRoomNotifier.fileList;
       String fileName = selectionList.first.path.split('/').last;
       final mimeType = lookupMimeType(selectionList.first.path);
-      popUpDialog(
+      showAdaptiveDialog(
         context: ctx,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Upload Files (${selectionList.length})',
-                style: Theme.of(ctx).textTheme.titleSmall,
+        builder: (ctx) => DefaultDialog(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Upload Files (${selectionList.length})',
+                  style: Theme.of(ctx).textTheme.titleSmall,
+                ),
+              ),
+            ],
+          ),
+          subtitle: Visibility(
+            visible: selectionList.length <= 5,
+            child: _FileWidget(mimeType, selectionList.first),
+          ),
+          description: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(fileName, style: Theme.of(ctx).textTheme.bodySmall),
+          ),
+          actions: <Widget>[
+            DefaultButton(
+              onPressed: () => ctx.pop(),
+              title: 'Cancel',
+              isOutlined: true,
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(
+                  color: Theme.of(ctx).colorScheme.errorContainer,
+                ),
+              ),
+            ),
+            DefaultButton(
+              onPressed: () async {
+                ctx.pop();
+                await chatRoomNotifier.handleFileUpload();
+              },
+              title: 'Upload',
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(ctx).colorScheme.success,
               ),
             ),
           ],
         ),
-        subtitle: Visibility(
-          visible: selectionList.length <= 5,
-          child: _FileWidget(mimeType, selectionList.first),
-        ),
-        description: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(fileName, style: Theme.of(ctx).textTheme.bodySmall),
-        ),
-        btnText: 'Cancel',
-        btn2Text: 'Upload',
-        btn2Color: Theme.of(ctx).colorScheme.success,
-        btnBorderColor: Theme.of(ctx).colorScheme.errorContainer,
-        onPressedBtn: () => ctx.pop(),
-        onPressedBtn2: () async {
-          ctx.pop();
-          await chatRoomNotifier.handleFileUpload();
-        },
       );
     }
   }

@@ -1,10 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
@@ -114,13 +115,15 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 displayMsg = 'Posting text update to $spaceId';
               }
 
-              popUpDialog(
+              showAdaptiveDialog(
+                barrierDismissible: false,
                 context: context,
-                title: Text(
-                  displayMsg,
-                  style: Theme.of(context).textTheme.titleSmall,
+                builder: (context) => DefaultDialog(
+                  title: Text(
+                    displayMsg,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
                 ),
-                isLoader: true,
               );
 
               final space = await ref.read(spaceProvider(spaceId!).future);
@@ -191,18 +194,21 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 if (!context.mounted) {
                   return;
                 }
-                Navigator.of(context, rootNavigator: true).pop();
-                popUpDialog(
+                showAdaptiveDialog(
                   context: context,
-                  title: Text(
-                    '$displayMsg failed: \n $err"',
-                    style: Theme.of(context).textTheme.titleSmall,
+                  builder: (context) => DefaultDialog(
+                    title: Text(
+                      '$displayMsg failed: \n $err"',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    actions: <Widget>[
+                      DefaultButton(
+                        onPressed: () =>
+                            Navigator.of(context, rootNavigator: true).pop(),
+                        title: 'Close',
+                      ),
+                    ],
                   ),
-                  isLoader: false,
-                  btnText: 'Close',
-                  onPressedBtn: () {
-                    Navigator.of(context, rootNavigator: true).pop();
-                  },
                 );
               }
             }

@@ -1,7 +1,8 @@
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/spaces/space_info.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
@@ -153,34 +154,47 @@ class _ShellToolbar extends ConsumerWidget {
     Space space,
     WidgetRef ref,
   ) {
-    popUpDialog(
+    showAdaptiveDialog(
+      barrierDismissible: false,
       context: context,
-      title: Column(
-        children: <Widget>[
-          const Icon(Icons.person_remove_outlined),
-          const SizedBox(height: 5),
-          Text('Leave Space', style: Theme.of(context).textTheme.titleMedium),
+      builder: (context) => DefaultDialog(
+        title: Column(
+          children: <Widget>[
+            const Icon(Icons.person_remove_outlined),
+            const SizedBox(height: 5),
+            Text('Leave Space', style: Theme.of(context).textTheme.titleMedium),
+          ],
+        ),
+        subtitle: const Text(
+          'Are you sure you want to leave this space?',
+        ),
+        actions: <Widget>[
+          DefaultButton(
+            onPressed: () => context.pop(),
+            title: 'No Stay',
+            style: OutlinedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              side: BorderSide(color: Theme.of(context).colorScheme.success),
+            ),
+          ),
+          DefaultButton(
+            onPressed: () async {
+              await space.leave();
+              // refresh spaces list
+              ref.invalidate(spacesProvider);
+              if (!context.mounted) {
+                return;
+              }
+              context.pop();
+              context.goNamed(Routes.dashboard.name);
+            },
+            title: 'Yes, Leave',
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.errorContainer,
+            ),
+          ),
         ],
       ),
-      subtitle: const Text(
-        'Are you sure you want to leave this space?',
-      ),
-      btnText: 'No, Stay!',
-      onPressedBtn: () => context.pop(),
-      btn2Text: 'Yes, Leave!',
-      onPressedBtn2: () async {
-        await space.leave();
-        // refresh spaces list
-        ref.invalidate(spacesProvider);
-        if (!context.mounted) {
-          return;
-        }
-        context.pop();
-        context.goNamed(Routes.dashboard.name);
-      },
-      btnColor: Colors.transparent,
-      btn2Color: Theme.of(context).colorScheme.errorContainer,
-      btnBorderColor: Theme.of(context).colorScheme.success,
     );
   }
 }

@@ -1,6 +1,6 @@
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/events/providers/events_provider.dart';
@@ -295,13 +295,16 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
   }
 
   void _handleUpdateEvent(BuildContext context) async {
-    popUpDialog(
+    showAdaptiveDialog(
+      barrierDismissible: false,
       context: context,
-      title: Text(
-        'Updating Event',
-        style: Theme.of(context).textTheme.titleSmall,
+      builder: (context) => DefaultDialog(
+        title: Text(
+          'Updating Event',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        isLoader: true,
       ),
-      isLoader: true,
     );
     final calendarEvent =
         await ref.read(calendarEventProvider(widget.calendarId!).future);

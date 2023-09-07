@@ -90,9 +90,12 @@ class NewsItem extends ConsumerWidget {
                 ),
               ),
             ),
-            NewsSideBar(
-              news: news,
-              index: index,
+            Align(
+              alignment: Alignment.bottomRight,
+              child: NewsSideBar(
+                news: news,
+                index: index,
+              ),
             ),
           ],
         );
