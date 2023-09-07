@@ -147,6 +147,12 @@ pub struct ConvoController {
     redaction_event_handle: Option<EventHandlerHandle>,
 }
 
+impl Default for ConvoController {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ConvoController {
     pub fn new() -> Self {
         ConvoController {
