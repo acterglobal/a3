@@ -54,6 +54,8 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
 
+use crate::RoomId;
+
 use super::{
     client::Client, common::OptionBuffer, room::Room, search::PublicSearchResult, RUNTIME,
 };
@@ -790,28 +792,16 @@ impl Client {
         Ok(self.spaces.lock_ref().to_vec())
     }
 
-    pub async fn get_space(&self, room_id_or_alias: String) -> Result<Space> {
-        let room_id = match OwnedRoomId::try_from(room_id_or_alias.clone()) {
-            Ok(room_id) => room_id,
-            Err(e) => {
-                if let Ok(alias_id) = OwnedRoomAliasId::try_from(room_id_or_alias) {
-                    let me = self.clone();
-                    RUNTIME
-                        .spawn(async move {
-                            anyhow::Ok(me.resolve_room_alias(&alias_id).await?.room_id)
-                        })
-                        .await??
-                } else {
-                    bail!("Neither roomId nor alias provided");
-                }
-            }
-        };
-
+    pub fn space_typed(&self, room_id: &OwnedRoomId) -> Option<Space> {
         self.spaces
             .lock_ref()
             .iter()
-            .find(|s| s.room_id() == &room_id)
+            .find(|s| s.room_id() == room_id)
             .map(Clone::clone)
-            .context("Space not found")
+    }
+
+    pub async fn space(&self, room_id_or_alias: String) -> Result<Space> {
+        let room_id = self.resolve_room_id_or_alias(room_id_or_alias).await?;
+        self.space_typed(&room_id).context("Space not found")
     }
 }

@@ -518,18 +518,6 @@ impl Room {
             .await?
     }
 
-    pub async fn timeline_stream(&self) -> Result<TimelineStream> {
-        let room = self.room.clone();
-
-        RUNTIME
-            .spawn(async move {
-                let timeline = Arc::new(room.timeline().await);
-                let stream = TimelineStream::new(room, timeline);
-                Ok(stream)
-            })
-            .await?
-    }
-
     pub async fn typing_notice(&self, typing: bool) -> Result<bool> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()

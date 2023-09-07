@@ -47,7 +47,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     while synced.next().await != Some(true) {} // let's wait for it to have synced
 
     let sisko_space = sisko
-        .get_space(format!("#ops:{homeserver_name}"))
+        .space(format!("#ops:{homeserver_name}"))
         .await
         .expect("sisko should belong to ops");
     let event_id = sisko_space
@@ -55,7 +55,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
         .await?;
 
     let kyra_space = kyra
-        .get_space(format!("#ops:{homeserver_name}"))
+        .space(format!("#ops:{homeserver_name}"))
         .await
         .expect("kyra should belong to ops");
     let reply_id = kyra_space

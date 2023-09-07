@@ -77,16 +77,11 @@ impl Notification {
     }
 
     pub fn space(&self) -> Option<Space> {
-        self.room.as_ref().map(|r| Space {
-            inner: r.clone(),
-            client: self.client.clone(),
-        })
+        self.client.space_typed(&self.notification.room_id)
     }
 
     pub fn convo(&self) -> Option<Convo> {
-        self.room
-            .as_ref()
-            .map(|r| Convo::new(self.client.clone(), r.clone()))
+        self.client.convo_typed(&self.notification.room_id)
     }
 }
 

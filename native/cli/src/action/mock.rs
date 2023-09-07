@@ -321,7 +321,7 @@ impl<'a> Mock<'a> {
                 let alias = alias.clone();
                 async move {
                     println!("tasks get_space {alias}");
-                    let space = cloned_odo.get_space(alias).await?;
+                    let space = cloned_odo.space(alias).await?;
                     Ok(Some(space))
                 }
             }).await? else {

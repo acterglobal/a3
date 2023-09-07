@@ -6,6 +6,7 @@ use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
 use futures::{
+    future::join_all,
     pin_mut,
     stream::{Stream, StreamExt},
 };
@@ -454,12 +455,7 @@ impl Client {
                 .collect(),
         );
         self.convo_controller
-            .load_rooms(
-                chats
-                    .into_iter()
-                    .map(|r| Convo::new(self.clone(), r))
-                    .collect(),
-            )
+            .load_rooms(join_all(chats.into_iter().map(|r| Convo::new(self.clone(), r))).await)
             .await;
     }
 
@@ -485,8 +481,9 @@ impl Client {
     }
 
     async fn refresh_rooms(&self, changed_rooms: Vec<&OwnedRoomId>) {
-        let update_keys = {
+        let (new_chats, update_keys) = {
             let mut updated: Vec<String> = vec![];
+            let mut new_chats = vec![];
             let mut trigger_spaces_key = false;
 
             let mut chats = self.convo_controller.convos.lock_mut();
@@ -501,7 +498,7 @@ impl Client {
                 }
             };
 
-            let remove_from_chat = |target: &mut MutableLockMut<Vec<Convo>>, r_id| {
+            let remove_from_chat = |target: &mut MutableVecLockMut<Convo>, r_id| {
                 if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
                     target.remove(idx);
                 }
@@ -534,9 +531,9 @@ impl Client {
                 } else {
                     if let Some(chat_idx) = chats.iter().position(|s| s.room_id() == r_id) {
                         let chat = chats.remove(chat_idx).update_room(inner);
-                        chats.insert(chat_idx, chat);
+                        chats.insert_cloned(chat_idx, chat);
                     } else {
-                        chats.push(Convo::new(self.clone(), inner))
+                        new_chats.push(inner)
                     }
                     // also clear from convos if it was in there...
                     if remove_from(&mut spaces, r_id) {
@@ -549,9 +546,39 @@ impl Client {
             if trigger_spaces_key {
                 updated.push("SPACES".to_owned());
             }
-            updated
+            (new_chats, updated)
         };
+        if !new_chats.is_empty() {
+            let new_convos = join_all(
+                new_chats
+                    .into_iter()
+                    .map(|inner| Convo::new(self.clone(), inner)),
+            )
+            .await;
+            let mut chats_locked = self.convo_controller.convos.lock_mut();
+            for chat in new_convos.into_iter() {
+                chats_locked.insert_cloned(0, chat);
+            }
+        }
         self.executor().notify(update_keys);
+    }
+
+    pub async fn resolve_room_id_or_alias(&self, room_id_or_alias: String) -> Result<OwnedRoomId> {
+        Ok(match OwnedRoomId::try_from(room_id_or_alias.clone()) {
+            Ok(room_id) => room_id,
+            Err(e) => {
+                if let Ok(alias_id) = OwnedRoomAliasId::try_from(room_id_or_alias) {
+                    let me = self.clone();
+                    RUNTIME
+                        .spawn(async move {
+                            anyhow::Ok(me.resolve_room_alias(&alias_id).await?.room_id)
+                        })
+                        .await??
+                } else {
+                    bail!("Neither roomId nor alias provided");
+                }
+            }
+        })
     }
 
     pub fn store(&self) -> &Store {
@@ -577,7 +604,6 @@ impl Client {
         self.invitation_controller.add_event_handler(&client);
         self.typing_controller.add_event_handler(&client);
         self.receipt_controller.add_event_handler(&client);
-        self.convo_controller.add_event_handler(&me);
 
         self.verification_controller
             .add_to_device_event_handler(&client);
@@ -973,7 +999,6 @@ impl Client {
             .remove_sync_event_handler(&client);
         self.typing_controller.remove_event_handler(&client);
         self.receipt_controller.remove_event_handler(&client);
-        self.convo_controller.remove_event_handler(&client);
 
         RUNTIME
             .spawn(async move {

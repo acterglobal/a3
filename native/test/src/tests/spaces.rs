@@ -199,7 +199,7 @@ async fn create_subspace() -> Result<()> {
     })
     .await?;
 
-    let space = user.get_space(subspace_id.to_string()).await?;
+    let space = user.space(subspace_id.to_string()).await?;
     let space_relations = space.space_relations().await?;
     let space_parent = space_relations
         .main_parent()
@@ -259,7 +259,7 @@ async fn update_name() -> Result<()> {
         let client = fetcher_client.clone();
         let space_id = space_id_clone.clone();
         async move {
-            if client.get_space(space_id).await?.name() == Some("New Name".to_owned()) {
+            if client.space(space_id).await?.name() == Some("New Name".to_owned()) {
                 Ok(())
             } else {
                 bail!("Name not set")
@@ -295,7 +295,7 @@ async fn update_name() -> Result<()> {
     //     let client = fetcher_client.clone();
     //     let space_id = space_id_clone.clone();
     //     async move {
-    //         if client.get_space(space_id).await?.name().is_none() {
+    //         if client.space(space_id).await?.name().is_none() {
     //             Ok(())
     //         } else {
     //             bail!("Name not set")
@@ -365,7 +365,7 @@ async fn update_topic() -> Result<()> {
         let client = fetcher_client.clone();
         let space_id = space_id_clone.clone();
         async move {
-            if client.get_space(space_id).await?.topic() == Some("New topic".to_owned()) {
+            if client.space(space_id).await?.topic() == Some("New topic".to_owned()) {
                 Ok(())
             } else {
                 bail!("Topic not set")

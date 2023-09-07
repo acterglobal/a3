@@ -687,10 +687,10 @@ object Convo {
     fn timeline_stream() -> Future<Result<TimelineStream>>;
 
     /// The last message sent to the room
-    fn latest_message() -> Option<RoomMessage>;
+    //fn latest_message() -> Option<RoomMessage>;
 
     /// Latest message timestamp or 0
-    fn latest_message_ts() -> u64;
+    //fn latest_message_ts() -> u64;
 
     /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;
@@ -1734,7 +1734,7 @@ object Client {
     fn convos() -> Future<Result<Vec<Convo>>>;
 
     /// The update event of convos the user is involved in
-    fn convos_rx() -> Stream<Vec<Convo>>;
+    // fn convos_rx() -> Stream<Vec<Convo>>;
 
     /// The spaces the user is part of
     fn spaces() -> Future<Result<Vec<Space>>>;
@@ -1749,7 +1749,7 @@ object Client {
     fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
 
     /// Get the space that user belongs to
-    fn get_space(room_id_or_alias: string) -> Future<Result<Space>>;
+    fn space(room_id_or_alias: string) -> Future<Result<Space>>;
 
     /// Get the Pinned Links for the client
     fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
