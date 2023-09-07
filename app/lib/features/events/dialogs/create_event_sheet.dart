@@ -1,8 +1,8 @@
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
@@ -264,10 +264,13 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   }
 
   Future<void> _handleCreateEvent() async {
-    popUpDialog(
+    showAdaptiveDialog(
+      barrierDismissible: false,
       context: context,
-      title: const Text('Creating Event'),
-      isLoader: true,
+      builder: (context) => const DefaultDialog(
+        title: Text('Creating Event'),
+        isLoader: true,
+      ),
     );
     // pre fill values if user doesn't set date time.
     if (_dateController.text.isEmpty) {

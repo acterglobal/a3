@@ -3,6 +3,7 @@ import 'dart:core';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
@@ -94,6 +95,24 @@ class PinPage extends ConsumerWidget {
                             child: Wrap(
                               alignment: WrapAlignment.start,
                               children: [SpaceChip(spaceId: spaceId)],
+                            ),
+                          ),
+                          trailing: IconButton(
+                            onPressed: () => showAdaptiveDialog(
+                              context: context,
+                              builder: (ctx) => ReportContentWidget(
+                                title: 'Report this Pin',
+                                description:
+                                    'Report this content to your homeserver administrator. Please note that your adminstrator won\'t be able to read or view files, if space is encrypted',
+                                eventId: pinId,
+                                roomId: pin.roomIdStr(),
+                                senderId: pin.sender().toString(),
+                                isSpace: true,
+                              ),
+                            ),
+                            icon: Icon(
+                              Atlas.warning_thin,
+                              color: Theme.of(context).colorScheme.error,
                             ),
                           ),
                         ),

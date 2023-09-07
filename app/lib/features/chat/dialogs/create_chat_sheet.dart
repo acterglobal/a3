@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
@@ -166,13 +166,16 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
             if (isSpaceRoom && currentParentSpace == null) {
               return;
             }
-            popUpDialog(
+            showAdaptiveDialog(
+              barrierDismissible: false,
               context: context,
-              title: Text(
-                'Creating Chat room',
-                style: Theme.of(context).textTheme.titleSmall,
+              builder: (context) => DefaultDialog(
+                title: Text(
+                  'Creating Chat room',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                isLoader: true,
               ),
-              isLoader: true,
             );
             await _handleCreateConvo(
               context,

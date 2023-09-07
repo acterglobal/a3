@@ -1,11 +1,12 @@
 import 'dart:io';
-
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
+import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -44,7 +45,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final chatState = ref.watch(chatStateProvider(widget.convo));
     final repliedToMessage = chatInputState.repliedToMessage;
     final currentMessageId = chatInputState.currentMessageId;
-    final accountProfile = ref.watch(accountProfileProvider);
     final showReplyView = ref.watch(
       chatInputProvider(roomId).select((ci) => ci.showReplyView),
     );
@@ -121,51 +121,74 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                 InkWell(
                   onTap: () {
                     if (isAuthor()) {
-                      popUpDialog(
+                      showAdaptiveDialog(
                         context: context,
-                        title: const Text(
-                          'Are you sure you want to delete this message? This action cannot be undone.',
+                        builder: (context) => DefaultDialog(
+                          title: const Text(
+                            'Are you sure you want to delete this message? This action cannot be undone.',
+                          ),
+                          actions: <Widget>[
+                            DefaultButton(
+                              onPressed: () => context.pop(),
+                              title: 'No',
+                              isOutlined: true,
+                            ),
+                            DefaultButton(
+                              onPressed: () async {
+                                if (currentMessageId != null) {
+                                  try {
+                                    redactRoomMessage(currentMessageId);
+                                    chatInputNotifier.emojiRowVisible(false);
+                                    chatInputNotifier.setCurrentMessageId(null);
+                                    if (context.mounted) {
+                                      context.pop();
+                                    }
+                                  } catch (e) {
+                                    if (!context.mounted) {
+                                      return;
+                                    }
+                                    context.pop();
+                                    customMsgSnackbar(
+                                      context,
+                                      e.toString(),
+                                    );
+                                  }
+                                } else {
+                                  debugPrint(currentMessageId);
+                                }
+                              },
+                              title: 'Yes',
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.onError,
+                              ),
+                            ),
+                          ],
                         ),
-                        btnText: 'No',
-                        btn2Text: 'Yes',
-                        btn2Color: Theme.of(context).colorScheme.onError,
-                        onPressedBtn: () => context.pop(),
-                        onPressedBtn2: () async {
-                          final messageId = chatInputState.currentMessageId;
-                          if (messageId != null) {
-                            try {
-                              await redactRoomMessage(messageId);
-                              chatInputNotifier.emojiRowVisible(false);
-                              chatInputNotifier.setCurrentMessageId(null);
-                              if (context.mounted) {
-                                context.pop();
-                              }
-                            } catch (e) {
-                              if (!context.mounted) {
-                                return;
-                              }
-                              context.pop();
-                              customMsgSnackbar(
-                                context,
-                                e.toString(),
-                              );
-                            }
-                          } else {
-                            debugPrint(messageId);
-                          }
-                        },
                       );
                     } else {
-                      customMsgSnackbar(
-                        context,
-                        'Report message isn\'t implemented yet',
+                      final message = ref
+                          .read(chatStateProvider(widget.convo))
+                          .messages
+                          .firstWhere(
+                              (element) => element.id == currentMessageId);
+                      showAdaptiveDialog(
+                        context: context,
+                        builder: (context) => ReportContentWidget(
+                          title: 'Report this message',
+                          description:
+                              'Report this message to your homeserver administrator. Please note that adminstrator wouldn\'t be able to read or view any files, if room is encrypted',
+                          senderId: message.author.id,
+                          roomId: roomId,
+                          eventId: currentMessageId!,
+                        ),
                       );
                     }
                   },
                   child: Text(
-                    isAuthor() ? 'Unsend' : 'Report',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    isAuthor() ? 'Delete' : 'Report',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.errorContainer,
                     ),
                   ),
                 ),
@@ -191,22 +214,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    accountProfile.maybeWhen(
-                      data: (data) => ActerAvatar(
-                        uniqueId: userId,
-                        mode: DisplayMode.User,
-                        displayName: data.profile.displayName ?? userId,
-                        avatar: data.profile.getAvatarImage(),
-                        size: data.profile.hasAvatar() ? 18 : 36,
-                      ),
-                      orElse: () => ActerAvatar(
-                        uniqueId: userId,
-                        mode: DisplayMode.User,
-                        displayName: userId,
-                        size: 36,
-                      ),
-                    ),
+                  children: <Widget>[
+                    const UserAvatarWidget(size: 20),
                     Flexible(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -277,37 +286,52 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       var selectionList = chatInputState.fileList;
       String fileName = selectionList.first.path.split('/').last;
       final mimeType = lookupMimeType(selectionList.first.path);
-      popUpDialog(
+      showAdaptiveDialog(
         context: ctx,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Upload Files (${selectionList.length})',
-                style: Theme.of(ctx).textTheme.titleSmall,
+        builder: (ctx) => DefaultDialog(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Upload Files (${selectionList.length})',
+                  style: Theme.of(ctx).textTheme.titleSmall,
+                ),
+              ),
+            ],
+          ),
+          subtitle: Visibility(
+            visible: selectionList.length <= 5,
+            child: _FileWidget(mimeType, selectionList.first),
+          ),
+          description: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(fileName, style: Theme.of(ctx).textTheme.bodySmall),
+          ),
+          actions: <Widget>[
+            DefaultButton(
+              onPressed: () => ctx.pop(),
+              title: 'Cancel',
+              isOutlined: true,
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(
+                  color: Theme.of(ctx).colorScheme.errorContainer,
+                ),
+              ),
+            ),
+            DefaultButton(
+              onPressed: () async {
+                ctx.pop();
+                await handleFileUpload();
+              },
+              title: 'Upload',
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(ctx).colorScheme.success,
               ),
             ),
           ],
         ),
-        subtitle: Visibility(
-          visible: selectionList.length <= 5,
-          child: _FileWidget(mimeType, selectionList.first),
-        ),
-        description: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(fileName, style: Theme.of(ctx).textTheme.bodySmall),
-        ),
-        btnText: 'Cancel',
-        btn2Text: 'Upload',
-        btn2Color: Theme.of(ctx).colorScheme.success,
-        btnBorderColor: Theme.of(ctx).colorScheme.errorContainer,
-        onPressedBtn: () => ctx.pop(),
-        onPressedBtn2: () async {
-          ctx.pop();
-          await handleFileUpload();
-        },
       );
     }
   }

@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -196,13 +196,15 @@ class MemberListEntry extends ConsumerWidget {
       if (!context.mounted) {
         return;
       }
-      popUpDialog(
+      showAdaptiveDialog(
         context: context,
-        title: Text(
-          'Updating Power level of $userId',
-          style: Theme.of(context).textTheme.titleSmall,
+        builder: (context) => DefaultDialog(
+          title: Text(
+            'Updating Power level of $userId',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          isLoader: true,
         ),
-        isLoader: true,
       );
       space != null
           ? convo?.updatePowerLevel(userId, newPowerlevel)

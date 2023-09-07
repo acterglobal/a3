@@ -143,7 +143,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                       margin: const EdgeInsets.all(8),
                       child: InkWell(
                         onTap: () => context.pushNamed(Routes.myProfile.name),
-                        child: const UserAvatarWidget(),
+                        child: const UserAvatarWidget(size: 20),
                       ),
                     ),
                   ),

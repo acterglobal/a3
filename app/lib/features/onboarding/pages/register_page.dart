@@ -3,7 +3,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/custom_button.dart';
+import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:flutter/gestures.dart';
@@ -293,7 +293,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     const SizedBox(height: 40),
                     authState
                         ? const CircularProgressIndicator()
-                        : CustomButton(
+                        : DefaultButton(
                             onPressed: handleSubmit,
                             title: AppLocalizations.of(context)!.register,
                           ),

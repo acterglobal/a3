@@ -119,7 +119,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           }
         }
         break;
-      case 'Set':
+      case 'Set': // used to update UnableToDecrypt message
       case 'Insert':
         RoomMessage m = timelineEvent.value()!;
         final message = _parseMessage(m);

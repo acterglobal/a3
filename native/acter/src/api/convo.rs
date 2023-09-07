@@ -114,7 +114,7 @@ impl Convo {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let mut records: Vec<ReceiptRecord> = vec![];
+                let mut records = vec![];
                 for member in room.members(RoomMemberships::ACTIVE).await? {
                     let user_id = member.user_id();
                     if let Some((event_id, receipt)) = room
@@ -137,26 +137,6 @@ impl Deref for Convo {
         &self.inner
     }
 }
-
-// #[derive(Clone, Debug)]
-// pub(crate) struct ConvoController {
-// }
-
-// impl ConvoController {
-//     pub fn new() -> Self {
-//         ConvoController {
-//             convos: Default::default(),
-//         }
-//     }
-
-//     pub fn convos(&self) -> Vec<Convo> {
-//         self.convos.lock_ref().to_vec()
-//     }
-
-//     pub async fn load_rooms(&self, mut convos: Vec<Convo>) {
-//         self.convos.lock().await.append(convos);
-//     }
-// }
 
 #[derive(Builder, Default, Clone)]
 pub struct CreateConvoSettings {

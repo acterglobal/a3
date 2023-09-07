@@ -399,7 +399,7 @@ impl Client {
         server_names: Vec<String>,
     ) -> Result<Room> {
         let alias = OwnedRoomOrAliasId::try_from(room_id_or_alias)?;
-        let server_names: Vec<OwnedServerName> = server_names
+        let server_names = server_names
             .into_iter()
             .map(OwnedServerName::try_from)
             .collect::<Result<Vec<OwnedServerName>, ruma::IdParseError>>()?;

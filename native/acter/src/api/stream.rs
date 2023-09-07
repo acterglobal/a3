@@ -9,7 +9,6 @@ use matrix_sdk::{
         },
         EventId,
     },
-    Client,
 };
 use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
 use std::sync::Arc;

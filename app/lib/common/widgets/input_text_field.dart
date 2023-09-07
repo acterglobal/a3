@@ -43,7 +43,7 @@ class _InputTextFieldState extends State<InputTextField> {
       onFieldSubmitted: (value) {
         FocusNode().unfocus();
       },
-      cursorColor: Theme.of(context).colorScheme.tertiary,
+      cursorColor: Theme.of(context).colorScheme.secondary,
       style: Theme.of(context).textTheme.labelLarge,
       decoration: InputDecoration(
         fillColor: Theme.of(context).colorScheme.primaryContainer,
@@ -54,6 +54,10 @@ class _InputTextFieldState extends State<InputTextField> {
           borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.tertiary,
+            width: 0.5,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
       ),

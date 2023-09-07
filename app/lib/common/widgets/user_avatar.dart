@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserAvatarWidget extends ConsumerWidget {
-  const UserAvatarWidget({super.key});
+  final double size;
+  const UserAvatarWidget({
+    required this.size,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,7 +23,7 @@ class UserAvatarWidget extends ConsumerWidget {
             ActerAvatar(
               mode: DisplayMode.User,
               uniqueId: client.userId().toString(),
-              size: 20,
+              size: size,
               avatar: data.profile.getAvatarImage(),
               displayName: data.profile.displayName,
             ),

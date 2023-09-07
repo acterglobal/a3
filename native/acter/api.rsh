@@ -126,6 +126,12 @@ object NewsEntry {
 
     /// get room id
     fn room_id() -> RoomId;
+
+    /// get sender id
+    fn sender() -> UserId;
+
+    /// get event id
+    fn event_id() -> EventId;
 }
 
 object NewsEntryDraft {
@@ -223,6 +229,9 @@ object ActerPin {
     /// the room/space this item belongs to
     fn room_id_str() -> string;
 
+    /// sender id
+    fn sender() -> UserId;
+
     /// make a builder for updating the pin
     fn update_builder() -> Result<PinUpdateBuilder>;
 
@@ -293,7 +302,10 @@ object CalendarEvent {
     // fn locations() -> Vec<Location>;
     /// event id
     fn event_id() -> EventId;
+    /// room id
     fn room_id_str() -> string;
+    /// sender id
+    fn sender() -> UserId;
     /// update builder
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
@@ -854,6 +866,11 @@ object Convo {
 
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
+
+    /// report an event from this room
+    /// score - The score to rate this content as where -100 is most offensive and 0 is inoffensive (optional).
+    /// reason - The reason for the event being reported (optional).
+    fn report_content(event_id: string, score: Option<i32>, reason: Option<string>) -> Future<Result<bool>>;
 
     fn is_joined() -> bool;
 }
@@ -1525,6 +1542,11 @@ object Space {
     /// update the power level for a feature
     fn update_feature_power_levels(feature: string, level: Option<i32>) -> Future<Result<bool>>;
 
+    /// report an event from this room
+    /// score - The score to rate this content as where -100 is most offensive and 0 is inoffensive (optional).
+    /// reason - The reason for the event being reported (optional).
+    fn report_content(event_id: string, score: Option<i32>, reason: Option<string>) -> Future<Result<bool>>;
+
 }
 
 enum MembershipStatus {
@@ -1572,6 +1594,12 @@ object Member {
     /// Whether this user is allowed to perform the given action
     //fn can(permission: MemberPermission) -> bool;
     fn can_string(permission: string) -> bool;
+
+    /// add this member to ignore list
+    fn ignore() -> Future<Result<bool>>;
+
+    /// remove this member from ignore list
+    fn unignore() -> Future<Result<bool>>;
 }
 
 object Account {
