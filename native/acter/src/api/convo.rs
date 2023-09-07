@@ -249,18 +249,19 @@ impl ConvoController {
             let mut convos = self.convos.lock_mut();
             let room_id = room.room_id();
 
-            let mut convo = Convo::new(self.clone(), Room { room: room.clone() });
             if let Ok(decrypted) = joined.decrypt_event(&raw_event).await {
                 let ev = raw_event
                     .deserialize_as::<OriginalSyncRoomEncryptedEvent>()
                     .unwrap();
                 let msg = RoomMessage::room_encrypted_from_sync_event(ev, room_id.to_owned());
-                convo.set_latest_message(msg);
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
-                    convos.remove(idx);
+                    let mut convo = convos.remove(idx);
+                    convo.set_latest_message(msg);
                     convos.insert(0, convo);
                 } else {
+                    let mut convo = Convo::new(self.clone(), Room { room: room.clone() });
+                    convo.set_latest_message(msg);
                     convos.insert(0, convo);
                 }
             }
@@ -283,15 +284,15 @@ impl ConvoController {
             } else {
                 false
             };
-
-            let mut convo = Convo::new(self.clone(), Room { room: room.clone() });
             let msg = RoomMessage::room_message_from_sync_event(ev, room_id.to_owned(), sent_by_me);
-            convo.set_latest_message(msg);
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
-                convos.remove(idx);
+                let mut convo = convos.remove(idx);
+                convo.set_latest_message(msg);
                 convos.insert(0, convo);
             } else {
+                let mut convo = Convo::new(self.clone(), Room { room: room.clone() });
+                convo.set_latest_message(msg);
                 convos.insert(0, convo);
             }
         }
@@ -304,29 +305,26 @@ impl ConvoController {
         room: &SdkRoom,
         client: &SdkClient,
     ) {
+        let mut convos = self.convos.lock_mut();
         // filter only event for me
         let user_id = client.user_id().expect("You seem to be not logged in");
         if ev.state_key != *user_id {
             if let SdkRoom::Joined(joined) = room {
-                let mut convos = self.convos.lock_mut();
                 let room_id = room.room_id();
-
-                let mut convo = Convo::new(self.clone(), Room { room: room.clone() });
                 let msg = RoomMessage::room_member_from_sync_event(ev, room_id.to_owned());
-                convo.set_latest_message(msg);
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
-                    convos.remove(idx);
+                    let mut convo = convos.remove(idx);
+                    convo.set_latest_message(msg);
                     convos.insert(0, convo);
                 } else {
+                    let mut convo = Convo::new(self.clone(), Room { room: room.clone() });
+                    convo.set_latest_message(msg);
                     convos.insert(0, convo);
                 }
             }
             return;
         }
-
-        let evt = ev.clone();
-        let mut convos = self.convos.lock_mut();
 
         if let Some(prev_content) = ev.unsigned.prev_content {
             let room_id = room.room_id();
@@ -363,15 +361,15 @@ impl ConvoController {
         if let SdkRoom::Joined(joined) = room {
             let mut convos = self.convos.lock_mut();
             let room_id = room.room_id();
-
-            let mut convo = Convo::new(self.clone(), Room { room: room.clone() });
             let msg = RoomMessage::room_redaction_from_sync_event(ev, room_id.to_owned());
-            convo.set_latest_message(msg);
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
-                convos.remove(idx);
+                let mut convo = convos.remove(idx);
+                convo.set_latest_message(msg);
                 convos.insert(0, convo);
             } else {
+                let mut convo = Convo::new(self.clone(), Room { room: room.clone() });
+                convo.set_latest_message(msg);
                 convos.insert(0, convo);
             }
         }
