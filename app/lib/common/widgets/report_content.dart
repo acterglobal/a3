@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final _ignoreUserProvider = StateProvider.autoDispose<bool>((ref) => false);
 
+/// Reusable reporting acter content widget.
 class ReportContentWidget extends ConsumerWidget {
   final String title;
   final String description;
@@ -58,7 +59,7 @@ class ReportContentWidget extends ConsumerWidget {
               controller: textController,
               hintText: 'Reason',
               textInputType: TextInputType.multiline,
-              maxLines: 15,
+              maxLines: 5,
             ),
           ),
           Consumer(

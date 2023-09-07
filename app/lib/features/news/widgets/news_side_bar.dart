@@ -54,9 +54,10 @@ class NewsSideBar extends ConsumerWidget {
                   title: 'Report this post',
                   description:
                       'Report this post to your homeserver administrator. Please note that adminstrator would\'t be able to read or view any files, if space is encrypted.',
-                  eventId: '',
+                  eventId: news.eventId().toString(),
                   senderId: senderId,
                   roomId: roomId,
+                  isSpace: true,
                 ),
               ),
               child: Text(
@@ -99,11 +100,12 @@ class NewsSideBar extends ConsumerWidget {
                         context: context,
                         builder: (context) => ReportContentWidget(
                           title: 'Report this post',
-                          eventId: '',
+                          eventId: news.eventId().toString(),
                           description:
                               'Report this post to your homeserver administrator. Please note that adminstrator would\'t be able to read or view any files, if space is encrypted.',
                           senderId: senderId,
                           roomId: roomId,
+                          isSpace: true,
                         ),
                       ),
                       actionLabel: 'Report',

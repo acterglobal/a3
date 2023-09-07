@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Reusable button widget.
 class DefaultButton extends StatelessWidget {
   final void Function()? onPressed;
   // Optional styling.
