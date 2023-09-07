@@ -336,10 +336,7 @@ impl Client {
                     .collect::<Vec<OwnedUserId>>();
                 // iterate my rooms to get user list
                 let mut profiles: Vec<UserProfile> = vec![];
-                for convo in client.convos().await? {
-                    if convo.room_id() == room_id {
-                        continue;
-                    }
+                if let Some(convo) = client.convo_typed(&room_id).await {
                     let members = convo.members(RoomMemberships::ACTIVE).await?;
                     for member in members {
                         let user_id = member.user_id().to_owned();

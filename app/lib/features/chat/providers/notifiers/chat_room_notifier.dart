@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -27,12 +27,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   void _init() async {
     try {
       timeline = await convo.timelineStream();
-      subscription = timeline?.diffRx().listen((event) async {
-        await _parseEvent(event);
+      subscription = timeline?.diffStream().listen((timelineDiff) async {
+        await _parseEvent(timelineDiff);
       });
       do {
         await loadMore();
-        await Future.delayed(const Duration(milliseconds: 1000), () => null);
+        await Future.delayed(const Duration(milliseconds: 100), () => null);
       } while (state.hasMore && state.messages.length < 10);
       ref.onDispose(() async {
         debugPrint('disposing message stream');

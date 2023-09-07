@@ -1,5 +1,5 @@
 use acter::api::{login_new_client, CreateConvoSettingsBuilder};
-use anyhow::Result;
+use anyhow::{Context, Result};
 use futures::stream::StreamExt;
 use tempfile::TempDir;
 use tokio::time::{sleep, Duration};
@@ -68,32 +68,28 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     }
 
     // sisko sends the formatted text message to kyra
-    let convo = sisko.convo(sisko_kyra_dm_id.to_string()).await?;
+    let convo = sisko
+        .convo_typed(&sisko_kyra_dm_id)
+        .await
+        .context("chat not found")?;
     let _event_id = convo
         .send_formatted_message("**Hello**".to_string())
         .await?;
 
     // kyra receives the formatted text message from sisko
-    let mut convos_rx = kyra.convos_rx();
-    loop {
-        #[allow(clippy::single_match)]
-        match convos_rx.next().await {
-            Some(convos) => {
-                if let Some(convo) = convos.iter().find(|x| *x.room_id() == sisko_kyra_dm_id) {
-                    if let Some(msg) = convo.latest_message() {
-                        if let Some(event_item) = msg.event_item() {
-                            if let Some(text_desc) = event_item.text_desc() {
-                                if let Some(formatted) = text_desc.formatted_body() {
-                                    let idx = formatted.find("<strong>Hello</strong>");
-                                    assert!(idx.is_some(), "formatted body not found");
-                                    break;
-                                }
-                            }
-                        }
-                    }
+    let convo = kyra
+        .convo_typed(&sisko_kyra_dm_id)
+        .await
+        .context("chat not found")?;
+
+    if let Some(msg) = convo.latest_message().await {
+        if let Some(event_item) = msg.event_item() {
+            if let Some(text_desc) = event_item.text_desc() {
+                if let Some(formatted) = text_desc.formatted_body() {
+                    let idx = formatted.find("<strong>Hello</strong>");
+                    assert!(idx.is_some(), "formatted body not found");
                 }
             }
-            None => {}
         }
     }
 

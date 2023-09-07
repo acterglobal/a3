@@ -1,6 +1,6 @@
 import 'dart:core';
 
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:flutter/material.dart';

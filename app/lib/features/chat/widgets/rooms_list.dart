@@ -21,7 +21,6 @@ class RoomsListWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(clientProvider)!;
-    final chatsNotifier = ref.watch(chatListProvider.notifier);
     final showSearch = ref.watch(_searchToggleProvider);
     final searchNotifier = ref.watch(_searchToggleProvider.notifier);
     return Scaffold(
@@ -45,14 +44,17 @@ class RoomsListWidget extends ConsumerWidget {
                     ),
                     child: TextFormField(
                       autofocus: true,
-                      onChanged: (value) => chatsNotifier.searchRoom(value),
+                      onChanged: (value) => ref
+                          .read(chatSearchValueProvider.notifier)
+                          .state = value,
                       cursorColor: Theme.of(context).colorScheme.tertiary2,
                       decoration: InputDecoration(
                         hintStyle: const TextStyle(color: Colors.white),
                         suffixIcon: GestureDetector(
                           onTap: () {
                             searchNotifier.update((state) => false);
-                            chatsNotifier.searchRoom(null);
+                            ref.read(chatSearchValueProvider.notifier).state =
+                                null;
                           },
                           child: const Icon(
                             Icons.close,

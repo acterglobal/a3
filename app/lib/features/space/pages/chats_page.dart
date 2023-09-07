@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';

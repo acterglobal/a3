@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';

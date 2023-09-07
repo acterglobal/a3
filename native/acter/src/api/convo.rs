@@ -1,10 +1,7 @@
 use acter_core::{statics::default_acter_convo_states, Error};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
-use futures_signals::{
-    signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream},
-    signal_vec::{MutableSignalVec, MutableVec, SignalVecExt, SignalVecStream},
-};
+use futures::stream::{Stream, StreamExt};
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
@@ -37,11 +34,8 @@ use matrix_sdk_ui::{
     timeline::{EventTimelineItem, RoomExt},
     Timeline,
 };
-use std::{
-    ops::Deref,
-    path::PathBuf,
-    sync::{Arc, RwLock},
-};
+use std::{ops::Deref, path::PathBuf, sync::Arc};
+use tokio::sync::RwLock;
 use tracing::{error, info};
 
 use crate::TimelineStream;
@@ -51,15 +45,17 @@ use super::{
     message::{sync_event_to_message, RoomMessage},
     receipt::ReceiptRecord,
     room::Room,
+    utils::{remap_for_diff, ApiVectorDiff},
     RUNTIME,
 };
+
+pub type ConvoDiff = ApiVectorDiff<Convo>;
 
 #[derive(Clone, Debug)]
 pub struct Convo {
     client: Client,
     inner: Room,
     timeline: Arc<Timeline>,
-    latest_message: Arc<RwLock<Option<RoomMessage>>>,
 }
 
 impl Convo {
@@ -69,21 +65,16 @@ impl Convo {
             inner,
             client,
             timeline: Arc::new(timeline),
-            latest_message: Default::default(),
         }
     }
 
     pub(crate) fn update_room(self, room: Room) -> Self {
         let Convo {
-            client,
-            latest_message,
-            timeline,
-            ..
+            client, timeline, ..
         } = self;
         Convo {
             client,
             timeline,
-            latest_message,
             inner: room,
         }
     }
@@ -103,11 +94,12 @@ impl Convo {
             .unwrap_or_default()
     }
 
-    pub async fn latest_message(&self) -> Option<RoomMessage> {
+    pub async fn latest_message(&self) -> Result<RoomMessage> {
         self.timeline
             .latest_event()
             .await
             .map(|event| RoomMessage::from_timeline_event_item(&event, self.inner.room.clone()))
+            .context("No latest message found")
     }
 
     pub fn get_room_id(&self) -> OwnedRoomId {
@@ -146,26 +138,25 @@ impl Deref for Convo {
     }
 }
 
-#[derive(Clone, Debug)]
-pub(crate) struct ConvoController {
-    pub(crate) convos: MutableVec<Convo>,
-}
+// #[derive(Clone, Debug)]
+// pub(crate) struct ConvoController {
+// }
 
-impl ConvoController {
-    pub fn new() -> Self {
-        ConvoController {
-            convos: Default::default(),
-        }
-    }
+// impl ConvoController {
+//     pub fn new() -> Self {
+//         ConvoController {
+//             convos: Default::default(),
+//         }
+//     }
 
-    pub fn convos(&self) -> Vec<Convo> {
-        self.convos.lock_ref().to_vec()
-    }
+//     pub fn convos(&self) -> Vec<Convo> {
+//         self.convos.lock_ref().to_vec()
+//     }
 
-    pub async fn load_rooms(&self, mut convos: Vec<Convo>) {
-        self.convos.lock_mut().replace_cloned(convos);
-    }
-}
+//     pub async fn load_rooms(&self, mut convos: Vec<Convo>) {
+//         self.convos.lock().await.append(convos);
+//     }
+// }
 
 #[derive(Builder, Default, Clone)]
 pub struct CreateConvoSettings {
@@ -317,19 +308,34 @@ impl Client {
 
     pub async fn convo(&self, room_id_or_alias: String) -> Result<Convo> {
         let room_id = self.resolve_room_id_or_alias(room_id_or_alias).await?;
-        self.convo_typed(&room_id).context("Chat not found")
+        self.convo_typed(&room_id).await.context("Chat not found")
     }
 
-    pub fn convo_typed(&self, room_id: &OwnedRoomId) -> Option<Convo> {
-        self.convo_controller
-            .convos
-            .lock_ref()
+    pub async fn convo_typed(&self, room_id: &OwnedRoomId) -> Option<Convo> {
+        self.convos
+            .read()
+            .await
             .iter()
             .find(|s| s.room_id() == room_id)
             .map(Clone::clone)
     }
 
-    pub fn convos_rx(&self) -> SignalVecStream<MutableSignalVec<Convo>> {
-        self.convo_controller.convos.signal_vec_cloned().to_stream()
+    pub fn convos_stream(&self) -> impl Stream<Item = ConvoDiff> {
+        let convos = self.convos.clone();
+        async_stream::stream! {
+            let (current_items, stream) = {
+                let locked = convos.read().await;
+                (
+                    ConvoDiff::current_items(locked.clone().into_iter().collect()),
+                    locked.subscribe(),
+                )
+            };
+            let mut remap = stream.map(move |diff| remap_for_diff(diff, |x| x));
+            yield current_items;
+
+            while let Some(d) = remap.next().await {
+                yield d
+            }
+        }
     }
 }

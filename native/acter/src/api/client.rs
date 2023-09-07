@@ -5,6 +5,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
+use eyeball_im::{ObservableVector, VectorSubscriber};
 use futures::{
     future::join_all,
     pin_mut,
@@ -44,7 +45,7 @@ use std::{
 use tokio::{
     sync::{
         broadcast::{channel, Receiver, Sender},
-        Mutex, RwLock,
+        Mutex, RwLock, RwLockWriteGuard,
     },
     task::JoinHandle,
     time,
@@ -55,18 +56,9 @@ use tracing::{error, info, trace, warn};
 use crate::Notification;
 
 use super::{
-    account::Account,
-    api::FfiBuffer,
-    convo::{Convo, ConvoController},
-    device::DeviceController,
-    invitation::InvitationController,
-    profile::UserProfile,
-    receipt::ReceiptController,
-    room::Room,
-    spaces::Space,
-    typing::TypingController,
-    verification::VerificationController,
-    RUNTIME,
+    account::Account, api::FfiBuffer, convo::Convo, device::DeviceController,
+    invitation::InvitationController, profile::UserProfile, receipt::ReceiptController, room::Room,
+    spaces::Space, typing::TypingController, verification::VerificationController, RUNTIME,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -93,8 +85,8 @@ pub struct Client {
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
     pub(crate) receipt_controller: ReceiptController,
-    pub(crate) convo_controller: ConvoController,
-    pub(crate) spaces: MutableVec<Space>,
+    pub spaces: Arc<RwLock<eyeball_im::ObservableVector<Space>>>,
+    pub convos: Arc<RwLock<eyeball_im::ObservableVector<Convo>>>,
     pub(crate) notifications: Arc<Sender<RumaNotification>>,
 }
 
@@ -433,12 +425,13 @@ impl Client {
             core,
             state: Arc::new(RwLock::new(state)),
             spaces: Default::default(),
+            convos: Default::default(),
             invitation_controller: InvitationController::new(),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(),
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
-            convo_controller: ConvoController::new(),
+
             notifications: Arc::new(channel(25).0),
         };
 
@@ -448,15 +441,17 @@ impl Client {
 
     async fn load_from_cache(&self) {
         let (spaces, chats) = self.get_spaces_and_chats(None).await;
-        self.spaces.lock_mut().replace_cloned(
+        self.spaces.write().await.append(
             spaces
                 .into_iter()
                 .map(|r| Space::new(self.clone(), r))
                 .collect(),
         );
-        self.convo_controller
-            .load_rooms(join_all(chats.into_iter().map(|r| Convo::new(self.clone(), r))).await)
-            .await;
+        self.convos.write().await.append(
+            join_all(chats.into_iter().map(|r| Convo::new(self.clone(), r)))
+                .await
+                .into(),
+        );
     }
 
     async fn get_spaces_and_chats(&self, filter: Option<SpaceFilter>) -> (Vec<Room>, Vec<Room>) {
@@ -481,15 +476,14 @@ impl Client {
     }
 
     async fn refresh_rooms(&self, changed_rooms: Vec<&OwnedRoomId>) {
-        let (new_chats, update_keys) = {
+        let update_keys = {
             let mut updated: Vec<String> = vec![];
-            let mut new_chats = vec![];
             let mut trigger_spaces_key = false;
 
-            let mut chats = self.convo_controller.convos.lock_mut();
-            let mut spaces = self.spaces.lock_mut();
+            let mut chats = self.convos.write().await;
+            let mut spaces = self.spaces.write().await;
 
-            let remove_from = |target: &mut MutableVecLockMut<Space>, r_id| {
+            let remove_from = |target: &mut RwLockWriteGuard<ObservableVector<Space>>, r_id| {
                 if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
                     target.remove(idx);
                     true
@@ -498,14 +492,15 @@ impl Client {
                 }
             };
 
-            let remove_from_chat = |target: &mut MutableVecLockMut<Convo>, r_id| {
+            let remove_from_chat = |target: &mut RwLockWriteGuard<ObservableVector<Convo>>,
+                                    r_id| {
                 if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
                     target.remove(idx);
                 }
             };
 
             for r_id in changed_rooms {
-                let Some(room) = self.core.client().get_room(&r_id) else {
+                let Some(room) = self.core.client().get_room(r_id) else {
                     if remove_from(&mut spaces, r_id) {
                         trigger_spaces_key = true;
                     }
@@ -518,12 +513,12 @@ impl Client {
                 if inner.is_space() {
                     if let Some(space_idx) = spaces.iter().position(|s| s.room_id() == r_id) {
                         let space = spaces.remove(space_idx).update_room(inner);
-                        spaces.insert_cloned(space_idx, space);
+                        spaces.insert(space_idx, space);
                     } else {
                         // not found yet, we need to trigger the `SPACES` key
                         // and add it
                         trigger_spaces_key = true;
-                        spaces.push_cloned(Space::new(self.clone(), inner))
+                        spaces.push_front(Space::new(self.clone(), inner))
                     }
                     // also clear from convos if it was in there...
                     remove_from_chat(&mut chats, r_id);
@@ -531,9 +526,9 @@ impl Client {
                 } else {
                     if let Some(chat_idx) = chats.iter().position(|s| s.room_id() == r_id) {
                         let chat = chats.remove(chat_idx).update_room(inner);
-                        chats.insert_cloned(chat_idx, chat);
+                        chats.insert(chat_idx, chat);
                     } else {
-                        new_chats.push(inner)
+                        chats.push_front(Convo::new(self.clone(), inner).await);
                     }
                     // also clear from convos if it was in there...
                     if remove_from(&mut spaces, r_id) {
@@ -546,20 +541,8 @@ impl Client {
             if trigger_spaces_key {
                 updated.push("SPACES".to_owned());
             }
-            (new_chats, updated)
+            updated
         };
-        if !new_chats.is_empty() {
-            let new_convos = join_all(
-                new_chats
-                    .into_iter()
-                    .map(|inner| Convo::new(self.clone(), inner)),
-            )
-            .await;
-            let mut chats_locked = self.convo_controller.convos.lock_mut();
-            for chat in new_convos.into_iter() {
-                chats_locked.insert_cloned(0, chat);
-            }
-        }
         self.executor().notify(update_keys);
     }
 
@@ -614,7 +597,6 @@ impl Client {
 
         let mut invitation_controller = self.invitation_controller.clone();
         let mut device_controller = self.device_controller.clone();
-        let mut convo_controller = self.convo_controller.clone();
         let notifications = self.notifications.clone();
 
         let (first_synced_tx, first_synced_rx) = channel(1);
@@ -636,7 +618,6 @@ impl Client {
 
             let mut invitation_controller = invitation_controller.clone();
             let mut device_controller = device_controller.clone();
-            let mut convo_controller = convo_controller.clone();
 
             let history_loading = history_loading.clone();
             let first_sync_task = first_sync_task.clone();
@@ -655,7 +636,6 @@ impl Client {
 
                     let mut invitation_controller = invitation_controller.clone();
                     let mut device_controller = device_controller.clone();
-                    let mut convo_controller = convo_controller.clone();
 
                     let first_synced_arc = first_synced_arc.clone();
                     let sync_error_arc = sync_error_arc.clone();
@@ -808,10 +788,6 @@ impl Client {
             is_guest,
         })?;
         Ok(result)
-    }
-
-    pub async fn convos(&self) -> Result<Vec<Convo>> {
-        Ok(self.convo_controller.convos())
     }
 
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {

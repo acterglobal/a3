@@ -17,6 +17,11 @@ class MySpacesSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spaces = ref.watch(spacesProvider);
+
+    int spacesLimit =
+        (limit != null && spaces.length > limit!) ? limit! : spaces.length;
+    List<Space> subspaces =
+        limit == spacesLimit ? spaces : spaces.sublist(0, spacesLimit);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Column(
@@ -32,44 +37,29 @@ class MySpacesSection extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 10),
-          spaces.when(
-            data: (data) {
-              if (data.isEmpty) {
-                return const _NoSpacesWidget();
-              }
-              int dataLimit = (limit != null && data.length > limit!)
-                  ? limit!
-                  : data.length;
-              List<Space> subdata =
-                  limit == dataLimit ? data : data.sublist(0, dataLimit);
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: subdata.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return SpaceCard(space: subdata[index]);
-                    },
-                  ),
-                  subdata.length != data.length
-                      ? Padding(
-                          padding: const EdgeInsets.only(left: 30, top: 8),
-                          child: OutlinedButton(
-                            onPressed: () {
-                              context.pushNamed(Routes.spaces.name);
-                            },
-                            child: Text('see all my ${data.length} spaces'),
-                          ),
-                        )
-                      : const Text(''),
-                ],
-              );
-            },
-            error: (error, stackTrace) =>
-                Text('Failed to load spaces due to $error'),
-            loading: () => const Center(child: CircularProgressIndicator()),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: subspaces.length,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return SpaceCard(space: subspaces[index]);
+                },
+              ),
+              subspaces.length != spaces.length
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 30, top: 8),
+                      child: OutlinedButton(
+                        onPressed: () {
+                          context.pushNamed(Routes.spaces.name);
+                        },
+                        child: Text('see all my ${spaces.length} spaces'),
+                      ),
+                    )
+                  : const Text(''),
+            ],
           ),
         ],
       ),

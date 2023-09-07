@@ -57,7 +57,12 @@ use tracing::{error, trace, warn};
 use crate::RoomId;
 
 use super::{
-    client::Client, common::OptionBuffer, room::Room, search::PublicSearchResult, RUNTIME,
+    client::Client,
+    common::OptionBuffer,
+    room::Room,
+    search::PublicSearchResult,
+    utils::{remap_for_diff, ApiVectorDiff},
+    RUNTIME,
 };
 
 #[derive(Debug, Clone)]
@@ -746,6 +751,8 @@ pub fn new_space_settings_builder() -> CreateSpaceSettingsBuilder {
     CreateSpaceSettingsBuilder::default()
 }
 
+pub type SpaceDiff = ApiVectorDiff<Space>;
+
 // External API
 impl Client {
     pub async fn create_acter_space(
@@ -789,12 +796,32 @@ impl Client {
     }
 
     pub async fn spaces(&self) -> Result<Vec<Space>> {
-        Ok(self.spaces.lock_ref().to_vec())
+        Ok(self.spaces.read().await.clone().into_iter().collect())
     }
 
-    pub fn space_typed(&self, room_id: &OwnedRoomId) -> Option<Space> {
+    pub fn spaces_stream(&self) -> impl Stream<Item = SpaceDiff> {
+        let spaces = self.spaces.clone();
+        async_stream::stream! {
+        let (current_items, stream) = {
+            let locked = spaces.read().await;
+            (
+                SpaceDiff::current_items(locked.clone().into_iter().collect()),
+                locked.subscribe(),
+            )
+        };
+            let mut remap = stream.map(move |diff| remap_for_diff(diff, |x| x));
+            yield current_items;
+
+            while let Some(d) = remap.next().await {
+                yield d
+            }
+        }
+    }
+
+    pub async fn space_typed(&self, room_id: &OwnedRoomId) -> Option<Space> {
         self.spaces
-            .lock_ref()
+            .read()
+            .await
             .iter()
             .find(|s| s.room_id() == room_id)
             .map(Clone::clone)
@@ -802,6 +829,6 @@ impl Client {
 
     pub async fn space(&self, room_id_or_alias: String) -> Result<Space> {
         let room_id = self.resolve_room_id_or_alias(room_id_or_alias).await?;
-        self.space_typed(&room_id).context("Space not found")
+        self.space_typed(&room_id).await.context("Space not found")
     }
 }

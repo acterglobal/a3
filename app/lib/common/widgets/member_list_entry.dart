@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';

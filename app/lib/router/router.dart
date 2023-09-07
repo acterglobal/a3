@@ -1,6 +1,6 @@
 import 'package:acter/common/dialogs/dialog_page.dart';
 import 'package:acter/common/dialogs/side_sheet_page.dart';
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
