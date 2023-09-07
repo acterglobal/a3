@@ -173,7 +173,6 @@ class _ShellToolbar extends ConsumerWidget {
             onPressed: () => context.pop(),
             title: 'No Stay',
             style: OutlinedButton.styleFrom(
-              backgroundColor: Colors.transparent,
               side: BorderSide(color: Theme.of(context).colorScheme.success),
             ),
           ),

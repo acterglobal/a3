@@ -2,10 +2,9 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
-import 'package:acter/common/widgets/default_button.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/like_button.dart';
+import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
@@ -13,8 +12,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final _ignoreUserProvider = StateProvider<bool>((ref) => false);
 
 class NewsSideBar extends ConsumerWidget {
   final ffi.NewsEntry news;
@@ -28,6 +25,9 @@ class NewsSideBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = news.roomId().toString();
+    final senderId = news.sender().toString();
+    final userId = ref.watch(clientProvider)!.userId().toString();
+    final isAuthor = senderId == userId;
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final bgColor = convertColor(
       news.colors()?.background(),
@@ -45,54 +45,18 @@ class NewsSideBar extends ConsumerWidget {
         Shadow(color: bgColor, offset: const Offset(2, 2), blurRadius: 5),
       ],
     );
-    final List<PopupMenuEntry> submenu = isDesktop
+    final List<PopupMenuEntry> submenu = isDesktop && !isAuthor
         ? [
             PopupMenuItem(
               onTap: () => showAdaptiveDialog(
                 context: context,
-                builder: (context) => DefaultDialog(
-                  title: Align(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Report this post',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ),
-                  ),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Report this post to your homeserver administrator. If space is encrypted, your administrator wouldn\'t be able to read or view it.',
-                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                            color: Theme.of(context).colorScheme.neutral6,
-                          ),
-                    ),
-                  ),
-                  description: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: InputTextField(
-                      hintText: 'Reason',
-                      textInputType: TextInputType.multiline,
-                      maxLines: 15,
-                    ),
-                  ),
-                  actions: <Widget>[
-                    DefaultButton(
-                      onPressed: () =>
-                          Navigator.of(context, rootNavigator: true).pop(),
-                      title: 'Close',
-                      isOutlined: true,
-                    ),
-                    DefaultButton(
-                      onPressed: () {},
-                      title: 'Report',
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.onError,
-                      ),
-                    ),
-                  ],
+                builder: (context) => ReportContentWidget(
+                  title: 'Report this post',
+                  description:
+                      'Report this post to your homeserver administrator. Please note that adminstrator would\'t be able to read or view any files, if space is encrypted.',
+                  eventId: '',
+                  senderId: senderId,
+                  roomId: roomId,
                 ),
               ),
               child: Text(
@@ -130,8 +94,21 @@ class NewsSideBar extends ConsumerWidget {
                 onTap: () => showModalBottomSheet(
                   context: context,
                   builder: (context) => DefaultBottomSheet(
-                    content:
-                        _BottomSheetActions(actionLabelStyle: actionLabelStyle),
+                    content: _BottomSheetAction(
+                      onPress: () => showAdaptiveDialog(
+                        context: context,
+                        builder: (context) => ReportContentWidget(
+                          title: 'Report this post',
+                          eventId: '',
+                          description:
+                              'Report this post to your homeserver administrator. Please note that adminstrator would\'t be able to read or view any files, if space is encrypted.',
+                          senderId: senderId,
+                          roomId: roomId,
+                        ),
+                      ),
+                      actionLabel: 'Report',
+                      actionLabelStyle: actionLabelStyle,
+                    ),
                   ),
                 ),
                 child: _SideBarItem(
@@ -196,83 +173,28 @@ class _SideBarItem extends StatelessWidget {
   }
 }
 
-class _BottomSheetActions extends ConsumerWidget {
+class _BottomSheetAction extends ConsumerWidget {
+  final String actionLabel;
+  final void Function()? onPress;
   final TextStyle? actionLabelStyle;
-  const _BottomSheetActions({this.actionLabelStyle});
+  const _BottomSheetAction({
+    required this.actionLabel,
+    required this.onPress,
+    this.actionLabelStyle,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final size = MediaQuery.of(context).size;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         GestureDetector(
-          onTap: () => showAdaptiveDialog(
-            context: context,
-            builder: (context) => DefaultDialog(
-              title: Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Report this post',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-              ),
-              subtitle: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Report this post to your homeserver administrator. If space is encrypted, your administrator wouldn\'t be able to read or view it.',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ),
-              description: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: InputTextField(
-                  hintText: 'Reason',
-                  textInputType: TextInputType.multiline,
-                  maxLines: size.height < 600 ? 15 : 5,
-                ),
-              ),
-              actions: <Widget>[
-                DefaultButton(
-                  onPressed: () =>
-                      Navigator.of(context, rootNavigator: true).pop(),
-                  title: 'Close',
-                  isOutlined: true,
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                DefaultButton(
-                  onPressed: () {},
-                  title: 'Report',
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.onError,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          onTap: () => onPress,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Report this Post',
-              style: actionLabelStyle!.copyWith(
-                color: Theme.of(context).colorScheme.error,
-              ),
+              actionLabel,
+              style: actionLabelStyle,
             ),
           ),
         ),

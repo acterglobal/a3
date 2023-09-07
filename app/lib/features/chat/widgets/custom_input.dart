@@ -3,7 +3,7 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter/common/widgets/input_text_field.dart';
+import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
@@ -21,8 +21,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:mime/mime.dart';
-
-final _ignoreUserProvider = StateProvider<bool>((ref) => false);
 
 class CustomChatInput extends ConsumerWidget {
   const CustomChatInput({Key? key}) : super(key: key);
@@ -149,95 +147,20 @@ class CustomChatInput extends ConsumerWidget {
                         ),
                       );
                     } else {
+                      final messageId = chatRoomNotifier.currentMessageId;
+                      final message = ref
+                          .read(messagesProvider)
+                          .firstWhere((element) => element.id == messageId);
                       showAdaptiveDialog(
                         context: context,
-                        builder: (context) => DefaultDialog(
-                          title: Align(
-                            alignment: Alignment.topLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 12,
-                              ),
-                              child: Text(
-                                'Report Content',
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                            ),
-                          ),
-                          subtitle: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Report this message to your homeserver administrator. If space is encrypted, your administrator wouldn\'t be able to read or view it.',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(
-                                    color:
-                                        Theme.of(context).colorScheme.neutral5,
-                                  ),
-                            ),
-                          ),
-                          description: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: InputTextField(
-                                  hintText: 'Reason',
-                                  textInputType: TextInputType.multiline,
-                                  maxLines: 15,
-                                ),
-                              ),
-                              Consumer(
-                                builder: (context, ref, child) {
-                                  return CheckboxListTile(
-                                    controlAffinity:
-                                        ListTileControlAffinity.leading,
-                                    title: Text(
-                                      'Ignore User (optional)',
-                                      style:
-                                          Theme.of(context).textTheme.bodySmall,
-                                    ),
-                                    subtitle: Text(
-                                      'Mark to hide all current and future content from this user',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelMedium!
-                                          .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .neutral5,
-                                          ),
-                                    ),
-                                    value: ref.watch(_ignoreUserProvider),
-                                    onChanged: (value) => ref
-                                        .read(_ignoreUserProvider.notifier)
-                                        .update(
-                                          (state) => value!,
-                                        ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          actions: <Widget>[
-                            DefaultButton(
-                              onPressed: () =>
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop(),
-                              title: 'Close',
-                              isOutlined: true,
-                            ),
-                            DefaultButton(
-                              onPressed: () {},
-                              title: 'Report',
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.onError,
-                              ),
-                            ),
-                          ],
+                        builder: (context) => ReportContentWidget(
+                          title: 'Report this message',
+                          description:
+                              'Report this message to your homeserver administrator. Please note that adminstrator wouldn\'t be able to read or view any files, if room is encrypted',
+                          senderId: message.author.id,
+                          roomId:
+                              ref.read(currentConvoProvider)!.getRoomIdStr(),
+                          eventId: messageId!,
                         ),
                       );
                     }
@@ -245,7 +168,7 @@ class CustomChatInput extends ConsumerWidget {
                   child: Text(
                     isAuthor ? 'Delete' : 'Report',
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
+                      color: Theme.of(context).colorScheme.errorContainer,
                     ),
                   ),
                 ),
