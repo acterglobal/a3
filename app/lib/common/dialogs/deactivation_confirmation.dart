@@ -1,7 +1,8 @@
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,9 +15,13 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
     context: context,
     builder: (BuildContext ctx) {
       return AlertDialog(
-        title: Text('Deactivate Account',
-            style: TextStyle(
-                color: AppTheme.brandColorScheme.error, fontSize: 32,),),
+        title: Text(
+          'Deactivate Account',
+          style: TextStyle(
+            color: AppTheme.brandColorScheme.error,
+            fontSize: 32,
+          ),
+        ),
         content: SingleChildScrollView(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 650),
@@ -69,13 +74,16 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
           ),
           TextButton(
             onPressed: () async {
-              popUpDialog(
+              showAdaptiveDialog(
+                barrierDismissible: false,
                 context: context,
-                title: Text(
-                  'Deactivating your account',
-                  style: Theme.of(context).textTheme.titleSmall,
+                builder: (context) => DefaultDialog(
+                  title: Text(
+                    'Deactivating your account',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  isLoader: true,
                 ),
-                isLoader: true,
               );
               final sdk = await ref.read(sdkProvider.future);
               try {
@@ -99,19 +107,22 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
                 if (!context.mounted) {
                   return;
                 }
-                Navigator.of(context, rootNavigator: true).pop();
 
-                popUpDialog(
+                showAdaptiveDialog(
                   context: context,
-                  title: Text(
-                    'Deactivating failed: \n $err"',
-                    style: Theme.of(context).textTheme.titleSmall,
+                  builder: (context) => DefaultDialog(
+                    title: Text(
+                      'Deactivating failed: \n $err"',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    actions: <Widget>[
+                      DefaultButton(
+                        onPressed: () =>
+                            Navigator.of(context, rootNavigator: true).pop(),
+                        title: 'Close',
+                      ),
+                    ],
                   ),
-                  isLoader: false,
-                  btnText: 'Close',
-                  onPressedBtn: () {
-                    Navigator.of(context, rootNavigator: true).pop();
-                  },
                 );
               }
             },

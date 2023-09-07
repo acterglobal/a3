@@ -196,7 +196,7 @@ impl InvitationController {
     }
 
     pub async fn load_invitations(&self, client: &SdkClient) -> Result<()> {
-        let mut invitations: Vec<Invitation> = vec![];
+        let mut invitations = vec![];
         for room in client.invited_rooms().iter() {
             let details = room.invite_details().await?;
             if let Some(inviter) = details.inviter {

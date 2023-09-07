@@ -106,6 +106,9 @@ object NewsSlide {
     fn file_desc() -> Option<FileDesc>;
     /// if this is a file, hand over the data
     fn file_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is a location, hand over the description
+    fn location_desc() -> Option<LocationDesc>;
 }
 
 /// A news entry
@@ -123,6 +126,12 @@ object NewsEntry {
 
     /// get room id
     fn room_id() -> RoomId;
+
+    /// get sender id
+    fn sender() -> UserId;
+
+    /// get event id
+    fn event_id() -> EventId;
 }
 
 object NewsEntryDraft {
@@ -220,6 +229,9 @@ object ActerPin {
     /// the room/space this item belongs to
     fn room_id_str() -> string;
 
+    /// sender id
+    fn sender() -> UserId;
+
     /// make a builder for updating the pin
     fn update_builder() -> Result<PinUpdateBuilder>;
 
@@ -290,7 +302,10 @@ object CalendarEvent {
     // fn locations() -> Vec<Location>;
     /// event id
     fn event_id() -> EventId;
+    /// room id
     fn room_id_str() -> string;
+    /// sender id
+    fn sender() -> UserId;
     /// update builder
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
@@ -439,7 +454,7 @@ object RoomEventItem {
     fn event_type() -> string;
 
     /// the type of massage, like text, image, audio, video, file etc
-    fn sub_type() -> Option<string>;
+    fn msg_type() -> Option<string>;
 
     /// contains text fallback and formatted text
     fn text_desc() -> Option<TextDesc>;
@@ -456,6 +471,9 @@ object RoomEventItem {
     /// contains source data, name, mimetype and size
     fn file_desc() -> Option<FileDesc>;
 
+    /// contains body and geo uri
+    fn location_desc() -> Option<LocationDesc>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -463,7 +481,7 @@ object RoomEventItem {
     fn reaction_keys() -> Vec<string>;
 
     /// the details that users reacted using this emote key in this message
-    fn reaction_items(key: string) -> Option<Vec<ReactionRecord>>;
+    fn reaction_records(key: string) -> Option<Vec<ReactionRecord>>;
 
     /// Whether this message is editable
     fn is_editable() -> bool;
@@ -598,6 +616,20 @@ object FileDesc {
     fn thumbnail_source() -> Option<MediaSource>;
 }
 
+object LocationDesc {
+    /// body
+    fn body() -> string;
+
+    /// geo uri
+    fn geo_uri() -> string;
+
+    /// thumbnail info
+    fn thumbnail_info() -> Option<ThumbnailInfo>;
+
+    /// thumbnail source
+    fn thumbnail_source() -> Option<MediaSource>;
+}
+
 object ReactionRecord {
     /// who sent reaction
     fn sender_id() -> UserId;
@@ -693,8 +725,14 @@ object Convo {
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<EventId>>;
 
+    /// Edit the existing event with plain text
+    fn edit_plain_message(event_id: string, new_msg: string) -> Future<Result<EventId>>;
+
     /// Send a text message in MarkDown format to the room
     fn send_formatted_message(markdown_message: string) -> Future<Result<EventId>>;
+
+    /// Edit the existing event with MarkDown text
+    fn edit_formatted_message(event_id: string, new_msg: string) -> Future<Result<EventId>>;
 
     /// Send reaction about existing event
     fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;
@@ -707,6 +745,9 @@ object Convo {
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
+    /// edit the image message
+    fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<EventId>>;
+
     /// send the audio message to this room
     fn send_audio_message(uri: string, name: string, mimetype: string, secs: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
 
@@ -714,6 +755,9 @@ object Convo {
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// edit the audio message
+    fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, secs: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
 
     /// send the video message to this room
     fn send_video_message(uri: string, name: string, mimetype: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, size: Option<u32>, blurhash: Option<string>) -> Future<Result<EventId>>;
@@ -723,6 +767,9 @@ object Convo {
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
+    /// edit the video message
+    fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
+
     /// send the file message to this room
     fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<EventId>>;
 
@@ -730,6 +777,15 @@ object Convo {
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    /// edit the file message
+    fn edit_file_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u32>) -> Future<Result<EventId>>;
+
+    /// send the location message to this room
+    fn send_location_message(body: string, geo_uri: string) -> Future<Result<EventId>>;
+
+    /// edit the location message
+    fn edit_location_message(event_id: string, body: string, geo_uri: string) -> Future<Result<EventId>>;
 
     /// get the user status on this room
     fn room_type() -> string;
@@ -781,6 +837,11 @@ object Convo {
 
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
+
+    /// report an event from this room
+    /// score - The score to rate this content as where -100 is most offensive and 0 is inoffensive (optional).
+    /// reason - The reason for the event being reported (optional).
+    fn report_content(event_id: string, score: Option<i32>, reason: Option<string>) -> Future<Result<bool>>;
 
     fn is_joined() -> bool;
 }
@@ -854,6 +915,9 @@ object Attachment {
     fn file_desc() -> Option<FileDesc>;
     /// if this is a file, hand over the data
     fn file_binary() -> Future<Result<buffer<u8>>>;
+
+    /// if this is a location, hand over the description
+    fn location_desc() -> Option<LocationDesc>;
 }
 
 /// Reference to the attachments section of a particular item
@@ -1449,6 +1513,11 @@ object Space {
     /// update the power level for a feature
     fn update_feature_power_levels(feature: string, level: Option<i32>) -> Future<Result<bool>>;
 
+    /// report an event from this room
+    /// score - The score to rate this content as where -100 is most offensive and 0 is inoffensive (optional).
+    /// reason - The reason for the event being reported (optional).
+    fn report_content(event_id: string, score: Option<i32>, reason: Option<string>) -> Future<Result<bool>>;
+
 }
 
 enum MembershipStatus {
@@ -1496,6 +1565,12 @@ object Member {
     /// Whether this user is allowed to perform the given action
     //fn can(permission: MemberPermission) -> bool;
     fn can_string(permission: string) -> bool;
+
+    /// add this member to ignore list
+    fn ignore() -> Future<Result<bool>>;
+
+    /// remove this member from ignore list
+    fn unignore() -> Future<Result<bool>>;
 }
 
 object Account {

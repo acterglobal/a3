@@ -1,8 +1,10 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
+import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
@@ -23,8 +25,10 @@ class NewsSideBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = news.roomId().toString();
+    final senderId = news.sender().toString();
+    final userId = ref.watch(clientProvider)!.userId().toString();
+    final isAuthor = senderId == userId;
     final space = ref.watch(briefSpaceItemProvider(roomId));
-
     final bgColor = convertColor(
       news.colors()?.background(),
       Theme.of(context).colorScheme.neutral6,
@@ -33,45 +37,89 @@ class NewsSideBar extends ConsumerWidget {
       news.colors()?.color(),
       Theme.of(context).colorScheme.neutral6,
     );
-    TextStyle style = Theme.of(context).textTheme.bodyLarge!.copyWith(
+    final TextStyle? actionLabelStyle = Theme.of(context).textTheme.labelLarge;
+    final TextStyle style = Theme.of(context).textTheme.bodyLarge!.copyWith(
       fontSize: 13,
       color: fgColor,
       shadows: [
         Shadow(color: bgColor, offset: const Offset(2, 2), blurRadius: 5),
       ],
     );
+    final List<PopupMenuEntry> submenu = isDesktop && !isAuthor
+        ? [
+            PopupMenuItem(
+              onTap: () => showAdaptiveDialog(
+                context: context,
+                builder: (context) => ReportContentWidget(
+                  title: 'Report this post',
+                  description:
+                      'Report this post to your homeserver administrator. Please note that adminstrator would\'t be able to read or view any files, if space is encrypted.',
+                  eventId: news.eventId().toString(),
+                  senderId: senderId,
+                  roomId: roomId,
+                  isSpace: true,
+                ),
+              ),
+              child: Text(
+                'Report this post',
+                style: actionLabelStyle!.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ),
+          ]
+        : [];
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
+      children: <Widget>[
+        const Spacer(),
         LikeButton(
           likeCount: news.likesCount().toString(),
           style: style,
           color: fgColor,
           index: index,
         ),
-        const SizedBox(height: 8),
-        GestureDetector(
-          onTap: () => showCommentsBottomSheet(context),
-          child: _SideBarItem(
-            icon: const Icon(Atlas.comment_dots, color: Colors.white),
-            label: news.commentsCount().toString(),
-            style: style,
-          ),
-        ),
-        _SideBarItem(
-          icon: const Icon(Atlas.curve_arrow_right_bold, color: Colors.white),
-          label: '76',
-          style: style,
-        ),
-        GestureDetector(
-          onTap: () => showReportBottomSheet(context),
-          child: _SideBarItem(
-            icon: const Icon(Atlas.dots_horizontal_thin),
-            label: '',
-            style: style,
-          ),
-        ),
+        const SizedBox(height: 10),
+        isDesktop
+            ? PopupMenuButton(
+                itemBuilder: (context) {
+                  return submenu;
+                },
+                child: _SideBarItem(
+                  icon: const Icon(Atlas.dots_horizontal_thin),
+                  label: '',
+                  style: style,
+                ),
+              )
+            : InkWell(
+                onTap: () => showModalBottomSheet(
+                  context: context,
+                  builder: (context) => DefaultBottomSheet(
+                    content: _BottomSheetAction(
+                      onPress: () => showAdaptiveDialog(
+                        context: context,
+                        builder: (context) => ReportContentWidget(
+                          title: 'Report this post',
+                          eventId: news.eventId().toString(),
+                          description:
+                              'Report this post to your homeserver administrator. Please note that adminstrator would\'t be able to read or view any files, if space is encrypted.',
+                          senderId: senderId,
+                          roomId: roomId,
+                          isSpace: true,
+                        ),
+                      ),
+                      actionLabel: 'Report',
+                      actionLabelStyle: actionLabelStyle,
+                    ),
+                  ),
+                ),
+                child: _SideBarItem(
+                  icon: const Icon(Atlas.dots_horizontal_thin),
+                  label: '',
+                  style: style,
+                ),
+              ),
+        const SizedBox(height: 10),
         InkWell(
           onTap: () {
             context.goNamed(
@@ -99,80 +147,7 @@ class NewsSideBar extends ConsumerWidget {
             loading: () => const Text('l'),
           ),
         ),
-        const SizedBox(height: 8),
       ],
-    );
-  }
-
-  void showReportBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      isDismissible: false,
-      context: context,
-      builder: (context) {
-        return SizedBox(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  'Copy Link',
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-              const Divider(indent: 24, endIndent: 24),
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  'Bookmark/Save',
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-              const Divider(indent: 24, endIndent: 24),
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  'Get Notified',
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-              const Divider(indent: 24, endIndent: 24),
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  'Report this post',
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(color: Theme.of(context).colorScheme.error),
-                ),
-              ),
-              const Divider(indent: 24, endIndent: 24),
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: GestureDetector(
-                  onTap: () => context.pop(),
-                  child: Text(
-                    'Cancel',
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void showCommentsBottomSheet(BuildContext context) {
-    customMsgSnackbar(
-      context,
-      'Comment not yet implemented',
     );
   }
 }
@@ -195,6 +170,37 @@ class _SideBarItem extends StatelessWidget {
         icon,
         const SizedBox(height: 5),
         Text(label, style: style),
+      ],
+    );
+  }
+}
+
+class _BottomSheetAction extends ConsumerWidget {
+  final String actionLabel;
+  final void Function()? onPress;
+  final TextStyle? actionLabelStyle;
+  const _BottomSheetAction({
+    required this.actionLabel,
+    required this.onPress,
+    this.actionLabelStyle,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        GestureDetector(
+          onTap: () => onPress,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              actionLabel,
+              style: actionLabelStyle,
+            ),
+          ),
+        ),
+        const Divider(),
       ],
     );
   }

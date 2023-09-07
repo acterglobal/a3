@@ -13,7 +13,7 @@ class MemberAvatar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userId = member.userId().toString();
-    final profile = ref.watch(memberProfileProvider(userId));
+    final profile = ref.watch(memberProfileProvider(member));
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [

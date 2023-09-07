@@ -17,12 +17,12 @@ use matrix_sdk::{
         events::room::{
             message::{
                 AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-                ImageMessageEventContent, TextMessageEventContent, VideoInfo,
-                VideoMessageEventContent,
+                ImageMessageEventContent, LocationMessageEventContent, TextMessageEventContent,
+                VideoInfo, VideoMessageEventContent,
             },
             ImageInfo,
         },
-        MxcUri, OwnedEventId, OwnedRoomId, UInt,
+        MxcUri, OwnedEventId, OwnedRoomId, OwnedUserId, UInt,
     },
 };
 use std::{
@@ -37,7 +37,7 @@ use tracing::trace;
 use super::{
     api::FfiBuffer,
     client::Client,
-    common::{AudioDesc, FileDesc, ImageDesc, VideoDesc},
+    common::{AudioDesc, FileDesc, ImageDesc, LocationDesc, VideoDesc},
     spaces::Space,
     RUNTIME,
 };
@@ -192,6 +192,7 @@ impl NewsSlide {
             NewsContent::Audio(AudioMessageEventContent { body, .. }) => body.clone(),
             NewsContent::Video(VideoMessageEventContent { body, .. }) => body.clone(),
             NewsContent::File(FileMessageEventContent { body, .. }) => body.clone(),
+            NewsContent::Location(LocationMessageEventContent { body, .. }) => body.clone(),
             NewsContent::Text(TextMessageEventContent {
                 formatted, body, ..
             }) => {
@@ -258,6 +259,14 @@ impl NewsSlide {
         // any variable in self can't be called directly in spawn
         let content = self.inner.content().file().context("Not a file")?;
         self.client.source_binary(content.source).await
+    }
+
+    pub fn location_desc(&self) -> Option<LocationDesc> {
+        self.inner.content().location().and_then(|content| {
+            content
+                .info
+                .map(|info| LocationDesc::new(content.body, content.geo_uri))
+        })
     }
 }
 
@@ -356,6 +365,14 @@ impl NewsEntry {
 
     pub fn room_id(&self) -> OwnedRoomId {
         self.room.room_id().to_owned()
+    }
+
+    pub fn sender(&self) -> OwnedUserId {
+        self.content.sender().to_owned()
+    }
+
+    pub fn event_id(&self) -> OwnedEventId {
+        self.content.event_id().to_owned()
     }
 }
 
