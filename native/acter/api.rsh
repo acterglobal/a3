@@ -129,6 +129,9 @@ object NewsEntry {
 
     /// get sender id
     fn sender() -> UserId;
+
+    /// get event id
+    fn event_id() -> EventId;
 }
 
 object NewsEntryDraft {
