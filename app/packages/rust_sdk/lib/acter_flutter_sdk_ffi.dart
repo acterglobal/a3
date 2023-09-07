@@ -11780,6 +11780,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _newsEntryEventIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NewsEntry_event_id");
+
+  late final _newsEntryEventId = _newsEntryEventIdPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _newsEntryDraftAddTextSlidePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -25858,6 +25868,21 @@ class NewsEntry {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// get event id
+  EventId eventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_EventId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = EventId._(_api, tmp3_1);
     return tmp2;
   }
 

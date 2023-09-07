@@ -370,6 +370,10 @@ impl NewsEntry {
     pub fn sender(&self) -> OwnedUserId {
         self.content.sender().to_owned()
     }
+
+    pub fn event_id(&self) -> OwnedEventId {
+        self.content.event_id().to_owned()
+    }
 }
 
 #[derive(Clone)]
