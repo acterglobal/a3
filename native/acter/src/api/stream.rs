@@ -10,13 +10,13 @@ use matrix_sdk::{
         },
         EventId,
     },
-    Client,
 };
 use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
 use std::sync::Arc;
 use tracing::{error, info};
 
 use super::{
+    convo::ConvoController,
     message::{timeline_item_to_message, RoomMessage},
     RUNTIME,
 };
@@ -59,16 +59,22 @@ impl TimelineDiff {
 pub struct TimelineStream {
     room: Room,
     timeline: Arc<Timeline>,
+    convo_controller: ConvoController,
 }
 
 impl TimelineStream {
-    pub fn new(room: Room, timeline: Arc<Timeline>) -> Self {
-        TimelineStream { room, timeline }
+    pub fn new(room: Room, timeline: Arc<Timeline>, convo_controller: ConvoController) -> Self {
+        TimelineStream {
+            room,
+            timeline,
+            convo_controller,
+        }
     }
 
     pub fn diff_rx(&self) -> impl Stream<Item = TimelineDiff> {
         let timeline = self.timeline.clone();
         let room = self.room.clone();
+        let mut convo_controller = self.convo_controller.clone();
 
         async_stream::stream! {
             let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
@@ -93,12 +99,17 @@ impl TimelineStream {
                     value: Some(timeline_item_to_message(value, room.clone())),
                 },
                 // Replace the element at the given position, notify subscribers and return the previous element at that position
-                VectorDiff::Set { index, value } => TimelineDiff {
-                    action: "Set".to_string(),
-                    values: None,
-                    index: Some(index),
-                    value: Some(timeline_item_to_message(value, room.clone())),
-                },
+                // When unable to decrypt, we can reach this point after room key is fetched and 2nd decryption is succeeded
+                VectorDiff::Set { index, value } => {
+                    let msg = timeline_item_to_message(value, room.clone());
+                    convo_controller.update_latest_message(&room, msg.clone());
+                    TimelineDiff {
+                        action: "Set".to_string(),
+                        values: None,
+                        index: Some(index),
+                        value: Some(msg),
+                    }
+                }
                 // Remove the element at the given position, notify subscribers and return the element
                 VectorDiff::Remove { index } => TimelineDiff {
                     action: "Remove".to_string(),
