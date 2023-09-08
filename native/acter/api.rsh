@@ -728,7 +728,7 @@ object Convo {
     fn latest_message() -> Future<Result<RoomMessage>>;
 
     /// Latest message timestamp or 0
-    fn latest_message_ts() -> Future<u64>;
+    fn latest_message_ts() -> u64;
 
     /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;

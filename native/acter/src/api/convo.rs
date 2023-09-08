@@ -31,11 +31,14 @@ use matrix_sdk::{
     Client as SdkClient, RoomMemberships,
 };
 use matrix_sdk_ui::{
-    timeline::{EventTimelineItem, RoomExt},
+    timeline::{EventTimelineItem, RoomExt, TimelineItem},
     Timeline,
 };
-use std::{ops::Deref, path::PathBuf, sync::Arc};
-use tokio::sync::RwLock;
+use std::{
+    ops::Deref,
+    path::PathBuf,
+    sync::{Arc, RwLock as StdRwLock},
+};
 use tracing::{error, info};
 
 use crate::TimelineStream;
@@ -55,26 +58,92 @@ pub type ConvoDiff = ApiVectorDiff<Convo>;
 pub struct Convo {
     client: Client,
     inner: Room,
+    latest_message_ts: Arc<StdRwLock<Option<u64>>>,
     timeline: Arc<Timeline>,
+}
+
+impl PartialEq for Convo {
+    fn eq(&self, other: &Self) -> bool {
+        self.inner.room_id() == other.inner.room_id()
+            && self.latest_message_ts() == other.latest_message_ts()
+    }
+}
+
+impl Eq for Convo {}
+
+impl PartialOrd for Convo {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.latest_message_ts()
+            .partial_cmp(&other.latest_message_ts())
+    }
+}
+
+impl Ord for Convo {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.latest_message_ts().cmp(&other.latest_message_ts())
+    }
+}
+
+fn latest_message_storage_key(room_id: &RoomId) -> String {
+    format!("{room_id}::latest_message_ts")
 }
 
 impl Convo {
     pub(crate) async fn new(client: Client, inner: Room) -> Self {
-        let timeline = inner.room.timeline().await;
+        let timeline = Arc::new(inner.room.timeline().await);
+        let latest_message_ts: Option<u64> = client
+            .store()
+            .get_raw::<u64>(&latest_message_storage_key(inner.room_id()))
+            .await
+            .ok();
+
         Convo {
             inner,
             client,
-            timeline: Arc::new(timeline),
+            latest_message_ts: Arc::new(StdRwLock::new(latest_message_ts)),
+            timeline,
         }
+    }
+
+    pub(crate) async fn update_latest_msg_ts(&self) {
+        let new_val = if let Some(e) = self
+            .latest_message()
+            .await
+            .map(|e| e.event_item())
+            .ok()
+            .flatten()
+        {
+            match self.latest_message_ts.write() {
+                Err(e) => {
+                    error!(?e, room_id=?self.room_id(), "Updating latest msg ts failed");
+                    return;
+                }
+                Ok(mut i) => {
+                    *i = Some(e.origin_server_ts());
+                    e.origin_server_ts()
+                }
+            }
+        } else {
+            0
+        };
+        self.client
+            .store()
+            .set_raw(&latest_message_storage_key(self.inner.room_id()), &new_val)
+            .await
+            .ok();
     }
 
     pub(crate) fn update_room(self, room: Room) -> Self {
         let Convo {
-            client, timeline, ..
+            client,
+            latest_message_ts,
+            timeline,
+            ..
         } = self;
         Convo {
             client,
             timeline,
+            latest_message_ts,
             inner: room,
         }
     }
@@ -86,11 +155,11 @@ impl Convo {
         ))
     }
 
-    pub async fn latest_message_ts(&self) -> u64 {
-        self.timeline
-            .latest_event()
-            .await
-            .map(|event| event.timestamp().as_secs().into())
+    pub fn latest_message_ts(&self) -> u64 {
+        self.latest_message_ts
+            .read()
+            .map(|a| a.unwrap_or_default())
+            .ok()
             .unwrap_or_default()
     }
 

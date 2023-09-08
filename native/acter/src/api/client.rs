@@ -417,6 +417,36 @@ impl Client {
     }
 }
 
+// helper methods for managing spaces and chats
+fn remove_from(target: &mut RwLockWriteGuard<ObservableVector<Space>>, r_id: &OwnedRoomId) -> bool {
+    if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
+        target.remove(idx);
+        true
+    } else {
+        false
+    }
+}
+
+fn remove_from_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, r_id: &OwnedRoomId) {
+    if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
+        target.remove(idx);
+    }
+}
+
+// we expect chat to always stay sorted.
+fn insert_to_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, convo: Convo) {
+    let msg_ts = convo.latest_message_ts();
+    if (msg_ts > 0) {
+        if let Some(idx) = target.iter().position(|s| s.latest_message_ts() < msg_ts) {
+            target.insert(idx, convo);
+            return;
+        }
+    }
+
+    // fallback: push at the end.
+    target.push_back(convo);
+}
+
 // external API
 impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
@@ -447,11 +477,9 @@ impl Client {
                 .map(|r| Space::new(self.clone(), r))
                 .collect(),
         );
-        self.convos.write().await.append(
-            join_all(chats.into_iter().map(|r| Convo::new(self.clone(), r)))
-                .await
-                .into(),
-        );
+        let mut values = join_all(chats.into_iter().map(|r| Convo::new(self.clone(), r))).await;
+        values.sort();
+        self.convos.write().await.append(values.into());
     }
 
     async fn get_spaces_and_chats(&self, filter: Option<SpaceFilter>) -> (Vec<Room>, Vec<Room>) {
@@ -483,22 +511,6 @@ impl Client {
             let mut chats = self.convos.write().await;
             let mut spaces = self.spaces.write().await;
 
-            let remove_from = |target: &mut RwLockWriteGuard<ObservableVector<Space>>, r_id| {
-                if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
-                    target.remove(idx);
-                    true
-                } else {
-                    false
-                }
-            };
-
-            let remove_from_chat = |target: &mut RwLockWriteGuard<ObservableVector<Convo>>,
-                                    r_id| {
-                if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
-                    target.remove(idx);
-                }
-            };
-
             for r_id in changed_rooms {
                 let Some(room) = self.core.client().get_room(r_id) else {
                     if remove_from(&mut spaces, r_id) {
@@ -526,9 +538,10 @@ impl Client {
                 } else {
                     if let Some(chat_idx) = chats.iter().position(|s| s.room_id() == r_id) {
                         let chat = chats.remove(chat_idx).update_room(inner);
-                        chats.insert(chat_idx, chat);
+                        chat.update_latest_msg_ts().await;
+                        insert_to_chat(&mut chats, chat);
                     } else {
-                        chats.push_front(Convo::new(self.clone(), inner).await);
+                        insert_to_chat(&mut chats, Convo::new(self.clone(), inner).await);
                     }
                     // also clear from convos if it was in there...
                     if remove_from(&mut spaces, r_id) {
