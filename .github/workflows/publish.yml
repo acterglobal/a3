@@ -451,7 +451,7 @@ jobs:
           packageName: global.acter.a3
           releaseName: v${{ needs.tags.outputs.tag }}
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
-          debugSymbols: debug_symbols/
+          # debugSymbols: debug_symbols/
           track: beta
           status: completed
 
