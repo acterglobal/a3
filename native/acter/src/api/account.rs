@@ -98,7 +98,11 @@ impl Account {
             .await?
     }
 
-    pub async fn request_token_via_email(&self, email_address: String, password: String) -> Result<bool> {
+    pub async fn request_token_via_email(
+        &self,
+        email_address: String,
+        password: String,
+    ) -> Result<bool> {
         let account = self.account.clone();
         let secret = ClientSecret::parse(password).context("Password parsing failed")?;
         RUNTIME
@@ -110,9 +114,7 @@ impl Account {
                 // Wait for the user to confirm that the token was submitted or prompt
                 // the user for the token and send it to submit_url.
 
-                let uiaa_response = account
-                    .add_3pid(&secret, &token_response.sid, None)
-                    .await?;
+                let uiaa_response = account.add_3pid(&secret, &token_response.sid, None).await?;
                 Ok(true)
             })
             .await?
