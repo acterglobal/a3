@@ -15,6 +15,8 @@ import 'package:go_router/go_router.dart';
 class ConvoCard extends ConsumerStatefulWidget {
   final Convo room;
 
+  final Function()? onTap;
+
   /// Whether or not to render the parent Icon
   ///
   final bool showParent;
@@ -22,6 +24,7 @@ class ConvoCard extends ConsumerStatefulWidget {
   const ConvoCard({
     Key? key,
     required this.room,
+    this.onTap,
     this.showParent = true,
   }) : super(key: key);
 
@@ -47,36 +50,34 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     // ToDo: UnreadCounter
     return convoProfile.when(
       data: (profile) => ConvoWithProfileCard(
-          roomId: roomId,
-          showParent: widget.showParent,
-          profile: profile,
-          onTap: () {
-            context.pushNamed(
-              Routes.chatroom.name,
-              pathParameters: {'roomId': roomId},
-            );
-          },
-          subtitle: latestMsg.when(
-              data: (latestMsg) => latestMsg != null
-                  ? _SubtitleWidget(
-                      room: widget.room,
-                      latestMessage: latestMsg,
-                    )
-                  : const SizedBox.shrink(),
-              error: (e, s) => Text('Error: $e'),
-              loading: () => const SizedBox.shrink()),
-          trailing: latestMsg.when(
-              data: (latestMsg) => latestMsg != null
-                  ? _TrailingWidget(
-                      // controller: receiptController,
-                      room: widget.room,
-                      latestMessage: latestMsg,
-                      activeMembers: activeMembers,
-                      userId: client!.userId().toString(),
-                    )
-                  : const SizedBox.shrink(),
-              error: (e, s) => Text('Error: $e'),
-              loading: () => const SizedBox.shrink())),
+        roomId: roomId,
+        showParent: widget.showParent,
+        profile: profile,
+        onTap: widget.onTap,
+        subtitle: latestMsg.when(
+          data: (latestMsg) => latestMsg != null
+              ? _SubtitleWidget(
+                  room: widget.room,
+                  latestMessage: latestMsg,
+                )
+              : const SizedBox.shrink(),
+          error: (e, s) => Text('Error: $e'),
+          loading: () => const SizedBox.shrink(),
+        ),
+        trailing: latestMsg.when(
+          data: (latestMsg) => latestMsg != null
+              ? _TrailingWidget(
+                  // controller: receiptController,
+                  room: widget.room,
+                  latestMessage: latestMsg,
+                  activeMembers: activeMembers,
+                  userId: client!.userId().toString(),
+                )
+              : const SizedBox.shrink(),
+          error: (e, s) => Text('Error: $e'),
+          loading: () => const SizedBox.shrink(),
+        ),
+      ),
       error: (error, stackTrace) => const Text('Failed to load Conversation'),
       loading: () => const CircularProgressIndicator(),
     );

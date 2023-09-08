@@ -755,7 +755,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     return types.UnsupportedMessage(
       author: const types.User(id: 'virtual'),
       id: UniqueKey().toString(),
-      metadata: {
+      metadata: const {
         'itemType': 'virtual',
       },
     );

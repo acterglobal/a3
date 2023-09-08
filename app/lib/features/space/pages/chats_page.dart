@@ -58,7 +58,14 @@ class SpaceChatsPage extends ConsumerWidget {
                   initialItemCount: rooms.length,
                   itemBuilder: (context, index, animation) => SizeTransition(
                     sizeFactor: animation,
-                    child: ConvoCard(room: rooms[index], showParent: false),
+                    child: ConvoCard(
+                      room: rooms[index],
+                      showParent: false,
+                      onTap: () => context.pushNamed(
+                        Routes.chatroom.name,
+                        pathParameters: {'roomId': rooms[index].getRoomIdStr()},
+                      ),
+                    ),
                   ),
                 );
               }

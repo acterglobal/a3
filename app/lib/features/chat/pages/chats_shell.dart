@@ -19,7 +19,7 @@ class ChatShell extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               const Flexible(
-                child: RoomsListWidget(),
+                child: RoomsListWidget(inSidebar: true),
               ),
               Flexible(
                 flex: 2,

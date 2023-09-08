@@ -119,7 +119,7 @@ class _ChatBubble extends ConsumerWidget {
           isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
         _EmojiRow(
-            roomId: roomId, onEmojiTap: sendEmojiReaction, message: message),
+            roomId: roomId, onEmojiTap: sendEmojiReaction, message: message,),
         const SizedBox(height: 4),
         enlargeEmoji
             ? child
@@ -455,7 +455,7 @@ class _EmojiRow extends ConsumerWidget {
   final Function(String messageId, String value) onEmojiTap;
 
   const _EmojiRow(
-      {required this.roomId, required this.onEmojiTap, required this.message});
+      {required this.roomId, required this.onEmojiTap, required this.message,});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

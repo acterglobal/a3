@@ -16,7 +16,11 @@ const defaultRoomListMenuKey = Key('room-list');
 final _searchToggleProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 class RoomsListWidget extends ConsumerWidget {
-  const RoomsListWidget({super.key = defaultRoomListMenuKey});
+  final bool inSidebar;
+  const RoomsListWidget({
+    this.inSidebar = false,
+    super.key = defaultRoomListMenuKey,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -100,7 +104,22 @@ class RoomsListWidget extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                if (client.isGuest()) empty else const ConvosList(),
+                if (client.isGuest())
+                  empty
+                else
+                  ConvosList(
+                    onSelected: (String roomId) {
+                      inSidebar
+                          ? context.goNamed(
+                              Routes.chatroom.name,
+                              pathParameters: {'roomId': roomId},
+                            )
+                          : context.pushNamed(
+                              Routes.chatroom.name,
+                              pathParameters: {'roomId': roomId},
+                            );
+                    },
+                  ),
               ],
             ),
           ),

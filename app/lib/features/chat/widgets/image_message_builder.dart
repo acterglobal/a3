@@ -23,7 +23,7 @@ class ImageMessageBuilder extends StatefulWidget {
 }
 
 class _ImageMessageBuilderState extends State<ImageMessageBuilder> {
-  AsyncValue<Uint8List> imageData = AsyncValue.loading();
+  AsyncValue<Uint8List> imageData = const AsyncValue.loading();
 
   @override
   void initState() {

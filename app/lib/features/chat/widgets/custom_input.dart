@@ -171,7 +171,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                           .read(chatStateProvider(widget.convo))
                           .messages
                           .firstWhere(
-                              (element) => element.id == currentMessageId);
+                              (element) => element.id == currentMessageId,);
                       showAdaptiveDialog(
                         context: context,
                         builder: (context) => ReportContentWidget(
@@ -566,7 +566,6 @@ class _TextInputWidget extends ConsumerWidget {
   const _TextInputWidget({
     required this.convo,
     required this.onSendButtonPressed,
-    super.key,
   });
 
   @override

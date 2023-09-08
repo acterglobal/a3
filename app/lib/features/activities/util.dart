@@ -6,7 +6,7 @@ NotificationBrief briefForChat(ffi.Notification notification) {
   final convo = notification.convo();
   final message = notification.roomMessage();
   const route = Routes.chatroom;
-  if (convo == null || message == null) {
+  if (message == null) {
     return const NotificationBrief(
       title: 'unsupported chat message',
       route: route,

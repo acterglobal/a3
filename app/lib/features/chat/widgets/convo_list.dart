@@ -8,7 +8,8 @@ import 'package:auto_animated_list/auto_animated_list.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ConvosList extends ConsumerWidget {
-  const ConvosList({super.key});
+  final Function(String)? onSelected;
+  const ConvosList({this.onSelected, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -58,7 +59,11 @@ class ConvosList extends ConsumerWidget {
       itemBuilder: (context, item, index, animation) => SizeFadeTransition(
         sizeFraction: 0.7,
         animation: animation,
-        child: ConvoCard(room: item),
+        child: ConvoCard(
+          room: item,
+          onTap: () =>
+              onSelected != null ? onSelected!(item.getRoomIdStr()) : null,
+        ),
       ),
       scrollDirection: Axis.vertical,
       shrinkWrap: true,

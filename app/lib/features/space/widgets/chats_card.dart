@@ -40,6 +40,12 @@ class ChatsCard extends ConsumerWidget {
                       itemBuilder: (context, index) => ConvoCard(
                         room: chats[index],
                         showParent: false,
+                        onTap: () => context.pushNamed(
+                          Routes.chatroom.name,
+                          pathParameters: {
+                            'roomId': chats[index].getRoomIdStr()
+                          },
+                        ),
                       ),
                     ),
                     chats.length > 3

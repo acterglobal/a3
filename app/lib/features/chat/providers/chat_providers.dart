@@ -32,17 +32,17 @@ final chatStateProvider =
 final chatSearchValueProvider = StateProvider<String?>((ref) => null);
 
 final searchedChatsProvider = FutureProvider<List<Convo>>((ref) async {
-  final all_rooms = ref.watch(chatsProvider);
+  final allRooms = ref.watch(chatsProvider);
   final searchValue = ref.watch(chatSearchValueProvider);
   if (searchValue == null || searchValue.isEmpty) {
-    return all_rooms;
+    return allRooms;
   }
 
   final searchTerm = searchValue.toLowerCase();
 
   final foundRooms = List<Convo>.empty(growable: true);
 
-  for (final convo in all_rooms) {
+  for (final convo in allRooms) {
     final profile = await ref.watch(chatProfileDataProvider(convo).future);
     final name = profile.displayName ?? convo.getRoomIdStr();
     if (name.toLowerCase().contains(searchTerm)) {
