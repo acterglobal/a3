@@ -10,6 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
+class PostProcessItem {
+  final types.Message message;
+  final RoomMessage event;
+  const PostProcessItem(this.event, this.message);
+}
+
 class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   final Ref ref;
   final Convo convo;
@@ -28,7 +34,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     try {
       timeline = await convo.timelineStream();
       subscription = timeline?.diffStream().listen((timelineDiff) async {
-        await _parseEvent(timelineDiff);
+        await _handleDiff(timelineDiff);
       });
       do {
         await loadMore();
@@ -53,12 +59,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     state = state.copyWith(hasMore: hasMore);
   }
 
+  List<types.Message> messagesCopy() =>
+      List.from(state.messages, growable: true);
+
   // Messages CRUD
-  void addMessage(types.Message m) =>
-      state = state.copyWith(messages: [...state.messages, m]);
+  void setMessages(List<types.Message> messages) =>
+      state = state.copyWith(messages: messages);
 
   void insertMessage(int to, types.Message m) {
-    List<types.Message> newState = [...state.messages];
+    final newState = messagesCopy();
     if (to < newState.length) {
       newState.insert(to, m);
     } else {
@@ -68,19 +77,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   void replaceMessage(int index, types.Message m) {
-    if (index < state.messages.length) {
-      List<types.Message> newState = [...state.messages];
-      newState[index] = m;
-      state = state.copyWith(messages: newState);
-    }
+    final newState = messagesCopy();
+    newState[index] = m;
+    state = state.copyWith(messages: newState);
   }
 
   void removeMessage(int idx) {
-    if (idx < state.messages.length) {
-      List<types.Message> newState = [...state.messages];
-      newState.removeAt(idx);
-      state = state.copyWith(messages: newState);
-    }
+    final newState = messagesCopy();
+    newState.removeAt(idx);
+    state = state.copyWith(messages: newState);
   }
 
   void resetMessages() => state = state.copyWith(messages: []);
@@ -98,80 +103,91 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // parses `RoomMessage` event to `types.Message` and updates messages list
-  Future<void> _parseEvent(TimelineDiff timelineEvent) async {
-    debugPrint('DiffRx: ${timelineEvent.action()}');
+  Future<void> _handleDiff(TimelineDiff timelineEvent) async {
+    List<PostProcessItem> postProcessing = [];
     switch (timelineEvent.action()) {
       case 'Append':
         List<RoomMessage> messages = timelineEvent.values()!.toList();
-        for (var m in messages) {
+        List<types.Message> messagesToAdd = [];
+        for (final m in messages) {
           final message = _parseMessage(m);
-          if (message == null || message is types.UnsupportedMessage) {
-            break;
-          }
-          insertMessage(0, message);
-          final repliedTo = _getRepliedTo(message);
-          if (repliedTo != null) {
-            await _fetchOriginalContent(repliedTo, message.id);
-          }
-          RoomEventItem? eventItem = m.eventItem();
-          if (eventItem != null) {
-            await _fetchEventBinary(eventItem.msgType(), message.id);
-          }
+          messagesToAdd.add(message);
+          postProcessing.add(PostProcessItem(m, message));
+        }
+        if (messagesToAdd.isNotEmpty) {
+          final newList = messagesCopy();
+          newList.addAll(messagesToAdd);
+          setMessages(newList);
         }
         break;
       case 'Set': // used to update UnableToDecrypt message
+        RoomMessage m = timelineEvent.value()!;
+        final index = timelineEvent.index()!;
+        final message = _parseMessage(m);
+        replaceMessage(index, message);
+        postProcessing.add(PostProcessItem(m, message));
+        break;
+
       case 'Insert':
         RoomMessage m = timelineEvent.value()!;
+        final index = timelineEvent.index()!;
         final message = _parseMessage(m);
-        if (message == null || message is types.UnsupportedMessage) {
-          break;
-        }
-        int index = state.messages.indexWhere((msg) => message.id == msg.id);
-        if (index == -1) {
-          addMessage(message);
-        } else {
-          // update event may be fetched prior to insert event
-          replaceMessage(index, message);
-        }
-        final repliedTo = _getRepliedTo(message);
-        if (repliedTo != null) {
-          await _fetchOriginalContent(repliedTo, message.id);
-        }
-        RoomEventItem? eventItem = m.eventItem();
-        if (eventItem != null) {
-          await _fetchEventBinary(eventItem.msgType(), message.id);
-        }
+        insertMessage(index, message);
+        postProcessing.add(PostProcessItem(m, message));
         break;
       case 'Remove':
         int index = timelineEvent.index()!;
-        final messages = state.messages;
-        if (index < messages.length) {
-          removeMessage(messages.length - 1 - index);
-        }
+        removeMessage(index);
         break;
       case 'PushBack':
         RoomMessage m = timelineEvent.value()!;
         final message = _parseMessage(m);
-        if (message == null || message is types.UnsupportedMessage) {
-          break;
-        }
         insertMessage(0, message);
-        final repliedTo = _getRepliedTo(message);
-        if (repliedTo != null) {
-          await _fetchOriginalContent(repliedTo, message.id);
-        }
-        RoomEventItem? eventItem = m.eventItem();
-        if (eventItem != null) {
-          await _fetchEventBinary(eventItem.msgType(), message.id);
-        }
+        postProcessing.add(PostProcessItem(m, message));
         break;
       case 'PushFront':
         RoomMessage m = timelineEvent.value()!;
         final message = _parseMessage(m);
-        if (message == null || message is types.UnsupportedMessage) {
-          break;
+        final newList = messagesCopy();
+        newList.add(message);
+        setMessages(newList);
+        postProcessing.add(PostProcessItem(m, message));
+        break;
+      case 'PopBack':
+        final newList = messagesCopy();
+        newList.removeLast();
+        setMessages(newList);
+        break;
+      case 'PopFront':
+        final newList = messagesCopy();
+        newList.removeAt(0);
+        setMessages(newList);
+        break;
+      case 'Clear':
+        setMessages([]);
+        break;
+      case 'Reset':
+        List<RoomMessage> messages = timelineEvent.values()!.toList();
+        List<types.Message> newList = [];
+        for (final m in messages) {
+          final message = _parseMessage(m);
+          newList.add(message);
+          postProcessing.add(PostProcessItem(m, message));
         }
-        addMessage(message);
+        if (newList.isNotEmpty) {
+          setMessages(newList);
+        }
+        break;
+      default:
+        break;
+    }
+
+    // ensure we are done with the state list to avoid
+    // races between the async tasks and the diff
+    if (postProcessing.isNotEmpty) {
+      for (final p in postProcessing) {
+        final message = p.message;
+        final m = p.event;
         final repliedTo = _getRepliedTo(message);
         if (repliedTo != null) {
           await _fetchOriginalContent(repliedTo, message.id);
@@ -180,26 +196,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (eventItem != null) {
           await _fetchEventBinary(eventItem.msgType(), message.id);
         }
-        break;
-      case 'PopBack':
-        final messages = state.messages;
-        if (messages.isNotEmpty) {
-          removeMessage(0);
-        }
-        break;
-      case 'PopFront':
-        final messages = state.messages;
-        if (messages.isNotEmpty) {
-          removeMessage(messages.length - 1);
-        }
-        break;
-      case 'Clear':
-        resetMessages();
-        break;
-      case 'Reset':
-        break;
-      default:
-        break;
+      }
     }
   }
 
@@ -388,7 +385,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // maps [RoomMessage] to [types.Message].
-  types.Message? _parseMessage(RoomMessage message) {
+  types.Message _parseMessage(RoomMessage message) {
     RoomVirtualItem? virtualItem = message.virtualItem();
     if (virtualItem != null) {
       // should not return null, before we can keep track of index in diff receiver
@@ -755,7 +752,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
     }
-    return null;
+    return types.UnsupportedMessage(
+      author: const types.User(id: 'virtual'),
+      id: UniqueKey().toString(),
+      metadata: {
+        'itemType': 'virtual',
+      },
+    );
   }
 
   // fetch event media binary for message.

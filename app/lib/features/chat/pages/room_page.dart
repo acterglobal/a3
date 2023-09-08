@@ -62,6 +62,15 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     final activeMembers = ref.watch(chatMembersProvider(convo.getRoomIdStr()));
     final chatState = ref.watch(chatStateProvider(convo));
 
+    final messages = chatState.messages
+        .where(
+          // filter only items we can show
+          (m) => m is! types.UnsupportedMessage,
+        )
+        .toList()
+        .reversed
+        .toList();
+
     final roomId = widget.convo.getRoomIdStr();
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
@@ -166,7 +175,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             sendButtonAccessibilityLabel: '',
           ),
           timeFormat: DateFormat.jm(),
-          messages: chatState.messages,
+          messages: messages,
           onSendPressed: (types.PartialText partialText) {},
           user: types.User(id: client!.userId().toString()),
           // disable image preview
