@@ -489,7 +489,11 @@ impl Client {
             .fold(
                 (Vec::new(), Vec::new()),
                 async move |(mut spaces, mut convos), room| {
-                    let inner = Room { room: room.clone() };
+                    if matches!(room, SdkRoom::Left(_)) {
+                        // ignore rooms we aren't in anymore ... maybe make them available somewhere else at some point
+                        return (spaces, convos);
+                    }
+                    let inner = Room { room };
 
                     if inner.is_space() {
                         spaces.push(inner);
@@ -519,6 +523,16 @@ impl Client {
                     remove_from_chat(&mut chats, r_id);
                     continue
                 };
+
+                if matches!(room, SdkRoom::Left(_)) {
+                    // remove rooms we aren't in anymore
+                    if remove_from(&mut spaces, r_id) {
+                        trigger_spaces_key = true;
+                    }
+                    remove_from_chat(&mut chats, r_id);
+                    updated.push(r_id.to_string());
+                    continue;
+                }
 
                 let inner = Room { room: room.clone() };
 
