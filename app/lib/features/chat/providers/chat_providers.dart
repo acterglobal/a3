@@ -8,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final chatsSearchProvider = StateProvider<List<Convo>>((ref) => []);
-
 final typingProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
 final chatInputProvider =
