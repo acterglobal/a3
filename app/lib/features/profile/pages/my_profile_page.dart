@@ -176,8 +176,6 @@ class MyProfile extends ConsumerWidget {
       await profile.account.setDisplayName(newText);
       ref.invalidate(accountProfileProvider);
 
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
       if (!context.mounted) {
         return;
       }
@@ -198,8 +196,7 @@ class MyProfile extends ConsumerWidget {
     if (result != null) {
       final file = result.files.first;
       await profile.account.uploadAvatar(file.path!);
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
+
       if (!context.mounted) {
         return;
       }
@@ -235,8 +232,6 @@ class MyProfile extends ConsumerWidget {
       );
       ref.invalidate(accountProfileProvider);
 
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
       if (!context.mounted) {
         return;
       }
