@@ -77,6 +77,13 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
   }
 }
 
+class EmailPassword {
+  String emailAddress;
+  String password;
+
+  EmailPassword(this.emailAddress, this.password);
+}
+
 class ChangeEmailPassword extends StatefulWidget {
   final AccountProfile account;
 
@@ -137,19 +144,9 @@ class _ChangeEmailPasswordState extends State<ChangeEmailPassword> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    final account = widget.account.account;
-    final emailAddr = newEmail.text;
-    final password = newPassword.text;
-    account.requestTokenViaEmail(emailAddr, password).then((result) {
-      if (!context.mounted) {
-        return;
-      }
-      if (result) {
-        Navigator.pop(context, newEmail.text);
-      } else {
-        Navigator.pop(context, null);
-      }
-    });
+    // user can reset password under the same email address
+    final result = EmailPassword(newEmail.text, newPassword.text);
+    Navigator.pop(context, result);
   }
 }
 
@@ -217,11 +214,11 @@ class MyProfile extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final newText = await showDialog<String?>(
+    final newValue = await showDialog<EmailPassword?>(
       context: context,
       builder: (BuildContext context) => ChangeEmailPassword(account: profile),
     );
-    if (newText != null && context.mounted) {
+    if (newValue != null && context.mounted) {
       showAdaptiveDialog(
         context: context,
         builder: (context) => DefaultDialog(
@@ -232,7 +229,10 @@ class MyProfile extends ConsumerWidget {
           isLoader: true,
         ),
       );
-      // already requested token in ChangeEmailPassword dialog
+      await profile.account.requestTokenViaEmail(
+        newValue.emailAddress,
+        newValue.password,
+      );
       ref.invalidate(accountProfileProvider);
 
       // We are doing as expected, but the lints triggers.
