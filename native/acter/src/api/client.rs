@@ -145,7 +145,7 @@ pub(crate) async fn devide_spaces_from_convos(
                 if inner.is_space() {
                     spaces.push(Space::new(client.clone(), inner));
                 } else {
-                    convos.push(Convo::new(inner));
+                    convos.push(Convo::new(client.convo_controller.clone(), inner));
                 }
 
                 (spaces, convos, client)

@@ -1,11 +1,13 @@
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/custom_button.dart';
+import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
+import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/features/events/providers/events_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -85,7 +87,7 @@ class CalendarEventPage extends ConsumerWidget {
                               SizedBox(
                                 height: 50,
                                 width: 100,
-                                child: CustomButton(
+                                child: DefaultButton(
                                   title: 'Invite',
                                   onPressed: () => onInvite(context),
                                 ),
@@ -93,7 +95,7 @@ class CalendarEventPage extends ConsumerWidget {
                               SizedBox(
                                 height: 50,
                                 width: 100,
-                                child: CustomButton(
+                                child: DefaultButton(
                                   title: 'Join',
                                   onPressed: () => onJoin(context),
                                 ),
@@ -121,6 +123,25 @@ class CalendarEventPage extends ConsumerWidget {
                                       child: const Text('No'),
                                     ),
                                   ],
+                                ),
+                              ),
+                              const Spacer(),
+                              IconButton(
+                                onPressed: () => showAdaptiveDialog(
+                                  context: context,
+                                  builder: (ctx) => ReportContentWidget(
+                                    title: 'Report this Event',
+                                    description:
+                                        'Report this content to your homeserver administrator. Please note that your adminstrator won\'t be able to read or view files, if space is encrypted',
+                                    eventId: calendarId,
+                                    roomId: ev.roomIdStr(),
+                                    senderId: ev.sender().toString(),
+                                    isSpace: true,
+                                  ),
+                                ),
+                                icon: Icon(
+                                  Atlas.warning_thin,
+                                  color: Theme.of(context).colorScheme.error,
                                 ),
                               ),
                             ],

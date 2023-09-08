@@ -1,4 +1,4 @@
-use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId};
+use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
@@ -42,6 +42,10 @@ impl CalendarEvent {
 
     pub fn room_id(&self) -> &RoomId {
         &self.meta.room_id
+    }
+
+    pub fn sender(&self) -> &UserId {
+        &self.meta.sender
     }
 
     pub fn updater(&self) -> CalendarEventUpdateBuilder {

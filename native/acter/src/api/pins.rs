@@ -11,7 +11,9 @@ use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{
     room::{Joined, Room},
-    ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId},
+    ruma::{
+        events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId, OwnedUserId,
+    },
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -256,6 +258,10 @@ impl Pin {
 
     pub fn room_id_str(&self) -> String {
         self.content.room_id().to_string()
+    }
+
+    pub fn sender(&self) -> OwnedUserId {
+        self.content.sender().to_owned()
     }
 }
 

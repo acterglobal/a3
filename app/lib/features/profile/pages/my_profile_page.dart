@@ -1,10 +1,10 @@
 import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -166,13 +166,15 @@ class MyProfile extends ConsumerWidget {
       builder: (BuildContext context) => ChangeDisplayName(account: profile),
     );
     if (newText != null && context.mounted) {
-      popUpDialog(
+      showAdaptiveDialog(
         context: context,
-        title: Text(
-          'Updating Display Name',
-          style: Theme.of(context).textTheme.titleSmall,
+        builder: (context) => DefaultDialog(
+          title: Text(
+            'Updating Display Name',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          isLoader: true,
         ),
-        isLoader: true,
       );
       await profile.account.setDisplayName(newText);
       ref.invalidate(accountProfileProvider);
@@ -220,13 +222,15 @@ class MyProfile extends ConsumerWidget {
       builder: (BuildContext context) => ChangeEmailPassword(account: profile),
     );
     if (newText != null && context.mounted) {
-      popUpDialog(
+      showAdaptiveDialog(
         context: context,
-        title: Text(
-          'Updating Email Address',
-          style: Theme.of(context).textTheme.titleSmall,
+        builder: (context) => DefaultDialog(
+          title: Text(
+            'Updating Email Address',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          isLoader: true,
         ),
-        isLoader: true,
       );
       // already requested token in ChangeEmailPassword dialog
       ref.invalidate(accountProfileProvider);
