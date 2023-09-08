@@ -1,21 +1,22 @@
 import 'package:acter/common/dialogs/deactivation_confirmation.dart';
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
+import 'package:acter/common/dialogs/pop_up_dialog.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
-import 'package:acter_avatar/acter_avatar.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class ChangeDisplayName extends StatefulWidget {
   final AccountProfile account;
+
   const ChangeDisplayName({
     Key? key,
     required this.account,
@@ -26,18 +27,17 @@ class ChangeDisplayName extends StatefulWidget {
 }
 
 class _ChangeDisplayNameState extends State<ChangeDisplayName> {
-  final TextEditingController newUsername = TextEditingController();
+  final TextEditingController newName = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    newUsername.text = widget.account.profile.displayName ?? '';
+    newName.text = widget.account.profile.displayName ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
-    final account = widget.account;
     return AlertDialog(
       title: const Text('Change your display name'),
       content: Form(
@@ -47,9 +47,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
           children: [
             Padding(
               padding: const EdgeInsets.all(5),
-              child: TextFormField(
-                controller: newUsername,
-              ),
+              child: TextFormField(controller: newName),
             ),
           ],
         ),
@@ -60,22 +58,98 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
           child: const Text('Cancel'),
         ),
         TextButton(
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              final currentUserName = account.profile.displayName;
-              final newDisplayName = newUsername.text;
-              if (currentUserName != newDisplayName) {
-                Navigator.pop(context, newDisplayName);
-              } else {
-                Navigator.pop(context, null);
-              }
-              return;
-            }
-          },
+          onPressed: onSubmit,
           child: const Text('Submit'),
         ),
       ],
     );
+  }
+
+  void onSubmit() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    if (widget.account.profile.displayName != newName.text) {
+      Navigator.pop(context, newName.text);
+    } else {
+      Navigator.pop(context, null);
+    }
+  }
+}
+
+class ChangeEmailPassword extends StatefulWidget {
+  final AccountProfile account;
+
+  const ChangeEmailPassword({
+    Key? key,
+    required this.account,
+  }) : super(key: key);
+
+  @override
+  State<ChangeEmailPassword> createState() => _ChangeEmailPasswordState();
+}
+
+class _ChangeEmailPasswordState extends State<ChangeEmailPassword> {
+  final TextEditingController newEmail = TextEditingController();
+  final TextEditingController newPassword = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    newEmail.text = widget.account.emailAddress ?? '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Change your password via email address'),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: TextFormField(controller: newEmail),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: TextFormField(controller: newPassword),
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.pop(context, null),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => onSubmit(context),
+          child: const Text('Submit'),
+        ),
+      ],
+    );
+  }
+
+  void onSubmit(BuildContext context) {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    final account = widget.account.account;
+    final emailAddr = newEmail.text;
+    final password = newPassword.text;
+    account.requestTokenViaEmail(emailAddr, password).then((result) {
+      if (!context.mounted) {
+        return;
+      }
+      if (result) {
+        Navigator.pop(context, newEmail.text);
+      } else {
+        Navigator.pop(context, null);
+      }
+    });
   }
 }
 
@@ -87,20 +161,20 @@ class MyProfile extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final newUsername = await showDialog<String?>(
+    final newText = await showDialog<String?>(
       context: context,
       builder: (BuildContext context) => ChangeDisplayName(account: profile),
     );
-    if (newUsername != null && context.mounted) {
+    if (newText != null && context.mounted) {
       popUpDialog(
         context: context,
         title: Text(
-          'Updating Displayname',
+          'Updating Display Name',
           style: Theme.of(context).textTheme.titleSmall,
         ),
         isLoader: true,
       );
-      await profile.account.setDisplayName(newUsername);
+      await profile.account.setDisplayName(newText);
       ref.invalidate(accountProfileProvider);
 
       // We are doing as expected, but the lints triggers.
@@ -113,7 +187,7 @@ class MyProfile extends ConsumerWidget {
     }
   }
 
-  void _handleAvatarUpload(
+  Future<void> updateAvatar(
     AccountProfile profile,
     BuildContext context,
     WidgetRef ref,
@@ -133,6 +207,37 @@ class MyProfile extends ConsumerWidget {
       customMsgSnackbar(context, 'Avatar uploaded');
     } else {
       // user cancelled the picker
+    }
+  }
+
+  Future<void> updateEmailAddress(
+    AccountProfile profile,
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final newText = await showDialog<String?>(
+      context: context,
+      builder: (BuildContext context) => ChangeEmailPassword(account: profile),
+    );
+    if (newText != null && context.mounted) {
+      popUpDialog(
+        context: context,
+        title: Text(
+          'Updating Email Address',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        isLoader: true,
+      );
+      // already requested token in ChangeEmailPassword dialog
+      ref.invalidate(accountProfileProvider);
+
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
+      Navigator.of(context, rootNavigator: true).pop();
+      customMsgSnackbar(context, 'Display Name update submitted');
     }
   }
 
@@ -190,11 +295,7 @@ class MyProfile extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () => _handleAvatarUpload(
-                          data,
-                          context,
-                          ref,
-                        ),
+                        onTap: () => updateAvatar(data, context, ref),
                         child: Container(
                           margin: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -218,11 +319,7 @@ class MyProfile extends ConsumerWidget {
                             iconSize: 14,
                             icon: const Icon(Atlas.pencil_edit_thin),
                             onPressed: () async {
-                              await updateDisplayName(
-                                data,
-                                context,
-                                ref,
-                              );
+                              await updateDisplayName(data, context, ref);
                             },
                           ),
                         ],
@@ -234,7 +331,7 @@ class MyProfile extends ConsumerWidget {
                           IconButton(
                             iconSize: 14,
                             icon: const Icon(Atlas.pages),
-                            onPressed: () async {
+                            onPressed: () {
                               Clipboard.setData(
                                 ClipboardData(text: userId),
                               );
@@ -242,6 +339,19 @@ class MyProfile extends ConsumerWidget {
                                 context,
                                 'Username copied to clipboard',
                               );
+                            },
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(data.emailAddress ?? ''),
+                          IconButton(
+                            iconSize: 14,
+                            icon: const Icon(Atlas.pencil_edit_thin),
+                            onPressed: () async {
+                              await updateEmailAddress(data, context, ref);
                             },
                           ),
                         ],

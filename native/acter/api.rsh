@@ -1572,6 +1572,13 @@ object Account {
     /// Change the avatar of the account with the provided
     /// local file path
     fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
+
+    /// get email address from third party identifier
+    fn email_address() -> Future<Result<OptionString>>;
+
+    /// Requests token via email and add email address to third party identifier.
+    /// If password is not enough complex, homeserver may reject this request.
+    fn request_token_via_email(email_address: string, password: string) -> Future<Result<bool>>;
 }
 
 object SyncState {

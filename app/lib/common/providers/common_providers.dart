@@ -22,8 +22,9 @@ final loadingProvider = StateProvider<bool>((ref) => false);
 class AccountProfile {
   final Account account;
   final ProfileData profile;
+  final String? emailAddress; // for only user profile, not room profile
 
-  const AccountProfile(this.account, this.profile);
+  const AccountProfile(this.account, this.profile, this.emailAddress);
 }
 
 Future<ProfileData> getProfileData(Account account) async {
@@ -44,7 +45,8 @@ final accountProvider = FutureProvider((ref) async {
 final accountProfileProvider = FutureProvider((ref) async {
   final account = await ref.watch(accountProvider.future);
   final profile = await getProfileData(account);
-  return AccountProfile(account, profile);
+  final emailAddress = await account.emailAddress();
+  return AccountProfile(account, profile, emailAddress.text());
 });
 
 // Chat Providers

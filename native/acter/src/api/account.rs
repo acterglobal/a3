@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use matrix_sdk::{
     media::MediaFormat,
-    ruma::{OwnedMxcUri, OwnedUserId},
+    ruma::{thirdparty::Medium, uint, ClientSecret, OwnedMxcUri, OwnedUserId},
     Account as SdkAccount,
 };
 use std::{ops::Deref, path::PathBuf};
@@ -79,6 +79,41 @@ impl Account {
                 let data = std::fs::read(path).context("File should be read")?;
                 let new_url = account.upload_avatar(&content_type, data).await?;
                 Ok(new_url)
+            })
+            .await?
+    }
+
+    pub async fn email_address(&self) -> Result<OptionString> {
+        let account = self.account.clone();
+        RUNTIME
+            .spawn(async move {
+                let response = account.get_3pids().await?;
+                for threepid in response.threepids.iter() {
+                    if threepid.medium == Medium::Email {
+                        return Ok(OptionString::new(Some(threepid.address.clone())));
+                    }
+                }
+                Ok(OptionString::new(None))
+            })
+            .await?
+    }
+
+    pub async fn request_token_via_email(&self, email_address: String, password: String) -> Result<bool> {
+        let account = self.account.clone();
+        let secret = ClientSecret::parse(password).context("Password parsing failed")?;
+        RUNTIME
+            .spawn(async move {
+                let token_response = account
+                    .request_3pid_email_token(&secret, email_address.as_str(), uint!(0))
+                    .await?;
+
+                // Wait for the user to confirm that the token was submitted or prompt
+                // the user for the token and send it to submit_url.
+
+                let uiaa_response = account
+                    .add_3pid(&secret, &token_response.sid, None)
+                    .await?;
+                Ok(true)
             })
             .await?
     }
