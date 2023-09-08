@@ -8,9 +8,9 @@ import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -158,7 +158,7 @@ class MyProfile extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final newText = await showDialog<String?>(
+    final newText = await showDialog<String>(
       context: context,
       builder: (BuildContext context) => ChangeDisplayName(account: profile),
     );
@@ -214,7 +214,7 @@ class MyProfile extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final newValue = await showDialog<EmailPassword?>(
+    final newValue = await showDialog<EmailPassword>(
       context: context,
       builder: (BuildContext context) => ChangeEmailPassword(account: profile),
     );

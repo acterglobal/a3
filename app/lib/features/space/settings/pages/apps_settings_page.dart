@@ -31,7 +31,11 @@ class SettingsAndMembership {
   final Member? member;
 
   const SettingsAndMembership(
-      this.space, this.powerLevels, this.settings, this.member,);
+    this.space,
+    this.powerLevels,
+    this.settings,
+    this.member,
+  );
 }
 
 final spaceAppSettingsProvider = FutureProvider.autoDispose
@@ -100,7 +104,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
                     onPressed: (context) async {
-                      final newPowerLevel = await showDialog<int?>(
+                      final newPowerLevel = await showDialog<int>(
                         context: context,
                         builder: (BuildContext context) => ChangePowerLevel(
                           featureName: 'Updates',
@@ -153,7 +157,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
                     onPressed: (context) async {
-                      final newPowerLevel = await showDialog<int?>(
+                      final newPowerLevel = await showDialog<int>(
                         context: context,
                         builder: (BuildContext context) => ChangePowerLevel(
                           featureName: 'Pin',
@@ -206,7 +210,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
                     onPressed: (context) async {
-                      final newPowerLevel = await showDialog<int?>(
+                      final newPowerLevel = await showDialog<int>(
                         context: context,
                         builder: (BuildContext context) => ChangePowerLevel(
                           featureName: 'Calendar Events',

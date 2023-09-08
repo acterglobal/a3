@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:acter_avatar/acter_avatar.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChangePowerLevel extends StatefulWidget {
   final Member member;
@@ -183,7 +183,7 @@ class MemberListEntry extends ConsumerWidget {
   });
 
   Future<void> changePowerLevel(BuildContext context, WidgetRef ref) async {
-    final newPowerlevel = await showDialog<int?>(
+    final newPowerlevel = await showDialog<int>(
       context: context,
       builder: (BuildContext context) =>
           ChangePowerLevel(member: member, myMembership: myMembership),
