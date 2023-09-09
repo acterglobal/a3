@@ -63,7 +63,7 @@ class SessionsPage extends ConsumerWidget {
                 Text(
                   'Unverified Sessions',
                   style: Theme.of(context).textTheme.headlineSmall,
-                )
+                ),
               ],
             ),
           ),

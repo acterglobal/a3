@@ -64,20 +64,20 @@ class SettingsMenu extends ConsumerWidget {
               SettingsTile.navigation(
                 title: Text(
                   'Blocked Users',
-                  style: titleStylesSelected(Routes.settingSessions),
+                  style: titleStylesSelected(Routes.blockedUsers),
                 ),
                 description: Text(
                   'Users you blocked',
-                  style: titleStylesSelected(Routes.settingSessions),
+                  style: titleStylesSelected(Routes.blockedUsers),
                 ),
                 leading: Icon(
                   Atlas.users_thin,
-                  color: colorSelected(Routes.settingSessions),
+                  color: colorSelected(Routes.blockedUsers),
                 ),
                 onPressed: (context) {
                   shouldGoNotNamed
-                      ? context.goNamed(Routes.settingSessions.name)
-                      : context.pushNamed(Routes.settingSessions.name);
+                      ? context.goNamed(Routes.blockedUsers.name)
+                      : context.pushNamed(Routes.blockedUsers.name);
                 },
               ),
             ],

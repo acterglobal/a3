@@ -297,7 +297,7 @@ class MemberListEntry extends ConsumerWidget {
               children: <TextSpan>[
                 TextSpan(
                   text:
-                      "You are about to unblock $userId. This will allow them to contact you again",
+                      'You are about to unblock $userId. This will allow them to contact you again',
                 ),
                 const TextSpan(text: 'Continue?'),
               ],

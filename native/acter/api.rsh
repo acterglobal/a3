@@ -1592,6 +1592,15 @@ object Account {
     /// Change the avatar of the account with the provided
     /// local file path
     fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
+
+    /// list of users by blocked by this user
+    fn ignored_users() -> Future<Result<Vec<UserId>>>;
+
+    /// add user_id to ignore list
+    fn ignore_user(user_id: string) -> Future<Result<bool>>;
+
+    /// remove user_id from ignore list
+    fn unignore_user(user_id: string) -> Future<Result<bool>>;
 }
 
 object SyncState {
