@@ -1,5 +1,7 @@
+import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/activities/providers/session_providers.dart';
 import 'package:acter/features/activities/widgets/session_card.dart';
+import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,39 +10,42 @@ class SessionsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const AppBarTheme().backgroundColor,
-        elevation: 0.0,
-        title: const Text('Sessions'),
-        centerTitle: true,
-      ),
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsetsDirectional.symmetric(
-              horizontal: 10,
-              vertical: 5,
+    return WithSidebar(
+      sidebar: const SettingsMenu(),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: const AppBarTheme().backgroundColor,
+          elevation: 0.0,
+          title: const Text('Sessions'),
+          centerTitle: true,
+        ),
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: 10,
+                vertical: 5,
+              ),
+              child: Text(
+                'Unverified Sessions',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
             ),
-            child: Text(
-              'Unverified Sessions',
-              style: Theme.of(context).textTheme.headlineSmall,
+            Consumer(builder: unverifiedSessionsBuilder),
+            Padding(
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: 10,
+                vertical: 5,
+              ),
+              child: Text(
+                'All Sessions',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
             ),
-          ),
-          Consumer(builder: unverifiedSessionsBuilder),
-          Padding(
-            padding: const EdgeInsetsDirectional.symmetric(
-              horizontal: 10,
-              vertical: 5,
-            ),
-            child: Text(
-              'All Sessions',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-          ),
-          Consumer(builder: allSessionsBuilder),
-        ],
+            Consumer(builder: allSessionsBuilder),
+          ],
+        ),
       ),
     );
   }

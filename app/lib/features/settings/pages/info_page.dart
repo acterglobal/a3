@@ -33,7 +33,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
     return WithSidebar(
       sidebar: const SettingsMenu(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('App Info')),
+        appBar: AppBar(title: const Text('Acter App Info')),
         body: SettingsList(
           sections: [
             SettingsSection(
