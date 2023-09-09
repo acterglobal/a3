@@ -194,14 +194,14 @@ class MemberListEntry extends ConsumerWidget {
           content: RichText(
             textAlign: TextAlign.left,
             text: TextSpan(
-              text: 'Block',
-              style: const TextStyle(color: Colors.white, fontSize: 32),
-              children: <TextSpan>[
+              text: 'You are about to block $userId. ',
+              style: const TextStyle(color: Colors.white, fontSize: 24),
+              children: const <TextSpan>[
                 TextSpan(
                   text:
-                      "You are about to block $userId. Once blocked you won't see their messages anymore and it will block their attempt to contact you directly. ",
+                      "Once blocked you won't see their messages anymore and it will block their attempt to contact you directly. ",
                 ),
-                const TextSpan(text: 'Continue?'),
+                TextSpan(text: 'Continue?'),
               ],
             ),
           ),
@@ -292,14 +292,13 @@ class MemberListEntry extends ConsumerWidget {
           content: RichText(
             textAlign: TextAlign.left,
             text: TextSpan(
-              text: 'Unblock',
-              style: const TextStyle(color: Colors.white, fontSize: 32),
-              children: <TextSpan>[
+              text: 'You are about to unblock $userId.',
+              style: const TextStyle(color: Colors.white, fontSize: 24),
+              children: const <TextSpan>[
                 TextSpan(
-                  text:
-                      'You are about to unblock $userId. This will allow them to contact you again',
+                  text: 'This will allow them to contact you again',
                 ),
-                const TextSpan(text: 'Continue?'),
+                TextSpan(text: 'Continue?'),
               ],
             ),
           ),
